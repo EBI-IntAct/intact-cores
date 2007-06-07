@@ -1,0 +1,5 @@
+2006-11-13
+
+This package may seem odd at first but it is currently necessary in order to separate the tests from the main classes.
+It has to do with the loading of the hibernate Entities and Bruno is working on a fix.
+PLEASE DO NOT attempt to move the test back under model until this bug is fixed.
