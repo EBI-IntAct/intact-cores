@@ -35,14 +35,7 @@
     <version>1.6.0-SNAPSHOT</version>
 
     <name>IntAct Core :: APT</name>
-    <url>http://www.ebi.ac.uk/~intact/devsite/${artifactId}</url>
     <description>Annotation Processors for IntAct</description>
-
-    <scm>
-        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk/intact-apt</connection>
-        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk/intact-apt</developerConnection>
-        <url>http://svn.sourceforge.net/viewcvs.cgi/intact/repo/core/trunk/intact-apt</url>
-    </scm>
 
     <profiles>
     <!-- Mac OS X has not a tools.jar! -->
@@ -70,13 +63,5 @@
             <artifactId>log4j</artifactId>
         </dependency>
     </dependencies>
-
-    <distributionManagement>
-        <site>
-            <id>intact-site</id>
-            <name>Intact site</name>
-            <url>${site.remote.basedir}/${artifactId}</url>
-        </site>
-    </distributionManagement>
 
 </project>

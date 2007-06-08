@@ -14,15 +14,7 @@
     <version>1.6.0-SNAPSHOT</version>
 
     <name>IntAct Core :: Annotations</name>
-    <url>http://www.ebi.ac.uk/~intact/devsite/${artifactId}</url>
     <description>Intact Annotations, common annotations for all the IntAct modules</description>
-
-    <scm>
-        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk/intact-annotations</connection>
-        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk/intact-annotations
-        </developerConnection>
-        <url>http://svn.sourceforge.net/viewcvs.cgi/intact/repo/core/trunk/intact-annotations</url>
-    </scm>
 
     <dependencies>
         <dependency>
@@ -32,16 +24,7 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.0.4</version>
         </dependency>
     </dependencies>
-
-    <distributionManagement>
-        <site>
-            <id>intact-site</id>
-            <name>Intact site</name>
-            <url>${site.remote.basedir}/${artifactId}</url>
-        </site>
-    </distributionManagement>
 
 </project>
