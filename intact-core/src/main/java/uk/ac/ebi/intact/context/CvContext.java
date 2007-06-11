@@ -89,7 +89,12 @@ public final class CvContext implements Serializable {
             return ( T ) cachedByLabel.get( labelKey );
         }
 
-        T cvObject = getDaoFactory().getCvObjectDao( cvType ).getByShortLabel( cvType, label );
+        T cvObject = null;
+        try {
+            cvObject = getDaoFactory().getCvObjectDao( cvType ).getByShortLabel( cvType, label );
+        } catch (Exception e) {
+            throw new IntactException("Exception getting cvType "+cvType.getSimpleName()+" with label: "+label);
+        }
 
         if ( cvObject == null ) {
             return null;
@@ -115,7 +120,12 @@ public final class CvContext implements Serializable {
             return ( T ) cachedByMiRef.get( key );
         }
 
-        T cvObject = getDaoFactory().getCvObjectDao().getByPrimaryId( cvType, miRef );
+        T cvObject = null;
+        try {
+            cvObject = getDaoFactory().getCvObjectDao().getByPrimaryId( cvType, miRef );
+        } catch (Exception e) {
+            throw new IntactException("Exception getting cvType "+cvType.getSimpleName()+" with miRef: "+miRef);
+        }
 
         if ( cvObject == null ) {
             return null;
