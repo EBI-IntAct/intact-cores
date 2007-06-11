@@ -1,9 +1,8 @@
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvObject;
-import uk.ac.ebi.intact.model.CvObjectXref;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.business.IntactException;
 
 import java.util.Collection;
 
@@ -15,6 +14,9 @@ import java.util.Collection;
  * To change this template use File | Settings | File Templates.
  */
 public class CvObjectUtils {
+
+    private static final String PSI_MI_CVDATABASE_ATT = (CvDatabase.class.getName()+".PSI_MI").intern();
+    private static final String IDENTITY_CVXREFQUALIFIER_ATT = (CvXrefQualifier.class.getName()+".IDENTITY").intern();
 
     public static CvObjectXref getPsiMiIdentityXref( CvObject cvObject ) {
         if ( cvObject == null ) {
@@ -64,5 +66,59 @@ public class CvObjectUtils {
             }
         }
         return false;
+    }
+
+    public static CvDatabase createPsiMiCvDatabase(IntactContext intactContext) {
+
+        CvDatabase cvDatabase = (CvDatabase) intactContext.getSession().getApplicationAttribute(PSI_MI_CVDATABASE_ATT);
+
+        if (cvDatabase != null) {
+            return cvDatabase;
+        }
+
+        cvDatabase = new CvDatabase(intactContext.getInstitution(), CvDatabase.PSI_MI);
+
+        intactContext.getSession().setApplicationAttribute(PSI_MI_CVDATABASE_ATT, cvDatabase);
+
+        CvObjectXref xref = createPsiMiXref(CvObjectXref.class, CvDatabase.PSI_MI_MI_REF, intactContext);
+        cvDatabase.addXref(xref);
+
+        return cvDatabase;
+    }
+
+    public static CvXrefQualifier createIdentityCvXrefQualifier(IntactContext intactContext) {
+        CvXrefQualifier cvXrefQualifier = (CvXrefQualifier) intactContext.getSession().getApplicationAttribute(IDENTITY_CVXREFQUALIFIER_ATT);
+
+        if (cvXrefQualifier != null) {
+            return cvXrefQualifier;
+        }
+
+        cvXrefQualifier = new CvXrefQualifier(intactContext.getInstitution(), CvXrefQualifier.IDENTITY);
+
+        intactContext.getSession().setApplicationAttribute(IDENTITY_CVXREFQUALIFIER_ATT, cvXrefQualifier);
+
+        CvObjectXref xref = createPsiMiXref(CvObjectXref.class, CvXrefQualifier.IDENTITY_MI_REF, intactContext);
+        cvXrefQualifier.addXref(xref);
+
+        return cvXrefQualifier;
+    }
+
+     private static  <X extends Xref> X createPsiMiXref(Class<X> xrefClass, String psiMi, IntactContext intactContext) {
+        if (xrefClass == null) {
+            throw new NullPointerException("xrefClass");
+        }
+
+        X xref;
+        try {
+            xref = xrefClass.newInstance();
+        } catch (Exception e) {
+            throw new IntactException("Problems instantiating Xref of type: " + xrefClass.getName());
+        }
+        xref.setOwner(intactContext.getInstitution());
+        xref.setPrimaryId(psiMi);
+        xref.setCvDatabase(createPsiMiCvDatabase(intactContext));
+        xref.setCvXrefQualifier(createIdentityCvXrefQualifier(intactContext));
+
+        return xref;
     }
 }
