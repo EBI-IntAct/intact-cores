@@ -94,7 +94,11 @@ public class DataContext implements Serializable {
         assert ( daoFactory.isTransactionActive() == false );
 
         // flush the CvContext in to avoid lazy initialization errors
-        CvContext.getCurrentInstance(session).clearCache();
+        clearCvContext();
+    }
+
+    private void clearCvContext() {
+       CvContext.getCurrentInstance(session).clearCache();
     }
 
     public Session getSession() {
@@ -133,6 +137,9 @@ public class DataContext implements Serializable {
     public void flushSession() {
         DataConfig dataConfig = RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig();
         dataConfig.flushSession();
+
+        // flush the CvContext in to avoid lazy initialization errors
+        clearCvContext();
     }
 
     private DaoFactory getDaoFactory( DataConfig dataConfig ) {
