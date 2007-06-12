@@ -92,6 +92,9 @@ public class DataContext implements Serializable {
         }
 
         assert ( daoFactory.isTransactionActive() == false );
+
+        // flush the CvContext in to avoid lazy initialization errors
+        CvContext.getCurrentInstance(session).clearCache();
     }
 
     public Session getSession() {

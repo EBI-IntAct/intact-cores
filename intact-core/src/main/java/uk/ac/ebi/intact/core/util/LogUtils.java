@@ -32,8 +32,9 @@ public class LogUtils {
 
     private static final Log log = LogFactory.getLog(LogUtils.class);
 
-    private static final Logger LOG_HIBERNATE_SQL = LogManager.getLogger("org.hibernate.SQL");
-    private static final Logger LOG_HIBERNATE_TYPE = LogManager.getLogger(NullableType.class);
+    private static final Logger[] LOG_HIBERNATE_SQL = { LogManager.getLogger("org.hibernate.SQL"),
+                                                        LogManager.getLogger("org.hibernate.type"),
+                                                        LogManager.getLogger(NullableType.class)};
 
     /**
      * Whether to log or not SQL statements
@@ -42,11 +43,13 @@ public class LogUtils {
      */
     public static void setPrintSql(boolean showSql) {
         if (showSql) {
-            setLoggerLevel(LOG_HIBERNATE_SQL, Level.DEBUG);
-            setLoggerLevel(LOG_HIBERNATE_TYPE, Level.DEBUG);
+            for (Logger logger : LOG_HIBERNATE_SQL) {
+                setLoggerLevel(logger, Level.DEBUG);
+            }
         } else {
-            setLoggerLevel(LOG_HIBERNATE_SQL, Level.INFO);
-            setLoggerLevel(LOG_HIBERNATE_TYPE, Level.INFO);
+            for (Logger logger : LOG_HIBERNATE_SQL) {
+                setLoggerLevel(logger, Level.INFO);
+            }
         }
     }
 
