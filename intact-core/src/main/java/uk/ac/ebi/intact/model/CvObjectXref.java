@@ -18,7 +18,8 @@ import javax.persistence.*;
  * @since <pre>21-Jul-2006</pre>
  */
 @Entity
-@Table( name = "ia_controlledvocab_xref" )
+@Table( name = "ia_controlledvocab_xref",
+        uniqueConstraints = {@UniqueConstraint(columnNames={"parent_ac", "qualifier_ac", "database_ac", "primaryid"})}) 
 public class CvObjectXref extends Xref {
 
     private static final Log log = LogFactory.getLog( CvObjectXref.class );

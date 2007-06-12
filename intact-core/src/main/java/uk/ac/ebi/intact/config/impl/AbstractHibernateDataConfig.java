@@ -274,4 +274,8 @@ public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFact
             configuration.setInterceptor( EmptyInterceptor.INSTANCE );
         }
     }
+
+    public void flushSession() {
+        sessionFactory.getCurrentSession().flush();
+    }
 }

@@ -127,6 +127,11 @@ public class DataContext implements Serializable {
         return RuntimeConfig.getCurrentInstance( session ).isReadOnlyApp();
     }
 
+    public void flushSession() {
+        DataConfig dataConfig = RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig();
+        dataConfig.flushSession();
+    }
+
     private DaoFactory getDaoFactory( DataConfig dataConfig ) {
         DaoFactory daoFactory = DaoFactory.getCurrentInstance( session, dataConfig );
         return daoFactory;

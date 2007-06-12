@@ -75,4 +75,6 @@ public abstract class DataConfig<T, C> {
     public void setAutoFlush(boolean autoFlush) {
         this.autoFlush = autoFlush;
     }
+
+    public abstract void flushSession();
 }

@@ -20,7 +20,8 @@ import java.util.List;
  * @version $Id$
  */
 @Entity
-@Table( name = "ia_controlledvocab" )
+@Table( name = "ia_controlledvocab",
+        uniqueConstraints = {@UniqueConstraint(columnNames={"objclass", "shortlabel"})})
 @DiscriminatorColumn( name = "objclass", discriminatorType = DiscriminatorType.STRING, length = 255 )
 public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjectAlias> implements Searchable {
 
