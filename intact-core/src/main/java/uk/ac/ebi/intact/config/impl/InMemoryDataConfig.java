@@ -15,9 +15,10 @@
  */
 package uk.ac.ebi.intact.config.impl;
 
+import uk.ac.ebi.intact.config.ConfigurationException;
 import uk.ac.ebi.intact.context.IntactSession;
 
-import java.io.File;
+import java.io.*;
 
 /**
  * This configuration uses a memory database (H2)
@@ -29,13 +30,37 @@ public class InMemoryDataConfig extends StandardCoreDataConfig {
 
     public static final String NAME = "uk.ac.ebi.intact.config.IN_MEMORY";
 
+    private File configurationFile;
+
     public InMemoryDataConfig(IntactSession session) {
         super(session);
     }
 
     @Override
     protected File getConfigFile() {
-        return new File(InMemoryDataConfig.class.getResource("/META-INF/memory-hibernate.cfg.xml").getFile());
+        if (configurationFile != null) {
+            return configurationFile;
+        }
+
+        try {
+            configurationFile = File.createTempFile("memory-hibernate-", ".cfg.xml");
+
+            InputStream is = InMemoryDataConfig.class.getResourceAsStream("/META-INF/memory-hibernate.cfg.xml");
+
+            FileWriter writer = new FileWriter(configurationFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line+System.getProperty("line.separator"));
+            }
+
+            writer.close();
+        } catch (IOException e) {
+            throw new ConfigurationException("Exception getting configuration file", e);
+        }
+
+        return configurationFile;
     }
 
     @Override
