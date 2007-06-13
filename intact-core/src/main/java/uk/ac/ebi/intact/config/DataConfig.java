@@ -77,4 +77,6 @@ public abstract class DataConfig<T, C> {
     }
 
     public abstract void flushSession();
+
+    public abstract boolean isConfigurable();
 }

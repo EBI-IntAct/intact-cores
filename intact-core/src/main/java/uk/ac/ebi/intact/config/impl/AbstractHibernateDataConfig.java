@@ -278,4 +278,11 @@ public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFact
     public void flushSession() {
         sessionFactory.getCurrentSession().flush();
     }
+
+    public boolean isConfigurable() {
+        if (getConfigFile() == null) {
+            return false;
+        }
+        return getConfigFile().exists();
+    }
 }

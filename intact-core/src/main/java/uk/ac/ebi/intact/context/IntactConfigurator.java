@@ -11,7 +11,6 @@ import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.config.DataConfig;
 import uk.ac.ebi.intact.config.SchemaVersion;
-import uk.ac.ebi.intact.config.impl.StandardCoreDataConfig;
 import uk.ac.ebi.intact.context.impl.IntactContextWrapper;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.meta.DbInfo;
@@ -93,10 +92,8 @@ public class IntactConfigurator {
 
         if ( config.getDefaultDataConfig() == null ) {
             // add the core model data config
-            log.info( "Registering standard data-config" );
-            StandardCoreDataConfig stdDataConfig = new StandardCoreDataConfig( session );
-            stdDataConfig.getSessionFactory();
-            config.addDataConfig( stdDataConfig, true );
+            DataConfig dataConfig = IntactContext.calculateDefaultDataConfig(session);
+            registerDataConfig(dataConfig, config, true);
         }
 
         // load the data configs
@@ -187,6 +184,23 @@ public class IntactConfigurator {
         }
 
         setInitialized( session, true );
+    }
+
+    /**
+     * Registers a data-config, returning true if it has been correctly registered, false otherwise
+     * @return true if it has been correctly registered, false otherwise
+     */
+    private static boolean registerDataConfig(DataConfig dataConfig, RuntimeConfig config, boolean isDefault) {
+        log.info("Registering data-config: " + dataConfig.getName());
+        try {
+            dataConfig.getSessionFactory();
+        } catch (Throwable t) {
+            log.info("Data-config not found: " + dataConfig.getName()+" - "+t.getMessage());
+            return false;
+        }
+        config.addDataConfig(dataConfig, isDefault);
+
+        return true;
     }
 
     public static IntactContext createIntactContext( IntactSession session ) {

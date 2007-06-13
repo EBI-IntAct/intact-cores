@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.config.DataConfig;
+import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
 import uk.ac.ebi.intact.config.impl.StandardCoreDataConfig;
 import uk.ac.ebi.intact.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.model.Institution;
@@ -53,20 +54,20 @@ public class IntactContext implements Serializable {
         initContext( null, null );
     }
 
-    public static void initContext( DataConfig standardDataConfig, IntactSession session ) {
+    public static void initContext( DataConfig defaultDataConfig, IntactSession session ) {
         if ( session == null ) {
             session = new StandaloneSession();
         }
 
-        if ( standardDataConfig == null ) {
-            standardDataConfig = new StandardCoreDataConfig( session );
+        if ( defaultDataConfig == null ) {
+            defaultDataConfig = calculateDefaultDataConfig( session );
         }
 
-        if ( !standardDataConfig.isInitialized() ) {
-            standardDataConfig.initialize();
+        if ( !defaultDataConfig.isInitialized() ) {
+            defaultDataConfig.initialize();
         }
 
-        RuntimeConfig.initRuntime( session, standardDataConfig );
+        RuntimeConfig.initRuntime( session, defaultDataConfig );
         IntactConfigurator.initIntact( session );
         IntactConfigurator.createIntactContext( session );
     }
@@ -105,5 +106,27 @@ public class IntactContext implements Serializable {
 
     public DataContext getDataContext() {
         return dataContext;
+    }
+
+    public void close() {
+        session = null;
+        dataContext = null;
+        currentInstance.set(null);
+    }
+
+    /**
+     * Calculate the default data config. If the standard data-config exists (there is a hibernate.cfg.xml file in the classpath)
+     * use it, otherwise use the memory data-config;
+     * @param session
+     * @return
+     */
+    protected static DataConfig calculateDefaultDataConfig(IntactSession session) {
+        StandardCoreDataConfig stdDataConfig = new StandardCoreDataConfig(session);
+
+        if (stdDataConfig.isConfigurable()) {
+            return stdDataConfig;
+        }
+
+        return new InMemoryDataConfig(session);
     }
 }

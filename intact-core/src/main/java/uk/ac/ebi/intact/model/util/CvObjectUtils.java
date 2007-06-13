@@ -1,17 +1,16 @@
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.business.IntactException;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
 
 /**
- * Created by IntelliJ IDEA.
- * User: CatherineLeroy
- * Date: 15-Feb-2007
- * Time: 11:55:23
- * To change this template use File | Settings | File Templates.
+ * Util methods for interactions
+ *
+ * @version $Id: InteractionUtils.java 8541 2007-06-07 13:28:13Z baranda $
+ * @since <pre>14-Aug-2006</pre>
  */
 public class CvObjectUtils {
 

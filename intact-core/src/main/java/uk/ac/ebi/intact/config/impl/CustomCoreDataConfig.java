@@ -38,4 +38,8 @@ public class CustomCoreDataConfig extends StandardCoreDataConfig {
     public String getName() {
         return name;
     }
+
+    public boolean isConfigurable() {
+        return true;
+    }
 }
