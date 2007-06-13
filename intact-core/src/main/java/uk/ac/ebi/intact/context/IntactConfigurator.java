@@ -203,14 +203,38 @@ public class IntactConfigurator {
         // start a context
         log.debug( "Creating IntactContext..." );
         context = new IntactContextWrapper( dataContext, session );
+
+        initializeDatabaseIfNecessary(context);
+
+        return context;
+    }
+
+    /**
+     * Initialize the database, adding the institution and schema version, if necessary
+     * @param context IntactContext
+     */
+    public static void initializeDatabaseIfNecessary(IntactContext context) {
         try {
-            persistInstitutionIfNecessary( context );
+           persistInstitutionIfNecessary( context );
         } catch ( IntactTransactionException e ) {
             throw new IntactException( "Error while persisting institution.", e );
         }
-        persistSchemaVersionIfNecessary( context );
 
-        return context;
+        persistSchemaVersionIfNecessary( context );
+    }
+
+    /**
+     * Initialize the database, adding the institution and schema version
+     * @param context IntactContext
+     */
+    public static void initializeDatabase(IntactContext context) {
+        try {
+            persistInstitution(context);
+        } catch (IntactTransactionException e) {
+            throw new IntactException("Error while persisting institution.", e);
+        }
+
+        persistSchemaVersion(context);
     }
 
     private static void checkSchemaCompatibility( IntactSession session ) {
@@ -351,16 +375,29 @@ public class IntactConfigurator {
         boolean needsToBePersisted = ( Boolean ) obj;
 
         if ( needsToBePersisted ) {
-            Institution institution = context.getConfig().getInstitution();
-
-            log.debug( "Persisting institution: " + institution.getShortLabel() );
-            DaoFactory daoFactory = DaoFactory.getCurrentInstance( session, RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig() );
-            IntactTransaction tx = daoFactory.beginTransaction();
-            daoFactory.getInstitutionDao().persist( institution );
-            context.getDataContext().commitTransaction();
+            persistInstitution(context);
 
             session.setApplicationAttribute( INSTITUTION_TO_BE_PERSISTED_FLAG, Boolean.FALSE );
         }
+    }
+
+    private static void persistInstitution(IntactContext context) throws IntactTransactionException {
+        IntactSession session = context.getSession();
+
+        Institution institution = context.getConfig().getInstitution();
+
+        if (institution == null) {
+            throw new NullPointerException("Institution is null. Set an institution to the RuntimeConfig first");
+        }
+
+        // remove ac, it should not have one at this point to be persisted correctly
+        if (institution.getAc() != null)  institution.setAc(null);
+
+        log.debug("Persisting institution: " + institution.getShortLabel());
+        DaoFactory daoFactory = DaoFactory.getCurrentInstance(session, RuntimeConfig.getCurrentInstance(session).getDefaultDataConfig());
+        daoFactory.beginTransaction();
+        daoFactory.getInstitutionDao().persist(institution);
+        context.getDataContext().commitTransaction();
     }
 
     private static void persistSchemaVersionIfNecessary( IntactContext context ) {
@@ -375,21 +412,27 @@ public class IntactConfigurator {
         boolean needsToBePersisted = ( Boolean ) obj;
 
         if ( needsToBePersisted ) {
-            DbInfo dbInfo = new DbInfo( DbInfo.SCHEMA_VERSION, SchemaVersion.minimumVersion().toString() );
-
-            log.debug( "Persisting schema version: " + SchemaVersion.minimumVersion().toString() );
-
-            DaoFactory daoFactory = DaoFactory.getCurrentInstance( session, RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig() );
-            IntactTransaction tx = daoFactory.beginTransaction();
-            daoFactory.getDbInfoDao().persist( dbInfo );
-            //context.getDataContext().commitTransaction();
-            try {
-                tx.commit();
-            } catch ( IntactTransactionException e ) {
-                log.error( "Exception commiting " + e );
-            }
+            persistSchemaVersion(context);
 
             session.setApplicationAttribute( SCHEMA_VERSION_TO_BE_PERSISTED_FLAG, Boolean.FALSE );
+        }
+    }
+
+    private static void persistSchemaVersion(IntactContext context) {
+        IntactSession session = context.getSession();
+
+        DbInfo dbInfo = new DbInfo(DbInfo.SCHEMA_VERSION, SchemaVersion.minimumVersion().toString());
+
+        log.debug("Persisting schema version: " + SchemaVersion.minimumVersion().toString());
+
+        DaoFactory daoFactory = DaoFactory.getCurrentInstance(session, RuntimeConfig.getCurrentInstance(session).getDefaultDataConfig());
+        IntactTransaction tx = daoFactory.beginTransaction();
+        daoFactory.getDbInfoDao().persist(dbInfo);
+        //context.getDataContext().commitTransaction();
+        try {
+            tx.commit();
+        } catch (IntactTransactionException e) {
+            log.error("Exception commiting " + e);
         }
     }
 
