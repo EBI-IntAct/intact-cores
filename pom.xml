@@ -89,16 +89,13 @@
                 <artifactId>dbunit</artifactId>
                 <version>2.2</version>
             </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.3.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.3.1</version>
-        </dependency>
-    </dependencies>
 
     <!-- EBI repositories -->
     <repositories>
