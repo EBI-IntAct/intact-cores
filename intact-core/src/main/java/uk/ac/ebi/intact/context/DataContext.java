@@ -78,7 +78,7 @@ public class DataContext implements Serializable {
             try {
                 if (getSession().getFlushMode() == FlushMode.MANUAL)
                 {
-                    getSession().flush();
+                    flushSession();
                 }
 
                 daoFactory.getCurrentTransaction().commit();

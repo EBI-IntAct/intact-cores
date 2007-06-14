@@ -25,6 +25,7 @@ public class IntactTransaction {
     private static final Log log = LogFactory.getLog( IntactTransaction.class );
 
     private Transaction transaction;
+    private String id;
 
     /**
      * If DEBUG_MODE is true, a stack trace has been stored in the transaction so we can trace who created it.
@@ -47,6 +48,8 @@ public class IntactTransaction {
                 stackTrace[i - 2] = elements[i];
             }
         }
+
+        this.id = String.valueOf("TR"+System.currentTimeMillis());
     }
 
     /**
@@ -94,5 +97,9 @@ public class IntactTransaction {
 
     public Object getWrappedTransaction() {
         return transaction;
+    }
+
+    public String getId() {
+        return id;
     }
 }

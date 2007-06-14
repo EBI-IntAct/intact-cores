@@ -9,8 +9,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.business.IntactTransactionException;
+import uk.ac.ebi.intact.config.CvPrimer;
 import uk.ac.ebi.intact.config.DataConfig;
 import uk.ac.ebi.intact.config.SchemaVersion;
+import uk.ac.ebi.intact.config.impl.EmptyCvPrimer;
 import uk.ac.ebi.intact.context.impl.IntactContextWrapper;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.meta.DbInfo;
@@ -58,8 +60,6 @@ public class IntactConfigurator {
     private static final String SCHEMA_VERSION_TO_BE_PERSISTED_FLAG = "uk.ac.ebi.intact.internal.SCHEMA_VERSION_TO_BE_PERSISTED";
 
     private static final String INITIALIZED_APP_ATT_NAME = IntactConfigurator.class + "_INITIALIZED";
-
-    private static final String INTACT_CONTEXT_SESS_ATT_NAME = IntactConfigurator.class + "_INTACT_CONTEXT";
 
     /**
      * Initializes the fundamental intact parameters, such as data configs, the default prefix,  and default data
@@ -229,7 +229,7 @@ public class IntactConfigurator {
      */
     public static void initializeDatabaseIfNecessary(IntactContext context) {
         try {
-           persistInstitutionIfNecessary( context );
+           persistInstitutionAndCvsIfNecessary( context );
         } catch ( IntactTransactionException e ) {
             throw new IntactException( "Error while persisting institution.", e );
         }
@@ -249,6 +249,7 @@ public class IntactConfigurator {
         }
 
         persistSchemaVersion(context);
+        persistBasicCvObjects(context);
     }
 
     private static void checkSchemaCompatibility( IntactSession session ) {
@@ -377,7 +378,7 @@ public class IntactConfigurator {
         log.debug( "Institution: " + institution.getShortLabel() );
     }
 
-    private static void persistInstitutionIfNecessary( IntactContext context ) throws IntactTransactionException {
+    private static void persistInstitutionAndCvsIfNecessary( IntactContext context ) throws IntactTransactionException {
         IntactSession session = context.getSession();
 
         Object obj = session.getApplicationAttribute( INSTITUTION_TO_BE_PERSISTED_FLAG );
@@ -390,13 +391,13 @@ public class IntactConfigurator {
 
         if ( needsToBePersisted ) {
             persistInstitution(context);
+            persistBasicCvObjects(context);
 
             session.setApplicationAttribute( INSTITUTION_TO_BE_PERSISTED_FLAG, Boolean.FALSE );
         }
     }
 
     private static void persistInstitution(IntactContext context) throws IntactTransactionException {
-        IntactSession session = context.getSession();
 
         Institution institution = context.getConfig().getInstitution();
 
@@ -408,7 +409,7 @@ public class IntactConfigurator {
         if (institution.getAc() != null)  institution.setAc(null);
 
         log.debug("Persisting institution: " + institution.getShortLabel());
-        DaoFactory daoFactory = DaoFactory.getCurrentInstance(session, RuntimeConfig.getCurrentInstance(session).getDefaultDataConfig());
+        DaoFactory daoFactory = getDefaultDaoFactory(context);
         daoFactory.beginTransaction();
         daoFactory.getInstitutionDao().persist(institution);
         context.getDataContext().commitTransaction();
@@ -446,9 +447,33 @@ public class IntactConfigurator {
         try {
             tx.commit();
         } catch (IntactTransactionException e) {
-            log.error("Exception commiting " + e);
+            log.error(e);
         }
     }
+
+    private static void persistBasicCvObjects(IntactContext context) {
+        log.debug("Persisting necessary CvObjects");
+
+        DaoFactory daoFactory = getDefaultDaoFactory(context);
+
+        daoFactory.beginTransaction();
+
+        CvPrimer cvPrimer = new EmptyCvPrimer(daoFactory);
+        cvPrimer.createCVs();
+
+        try {
+            context.getDataContext().commitTransaction();
+        } catch (IntactTransactionException e) {
+            log.error(e);
+        }
+
+    }
+
+    private static DaoFactory getDefaultDaoFactory(IntactContext context) {
+        IntactSession session = context.getSession();
+        return DaoFactory.getCurrentInstance(session, RuntimeConfig.getCurrentInstance(session).getDefaultDataConfig());
+    }
+
 
     private static void setInstitutionToBePersisted( IntactSession session ) {
         session.setApplicationAttribute( INSTITUTION_TO_BE_PERSISTED_FLAG, Boolean.TRUE );

@@ -42,7 +42,7 @@
         <!--
              This profile is used when running the tests.
              If maven.test.skip property is true, don't import the H2 test db
-        -->
+
         <profile>
             <id>test</id>
             <activation>
@@ -60,6 +60,7 @@
                 </plugins>
             </build>
         </profile>
+        -->
     </profiles>
     
     <dependencies>

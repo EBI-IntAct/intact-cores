@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 
@@ -28,7 +29,10 @@ import uk.ac.ebi.intact.context.IntactContext;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class IntactAbstractTest {
+@RunWith(IntactTestRunner.class)
+public class IntactAbstractTestCase {
+
+
 
     @BeforeClass
     public static void begin() throws Exception {
@@ -39,19 +43,16 @@ public class IntactAbstractTest {
     public void setUp() throws Exception {
         getDataContext().beginTransaction();
 
-        IntactUnit iu = new IntactUnit();
-        iu.resetSchema();
+        System.out.println("\t\tNAME: "+ IntactTestRunner.getTestMethod()+"\t\t");
+
     }
 
     @After
     public void tearDown() throws Exception {
         getDataContext().commitTransaction();
-        getDataContext().beginTransaction();
 
         IntactUnit iu = new IntactUnit();
-        iu.dropSchema();
-
-        getDataContext().commitTransaction();
+        iu.resetSchema();
     }
 
     @AfterClass
@@ -66,4 +67,5 @@ public class IntactAbstractTest {
     protected DataContext getDataContext() {
         return getIntactContext().getDataContext();
     }
+
 }

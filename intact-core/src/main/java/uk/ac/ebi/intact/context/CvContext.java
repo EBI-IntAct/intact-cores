@@ -27,13 +27,15 @@ public final class CvContext implements Serializable {
 
     private static final Log log = LogFactory.getLog( CvContext.class );
 
-    private static final String APPLICATION_PARAM_NAME = CvContext.class.getName() + ".CONFIG";
+    private static final String SESSION_PARAM_NAME = CvContext.class.getName() + ".CONFIG";
+    private static final String CURRENT_TRANS_ID = CvContext.class.getName() + ".CURRENT_TRANSACTION_ID";
 
     private Map<String, CvObject> cachedByAc;
     private Map<LabelKey, CvObject> cachedByLabel;
     private Map<MiRefKey, CvObject> cachedByMiRef;
 
     private IntactSession session;
+    private static String currentTransactionId;
 
     private CvContext( IntactSession session ) {
         this.session = session;
@@ -45,12 +47,25 @@ public final class CvContext implements Serializable {
 
     public static CvContext getCurrentInstance( IntactSession session ) {
         CvContext cvContext
-                = ( CvContext ) session.getApplicationAttribute( APPLICATION_PARAM_NAME );
+                = ( CvContext ) session.getAttribute(SESSION_PARAM_NAME);
         if ( cvContext == null ) {
             log.debug( "Creating new CvContext" );
             cvContext = new CvContext( session );
-            session.setApplicationAttribute( APPLICATION_PARAM_NAME, cvContext );
+            session.setAttribute(SESSION_PARAM_NAME, cvContext );
         }
+
+        // check if the transaction
+        /*
+        String oldTransactionId = (String) session.getAttribute(CURRENT_TRANS_ID);
+        String transactionId = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getCurrentTransaction().getId();
+
+        if (oldTransactionId != null && !oldTransactionId.equals(transactionId)) {
+            if (log.isDebugEnabled()) log.debug("CvContext cache is stale");
+            cvContext.clearCache();
+        }
+
+        session.setAttribute(CURRENT_TRANS_ID, transactionId);
+        */
         return cvContext;
     }
 
@@ -86,6 +101,8 @@ public final class CvContext implements Serializable {
         LabelKey labelKey = new LabelKey( label, cvType );
 
         if ( !forceReload && cachedByLabel.containsKey( labelKey ) ) {
+            if (log.isDebugEnabled()) log.debug("Getting by label: "+label+" ("+cvType.getSimpleName()+") - Hit");
+
             return ( T ) cachedByLabel.get( labelKey );
         }
 
@@ -97,8 +114,12 @@ public final class CvContext implements Serializable {
         }
 
         if ( cvObject == null ) {
+            if (log.isDebugEnabled()) log.debug("Getting by label: "+label+" ("+cvType.getSimpleName()+") - Missed");
+
             return null;
         }
+
+        if (log.isDebugEnabled()) log.debug("Getting by label: "+label+" ("+cvType.getSimpleName()+") - DB Hit");
 
         putCv( cvObject );
 
@@ -117,8 +138,12 @@ public final class CvContext implements Serializable {
         MiRefKey key = new MiRefKey( miRef, cvType );
 
         if ( !forceReload && cachedByMiRef.containsKey( key ) ) {
+            if (log.isDebugEnabled()) log.debug("Getting by miRef: "+miRef+" - Hit");
+
             return ( T ) cachedByMiRef.get( key );
         }
+
+
 
         T cvObject = null;
         try {
@@ -128,8 +153,12 @@ public final class CvContext implements Serializable {
         }
 
         if ( cvObject == null ) {
+            if (log.isDebugEnabled()) log.debug("Getting by miRef: "+miRef+" - Missed");
+
             return null;
         }
+
+        if (log.isDebugEnabled()) log.debug("Getting by miRef: "+miRef+" - DB Hit");
 
         putCv( cvObject );
         putCvInMiRef( miRef, cvObject );
@@ -138,6 +167,7 @@ public final class CvContext implements Serializable {
     }
 
     public void clearCache() {
+        if (log.isDebugEnabled()) log.debug("Clearing CVContext cache");
         cachedByAc.clear();
         cachedByLabel.clear();
         cachedByMiRef.clear();

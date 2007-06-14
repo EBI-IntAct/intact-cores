@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.core.unit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -50,6 +52,8 @@ import java.sql.SQLException;
  */
 public class IntactUnit {
 
+    private static final Log log = LogFactory.getLog(IntactUnit.class);
+
     private DefaultDataTypeFactory dataTypeFactory;
 
     public IntactUnit(){
@@ -84,40 +88,63 @@ public class IntactUnit {
      * Drops and creates the schema, initializing intact. Beware that it commits transactions
      */
     public void resetSchema() throws IntactTransactionException {
+        if (log.isDebugEnabled()) log.debug("Resetting schema");
+
         DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
-        dataContext.beginTransaction();
 
+        if (dataContext.isTransactionActive()) {
+            throw new IllegalStateException("To reset the schema, the transaction must NOT be active");
+        }
+        
         dropSchema();
-
-        dataContext.commitTransaction();
-        dataContext.beginTransaction();
-
         createSchema();
-
-        dataContext.commitTransaction();
-        dataContext.beginTransaction();
-
-        IntactConfigurator.initializeDatabase(IntactContext.getCurrentInstance());
-
-        dataContext.commitTransaction();
-        dataContext.beginTransaction();
-
     }
 
     /**
      * Creates a schema 
      */
-    public void createSchema() {
+    public void createSchema() throws IntactTransactionException {
+        if (log.isDebugEnabled()) log.debug("Creating schema");
+
+        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
+
+        if (dataContext.isTransactionActive()) {
+            throw new IllegalStateException("To create the schema, the transaction must NOT be active");
+        }
+
+        dataContext.beginTransaction();
+
         SchemaExport se = new SchemaExport(getConfiguration());
         se.create(false, true);
+
+        dataContext.commitTransaction();
+        dataContext.beginTransaction();
+
+        if (log.isDebugEnabled()) log.debug("Initializing database");
+
+        IntactConfigurator.initializeDatabase(IntactContext.getCurrentInstance());
+
+        dataContext.commitTransaction();
     }
 
     /**
      * Drops the current schema, emptying the database
      */
-    public void dropSchema() {
+    public void dropSchema() throws IntactTransactionException {
+        if (log.isDebugEnabled()) log.debug("Droping schema");
+
+        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
+
+        if (dataContext.isTransactionActive()) {
+            throw new IllegalStateException("To drop the schema, the transaction must NOT be active");
+        }
+
+        dataContext.beginTransaction();
+
         SchemaExport se = new SchemaExport(getConfiguration());
         se.drop(false, true);
+
+        dataContext.commitTransaction();
     }
 
     private Configuration getConfiguration() {
