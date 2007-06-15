@@ -23,7 +23,7 @@ package uk.ac.ebi.intact.dataexchange.psimi.xml.persister;
  */
 public interface Persister<T> {
 
-    public T saveOrUpdate(T objectToPersist) throws PersisterException;
+    void saveOrUpdate(T intactObject) throws PersisterException;
 
-    public PersisterReport getReport();
+    void commit();
 }
