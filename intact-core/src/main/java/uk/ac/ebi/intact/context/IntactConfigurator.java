@@ -49,7 +49,7 @@ public class IntactConfigurator {
 
     private static final String DEFAULT_AC_PREFIX = "UNK";
 
-    private static final String DEFAULT_READ_ONLY_APP = Boolean.TRUE.toString();
+    private static final String DEFAULT_READ_ONLY_APP = Boolean.FALSE.toString();
 
     private static final String DEFAULT_SYNCHRONIZED_SEARCH_ITEMS = Boolean.FALSE.toString();
 
