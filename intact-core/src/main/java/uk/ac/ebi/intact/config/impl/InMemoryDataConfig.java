@@ -44,6 +44,7 @@ public class InMemoryDataConfig extends StandardCoreDataConfig {
 
         try {
             configurationFile = File.createTempFile("memory-hibernate-", ".cfg.xml");
+            configurationFile.deleteOnExit();
 
             InputStream is = InMemoryDataConfig.class.getResourceAsStream("/META-INF/memory-hibernate.cfg.xml");
 

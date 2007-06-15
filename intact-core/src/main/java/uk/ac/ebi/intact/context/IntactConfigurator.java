@@ -33,17 +33,19 @@ public class IntactConfigurator {
 
     private static final Log log = LogFactory.getLog( IntactConfigurator.class );
 
-    private static final String DEFAULT_INSTITUTION_LABEL = "ebi";
+    private static final String DEFAULT_INSTITUTION_LABEL = "Unknown";
 
-    private static final String DEFAULT_INSTITUTION_FULL_NAME = "European Bioinformatics Institute";
+    private static final String EBI_INSTITUTION_LABEL = "ebi";
 
-    private static final String DEFAULT_INSTITUTION_POSTAL_ADDRESS = "European Bioinformatics Institute; " +
+    private static final String EBI_INSTITUTION_FULL_NAME = "European Bioinformatics Institute";
+
+    private static final String EBI_INSTITUTION_POSTAL_ADDRESS = "European Bioinformatics Institute; " +
                                                                      "Wellcome Trust Genome Campus; " +
                                                                      "Hinxton, Cambridge; " +
                                                                      "CB10 1SD; " +
                                                                      "United Kingdom";
 
-    private static final String DEFAULT_INSTITUTION_URL = "http://www.ebi.ac.uk/";
+    private static final String EBI_INSTITUTION_URL = "http://www.ebi.ac.uk/";
 
     private static final String DEFAULT_AC_PREFIX = "UNK";
 
@@ -324,16 +326,20 @@ public class IntactConfigurator {
         String institutionLabel = getInitParamValue( session, IntactEnvironment.INSTITUTION_LABEL.getFqn(), null, "institution" );
 
         if ( institutionLabel == null ) {
+            String message;
             if ( session.isWebapp() ) {
-                throw new IntactException( "A institution label is mandatory. " +
+                message = "An institution label is recommended. " +
                                            "Provide it by setting the init parameter " + IntactEnvironment.INSTITUTION_LABEL + " " +
-                                           "in the web.xml file" );
+                                           "in the web.xml file";
             } else {
-                throw new IntactException( "A institution label is mandatory. " +
+                message = "An institution label is recommended. " +
                                            "Provide it by setting the environment variable 'institution'" +
                                            " when executing the java command. (e.g. java ... -Dinstitution=yourInstitution)." +
-                                           " You can also set the init parameter " + IntactEnvironment.INSTITUTION_LABEL + " in the IntactSession Object. " );
+                                           " You can also set the init parameter " + IntactEnvironment.INSTITUTION_LABEL + " in the IntactSession Object. " ;
             }
+            if (log.isWarnEnabled()) log.warn(message);
+
+            institutionLabel = DEFAULT_INSTITUTION_LABEL;
         }
 
         DaoFactory daoFactory = DaoFactory.getCurrentInstance( session, RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig() );
@@ -356,10 +362,10 @@ public class IntactConfigurator {
             String postalAddress;
             String url;
 
-            if ( institutionLabel.equalsIgnoreCase( DEFAULT_INSTITUTION_LABEL ) ) {
-                fullName = getInitParamValue( session, IntactEnvironment.INSTITUTION_FULL_NAME.getFqn(), DEFAULT_INSTITUTION_FULL_NAME );
-                postalAddress = getInitParamValue( session, IntactEnvironment.INSTITUTION_POSTAL_ADDRESS.getFqn(), DEFAULT_INSTITUTION_POSTAL_ADDRESS );
-                url = getInitParamValue( session, IntactEnvironment.INSTITUTION_URL.getFqn(), DEFAULT_INSTITUTION_URL );
+            if ( institutionLabel.equalsIgnoreCase( EBI_INSTITUTION_LABEL ) ) {
+                fullName = getInitParamValue( session, IntactEnvironment.INSTITUTION_FULL_NAME.getFqn(), EBI_INSTITUTION_FULL_NAME);
+                postalAddress = getInitParamValue( session, IntactEnvironment.INSTITUTION_POSTAL_ADDRESS.getFqn(), EBI_INSTITUTION_POSTAL_ADDRESS);
+                url = getInitParamValue( session, IntactEnvironment.INSTITUTION_URL.getFqn(), EBI_INSTITUTION_URL);
             } else {
                 fullName = getInitParamValue( session, IntactEnvironment.INSTITUTION_FULL_NAME.getFqn(), "" );
                 postalAddress = getInitParamValue( session, IntactEnvironment.INSTITUTION_POSTAL_ADDRESS.getFqn(), "" );
