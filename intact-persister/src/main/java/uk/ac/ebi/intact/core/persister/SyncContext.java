@@ -97,5 +97,6 @@ public class SyncContext {
         if (log.isDebugEnabled()) log.debug("Clearing SyncContext");
 
         syncedCvObjects.clear();
+        syncedAnnotatedObjects.clear();
     }
 }

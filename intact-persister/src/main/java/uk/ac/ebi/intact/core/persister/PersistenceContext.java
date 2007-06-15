@@ -19,7 +19,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
@@ -108,10 +107,6 @@ public class PersistenceContext {
 
         for (AnnotatedObject ao : annotatedObjectsToBePersisted.values()) {
             getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
-
-            if (ao.getClass().equals(BioSource.class)) {
-                System.out.println("PERSISTED: "+ao);
-            }
         }
 
         clear();

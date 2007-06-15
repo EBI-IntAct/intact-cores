@@ -45,16 +45,14 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         if (PersistenceContext.getInstance().contains(intactObject)) {
             return;
         }
-        if (intactObject.getClass().getSimpleName().equals("BioSource")) {
+
         if (log.isDebugEnabled()) log.debug("Saving "+intactObject.getClass().getSimpleName()+": "+intactObject.getShortLabel());
-        }
+
         SyncTransientResponse<T> syncResponse = syncIfTransientResponse(intactObject);
 
         if (syncResponse.isAlreadyPresent()) {
             if (syncedAndCandidateAreEqual(syncResponse.getValue(), intactObject)) {
-                if (intactObject.getClass().getSimpleName().equals("BioSource")) {
                 if (log.isDebugEnabled()) log.debug("\tAlready present in a data source (synced)");
-                }
             } else {
                 if (log.isDebugEnabled()) log.debug("\tData source object and object to persist are not equal - update");
 
@@ -66,9 +64,8 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
             // don't continue if the object already exists or has been updated
             return;
         }
-        if (intactObject.getClass().getSimpleName().equals("BioSource")) {
+
         log.debug("\tNot present in a data source - Will persist");
-        }
         T newAnnotatedObject = syncResponse.getValue();
         PersistenceContext.getInstance().addToPersist(newAnnotatedObject);
 
@@ -90,22 +87,16 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
     }
 
     protected T syncIfTransient(T intactObject) {
-        if (intactObject.getClass().getSimpleName().equals("BioSource")) {
         if (log.isDebugEnabled()) log.debug("\t\tSyncing "+intactObject.getClass().getSimpleName()+": "+intactObject.getShortLabel());
-        }
 
         T refreshedObject = get(intactObject);
 
         if (refreshedObject != null) {
-            if (intactObject.getClass().getSimpleName().equals("BioSource")) {
             if (log.isDebugEnabled()) log.debug("\t\t\tAlready synced");
-            }
             return refreshedObject;
         }
 
-        if (intactObject.getClass().getSimpleName().equals("BioSource")) {
         if (log.isDebugEnabled()) log.debug("\t\t\tNot previously synced");
-        }
 
         SyncContext.getInstance().addToSynced(intactObject);
 
