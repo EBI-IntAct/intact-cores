@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.core.unit;
+package uk.ac.ebi.intact.core.unit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
 import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
-import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
 
 /**
  * TODO comment this

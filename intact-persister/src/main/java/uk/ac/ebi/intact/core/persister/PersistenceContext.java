@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
@@ -103,16 +104,25 @@ public class PersistenceContext {
             getDaoFactory().getCvObjectDao().persist(cv);
         }
 
-        cvObjectsToBePersisted.clear();
         getIntactContext().getDataContext().flushSession();
 
         for (AnnotatedObject ao : annotatedObjectsToBePersisted.values()) {
             getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
+
+            if (ao.getClass().equals(BioSource.class)) {
+                System.out.println("PERSISTED: "+ao);
+            }
         }
 
-        annotatedObjectsToBePersisted.clear();
+        clear();
         SyncContext.getInstance().clear();
         getIntactContext().getDataContext().flushSession();
+    }
+
+    public void clear() {
+        if (log.isDebugEnabled()) log.debug("Clearing PersistenceContext");
+        cvObjectsToBePersisted.clear();
+        annotatedObjectsToBePersisted.clear();
     }
 
     private String keyFor(AnnotatedObject ao) {
