@@ -53,7 +53,7 @@ public class IntactConfigurator {
 
     private static final String DEFAULT_SYNCHRONIZED_SEARCH_ITEMS = Boolean.FALSE.toString();
 
-    private static final String DEFAULT_TRANSACTION_AUTO_BEGIN = Boolean.FALSE.toString();
+    private static final String DEFAULT_TRANSACTION_AUTO_BEGIN = Boolean.TRUE.toString();
 
     private static final String DEFAULT_DEBUG_MODE = Boolean.FALSE.toString();
 
