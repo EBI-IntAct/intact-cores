@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.dataexchange.psimi.xml.persister;
+package uk.ac.ebi.intact.core.persister.util;
+
+import uk.ac.ebi.intact.context.IntactContext;
 
 /**
  * TODO comment this
@@ -21,9 +23,18 @@ package uk.ac.ebi.intact.dataexchange.psimi.xml.persister;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public interface Persister<T> {
+public class PersisterConfig {
 
-    void saveOrUpdate(T intactObject) throws PersisterException;
+    private static final String DRY_RUN_ATT = PersisterConfig.class + ".DRY_RUN";
 
-    void commit();
+    private PersisterConfig() {
+    }
+
+    public static boolean isDryRun(IntactContext context) {
+        return (Boolean) context.getSession().getAttribute(DRY_RUN_ATT);
+    }
+
+    public static void setDryRun(IntactContext context, boolean isDryRun) {
+        context.getSession().setAttribute(DRY_RUN_ATT, isDryRun);
+    }
 }

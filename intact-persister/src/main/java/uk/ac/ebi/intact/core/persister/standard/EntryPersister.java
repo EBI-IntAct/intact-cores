@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.dataexchange.psimi.xml.persister.standard;
+package uk.ac.ebi.intact.core.persister.standard;
 
-import uk.ac.ebi.intact.dataexchange.psimi.xml.persister.PersistenceContext;
-import uk.ac.ebi.intact.dataexchange.psimi.xml.persister.Persister;
-import uk.ac.ebi.intact.dataexchange.psimi.xml.persister.PersisterException;
+import uk.ac.ebi.intact.core.persister.PersistenceContext;
+import uk.ac.ebi.intact.core.persister.Persister;
+import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.IntactEntry;
 import uk.ac.ebi.intact.model.Interaction;
 

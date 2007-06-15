@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.dataexchange.psimi.xml.persister.util;
+package uk.ac.ebi.intact.core.persister.util;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
