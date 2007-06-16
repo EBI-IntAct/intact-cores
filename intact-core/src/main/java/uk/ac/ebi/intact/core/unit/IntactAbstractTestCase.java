@@ -20,8 +20,12 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
+import uk.ac.ebi.intact.commons.util.TestDataset;
+import uk.ac.ebi.intact.commons.util.TestDatasetProvider;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
+
+import java.lang.reflect.Method;
 
 /**
  * Base for all intact-tests.
@@ -32,8 +36,6 @@ import uk.ac.ebi.intact.context.IntactContext;
 @RunWith(IntactTestRunner.class)
 public class IntactAbstractTestCase {
 
-
-
     @BeforeClass
     public static void begin() throws Exception {
 
@@ -41,18 +43,44 @@ public class IntactAbstractTestCase {
 
     @Before
     public void setUp() throws Exception {
+        //getDataContext().beginTransaction();
+
+        Method currentMethod = IntactTestRunner.getTestMethod();
+
+        if (currentMethod == null) {
+            throw new RuntimeException("This test cannot be run in IDEA");
+        }
+
+        IntactUnit iu = new IntactUnit();
+
+        IntactUnitDataset datasetAnnot = currentMethod.getAnnotation(IntactUnitDataset.class);
+
+        if (datasetAnnot != null) {
+            TestDataset testDataset = getTestDataset(datasetAnnot);
+
+            iu.createSchema(false);
+            getDataContext().beginTransaction();
+            iu.importTestDataset(testDataset);
+
+            getDataContext().commitTransaction();
+        } else {
+            iu.createSchema();
+        }
+
         getDataContext().beginTransaction();
+    }
 
-        System.out.println("\t\tNAME: "+ IntactTestRunner.getTestMethod()+"\t\t");
-
+    private TestDataset getTestDataset(IntactUnitDataset datasetAnnot) throws Exception {
+        TestDatasetProvider provider = datasetAnnot.provider().newInstance();
+        return provider.getTestDataset(datasetAnnot.dataset());
     }
 
     @After
     public void tearDown() throws Exception {
         getDataContext().commitTransaction();
 
-        IntactUnit iu = new IntactUnit();
-        iu.resetSchema();
+        //IntactUnit iu = new IntactUnit();
+        //iu.dropSchema();
     }
 
     @AfterClass

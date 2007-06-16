@@ -74,13 +74,14 @@ public class IntactUnit {
         }
 
         try {
-            DatabaseOperation.INSERT.execute(getDatabaseConnection(), convertTestDatasetToDbUnit(testDataset));
+            IDataSet dbUnitDataSet = convertTestDatasetToDbUnit(testDataset);
+            DatabaseOperation.INSERT.execute(getDatabaseConnection(), dbUnitDataSet);
         } catch (Exception e) {
             throw new IntactException("Exception importing dataset: "+testDataset.getId(), e);
         }
     }
 
-    private IDataSet convertTestDatasetToDbUnit(TestDataset testDataset) throws DataSetException, IOException {
+    private IDataSet convertTestDatasetToDbUnit(TestDataset testDataset) throws DataSetException, IOException, SQLException {
         return new FlatXmlDataSet(testDataset.getDbUnitDataset());
     }
 
@@ -88,6 +89,14 @@ public class IntactUnit {
      * Drops and creates the schema, initializing intact. Beware that it commits transactions
      */
     public void resetSchema() throws IntactTransactionException {
+        resetSchema(true);
+    }
+
+    /**
+     * Drops and creates the schema. Beware that it commits transactions
+     * @param initializeDatabase If false, do not initialize the database (e.g. don't create Institution)
+     */
+    public void resetSchema(boolean initializeDatabase) throws IntactTransactionException {
         if (log.isDebugEnabled()) log.debug("Resetting schema");
 
         DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
@@ -97,13 +106,21 @@ public class IntactUnit {
         }
         
         dropSchema();
-        createSchema();
+        createSchema(initializeDatabase);
     }
 
     /**
-     * Creates a schema 
+     * Creates a schema and initialize the database
      */
     public void createSchema() throws IntactTransactionException {
+        createSchema(true);
+    }
+
+    /**
+     * Creates a schema
+     * @param initializeDatabase If false, do not initialize the database (e.g. don't create Institution)
+     */
+    public void createSchema(boolean initializeDatabase) throws IntactTransactionException {
         if (log.isDebugEnabled()) log.debug("Creating schema");
 
         DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
@@ -120,9 +137,10 @@ public class IntactUnit {
         dataContext.commitTransaction();
         dataContext.beginTransaction();
 
-        if (log.isDebugEnabled()) log.debug("Initializing database");
-
-        IntactConfigurator.initializeDatabase(IntactContext.getCurrentInstance());
+        if (initializeDatabase) {
+            if (log.isDebugEnabled()) log.debug("Initializing database");
+            IntactConfigurator.initializeDatabase(IntactContext.getCurrentInstance());
+        }
 
         dataContext.commitTransaction();
     }

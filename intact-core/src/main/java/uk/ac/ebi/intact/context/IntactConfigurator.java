@@ -376,7 +376,7 @@ public class IntactConfigurator {
             institution.setPostalAddress( postalAddress );
             institution.setUrl( url );
 
-            log.warn( "Institution does not exist. Will be created, overriding any read-only attribute" );
+            log.warn( "Institution does not exist. Will be created." );
             setInstitutionToBePersisted( session );
         }
 

@@ -19,7 +19,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
 import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
-import uk.ac.ebi.intact.unitdataset.PsiUnitDataset;
+import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
 
 /**
  * TODO comment this
@@ -28,9 +28,9 @@ import uk.ac.ebi.intact.unitdataset.PsiUnitDataset;
  * @version $Id$
  */
 public class IntactAbstractTestCaseTest extends IntactAbstractTestCase {
-
+    
     @Test
-    public void defaultTest() throws Exception {
+    public void defaultEmpty() throws Exception {
         assertTrue("Transaction must be active", getDataContext().isTransactionActive());
         assertEquals(1, getDataContext().getDaoFactory().getInstitutionDao().countAll());
 
@@ -38,10 +38,12 @@ public class IntactAbstractTestCaseTest extends IntactAbstractTestCase {
     }
 
     @Test
-    @IntactUnitDataset(test = PsiUnitDataset.ALL_CVS, datasetId = "ll")
-    public void defaultTest2() throws Exception {
+    @IntactUnitDataset(provider = PsiTestDatasetProvider.class, dataset = PsiTestDatasetProvider.ALL_CVS)
+    public void default_allCVs() throws Exception {
         assertTrue("Transaction must be active", getDataContext().isTransactionActive());
+        
         assertEquals(1, getDataContext().getDaoFactory().getInstitutionDao().countAll());
+        assertEquals("Wrong number of CvObjects", 973, getDataContext().getDaoFactory().getCvObjectDao().countAll());
 
         assertEquals(getIntactContext().getConfig().getDefaultDataConfig().getName(), InMemoryDataConfig.NAME);
     }

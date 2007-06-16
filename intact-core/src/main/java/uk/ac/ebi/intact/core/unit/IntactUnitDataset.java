@@ -15,18 +15,32 @@
  */
 package uk.ac.ebi.intact.core.unit;
 
+import uk.ac.ebi.intact.commons.util.TestDatasetProvider;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * TODO comment this
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface IntactUnitDataset {
+
+    /**
+     * Provider to use (must contain the dataset)
+     */
+    Class<? extends TestDatasetProvider> provider();
 
     /**
      * Dataset to import
      */
-    String datasetId();
+    String dataset();
 
 }
 
