@@ -69,7 +69,15 @@
                 <version>${currentVersion}</version>
             </dependency>
 
+            <!-- test datasets -->
+            <dependency>
+                <groupId>uk.ac.ebi.intact.datasets</groupId>
+                <artifactId>intact-dataset</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <scope>test</scope>
+            </dependency>
 
+            <!-- third party deps -->
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>

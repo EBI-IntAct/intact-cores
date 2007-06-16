@@ -19,6 +19,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
 import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
+import uk.ac.ebi.intact.unitdataset.PsiUnitDataset;
 
 /**
  * TODO comment this
@@ -37,7 +38,7 @@ public class IntactAbstractTestCaseTest extends IntactAbstractTestCase {
     }
 
     @Test
-    @IntactUnitDataset(datasetId = "testDatasetId")
+    @IntactUnitDataset(test = PsiUnitDataset.ALL_CVS, datasetId = "ll")
     public void defaultTest2() throws Exception {
         assertTrue("Transaction must be active", getDataContext().isTransactionActive());
         assertEquals(1, getDataContext().getDaoFactory().getInstitutionDao().countAll());
