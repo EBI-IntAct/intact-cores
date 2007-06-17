@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * @version $Id$
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(value = {ElementType.PACKAGE, ElementType.TYPE, ElementType.METHOD})
 public @interface IntactUnitDataset {
 
     /**

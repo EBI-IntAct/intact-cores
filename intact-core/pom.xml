@@ -43,6 +43,11 @@
             <artifactId>intact-dataset</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.intact.datasets</groupId>
+            <artifactId>intact-dataset-legacy</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- third party deps -->
         <dependency>

@@ -5,15 +5,18 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.persistence.dao;
 
-import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.context.IntactContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
+import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
+import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
 import uk.ac.ebi.intact.model.CvDatabase;
+import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.CvXrefQualifier;
-import uk.ac.ebi.intact.model.CvObject;
-import uk.ac.ebi.intact.DatabaseTestCase;
+import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,25 +28,11 @@ import java.util.List;
  * @author Catherine Leroy (cleroy@ebi.ac.uk)
  * @version $Id$
  */
-public class CvObjectDaoTest  extends DatabaseTestCase {
+@IntactUnitDataset(dataset = PsiTestDatasetProvider.ALL_CVS, provider = PsiTestDatasetProvider.class)
+public class CvObjectDaoTest extends IntactAbstractTestCase {
      private static final Log log = LogFactory.getLog(CvObjectDaoTest.class);
 
-
-    public CvObjectDaoTest(String name) {
-        super(name);
-    }
-
-    public void setUp() throws Exception
-        {
-            super.setUp();
-        }
-
-        public void tearDown() throws Exception
-        {
-            super.tearDown();
-        }
-
-
+    @Test
     public void testgetByPsiMiRefCollection()
     {
         Collection<String> psiMiRefs = new ArrayList<String>();
@@ -57,6 +46,7 @@ public class CvObjectDaoTest  extends DatabaseTestCase {
         assertEquals(cvObjects.size(),3);
     }
 
+    @Test
     public void testGetByObjClass (){
         Class[] classes = {CvTopic.class, CvXrefQualifier.class};
         CvObjectDao<CvObject> cvObjectDao = getDaoFactory().getCvObjectDao(CvObject.class);
@@ -74,7 +64,7 @@ public class CvObjectDaoTest  extends DatabaseTestCase {
             }
         }
 
-        assertEquals(73,cvTopicCount);
-        assertEquals(21,cvXrefQualifierCount);
+        assertEquals(71,cvTopicCount);
+        assertEquals(23,cvXrefQualifierCount);
     }
 }

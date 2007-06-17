@@ -24,6 +24,7 @@ import uk.ac.ebi.intact.commons.util.TestDataset;
 import uk.ac.ebi.intact.commons.util.TestDatasetProvider;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.lang.reflect.Method;
 
@@ -53,8 +54,12 @@ public class IntactAbstractTestCase {
 
         IntactUnit iu = new IntactUnit();
 
+        // try to get the IntactUnitDataset annotation from the method, and then the class 
         IntactUnitDataset datasetAnnot = currentMethod.getAnnotation(IntactUnitDataset.class);
 
+        if (datasetAnnot == null) {
+            datasetAnnot = currentMethod.getDeclaringClass().getAnnotation(IntactUnitDataset.class);
+        }
         if (datasetAnnot != null) {
             TestDataset testDataset = getTestDataset(datasetAnnot);
 
@@ -94,6 +99,10 @@ public class IntactAbstractTestCase {
 
     protected DataContext getDataContext() {
         return getIntactContext().getDataContext();
+    }
+
+    protected DaoFactory getDaoFactory() {
+        return getDataContext().getDaoFactory();
     }
 
 }
