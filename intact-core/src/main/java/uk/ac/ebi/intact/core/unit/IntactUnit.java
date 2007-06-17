@@ -36,6 +36,7 @@ import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactConfigurator;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.model.Institution;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,6 +44,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Utilities to deal with the database, useful for testing
@@ -78,6 +80,12 @@ public class IntactUnit {
             DatabaseOperation.INSERT.execute(getDatabaseConnection(), dbUnitDataSet);
         } catch (Exception e) {
             throw new IntactException("Exception importing dataset: "+testDataset.getId(), e);
+        }
+
+        // reset institution
+        List<Institution> institutions = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInstitutionDao().getAll();
+        if (!institutions.isEmpty()) {
+            IntactContext.getCurrentInstance().getConfig().setInstitution(institutions.get(0));
         }
     }
 

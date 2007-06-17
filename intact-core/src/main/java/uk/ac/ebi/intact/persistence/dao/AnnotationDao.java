@@ -12,6 +12,4 @@ import java.util.List;
 public interface AnnotationDao extends IntactObjectDao<Annotation> {
 
     List<Annotation> getByTextLike( String text );
-
-    List<Annotation> getByDescriptionLike( String description );
 }

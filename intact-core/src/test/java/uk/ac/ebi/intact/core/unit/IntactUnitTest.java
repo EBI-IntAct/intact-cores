@@ -34,7 +34,9 @@ public class IntactUnitTest extends IntactAbstractTestCase
 
         IntactUnit iu = new IntactUnit();
         iu.resetSchema();
-        
+
+        getDataContext().beginTransaction();
         assertEquals(0, getDataContext().getDaoFactory().getCvObjectDao().countAll());
+        getDataContext().commitTransaction();
     }
 }

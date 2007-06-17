@@ -27,9 +27,4 @@ public class AnnotationDaoImpl extends IntactObjectDaoImpl<Annotation> implement
         return getSession().createCriteria( getEntityClass() )
                 .add( Restrictions.like( "annotationText", text ) ).list();
     }
-
-    public List<Annotation> getByDescriptionLike( String description ) {
-        return getSession().createCriteria( getEntityClass() )
-                .add( Restrictions.like( "description", description ) ).list();
-    }
 }
