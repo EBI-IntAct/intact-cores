@@ -62,16 +62,9 @@ public class IntactAnnotator {
         File directory = new File( strDir );
 
         if ( directory.exists() ) {
-            log.debug( "Reading annotated classes from directory: " + directory );
+            log.debug( "Reading annotated classes from classpath dirs" );
+            annotatedClasses.addAll(AnnotationUtil.getClassesWithAnnotationFromClasspathDirs(Entity.class));
 
-            // Get the list of the files contained in the package
-            for ( String file : directory.list() ) {
-                Class clazz = AnnotationUtil.getAnnotatedClass( Entity.class, packageName + "/" + file );
-
-                if ( clazz != null ) {
-                    annotatedClasses.add( clazz );
-                }
-            }
         } else {
             log.info( "Directory not found: " + directory + ". Reading classes from jar" );
 
