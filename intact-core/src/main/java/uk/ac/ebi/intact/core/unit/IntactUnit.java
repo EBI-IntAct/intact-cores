@@ -31,7 +31,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.business.IntactTransactionException;
-import uk.ac.ebi.intact.commons.util.TestDataset;
+import uk.ac.ebi.intact.commons.dataset.DbUnitTestDataset;
 import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactConfigurator;
@@ -57,6 +57,7 @@ public class IntactUnit {
     private static final Log log = LogFactory.getLog(IntactUnit.class);
 
     private DefaultDataTypeFactory dataTypeFactory;
+    private static final String FORMAT_XML = "xml";
 
     public IntactUnit(){
         dataTypeFactory = new HsqldbDataTypeFactory();
@@ -70,7 +71,7 @@ public class IntactUnit {
      * Import a testDataset into the database
      * @param testDataset the dataset to use
      */
-    public void importTestDataset(TestDataset testDataset)  {
+    public void importTestDataset(DbUnitTestDataset testDataset)  {
         if (testDataset == null) {
             throw new NullPointerException("testDataset");
         }
@@ -89,8 +90,11 @@ public class IntactUnit {
         }
     }
 
-    private IDataSet convertTestDatasetToDbUnit(TestDataset testDataset) throws DataSetException, IOException, SQLException {
-        return new FlatXmlDataSet(testDataset.getDbUnitDataset());
+    private IDataSet convertTestDatasetToDbUnit(DbUnitTestDataset testDataset) throws DataSetException, IOException, SQLException {
+        if (testDataset.getFormatType().equals(FORMAT_XML)) {
+            return new FlatXmlDataSet(testDataset.getSource());
+        }
+        throw new IllegalArgumentException("Invalid format for dataset: "+testDataset.getFormatType());
     }
 
     /**

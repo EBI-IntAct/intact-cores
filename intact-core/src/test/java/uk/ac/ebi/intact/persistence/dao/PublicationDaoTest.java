@@ -5,11 +5,18 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
-import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
+import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
+import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
 import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 
 /**
  * TODO comment this!
@@ -18,33 +25,34 @@ import uk.ac.ebi.intact.model.Publication;
  * @version $Id$
  * @since <pre>08-Aug-2006</pre>
  */
-public class PublicationDaoTest extends TestCase
+@IntactUnitDataset(dataset = LegacyPsiTestDatasetProvider.INTACT_CORE, provider = LegacyPsiTestDatasetProvider.class)
+public class PublicationDaoTest extends IntactAbstractTestCase
 {
 
     private static final Log log = LogFactory.getLog(PublicationDaoTest.class);
 
     private PublicationDao publicationDao;
 
-    @Override
-    protected void setUp() throws Exception
+    @Before
+    public void prepare() throws Exception
     {
-        super.setUp();
         publicationDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getPublicationDao();
 
     }
 
-    @Override
-    protected void tearDown() throws Exception
+    @After
+    public void after() throws Exception
     {
-        super.tearDown();
         publicationDao = null;
     }
 
-    public void testGetByAc()
+    @Test
+    public void getByShortLabel()
     {
-        Publication pub = publicationDao.getByAc("EBI-972997");
+        final String label = "10029528";
+        Publication pub = publicationDao.getByShortLabel(label);
         assertNotNull(pub);
-        assertEquals("16469705", pub.getShortLabel());
+        assertEquals(label, pub.getShortLabel());
     }
 
 }

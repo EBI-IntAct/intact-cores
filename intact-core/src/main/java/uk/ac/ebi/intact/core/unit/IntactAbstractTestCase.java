@@ -20,8 +20,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import uk.ac.ebi.intact.commons.util.TestDataset;
-import uk.ac.ebi.intact.commons.util.TestDatasetProvider;
+import uk.ac.ebi.intact.commons.dataset.DbUnitTestDataset;
+import uk.ac.ebi.intact.commons.dataset.TestDataset;
+import uk.ac.ebi.intact.commons.dataset.TestDatasetProvider;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
@@ -63,9 +64,13 @@ public class IntactAbstractTestCase {
         if (datasetAnnot != null) {
             TestDataset testDataset = getTestDataset(datasetAnnot);
 
-            iu.createSchema(false);
-            getDataContext().beginTransaction();
-            iu.importTestDataset(testDataset);
+            if (testDataset instanceof DbUnitTestDataset) {
+                iu.createSchema(false);
+                getDataContext().beginTransaction();
+                iu.importTestDataset((DbUnitTestDataset)testDataset);
+            } else {
+                throw new IntactTestException("Cannot import TestDatasets of type: "+testDataset.getClass().getName());
+            }
 
             getDataContext().commitTransaction();
         } else {
@@ -90,7 +95,9 @@ public class IntactAbstractTestCase {
 
     @AfterClass
     public static void close() throws Exception {
-        IntactContext.getCurrentInstance().close();
+        if (IntactContext.currentInstanceExists()) {
+            IntactContext.getCurrentInstance().close();
+        }
     }
 
     protected IntactContext getIntactContext() {

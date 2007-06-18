@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.intact.core.unit;
 
-import uk.ac.ebi.intact.commons.util.TestDatasetProvider;
+import uk.ac.ebi.intact.commons.dataset.TestDatasetProvider;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

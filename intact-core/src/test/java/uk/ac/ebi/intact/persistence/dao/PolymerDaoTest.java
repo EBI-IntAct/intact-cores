@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
+import uk.ac.ebi.intact.model.Polymer;
 import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 
 /**
@@ -34,11 +35,13 @@ public class PolymerDaoTest extends IntactAbstractTestCase
     @IntactUnitDataset(dataset = LegacyPsiTestDatasetProvider.INTACT_CORE, provider = LegacyPsiTestDatasetProvider.class)
     public void testGetSequenceByPolymerAc() throws Exception
     {
-        String seq = getIntactContext().getDataContext().getDaoFactory().getPolymerDao().getSequenceByPolymerAc("UNK-4346");
+        Polymer polymer = getDaoFactory().getPolymerDao().getByShortLabel("p83949-1");
+
+        String seq = getIntactContext().getDataContext().getDaoFactory().getPolymerDao().getSequenceByPolymerAc(polymer.getAc());
 
         String originalSeq = "MNSYFEQASGFYGHPHQATGMAMGSGGHHDQTASAAAAAYRGFPLSLGMSPYANHHLQRTTQDSPYDASITAACNKIYGDGAGAYKQDCLNIKADAVNGYKDIWNTGGSNGGGGGGGGGGGGGAGGTGGAGNANGGNAANANGQNNPAGGMPVRPSACTPDSRVGGYLDTSGGSPVSHRGGSAGGNVSVSGGNGNAGGVQSGVGVAGAGTAWNANCTISGAAAQTAAASSLHQASNHTFYPWMAIAGECPEDPTKSKIRSDLTQYGGISTDMGKRYSESLAGSLLPDWLGTNGLRRRGRQTYTRYQTLELEKEFHTNHYLTRRRRIEMAHALCLTERQIKIWFQNRRMKLKKEIQAIKELNEQEKQAQAQKAAAAAAAAAAVQGGHLDQ";
 
-        Assert.assertEquals(seq, originalSeq);
+        Assert.assertEquals(originalSeq, seq);
     }
 
 }
