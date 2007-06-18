@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.CvObject;
 
 /**
@@ -29,7 +28,7 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
      private static ThreadLocal<CvObjectPersister> instance = new ThreadLocal<CvObjectPersister>() {
         @Override
         protected CvObjectPersister initialValue() {
-            return new CvObjectPersister(IntactContext.getCurrentInstance());
+            return new CvObjectPersister();
         }
     };
 
@@ -37,8 +36,8 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
         return instance.get();
     }
 
-    protected CvObjectPersister(IntactContext intactContext) {
-        super(intactContext);
+    protected CvObjectPersister() {
+        super();
     }
 
     @Override

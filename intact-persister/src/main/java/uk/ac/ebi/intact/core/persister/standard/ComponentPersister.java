@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
 
@@ -30,7 +29,7 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
     private static ThreadLocal<ComponentPersister> instance = new ThreadLocal<ComponentPersister>() {
         @Override
         protected ComponentPersister initialValue() {
-            return new ComponentPersister(IntactContext.getCurrentInstance());
+            return new ComponentPersister();
         }
     };
 
@@ -38,8 +37,8 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         return instance.get();
     }
 
-    public ComponentPersister(IntactContext intactContext) {
-        super(intactContext);
+    public ComponentPersister() {
+        super();
     }
 
     protected Component fetchFromDataSource(Component intactObject) {

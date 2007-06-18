@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.CvInteractionType;
@@ -36,7 +35,7 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
     private static ThreadLocal<InteractionPersister> instance = new ThreadLocal<InteractionPersister>() {
         @Override
         protected InteractionPersister initialValue() {
-            return new InteractionPersister(IntactContext.getCurrentInstance());
+            return new InteractionPersister();
         }
     };
 
@@ -44,8 +43,8 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         return instance.get();
     }
 
-    protected InteractionPersister(IntactContext intactContext) {
-        super(intactContext);
+    protected InteractionPersister() {
+        super();
     }
 
     @Override

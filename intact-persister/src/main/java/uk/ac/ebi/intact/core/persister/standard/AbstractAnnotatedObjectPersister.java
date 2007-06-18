@@ -16,7 +16,6 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
 import uk.ac.ebi.intact.business.IntactException;
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.AbstractPersister;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
@@ -31,8 +30,8 @@ import java.util.Collection;
  */
 public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject> extends AbstractPersister<T> {
 
-    protected AbstractAnnotatedObjectPersister(IntactContext intactContext) {
-        super(intactContext);
+    protected AbstractAnnotatedObjectPersister() {
+        super();
     }
 
     @Override

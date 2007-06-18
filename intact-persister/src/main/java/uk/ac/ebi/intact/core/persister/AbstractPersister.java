@@ -33,8 +33,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
     private IntactContext intactContext;
 
-    protected AbstractPersister(IntactContext intactContext) {
-        this.intactContext = intactContext;
+    protected AbstractPersister() {
     }
     
     public final void saveOrUpdate(T intactObject) throws PersisterException {
@@ -126,7 +125,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
     protected abstract boolean update(T objectToUpdate, T existingObject);
 
     protected IntactContext getIntactContext() {
-        return intactContext;
+        return IntactContext.getCurrentInstance();
     }
 
     public boolean isDryRun() {

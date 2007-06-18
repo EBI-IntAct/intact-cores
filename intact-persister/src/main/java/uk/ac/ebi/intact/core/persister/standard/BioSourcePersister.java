@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.BioSource;
 
 /**
@@ -29,7 +28,7 @@ public class BioSourcePersister extends AbstractAnnotatedObjectPersister<BioSour
     private static ThreadLocal<BioSourcePersister> instance = new ThreadLocal<BioSourcePersister>() {
         @Override
         protected BioSourcePersister initialValue() {
-            return new BioSourcePersister(IntactContext.getCurrentInstance());
+            return new BioSourcePersister();
         }
     };
 
@@ -37,8 +36,8 @@ public class BioSourcePersister extends AbstractAnnotatedObjectPersister<BioSour
         return instance.get();
     }
 
-    protected BioSourcePersister(IntactContext intactContext) {
-        super(intactContext);
+    protected BioSourcePersister() {
+        super();
     }
 
     protected BioSource fetchFromDataSource(BioSource intactObject) {

@@ -43,11 +43,10 @@ public class PersistenceContext {
     private static ThreadLocal<PersistenceContext> instance = new ThreadLocal<PersistenceContext>() {
         @Override
         protected PersistenceContext initialValue() {
-            return new PersistenceContext(IntactContext.getCurrentInstance());
+            return new PersistenceContext();
         }
     };
 
-    private IntactContext intactContext;
     private boolean dryRun;
 
     private Map<String, CvObject> cvObjectsToBePersisted;
@@ -57,9 +56,7 @@ public class PersistenceContext {
         return instance.get();
     }
 
-    private PersistenceContext(IntactContext intactContext) {
-        this.intactContext = intactContext;
-
+    private PersistenceContext() {
         this.cvObjectsToBePersisted = new HashMap<String,CvObject>();
         this.annotatedObjectsToBePersisted = new HashMap<String,AnnotatedObject>();
     }
@@ -125,7 +122,7 @@ public class PersistenceContext {
     }
 
     private IntactContext getIntactContext() {
-        return intactContext;
+        return IntactContext.getCurrentInstance();
     }
 
     private DaoFactory getDaoFactory() {

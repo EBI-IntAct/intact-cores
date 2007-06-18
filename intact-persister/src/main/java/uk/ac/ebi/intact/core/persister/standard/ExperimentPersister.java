@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.model.CvIdentification;
@@ -33,7 +32,7 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     private static ThreadLocal<ExperimentPersister> instance = new ThreadLocal<ExperimentPersister>() {
         @Override
         protected ExperimentPersister initialValue() {
-            return new ExperimentPersister(IntactContext.getCurrentInstance());
+            return new ExperimentPersister();
         }
     };
 
@@ -41,8 +40,8 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         return instance.get();
     }
 
-    public ExperimentPersister(IntactContext intactContext) {
-        super(intactContext);
+    public ExperimentPersister() {
+        super();
     }
 
     protected Experiment fetchFromDataSource(Experiment intactObject) {
@@ -58,10 +57,19 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
             BioSourcePersister.getInstance().saveOrUpdate(intactObject.getBioSource());
         }
 
-        CvObjectPersister.getInstance().saveOrUpdate(intactObject.getCvInteraction());
+        if (intactObject.getCvInteraction() != null) {
+            CvObjectPersister.getInstance().saveOrUpdate(intactObject.getCvInteraction());
+        } else {
+            throw new NullPointerException("Experiment without CvInteraction: "+intactObject.getShortLabel());
+        }
+
 
         if (intactObject.getCvIdentification() != null) {
             CvObjectPersister.getInstance().saveOrUpdate(intactObject.getCvIdentification());
+        }
+
+        if (intactObject.getPublication() != null) {
+            PublicationPersister.getInstance().saveOrUpdate(intactObject.getPublication());
         }
     }
 
@@ -76,6 +84,10 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
 
         if (intactObject.getCvIdentification() != null) {
             intactObject.setCvIdentification((CvIdentification) CvObjectPersister.getInstance().syncIfTransient(intactObject.getCvIdentification()));
+        }
+
+        if (intactObject.getPublication() != null) {
+            intactObject.setPublication(PublicationPersister.getInstance().syncAttributes(intactObject.getPublication()));
         }
 
         return super.syncAttributes(intactObject);

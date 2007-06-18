@@ -22,6 +22,14 @@
             <artifactId>intact-core</artifactId>
         </dependency>
 
+        <!-- test datasets -->
+        <dependency>
+            <groupId>uk.ac.ebi.intact.datasets</groupId>
+            <artifactId>intact-dataset</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- third party -->
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>

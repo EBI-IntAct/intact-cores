@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.model.CvInteractorType;
@@ -32,7 +31,7 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
     private static ThreadLocal<InteractorPersister> instance = new ThreadLocal<InteractorPersister>() {
         @Override
         protected InteractorPersister initialValue() {
-            return new InteractorPersister(IntactContext.getCurrentInstance());
+            return new InteractorPersister();
         }
     };
 
@@ -40,8 +39,8 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
         return instance.get();
     }
 
-    protected InteractorPersister(IntactContext intactContext) {
-        super(intactContext);
+    protected InteractorPersister() {
+        super();
     }
 
     @Override
