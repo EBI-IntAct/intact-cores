@@ -64,11 +64,13 @@ public class IntactTestRunner extends TestClassRunner {
                 String className = parseTestClassName(description);
                 String methodName = parseTestMethodName(description);
 
-                try {
-                    Method method = Class.forName(className).getMethod(methodName, null);
-                    testMethod.set(method);
-                } catch (Exception e) {
-                    throw new IntactTestException(e);
+                if (className != null && methodName != null) {
+                    try {
+                        Method method = Class.forName(className).getMethod(methodName, null);
+                        testMethod.set(method);
+                    } catch (Exception e) {
+                        throw new IntactTestException(e);
+                    }
                 }
             }
         }

@@ -18,8 +18,8 @@ package uk.ac.ebi.intact.model.util;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 
-import java.util.Iterator;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Utility methods for Proteins
@@ -28,7 +28,7 @@ import java.util.Collection;
  * @version $Id$
  */
 public class ProteinUtils {
-
+    
     /**
      * Checks if the protein has been annotated with the no-uniprot-update CvTopic, if so, return false, otherwise true.
      * That flag is added to a protein when created via the editor. As some protein may have a UniProt ID as identity we
@@ -86,5 +86,47 @@ public class ProteinUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Get the gene name of a protein
+     *
+     * @since 1.6
+     */
+    public static String getGeneName( final Interactor protein ) {
+
+        if ( (protein instanceof Protein) && !(isFromUniprot( (Protein)protein )) ) {
+            // if the protein is NOT a UniProt one, then use the shortlabel as we won't get a gene name.
+            return protein.getShortLabel();
+        }
+
+        // the gene name we want to extract from the protein.
+        String geneName = null;
+
+        CvAliasType geneNameAliasType = IntactContext.getCurrentInstance().getCvContext().getByMiRef(CvAliasType.class, CvAliasType.GENE_NAME_MI_REF);
+
+
+        if ( geneNameAliasType != null ) {
+            for ( Iterator iterator = protein.getAliases().iterator(); iterator.hasNext() && geneName == null; ) {
+                final Alias alias = (Alias) iterator.next();
+
+                if ( geneNameAliasType.equals( alias.getCvAliasType() ) ) {
+                    geneName = alias.getName();
+                }
+            }
+        }
+
+        if ( geneName == null ) {
+
+            geneName = protein.getShortLabel();
+
+            // remove any _organism in case it exists
+            int index = geneName.indexOf( '_' );
+            if ( index != -1 ) {
+                geneName = geneName.substring( 0, index );
+            }
+        }
+
+        return geneName;
     }
 }

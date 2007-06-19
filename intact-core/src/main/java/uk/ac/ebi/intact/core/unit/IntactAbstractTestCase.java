@@ -55,26 +55,50 @@ public class IntactAbstractTestCase {
 
         IntactUnit iu = new IntactUnit();
 
-        // try to get the IntactUnitDataset annotation from the method, and then the class 
-        IntactUnitDataset datasetAnnot = currentMethod.getAnnotation(IntactUnitDataset.class);
+        IgnoreDatabase ignoreDbAnnot = currentMethod.getAnnotation(IgnoreDatabase.class);
 
-        if (datasetAnnot == null) {
-            datasetAnnot = currentMethod.getDeclaringClass().getAnnotation(IntactUnitDataset.class);
-        }
-        if (datasetAnnot != null) {
-            TestDataset testDataset = getTestDataset(datasetAnnot);
+        IntactUnitDataset datasetAnnot = null;
+        boolean loadDataset = false;
 
-            if (testDataset instanceof DbUnitTestDataset) {
-                iu.createSchema(false);
-                getDataContext().beginTransaction();
-                iu.importTestDataset((DbUnitTestDataset)testDataset);
+        // if the ignoreDbAnnot is present at method level, ignore the db, else
+        if (ignoreDbAnnot == null) {
+            // try to get the IntactUnitDataset annotation from the method, and then the class
+            datasetAnnot = currentMethod.getAnnotation(IntactUnitDataset.class);
+
+            if (datasetAnnot == null) {
+                ignoreDbAnnot = currentMethod.getDeclaringClass().getAnnotation(IgnoreDatabase.class);
+
+                if (ignoreDbAnnot == null) {
+                    datasetAnnot = currentMethod.getDeclaringClass().getAnnotation(IntactUnitDataset.class);
+
+                    if (datasetAnnot != null) {
+                        loadDataset = true;
+                    } else {
+                        iu.createSchema();
+                    }
+                }
             } else {
-                throw new IntactTestException("Cannot import TestDatasets of type: "+testDataset.getClass().getName());
+                loadDataset = true;
             }
+        }
 
+        if (loadDataset) {
+            if (datasetAnnot != null) {
+                TestDataset testDataset = getTestDataset(datasetAnnot);
+
+                if (testDataset instanceof DbUnitTestDataset) {
+                    iu.createSchema(false);
+                    getDataContext().beginTransaction();
+                    iu.importTestDataset((DbUnitTestDataset) testDataset);
+                } else {
+                    throw new IntactTestException("Cannot import TestDatasets of type: " + testDataset.getClass().getName());
+                }
+
+                getDataContext().commitTransaction();
+            } else {
+                iu.createSchema();
+            }
             getDataContext().commitTransaction();
-        } else {
-            iu.createSchema();
         }
 
         getDataContext().beginTransaction();
