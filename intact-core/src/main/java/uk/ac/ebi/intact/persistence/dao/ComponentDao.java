@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Component;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>07-Jul-2006</pre>
  */
+@Mockable
 public interface ComponentDao extends AnnotatedObjectDao<Component> {
 
     List<Component> getByInteractorAc( String interactorAc );

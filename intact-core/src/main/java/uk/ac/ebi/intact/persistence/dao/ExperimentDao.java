@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>08-May-2006</pre>
  */
+@Mockable
 public interface ExperimentDao extends AnnotatedObjectDao<Experiment> {
 
     Integer countInteractionsForExperimentWithAc( String ac );

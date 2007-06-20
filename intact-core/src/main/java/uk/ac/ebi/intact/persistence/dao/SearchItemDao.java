@@ -6,6 +6,7 @@
 package uk.ac.ebi.intact.persistence.dao;
 
 import org.hibernate.Session;
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.SearchItem;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Map;
  * @version $Id$
  * @since <pre>08-May-2006</pre>
  */
+@Mockable
 public interface SearchItemDao extends BaseDao<Session> {
 
     Map<String, Integer> countGroupsByValuesLike( String[] values, String[] objClasses, String type );

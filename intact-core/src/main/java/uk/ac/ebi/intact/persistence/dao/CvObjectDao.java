@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.CvObject;
 
 import java.util.Collection;
@@ -15,6 +16,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>08-May-2006</pre>
  */
+@Mockable
 public interface CvObjectDao<T extends CvObject> extends AnnotatedObjectDao<T> {
 
     List<T> getByPsiMiRefCollection( Collection<String> psiMis );

@@ -1,0 +1,12 @@
+/** AUTO-GENERATED **/
+package $mockInfo.packageName;
+
+public class $mockInfo.simpleName {
+
+#foreach( $method in $mockInfo.mockableClass.methods )
+    $method {
+        throw new UnsupportedOperationException();
+    }
+#end
+
+}

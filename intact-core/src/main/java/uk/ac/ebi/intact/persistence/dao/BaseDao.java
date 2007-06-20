@@ -5,6 +5,8 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
+
 import java.sql.SQLException;
 
 /**
@@ -14,6 +16,7 @@ import java.sql.SQLException;
  * @version $Id$
  * @since <pre>08-May-2006</pre>
  */
+@Mockable
 public interface BaseDao<S extends Object> {
 
     S getSession();

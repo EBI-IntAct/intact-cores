@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.MineInteraction;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
  * @version $Id$
  * @since 1.5
  */
+@Mockable
 public interface MineInteractionDao {
 
     void persist( MineInteraction mineInteraction );

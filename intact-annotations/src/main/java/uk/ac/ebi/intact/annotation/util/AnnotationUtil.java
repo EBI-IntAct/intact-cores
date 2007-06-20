@@ -186,10 +186,22 @@ public class AnnotationUtil {
      * @return Classes containing the annotation
      */
     public static Collection<Class> getClassesWithAnnotationFromDir(Class<? extends Annotation> annotationClass, File dir) {
-        return getClassesWithAnnotationFromDir(annotationClass, dir, dir);
+        return getClassesWithAnnotationFromDir(annotationClass, dir, dir, Thread.currentThread().getContextClassLoader());
     }
 
-    private static Collection<Class> getClassesWithAnnotationFromDir(Class<? extends Annotation> annotationClass, File dir, File parentDir) {
+    /**
+     * Returns the classes contained the annotation in a directory. It searches the subdirectories recursively
+     *
+     * @param annotationClass annotation to look for
+     * @param dir             Directory to use, recursive search in its subdirectories
+     *
+     * @return Classes containing the annotation
+     */
+    public static Collection<Class> getClassesWithAnnotationFromDir(Class<? extends Annotation> annotationClass, File dir, ClassLoader classLoader) {
+        return getClassesWithAnnotationFromDir(annotationClass, dir, dir, classLoader);
+    }
+
+    private static Collection<Class> getClassesWithAnnotationFromDir(Class<? extends Annotation> annotationClass, File dir, File parentDir, ClassLoader classLoader) {
         Set<Class> classesFromDir = new HashSet<Class>();
 
         File[] classFiles = dir.listFiles(new FilenameFilter() {
@@ -200,12 +212,11 @@ public class AnnotationUtil {
 
         for (File classFile : classFiles) {
             String classFileWithoutDir = classFile.toString().substring(parentDir.toString().length());
-
-            Class annotatedClass = AnnotationUtil.getAnnotatedClass(annotationClass, classFileWithoutDir);
+            Class annotatedClass = AnnotationUtil.getAnnotatedClass(annotationClass, classFileWithoutDir, classLoader);
 
             if (annotatedClass != null) {
                 classesFromDir.add(annotatedClass);
-            }
+               }
         }
 
         File[] subdirs = dir.listFiles(new FileFilter() {
@@ -215,7 +226,7 @@ public class AnnotationUtil {
         });
 
         for (File subdir : subdirs) {
-            Collection<Class> classesFromSubdir = getClassesWithAnnotationFromDir(annotationClass, subdir, parentDir);
+            Collection<Class> classesFromSubdir = getClassesWithAnnotationFromDir(annotationClass, subdir, parentDir, classLoader);
             classesFromDir.addAll(classesFromSubdir);
         }
 
@@ -245,7 +256,6 @@ public class AnnotationUtil {
      */
     public static Class getAnnotatedClass(Class<? extends Annotation> annotationClass, String classFilename, ClassLoader classLoader) {
         if (classFilename.endsWith(".class")) {
-
             String fileDir;
             String className;
 
@@ -276,23 +286,35 @@ public class AnnotationUtil {
                     clazz = Class.forName(completeClassName);
                 }
 
-                // check for the annotation is present, and if present, return the class
-                if (clazz.isAnnotationPresent(annotationClass)) {
+                if (isAnnotationPresent(clazz, annotationClass)) {
                     return clazz;
                 }
 
             } catch (Throwable e) {
                 log.debug("Error loading class " + packageName + "." + className + ": " + e);
-
-                if (className.contains("PsiTestExtension") && classLoader != null)
-                {
-                    e.printStackTrace();
-                }
             }
         }
 
         // if the file does not have the annotation return null
         return null;
+    }
+
+    /**
+     * @since 1.6
+     */
+    public static boolean isAnnotationPresent(Class clazz, Class<? extends Annotation> annotClass) {
+        if (clazz == null) {
+            return false;
+        }
+
+        for (Annotation a : clazz.getAnnotations())
+        {
+            if (a.annotationType().equals(annotClass)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

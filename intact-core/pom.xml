@@ -21,6 +21,46 @@
     <properties>
         <maven.pmd.skip>true</maven.pmd.skip>
     </properties>
+     <!--
+    <build>
+        <plugins>
+             <plugin>
+                 <groupId>uk.ac.ebi.intact.core.plugins</groupId>
+                 <artifactId>core-generator-maven-plugin</artifactId>
+                 <version>${currentVersion}</version>
+                 <executions>
+                     <execution>
+                         <goals>
+                             <goal>generate-mocks</goal>
+                         </goals>
+                         <phase>compile</phase>
+                     </execution>
+                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <configuration>
+                    <tasks>
+                        <property name="cp" refid="maven.compile.classpath"/>
+                        <echo message="JAVA_HOME: ${java.home}"/>
+                        <javac srcdir="${project.build.directory}/mocks" destdir="${project.build.outputDirectory}" debug="on" optimize="off">
+                            <classpath refid="cp"/>
+                        </javac>
+                    </tasks>
+                    <sourceRoot>${project.build.directory}/mocks</sourceRoot>
+                </configuration>
+                <executions>
+                     <execution>
+                         <goals>
+                             <goal>run</goal>
+                         </goals>
+                         <phase>process-classes</phase>
+                     </execution>
+                 </executions>
+            </plugin>
+        </plugins>
+    </build>
+    -->
 
     <dependencies>
         <!-- intact deps -->

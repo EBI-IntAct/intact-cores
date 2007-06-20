@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.PolymerImpl;
 
 /**
@@ -22,6 +23,7 @@ import uk.ac.ebi.intact.model.PolymerImpl;
  * @version $Id$
  * @since 1.5
  */
+@Mockable
 public interface PolymerDao<T extends PolymerImpl> extends InteractorDao<T> {
 
     String getSequenceByPolymerAc( String polymerAc );

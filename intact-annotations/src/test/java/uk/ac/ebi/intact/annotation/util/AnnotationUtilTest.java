@@ -15,13 +15,12 @@
  */
 package uk.ac.ebi.intact.annotation.util;
 
-import junit.framework.Assert;
+import static junit.framework.Assert.*;
 import org.junit.Test;
 import uk.ac.ebi.intact.annotation.EditorTopic;
+import uk.ac.ebi.intact.annotation.Mockable;
 
 import java.io.File;
-import java.util.List;
-import java.util.Set;
 import java.util.Collection;
 
 /**
@@ -37,20 +36,36 @@ public class AnnotationUtilTest {
         File dir = new File(AnnotationUtilTest.class.getResource("/").getFile());
         Collection<Class> classes = AnnotationUtil.getClassesWithAnnotationFromDir(EditorTopic.class, dir);
 
-        Assert.assertEquals(1, classes.size());
+        assertEquals(1, classes.size());
     }
 
     @Test
     public void getClassesWithAnnotationFromClasspathDirs() throws Exception {
         Collection<Class> classes = AnnotationUtil.getClassesWithAnnotationFromClasspathDirs(EditorTopic.class);
 
-        Assert.assertEquals(1, classes.size());
+        assertEquals(1, classes.size());
     }
 
     @Test
     public void getClassesWithAnnotationFromClasspath() throws Exception {
         Collection<Class> classes = AnnotationUtil.getClassesWithAnnotationFromClasspath(EditorTopic.class);
 
-        Assert.assertEquals(1, classes.size());
+        assertEquals(1, classes.size());
     }
+
+    @Test
+    public void isAnnotationPresent() throws Exception {
+        assertTrue(AnnotationUtil.isAnnotationPresent(AnnotatedClass.class, EditorTopic.class));
+        assertFalse(AnnotationUtil.isAnnotationPresent(AnnotatedClass.class, Mockable.class));
+        assertTrue(AnnotationUtil.isAnnotationPresent(AnnotatedInterface.class, Mockable.class));
+        assertFalse(AnnotationUtil.isAnnotationPresent(AnnotatedSubClass.class, EditorTopic.class));
+    }
+
+    @EditorTopic(name = "name")
+    private class AnnotatedClass {}
+
+    private class AnnotatedSubClass extends AnnotatedClass {}
+
+    @Mockable
+    private interface AnnotatedInterface {}
 }

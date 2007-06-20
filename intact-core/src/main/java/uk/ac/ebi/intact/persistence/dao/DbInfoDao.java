@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.meta.DbInfo;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>01-Sep-2006</pre>
  */
+@Mockable
 public interface DbInfoDao {
 
     DbInfo get( String key );

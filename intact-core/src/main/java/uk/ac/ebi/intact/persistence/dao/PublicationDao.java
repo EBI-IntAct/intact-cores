@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Publication;
 
 /**
@@ -12,6 +13,7 @@ import uk.ac.ebi.intact.model.Publication;
  * @version $Id$
  * @since <pre>14-Aug-2006</pre>
  */
+@Mockable
 public interface PublicationDao extends AnnotatedObjectDao<Publication> {
 
 }

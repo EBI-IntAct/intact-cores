@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Protein;
 import uk.ac.ebi.intact.model.ProteinImpl;
 
@@ -18,6 +19,7 @@ import java.util.Map;
  * @version $Id$
  * @since <pre>08-May-2006</pre>
  */
+@Mockable
 public interface ProteinDao extends InteractorDao<ProteinImpl> {
 
     /**

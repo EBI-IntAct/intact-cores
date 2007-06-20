@@ -39,7 +39,7 @@ public class DaoFactory implements Serializable {
 
     private IntactTransaction currentTransaction;
 
-    private DaoFactory( DataConfig dataConfig, IntactSession intactSession ) {
+    protected DaoFactory( DataConfig dataConfig, IntactSession intactSession ) {
         this.dataConfig = ( AbstractHibernateDataConfig ) dataConfig;
         this.intactSession = intactSession;
     }

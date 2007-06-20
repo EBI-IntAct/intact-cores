@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvTopic;
@@ -19,6 +20,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>08-May-2006</pre>
  */
+@Mockable
 public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObjectDao<T> {
 
     T getByShortLabel( String value );
@@ -49,8 +51,26 @@ public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObj
 
     List<T> getByAnnotationAc( String ac );
 
+    /**
+     * Return a collection of annotated object of type <T> being annotated with an annotation having
+     * a topic equal to the topic given in parameter and the description equal to the description given
+     * in parameter.
+     *
+     * @param topic
+     * @param description
+     *
+     * @return a list of annotated objects.
+     */
     List<T> getByAnnotationTopicAndDescription( CvTopic topic, String description );
 
+    /**
+     * Gets all the cases for the current entity
+     *
+     * @param excludeObsolete if true exclude the obsolete CVs
+     * @param excludeHidden   if true exclude the hidden CVs
+     *
+     * @return the list of all entities
+     */
     List<T> getAll( boolean excludeObsolete, boolean excludeHidden );
 
     /**
@@ -62,4 +82,14 @@ public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObj
      * @return a List of AnnotatedObject having their ac or shortlabel like the searchString
      */
     List<T> getByShortlabelOrAcLike( String searchString );
+
+    /**
+     * Gets the shortLabels like the value provided.
+     *
+     * @param labelLike will get labels similar to this one. Remember to provided the '%' in the open end of the value
+     * to search to one side of the other (or both).
+     *
+     * @since 1.6
+     */
+    List<String> getShortLabelsLike( String labelLike );
 }

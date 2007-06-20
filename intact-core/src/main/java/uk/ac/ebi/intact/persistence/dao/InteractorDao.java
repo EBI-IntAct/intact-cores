@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.InteractorImpl;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>08-May-2006</pre>
  */
+@Mockable
 public interface InteractorDao<T extends InteractorImpl> extends AnnotatedObjectDao<T> {
 
     Integer countInteractionsForInteractorWithAc( String ac );

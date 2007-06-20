@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Alias;
 
 import java.util.Collection;
@@ -14,6 +15,7 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>08-May-2006</pre>
  */
+@Mockable
 public interface AliasDao<T extends Alias> extends IntactObjectDao<T> {
 
     Collection<T> getByNameLike( String name );

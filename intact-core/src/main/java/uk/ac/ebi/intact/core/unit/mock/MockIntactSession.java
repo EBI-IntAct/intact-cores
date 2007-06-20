@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.annotation.util;
+package uk.ac.ebi.intact.core.unit.mock;
 
-import uk.ac.ebi.intact.annotation.EditorTopic;
+import uk.ac.ebi.intact.context.impl.StandaloneSession;
 
 /**
  * TODO comment this
@@ -23,7 +23,6 @@ import uk.ac.ebi.intact.annotation.EditorTopic;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@EditorTopic
-public class StubTopic {
+public class MockIntactSession extends StandaloneSession {
 
 }
