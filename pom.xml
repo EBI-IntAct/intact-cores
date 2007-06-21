@@ -32,7 +32,6 @@
     <modules>
         <module>intact-annotations</module>
         <module>intact-apt</module>
-        <module>core-generator-maven-plugin</module>
         <module>intact-core</module>
         <module>intact-persister</module>
     </modules>
