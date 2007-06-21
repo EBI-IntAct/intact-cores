@@ -1,1 +1,2 @@
 uk.ac.ebi.intact.apt.IntactAnnotationProcessorFactory
+uk.ac.ebi.intact.apt.mockable.MockableProcessorFactory

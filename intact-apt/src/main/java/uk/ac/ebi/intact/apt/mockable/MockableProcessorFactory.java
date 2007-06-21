@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package uk.ac.ebi.intact.apt;
+package uk.ac.ebi.intact.apt.mockable;
 
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.AnnotationProcessorFactory;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
-import uk.ac.ebi.intact.annotation.PotentialThreat;
+import uk.ac.ebi.intact.annotation.Mockable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,30 +33,31 @@ import java.util.Set;
  * @version $Id$
  * @since <pre>05-Oct-2006</pre>
  */
-public class IntactAnnotationProcessorFactory implements AnnotationProcessorFactory
-{
+public class MockableProcessorFactory implements AnnotationProcessorFactory {
 
-  private static final Collection<String> SUPPORTED_ANNOTATIONS
-      = Collections.unmodifiableCollection(Arrays.asList(PotentialThreat.class.getName()));
+    private static final Collection<String> SUPPORTED_ANNOTATIONS
+            = Collections.unmodifiableCollection(Arrays.asList(Mockable.class.getName()));
 
-  private static final Collection<String> SUPPORTED_OPTIONS = Collections.emptyList();
+    private static final Collection<String> SUPPORTED_OPTIONS =
+            Arrays.asList("-AtargetDir");
 
-  private PotentialThreatProcessor annotationProcessor = null;
+    private MockableProcessor annotationProcessor = null;
 
-  public Collection<String> supportedAnnotationTypes() {
-    return SUPPORTED_ANNOTATIONS;
-  }
-
-  public Collection<String> supportedOptions() {
-    return SUPPORTED_OPTIONS;
-  }
-
-  public AnnotationProcessor getProcessorFor(Set<AnnotationTypeDeclaration> atds,
-      AnnotationProcessorEnvironment env) {
-    if (annotationProcessor == null) {
-      annotationProcessor = new PotentialThreatProcessor(atds, env);
+    public Collection<String> supportedAnnotationTypes() {
+        return SUPPORTED_ANNOTATIONS;
     }
-    return annotationProcessor;
-  }
+
+    public Collection<String> supportedOptions() {
+        return SUPPORTED_OPTIONS;
+    }
+
+    public AnnotationProcessor getProcessorFor(Set<AnnotationTypeDeclaration> atds,
+                                               AnnotationProcessorEnvironment env
+    ) {
+        if (annotationProcessor == null) {
+            annotationProcessor = new MockableProcessor(atds, env);
+        }
+        return annotationProcessor;
+    }
 
 }

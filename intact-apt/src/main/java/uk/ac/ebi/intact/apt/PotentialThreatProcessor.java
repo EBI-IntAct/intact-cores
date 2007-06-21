@@ -15,14 +15,14 @@
  */
 package uk.ac.ebi.intact.apt;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.AnnotationProcessor;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.util.DeclarationVisitors;
 
-import java.util.Set;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * TODO comment this!
@@ -31,13 +31,13 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>05-Oct-2006</pre>
  */
-public class IntactAnnotationProcessor implements AnnotationProcessor
+public class PotentialThreatProcessor implements AnnotationProcessor
 {
 
   private final AnnotationProcessorEnvironment env;
   private final Set<AnnotationTypeDeclaration> atds;
 
-  public IntactAnnotationProcessor(Set<AnnotationTypeDeclaration> atds,
+  public PotentialThreatProcessor(Set<AnnotationTypeDeclaration> atds,
       AnnotationProcessorEnvironment env) {
     this.atds = atds;
     this.env = env;

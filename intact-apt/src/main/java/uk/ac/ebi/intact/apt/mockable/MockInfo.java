@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.core.plugin.generator;
+package uk.ac.ebi.intact.apt.mockable;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,16 +27,14 @@ import java.io.IOException;
 public class MockInfo {
 
     private static final String MOCK_CLASS_PREFIX = "Mock";
-
-    private Class mockableClass;
+   
     private String simpleName;
     private String packageName;
 
-    public MockInfo(Class mockableClass, String packageName) {
-        this.mockableClass = mockableClass;
+    public MockInfo(String simpleName, String packageName) {
         this.packageName = packageName;
 
-        this.simpleName = MOCK_CLASS_PREFIX +mockableClass.getSimpleName();
+        this.simpleName = MOCK_CLASS_PREFIX +simpleName;
     }
 
     public String getPackageName() {
@@ -47,12 +45,8 @@ public class MockInfo {
         return simpleName;
     }
 
-    public String getClassName() {
+    public String getQualifiedName() {
         return packageName+"."+simpleName;
-    }
-
-    public Class getMockableClass() {
-        return mockableClass;
     }
 
     public File getFileName(File resourcesDir) throws IOException {

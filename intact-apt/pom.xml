@@ -37,6 +37,10 @@
     <name>IntAct Core :: APT</name>
     <description>Annotation Processors for IntAct</description>
 
+    <prerequisites>
+        <maven>2.0.3</maven>
+    </prerequisites>
+
     <profiles>
     <!-- Mac OS X has not a tools.jar! -->
     <profile>
@@ -59,8 +63,20 @@
 
     <dependencies>
         <dependency>
+            <groupId>uk.ac.ebi.intact.core</groupId>
+            <artifactId>intact-annotations</artifactId>
+            <version>${currentVersion}</version>
+        </dependency>
+
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>velocity</groupId>
+            <artifactId>velocity-dep</artifactId>
+            <version>1.4</version>
         </dependency>
     </dependencies>
 
