@@ -44,7 +44,7 @@ public class TemporaryH2DataConfig extends StandardCoreDataConfig {
             e.printStackTrace();
         }
     }
-
+        
     private File configurationFile;
 
     public TemporaryH2DataConfig(IntactSession session) {
