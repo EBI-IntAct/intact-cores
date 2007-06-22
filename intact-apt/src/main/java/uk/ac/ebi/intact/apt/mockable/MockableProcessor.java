@@ -52,14 +52,14 @@ public class MockableProcessor implements AnnotationProcessor {
 
         for (AnnotationTypeDeclaration atd : atds) {
             env.getMessager().printNotice("Processing annotation " + atd);
+
             Collection<Declaration> decls = env.getDeclarationsAnnotatedWith(atd);
+            
             for (Declaration decl : decls) {
                 MockableVisitor visitor = new MockableVisitor(env, targetDir);
-
                 decl.accept(DeclarationVisitors.getDeclarationScanner(visitor, DeclarationVisitors.NO_OP));
-
                 try {
-                    visitor.generateMock(decl.getSimpleName());
+                    visitor.generateMock();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -70,11 +70,7 @@ public class MockableProcessor implements AnnotationProcessor {
     private File createTargetDir() {
         String s = env.getOptions().get("-s");
 
-        // little hack to get the output dir target/classes, as the getOptions does not seem to work
-        File outputDir = new File(s).getParentFile();
-        File targetDir = new File(outputDir, "classes");
-
-        System.out.println("Created dir: " + targetDir);
+        File targetDir = new File(s);
 
         if (!targetDir.exists()) {
             targetDir.mkdirs();

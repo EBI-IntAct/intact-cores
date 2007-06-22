@@ -31,14 +31,14 @@ import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
  * @version $Id$
  */
 @IgnoreDatabase
-public class InteractionUtilsTest extends IntactAbstractTestCase {
+public class InteractionShortLabelGeneratorTest extends IntactAbstractTestCase {
 
     @Test
     public void createCandidateShortLabel() throws Exception {
         String baitLabel = "bait";
         String preyLabel ="prey";
 
-        String candLabel = InteractionUtils.createCandidateShortLabel(baitLabel, preyLabel);
+        String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(baitLabel, preyLabel);
 
         assertNotNull(candLabel);
         assertEquals("bait-prey", candLabel);
@@ -51,7 +51,7 @@ public class InteractionUtilsTest extends IntactAbstractTestCase {
         String baitLabel = "IAmAHappyBayt";
         String preyLabel ="AndIAmAHappyPrey";
 
-        String candLabel = InteractionUtils.createCandidateShortLabel(baitLabel, preyLabel);
+        String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(baitLabel, preyLabel);
 
         assertNotNull(candLabel);
         assertEquals("iamahappyb-andiamaha", candLabel);
@@ -64,7 +64,7 @@ public class InteractionUtilsTest extends IntactAbstractTestCase {
 
         assertNotNull(interaction);
 
-        String candLabel = InteractionUtils.createCandidateShortLabel(interaction);
+        String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(interaction);
 
         assertNotNull(candLabel);
         assertEquals("cara-carb", candLabel);

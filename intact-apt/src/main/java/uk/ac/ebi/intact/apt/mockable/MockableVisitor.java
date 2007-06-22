@@ -16,11 +16,13 @@
 package uk.ac.ebi.intact.apt.mockable;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.InterfaceDeclaration;
+import com.sun.mirror.declaration.MethodDeclaration;
+import com.sun.mirror.util.SimpleDeclarationVisitor;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
-import uk.ac.ebi.intact.apt.AnnotationDeclarationVisitorCollector;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -33,7 +35,7 @@ import java.util.Properties;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class MockableVisitor extends AnnotationDeclarationVisitorCollector{
+public class MockableVisitor extends SimpleDeclarationVisitor {
 
     private static final String MOCK_TEMPLATE = "Mock.vm";
 
@@ -41,6 +43,7 @@ public class MockableVisitor extends AnnotationDeclarationVisitorCollector{
 
     private AnnotationProcessorEnvironment env;
     private File targetDir;
+    private MockInfo mockInfo;
 
 
     public MockableVisitor(AnnotationProcessorEnvironment env, File targetDir) {
@@ -49,20 +52,18 @@ public class MockableVisitor extends AnnotationDeclarationVisitorCollector{
         this.targetDir = targetDir;
     }
 
-    public void generateMock(String mockableSimpleName) throws Exception {
-
-
-
-            MockInfo mockInfo = new MockInfo(mockableSimpleName, generatedPackage);
-
-        env.getMessager().printNotice("Generating mock: "+mockInfo.getQualifiedName());
-
-            generateMock(mockInfo);
-        //}
-
+    @Override
+    public void visitInterfaceDeclaration(InterfaceDeclaration interfaceDeclaration) {
+        this.mockInfo = new MockInfo(interfaceDeclaration, generatedPackage);
     }
 
-    public void generateMock(MockInfo mockInfo) throws Exception {
+    @Override
+    public void visitMethodDeclaration(MethodDeclaration methodDeclaration) {
+        this.mockInfo.addMethodSignature(methodDeclaration);
+    }
+
+
+    public void generateMock() throws Exception {
         // create velocity context
         VelocityContext context = new VelocityContext();
         context.put("mockInfo", mockInfo);
@@ -80,6 +81,8 @@ public class MockableVisitor extends AnnotationDeclarationVisitorCollector{
         Writer writer = new FileWriter(mockFile);
         template.merge(context, writer);
         writer.close();
+
+        mockFile.setReadOnly();
     }
 
 

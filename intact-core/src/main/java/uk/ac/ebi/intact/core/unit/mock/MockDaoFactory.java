@@ -18,7 +18,6 @@ package uk.ac.ebi.intact.core.unit.mock;
 import org.hibernate.Session;
 import uk.ac.ebi.intact.config.DataConfig;
 import uk.ac.ebi.intact.context.IntactSession;
-import uk.ac.ebi.intact.core.unit.IntactTestException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.*;
 
@@ -263,7 +262,7 @@ public class MockDaoFactory extends DaoFactory {
 
     private void checkIfDaoIsSet(Object dao, Class expectedDaoClass) {
         if (dao == null) {
-            throw new IntactTestException("Mock dao not registered, and it has been called:  "+expectedDaoClass.getName());
+            throw new IllegalMockDaoException("Mock dao not registered, and it has been called:  "+expectedDaoClass.getName());
         }
     }
 

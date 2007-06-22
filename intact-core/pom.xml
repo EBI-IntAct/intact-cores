@@ -30,7 +30,12 @@
                 <configuration>
                     <target>1.5</target>
                 </configuration>
-             </plugin>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

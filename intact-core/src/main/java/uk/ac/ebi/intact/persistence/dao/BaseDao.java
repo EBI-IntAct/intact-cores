@@ -17,9 +17,9 @@ import java.sql.SQLException;
  * @since <pre>08-May-2006</pre>
  */
 @Mockable
-public interface BaseDao<S extends Object> {
+public interface BaseDao<T extends Object> {
 
-    S getSession();
+    T getSession();
 
     void flushCurrentSession();
 

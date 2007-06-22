@@ -77,7 +77,7 @@ public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl>
 
     public List<? extends Searchable> getByQuery( Class<? extends Searchable>[] searchableClasses, SearchableQuery query, Integer firstResult, Integer maxResults ) {
         // iterate each searchable and get the results
-        List<? extends Searchable> results = new ArrayList<Searchable>();
+        List<Searchable> results = new ArrayList<Searchable>();
 
         for ( Class searchable : searchableClasses ) {
             int resultsFoundSoFar = results.size();
@@ -93,7 +93,7 @@ public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl>
         return results;
     }
 
-    public <T extends Searchable> List<T> getByQuery( Class<T> searchableClass, SearchableQuery query, Integer firstResult, Integer maxResults ) {
+    public List<? extends Searchable> getByQuery( Class<? extends Searchable> searchableClass, SearchableQuery query, Integer firstResult, Integer maxResults ) {
         //DetachedCriteria criteria = new SearchableCriteriaBuilder(query)
         //        .createCriteria(searchableClass);
 

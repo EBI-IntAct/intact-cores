@@ -18,7 +18,6 @@ package uk.ac.ebi.intact.core.unit.mock;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.core.unit.IntactTestException;
 import uk.ac.ebi.intact.persistence.dao.impl.ComponentDaoImpl;
 
 /**
@@ -30,7 +29,7 @@ import uk.ac.ebi.intact.persistence.dao.impl.ComponentDaoImpl;
 public class MockIntactContextTest {
 
     @Before
-    public void setUp() throws Exception {
+    public void before() throws Exception {
        MockIntactContext.initMockContext();
     }
 
@@ -45,8 +44,9 @@ public class MockIntactContextTest {
         IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentDao();
     }
 
-    @Test(expected = IntactTestException.class)
+    @Test(expected = IllegalMockDaoException.class)
     public void dao_NotSet() throws Exception {
         IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentDao();
+
     }
 }

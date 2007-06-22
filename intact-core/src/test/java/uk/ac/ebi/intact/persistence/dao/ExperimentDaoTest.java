@@ -15,10 +15,14 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
-import junit.framework.TestCase;
-import uk.ac.ebi.intact.context.IntactContext;
+import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
+import org.junit.Test;
+import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
+import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 
 import java.util.Iterator;
 import java.util.List;
@@ -29,28 +33,13 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ExperimentDaoTest extends TestCase
-{
-     private ExperimentDao experimentDao;
+@IntactUnitDataset(dataset = LegacyPsiTestDatasetProvider.INTACT_CORE, provider = LegacyPsiTestDatasetProvider.class)
+public class ExperimentDaoTest extends IntactAbstractTestCase {
 
-    @Override
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        experimentDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getExperimentDao();
-
-    }
-
-    @Override
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-        experimentDao = null;
-    }
-
+    @Test
     public void testGetAllScrolled() throws Exception
     {
-        Iterator<Experiment> expIter = experimentDao.getAllIterator();
+        Iterator<Experiment> expIter = getDaoFactory().getExperimentDao().getAllIterator();
 
         int i=0;
 
@@ -60,36 +49,41 @@ public class ExperimentDaoTest extends TestCase
             i++;
         }
 
-        assertTrue(i > 4000);
+        assertEquals(6, i);
     }
 
+    @Test
+    @Ignore
     public void testGetInteractionsForExperimentWithAcScroll() throws Exception
     {
+        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
         Iterator<Interaction> expInteraction =
-                experimentDao.getInteractionsForExperimentWithAcIterator("EBI-196429"); //giot
+                getDaoFactory().getExperimentDao().getInteractionsForExperimentWithAcIterator(exp.getAc()); //giot
 
         int i=0;
 
         while (expInteraction.hasNext())
         {
             Interaction inter = expInteraction.next();
-            System.out.println(inter.getAc());
             i++;
         }
 
+        assertEquals(exp.getInteractions().size(), i);
     }
 
+    @Test
     public void testCountInteractionsForExperimentWithAc(){
-        Experiment exp = experimentDao.getByShortLabel("thoden-1999-1");
+        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
         String ac = exp.getAc();
-        int interactionsCount = experimentDao.countInteractionsForExperimentWithAc(ac);
+        int interactionsCount = getDaoFactory().getExperimentDao().countInteractionsForExperimentWithAc(ac);
         assertEquals(2,interactionsCount);
     }
 
+    @Test
     public void testGetInteractionsForExperimentWithAc(){
-        Experiment exp = experimentDao.getByShortLabel("thoden-1999-1");
+        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
         String ac = exp.getAc();
-        List<Interaction> interactions = experimentDao.getInteractionsForExperimentWithAc(ac,0,50);
+        List<Interaction> interactions = getDaoFactory().getExperimentDao().getInteractionsForExperimentWithAc(ac,0,50);
         assertEquals(2, interactions.size());
     }
 

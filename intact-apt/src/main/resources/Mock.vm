@@ -1,9 +1,14 @@
 /** AUTO-GENERATED **/
 package $mockInfo.packageName;
 
-public class $mockInfo.simpleName {
+public class $mockInfo.simpleName #if ( $mockInfo.genericType ) $mockInfo.genericType #end
+    #if ( $mockInfo.superMock )
+        extends $mockInfo.superMock
+    #end
+    implements $mockInfo.interfaceDeclaration.qualifiedName #if ( $mockInfo.genericTypeVar ) $mockInfo.genericTypeVar #end
+{
 
-#foreach( $method in $mockInfo.mockableClass.methods )
+#foreach( $method in $mockInfo.methodSignatures )
     $method {
         throw new UnsupportedOperationException();
     }
