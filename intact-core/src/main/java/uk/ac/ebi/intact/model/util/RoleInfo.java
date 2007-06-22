@@ -105,11 +105,11 @@ public class RoleInfo {
         return relevantNameMi;
     }
 
-    private boolean isExperimentalRoleUnspecified() {
+    public boolean isExperimentalRoleUnspecified() {
         return getExperimentalRoleMi().equals(CvExperimentalRole.UNSPECIFIED_PSI_REF);
     }
 
-    private boolean isBiologicalRoleUnspecified() {
+    public boolean isBiologicalRoleUnspecified() {
         return getBiologicalRoleMi().equals(CvBiologicalRole.UNSPECIFIED_PSI_REF);
     }
 }
