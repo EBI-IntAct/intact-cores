@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.unit.IntactAbstractMockTestCase;
 import uk.ac.ebi.intact.persistence.dao.ProteinDao;
 
 /**
@@ -27,11 +28,10 @@ import uk.ac.ebi.intact.persistence.dao.ProteinDao;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class MockDaoFactoryTest {
+public class MockDaoFactoryTest extends IntactAbstractMockTestCase  {
 
     @Before
-    public void before() throws Exception {
-        MockIntactContext.initMockContext();
+    public void prepareDAOs() throws Exception {
         MockIntactContext.configureMockDaoFactory().setMockProteinDao(new DummyProteinDao());
     }
 

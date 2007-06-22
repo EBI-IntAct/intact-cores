@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.intact.core.unit.mock;
 
-import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.unit.IntactAbstractMockTestCase;
 import uk.ac.ebi.intact.persistence.dao.impl.ComponentDaoImpl;
 
 /**
@@ -26,12 +26,7 @@ import uk.ac.ebi.intact.persistence.dao.impl.ComponentDaoImpl;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class MockIntactContextTest {
-
-    @Before
-    public void before() throws Exception {
-       MockIntactContext.initMockContext();
-    }
+public class MockIntactContextTest extends IntactAbstractMockTestCase {
 
     @Test
     public void instanceCreated() throws Exception {

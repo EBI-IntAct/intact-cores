@@ -5,8 +5,6 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.persistence.dao;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -30,7 +28,6 @@ import java.util.List;
  */
 @IntactUnitDataset(dataset = PsiTestDatasetProvider.ALL_CVS, provider = PsiTestDatasetProvider.class)
 public class CvObjectDaoTest extends IntactAbstractTestCase {
-     private static final Log log = LogFactory.getLog(CvObjectDaoTest.class);
 
     @Test
     public void testgetByPsiMiRefCollection()

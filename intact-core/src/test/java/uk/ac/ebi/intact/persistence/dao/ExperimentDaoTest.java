@@ -76,7 +76,7 @@ public class ExperimentDaoTest extends IntactAbstractTestCase {
         Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
         String ac = exp.getAc();
         int interactionsCount = getDaoFactory().getExperimentDao().countInteractionsForExperimentWithAc(ac);
-        assertEquals(2,interactionsCount);
+        assertEquals(1,interactionsCount);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class ExperimentDaoTest extends IntactAbstractTestCase {
         Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
         String ac = exp.getAc();
         List<Interaction> interactions = getDaoFactory().getExperimentDao().getInteractionsForExperimentWithAc(ac,0,50);
-        assertEquals(2, interactions.size());
+        assertEquals(1, interactions.size());
     }
 
 }
