@@ -114,6 +114,9 @@
                 <artifactId>h2</artifactId>
                 <version>1.0.20070429</version>
             </dependency>
+            <!-- We have dbunit and junit in the compile classpath because they are
+            used for the creation/drop of the schema and test base classes, that need to be
+            exported to the artifacts that use intact-core -->
             <dependency>
                 <groupId>org.dbunit</groupId>
                 <artifactId>dbunit</artifactId>

@@ -1,9 +1,6 @@
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvObject;
-import uk.ac.ebi.intact.model.CvObjectXref;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
 
@@ -63,6 +60,17 @@ public class CvObjectUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Creates a wrapper of experimental role and biological role altogether that have methods to output
+     * the meaningful label for both roles
+     * @param experimentalRole the experimental role to use
+     * @param biologicalRole the biological role to use
+     * @return the object containing both roles
+     */
+    public static RoleInfo createRoleInfo(CvExperimentalRole experimentalRole, CvBiologicalRole biologicalRole) {
+        return new RoleInfo(biologicalRole, experimentalRole);
     }
 
 }
