@@ -187,7 +187,7 @@ public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFact
 
         if ( getSession().isWebapp() ) {
             try {
-                configuration.configure();
+                getConfiguration().configure(getConfigFile());
                 String sessionFactoryName = configuration.getProperty( Environment.SESSION_FACTORY_NAME );
                 log.debug( "Looking up sessionFactory from JNDI: " + sessionFactoryName );
 

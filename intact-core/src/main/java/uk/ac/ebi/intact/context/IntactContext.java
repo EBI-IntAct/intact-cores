@@ -4,8 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.config.DataConfig;
-import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
 import uk.ac.ebi.intact.config.impl.StandardCoreDataConfig;
+import uk.ac.ebi.intact.config.impl.TemporaryH2DataConfig;
 import uk.ac.ebi.intact.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.model.Institution;
 
@@ -120,13 +120,13 @@ public class IntactContext implements Serializable {
      * @param session
      * @return
      */
-    protected static DataConfig calculateDefaultDataConfig(IntactSession session) {
+    public static DataConfig calculateDefaultDataConfig(IntactSession session) {
         StandardCoreDataConfig stdDataConfig = new StandardCoreDataConfig(session);
 
         if (stdDataConfig.isConfigurable()) {
             return stdDataConfig;
         }
 
-        return new InMemoryDataConfig(session);
+        return new TemporaryH2DataConfig(session);
     }
 }

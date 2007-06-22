@@ -33,6 +33,8 @@ public final class RuntimeConfig implements Serializable {
 
     private IntactSession session;
 
+    private static ThreadLocal<RuntimeConfig> instance = new ThreadLocal<RuntimeConfig>();
+
     private Institution institution;
     private String acPrefix;
     private final Map<String, DataConfig> dataConfigs;
@@ -49,10 +51,12 @@ public final class RuntimeConfig implements Serializable {
 
     public static RuntimeConfig getCurrentInstance( IntactSession session ) {
         RuntimeConfig runtimeConfig
-                = ( RuntimeConfig ) session.getApplicationAttribute( APPLICATION_PARAM_NAME );
+                = instance.get();
         if ( runtimeConfig == null ) {
             runtimeConfig = initRuntime( session, null );
         }
+        instance.set(runtimeConfig);
+
         return runtimeConfig;
     }
 
@@ -65,6 +69,8 @@ public final class RuntimeConfig implements Serializable {
         }
 
         session.setApplicationAttribute( APPLICATION_PARAM_NAME, runtimeConfig );
+
+        instance.set(runtimeConfig);
 
         return runtimeConfig;
     }

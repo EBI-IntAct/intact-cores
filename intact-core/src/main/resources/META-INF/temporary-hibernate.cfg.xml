@@ -12,7 +12,7 @@
 
         <property name="dialect">org.hibernate.dialect.H2Dialect</property>
         <property name="connection.driver_class">org.h2.Driver</property>
-        <property name="connection.url">jdbc:h2:mem:intact_core_mem</property>
+        <property name="connection.url">jdbc:h2:/tmp/intact_mem</property>
         <property name="connection.username">sa</property>
         <property name="connection.password"></property>
 

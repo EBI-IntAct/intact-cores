@@ -198,6 +198,7 @@ public class IntactConfigurator {
             dataConfig.getSessionFactory();
         } catch (Throwable t) {
             log.info("Data-config not found: " + dataConfig.getName()+" - "+t.getMessage());
+            t.printStackTrace();
             return false;
         }
         config.addDataConfig(dataConfig, isDefault);
