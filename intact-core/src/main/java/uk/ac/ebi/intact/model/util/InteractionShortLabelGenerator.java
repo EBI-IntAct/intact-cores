@@ -35,9 +35,9 @@ public class InteractionShortLabelGenerator {
 
     private static final String INTERACTION_SEPARATOR = "-";
 
-     /**
+    /**
      * Creates a candiate short label - not taking into account if an interaction with the same name exists in the database.
-     *
+     * <p/>
      * Create an IntAct shortlabel for a given interaction (ie. a set of [protein, role] ).
      * <p/>
      * - Stategy -
@@ -48,10 +48,10 @@ public class InteractionShortLabelGenerator {
      * X is (in order of preference): 1. the gene name of the bait protein 2. the gene name of a prey protein (the first
      * one in alphabetical order) 3. the gene name of a neutral protein (the first one in alphabetical order)
      * <p/>
-     *
-     *
+     * <p/>
+     * <p/>
      * -- REMOVE NEXT SECTION - not done in this method
-     *
+     * <p/>
      * Y is : 1. the gene name of a prey protein (the first one in alphabetical order or second if the first has been
      * used already) 2. the gene name of a neutral protein (the first one in alphabetical order or second if the first
      * has been used already) Z is : an Integer that gives the number of occurence in intact.
@@ -66,9 +66,9 @@ public class InteractionShortLabelGenerator {
      *
      * @param interaction
      *
-     * @since 1.6
-     *
      * @throws uk.ac.ebi.intact.business.IntactException
+     *
+     * @since 1.6
      */
     public static String createCandidateShortLabel(final Interaction interaction) {
         // this collections will contain the geneNames, and will be filled according the experimental roles of
@@ -119,7 +119,7 @@ public class InteractionShortLabelGenerator {
                 // if more than 2 components, get one and add the cound of others.
                 preyShortlabel = (_geneNames.length - 1) + "";
             } else {
-                preyShortlabel =  _geneNames[1];
+                preyShortlabel = _geneNames[1];
             }
 
         } else {
@@ -143,8 +143,10 @@ public class InteractionShortLabelGenerator {
 
     /**
      * Creates a candiate short label - not taking into account if an interaction with the same name exists in the database
+     *
      * @param baitShortLabel bait gene name
      * @param preyShortLabel prey gene name
+     *
      * @return the short label
      */
     protected static String createCandidateShortLabel(String baitShortLabel, String preyShortLabel) {
@@ -153,9 +155,11 @@ public class InteractionShortLabelGenerator {
 
     /**
      * Creates a candiate short label - not taking into account if an interaction with the same name exists in the database
+     *
      * @param baitShortLabel bait gene name
      * @param preyShortLabel prey gene name
-     * @param suffix e.g. "1"
+     * @param suffix         e.g. "1"
+     *
      * @return the short label
      */
     protected static String createCandidateShortLabel(String baitShortLabel, String preyShortLabel, Integer suffix) {
@@ -172,21 +176,22 @@ public class InteractionShortLabelGenerator {
      *
      * @return either a String or null according to the failOnError parameter.
      *
-     * @throws uk.ac.ebi.intact.business.IntactException thrown when the failOnError parameter is true and no string can be returned.
+     * @throws uk.ac.ebi.intact.business.IntactException
+     *          thrown when the failOnError parameter is true and no string can be returned.
      */
-    private static String getLabelFromCollection( Collection<String> geneNames, boolean failOnError ) throws IntactException {
+    private static String getLabelFromCollection(Collection<String> geneNames, boolean failOnError) throws IntactException {
         String shortlabel = null;
 
-        if ( geneNames == null ) {
-            throw new IllegalArgumentException( "You must give a non null collection of gene name." );
+        if (geneNames == null) {
+            throw new IllegalArgumentException("You must give a non null collection of gene name.");
         }
 
-        switch ( geneNames.size() ) {
+        switch (geneNames.size()) {
             case 0:
                 // ERROR, we should have a bait.
                 // This should have been detected during step 1 or 2.
-                if ( failOnError ) {
-                    throw new IntactException( "Could not find gene name for that interaction." );
+                if (failOnError) {
+                    throw new IntactException("Could not find gene name for that interaction.");
                 }
                 break;
             case 1:
@@ -196,8 +201,8 @@ public class InteractionShortLabelGenerator {
             default:
                 // more than one ... need sorting
                 String[] _geneNames = geneNames.toArray(new String[geneNames.size()]);
-                Arrays.sort( _geneNames, String.CASE_INSENSITIVE_ORDER );
-                shortlabel = _geneNames[ 0 ];
+                Arrays.sort(_geneNames, String.CASE_INSENSITIVE_ORDER);
+                shortlabel = _geneNames[0];
                 break;
         }
 
@@ -206,7 +211,9 @@ public class InteractionShortLabelGenerator {
 
     /**
      * Removes the suffix of a shortLabel
+     *
      * @param shortLabel a shortLabel with or without suffix
+     *
      * @return the shortlabel without suffix
      */
     protected static String removeSuffix(String shortLabel) {
@@ -218,6 +225,7 @@ public class InteractionShortLabelGenerator {
      * Gets the next available suffix for a provided shortLabel
      *
      * @param shortLabel Can already have a suffix or not.
+     *
      * @return The next available shortLabel
      */
     public static String nextAvailableShortlabel(String shortLabel) {
@@ -229,7 +237,9 @@ public class InteractionShortLabelGenerator {
     /**
      * Calculates the next available suffix using a short label - which is
      * the highest suffix + 1
+     *
      * @param shortLabel the label to use
+     *
      * @return the next available suffix.
      */
     protected static Integer calculateNextSuffix(String shortLabel) {
@@ -237,7 +247,7 @@ public class InteractionShortLabelGenerator {
 
         // we get all the labels with the same bait-prey combination
         List<String> shortLabelsWithSuffix = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
-                .getInteractionDao().getShortLabelsLike(labelWithoutSuffix+"%");
+                .getInteractionDao().getShortLabelsLike(labelWithoutSuffix + "%");
 
         int maxSuffix = 0;
 
@@ -255,10 +265,11 @@ public class InteractionShortLabelGenerator {
             return null;
         }
 
-        return maxSuffix+1;
+        return maxSuffix + 1;
     }
 
     public static class InteractionShortLabel {
+
         private String baitLabel;
         private String preyLabel;
         private Integer suffix;
@@ -297,20 +308,20 @@ public class InteractionShortLabelGenerator {
             return getCompleteLabel(true);
         }
 
-         public String getCompleteLabel(boolean includeSuffix) {
+        public String getCompleteLabel(boolean includeSuffix) {
             String strSuffix = "";
             if (includeSuffix && suffix != null) {
-                strSuffix = INTERACTION_SEPARATOR+suffix;
+                strSuffix = INTERACTION_SEPARATOR + suffix;
             }
 
             truncateLabelsIfNecessary();
 
-            String complete = baitLabel+INTERACTION_SEPARATOR+preyLabel+strSuffix;
+            String complete = baitLabel + INTERACTION_SEPARATOR + preyLabel + strSuffix;
             return complete;
         }
 
         private void parse(String completeLabel) {
-             if (!completeLabel.contains(INTERACTION_SEPARATOR)) {
+            if (!completeLabel.contains(INTERACTION_SEPARATOR)) {
                 throw new IllegalArgumentException("This label is not an interaction label (does not contain '" + INTERACTION_SEPARATOR + "'): " + completeLabel);
             }
 
@@ -331,7 +342,7 @@ public class InteractionShortLabelGenerator {
 
         private void truncateLabelsIfNecessary() {
 
-            while (getCompleteLabel().length() > AnnotatedObject.MAX_SHORT_LABEL_LEN) {
+            while (calculateLabelLength() > AnnotatedObject.MAX_SHORT_LABEL_LEN) {
                 if (baitLabel.length() > preyLabel.length()) {
                     baitLabel = baitLabel.substring(0, baitLabel.length() - 1); // truncate, remove last charachter (from bait)
                 } else {
@@ -341,8 +352,14 @@ public class InteractionShortLabelGenerator {
                 //interactionLabel = createCandidateShortLabel(baitLabel, preyLabel, suffix);
             } // while
 
-    }
+        }
 
+        private int calculateLabelLength() {
+            // NOTE: if we called here to getCompleteLabel().length() it would cause an StackTraceError
+            int labelLength = baitLabel.length() + preyLabel.length() + INTERACTION_SEPARATOR.length();
+            if (suffix != null) labelLength = String.valueOf(suffix).length() + INTERACTION_SEPARATOR.length();
+            return labelLength;
+        }
 
 
         private String prepareLabel(String label) {
