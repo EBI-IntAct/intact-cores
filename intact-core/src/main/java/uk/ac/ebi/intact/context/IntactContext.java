@@ -10,6 +10,7 @@ import uk.ac.ebi.intact.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.model.Institution;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -125,6 +126,20 @@ public class IntactContext implements Serializable {
 
         if (stdDataConfig.isConfigurable()) {
             return stdDataConfig;
+        }
+
+        if ( session.containsInitParam( IntactEnvironment.DATA_CONFIG_PARAM_NAME.getFqn() ) ) {
+            String dataConfigClass = session.getInitParam( IntactEnvironment.DATA_CONFIG_PARAM_NAME.getFqn() );
+             try {
+                    Constructor constructor = Class.forName( dataConfigClass ).getConstructor(IntactSession.class);
+                    DataConfig dataConfig = ( DataConfig ) constructor.newInstance(session);
+                    dataConfig.getSessionFactory();
+                    return dataConfig;
+                }
+                catch ( Exception e ) {
+                    throw new IntactInitializationError( "Error initializing data configs. A data config must have a constructor" +
+                            "that accepts an IntactSession object", e );
+                }
         }
 
         return new TemporaryH2DataConfig(session);

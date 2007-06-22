@@ -98,27 +98,6 @@ public class IntactConfigurator {
             registerDataConfig(dataConfig, config, true);
         }
 
-        // load the data configs
-        if ( session.containsInitParam( IntactEnvironment.DATA_CONFIG_PARAM_NAME.getFqn() ) ) {
-            String dataConfigValue = session.getInitParam( IntactEnvironment.DATA_CONFIG_PARAM_NAME.getFqn() );
-
-            String[] dataConfigs = dataConfigValue.split( "," );
-
-            for ( String dataConfigClass : dataConfigs ) {
-                dataConfigClass = dataConfigClass.trim();
-                log.info( "Registering data-config: " + dataConfigClass );
-
-                try {
-                    DataConfig dataConfig = ( DataConfig ) ( Class.forName( dataConfigClass ).newInstance() );
-                    dataConfig.getSessionFactory();
-                    config.addDataConfig( dataConfig );
-                }
-                catch ( Exception e ) {
-                    throw new IntactInitializationError( "Error initializing data configs", e );
-                }
-            }
-        }
-
         // load the default prefix for generated ACs
         String prefix = getInitParamValue( session, IntactEnvironment.AC_PREFIX_PARAM_NAME.getFqn(), DEFAULT_AC_PREFIX );
         config.setAcPrefix( prefix );

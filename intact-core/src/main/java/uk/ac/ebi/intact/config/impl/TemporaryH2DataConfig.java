@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.config.impl;
 
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 import uk.ac.ebi.intact.config.ConfigurationException;
 import uk.ac.ebi.intact.context.IntactSession;
 
@@ -30,10 +32,32 @@ public class TemporaryH2DataConfig extends StandardCoreDataConfig {
 
     public static final String NAME = "uk.ac.ebi.intact.config.TEMPORARY_H2";
 
+    private static String CONNECTION_URL = "jdbc:h2:/tmp/intact-h2";
+
+    static {
+        try
+        {
+            CONNECTION_URL = "jdbc:h2:"+File.createTempFile("intact-", "-h2");
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private File configurationFile;
 
     public TemporaryH2DataConfig(IntactSession session) {
         super(session);
+    }
+
+    @Override
+    public Configuration getConfiguration()
+    {
+        Configuration configuration = super.getConfiguration();
+        configuration.setProperty(Environment.URL, CONNECTION_URL);
+
+        return configuration;
     }
 
     @Override
