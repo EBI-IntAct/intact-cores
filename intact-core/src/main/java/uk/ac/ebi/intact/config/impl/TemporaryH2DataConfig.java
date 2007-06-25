@@ -33,7 +33,7 @@ public class TemporaryH2DataConfig extends StandardCoreDataConfig {
     public static final String NAME = "uk.ac.ebi.intact.config.TEMPORARY_H2";
 
     private static String CONNECTION_URL = "jdbc:h2:/tmp/intact-h2";
-
+    /*
     static {
         try
         {
@@ -44,7 +44,7 @@ public class TemporaryH2DataConfig extends StandardCoreDataConfig {
             e.printStackTrace();
         }
     }
-        
+    */    
     private File configurationFile;
 
     public TemporaryH2DataConfig(IntactSession session) {
