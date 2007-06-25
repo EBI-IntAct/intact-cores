@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.config.impl;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import uk.ac.ebi.intact.config.ConfigurationException;
+import uk.ac.ebi.intact.context.IntactEnvironment;
 import uk.ac.ebi.intact.context.IntactSession;
 
 import java.io.*;
@@ -32,19 +33,22 @@ public class TemporaryH2DataConfig extends StandardCoreDataConfig {
 
     public static final String NAME = "uk.ac.ebi.intact.config.TEMPORARY_H2";
 
-    private static String CONNECTION_URL = "jdbc:h2:/tmp/intact-h2";
-    /*
+    private static final String CONNECTION_PROTOCOL="jdbc:h2:";
+    private static String CONNECTION_FILE_DEFAULT = null;
+
     static {
         try
         {
-            CONNECTION_URL = "jdbc:h2:"+File.createTempFile("intact-", "-h2");
+            CONNECTION_FILE_DEFAULT = File.createTempFile("intact-", "-h2").toString();
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
     }
-    */    
+
+    private String connectionUrl = CONNECTION_PROTOCOL+CONNECTION_FILE_DEFAULT;
+
     private File configurationFile;
 
     public TemporaryH2DataConfig(IntactSession session) {
@@ -54,8 +58,14 @@ public class TemporaryH2DataConfig extends StandardCoreDataConfig {
     @Override
     public Configuration getConfiguration()
     {
+        connectionUrl = CONNECTION_PROTOCOL+CONNECTION_FILE_DEFAULT;
+
+        if (getSession().containsInitParam(IntactEnvironment.TEMP_H2.getFqn())) {
+            connectionUrl = CONNECTION_PROTOCOL + getSession().getInitParam(IntactEnvironment.TEMP_H2.getFqn());
+        }
+        
         Configuration configuration = super.getConfiguration();
-        configuration.setProperty(Environment.URL, CONNECTION_URL);
+        configuration.setProperty(Environment.URL, connectionUrl);
 
         return configuration;
     }

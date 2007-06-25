@@ -87,7 +87,12 @@ public enum IntactEnvironment {
      * If true, debug mode such as memorizing who begin a transaction, ... Should not be true in production environment.
      * Default is false.
      */
-    DEBUG_MODE( "uk.ac.ebi.intact.DEBUG_MODE" );
+    DEBUG_MODE( "uk.ac.ebi.intact.DEBUG_MODE" ),
+
+    /**
+     * File where the temporary H2 database -when using the temporary data config- will be created
+     */
+    TEMP_H2("uk.ac.ebi.intact.TEMP_H2_FILE");
 
 
     private String fqn;
