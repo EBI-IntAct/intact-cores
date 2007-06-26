@@ -77,8 +77,14 @@ public class InteractionShortLabelGenerator {
         Collection<String> preys = new ArrayList<String>(2);
         Collection<String> neutrals = new ArrayList<String>(2);
 
+        Collection<Component> components = interaction.getComponents();
+
+        if (components.isEmpty()) {
+            throw new IllegalStateException("Interaction without components");
+        }
+
         // Search for a gene name in the set, if none exist, take the protein ID.
-        for (Component component : interaction.getComponents()) {
+        for (Component component : components) {
 
             Interactor interactor = component.getInteractor();
             String geneName = ProteinUtils.getGeneName(interactor);
@@ -109,6 +115,9 @@ public class InteractionShortLabelGenerator {
 
         if (baits.isEmpty() && preys.isEmpty()) {
             // we have only neutral
+            if (neutrals.isEmpty()) {
+                throw new IllegalStateException("Not bait nor pray, nor neutral components");
+            }
 
             String[] _geneNames = neutrals.toArray(new String[neutrals.size()]);
             Arrays.sort(_geneNames, String.CASE_INSENSITIVE_ORDER);
@@ -118,7 +127,7 @@ public class InteractionShortLabelGenerator {
             if (_geneNames.length > 2) {
                 // if more than 2 components, get one and add the cound of others.
                 preyShortlabel = (_geneNames.length - 1) + "";
-            } else {
+            } else if (_geneNames.length == 2) {
                 preyShortlabel = _geneNames[1];
             }
 
@@ -274,6 +283,8 @@ public class InteractionShortLabelGenerator {
         private String preyLabel;
         private Integer suffix;
 
+        private Boolean selfInteraction;
+
         public InteractionShortLabel(String completeLabel) {
             parse(completeLabel);
         }
@@ -286,7 +297,7 @@ public class InteractionShortLabelGenerator {
             if (baitLabel.contains(INTERACTION_SEPARATOR)) {
                 throw new IllegalArgumentException("Bait label cannot contain '" + INTERACTION_SEPARATOR + "': " + baitLabel);
             }
-            if (preyLabel.contains(INTERACTION_SEPARATOR)) {
+            if (preyLabel != null && preyLabel.contains(INTERACTION_SEPARATOR)) {
                 throw new IllegalArgumentException("Prey label cannot contain '" + INTERACTION_SEPARATOR + "': " + preyLabel);
             }
 
@@ -309,17 +320,27 @@ public class InteractionShortLabelGenerator {
         }
 
         public String getCompleteLabel(boolean includeSuffix) {
+            truncateLabelsIfNecessary();
+
+            String strPrey = "";
+            if (preyLabel != null) { //not a self-interaction
+                strPrey = INTERACTION_SEPARATOR + preyLabel;
+            }
+
             String strSuffix = "";
             if (includeSuffix && suffix != null) {
                 strSuffix = INTERACTION_SEPARATOR + suffix;
             }
 
-            truncateLabelsIfNecessary();
-
-            String complete = baitLabel + INTERACTION_SEPARATOR + preyLabel + strSuffix;
+            String complete = baitLabel + strPrey + strSuffix;
             return complete;
         }
 
+        /**
+         * Interactions follow the nomenclature baitLabel-preyLabel-suffix (where suffix is optional integer).
+         * Self-interactions follow label-suffix (where suffix is optional integer).
+         * @param completeLabel
+         */
         private void parse(String completeLabel) {
             if (!completeLabel.contains(INTERACTION_SEPARATOR)) {
                 throw new IllegalArgumentException("This label is not an interaction label (does not contain '" + INTERACTION_SEPARATOR + "'): " + completeLabel);
@@ -331,38 +352,78 @@ public class InteractionShortLabelGenerator {
                 throw new IllegalArgumentException("This label is not an interaction label (contain more than one '" + INTERACTION_SEPARATOR + "'): " + completeLabel);
             }
 
+            // self interactions
+            boolean isSelfInteraction = isSelfInteraction(completeLabel);
+
             this.baitLabel = baitPrayLabels[0];
-            this.preyLabel = baitPrayLabels[1];
+
+            if (!isSelfInteraction) {
+                this.preyLabel = baitPrayLabels[1];
+            }
             this.suffix = null;
 
             if (baitPrayLabels.length == 3) {
-                suffix = Integer.valueOf(baitPrayLabels[2]);
+                if (isSelfInteraction) {
+                    suffix = Integer.valueOf(baitPrayLabels[1]);
+                } else {
+                    suffix = Integer.valueOf(baitPrayLabels[2]);
+                }
             }
         }
 
-        private void truncateLabelsIfNecessary() {
+        private boolean isSelfInteraction(String completeLabel) {
+            if (selfInteraction != null) {
+                return selfInteraction;
+            }
+            
+            String[] baitPrayLabels = completeLabel.split(INTERACTION_SEPARATOR);
 
+            // self interactions
+            boolean isSelfInteraction = false;
+            if (baitPrayLabels.length > 0 && baitPrayLabels.length < 3) {
+                if (baitPrayLabels.length == 2) {
+                    String possibleSuffix = baitPrayLabels[1];
+
+                    boolean suffixIsAnInteger = possibleSuffix.matches("\\d+");
+                    isSelfInteraction = suffixIsAnInteger;
+                }
+            }
+
+            return isSelfInteraction;
+        }
+
+        private void truncateLabelsIfNecessary() {
             while (calculateLabelLength() > AnnotatedObject.MAX_SHORT_LABEL_LEN) {
-                if (baitLabel.length() > preyLabel.length()) {
+                int baitLength = baitLabel.length();
+                int preyLength = (preyLabel == null)? 0 : preyLabel.length();
+
+                if (baitLength > preyLength) {
                     baitLabel = baitLabel.substring(0, baitLabel.length() - 1); // truncate, remove last charachter (from bait)
                 } else {
-                    preyLabel = preyLabel.substring(0, preyLabel.length() - 1); // truncate, remove last charachter (from prey)
+                    if (preyLabel != null) {
+                        preyLabel = preyLabel.substring(0, preyLabel.length() - 1); // truncate, remove last charachter (from prey)
+                    }
                 }
 
-                //interactionLabel = createCandidateShortLabel(baitLabel, preyLabel, suffix);
             } // while
 
         }
 
         private int calculateLabelLength() {
+            int preyLength = 0;
+            if (preyLabel != null) { // not a self-interaction
+                preyLength = preyLabel.length()+INTERACTION_SEPARATOR.length();
+            }
             // NOTE: if we called here to getCompleteLabel().length() it would cause an StackTraceError
-            int labelLength = baitLabel.length() + preyLabel.length() + INTERACTION_SEPARATOR.length();
+            int labelLength = baitLabel.length() + preyLength;
             if (suffix != null) labelLength = String.valueOf(suffix).length() + INTERACTION_SEPARATOR.length();
             return labelLength;
         }
 
 
         private String prepareLabel(String label) {
+            if (label == null) return null;
+            
             // convert bad characters ('-', ' ', '.') to '_'
             label = label.toLowerCase();
             label = SearchReplace.replace(label, "-", "_");

@@ -23,7 +23,7 @@ import java.util.Map;
  * @version $Id$
  * @since <pre>15-Aug-2006</pre>
  */
-public final class CvContext implements Serializable {
+public class CvContext implements Serializable {
 
     private static final Log log = LogFactory.getLog( CvContext.class );
 
@@ -37,7 +37,7 @@ public final class CvContext implements Serializable {
     private IntactSession session;
     private static String currentTransactionId;
 
-    private CvContext( IntactSession session ) {
+    protected CvContext( IntactSession session ) {
         this.session = session;
 
         this.cachedByAc = new HashMap<String, CvObject>();
@@ -110,7 +110,8 @@ public final class CvContext implements Serializable {
         try {
             cvObject = getDaoFactory().getCvObjectDao( cvType ).getByShortLabel( cvType, label );
         } catch (Exception e) {
-            throw new IntactException("Exception getting cvType "+cvType.getSimpleName()+" with label: "+label);
+            e.printStackTrace();
+            throw new IntactException("Exception getting cvType "+cvType.getSimpleName()+" with label: "+label, e);
         }
 
         if ( cvObject == null ) {

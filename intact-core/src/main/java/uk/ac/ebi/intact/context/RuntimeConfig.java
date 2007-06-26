@@ -52,6 +52,9 @@ public final class RuntimeConfig implements Serializable {
                 = ( RuntimeConfig ) session.getApplicationAttribute( APPLICATION_PARAM_NAME );
         if ( runtimeConfig == null ) {
             runtimeConfig = initRuntime( session, null );
+
+            Institution institution = new Institution("testInstitution");
+            runtimeConfig.setInstitution(institution);
         }
         return runtimeConfig;
     }

@@ -38,6 +38,9 @@ public class MockIntactContext extends IntactContext {
         this.dataContext = dataContext;
         this.session = session;
 
+        runtimeConfig = RuntimeConfig.getCurrentInstance(session);
+        cvContext = CvContext.getCurrentInstance(session);
+
         setCurrentInstance(this);
     }
 
@@ -112,5 +115,6 @@ public class MockIntactContext extends IntactContext {
         }
         return (MockDaoFactory) IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
     }
+    
 
 }
