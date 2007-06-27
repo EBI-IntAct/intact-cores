@@ -15,6 +15,7 @@ import uk.ac.ebi.intact.model.event.SearchItemSyncEventListener;
 import uk.ac.ebi.intact.model.meta.DbInfo;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +80,9 @@ public class StandardCoreDataConfig extends AbstractHibernateDataConfig {
     }
 
     protected File getConfigFile() {
-        return new File(StandardCoreDataConfig.class.getResource("/hibernate.cfg.xml").getFile());
+        URL resource = StandardCoreDataConfig.class.getResource("/hibernate.cfg.xml");
+        File file = (resource == null)? null : new File(resource.getFile());
+        return file;
     }
 
     protected void setListenersRegistered( boolean listenersRegistered ) {
