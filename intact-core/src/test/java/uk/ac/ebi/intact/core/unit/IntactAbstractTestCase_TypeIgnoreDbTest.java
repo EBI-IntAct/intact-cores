@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.core.unit;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
 
 /**
@@ -16,6 +17,8 @@ public class IntactAbstractTestCase_TypeIgnoreDbTest extends IntactAbstractTestC
 {
     @BeforeClass
     public static void resetDbBeforeClass() throws Exception{
+        IntactContext.getCurrentInstance().close();
+
         IntactUnit iu = new IntactUnit();
         iu.createSchema();
     }

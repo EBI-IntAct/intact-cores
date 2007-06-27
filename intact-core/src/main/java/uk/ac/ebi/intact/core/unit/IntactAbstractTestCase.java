@@ -20,6 +20,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
+import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.commons.dataset.DbUnitTestDataset;
 import uk.ac.ebi.intact.commons.dataset.TestDataset;
 import uk.ac.ebi.intact.commons.dataset.TestDatasetProvider;
@@ -121,6 +122,20 @@ public class IntactAbstractTestCase {
     public static void close() throws Exception {
         if (IntactContext.currentInstanceExists()) {
             IntactContext.getCurrentInstance().close();
+        }
+    }
+
+    protected void beginTransaction() {
+        getDataContext().beginTransaction();
+    }
+
+    protected void commitTransaction() throws IntactTestException {
+        if (getDataContext().isTransactionActive()) {
+            try {
+                getDataContext().commitTransaction();
+            } catch (IntactTransactionException e) {
+                throw new IntactTestException(e);
+            }
         }
     }
 

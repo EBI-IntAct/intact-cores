@@ -122,26 +122,32 @@ public class IntactContext implements Serializable {
      * @return
      */
     public static DataConfig calculateDefaultDataConfig(IntactSession session) {
-        StandardCoreDataConfig stdDataConfig = new StandardCoreDataConfig(session);
+        if (log.isDebugEnabled()) log.debug("Calculating default DataConfig");
 
-        if (stdDataConfig.isConfigurable()) {
-            return stdDataConfig;
+        DataConfig dataConfig = new StandardCoreDataConfig(session);
+
+        if (!dataConfig.isConfigurable()) {
+            if (log.isDebugEnabled()) log.debug("\tDataConfig not configurable (hibernate.cfg.xml not found)");
+
+            if ( session.containsInitParam( IntactEnvironment.DATA_CONFIG_PARAM_NAME.getFqn() ) ) {
+                String dataConfigClass = session.getInitParam( IntactEnvironment.DATA_CONFIG_PARAM_NAME.getFqn() );
+                 try {
+                        Constructor constructor = Class.forName( dataConfigClass ).getConstructor(IntactSession.class);
+                        dataConfig = ( DataConfig ) constructor.newInstance(session);
+                        dataConfig.getSessionFactory();
+                    }
+                    catch ( Exception e ) {
+                        throw new IntactInitializationError( "Error initializing data configs. A data config must have a constructor" +
+                                "that accepts an IntactSession object", e );
+                    }
+                if (log.isDebugEnabled()) log.debug("\tInitialized from session init parameter");
+            } else {
+               dataConfig = new TemporaryH2DataConfig(session); 
+            }
         }
 
-        if ( session.containsInitParam( IntactEnvironment.DATA_CONFIG_PARAM_NAME.getFqn() ) ) {
-            String dataConfigClass = session.getInitParam( IntactEnvironment.DATA_CONFIG_PARAM_NAME.getFqn() );
-             try {
-                    Constructor constructor = Class.forName( dataConfigClass ).getConstructor(IntactSession.class);
-                    DataConfig dataConfig = ( DataConfig ) constructor.newInstance(session);
-                    dataConfig.getSessionFactory();
-                    return dataConfig;
-                }
-                catch ( Exception e ) {
-                    throw new IntactInitializationError( "Error initializing data configs. A data config must have a constructor" +
-                            "that accepts an IntactSession object", e );
-                }
-        }
+        if (log.isDebugEnabled()) log.debug("\tUsing DataConfig: "+dataConfig.getName());
 
-        return new TemporaryH2DataConfig(session);
+        return dataConfig;
     }
 }

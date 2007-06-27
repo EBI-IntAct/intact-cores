@@ -79,8 +79,7 @@ public class StandardCoreDataConfig extends AbstractHibernateDataConfig {
     }
 
     protected File getConfigFile() {
-        // uses the default file in the classpath (/hibernate.cfg.xml)
-        return null;
+        return new File(StandardCoreDataConfig.class.getResource("/hibernate.cfg.xml").getFile());
     }
 
     protected void setListenersRegistered( boolean listenersRegistered ) {
