@@ -173,25 +173,25 @@ public class MockDaoFactory extends DaoFactory {
 
     @Override
     public <T extends IntactObject> IntactObjectDao<T> getIntactObjectDao(Class<T> entityType) {
-        checkIfDaoIsSet(intactObjectDao, IntactObjectDao.class);
+        checkIfDaoIsSet(interactionDao, IntactObjectDao.class);
         return (IntactObjectDao<T>) intactObjectDao;
     }
 
     @Override
     public InteractionDao getInteractionDao() {
-        checkIfDaoIsSet(intactObjectDao, IntactObjectDao.class);
+        checkIfDaoIsSet(interactionDao, InteractionDao.class);
         return interactionDao;
     }
 
     @Override
     public InteractorDao<InteractorImpl> getInteractorDao() {
-        checkIfDaoIsSet(intactObjectDao, IntactObjectDao.class);
+        checkIfDaoIsSet(interactorDao, InteractorDao.class);
         return (InteractorDao<InteractorImpl>) interactorDao;
     }
 
     @Override
     public <T extends InteractorImpl> InteractorDao<T> getInteractorDao(Class<T> entityType) {
-        checkIfDaoIsSet(intactObjectDao, InteractorDao.class);
+        checkIfDaoIsSet(interactorDao, InteractorDao.class);
         return (InteractorDao<T>)  interactorDao;
     }
 
@@ -308,7 +308,7 @@ public class MockDaoFactory extends DaoFactory {
         this.featureDao = featureDao;
     }
 
-    public void setMockInstactSession(IntactSession instactSession) {
+    public void setMockIntactSession(IntactSession instactSession) {
         this.instactSession = instactSession;
     }
 

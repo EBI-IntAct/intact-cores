@@ -238,9 +238,15 @@ public class InteractionShortLabelGenerator {
      * @return The next available shortLabel
      */
     public static String nextAvailableShortlabel(String shortLabel) {
-        int nextSuffix = calculateNextSuffix(shortLabel);
+        Integer nextSuffix = calculateNextSuffix(shortLabel);
 
-        return new InteractionShortLabel(shortLabel).getCompleteLabel();
+        InteractionShortLabel label = new InteractionShortLabel(shortLabel);
+
+        if (nextSuffix != null) {
+            label.setSuffix(nextSuffix);
+        }
+
+        return label.getCompleteLabel();
     }
 
     /**
@@ -258,7 +264,7 @@ public class InteractionShortLabelGenerator {
         List<String> shortLabelsWithSuffix = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
                 .getInteractionDao().getShortLabelsLike(labelWithoutSuffix + "%");
 
-        int maxSuffix = 0;
+        int maxSuffix = -1;
 
         for (String labelWithSuffix : shortLabelsWithSuffix) {
             InteractionShortLabel label = new InteractionShortLabel(labelWithSuffix);
@@ -267,10 +273,12 @@ public class InteractionShortLabelGenerator {
 
             if (suffix != null) {
                 maxSuffix = Math.max(maxSuffix, suffix);
+            } else {
+                maxSuffix = 0;
             }
         }
 
-        if (maxSuffix == 0) {
+        if (maxSuffix == -1) {
             return null;
         }
 
@@ -313,6 +321,10 @@ public class InteractionShortLabelGenerator {
 
         public Integer getSuffix() {
             return suffix;
+        }
+
+        public void setSuffix(Integer suffix) {
+            this.suffix = suffix;
         }
 
         public String getCompleteLabel() {
@@ -359,8 +371,9 @@ public class InteractionShortLabelGenerator {
 
             if (!isSelfInteraction) {
                 this.preyLabel = baitPrayLabels[1];
+            } else {
+                this.suffix = Integer.valueOf(baitPrayLabels[1]);
             }
-            this.suffix = null;
 
             if (baitPrayLabels.length == 3) {
                 if (isSelfInteraction) {
