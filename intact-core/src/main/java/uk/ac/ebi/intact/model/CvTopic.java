@@ -77,7 +77,7 @@ public class CvTopic extends CvObject implements Editable {
 
     public static final String CC_NOTE = "uniprot-cc-note";
 
-    public static final String OBSOLETE = "obsolete";
+    public static final String OBSOLETE = "obsolete term";
     public static final String OBSOLETE_MI_REF = "MI:0431";
 
     public static final String NO_EXPORT = "no-export";
