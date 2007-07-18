@@ -61,7 +61,7 @@ public class CvObjectDaoTest extends IntactAbstractTestCase {
             }
         }
 
-        assertEquals(71,cvTopicCount);
+        assertEquals(74,cvTopicCount);
         assertEquals(23,cvXrefQualifierCount);
     }
 }
