@@ -90,6 +90,11 @@ public class InteractionShortLabelGenerator {
             String geneName = ProteinUtils.getGeneName(interactor);
 
             CvExperimentalRole role = component.getCvExperimentalRole();
+
+            if (role == null) {
+                throw new NullPointerException("Component found without experimental role: "+component.getAc());
+            }
+
             String roleMi = CvObjectUtils.getPsiMiIdentityXref(role).getPrimaryId();
 
             if (roleMi.equals(CvExperimentalRole.PREY_PSI_REF)) {
