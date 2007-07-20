@@ -15,7 +15,9 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.CvObject;
+import uk.ac.ebi.intact.model.CvObjectXref;
 
 /**
  * TODO comment this
@@ -39,6 +41,19 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
     protected CvObjectPersister() {
         super();
     }
+
+    @Override
+    protected void saveOrUpdateAttributes(CvObject intactObject) throws PersisterException {
+        if (intactObject.getXrefs().isEmpty()) {
+            throw new PersisterException("Cannot save or update a CvObject without Xrefs");
+        }
+
+        for (CvObjectXref xref : intactObject.getXrefs()) {
+            saveOrUpdate(xref.getCvDatabase());
+            saveOrUpdate(xref.getCvXrefQualifier());
+        }
+    }
+    
 
     @Override
     protected CvObject fetchFromDataSource(CvObject intactObject) {

@@ -17,7 +17,7 @@ public class PersistenceContextTest
 {
     @Before
     public void prepare() throws Exception {
-        PersistenceContext.getInstance().clear();
+        PersisterContext.getInstance().clear();
     }
 
     @Test
@@ -27,16 +27,16 @@ public class PersistenceContextTest
         expect(ao.getShortLabel()).andReturn("aoLabel").anyTimes();
         replay(ao);
 
-        PersistenceContext.getInstance().addToPersist(ao);
+        PersisterContext.getInstance().addToPersist(ao);
         
         verify(ao);
 
-        assertEquals(1, PersistenceContext.getInstance().getAnnotatedObjectsToBePersisted().size());
-        assertEquals(0, PersistenceContext.getInstance().getCvObjectsToBePersisted().size());
+        assertEquals(1, PersisterContext.getInstance().getAnnotatedObjectsToBePersisted().size());
+        assertEquals(0, PersisterContext.getInstance().getCvObjectsToBePersisted().size());
 
-        PersistenceContext.getInstance().clear();
-        assertEquals(0, PersistenceContext.getInstance().getAnnotatedObjectsToBePersisted().size());
-        assertEquals(0, PersistenceContext.getInstance().getCvObjectsToBePersisted().size());
+        PersisterContext.getInstance().clear();
+        assertEquals(0, PersisterContext.getInstance().getAnnotatedObjectsToBePersisted().size());
+        assertEquals(0, PersisterContext.getInstance().getCvObjectsToBePersisted().size());
     }
 
     @Test
@@ -46,16 +46,16 @@ public class PersistenceContextTest
         expect(ao.getShortLabel()).andReturn("cvLabel").anyTimes();
         replay(ao);
 
-        PersistenceContext.getInstance().addToPersist(ao);
+        PersisterContext.getInstance().addToPersist(ao);
 
         verify(ao);
 
-        assertEquals(1, PersistenceContext.getInstance().getCvObjectsToBePersisted().size());
-        assertEquals(0, PersistenceContext.getInstance().getAnnotatedObjectsToBePersisted().size());
+        assertEquals(1, PersisterContext.getInstance().getCvObjectsToBePersisted().size());
+        assertEquals(0, PersisterContext.getInstance().getAnnotatedObjectsToBePersisted().size());
 
-        PersistenceContext.getInstance().clear();
-        assertEquals(0, PersistenceContext.getInstance().getCvObjectsToBePersisted().size());
-        assertEquals(0, PersistenceContext.getInstance().getAnnotatedObjectsToBePersisted().size());
+        PersisterContext.getInstance().clear();
+        assertEquals(0, PersisterContext.getInstance().getCvObjectsToBePersisted().size());
+        assertEquals(0, PersisterContext.getInstance().getAnnotatedObjectsToBePersisted().size());
     }
 
 

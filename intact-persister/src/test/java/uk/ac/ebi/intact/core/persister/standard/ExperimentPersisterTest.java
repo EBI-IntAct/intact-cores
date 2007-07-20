@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.persister.PersistenceContext;
+import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
 import uk.ac.ebi.intact.model.BioSource;
@@ -32,7 +32,7 @@ public class ExperimentPersisterTest extends IntactAbstractTestCase
     @After
     public void after() {
         persister = null;
-        PersistenceContext.getInstance().clear();
+        PersisterContext.getInstance().clear();
     }
 
     @Test

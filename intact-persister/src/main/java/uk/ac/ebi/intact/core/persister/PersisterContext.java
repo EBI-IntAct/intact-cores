@@ -33,17 +33,17 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PersistenceContext {
+public class PersisterContext {
 
     /**
      * Sets up a logger for that class.
      */
-    public static final Log log = LogFactory.getLog(PersistenceContext.class);
+    public static final Log log = LogFactory.getLog(PersisterContext.class);
 
-    private static ThreadLocal<PersistenceContext> instance = new ThreadLocal<PersistenceContext>() {
+    private static ThreadLocal<PersisterContext> instance = new ThreadLocal<PersisterContext>() {
         @Override
-        protected PersistenceContext initialValue() {
-            return new PersistenceContext();
+        protected PersisterContext initialValue() {
+            return new PersisterContext();
         }
     };
 
@@ -52,11 +52,11 @@ public class PersistenceContext {
     private Map<String, CvObject> cvObjectsToBePersisted;
     private Map<String, AnnotatedObject> annotatedObjectsToBePersisted;
 
-    public static PersistenceContext getInstance() {
+    public static PersisterContext getInstance() {
         return instance.get();
     }
 
-    private PersistenceContext() {
+    private PersisterContext() {
         this.cvObjectsToBePersisted = new HashMap<String,CvObject>();
         this.annotatedObjectsToBePersisted = new HashMap<String,AnnotatedObject>();
     }

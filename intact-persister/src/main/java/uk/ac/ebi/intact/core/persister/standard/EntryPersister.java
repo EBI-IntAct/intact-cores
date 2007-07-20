@@ -15,8 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import uk.ac.ebi.intact.core.persister.PersistenceContext;
 import uk.ac.ebi.intact.core.persister.Persister;
+import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.IntactEntry;
 import uk.ac.ebi.intact.model.Interaction;
@@ -26,7 +26,7 @@ import uk.ac.ebi.intact.model.Interaction;
  * TODO comment this
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
- * @version $Id$
+ * @version $Id:EntryPersister.java 8692 2007-06-15 17:02:01Z baranda $
  */
 public class EntryPersister implements Persister<IntactEntry> {
 
@@ -42,7 +42,7 @@ public class EntryPersister implements Persister<IntactEntry> {
     }
 
     public static EntryPersister getInstance(boolean isDryRun) {
-        PersistenceContext.getInstance().setDryRun(isDryRun);
+        PersisterContext.getInstance().setDryRun(isDryRun);
 
         return instance.get();
     }
@@ -61,6 +61,6 @@ public class EntryPersister implements Persister<IntactEntry> {
     }
 
     public void commit() {
-        PersistenceContext.getInstance().persistAll();
+        PersisterContext.getInstance().persistAll();
     }
 }

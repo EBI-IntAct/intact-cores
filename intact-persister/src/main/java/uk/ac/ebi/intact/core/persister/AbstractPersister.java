@@ -41,7 +41,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
             throw new NullPointerException("intactObject");
         }
 
-        if (PersistenceContext.getInstance().contains(intactObject)) {
+        if (PersisterContext.getInstance().contains(intactObject)) {
             return;
         }
 
@@ -66,13 +66,13 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
         log.debug("\tNot present in a data source - Will persist");
         T newAnnotatedObject = syncResponse.getValue();
-        PersistenceContext.getInstance().addToPersist(newAnnotatedObject);
+        PersisterContext.getInstance().addToPersist(newAnnotatedObject);
 
         saveOrUpdateAttributes(newAnnotatedObject);
     }
 
     public final void commit() {
-       PersistenceContext.getInstance().persistAll();
+       PersisterContext.getInstance().persistAll();
     }
 
     protected final SyncTransientResponse<T> syncIfTransientResponse(T intactObject) {
@@ -105,8 +105,8 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
     }
 
     protected final T get(T intactObject) {
-        if (PersistenceContext.getInstance().contains(intactObject)) {
-            return (T) PersistenceContext.getInstance().get(intactObject);
+        if (PersisterContext.getInstance().contains(intactObject)) {
+            return (T) PersisterContext.getInstance().get(intactObject);
         }
         if (SyncContext.getInstance().isAlreadySynced(intactObject)) {
             return (T) SyncContext.getInstance().get(intactObject);
@@ -129,7 +129,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
     }
 
     public boolean isDryRun() {
-        return PersistenceContext.getInstance().isDryRun();
+        return PersisterContext.getInstance().isDryRun();
     }
 
     private class SyncTransientResponse<T> {
