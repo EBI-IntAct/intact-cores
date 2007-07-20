@@ -114,7 +114,7 @@ public class IntactUnit {
         DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
 
         if (dataContext.isTransactionActive()) {
-            throw new IllegalStateException("To reset the schema, the transaction must NOT be active");
+            throw new IllegalStateException("To reset the schema, the transaction must NOT be active: "+dataContext.getDaoFactory().getCurrentTransaction());
         }
         
         dropSchema();
@@ -138,7 +138,7 @@ public class IntactUnit {
         DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
 
         if (dataContext.isTransactionActive()) {
-            throw new IllegalStateException("To create the schema, the transaction must NOT be active");
+            throw new IllegalStateException("To reset the schema, the transaction must NOT be active: "+dataContext.getDaoFactory().getCurrentTransaction());
         }
 
         dataContext.beginTransaction();

@@ -102,4 +102,9 @@ public class IntactTransaction {
     public String getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "Transaction [id="+getId()+", committed="+wasCommitted()+"];";
+    }
 }

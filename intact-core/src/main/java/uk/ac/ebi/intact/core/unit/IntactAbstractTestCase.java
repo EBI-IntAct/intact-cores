@@ -26,6 +26,7 @@ import uk.ac.ebi.intact.commons.dataset.TestDataset;
 import uk.ac.ebi.intact.commons.dataset.TestDatasetProvider;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.lang.reflect.Method;
@@ -84,6 +85,11 @@ public class IntactAbstractTestCase {
         }
 
         if (loadDataset) {
+            // ensure no MockIntactContext is active
+            if (getIntactContext() instanceof MockIntactContext) {
+                getIntactContext().close();
+            }
+
             if (datasetAnnot != null) {
                 TestDataset testDataset = getTestDataset(datasetAnnot);
 
