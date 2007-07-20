@@ -60,7 +60,7 @@ public class ComponentPersisterTest extends IntactAbstractTestCase
     }
 
     @Test
-    @IntactUnitDataset(dataset = PsiTestDatasetProvider.INTACT_JUL_06, provider = PsiTestDatasetProvider.class)
+    @IntactUnitDataset(dataset = PsiTestDatasetProvider.DIP_NOV_06, provider = PsiTestDatasetProvider.class)
     public void testPersistComponent_newExpRole() throws Exception {
         Interaction interaction = getDaoFactory().getInteractionDao().getAll(0,1).iterator().next();
         Interactor interactor = getDaoFactory().getInteractorDao().getAll(0,1).iterator().next();
