@@ -223,7 +223,7 @@ public abstract class Xref extends BasicObjectImpl {
 
     ///////////////////////////////////////
     // access methods for associations
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne
     @JoinColumn( name = "qualifier_ac" )
     public CvXrefQualifier getCvXrefQualifier() {
         return cvXrefQualifier;
@@ -233,7 +233,7 @@ public abstract class Xref extends BasicObjectImpl {
         this.cvXrefQualifier = cvXrefQualifier;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne
     @JoinColumn( name = "database_ac" )
     public CvDatabase getCvDatabase() {
         return cvDatabase;

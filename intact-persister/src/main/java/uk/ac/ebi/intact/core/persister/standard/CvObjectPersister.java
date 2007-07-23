@@ -60,4 +60,5 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
         return getIntactContext().getDataContext().getDaoFactory()
                 .getCvObjectDao().getByShortLabel(intactObject.getClass(), intactObject.getShortLabel());
     }
+
 }

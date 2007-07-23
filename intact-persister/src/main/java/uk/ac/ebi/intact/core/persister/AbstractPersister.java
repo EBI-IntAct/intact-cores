@@ -66,6 +66,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
         log.debug("\tNot present in a data source - Will persist");
         T newAnnotatedObject = syncResponse.getValue();
+
         PersisterContext.getInstance().addToPersist(newAnnotatedObject);
 
         saveOrUpdateAttributes(newAnnotatedObject);
