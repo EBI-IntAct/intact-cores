@@ -15,8 +15,8 @@
  */
 package uk.ac.ebi.intact.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * This class represents an entry in IntAct. It does not have a direct equivalence in the database
@@ -56,7 +56,7 @@ public class IntactEntry {
 
         }
 
-        experiments = new ArrayList<Experiment>();
+        experiments = new HashSet<Experiment>();
 
         for (Interaction interaction : getInteractions()) {
             experiments.addAll(interaction.getExperiments());
@@ -76,7 +76,7 @@ public class IntactEntry {
 
         }
 
-        interactors = new ArrayList<Interactor>();
+        interactors = new HashSet<Interactor>();
 
         for (Interaction interaction : getInteractions()) {
             for (Component comp : interaction.getComponents()) {
