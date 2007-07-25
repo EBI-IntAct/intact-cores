@@ -68,13 +68,22 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
                 }
             }
             for (Alias alias : (Collection<Alias>) intactObject.getAliases()) {
-                CvAliasType cvAliasType = (CvAliasType) cvPersister.syncIfTransient(alias.getCvAliasType());
-                alias.setCvAliasType(cvAliasType);
+                CvAliasType cvAliasType = alias.getCvAliasType();
+
+                if (cvAliasType != null) {
+                    cvAliasType = (CvAliasType) cvPersister.syncIfTransient(alias.getCvAliasType());
+                    alias.setCvAliasType(cvAliasType);
+                }
+
                 alias.setOwner(getIntactContext().getInstitution());
             }
             for (Annotation annotation : (Collection<Annotation>) intactObject.getAnnotations()) {
-                CvTopic cvTopic = (CvTopic) cvPersister.syncIfTransient(annotation.getCvTopic());
-                annotation.setCvTopic(cvTopic);
+                CvTopic cvTopic = annotation.getCvTopic();
+
+                if (cvTopic != null) {
+                    cvTopic = (CvTopic) cvPersister.syncIfTransient(annotation.getCvTopic());
+                    annotation.setCvTopic(cvTopic);
+                }
                 annotation.setOwner(getIntactContext().getInstitution());
             }
         } catch (Throwable t) {

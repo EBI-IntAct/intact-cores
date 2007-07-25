@@ -18,7 +18,7 @@
     <url>http://www.ebi.ac.uk/~intact/devsite/core</url>
 
     <properties>
-        <currentVersion>${version}</currentVersion>
+        <currentVersion>${project.version}</currentVersion>
     </properties>
 
     <scm>
