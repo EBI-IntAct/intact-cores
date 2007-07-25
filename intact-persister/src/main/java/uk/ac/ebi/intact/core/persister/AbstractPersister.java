@@ -52,7 +52,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         if (syncResponse.isAlreadyPresent()) {
             intactObject.setAc(syncResponse.getValue().getAc());
             if (syncedAndCandidateAreEqual(syncResponse.getValue(), intactObject)) {
-                if (log.isDebugEnabled()) log.debug("\tAlready present in a data source (synced)");
+                if (log.isDebugEnabled()) log.debug("\tAlready present in a data source (synced) - "+syncResponse.getValue().getShortLabel()+" ("+syncResponse.getValue().getAc()+")");
             } else {
                 if (log.isDebugEnabled()) log.debug("\tData source object and object to persist are not equal - update");
 
@@ -65,7 +65,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
             return;
         }
 
-        log.debug("\tNot present in a data source - Will persist");
+        log.debug("\tNot present in a data source - Will persist - "+syncResponse.getValue().getShortLabel());
         T newAnnotatedObject = syncResponse.getValue();
 
         PersisterContext.getInstance().addToPersist(newAnnotatedObject);
