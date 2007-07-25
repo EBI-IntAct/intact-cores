@@ -50,6 +50,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         SyncTransientResponse<T> syncResponse = syncIfTransientResponse(intactObject);
 
         if (syncResponse.isAlreadyPresent()) {
+            intactObject.setAc(syncResponse.getValue().getAc());
             if (syncedAndCandidateAreEqual(syncResponse.getValue(), intactObject)) {
                 if (log.isDebugEnabled()) log.debug("\tAlready present in a data source (synced)");
             } else {
