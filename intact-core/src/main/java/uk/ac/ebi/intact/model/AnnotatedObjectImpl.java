@@ -8,7 +8,6 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.lucene.Text;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
@@ -103,7 +102,6 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
 
     @Length( min = 1, max = MAX_SHORT_LABEL_LEN )
     @NotNull
-    @Text
     public String getShortLabel() {
         return shortLabel;
     }

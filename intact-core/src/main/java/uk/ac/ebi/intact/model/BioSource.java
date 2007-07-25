@@ -5,7 +5,6 @@
  */
 package uk.ac.ebi.intact.model;
 
-import org.hibernate.lucene.Indexed;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
@@ -21,7 +20,6 @@ import java.util.Collection;
 @Table( name = "ia_biosource" )
 @AssociationOverride( name = "annotations",
                       joinColumns = {@JoinColumn( name = "annotation_ac" )} )
-@Indexed( index = "lucene-indexes/intact-objects" )
 @EditorTopic
 public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias> implements Editable, Searchable {
 

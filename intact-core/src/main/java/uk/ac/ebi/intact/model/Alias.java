@@ -117,7 +117,7 @@ public abstract class Alias extends BasicObjectImpl {
     ///////////////////////////////////////
     // access methods for associations
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne
     @JoinColumn( name = "aliastype_ac" )
     public CvAliasType getCvAliasType() {
         return cvAliasType;

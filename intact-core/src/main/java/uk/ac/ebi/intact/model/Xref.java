@@ -177,11 +177,11 @@ public abstract class Xref extends BasicObjectImpl {
         this.primaryId = aPrimaryId;
     }
 
+    @Length( max = MAX_ID_LEN )
     public String getSecondaryId() {
         return secondaryId;
     }
 
-    @Length( max = MAX_ID_LEN )
     public void setSecondaryId( String aSecondaryId ) {
         this.secondaryId = aSecondaryId;
     }
