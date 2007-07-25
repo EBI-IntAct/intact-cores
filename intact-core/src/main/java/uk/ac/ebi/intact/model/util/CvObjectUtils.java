@@ -36,6 +36,24 @@ public class CvObjectUtils {
                 }
             }
         }
+
+        // if cvObjectXref is null, degrade the search so we search on short label rather than
+        // the identity xrefs. This is an ugly hack as it seems that sometimes the xrefs of the cvobject
+        // of the xref of the original cvobject are not lazily loaded. I hope you understand, my friend
+        if (cvObjectXref == null) {
+            for (CvObjectXref xref : cvObjectXrefs) {
+                if (xref.getCvDatabase().getShortLabel().equals(CvDatabase.PSI_MI) &&
+                        xref.getCvXrefQualifier().getShortLabel().equals(CvXrefQualifier.IDENTITY)) {
+                    if (cvObjectXref == null) {
+                        cvObjectXref = xref;
+                    } else {
+                        String clazz = cvObject.getClass().getSimpleName();
+                        throw new IllegalStateException("More than one psi-mi identity in " + clazz + " :" + cvObject.getAc());
+                    }
+                }
+            }
+        }
+
         return cvObjectXref;
     }
 
