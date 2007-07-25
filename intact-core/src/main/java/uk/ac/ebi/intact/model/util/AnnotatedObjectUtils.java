@@ -15,10 +15,7 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
-import uk.ac.ebi.intact.model.Xref;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import java.beans.IntrospectionException;
@@ -174,6 +171,28 @@ public class AnnotatedObjectUtils {
         PropertyDescriptor propDesc = null;
         try {
             propDesc = new PropertyDescriptor("xrefs", clazz);
+        } catch (IntrospectionException e) {
+            e.printStackTrace();
+        }
+        Method method = propDesc.getReadMethod();
+
+        return getParameterizedType(method.getGenericReturnType());
+    }
+
+
+    /**
+     * Gets the generic Xref type for an AnnotatedObject class
+     * @param clazz an AnnotatedObject class
+     * @return the Xref type used in the class
+     *
+     * @since 1.6.1
+     */
+    public static Class<? extends Alias> getAliasClassType(Class<? extends AnnotatedObject> clazz)  {
+        clazz = CgLibUtil.removeCglibEnhanced(clazz);
+
+        PropertyDescriptor propDesc = null;
+        try {
+            propDesc = new PropertyDescriptor("aliases", clazz);
         } catch (IntrospectionException e) {
             e.printStackTrace();
         }

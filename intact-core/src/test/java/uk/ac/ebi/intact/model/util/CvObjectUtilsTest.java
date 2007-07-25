@@ -4,10 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
-import uk.ac.ebi.intact.model.CvBiologicalRole;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvExperimentalRole;
-import uk.ac.ebi.intact.model.CvObjectXref;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
 
 @IntactUnitDataset(dataset = PsiTestDatasetProvider.ALL_CVS, provider = PsiTestDatasetProvider.class)
@@ -20,11 +17,31 @@ public class CvObjectUtilsTest extends IntactAbstractTestCase {
         CvDatabase uniprotKb = getIntactContext().getCvContext().getByMiRef(CvDatabase.class,CvDatabase.UNIPROT_MI_REF);
 
         CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref(uniprotKb);
-        if(cvObjectXref == null){
-            fail("The xref retuned should not be null");
-        }
+
+        assertNotNull("The xref retuned should not be null", cvObjectXref);
         assertEquals(CvDatabase.UNIPROT_MI_REF,cvObjectXref.getPrimaryId());
     }
+
+    @Test
+    public void testGetPsiMiIdentityXref_psiMiRef() throws Exception{
+        assertFalse(0 == getDaoFactory().getCvObjectDao().countAll());
+
+        CvXrefQualifier identityQual = getIntactContext().getCvContext().getByMiRef(CvXrefQualifier.class,CvXrefQualifier.IDENTITY_MI_REF);
+
+        CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref(identityQual);
+
+        assertNotNull("The xref retuned should not be null", cvObjectXref);
+        assertEquals(CvXrefQualifier.IDENTITY_MI_REF,cvObjectXref.getPrimaryId());
+
+        CvXrefQualifier identityOfIdentityQual = cvObjectXref.getCvXrefQualifier();
+        assertNotNull(identityOfIdentityQual);
+
+        CvObjectXref cvIdentityOfIdentityXref = CvObjectUtils.getPsiMiIdentityXref(identityOfIdentityQual);
+        assertNotNull(cvIdentityOfIdentityXref);
+        assertEquals(CvXrefQualifier.IDENTITY_MI_REF,cvIdentityOfIdentityXref.getPrimaryId());
+
+    }
+
 
     @Test
     public void createRoleInfo_relevant() throws Exception {
