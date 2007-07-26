@@ -41,6 +41,6 @@ public class ProteinUtilsTest extends IntactAbstractTestCase {
         String geneName = ProteinUtils.getGeneName(prot);
         
         assertNotNull(geneName);
-        assertEquals("cara", geneName);
+        assertEquals("carA", geneName);
     }
 }

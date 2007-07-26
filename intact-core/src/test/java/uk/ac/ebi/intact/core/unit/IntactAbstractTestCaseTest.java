@@ -15,10 +15,10 @@
  */
 package uk.ac.ebi.intact.core.unit;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import org.junit.Test;
 import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
+import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
 
 /**
@@ -46,5 +46,13 @@ public class IntactAbstractTestCaseTest extends IntactAbstractTestCase {
         assertTrue("Wrong number of CvObjects", getDataContext().getDaoFactory().getCvObjectDao().countAll() > 1000);
 
         assertEquals(getIntactContext().getConfig().getDefaultDataConfig().getName(), InMemoryDataConfig.NAME);
+    }
+
+    @Test
+    @IntactUnitDataset(provider = PsiTestDatasetProvider.class, dataset = PsiTestDatasetProvider.ALL_CVS)
+    public void default_allCVs_correctXref() throws Exception {
+        CvDatabase cvDb = getDaoFactory().getCvObjectDao(CvDatabase.class).getByPsiMiRef(CvDatabase.PSI_MI_MI_REF);
+        assertNotNull(cvDb);
+        assertFalse(cvDb.getXrefs().isEmpty());
     }
 }

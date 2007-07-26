@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.model.util;
 
 import static org.easymock.classextension.EasyMock.*;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
+import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
 
 import java.util.Arrays;
 
@@ -102,6 +104,19 @@ public class InteractionShortLabelGeneratorTest extends IntactAbstractTestCase {
 
         assertNotNull(candLabel);
         assertEquals("lalateractor", candLabel);
+    }
+
+    @Test
+    @IntactUnitDataset(dataset = PsiTestDatasetProvider.INTACT_JUL_06, provider = PsiTestDatasetProvider.class)
+    public void createCandidateShortLabel_fromInteraction_null() throws Exception {
+        Interaction interaction = getDaoFactory().getInteractionDao().getByShortLabel("fadd-casp8-2");
+
+        assertNotNull(interaction);
+
+        String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(interaction);
+
+        assertNotNull(candLabel);
+        Assert.assertEquals("fadd-casp8", candLabel);
     }
 
     private void addMiXrefToCvObject(CvObject cv, String mi, IntactContext context) {

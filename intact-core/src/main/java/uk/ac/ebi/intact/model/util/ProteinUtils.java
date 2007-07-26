@@ -103,16 +103,13 @@ public class ProteinUtils {
         // the gene name we want to extract from the protein.
         String geneName = null;
 
-        CvAliasType geneNameAliasType = IntactContext.getCurrentInstance().getCvContext().getByMiRef(CvAliasType.class, CvAliasType.GENE_NAME_MI_REF);
+        for ( Alias alias : protein.getAliases()) {
+            CvAliasType aliasType = alias.getCvAliasType();
+            CvObjectXref aliasTypeIdentityXref = CvObjectUtils.getPsiMiIdentityXref(aliasType);
 
-
-        if ( geneNameAliasType != null ) {
-            for ( Iterator iterator = protein.getAliases().iterator(); iterator.hasNext() && geneName == null; ) {
-                final Alias alias = (Alias) iterator.next();
-
-                if ( geneNameAliasType.equals( alias.getCvAliasType() ) ) {
-                    geneName = alias.getName();
-                }
+            if (aliasTypeIdentityXref != null && CvAliasType.GENE_NAME_MI_REF.equals(aliasTypeIdentityXref.getPrimaryId())) {
+                geneName = alias.getName();
+                break;
             }
         }
 
