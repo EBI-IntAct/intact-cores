@@ -66,6 +66,7 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
                     CvXrefQualifier cvXrefQual = (CvXrefQualifier) cvPersister.syncIfTransient(xref.getCvXrefQualifier());
                     xref.setCvXrefQualifier(cvXrefQual);
                 }
+                xref.setParent(intactObject);
             }
             for (Alias alias : (Collection<Alias>) intactObject.getAliases()) {
                 CvAliasType cvAliasType = alias.getCvAliasType();
@@ -76,6 +77,7 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
                 }
 
                 alias.setOwner(getIntactContext().getInstitution());
+                alias.setParent(intactObject);
             }
             for (Annotation annotation : (Collection<Annotation>) intactObject.getAnnotations()) {
                 CvTopic cvTopic = annotation.getCvTopic();

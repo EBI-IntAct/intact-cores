@@ -23,6 +23,7 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.model.CvAliasType;
+import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.model.IntactEntry;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
@@ -62,6 +63,10 @@ public class InteractionPersisterTest {
         beginTransaction();
 
         Assert.assertEquals(intactEntry.getInteractions().size(), getDaoFactory().getInteractionDao().countAll());
+
+        for (CvObject cv : getDaoFactory().getCvObjectDao().getAll()) {
+            Assert.assertFalse(cv.getXrefs().isEmpty());
+        }
     }
 
     @Test

@@ -18,8 +18,10 @@ package uk.ac.ebi.intact.core.persister;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.model.Alias;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.CvObject;
+import uk.ac.ebi.intact.model.Xref;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.util.Collection;
@@ -93,22 +95,48 @@ public class PersisterContext {
         if (log.isDebugEnabled()) {
             log.debug("Persisting all"+ (isDryRun()? " - DRY RUN" : ""));
             log.debug("\tCvObjects: "+cvObjectsToBePersisted.size());
-            log.debug("\tOther AnnotatedObjects: "+annotatedObjectsToBePersisted.size());
+
         }
 
         for (CvObject cv : cvObjectsToBePersisted.values()) {
             getDaoFactory().getCvObjectDao().persist(cv);
+            logPersistence(cv);
         }
 
         getIntactContext().getDataContext().flushSession();
 
+        log.debug("\tOther AnnotatedObjects: "+annotatedObjectsToBePersisted.size());
+
         for (AnnotatedObject ao : annotatedObjectsToBePersisted.values()) {
             getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
+            logPersistence(ao);
         }
 
         clear();
         SyncContext.getInstance().clear();
         getIntactContext().getDataContext().flushSession();
+    }
+
+    private static void logPersistence(AnnotatedObject<?,?> ao) {
+        if (log.isDebugEnabled()) {
+            log.debug("\t\tPersisting: " + ao.getShortLabel() + " (" + ao.getAc() + ")");
+
+            if (!ao.getXrefs().isEmpty()) {
+                log.debug("\t\t\tXrefs: " + ao.getXrefs().size());
+
+                for (Xref xref : ao.getXrefs()) {
+                    log.debug("\t\t\t\t"+xref);
+                }
+            }
+
+            if (!ao.getAliases().isEmpty()) {
+                log.debug("\t\t\tAliases: " + ao.getAliases().size());
+
+                for (Alias alias: ao.getAliases()) {
+                    log.debug("\t\t\t\t"+alias);
+                }
+            }
+        }
     }
 
     public void clear() {

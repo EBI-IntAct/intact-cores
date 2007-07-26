@@ -53,7 +53,6 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
             saveOrUpdate(xref.getCvXrefQualifier());
         }
     }
-    
 
     @Override
     protected CvObject fetchFromDataSource(CvObject intactObject) {
