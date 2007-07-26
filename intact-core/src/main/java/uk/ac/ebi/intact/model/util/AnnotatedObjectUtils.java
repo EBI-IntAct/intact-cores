@@ -165,7 +165,7 @@ public class AnnotatedObjectUtils {
      * @param clazz an AnnotatedObject class
      * @return the Xref type used in the class
      */
-    public static Class<? extends Xref> getXrefClassType(Class<? extends AnnotatedObject> clazz)  {
+    public static <X extends Xref> Class<X> getXrefClassType(Class<? extends AnnotatedObject<X,?>> clazz)  {
         clazz = CgLibUtil.removeCglibEnhanced(clazz);
         
         PropertyDescriptor propDesc = null;
@@ -187,7 +187,7 @@ public class AnnotatedObjectUtils {
      *
      * @since 1.6.1
      */
-    public static Class<? extends Alias> getAliasClassType(Class<? extends AnnotatedObject> clazz)  {
+    public static <A extends Alias> Class<A> getAliasClassType(Class<? extends AnnotatedObject<?,A>> clazz)  {
         clazz = CgLibUtil.removeCglibEnhanced(clazz);
 
         PropertyDescriptor propDesc = null;
