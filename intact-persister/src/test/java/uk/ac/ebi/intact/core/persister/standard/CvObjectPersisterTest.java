@@ -15,9 +15,13 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.junit.After;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvExperimentalRole;
 import uk.ac.ebi.intact.model.CvObjectXref;
@@ -34,26 +38,19 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
  */
 public class CvObjectPersisterTest {
 
-    protected DaoFactory getDaoFactory() {
-         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+    @Before
+    public void beforeTest() throws Exception {
+        new IntactUnit().createSchema();
+        beginTransaction();
     }
 
-    protected IntactContext getIntactContext() {
-         return IntactContext.getCurrentInstance();
-    }
-
-     protected void beginTransaction() {
-         IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-    }
-
-    protected void commitTransaction() throws Exception {
-         IntactContext.getCurrentInstance().getDataContext().commitTransaction();
+    @After
+    public void afterTest() throws Exception {
+        commitTransaction();
     }
 
     @Test
     public void persist_default() throws Exception {
-        beginTransaction();
-
         CvObjectBuilder builder = new CvObjectBuilder();
         CvXrefQualifier cvXrefQual = builder.createIdentityCvXrefQualifier(getIntactContext().getInstitution());
         CvDatabase cvDb = builder.createPsiMiCvDatabase(getIntactContext().getInstitution());
@@ -80,11 +77,8 @@ public class CvObjectPersisterTest {
         CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref(newExpRole);
         assertNotNull(cvObjectXref);
         assertEquals("rolePrimaryId",cvObjectXref.getPrimaryId());
-
-        commitTransaction();
     }
 
-     /*
     @Test (expected = PersisterException.class)
     public void persist_noXref() throws Exception {
 
@@ -94,5 +88,21 @@ public class CvObjectPersisterTest {
         CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();
 
         cvObjectPersister.saveOrUpdate(expRole);
-    }   */
+    }
+
+    protected DaoFactory getDaoFactory() {
+         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+    }
+
+    protected IntactContext getIntactContext() {
+         return IntactContext.getCurrentInstance();
+    }
+
+    protected void beginTransaction() {
+         IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+    }
+
+    protected void commitTransaction() throws Exception {
+         IntactContext.getCurrentInstance().getDataContext().commitTransaction();
+    }
 }

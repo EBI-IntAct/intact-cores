@@ -95,7 +95,7 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
 
     @Override
     protected boolean syncedAndCandidateAreEqual(T synced, T candidate) {
-        // return true by default
+        // TODO implement. In the meanwhile, return true by default
         return true;
     }
 
