@@ -145,6 +145,13 @@ public class IntactMockBuilder {
         return new Component(getInstitution(), interaction, interactor, expRole, bioRole);
     }
 
+    public Component createComponentNeutral(Interaction interaction, Interactor interactor) {
+        CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.NEUTRAL_PSI_REF, CvExperimentalRole.NEUTRAL);
+        CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
+
+        return new Component(getInstitution(), interaction, interactor, expRole, bioRole);
+    }
+
     public Component createComponentBait(Interaction interaction, Interactor interactor) {
         CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.BAIT_PSI_REF, CvExperimentalRole.BAIT);
         CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);

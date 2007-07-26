@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import static org.easymock.classextension.EasyMock.*;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,8 +23,8 @@ import uk.ac.ebi.intact.context.CvContext;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IgnoreDatabase;
 import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
-import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
@@ -78,32 +77,21 @@ public class InteractionShortLabelGeneratorTest extends IntactAbstractTestCase {
 
     @Test
      public void selfInteractionShortLabel() throws Exception {
-        MockIntactContext.initMockContext();
-        MockIntactContext context = (MockIntactContext) IntactContext.getCurrentInstance();
-        context.setCvContext(new MyCvContext());
-        //MockIntactContext.configureMockDaoFactory().setMockCvObjectDao(new MyCvObjectDao());
+        IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
+        Interaction interaction = mockBuilder.createInteractionRandomBinary();
 
-        Interaction interaction = createNiceMock(InteractionImpl.class);
-        Component component = createNiceMock(Component.class);
-        Interactor interactor = createNiceMock(Interactor.class);
+        Interactor interactor = mockBuilder.createProteinRandom();
+        final String geneName = "lala";
+        interactor.getAliases().iterator().next().setName(geneName);
 
-        CvExperimentalRole neutralRole = new CvExperimentalRole(context.getInstitution(), CvExperimentalRole.NEUTRAL);
-        addMiXrefToCvObject(neutralRole, CvExperimentalRole.NEUTRAL_PSI_REF, context);
-
-        expect(interactor.getShortLabel()).andReturn("lalateractor");
-        expect(component.getInteractor()).andReturn(interactor).anyTimes();
-        expect(component.getCvExperimentalRole()).andReturn(neutralRole);
-        expect(interaction.getComponents()).andReturn(Arrays.asList(component)).anyTimes();
-
-        replay(interaction);
-        replay(component);
-        replay(interactor);
+        Component comp = mockBuilder.createComponentNeutral(interaction, interactor);
+        interaction.setComponents(Arrays.asList(comp));
 
         String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(interaction);
 
         assertNotNull(candLabel);
-        assertEquals("lalateractor", candLabel);
+        assertEquals(geneName, candLabel);
     }
 
     @Test
