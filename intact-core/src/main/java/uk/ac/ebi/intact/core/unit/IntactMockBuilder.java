@@ -15,10 +15,11 @@
  */
 package uk.ac.ebi.intact.core.unit;
 
-import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
+import uk.ac.ebi.intact.model.util.AliasUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.model.util.XrefUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,20 +77,11 @@ public class IntactMockBuilder {
     }
 
     public <X extends Xref> X createIdentityXrefUniprot(AnnotatedObject<X,?> parent, String primaryId) {
-        CvDatabase cvDatabase = createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
-
-        return createIdentityXref(parent, primaryId, cvDatabase);
+        return XrefUtils.createIdentityXrefUniprot(parent, primaryId);
     }
 
     public <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvDatabase cvDatabase) {
-        X xref = (X) newXrefInstanceFor(parent.getClass());
-        xref.setOwner(getInstitution());
-        xref.setCvDatabase(cvDatabase);
-        xref.setCvXrefQualifier(getIdentityQualifier());
-        xref.setPrimaryId(primaryId);
-        xref.setParent(parent);
-
-        return xref;
+        return XrefUtils.createIdentityXref(parent, primaryId, getIdentityQualifier(), cvDatabase);
     }
 
     public BioSource createBioSourceRandom() {
@@ -102,26 +94,11 @@ public class IntactMockBuilder {
     }
 
     public <A extends Alias> A createAliasGeneName(AnnotatedObject<?,A> parent, String name) {
-        CvAliasType cvGeneName = createCvObject(CvAliasType.class, CvAliasType.GENE_NAME_MI_REF, CvAliasType.GENE_NAME);
-
-        A alias = (A) newAliasInstanceFor(parent.getClass());
-        alias.setOwner(institution);
-        alias.setParent(parent);
-        alias.setCvAliasType(cvGeneName);
-        alias.setName(name);
-
-        return alias;
+        return AliasUtils.createAliasGeneName(parent, name);
     }
 
     public <T extends CvObject> T createCvObject(Class<T> cvClass, String primaryId, String shortLabel) {
-        T cv = newInstance(cvClass);
-        cv.setOwner(getInstitution());
-        cv.setShortLabel(shortLabel);
-
-        CvObjectXref idXref = createIdentityXrefPsiMi(cv, primaryId);
-        cv.addXref(idXref);
-
-        return cv;
+        return CvObjectUtils.createCvObject(getInstitution(), cvClass, primaryId, shortLabel);
     }
 
     public Protein createProteinRandom() {
@@ -233,27 +210,6 @@ public class IntactMockBuilder {
         }
 
         return new IntactEntry(interactions);
-    }
-
-    protected <X extends Xref> X newXrefInstanceFor(Class<? extends AnnotatedObject> aoClass) {
-        Class<X> xrefClass = (Class<X>) AnnotatedObjectUtils.getXrefClassType(aoClass);
-        return newInstance(xrefClass);
-    }
-
-    protected <A extends Alias> A newAliasInstanceFor(Class<? extends AnnotatedObject> aoClass) {
-        Class<A> aliasClass = (Class<A>) AnnotatedObjectUtils.getAliasClassType(aoClass);
-        return newInstance(aliasClass);
-    }
-
-    private <T> T newInstance(Class<T> clazz) {
-        T instance;
-        try {
-            instance = clazz.newInstance();
-        } catch (Exception e) {
-            throw new IntactException(e);
-        }
-
-        return instance;
     }
 
     protected String nextString() {

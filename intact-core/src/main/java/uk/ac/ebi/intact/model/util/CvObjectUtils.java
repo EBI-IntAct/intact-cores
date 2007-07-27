@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.model.util;
 
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.util.ClassUtils;
 
 import java.util.Collection;
 
@@ -91,4 +92,14 @@ public class CvObjectUtils {
         return new RoleInfo(biologicalRole, experimentalRole);
     }
 
+    public static <T extends CvObject> T createCvObject(Institution institution, Class<T> cvClass, String primaryId, String shortLabel) {
+        T cv = ClassUtils.newInstance(cvClass);
+        cv.setOwner(institution);
+        cv.setShortLabel(shortLabel);
+
+        CvObjectXref idXref = XrefUtils.createIdentityXrefPsiMi(cv, primaryId);
+        cv.addXref(idXref);
+
+        return cv;
+    }
 }
