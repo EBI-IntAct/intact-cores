@@ -15,11 +15,9 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Utility methods for Proteins
@@ -40,18 +38,11 @@ public class ProteinUtils {
      */
     public static boolean isFromUniprot( Protein protein ) {
         boolean isFromUniprot = true;
+        
+        for (Annotation annotation : protein.getAnnotations()) {
+            String topicLabel = annotation.getCvTopic().getShortLabel();
 
-        CvTopic noUniprotUpdate = IntactContext.getCurrentInstance().getCvContext().getByLabel( CvTopic.class, CvTopic.NON_UNIPROT );
-
-        if ( null == noUniprotUpdate ) {
-            // in case the term hasn't been created, assume there are no proteins created via editor.
-            return true;
-        }
-
-        for ( Iterator iterator = protein.getAnnotations().iterator(); iterator.hasNext() && isFromUniprot; ) {
-            Annotation annotation = ( Annotation ) iterator.next();
-
-            if ( noUniprotUpdate.getAc().equals( annotation.getCvTopic().getAc() ) ) {
+            if (topicLabel.equals(CvTopic.NON_UNIPROT)) {
                 isFromUniprot = false;
             }
         }
