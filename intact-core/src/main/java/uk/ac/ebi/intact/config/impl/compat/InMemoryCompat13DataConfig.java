@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.config.impl.compat;
 
 import uk.ac.ebi.intact.config.SchemaVersion;
-import uk.ac.ebi.intact.config.impl.TemporaryH2DataConfig;
+import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
 import uk.ac.ebi.intact.context.IntactSession;
 
 import java.net.URL;
@@ -13,7 +13,7 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class InMemoryCompat13DataConfig extends TemporaryH2DataConfig
+public class InMemoryCompat13DataConfig extends InMemoryDataConfig
 {
     public static final String NAME = "uk.ac.ebi.intact.config.IN_MEMORY_COMPAT_13";
 
