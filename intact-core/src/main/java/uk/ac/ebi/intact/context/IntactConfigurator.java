@@ -112,7 +112,7 @@ public class IntactConfigurator {
         boolean forceNoSchemaCheck = Boolean.parseBoolean( strForceNoSchemaCheck );
 
         if ( !forceNoSchemaCheck ) {
-            checkSchemaCompatibility( session );
+            checkSchemaCompatibility( config.getDefaultDataConfig(), session );
         }
 
         // read only
@@ -234,8 +234,8 @@ public class IntactConfigurator {
         persistBasicCvObjects(context);
     }
 
-    private static void checkSchemaCompatibility( IntactSession session ) {
-        SchemaVersion requiredVersion = SchemaVersion.minimumVersion();
+    private static void checkSchemaCompatibility( DataConfig dataConfig, IntactSession session ) {
+        SchemaVersion requiredVersion = dataConfig.getMinimumRequiredVersion();
 
         DaoFactory daoFactory = DaoFactory.getCurrentInstance( session, RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig() );
 
@@ -421,17 +421,17 @@ public class IntactConfigurator {
 
     private static void persistSchemaVersion(IntactContext context) {
         IntactSession session = context.getSession();
+        SchemaVersion requiredVersion = context.getConfig().getDefaultDataConfig().getMinimumRequiredVersion();
 
-        DbInfo dbInfo = new DbInfo(DbInfo.SCHEMA_VERSION, SchemaVersion.minimumVersion().toString());
+        DbInfo dbInfo = new DbInfo(DbInfo.SCHEMA_VERSION, requiredVersion.toString());
 
-        log.debug("Persisting schema version: " + SchemaVersion.minimumVersion().toString());
+        if (log.isDebugEnabled()) log.debug("Persisting schema version: " + requiredVersion.toString());
 
         DaoFactory daoFactory = DaoFactory.getCurrentInstance(session, RuntimeConfig.getCurrentInstance(session).getDefaultDataConfig());
-        IntactTransaction tx = daoFactory.beginTransaction();
+        context.getDataContext().beginTransaction();
         daoFactory.getDbInfoDao().persist(dbInfo);
-        //context.getDataContext().commitTransaction();
         try {
-            tx.commit();
+            context.getDataContext().commitTransaction();
         } catch (IntactTransactionException e) {
             log.error(e);
         }

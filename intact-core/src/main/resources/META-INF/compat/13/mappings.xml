@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <entity class="uk.ac.ebi.intact.model.Component">
+        <table name="IA_COMPONENT"/>
+        <attributes>
+            <basic name="stoichiometry">
+                <column name="stoichiometry"/>
+            </basic>
+            <basic name="interactorAc">
+                <column name="interactor_ac" insertable="false" updatable="false"/>
+            </basic>
+            <basic name="interactionAc">
+                <column name="interaction_ac" insertable="false" updatable="false"/>
+            </basic>
+            <many-to-one name="cvExperimentalRole" fetch="LAZY">
+                <join-column name="role_ac"/>
+            </many-to-one>
+
+            <many-to-one name="cvComponentRole" fetch="LAZY">
+                <join-column name="role_ac" insertable="false" updatable="false"/>
+            </many-to-one>
+            <many-to-one name="participantIdentification" fetch="LAZY">
+                <join-column name="identmethod_ac"/>
+            </many-to-one>
+
+            <many-to-one name="expressedIn">
+                <join-column name="expressedin_ac"/>
+            </many-to-one>
+            <many-to-one name="interactor" target-entity="uk.ac.ebi.intact.model.InteractorImpl">
+                <join-column name="interactor_ac"/>
+            </many-to-one>
+
+            <many-to-one name="interaction" target-entity="uk.ac.ebi.intact.model.InteractionImpl">
+                <join-column name="interaction_ac"/>
+            </many-to-one>
+
+            <one-to-many name="bindingDomains" mapped-by="component">
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-remove/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="xrefs" mapped-by="parent">
+                 <cascade>
+                    <cascade-persist/>
+                    <cascade-remove/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="aliases" mapped-by="parent">
+                 <cascade>
+                    <cascade-persist/>
+                    <cascade-remove/>
+                </cascade>
+            </one-to-many>
+            
+            <many-to-many name="annotations">
+                <join-table name="ia_component2annot">
+                    <join-column name="component_ac"/>
+                    <inverse-join-column name="annotation_ac"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+
+            <transient name="cvBiologicalRole"/>
+
+        </attributes>
+    </entity>
+
+    <entity class="uk.ac.ebi.intact.model.CvComponentRole">
+
+    </entity>
+
+</entity-mappings>

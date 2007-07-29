@@ -20,14 +20,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.commons.dataset.DbUnitTestDataset;
 import uk.ac.ebi.intact.commons.dataset.TestDataset;
 import uk.ac.ebi.intact.commons.dataset.TestDatasetProvider;
-import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.lang.reflect.Method;
 
@@ -38,7 +35,7 @@ import java.lang.reflect.Method;
  * @version $Id$
  */
 @RunWith(IntactTestRunner.class)
-public class IntactAbstractTestCase {
+public class IntactAbstractTestCase extends IntactBasicTestCase{
 
     @BeforeClass
     public static void begin() throws Exception {
@@ -129,32 +126,6 @@ public class IntactAbstractTestCase {
         if (IntactContext.currentInstanceExists()) {
             IntactContext.getCurrentInstance().close();
         }
-    }
-
-    protected void beginTransaction() {
-        getDataContext().beginTransaction();
-    }
-
-    protected void commitTransaction() throws IntactTestException {
-        if (getDataContext().isTransactionActive()) {
-            try {
-                getDataContext().commitTransaction();
-            } catch (IntactTransactionException e) {
-                throw new IntactTestException(e);
-            }
-        }
-    }
-
-    protected IntactContext getIntactContext() {
-        return IntactContext.getCurrentInstance();
-    }
-
-    protected DataContext getDataContext() {
-        return getIntactContext().getDataContext();
-    }
-
-    protected DaoFactory getDaoFactory() {
-        return getDataContext().getDaoFactory();
     }
 
 }

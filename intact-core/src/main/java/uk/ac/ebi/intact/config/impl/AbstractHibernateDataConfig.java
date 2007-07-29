@@ -17,6 +17,7 @@ import org.hibernate.cfg.Environment;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.config.ConfigurationException;
 import uk.ac.ebi.intact.config.DataConfig;
+import uk.ac.ebi.intact.config.SchemaVersion;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.persistence.util.ImportFromClasspathEntityResolver;
 import uk.ac.ebi.intact.persistence.util.IntactAnnotator;
@@ -27,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -41,6 +44,12 @@ import java.util.Properties;
 public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFactory, Configuration> {
 
     private static final Log log = LogFactory.getLog( AbstractHibernateDataConfig.class );
+
+    // required version is 1.3.0 (build version should always be 0, as a change in the build
+    // version should no break compatibility)
+    private static final Integer REQUIRED_VERSION_MAJOR = 1;
+    private static final Integer REQUIRED_VERSION_MINOR = 6;
+    private static final Integer REQUIERD_VERSION_BUILD = 0;
 
     private static final String INTERCEPTOR_CLASS = "hibernate.util.interceptor_class";
     private static final String NOT_DEFINED_JDBC_DRIVER = "NOT_DEFINED";
@@ -58,6 +67,10 @@ public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFact
         configuration = getConfiguration();
     }
 
+    public SchemaVersion getMinimumRequiredVersion()
+    {
+        return new SchemaVersion(REQUIRED_VERSION_MAJOR, REQUIRED_VERSION_MINOR, REQUIERD_VERSION_BUILD);
+    }
 
     @Override
     public void initialize() {
@@ -84,8 +97,26 @@ public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFact
                 }
 
                 for ( Class clazz : annotatedClasses ) {
-                    log.debug( "Adding annotated class to hibernate: " + clazz.getName() );
-                    ( ( AnnotationConfiguration ) configuration ).addAnnotatedClass( clazz );
+                    if (!getExcludedEntities().contains(clazz.getName())) {
+                        if (log.isDebugEnabled())log.debug( "Adding annotated class to hibernate: " + clazz.getName() );
+                        ( ( AnnotationConfiguration ) configuration ).addAnnotatedClass( clazz );
+                    } else {
+                        if (log.isDebugEnabled()) log.debug( "Excluded entity: "+clazz.getName());
+                    }
+                }
+            }
+
+            URL mappingsUrl = getMappings();
+            if (mappingsUrl != null)
+            {
+                if (log.isDebugEnabled()) log.debug("Adding mappings from: " + mappingsUrl);
+                try
+                {
+                    configuration.addInputStream(mappingsUrl.openStream());
+                }
+                catch (IOException e)
+                {
+                    throw new ExceptionInInitializerError(e);
                 }
             }
 
@@ -285,4 +316,13 @@ public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFact
         }
         return getConfigFile().exists();
     }
+
+    public List<String> getExcludedEntities()
+    {
+        return new ArrayList<String>();
+    }
+
+     public URL getMappings() {
+         return null;
+     }
 }

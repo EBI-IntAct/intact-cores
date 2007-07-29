@@ -32,12 +32,6 @@ import java.util.regex.Pattern;
  */
 public class SchemaVersion {
 
-    // required version is 1.3.0 (build version should always be 0, as a change in the build
-    // version should no break compatibility)
-    private static final Integer REQUIRED_VERSION_MAJOR = 1;
-    private static final Integer REQUIRED_VERSION_MINOR = 6;
-    private static final Integer REQUIERD_VERSION_BUILD = 0;
-
     private static final Log log = LogFactory.getLog( SchemaVersion.class );
 
     private Integer major;
@@ -93,15 +87,6 @@ public class SchemaVersion {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Returns the required minimum version
-     *
-     * @return the minimum version
-     */
-    public static SchemaVersion minimumVersion() {
-        return new SchemaVersion( REQUIRED_VERSION_MAJOR, REQUIRED_VERSION_MINOR, REQUIERD_VERSION_BUILD );
     }
 
     public Integer getMajor() {

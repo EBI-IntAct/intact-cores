@@ -69,6 +69,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     private Collection<Feature> bindingDomains = new ArrayList<Feature>();
 
+    private CvComponentRole componentRole;
+
     /**
      * Experimental role of that component (eg. bait, prey, ...).
      */
@@ -336,6 +338,27 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( removed ) {
             feature.setComponent( null );
         }
+    }
+
+    /**
+     * Getter for property 'cvComponentRole'.
+     *
+     * @return Value for property 'cvComponentRole'.
+     */
+    @Deprecated
+    @Transient
+    public CvComponentRole getCvComponentRole() {
+        return componentRole;
+    }
+
+    /**
+     * Setter for property 'cvComponentRole'.
+     *
+     * @param cvComponentRole Value to set for property 'cvComponentRole'.
+     */
+    @Deprecated
+    public void setCvComponentRole( CvComponentRole cvComponentRole ) {
+        componentRole = cvComponentRole;
     }
 
     /**
