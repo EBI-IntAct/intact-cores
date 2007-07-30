@@ -188,6 +188,7 @@ public class IntactMockBuilder {
         experiment.setCvIdentification(createCvObject(CvIdentification.class, CvIdentification.PREDETERMINED_MI_REF, CvIdentification.PREDETERMINED));
 
         experiment.setPublication(createPublicationRandom());
+        experiment.addXref(createPrimaryReferenceXref(experiment, experiment.getPublication().getShortLabel()));
 
         return experiment;
     }
