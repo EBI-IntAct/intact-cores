@@ -205,7 +205,7 @@ public class IntactMockBuilder {
     }
 
     public Publication createPublicationRandom() {
-        return createPublication(nextString("pub"));
+        return createPublication(String.valueOf(nextInt()));
     }
 
     public Publication createPublication(String pmid) {
