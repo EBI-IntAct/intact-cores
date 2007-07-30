@@ -84,6 +84,22 @@ public class IntactMockBuilder {
         return XrefUtils.createIdentityXref(parent, primaryId, getIdentityQualifier(), cvDatabase);
     }
 
+    public <X extends Xref> X createPrimaryReferenceXref(AnnotatedObject<X,?> parent, String primaryId) {
+        CvXrefQualifier primaryReference = createCvObject(CvXrefQualifier.class, CvXrefQualifier.PRIMARY_REFERENCE_MI_REF, CvXrefQualifier.PRIMARY_REFERENCE);
+        CvDatabase pubmedDb = createCvObject(CvDatabase.class, CvDatabase.PUBMED_MI_REF, CvDatabase.PUBMED);
+
+        return createXref(parent, primaryId, primaryReference, pubmedDb);
+    }
+
+    public <X extends Xref> X createXref(AnnotatedObject<X,?> parent, String primaryId, CvXrefQualifier cvXrefQualifer, CvDatabase cvDatabase) {
+        X xref = (X) XrefUtils.newXrefInstanceFor(parent.getClass());
+        xref.setPrimaryId(primaryId);
+        xref.setCvXrefQualifier(cvXrefQualifer);
+        xref.setCvDatabase(cvDatabase);
+
+        return xref;
+    }
+
     public BioSource createBioSourceRandom() {
         return createBioSource(nextId(), nextString("label"));
     }

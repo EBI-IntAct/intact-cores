@@ -15,11 +15,13 @@
  */
 package uk.ac.ebi.intact.core.unit;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
-import org.junit.AfterClass;
 
 /**
  * Base for all intact-tests.
@@ -29,6 +31,18 @@ import org.junit.AfterClass;
  */
 public abstract class IntactBasicTestCase
 {
+
+    private IntactMockBuilder mockBuilder;
+
+    @Before
+    public void prepare() throws Exception {
+        mockBuilder = new IntactMockBuilder();
+    }
+
+    @After
+    public void after() throws Exception {
+        mockBuilder = null;
+    }
 
     @AfterClass
     public static void end() throws Exception {
@@ -63,5 +77,7 @@ public abstract class IntactBasicTestCase
         return getDataContext().getDaoFactory();
     }
 
-
+    protected IntactMockBuilder getMockBuilder() {
+        return mockBuilder;
+    }
 }
