@@ -19,6 +19,7 @@ import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
+import org.junit.AfterClass;
 
 /**
  * Base for all intact-tests.
@@ -28,6 +29,13 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
  */
 public abstract class IntactBasicTestCase
 {
+
+    @AfterClass
+    public static void end() throws Exception {
+        if (IntactContext.currentInstanceExists()) {
+            IntactContext.getCurrentInstance().close();
+        }
+    }
 
     protected void beginTransaction() {
         getDataContext().beginTransaction();
@@ -54,5 +62,6 @@ public abstract class IntactBasicTestCase
     protected DaoFactory getDaoFactory() {
         return getDataContext().getDaoFactory();
     }
+
 
 }

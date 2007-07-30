@@ -19,8 +19,8 @@ public class IntactUnitTest extends IntactAbstractTestCase
     @Test
     public void testResetSchema() throws Exception {
         CvObjectBuilder builder = new CvObjectBuilder();
-        CvXrefQualifier cvXrefQual = builder.createIdentityCvXrefQualifier(getIntactContext());
-        CvDatabase cvDatabase = builder.createPsiMiCvDatabase(getIntactContext());
+        CvXrefQualifier cvXrefQual = builder.createIdentityCvXrefQualifier(getIntactContext().getInstitution());
+        CvDatabase cvDatabase = builder.createPsiMiCvDatabase(getIntactContext().getInstitution());
         getDataContext().getDaoFactory().getCvObjectDao(CvXrefQualifier.class).persist(cvXrefQual);
         getDataContext().getDaoFactory().getCvObjectDao(CvDatabase.class).persist(cvDatabase);
 
