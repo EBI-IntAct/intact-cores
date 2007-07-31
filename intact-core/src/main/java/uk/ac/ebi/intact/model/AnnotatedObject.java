@@ -12,7 +12,7 @@ import java.util.Collection;
  * @version $Id$
  * @see uk.ac.ebi.intact.model.AnnotatedObjectImpl
  */
-public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicObject {
+public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicObject, Annotated {
 
     /**
      * This matches with the column size for short label
@@ -30,8 +30,6 @@ public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicO
     ///////////////////////////////////////
     // access methods for associations
     void setAnnotations( Collection<Annotation> someAnnotation );
-
-    Collection<Annotation> getAnnotations();
 
     void addAnnotation( Annotation annotation );
 

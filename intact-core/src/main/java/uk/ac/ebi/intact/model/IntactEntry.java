@@ -25,7 +25,7 @@ import java.util.HashSet;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class IntactEntry {
+public class IntactEntry implements Annotated {
 
     private Collection<Interaction> interactions;
     private Collection<Experiment> experiments;
