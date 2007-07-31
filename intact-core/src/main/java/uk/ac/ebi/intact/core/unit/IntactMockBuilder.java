@@ -229,6 +229,61 @@ public class IntactMockBuilder {
         return new IntactEntry(interactions);
     }
 
+    public Annotation createAnnotation(String annotationText, CvTopic cvTopic) {
+        Annotation annotation = new Annotation(institution, cvTopic);
+        annotation.setAnnotationText(annotationText);
+
+        return annotation;
+    }
+
+    public Annotation createAnnotation(String annotationText, String cvTopicPrimaryId, String cvTopicShortLabel) {
+        CvTopic cvTopic = createCvObject(CvTopic.class, cvTopicPrimaryId, cvTopicShortLabel);
+        return createAnnotation(annotationText, cvTopic);
+    }
+
+    public Annotation createAnnotationRandom() {
+        return createAnnotation(nextString("annottext"), CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
+    }
+
+    public Feature createFeature(String shortLabel, CvFeatureType featureType) {
+        Feature feature = new Feature(institution, shortLabel, null, featureType);
+
+        CvFeatureIdentification cvFeatureDetMethod = createCvObject(CvFeatureIdentification.class, CvFeatureIdentification.X_RAY_MI_REF, CvFeatureIdentification.X_RAY);
+        feature.setCvFeatureIdentification(cvFeatureDetMethod);
+
+        for (int i=0; i<childRandom(); i++) {
+            feature.addRange(createRangeRandom());
+        }
+
+        return feature;
+    }
+
+    public Feature createFeatureRandom() {
+        CvFeatureType cvFeatureType = createCvObject(CvFeatureType.class, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, CvFeatureType.EXPERIMENTAL_FEATURE);
+        return createFeature(nextString("feat"), cvFeatureType);
+    }
+
+    public Range createRange(int beginFrom, int endFrom, int beginTo, int endTo) {
+        Range range = new Range(institution, beginFrom, endTo, null);
+        range.setFromIntervalStart(beginFrom);
+        range.setFromIntervalEnd(endFrom);
+        range.setToIntervalStart(beginTo);
+        range.setToIntervalEnd(endTo);
+
+        CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, "MI:0339", CvFuzzyType.UNDETERMINED);
+        range.setFromCvFuzzyType(fuzzyType);
+        range.setToCvFuzzyType(fuzzyType);
+
+        return range;
+    }
+
+    public Range createRangeRandom() {
+        int from = new Random().nextInt(5);
+        int to = new Random().nextInt(10)+from;
+
+        return createRange(from, from, to, to);
+    }
+
     protected String nextString() {
         return nextString("str");
     }
