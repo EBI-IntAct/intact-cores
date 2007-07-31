@@ -17,6 +17,7 @@ import uk.ac.ebi.intact.model.meta.DbInfo;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,6 +53,10 @@ public class StandardCoreDataConfig extends AbstractHibernateDataConfig {
         return packages;
     }
 
+    public List<String> getExcludedEntities()
+    {
+        return Arrays.asList("uk.ac.ebi.intact.model.SearchItem");
+    }
 
     @Override
     public Configuration getConfiguration() {

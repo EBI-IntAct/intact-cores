@@ -27,6 +27,7 @@ import java.io.Serializable;
  * @since <pre>25-Apr-2006</pre>
  */
 @Embeddable
+@Deprecated
 public class SearchItemPk implements Serializable {
 
     private String ac;
