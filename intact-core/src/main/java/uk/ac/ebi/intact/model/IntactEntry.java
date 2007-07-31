@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -29,6 +30,7 @@ public class IntactEntry {
     private Collection<Interaction> interactions;
     private Collection<Experiment> experiments;
     private Collection<Interactor> interactors;
+    private Collection<Annotation> annotations;
 
     public IntactEntry() {
     }
@@ -70,7 +72,17 @@ public class IntactEntry {
      *
      * @return Interactors
      */
+    @Deprecated
     public Collection<Interactor> getInteractor() {
+        return getInteractors();
+    }
+
+    /**
+     * Convenience method to get the interactors - delegates the logic to the interactions
+     *
+     * @return Interactors
+     */
+    public Collection<Interactor> getInteractors() {
         if (interactors != null) {
             return interactors;
 
@@ -86,6 +98,17 @@ public class IntactEntry {
         }
 
         return interactors;
+    }
+
+    public Collection<Annotation> getAnnotations() {
+        if (annotations == null) {
+            annotations = new ArrayList<Annotation>();
+        }
+        return annotations;
+    }
+
+    public void setAnnotations(Collection<Annotation> annotations) {
+        this.annotations = annotations;
     }
 
 }
