@@ -300,10 +300,14 @@ public abstract class Xref extends BasicObjectImpl {
 
         final Xref xref = ( Xref ) o;
 
-        if ( !primaryId.equals( xref.primaryId ) ) return false;
-        if ( !cvDatabase.equals( xref.cvDatabase ) ) return false;
+        if (!getClass().equals(xref.getClass())) return false;
 
-        if ( cvXrefQualifier != null ? !cvXrefQualifier.equals( xref.cvXrefQualifier ) : xref.cvXrefQualifier != null )
+        if ( !primaryId.equals( xref.primaryId ) ) return false;
+        if ( cvDatabase != null ) {
+            if ( !cvDatabase.getShortLabel().equals( xref.cvDatabase.getShortLabel() ) ) return false;
+        }
+
+        if ( cvXrefQualifier != null ? !cvXrefQualifier.getShortLabel().equals( xref.cvXrefQualifier.getShortLabel() ) : xref.cvXrefQualifier != null )
             return false;
         if ( dbRelease != null ? !dbRelease.equals( xref.dbRelease ) : xref.dbRelease != null ) return false;
 
