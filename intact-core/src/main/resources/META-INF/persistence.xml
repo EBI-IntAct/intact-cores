@@ -12,8 +12,6 @@
          <property name="hibernate.connection.url" value="jdbc:h2:mem:intact_core_mem"/>
          <property name="hibernate.max_fetch_depth" value="3"/>
 
-         <property name="hibernate.current_session_context_class" value="thread"/>
-
          <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
       </properties>
    </persistence-unit>
@@ -28,9 +26,7 @@
          <property name="hibernate.connection.url" value="jdbc:h2:/tmp/intact-core"/>
          <property name="hibernate.max_fetch_depth" value="3"/>
 
-          <property name="hibernate.current_session_context_class" value="thread"/>
-
-         <property name="hibernate.hbm2ddl.auto" value="update"/>
+         <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
       </properties>
    </persistence-unit>
 

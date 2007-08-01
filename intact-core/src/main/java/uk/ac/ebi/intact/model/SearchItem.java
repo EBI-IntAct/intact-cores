@@ -27,7 +27,6 @@ import java.io.Serializable;
                                   @Index( name = "i_ia_search", columnNames = {"value", "objclass"} )
                                           }
 )
-@Deprecated
 public class SearchItem implements Serializable {
 
     private SearchItemPk pk;
