@@ -3,7 +3,7 @@
     <parent>
          <groupId>uk.ac.ebi.intact.core</groupId>
          <artifactId>core-master</artifactId>
-         <version>1.6.1-SNAPSHOT</version>
+         <version>1.6.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,7 @@
     <groupId>uk.ac.ebi.intact</groupId>
     <artifactId>intact-core</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.1</version>
 
     <name>IntAct Core :: Core</name>
     <url>http://www.ebi.ac.uk/~intact/devsite/${artifactId}</url>
