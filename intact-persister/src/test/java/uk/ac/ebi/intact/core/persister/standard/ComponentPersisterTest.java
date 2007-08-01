@@ -3,14 +3,14 @@ package uk.ac.ebi.intact.core.persister.standard;
 import org.junit.After;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
-import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
-import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.core.unit.IntactUnit;
+import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.Interaction;
 
 /**
  * TODO comment this
@@ -18,38 +18,31 @@ import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ComponentPersisterTest extends IntactAbstractTestCase
+public class ComponentPersisterTest extends IntactBasicTestCase
 {
-    private ExperimentPersister persister;
 
-    @Before
-    public void prepare() {
-        persister = ExperimentPersister.getInstance();
-    }
 
     @After
     public void after() {
-        persister = null;
         PersisterContext.getInstance().clear();
     }
 
     @Test
-    @IntactUnitDataset(dataset = PsiTestDatasetProvider.INTACT_JUL_06, provider = PsiTestDatasetProvider.class)
-    public void testPersistComponent_existingSources() throws Exception {
-        Interaction interaction = getDaoFactory().getInteractionDao().getAll(0,1).iterator().next();
-        Interactor interactor = getDaoFactory().getInteractorDao().getAll(0,1).iterator().next();
-        CvExperimentalRole expRole = getDaoFactory().getCvObjectDao(CvExperimentalRole.class).getAll(0,1).iterator().next();
-        CvBiologicalRole bioRole = getDaoFactory().getCvObjectDao(CvBiologicalRole.class).getAll(0,1).iterator().next();
+    public void testPersistComponent_default() throws Exception {
+        new IntactUnit().createSchema();
 
-        Component component = new Component(IntactContext.getCurrentInstance().getInstitution(), interaction, interactor, expRole, bioRole);
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        Component component = interaction.getComponents().iterator().next();
 
+        beginTransaction();
         ComponentPersister.getInstance().saveOrUpdate(component);
         ComponentPersister.getInstance().commit();
+        commitTransaction();
 
         String newComponentAc = component.getAc();
         assertNotNull(newComponentAc);
 
-        commitTransaction();
+
         beginTransaction();
 
         Component newComponent = getDaoFactory().getComponentDao().getByAc(newComponentAc);
@@ -61,5 +54,8 @@ public class ComponentPersisterTest extends IntactAbstractTestCase
         assertFalse(newComponent.getCvExperimentalRole().getXrefs().isEmpty());
     }
 
-
+    @Override
+    protected IntactMockBuilder getMockBuilder() {
+        return new IntactMockBuilder(IntactContext.getCurrentInstance().getInstitution());
+    }
 }

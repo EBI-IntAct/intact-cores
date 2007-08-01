@@ -93,6 +93,8 @@ public class IntactMockBuilder {
 
     public <X extends Xref> X createXref(AnnotatedObject<X,?> parent, String primaryId, CvXrefQualifier cvXrefQualifer, CvDatabase cvDatabase) {
         X xref = (X) XrefUtils.newXrefInstanceFor(parent.getClass());
+        xref.setOwner(parent.getOwner());
+        xref.setParent(parent);
         xref.setPrimaryId(primaryId);
         xref.setCvXrefQualifier(cvXrefQualifer);
         xref.setCvDatabase(cvDatabase);
@@ -128,10 +130,15 @@ public class IntactMockBuilder {
         InteractorXref idXref = createIdentityXrefUniprot(protein, uniprotId);
         protein.addXref(idXref);
 
-        InteractorAlias alias = createAliasGeneName(protein, nextString("gene"));
+        InteractorAlias alias = createAliasGeneName(protein, shortLabel.toUpperCase());
         protein.addAlias(alias);
 
         return protein;
+    }
+
+
+    public Protein createProtein(String uniprotId, String shortLabel) {
+        return createProtein(uniprotId, shortLabel, createBioSourceRandom());
     }
 
     public Component createComponent(Interaction interaction, Interactor interactor, CvExperimentalRole expRole, CvBiologicalRole bioRole) {
@@ -142,24 +149,30 @@ public class IntactMockBuilder {
         CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.NEUTRAL_PSI_REF, CvExperimentalRole.NEUTRAL);
         CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
 
-        return new Component(getInstitution(), interaction, interactor, expRole, bioRole);
+        Component component = new Component(getInstitution(), interaction, interactor, expRole, bioRole);
+
+        for (int i=0; i<childRandom(0,2); i++) {
+            component.addBindingDomain(createFeatureRandom());
+        }
+
+        return component;
     }
 
     public Component createComponentBait(Interaction interaction, Interactor interactor) {
         CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.BAIT_PSI_REF, CvExperimentalRole.BAIT);
         CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
 
-        return new Component(getInstitution(), interaction, interactor, expRole, bioRole);
+        return createComponent(interaction, interactor, expRole, bioRole);
     }
 
     public Component createComponentPrey(Interaction interaction, Interactor interactor) {
         CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.PREY_PSI_REF, CvExperimentalRole.PREY);
         CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
 
-        return new Component(getInstitution(), interaction, interactor, expRole, bioRole);
+        return createComponent(interaction, interactor, expRole, bioRole);
     }
 
-    public Interaction createInteraction(String shortLabel, Interactor bait, Interactor prey, Experiment experiment) {
+     public Interaction createInteraction(String shortLabel, Interactor bait, Interactor prey, Experiment experiment) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
         Interaction interaction = new InteractionImpl(Arrays.asList(experiment), cvInteractionType, null, shortLabel, getInstitution());
@@ -177,6 +190,21 @@ public class IntactMockBuilder {
 
         interaction.addComponent(createComponentBait(interaction, createProteinRandom()));
         interaction.addComponent(createComponentPrey(interaction, createProteinRandom()));
+
+        return interaction;
+    }
+
+    public Interaction createInteraction(String ... interactorShortLabels) {
+        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+        Interaction interaction = new InteractionImpl(Arrays.asList(createExperimentEmpty(nextString("exp"))), cvInteractionType, null, nextString("label"), getInstitution());
+
+        for (String interactorShortLabel : interactorShortLabels) {
+            interaction.addComponent(createComponentNeutral(interaction, createProtein("uniprotId", interactorShortLabel)));
+        }
+
+        if (interactorShortLabels.length == 1) {
+            interaction.addComponent(createComponentNeutral(interaction, createProtein("uniprotId", interactorShortLabels[0])));
+        }
 
         return interaction;
     }
@@ -246,14 +274,9 @@ public class IntactMockBuilder {
     }
 
     public Feature createFeature(String shortLabel, CvFeatureType featureType) {
-        Feature feature = new Feature(institution, shortLabel, null, featureType);
-
-        CvFeatureIdentification cvFeatureDetMethod = createCvObject(CvFeatureIdentification.class, CvFeatureIdentification.X_RAY_MI_REF, CvFeatureIdentification.X_RAY);
-        feature.setCvFeatureIdentification(cvFeatureDetMethod);
-
-        for (int i=0; i<childRandom(); i++) {
-            feature.addRange(createRangeRandom());
-        }
+        Interaction interaction = createInteractionRandomBinary();
+        Component component = interaction.getComponents().iterator().next();
+        Feature feature = new Feature(getInstitution(), shortLabel, component, featureType);
 
         return feature;
     }

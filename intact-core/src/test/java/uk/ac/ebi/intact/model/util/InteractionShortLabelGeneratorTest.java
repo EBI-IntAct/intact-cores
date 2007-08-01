@@ -19,15 +19,10 @@ import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import uk.ac.ebi.intact.context.CvContext;
-import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.core.unit.IgnoreDatabase;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
-import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
-import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Interactor;
 
 import java.util.Arrays;
 
@@ -37,8 +32,7 @@ import java.util.Arrays;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@IgnoreDatabase
-public class InteractionShortLabelGeneratorTest extends IntactAbstractTestCase {
+public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
 
     @Test
     public void createCandidateShortLabel() throws Exception {
@@ -63,9 +57,10 @@ public class InteractionShortLabelGeneratorTest extends IntactAbstractTestCase {
     }
 
     @Test
-    @IntactUnitDataset(dataset = LegacyPsiTestDatasetProvider.INTACT_CORE, provider = LegacyPsiTestDatasetProvider.class)
     public void createCandidateShortLabel_fromInteraction() throws Exception {
-        Interaction interaction = getDaoFactory().getInteractionDao().getByShortLabel("cara-carb-4");
+        Interactor interactorA = getMockBuilder().createProtein("P0A6F1", "cara");
+        Interactor interactorB = getMockBuilder().createProtein("P00968", "carb");
+        Interaction interaction = getMockBuilder().createInteraction("cara-carb-4", interactorA, interactorB, getMockBuilder().createExperimentEmpty("exp"));
 
         assertNotNull(interaction);
 
@@ -77,15 +72,13 @@ public class InteractionShortLabelGeneratorTest extends IntactAbstractTestCase {
 
     @Test
      public void selfInteractionShortLabel() throws Exception {
-        IntactMockBuilder mockBuilder = new IntactMockBuilder();
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
-        Interaction interaction = mockBuilder.createInteractionRandomBinary();
-
-        Interactor interactor = mockBuilder.createProteinRandom();
+        Interactor interactor = getMockBuilder().createProteinRandom();
         final String geneName = "lala";
         interactor.getAliases().iterator().next().setName(geneName);
 
-        Component comp = mockBuilder.createComponentNeutral(interaction, interactor);
+        Component comp = getMockBuilder().createComponentNeutral(interaction, interactor);
         interaction.setComponents(Arrays.asList(comp));
 
         String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(interaction);
@@ -95,9 +88,10 @@ public class InteractionShortLabelGeneratorTest extends IntactAbstractTestCase {
     }
 
     @Test
-    @IntactUnitDataset(dataset = PsiTestDatasetProvider.INTACT_JUL_06, provider = PsiTestDatasetProvider.class)
     public void createCandidateShortLabel_fromInteraction_null() throws Exception {
-        Interaction interaction = getDaoFactory().getInteractionDao().getByShortLabel("fadd-casp8-2");
+        Interactor interactorA = getMockBuilder().createProtein("Q13158", "fadd");
+        Interactor interactorB = getMockBuilder().createProtein("Q14790", "casp8");
+        Interaction interaction = getMockBuilder().createInteraction("fadd-casp8-2", interactorA, interactorB, getMockBuilder().createExperimentEmpty("exp"));
 
         assertNotNull(interaction);
 
@@ -107,21 +101,4 @@ public class InteractionShortLabelGeneratorTest extends IntactAbstractTestCase {
         Assert.assertEquals("fadd-casp8", candLabel);
     }
 
-    private void addMiXrefToCvObject(CvObject cv, String mi, IntactContext context) {
-        CvObjectBuilder builder = new CvObjectBuilder();
-        CvObjectXref xref = new CvObjectXref(context.getInstitution(), builder.createPsiMiCvDatabase(context), mi, builder.createIdentityCvXrefQualifier(context));
-        cv.addXref(xref);
-    }
-
-    private class MyCvContext extends CvContext {
-
-        private MyCvContext() {
-            super(IntactContext.getCurrentInstance().getSession());
-        }
-
-        @Override
-        public <T extends CvObject> T getByMiRef(Class<T> cvType, String miRef, boolean forceReload) {
-            return null;
-        }
-    }
 }

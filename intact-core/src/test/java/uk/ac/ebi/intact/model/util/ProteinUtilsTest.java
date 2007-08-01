@@ -18,10 +18,8 @@ package uk.ac.ebi.intact.model.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
-import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Protein;
-import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 
 /**
  * TODO comment this
@@ -29,12 +27,13 @@ import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ProteinUtilsTest extends IntactAbstractTestCase {
+public class ProteinUtilsTest extends IntactBasicTestCase {
 
     @Test
-    @IntactUnitDataset(dataset = LegacyPsiTestDatasetProvider.INTACT_CORE, provider = LegacyPsiTestDatasetProvider.class)
-    public void getGeneName_existing() throws Exception {
-        Protein prot = getDaoFactory().getProteinDao().getByShortLabel("cara_ecoli");
+    public void getGeneName_default() throws Exception {
+        Protein prot = getMockBuilder().createProtein("P0A6F1", "cara");
+        prot.getAliases().clear();
+        prot.getAliases().add(getMockBuilder().createAliasGeneName(prot, "carA"));
 
         assertNotNull(prot);
 

@@ -20,15 +20,13 @@ import uk.ac.ebi.intact.core.persister.AbstractPersister;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
 
-import java.util.Collection;
-
 /**
  * TODO comment this
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject> extends AbstractPersister<T> {
+public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject<?,?>> extends AbstractPersister<T> {
 
     protected AbstractAnnotatedObjectPersister() {
         super();
@@ -38,17 +36,17 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
     protected void saveOrUpdateAttributes(T intactObject) throws PersisterException {
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
 
-        for (Xref xref : (Collection<Xref>) intactObject.getXrefs()) {
+        for (Xref xref : intactObject.getXrefs()) {
             cvPersister.saveOrUpdate(xref.getCvDatabase());
 
             if (xref.getCvXrefQualifier() != null) {
                 cvPersister.saveOrUpdate(xref.getCvXrefQualifier());
             }
         }
-        for (Alias alias : (Collection<Alias>) intactObject.getAliases()) {
+        for (Alias alias : intactObject.getAliases()) {
             cvPersister.saveOrUpdate(alias.getCvAliasType());
         }
-        for (Annotation annotation : (Collection<Annotation>) intactObject.getAnnotations()) {
+        for (Annotation annotation : intactObject.getAnnotations()) {
             cvPersister.saveOrUpdate(annotation.getCvTopic());
         }
     }
@@ -58,7 +56,7 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
 
         try {
-            for (Xref xref : (Collection<Xref>) intactObject.getXrefs()) {
+            for (Xref xref : intactObject.getXrefs()) {
                 CvDatabase cvDb = (CvDatabase) cvPersister.syncIfTransient(xref.getCvDatabase());
                 xref.setCvDatabase(cvDb);
 
@@ -68,7 +66,7 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
                 }
                 xref.setParent(intactObject);
             }
-            for (Alias alias : (Collection<Alias>) intactObject.getAliases()) {
+            for (Alias alias :  intactObject.getAliases()) {
                 CvAliasType cvAliasType = alias.getCvAliasType();
 
                 if (cvAliasType != null) {
@@ -79,7 +77,7 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
                 alias.setOwner(getIntactContext().getInstitution());
                 alias.setParent(intactObject);
             }
-            for (Annotation annotation : (Collection<Annotation>) intactObject.getAnnotations()) {
+            for (Annotation annotation : intactObject.getAnnotations()) {
                 CvTopic cvTopic = annotation.getCvTopic();
 
                 if (cvTopic != null) {

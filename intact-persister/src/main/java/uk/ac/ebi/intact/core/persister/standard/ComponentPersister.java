@@ -58,9 +58,13 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         cvPersister.saveOrUpdate(intactObject.getCvBiologicalRole());
         cvPersister.saveOrUpdate(intactObject.getCvExperimentalRole());
 
-        // note that to avoid cyclic invocations, do not try to sync the interaction here
+        InteractionPersister.getInstance().saveOrUpdate(intactObject.getInteraction());
 
         InteractorPersister.getInstance().saveOrUpdate(intactObject.getInteractor());
+
+        for (Feature feature : intactObject.getBindingDomains()) {
+            FeaturePersister.getInstance().saveOrUpdate(feature);
+        }
     }
 
     @Override
@@ -77,6 +81,9 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         // note that to avoid cyclic invocations, do not try to sync the interaction here
 
         intactObject.setInteractor((Interactor) InteractorPersister.getInstance().syncIfTransient(intactObject.getInteractor()));
+
+        // don't sync features (consider all them as new)
+
 
         return super.syncAttributes(intactObject);
     }
