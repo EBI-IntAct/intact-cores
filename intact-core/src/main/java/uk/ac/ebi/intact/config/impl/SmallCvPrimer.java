@@ -55,21 +55,23 @@ public class SmallCvPrimer implements CvPrimer {
         // of psi-mi so they will be updated later.
 
         // CvXrefQualifier( identity )
-        CvXrefQualifier identity = intactContext.getCvContext().getByMiRef(CvXrefQualifier.class, CvXrefQualifier.IDENTITY_MI_REF);
+        CvXrefQualifier identity = intactContext.getDataContext().getDaoFactory()
+                .getCvObjectDao(CvXrefQualifier.class).getByPsiMiRef(CvXrefQualifier.IDENTITY_MI_REF);
 
         CvObjectBuilder cvBuilder = new CvObjectBuilder();
 
         if (identity == null) {
-            identity = cvBuilder.createIdentityCvXrefQualifier(IntactContext.getCurrentInstance());
+            identity = cvBuilder.createIdentityCvXrefQualifier(IntactContext.getCurrentInstance().getInstitution());
             identity.setFullName("identical object");
             intactContext.getDataContext().getDaoFactory().getCvObjectDao(CvXrefQualifier.class).persist(identity);
         }
 
         // CvDatabase( psi-mi )
-        CvDatabase psi = intactContext.getCvContext().getByMiRef(CvDatabase.class, CvDatabase.PSI_MI_MI_REF);
+        CvDatabase psi = intactContext.getDataContext().getDaoFactory()
+                .getCvObjectDao(CvDatabase.class).getByPsiMiRef(CvDatabase.PSI_MI_MI_REF);
 
         if (psi == null) {
-            psi = cvBuilder.createPsiMiCvDatabase(IntactContext.getCurrentInstance());
+            psi = cvBuilder.createPsiMiCvDatabase(IntactContext.getCurrentInstance().getInstitution());
             psi.setFullName("psi-mi");
             intactContext.getDataContext().getDaoFactory().getCvObjectDao(CvDatabase.class).persist(psi);
         }
