@@ -18,19 +18,33 @@ package uk.ac.ebi.intact.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Date;
 
 /**
- * This class represents an entry in IntAct. It does not have a direct equivalence in the database
+ * This class represents a PSI-MI XML entry in IntAct. It does not have a direct equivalence in the database.
  *
- * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @author Samuel Kerrien (skerrien@ebi.ac.uk), Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
 public class IntactEntry implements Annotated {
+
+    /**
+     * Institution makes up for the entry source.
+     */
+    private Institution institution;
+
+    /**
+     * Addition to the institution to represent the source (that has a released date). 
+     */
+    private Date releasedDate;
 
     private Collection<Interaction> interactions;
     private Collection<Experiment> experiments;
     private Collection<Interactor> interactors;
     private Collection<Annotation> annotations;
+
+    //////////////////
+    // Constructors
 
     public IntactEntry() {
     }
@@ -38,6 +52,9 @@ public class IntactEntry implements Annotated {
     public IntactEntry(Collection<Interaction> interactions) {
         this.interactions = interactions;
     }
+
+    /////////////////////////
+    // Getters and Setters
 
     public Collection<Interaction> getInteractions() {
         return interactions;
@@ -111,4 +128,19 @@ public class IntactEntry implements Annotated {
         this.annotations = annotations;
     }
 
+    public Institution getInstitution() {
+        return institution;
+    }
+
+    public void setInstitution( Institution institution ) {
+        this.institution = institution;
+    }
+
+    public Date getReleasedDate() {
+        return releasedDate;
+    }
+
+    public void setReleasedDate( Date releasedDate ) {
+        this.releasedDate = releasedDate;
+    }
 }
