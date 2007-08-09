@@ -56,7 +56,9 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<Session> {
             }
         }
 
-        return session;
+        // invoking the method from the session factory because if the session is closed it will automatically
+        // open one
+        return session.getSessionFactory().getCurrentSession();
     }
 
     public void flushCurrentSession() {
