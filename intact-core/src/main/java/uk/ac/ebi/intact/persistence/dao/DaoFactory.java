@@ -222,6 +222,10 @@ public class DaoFactory implements Serializable {
         return new XrefDaoImpl<T>( xrefClass, getCurrentSession(), intactSession );
     }
 
+    public ImexObjectDao getImexObjectDao() {
+        return new ImexObjectDaoImpl(getCurrentSession(), intactSession);
+    }
+
     public Connection connection() {
         return getCurrentSession().connection();
     }
