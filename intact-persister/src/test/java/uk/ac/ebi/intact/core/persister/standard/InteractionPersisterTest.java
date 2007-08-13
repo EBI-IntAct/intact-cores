@@ -22,10 +22,7 @@ import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.unit.IntactUnit;
-import uk.ac.ebi.intact.model.CvAliasType;
-import uk.ac.ebi.intact.model.CvObject;
-import uk.ac.ebi.intact.model.IntactEntry;
-import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 /**
@@ -83,6 +80,72 @@ public class InteractionPersisterTest {
 
         CvAliasType aliasType = getDaoFactory().getCvObjectDao(CvAliasType.class).getByPsiMiRef(CvAliasType.GENE_NAME_MI_REF);
         Assert.assertNotNull(aliasType);
+    }
+
+    @Test
+    public void institutionPersisted() throws Exception {
+        final String ownerName = "LalaInstitute";
+        Institution institution = new Institution(ownerName);
+
+        IntactMockBuilder builder = new IntactMockBuilder(institution);
+        Interaction interaction = builder.createInteractionRandomBinary();
+
+        Assert.assertEquals(institution, interaction.getOwner());
+
+        InteractionPersister interactorPersister = InteractionPersister.getInstance();
+
+        interactorPersister.saveOrUpdate(interaction);
+        interactorPersister.commit();
+
+        beginTransaction();
+
+        Institution reloadedInstitution = getDaoFactory().getInstitutionDao()
+                .getByShortLabel(ownerName);
+        Interaction reloadedInteraction = getDaoFactory().getInteractionDao()
+                .getByShortLabel(interaction.getShortLabel());
+
+        Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
+        Assert.assertEquals(ownerName, reloadedInstitution.getShortLabel());
+        Assert.assertEquals(ownerName, reloadedInteraction.getOwner().getShortLabel());
+    }
+
+    @Test
+    public void institution_notPersisted() throws Exception {
+        Institution institution = getIntactContext().getInstitution();
+
+        IntactMockBuilder builder = new IntactMockBuilder(institution);
+        Interaction interaction = builder.createInteractionRandomBinary();
+
+        Assert.assertEquals(institution, interaction.getOwner());
+
+        InteractionPersister interactorPersister = InteractionPersister.getInstance();
+
+        interactorPersister.saveOrUpdate(interaction);
+        interactorPersister.commit();
+
+        beginTransaction();
+
+        Assert.assertEquals(1, getDaoFactory().getInstitutionDao().countAll());
+    }
+
+    @Test
+    public void institution_notPersisted2() throws Exception {
+        Institution institution = new Institution(getIntactContext().getInstitution().getShortLabel());
+
+        IntactMockBuilder builder = new IntactMockBuilder(institution);
+        Interaction interaction = builder.createInteractionRandomBinary();
+
+        Assert.assertEquals(institution, interaction.getOwner());
+
+        InteractionPersister interactorPersister = InteractionPersister.getInstance();
+
+        interactorPersister.saveOrUpdate(interaction);
+        interactorPersister.commit();
+
+        beginTransaction();
+
+        System.out.println(getDaoFactory().getInstitutionDao().getAll());
+        Assert.assertEquals(1, getDaoFactory().getInstitutionDao().countAll());
     }
 
     protected DaoFactory getDaoFactory() {

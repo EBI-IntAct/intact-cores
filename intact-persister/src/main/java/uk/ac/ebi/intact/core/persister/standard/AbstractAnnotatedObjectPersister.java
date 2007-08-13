@@ -34,6 +34,9 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
 
     @Override
     protected void saveOrUpdateAttributes(T intactObject) throws PersisterException {
+        InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
+        institutionPersister.saveOrUpdate(intactObject.getOwner());
+
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
 
         for (Xref xref : intactObject.getXrefs()) {
@@ -42,17 +45,24 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
             if (xref.getCvXrefQualifier() != null) {
                 cvPersister.saveOrUpdate(xref.getCvXrefQualifier());
             }
+
+            institutionPersister.saveOrUpdate(xref.getOwner());
         }
         for (Alias alias : intactObject.getAliases()) {
             cvPersister.saveOrUpdate(alias.getCvAliasType());
+            institutionPersister.saveOrUpdate(alias.getOwner());
         }
         for (Annotation annotation : intactObject.getAnnotations()) {
             cvPersister.saveOrUpdate(annotation.getCvTopic());
+            institutionPersister.saveOrUpdate(annotation.getOwner());
         }
     }
 
     @Override
     protected T syncAttributes(T intactObject) {
+        InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
+        intactObject.setOwner(institutionPersister.syncIfTransient(intactObject.getOwner()));
+
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
 
         try {
@@ -65,6 +75,8 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
                     xref.setCvXrefQualifier(cvXrefQual);
                 }
                 xref.setParent(intactObject);
+
+                xref.setOwner(institutionPersister.syncIfTransient(xref.getOwner()));
             }
             for (Alias alias :  intactObject.getAliases()) {
                 CvAliasType cvAliasType = alias.getCvAliasType();
@@ -76,6 +88,8 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
 
                 alias.setOwner(getIntactContext().getInstitution());
                 alias.setParent(intactObject);
+
+                alias.setOwner(institutionPersister.syncIfTransient(alias.getOwner()));
             }
             for (Annotation annotation : intactObject.getAnnotations()) {
                 CvTopic cvTopic = annotation.getCvTopic();
@@ -85,6 +99,8 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
                     annotation.setCvTopic(cvTopic);
                 }
                 annotation.setOwner(getIntactContext().getInstitution());
+
+                annotation.setOwner(institutionPersister.syncIfTransient(annotation.getOwner()));
             }
         } catch (Throwable t) {
             throw new IntactException("Exception syncing: "+intactObject.getShortLabel()+" ("+intactObject.getAc()+")", t);

@@ -31,8 +31,6 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
     private static final Log log = LogFactory.getLog(AbstractPersister.class);
 
-    private IntactContext intactContext;
-
     protected AbstractPersister() {
     }
     
@@ -100,8 +98,6 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         if (log.isDebugEnabled()) log.debug("\t\t\tNot previously synced");
 
         SyncContext.getInstance().addToSynced(intactObject);
-
-        intactObject.setOwner(getIntactContext().getInstitution());
 
         return syncAttributes(intactObject);
     }

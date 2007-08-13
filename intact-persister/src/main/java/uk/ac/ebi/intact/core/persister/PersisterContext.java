@@ -18,10 +18,7 @@ package uk.ac.ebi.intact.core.persister;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.model.Alias;
-import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.CvObject;
-import uk.ac.ebi.intact.model.Xref;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.util.Collection;
@@ -53,6 +50,7 @@ public class PersisterContext {
 
     private Map<String, CvObject> cvObjectsToBePersisted;
     private Map<String, AnnotatedObject> annotatedObjectsToBePersisted;
+    private Map<String, Institution> institutionsToBePersisted;
 
     public static PersisterContext getInstance() {
         return instance.get();
@@ -61,6 +59,7 @@ public class PersisterContext {
     private PersisterContext() {
         this.cvObjectsToBePersisted = new HashMap<String,CvObject>();
         this.annotatedObjectsToBePersisted = new HashMap<String,AnnotatedObject>();
+        this.institutionsToBePersisted = new HashMap<String,Institution>();
     }
 
     public void addToPersist(AnnotatedObject ao) {
@@ -71,6 +70,11 @@ public class PersisterContext {
         }
     }
 
+    public void addToPersist(Institution institution) {
+        if (!institutionsToBePersisted.containsKey(institution)) {
+            institutionsToBePersisted.put(institution.getShortLabel(), institution);
+        }
+    }
 
     public boolean contains(AnnotatedObject ao) {
         final String key = keyFor(ao);
@@ -79,6 +83,12 @@ public class PersisterContext {
             return true;
         }
         return annotatedObjectsToBePersisted.containsKey(key);
+    }
+
+    public boolean contains(Institution institution) {
+        final String key = institution.getShortLabel();
+
+        return institutionsToBePersisted.containsKey(key);
     }
 
     public AnnotatedObject get(AnnotatedObject ao) {
@@ -91,12 +101,24 @@ public class PersisterContext {
         return annotatedObjectsToBePersisted.get(key);
     }
 
+    public Institution get(Institution institution) {
+       final String key = institution.getShortLabel(); 
+
+        return institutionsToBePersisted.get(key);
+    }
+
     public void persistAll() {
         if (log.isDebugEnabled()) {
             log.debug("Persisting all"+ (isDryRun()? " - DRY RUN" : ""));
             log.debug("\tCvObjects: "+cvObjectsToBePersisted.size());
 
         }
+
+        for (Institution institution : institutionsToBePersisted.values()) {
+            getDaoFactory().getInstitutionDao().persist(institution);
+        }
+
+        getIntactContext().getDataContext().flushSession();
 
         for (CvObject cv : cvObjectsToBePersisted.values()) {
             getDaoFactory().getCvObjectDao().persist(cv);
@@ -141,6 +163,7 @@ public class PersisterContext {
 
     public void clear() {
         if (log.isDebugEnabled()) log.debug("Clearing PersistenceContext");
+        institutionsToBePersisted.clear();
         cvObjectsToBePersisted.clear();
         annotatedObjectsToBePersisted.clear();
     }
