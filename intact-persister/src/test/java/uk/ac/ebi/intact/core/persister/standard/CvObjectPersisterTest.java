@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.persister.standard;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
@@ -80,6 +81,7 @@ public class CvObjectPersisterTest {
     }
 
     @Test (expected = PersisterException.class)
+    @Ignore
     public void persist_noXref() throws Exception {
 
         final String expRoleLabel = "EXP_ROLE";

@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.model.CvObjectXref;
@@ -26,6 +28,11 @@ import uk.ac.ebi.intact.model.CvObjectXref;
  * @version $Id$
  */
 public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject> {
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(CvObjectPersister.class);
 
      private static ThreadLocal<CvObjectPersister> instance = new ThreadLocal<CvObjectPersister>() {
         @Override
@@ -45,12 +52,16 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
     @Override
     protected void saveOrUpdateAttributes(CvObject intactObject) throws PersisterException {
         if (intactObject.getXrefs().isEmpty()) {
-            throw new PersisterException("Cannot save or update a CvObject without Xrefs");
+            log.warn("CvObject without Xrefs: "+intactObject.getShortLabel());
+            //throw new PersisterException("Cannot save or update a CvObject without Xrefs");
         }
 
         for (CvObjectXref xref : intactObject.getXrefs()) {
             saveOrUpdate(xref.getCvDatabase());
-            saveOrUpdate(xref.getCvXrefQualifier());
+
+            if (xref.getCvXrefQualifier() != null) {
+                saveOrUpdate(xref.getCvXrefQualifier());
+            }
         }
     }
 
