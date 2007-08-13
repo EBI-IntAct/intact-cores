@@ -16,10 +16,7 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.model.BioSource;
-import uk.ac.ebi.intact.model.CvIdentification;
-import uk.ac.ebi.intact.model.CvInteraction;
-import uk.ac.ebi.intact.model.Experiment;
+import uk.ac.ebi.intact.model.*;
 
 /**
  * TODO comment this
@@ -63,13 +60,16 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
             throw new NullPointerException("Experiment without CvInteraction: "+intactObject.getShortLabel());
         }
 
-
         if (intactObject.getCvIdentification() != null) {
             CvObjectPersister.getInstance().saveOrUpdate(intactObject.getCvIdentification());
         }
 
         if (intactObject.getPublication() != null) {
             PublicationPersister.getInstance().saveOrUpdate(intactObject.getPublication());
+        }
+
+        for (Interaction interaction : intactObject.getInteractions()) {
+            InteractionPersister.getInstance().saveOrUpdate(interaction);
         }
     }
 
