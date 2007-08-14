@@ -15,7 +15,11 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.persistence.dao.ExperimentDao;
+
+import java.util.List;
 
 /**
  *
@@ -26,8 +30,11 @@ import uk.ac.ebi.intact.model.*;
  */
 public class ExperimentUtils {
 
+    private static final String SYNCED_LABEL_PATTERN = "\\w+-\\d{4}-\\d+";
+    private static final String NOT_SYNCED_LABEL_PATTERN = "\\w+-\\d{4}";
+
     /**
-     * Gets the pubmed ID for an Experiment - whitout checking database
+     * Gets the pubmed ID for an Experiment - whitout hitting the database
      * @param experiment the experiment to get the pubmed id from
      * @return the pubmed id
      */
@@ -52,5 +59,46 @@ public class ExperimentUtils {
         }
 
         return pubmedId;
+    }
+
+    /**
+     * Syncs a short label with the database, checking that there are no duplicates and that the correct suffix is added.
+     *
+     * Concurrency note: just after getting the new short label, it is recommended to persist/update the interaction immediately
+     * in the database - so this method should ONLY be used before saving the interaction to the database. In some
+     * race conditions, two interactions could be created with the same id; currently there is no way to
+     * reserve a short label
+     *
+     * @param shortLabel the short label to sync
+     * @return the synced short label
+     *
+     * @since 1.6.2
+     */
+    public static String syncShortLabelWithDb(String shortLabel) {
+        String syncedLabel;
+
+        if (shortLabel.matches(SYNCED_LABEL_PATTERN)) {
+            syncedLabel = shortLabel;
+        } else  if (shortLabel.matches(NOT_SYNCED_LABEL_PATTERN)) {
+            ExperimentDao experimentDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getExperimentDao();
+            List<String> expLabels = experimentDao.getShortLabelsLike(shortLabel+"-%");
+
+            int maxSuffix = 0;
+
+            for (String expLabel : expLabels) {
+                String strSuffix = expLabel.substring(expLabel.lastIndexOf("-")+1, expLabel.length());
+
+                int suffix = Integer.valueOf(strSuffix);
+
+                maxSuffix = Math.max(maxSuffix, suffix);
+            }
+
+            syncedLabel = shortLabel+"-"+(maxSuffix+1);
+
+        } else {
+            throw new IllegalArgumentException("Short label with wrong format: "+shortLabel);
+        }
+
+        return syncedLabel;
     }
 }

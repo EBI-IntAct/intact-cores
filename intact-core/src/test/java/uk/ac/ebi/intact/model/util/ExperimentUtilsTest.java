@@ -17,10 +17,17 @@ package uk.ac.ebi.intact.model.util;
 
 import org.junit.Assert;
 import org.junit.Test;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.mock.MockExperimentDao;
+import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.ExperimentXref;
 import uk.ac.ebi.intact.model.Publication;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * TODO comment this
@@ -57,5 +64,77 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
 
         Assert.assertNotNull(pubmedId);
         Assert.assertEquals(expectedPubmedId, pubmedId);
+    }
+
+    @Test
+    public void syncShortLabelWithDb_ungapped() {
+        final String expPrefix = "lala-2007";
+
+        MockIntactContext.initMockContext();
+        MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
+            public List<String> getShortLabelsLike(String labelLike)
+            {
+                return Arrays.asList(expPrefix+"-1", expPrefix+"-2", expPrefix+"-3");
+            }
+        });
+
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix);
+
+        Assert.assertEquals("lala-2007-4", syncedLabel);
+
+        IntactContext.getCurrentInstance().close();
+    }
+
+    @Test
+    public void syncShortLabelWithDb_gapped() {
+        final String expPrefix = "lala-2007";
+
+        MockIntactContext.initMockContext();
+        MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
+            public List<String> getShortLabelsLike(String labelLike)
+            {
+                return Arrays.asList(expPrefix+"-4", expPrefix+"-2", expPrefix+"-7");
+            }
+        });
+
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix);
+
+        Assert.assertEquals("lala-2007-8", syncedLabel);
+
+        IntactContext.getCurrentInstance().close();
+    }
+
+    @Test
+    public void syncShortLabelWithDb_first() {
+        final String expPrefix = "lala-2007";
+
+        MockIntactContext.initMockContext();
+        MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
+            public List<String> getShortLabelsLike(String labelLike)
+            {
+                return Collections.EMPTY_LIST;
+            }
+        });
+
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix);
+
+        Assert.assertEquals("lala-2007-1", syncedLabel);
+
+        IntactContext.getCurrentInstance().close();
+    }
+
+    @Test
+    public void syncShortLabelWithDb_alreadyWithSuffix() {
+        final String expPrefix = "lala-2007-4";
+
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix);
+        Assert.assertEquals("lala-2007-4", syncedLabel);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void syncShortLabelWithDb_wrong() {
+        final String expPrefix = "lala-5";
+
+        ExperimentUtils.syncShortLabelWithDb(expPrefix);
     }
 }
