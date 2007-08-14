@@ -208,7 +208,7 @@ public class IntactMockBuilder {
     public Interaction createInteractionRandomBinary() {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
-        Interaction interaction = new InteractionImpl(Arrays.asList(createExperimentEmpty(nextString("exp"))), cvInteractionType, null, nextString("label"), getInstitution());
+        Interaction interaction = new InteractionImpl(Arrays.asList(createExperimentEmpty()), cvInteractionType, null, nextString("label"), getInstitution());
 
         interaction.addComponent(createComponentBait(interaction, createProteinRandom()));
         interaction.addComponent(createComponentPrey(interaction, createProteinRandom()));
@@ -218,7 +218,7 @@ public class IntactMockBuilder {
 
     public Interaction createInteraction(String ... interactorShortLabels) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
-        Interaction interaction = new InteractionImpl(Arrays.asList(createExperimentEmpty(nextString("exp"))), cvInteractionType, null, nextString("label"), getInstitution());
+        Interaction interaction = new InteractionImpl(Arrays.asList(createExperimentEmpty()), cvInteractionType, null, nextString("label"), getInstitution());
 
         for (String interactorShortLabel : interactorShortLabels) {
             interaction.addComponent(createComponentNeutral(interaction, createProtein("uniprotId", interactorShortLabel)));
