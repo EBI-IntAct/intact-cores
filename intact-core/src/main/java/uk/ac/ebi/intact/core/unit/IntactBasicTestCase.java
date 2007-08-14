@@ -35,12 +35,12 @@ public abstract class IntactBasicTestCase
     private IntactMockBuilder mockBuilder;
 
     @Before
-    public void prepare() throws Exception {
+    public final void prepareBasicTest() throws Exception {
         mockBuilder = new IntactMockBuilder();
     }
 
     @After
-    public void after() throws Exception {
+    public final void afterBasicTest() throws Exception {
         mockBuilder = null;
     }
 
