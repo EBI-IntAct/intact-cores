@@ -16,10 +16,7 @@
 package uk.ac.ebi.intact.core.unit;
 
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.AliasUtils;
-import uk.ac.ebi.intact.model.util.CvObjectBuilder;
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.model.util.XrefUtils;
+import uk.ac.ebi.intact.model.util.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,7 +117,7 @@ public class IntactMockBuilder {
     }
 
     public Protein createProteinRandom() {
-        return createProtein(nextString("primId"), nextString("prot"), createBioSourceRandom());
+        return createProtein(nextString("primId"), nextString(), createBioSourceRandom());
     }
 
     public Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource) {
@@ -191,16 +188,19 @@ public class IntactMockBuilder {
         return interaction;
     }
 
-    public Interaction createInteraction(String shortLabel, Component ... components) {
+    public Interaction createInteraction(Component ... components) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
         Experiment experiment = createExperimentEmpty();
 
-        Interaction interaction = new InteractionImpl(Arrays.asList(experiment), cvInteractionType, null, shortLabel, getInstitution());
+        Interaction interaction = new InteractionImpl(Arrays.asList(experiment), cvInteractionType, null, "temp", getInstitution());
 
         for (Component component : components) {
             interaction.addComponent(component);
         }
+
+        String shortLabel = InteractionUtils.calculateShortLabel(interaction);
+        interaction.setShortLabel(shortLabel);
 
         return interaction;
     }
@@ -212,6 +212,9 @@ public class IntactMockBuilder {
 
         interaction.addComponent(createComponentBait(interaction, createProteinRandom()));
         interaction.addComponent(createComponentPrey(interaction, createProteinRandom()));
+
+        String shortLabel = InteractionUtils.calculateShortLabel(interaction);
+        interaction.setShortLabel(shortLabel);
 
         return interaction;
     }
@@ -227,6 +230,9 @@ public class IntactMockBuilder {
         if (interactorShortLabels.length == 1) {
             interaction.addComponent(createComponentNeutral(interaction, createProtein("uniprotId", interactorShortLabels[0])));
         }
+
+        String shortLabel = InteractionUtils.calculateShortLabel(interaction);
+        interaction.setShortLabel(shortLabel);
 
         return interaction;
     }
