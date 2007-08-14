@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.persister;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.interceptor.impl.ExperimentInterceptor;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
@@ -129,7 +130,12 @@ public class PersisterContext {
 
         log.debug("\tOther AnnotatedObjects: "+annotatedObjectsToBePersisted.size());
 
+        ExperimentInterceptor experimentInterceptor = new ExperimentInterceptor();
+
         for (AnnotatedObject ao : annotatedObjectsToBePersisted.values()) {
+            if (ao instanceof Experiment) {
+                experimentInterceptor.onPrePersist((Experiment)ao);
+            }
             getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
             logPersistence(ao);
         }
