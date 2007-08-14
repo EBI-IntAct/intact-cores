@@ -158,11 +158,19 @@ public class IntactMockBuilder {
         return component;
     }
 
+    public Component createComponentBait(Interactor interactor) {
+        return createComponentBait(null, interactor);
+    }
+
     public Component createComponentBait(Interaction interaction, Interactor interactor) {
         CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.BAIT_PSI_REF, CvExperimentalRole.BAIT);
         CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
 
         return createComponent(interaction, interactor, expRole, bioRole);
+    }
+
+    public Component createComponentPrey(Interactor interactor) {
+        return createComponentPrey(null, interactor);
     }
 
     public Component createComponentPrey(Interaction interaction, Interactor interactor) {
@@ -179,6 +187,20 @@ public class IntactMockBuilder {
 
         interaction.addComponent(createComponentBait(interaction, bait));
         interaction.addComponent(createComponentPrey(interaction, prey));
+
+        return interaction;
+    }
+
+    public Interaction createInteraction(String shortLabel, Component ... components) {
+        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+
+        Experiment experiment = createExperimentEmpty();
+
+        Interaction interaction = new InteractionImpl(Arrays.asList(experiment), cvInteractionType, null, shortLabel, getInstitution());
+
+        for (Component component : components) {
+            interaction.addComponent(component);
+        }
 
         return interaction;
     }
@@ -209,6 +231,10 @@ public class IntactMockBuilder {
         return interaction;
     }
 
+     public Experiment createExperimentEmpty() {
+         return createExperimentEmpty(randomExperimentLabel());
+     }
+
     public Experiment createExperimentEmpty(String shortLabel) {
          Experiment experiment = new Experiment(getInstitution(), shortLabel, createBioSourceRandom());
 
@@ -222,7 +248,7 @@ public class IntactMockBuilder {
     }
 
     public Experiment createExperimentRandom(int interactionNumber) {
-        Experiment exp = createExperimentEmpty(nextString("exp"));
+        Experiment exp = createExperimentEmpty(randomExperimentLabel());
 
         for (int i=0; i<interactionNumber; i++) {
             Interaction interaction = createInteractionRandomBinary();
@@ -308,11 +334,11 @@ public class IntactMockBuilder {
     }
 
     protected String nextString() {
-        return nextString("str");
+        return randomString();
     }
 
     private String nextString(String prefix) {
-        return prefix + "_" + nextInt();
+        return prefix + "_" + randomString();
     }
 
     protected int nextInt() {
@@ -324,7 +350,7 @@ public class IntactMockBuilder {
         return sequence;
     }
 
-    protected int childRandom() {
+    private int childRandom() {
         return childRandom(MIN_CHILDREN, MAX_CHILDREN);
     }
 
@@ -333,4 +359,32 @@ public class IntactMockBuilder {
 
         return new Random().nextInt(max - min) + min;
     }
+
+    public String randomString() {
+        return randomString(childRandom(4,10));
+    }
+
+    public String randomString(int returnLength) {
+        String vowels = "aeiou";
+        String consonants = "qwrtypsdfghjklzxcvbnm";
+
+        StringBuilder random = new StringBuilder();
+        for (int j = 0; j < returnLength; j++)
+        {
+            boolean nextIsVowel = new Random().nextBoolean();
+
+            if (nextIsVowel) {
+                random.append(vowels.charAt((int) (Math.random() * vowels.length())));
+            } else {
+                random.append(consonants.charAt((int) (Math.random() * consonants.length())));
+            }
+        }
+        return random.toString();
+    }
+
+    protected String randomExperimentLabel() {
+        int year = 2000 + new Random().nextInt(8);
+        return randomString()+"-"+year+"-"+(new Random().nextInt(7)+1);
+    }
+
 }
