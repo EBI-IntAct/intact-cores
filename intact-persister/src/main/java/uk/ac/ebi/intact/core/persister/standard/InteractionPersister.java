@@ -47,6 +47,41 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         super();
     }
 
+    /**
+     * Syncing by the short label is not enough for an interaction. Additional checks are done
+     * to see if the interaction exists in the database
+     * @param intactObject the interaction to sync
+     * @return the interaction from the database, if exists
+     */
+    protected Interaction fetchFromDataSource(Interaction intactObject)
+    {
+        Interaction interaction = super.fetchFromDataSource(intactObject);
+
+        if (interaction == null) {
+            return null;
+        }
+
+        if (experimentLabels(interaction).equals(experimentLabels(intactObject))) {
+            return interaction;
+        }
+
+        return null;
+    }
+
+    /**
+     * Used to create a unique chain of experiment labels, used to differenciate interactions
+     * that could just have the same short label
+     */
+    private String experimentLabels(Interaction interaction) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Experiment exp : interaction.getExperiments()) {
+            sb.append(exp.getShortLabel()+"_");
+        }
+
+        return sb.toString();
+    }
+
     @Override
     protected void saveOrUpdateAttributes(Interaction intactObject) throws PersisterException {
         super.saveOrUpdateAttributes(intactObject);
