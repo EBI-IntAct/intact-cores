@@ -6,6 +6,7 @@ import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.config.DataConfig;
 import uk.ac.ebi.intact.config.impl.StandardCoreDataConfig;
 import uk.ac.ebi.intact.config.impl.TemporaryH2DataConfig;
+import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.model.Institution;
 
@@ -110,6 +111,11 @@ public class IntactContext implements Serializable {
     }
 
     public void close() {
+        for (DataConfig dataConfig : getConfig().getDataConfigs()) {
+            if (dataConfig instanceof AbstractHibernateDataConfig) {
+                ((AbstractHibernateDataConfig)dataConfig).getSessionFactory().close();
+            }
+        }
         session = null;
         dataContext = null;
         currentInstance.set(null);

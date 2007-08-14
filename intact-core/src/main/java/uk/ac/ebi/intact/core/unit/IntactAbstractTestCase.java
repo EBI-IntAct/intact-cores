@@ -117,15 +117,10 @@ public class IntactAbstractTestCase extends IntactBasicTestCase{
     public final void tearDown() throws Exception {
         getDataContext().commitTransaction();
 
-        //IntactUnit iu = new IntactUnit();
-        //iu.dropSchema();
-    }
-
-    @AfterClass
-    public static void close() throws Exception {
         if (IntactContext.currentInstanceExists()) {
             IntactContext.getCurrentInstance().close();
         }
     }
+
 
 }
