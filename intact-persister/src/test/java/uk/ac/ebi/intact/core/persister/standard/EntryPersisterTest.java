@@ -18,7 +18,6 @@ package uk.ac.ebi.intact.core.persister.standard;
 import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
 import uk.ac.ebi.intact.model.IntactEntry;
 
 /**
@@ -27,7 +26,7 @@ import uk.ac.ebi.intact.model.IntactEntry;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id:EntryPersisterTest.java 8684 2007-06-15 14:24:35Z baranda $
  */
-public class EntryPersisterTest extends IntactAbstractTestCase {
+public class EntryPersisterTest extends AbstractPersisterTest {
 
     private static final String INTACT_FILE = "/xml/intact_2006-07-19.xml";
     private static final String MINT_FILE = "/xml/mint_2006-07-18.xml";

@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.persister.PersisterContext;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Experiment;
 
 /**
@@ -15,19 +13,18 @@ import uk.ac.ebi.intact.model.Experiment;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ExperimentPersisterTest extends IntactBasicTestCase
+public class ExperimentPersisterTest extends AbstractPersisterTest
 {
     private ExperimentPersister persister;
 
     @Before
-    public void beforeTest() {
+    public void before() {
         persister = ExperimentPersister.getInstance();
     }
 
     @After
-    public void afterTest() {
+    public void after() {
         persister = null;
-        PersisterContext.getInstance().clear();
     }
 
     @Test
@@ -50,6 +47,27 @@ public class ExperimentPersisterTest extends IntactBasicTestCase
 
         assertNotNull(refreshedExperiment.getPublication());
         assertEquals("1234567", refreshedExperiment.getPublication().getShortLabel());
+        assertEquals(1, refreshedExperiment.getInteractions().size());
+
+        commitTransaction();
+    }
+
+    @Test
+    public void testPersistExperiment_assignedLabel() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentRandom(1);
+        exp.setShortLabel("lala-2005-2");
+
+        beginTransaction();
+
+        persister.saveOrUpdate(exp);
+        persister.commit();
+
+        commitTransaction();
+
+        beginTransaction();
+
+        Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("lala-2005-2");
+        assertNotNull(refreshedExperiment);
         assertEquals(1, refreshedExperiment.getInteractions().size());
 
         commitTransaction();

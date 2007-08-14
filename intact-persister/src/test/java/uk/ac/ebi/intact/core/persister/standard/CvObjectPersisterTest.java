@@ -15,21 +15,16 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.junit.After;
 import static org.junit.Assert.*;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvExperimentalRole;
 import uk.ac.ebi.intact.model.CvObjectXref;
 import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 /**
  * TODO comment this
@@ -37,18 +32,7 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class CvObjectPersisterTest {
-
-    @Before
-    public void beforeTest() throws Exception {
-        new IntactUnit().createSchema();
-        beginTransaction();
-    }
-
-    @After
-    public void afterTest() throws Exception {
-        commitTransaction();
-    }
+public class CvObjectPersisterTest extends AbstractPersisterTest{
 
     @Test
     public void persist_default() throws Exception {
@@ -92,19 +76,4 @@ public class CvObjectPersisterTest {
         cvObjectPersister.saveOrUpdate(expRole);
     }
 
-    protected DaoFactory getDaoFactory() {
-         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
-    }
-
-    protected IntactContext getIntactContext() {
-         return IntactContext.getCurrentInstance();
-    }
-
-    protected void beginTransaction() {
-         IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-    }
-
-    protected void commitTransaction() throws Exception {
-         IntactContext.getCurrentInstance().getDataContext().commitTransaction();
-    }
 }

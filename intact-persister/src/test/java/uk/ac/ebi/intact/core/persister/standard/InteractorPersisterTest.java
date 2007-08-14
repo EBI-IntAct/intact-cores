@@ -15,16 +15,11 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.model.CvAliasType;
 import uk.ac.ebi.intact.model.Interactor;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 /**
  * TODO comment this
@@ -32,18 +27,7 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class InteractorPersisterTest {
-
-    @Before
-    public void beforeTest() throws Exception {
-        new IntactUnit().createSchema();
-        beginTransaction();
-    }
-
-    @After
-    public void afterTest() throws Exception {
-        commitTransaction();
-    }
+public class InteractorPersisterTest extends AbstractPersisterTest{
 
     @Test
     public void aliasPersisted() throws Exception {
@@ -59,22 +43,6 @@ public class InteractorPersisterTest {
 
         CvAliasType aliasType = getDaoFactory().getCvObjectDao(CvAliasType.class).getByPsiMiRef(CvAliasType.GENE_NAME_MI_REF);
         Assert.assertNotNull(aliasType);
-    }
-    
-    protected DaoFactory getDaoFactory() {
-         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
-    }
-
-    protected IntactContext getIntactContext() {
-         return IntactContext.getCurrentInstance();
-    }
-
-    protected void beginTransaction() {
-         IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-    }
-
-    protected void commitTransaction() throws Exception {
-         IntactContext.getCurrentInstance().getDataContext().commitTransaction();
     }
 
 }

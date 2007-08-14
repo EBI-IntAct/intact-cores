@@ -15,15 +15,10 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 /**
  * TODO comment this
@@ -31,22 +26,12 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class InteractionPersisterTest {
-
-    @Before
-    public void beforeTest() throws Exception {
-        new IntactUnit().createSchema();
-        beginTransaction();
-    }
-
-    @After
-    public void afterTest() throws Exception {
-        commitTransaction();
-    }
+public class InteractionPersisterTest extends AbstractPersisterTest
+{
 
     @Test
     public void allPersisted() throws Exception {
-        IntactMockBuilder builder = new IntactMockBuilder(getIntactContext().getInstitution());
+        IntactMockBuilder builder = super.getMockBuilder();
         IntactEntry intactEntry = builder.createIntactEntryRandom();
 
         InteractionPersister interactorPersister = InteractionPersister.getInstance();
@@ -68,7 +53,7 @@ public class InteractionPersisterTest {
 
     @Test
     public void aliasPersisted() throws Exception {
-        IntactMockBuilder builder = new IntactMockBuilder(getIntactContext().getInstitution());
+        IntactMockBuilder builder = super.getMockBuilder();
         Interaction interaction = builder.createInteractionRandomBinary();
 
         InteractionPersister interactorPersister = InteractionPersister.getInstance();
@@ -148,19 +133,50 @@ public class InteractionPersisterTest {
         Assert.assertEquals(1, getDaoFactory().getInstitutionDao().countAll());
     }
 
-    protected DaoFactory getDaoFactory() {
-         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+    @Test
+    public void onPersist_syncedLabel() throws Exception {
+        Interaction interaction = getMockBuilder().createInteraction("lala", "lolo");
+
+        beginTransaction();
+        InteractionPersister.getInstance().saveOrUpdate(interaction);
+        InteractionPersister.getInstance().commit();
+        commitTransaction();
+
+        beginTransaction();
+        Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("lala-lolo");
+
+        Assert.assertNotNull(reloadedInteraction);
+        Assert.assertEquals(2, reloadedInteraction.getComponents().size());
+        commitTransaction();
     }
 
-    protected IntactContext getIntactContext() {
-         return IntactContext.getCurrentInstance();
-    }
-    
-    protected void beginTransaction() {
-         IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+    @Test
+    public void onPersist_syncedLabel2() throws Exception {
+        Interaction interaction = getMockBuilder().createInteraction("foo", "bar");
+
+        beginTransaction();
+        InteractionPersister.getInstance().saveOrUpdate(interaction);
+        InteractionPersister.getInstance().commit();
+        commitTransaction();
+
+        interaction = getMockBuilder().createInteraction("foo", "bar");
+
+        beginTransaction();
+        InteractionPersister.getInstance().saveOrUpdate(interaction);
+        InteractionPersister.getInstance().commit();
+        commitTransaction();
+
+        beginTransaction();
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+
+        Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("bar-foo-1");
+        Assert.assertNotNull(reloadedInteraction);
+        Assert.assertEquals(2, reloadedInteraction.getComponents().size());
+        commitTransaction();
     }
 
-    protected void commitTransaction() throws Exception {
-         IntactContext.getCurrentInstance().getDataContext().commitTransaction();
-    }
 }
