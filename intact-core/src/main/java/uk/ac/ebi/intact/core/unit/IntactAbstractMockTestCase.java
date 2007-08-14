@@ -28,12 +28,12 @@ import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 public class IntactAbstractMockTestCase {
 
     @Before
-    public void before() throws Exception {
+    public final void beforeMockTest() throws Exception {
        MockIntactContext.initMockContext();
     }
 
     @After
-    public void after() throws Exception {
+    public final void afterMockTest() throws Exception {
        MockIntactContext.getCurrentInstance().close();
     }
 
