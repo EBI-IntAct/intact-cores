@@ -43,7 +43,8 @@ public class CvObjectUtils {
         // of the xref of the original cvobject are not lazily loaded. I hope you understand, my friend
         if (cvObjectXref == null) {
             for (CvObjectXref xref : cvObjectXrefs) {
-                if (xref.getCvDatabase() != null) {
+                if (xref.getCvDatabase() != null && xref.getCvDatabase().getShortLabel() != null
+                        && xref.getCvXrefQualifier() != null && xref.getCvXrefQualifier().getShortLabel() != null) {
                     if (xref.getCvDatabase().getShortLabel().equals(CvDatabase.PSI_MI) &&
                             xref.getCvXrefQualifier().getShortLabel().equals(CvXrefQualifier.IDENTITY)) {
                         if (cvObjectXref == null) {
