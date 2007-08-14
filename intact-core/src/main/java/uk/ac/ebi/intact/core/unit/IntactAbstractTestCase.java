@@ -43,7 +43,7 @@ public class IntactAbstractTestCase extends IntactBasicTestCase{
     }
 
     @Before
-    public void setUp() throws Exception {
+    public final void setUp() throws Exception {
         //getDataContext().beginTransaction();
 
         Method currentMethod = IntactTestRunner.getTestMethod();
@@ -114,7 +114,7 @@ public class IntactAbstractTestCase extends IntactBasicTestCase{
     }
 
     @After
-    public void tearDown() throws Exception {
+    public final void tearDown() throws Exception {
         getDataContext().commitTransaction();
 
         //IntactUnit iu = new IntactUnit();
