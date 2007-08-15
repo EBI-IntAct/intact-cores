@@ -179,4 +179,22 @@ public class InteractionPersisterTest extends AbstractPersisterTest
         commitTransaction();
     }
 
+    @Test
+    public void persistAllInteractionInAExperiment() throws Exception {
+        Experiment experiment = getMockBuilder().createExperimentRandom(3);
+
+        for (Interaction interaction : experiment.getInteractions()) {
+            beginTransaction();
+            InteractionPersister.getInstance().saveOrUpdate(interaction);
+            InteractionPersister.getInstance().commit();
+            commitTransaction();
+        }
+
+        beginTransaction();
+        Assert.assertEquals(3, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(6, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        commitTransaction();
+    }
+
 }

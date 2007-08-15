@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.ExperimentXref;
@@ -172,6 +173,60 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         beginTransaction();
         persister.saveOrUpdate(exp2);
         persister.commit();
+        commitTransaction();
+    }
+
+    @Test
+    public void syncedAndCandidateAreEqual_new() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentRandom(1);
+        exp.setShortLabel("beha-2007-1");
+
+        Experiment exp2 = getMockBuilder().createExperimentRandom(1);
+        exp2.setShortLabel("beha-2007-2");
+
+        beginTransaction();
+        persister.saveOrUpdate(exp);
+        persister.saveOrUpdate(exp2);
+        persister.commit();
+        commitTransaction();
+
+        beginTransaction();
+        Assert.assertEquals(BehaviourType.NEW, persister.syncedAndCandidateAreEqual(exp, exp2));
+        commitTransaction();
+    }
+
+    @Test
+    public void syncedAndCandidateAreEqual_update() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentRandom(1);
+        exp.setShortLabel("beha-2007-1");
+
+        Experiment exp2 = getMockBuilder().createExperimentRandom(3);
+        exp2.setShortLabel("beha-2007-1");
+        exp2.setPublication(exp.getPublication());
+
+        beginTransaction();
+        persister.saveOrUpdate(exp);
+        persister.saveOrUpdate(exp2);
+        persister.commit();
+        commitTransaction();
+
+        beginTransaction();
+        Assert.assertEquals(BehaviourType.UPDATE, persister.syncedAndCandidateAreEqual(exp, exp2));
+        commitTransaction();
+    }
+
+    @Test
+    public void syncedAndCandidateAreEqual_ignore() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentRandom(1);
+        exp.setShortLabel("beha-2007-1");
+
+        beginTransaction();
+        persister.saveOrUpdate(exp);
+        persister.commit();
+        commitTransaction();
+
+        beginTransaction();
+        Assert.assertEquals(BehaviourType.IGNORE, persister.syncedAndCandidateAreEqual(exp, exp));
         commitTransaction();
     }
 }

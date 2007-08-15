@@ -57,6 +57,11 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     protected BehaviourType syncedAndCandidateAreEqual(Experiment synced, Experiment candidate) {
         if (synced == null) return BehaviourType.NEW;
 
+        if (!synced.getShortLabel().equals(candidate.getShortLabel())
+            && ExperimentUtils.matchesSyncedLabel(synced.getShortLabel())) {
+            return BehaviourType.NEW;
+        }
+
         final String syncedPubmedId = ExperimentUtils.getPubmedId(synced);
         final String candidatePubmedId = ExperimentUtils.getPubmedId(candidate);
 
@@ -69,7 +74,7 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         Collection<Interaction> syncedInteractions = synced.getInteractions();
         Collection<Interaction> candidateInteractions = candidate.getInteractions();
 
-        if (syncedInteractions.size() == candidateInteractions.size()) {
+        if (syncedInteractions.size() != candidateInteractions.size()) {
             return BehaviourType.UPDATE;
         }
 
