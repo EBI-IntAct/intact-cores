@@ -193,7 +193,7 @@ public class IntactMockBuilder {
 
         Experiment experiment = createExperimentEmpty();
 
-        Interaction interaction = new InteractionImpl(Arrays.asList(experiment), cvInteractionType, null, "temp", getInstitution());
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(experiment)), cvInteractionType, null, "temp", getInstitution());
 
         for (Component component : components) {
             interaction.addComponent(component);
@@ -208,7 +208,7 @@ public class IntactMockBuilder {
     public Interaction createInteractionRandomBinary() {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
-        Interaction interaction = new InteractionImpl(Arrays.asList(createExperimentEmpty()), cvInteractionType, null, nextString("label"), getInstitution());
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
 
         interaction.addComponent(createComponentBait(interaction, createProteinRandom()));
         interaction.addComponent(createComponentPrey(interaction, createProteinRandom()));
@@ -221,7 +221,7 @@ public class IntactMockBuilder {
 
     public Interaction createInteraction(String ... interactorShortLabels) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
-        Interaction interaction = new InteractionImpl(Arrays.asList(createExperimentEmpty()), cvInteractionType, null, nextString("label"), getInstitution());
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
 
         for (String interactorShortLabel : interactorShortLabels) {
             interaction.addComponent(createComponentNeutral(interaction, createProtein("uniprotId", interactorShortLabel)));
@@ -258,7 +258,7 @@ public class IntactMockBuilder {
 
         for (int i=0; i<interactionNumber; i++) {
             Interaction interaction = createInteractionRandomBinary();
-            interaction.setExperiments(Arrays.asList(exp));
+            interaction.setExperiments(new ArrayList<Experiment>(Arrays.asList(exp)));
             exp.addInteraction(interaction);
         }
 
