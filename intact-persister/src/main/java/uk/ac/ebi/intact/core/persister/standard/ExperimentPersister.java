@@ -15,8 +15,15 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.ExperimentUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * TODO comment this
@@ -44,6 +51,41 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     protected Experiment fetchFromDataSource(Experiment intactObject) {
         return getIntactContext().getDataContext().getDaoFactory()
                 .getExperimentDao().getByShortLabel(intactObject.getShortLabel());
+    }
+
+    @Override
+    protected BehaviourType syncedAndCandidateAreEqual(Experiment synced, Experiment candidate) {
+        if (synced == null) return BehaviourType.NEW;
+
+        final String syncedPubmedId = ExperimentUtils.getPubmedId(synced);
+        final String candidatePubmedId = ExperimentUtils.getPubmedId(candidate);
+
+        if (!syncedPubmedId.equals(
+                candidatePubmedId) && ExperimentUtils.matchesSyncedLabel(candidate.getShortLabel())) {
+            throw new PersisterUnexpectedException("Trying to persist an Experiment with a short label that already exists in the database," +
+                                         " but they have different pubmed IDs: "+synced.getShortLabel()+" (Existing: "+syncedPubmedId+", Found: "+candidatePubmedId+")");
+        }
+
+        Collection<Interaction> syncedInteractions = synced.getInteractions();
+        Collection<Interaction> candidateInteractions = candidate.getInteractions();
+
+        if (syncedInteractions.size() == candidateInteractions.size()) {
+            return BehaviourType.UPDATE;
+        }
+
+        List<String> syncedInteractionLabels = new ArrayList<String>(syncedInteractions.size());
+
+        for (Interaction syncedInteraction : syncedInteractions) {
+            syncedInteractionLabels.add(syncedInteraction.getShortLabel());
+        }
+
+        for (Interaction candidateInteraction : candidateInteractions) {
+            if (!syncedInteractionLabels.contains(candidateInteraction.getShortLabel())) {
+                return BehaviourType.UPDATE;
+            }
+        }
+
+        return BehaviourType.IGNORE;
     }
 
     @Override
@@ -91,5 +133,16 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         }
 
         return super.syncAttributes(intactObject);
+    }
+
+    @Override
+    protected boolean update(Experiment objectToUpdate, Experiment existingObject) {
+        for (Interaction interaction : existingObject.getInteractions()) {
+            objectToUpdate.addInteraction(interaction);
+        }
+
+        super.updateCommonAttributes(objectToUpdate, existingObject);
+
+        return true;
     }
 }

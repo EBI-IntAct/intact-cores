@@ -21,23 +21,23 @@ package uk.ac.ebi.intact.core.persister;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PersisterException extends Exception {
+public class PersisterUnexpectedException extends RuntimeException {
 
-    public PersisterException() {
+    public PersisterUnexpectedException() {
         PersisterContext.getInstance().clear();
     }
 
-    public PersisterException(Throwable cause) {
+    public PersisterUnexpectedException(Throwable cause) {
         super(cause);
         PersisterContext.getInstance().clear();
     }
 
-    public PersisterException(String message) {
+    public PersisterUnexpectedException(String message) {
         super(message);
         PersisterContext.getInstance().clear();
     }
 
-    public PersisterException(String message, Throwable cause) {
+    public PersisterUnexpectedException(String message, Throwable cause) {
         super(message, cause);
         PersisterContext.getInstance().clear();
     }

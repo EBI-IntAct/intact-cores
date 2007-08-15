@@ -116,7 +116,6 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
             return BehaviourType.NEW;
         }
         
-        // TODO implement. In the meanwhile, return IGNORE by default
         return BehaviourType.IGNORE;
     }
 
@@ -128,5 +127,22 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
     @Override
     protected T syncIfTransient(T intactObject) {
         return super.syncIfTransient(intactObject);
+    }
+
+    protected <X extends Xref, A extends Alias, T extends AnnotatedObject<X,A>>
+        boolean updateCommonAttributes(T objectToUpdate, T existingObject) {
+        for (X xref : existingObject.getXrefs()) {
+            objectToUpdate.addXref(xref);
+        }
+
+        for (A alias : existingObject.getAliases()) {
+            objectToUpdate.addAlias(alias);
+        }
+
+        for (Annotation annotation : existingObject.getAnnotations()) {
+            objectToUpdate.addAnnotation(annotation);
+        }
+
+        return true;
     }
 }
