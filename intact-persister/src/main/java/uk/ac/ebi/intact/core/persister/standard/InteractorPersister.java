@@ -15,7 +15,9 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.hibernate.NonUniqueResultException;
 import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.model.CvInteractorType;
 import uk.ac.ebi.intact.model.Interactor;
@@ -73,7 +75,11 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
 
     @Override
     protected T fetchFromDataSource(T intactObject) {
-        return (T) getIntactContext().getDataContext().getDaoFactory()
-                .getInteractorDao().getByShortLabel(intactObject.getShortLabel());
+        try {
+            return (T) getIntactContext().getDataContext().getDaoFactory()
+                    .getInteractorDao().getByShortLabel(intactObject.getShortLabel());
+        } catch (NonUniqueResultException e) {
+            throw new PersisterUnexpectedException("There is more than one interactor with this label in the database: "+intactObject.getShortLabel(), e);
+        }
     }
 }

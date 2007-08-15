@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.CvAliasType;
 import uk.ac.ebi.intact.model.Interactor;
 
@@ -27,12 +26,11 @@ import uk.ac.ebi.intact.model.Interactor;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class InteractorPersisterTest extends AbstractPersisterTest{
+public class InteractorPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void aliasPersisted() throws Exception {
-        IntactMockBuilder builder = new IntactMockBuilder(getIntactContext().getInstitution());
-        Interactor interactor = builder.createProteinRandom();
+        Interactor interactor = getMockBuilder().createProteinRandom();
 
         InteractorPersister interactorPersister = InteractorPersister.getInstance();
 
