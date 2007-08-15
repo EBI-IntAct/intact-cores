@@ -313,10 +313,10 @@ public class InteractionShortLabelGenerator {
             this.preyLabel = prepareLabel(preyLabel);
             this.suffix = suffix;
 
-            if (baitLabel.contains(INTERACTION_SEPARATOR)) {
+            if (this.baitLabel.contains(INTERACTION_SEPARATOR)) {
                 throw new IllegalArgumentException("Bait label cannot contain '" + INTERACTION_SEPARATOR + "': " + baitLabel);
             }
-            if (preyLabel != null && preyLabel.contains(INTERACTION_SEPARATOR)) {
+            if (this.preyLabel != null && preyLabel.contains(INTERACTION_SEPARATOR)) {
                 throw new IllegalArgumentException("Prey label cannot contain '" + INTERACTION_SEPARATOR + "': " + preyLabel);
             }
 
@@ -445,12 +445,12 @@ public class InteractionShortLabelGenerator {
         }
 
 
-        private String prepareLabel(String label) {
+        protected static String prepareLabel(String label) {
             if (label == null) return null;
             
             // convert bad characters ('-', ' ', '.') to '_'
             label = label.toLowerCase();
-            label = SearchReplace.replace(label, "-", "_");
+            label = SearchReplace.replace(label, INTERACTION_SEPARATOR, "_");
             label = SearchReplace.replace(label, " ", "_");
             label = SearchReplace.replace(label, ".", "_");
 

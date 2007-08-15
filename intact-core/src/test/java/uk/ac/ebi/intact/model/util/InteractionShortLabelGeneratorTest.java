@@ -101,4 +101,18 @@ public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
         Assert.assertEquals("fadd-casp8", candLabel);
     }
 
+    @Test
+    public void createCandidateShortLabel_badCharsInInteractor() throws Exception {
+        String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel("bis3-indolylmaleimid", "prey");
+        Assert.assertEquals("bis3_indolylmal-prey", candLabel);
+    }
+
+    @Test
+    public void prepareLabel() throws Exception {
+        Assert.assertEquals("la_la", InteractionShortLabelGenerator.InteractionShortLabel.prepareLabel("la-la"));
+        Assert.assertEquals("la_la", InteractionShortLabelGenerator.InteractionShortLabel.prepareLabel("la-la"));
+        Assert.assertEquals("la_la", InteractionShortLabelGenerator.InteractionShortLabel.prepareLabel("la.la"));
+        Assert.assertEquals("la_la", InteractionShortLabelGenerator.InteractionShortLabel.prepareLabel("la_la"));
+    }
+
 }
