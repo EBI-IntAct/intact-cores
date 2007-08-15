@@ -137,4 +137,17 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
 
         ExperimentUtils.syncShortLabelWithDb(expPrefix);
     }
+    
+    @Test
+    public void matchesSyncedLabel() {
+        Assert.assertTrue(ExperimentUtils.matchesSyncedLabel("mike-2007-3"));
+        Assert.assertTrue(ExperimentUtils.matchesSyncedLabel("mike-2007-10"));
+        Assert.assertFalse(ExperimentUtils.matchesSyncedLabel("mike-2007"));
+    }
+
+    @Test
+    public void matchesNotSyncedLabel() {
+        Assert.assertTrue(ExperimentUtils.matchesMotSyncedLabel("mike-2007"));
+        Assert.assertFalse(ExperimentUtils.matchesMotSyncedLabel("mike-2007-3"));
+    }
 }

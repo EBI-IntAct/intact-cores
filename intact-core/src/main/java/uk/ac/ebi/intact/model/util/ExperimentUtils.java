@@ -77,9 +77,9 @@ public class ExperimentUtils {
     public static String syncShortLabelWithDb(String shortLabel) {
         String syncedLabel;
 
-        if (shortLabel.matches(SYNCED_LABEL_PATTERN)) {
+        if (matchesSyncedLabel(shortLabel)) {
             syncedLabel = shortLabel;
-        } else  if (shortLabel.matches(NOT_SYNCED_LABEL_PATTERN)) {
+        } else  if (matchesMotSyncedLabel(shortLabel)) {
             ExperimentDao experimentDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getExperimentDao();
             List<String> expLabels = experimentDao.getShortLabelsLike(shortLabel+"-%");
 
@@ -100,5 +100,27 @@ public class ExperimentUtils {
         }
 
         return syncedLabel;
+    }
+
+    /**
+     * Returns true if the experiment label matches this regex: wwww-dddd-d+
+     * @param experimentShortLabel the experiment short label to match
+     * @return true if matched
+     *
+     * @since 1.6.2
+     */
+    public static boolean matchesSyncedLabel(String experimentShortLabel) {
+        return experimentShortLabel.matches(SYNCED_LABEL_PATTERN);
+    }
+
+    /**
+     * Returns true if the experiment label matches this regex: wwww-dddd
+     * @param experimentShortLabel the experiment short label to match
+     * @return true if matched
+     *
+     * @since 1.6.2
+     */
+    public static boolean matchesMotSyncedLabel(String experimentShortLabel) {
+        return experimentShortLabel.matches(NOT_SYNCED_LABEL_PATTERN);
     }
 }
