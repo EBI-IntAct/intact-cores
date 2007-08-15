@@ -54,6 +54,8 @@ public class PersisterContext {
     private Map<String, AnnotatedObject> annotatedObjectsToBePersisted;
     private Map<String, Institution> institutionsToBePersisted;
 
+    private Map<String, AnnotatedObject> annotatedObjectsToBeUpdated;
+
     public static PersisterContext getInstance() {
         return instance.get();
     }
@@ -62,6 +64,8 @@ public class PersisterContext {
         this.cvObjectsToBePersisted = new HashMap<String,CvObject>();
         this.annotatedObjectsToBePersisted = new HashMap<String,AnnotatedObject>();
         this.institutionsToBePersisted = new HashMap<String,Institution>();
+
+        this.annotatedObjectsToBeUpdated = new HashMap<String,AnnotatedObject>();
     }
 
     public void addToPersist(AnnotatedObject ao) {
@@ -70,6 +74,14 @@ public class PersisterContext {
         } else {
             annotatedObjectsToBePersisted.put(keyFor(ao), ao);
         }
+    }
+
+    public void addToUpdate(AnnotatedObject ao) {
+        annotatedObjectsToBeUpdated.put(keyFor(ao), ao);
+    }
+
+    public void addToPersistImmediately(AnnotatedObject ao) {
+        getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).saveOrUpdate(ao);
     }
 
     public void addToPersist(Institution institution) {
@@ -141,6 +153,18 @@ public class PersisterContext {
                 interactionInterceptor.onPrePersist((Interaction)ao);
             }
             getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
+            logPersistence(ao);
+        }
+
+        getIntactContext().getDataContext().flushSession();
+
+        for (AnnotatedObject ao : annotatedObjectsToBeUpdated.values()) {
+            if (ao instanceof Experiment) {
+                experimentInterceptor.onPrePersist((Experiment)ao);
+            } else if (ao instanceof Interaction) {
+                interactionInterceptor.onPrePersist((Interaction)ao);
+            }
+            getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).saveOrUpdate(ao);
             logPersistence(ao);
         }
 

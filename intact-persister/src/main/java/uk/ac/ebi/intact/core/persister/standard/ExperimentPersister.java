@@ -76,12 +76,16 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         final String syncedPubmedId = ExperimentUtils.getPubmedId(synced);
         final String candidatePubmedId = ExperimentUtils.getPubmedId(candidate);
 
-        if (log.isDebugEnabled()) log.debug("Synced pubmedId: "+syncedPubmedId+" ("+synced.getShortLabel()+") - candidate pubmedId: "+candidatePubmedId+" ("+synced.getShortLabel()+")");
+        if (syncedPubmedId == null && candidatePubmedId != null) {
+            if (log.isDebugEnabled())
+                log.debug("Synced pubmedId: " + syncedPubmedId + " (" + synced.getShortLabel() + ") - candidate pubmedId: " + candidatePubmedId + " (" + synced.getShortLabel() + ")");
+            return BehaviourType.UPDATE;
+        }
 
-        if (!syncedPubmedId.equals(
+        if (syncedPubmedId != null && !syncedPubmedId.equals(
                 candidatePubmedId) && ExperimentUtils.matchesSyncedLabel(candidate.getShortLabel())) {
             throw new PersisterUnexpectedException("Trying to persist an Experiment with a short label that already exists in the database," +
-                                         " but they have different pubmed IDs: "+synced.getShortLabel()+" (Existing: "+syncedPubmedId+", Found: "+candidatePubmedId+")");
+                                                   " but they have different pubmed IDs: " + synced.getShortLabel() + " (Existing: " + syncedPubmedId + ", Found: " + candidatePubmedId + ")");
         }
 
         Collection<Interaction> syncedInteractions = synced.getInteractions();
@@ -109,7 +113,7 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     @Override
     protected void saveOrUpdateAttributes(Experiment intactObject) throws PersisterException {
         super.saveOrUpdateAttributes(intactObject);
-        
+
         if (intactObject.getBioSource() != null) {
             BioSourcePersister.getInstance().saveOrUpdate(intactObject.getBioSource());
         }
@@ -117,7 +121,7 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         if (intactObject.getCvInteraction() != null) {
             CvObjectPersister.getInstance().saveOrUpdate(intactObject.getCvInteraction());
         } else {
-            throw new NullPointerException("Experiment without CvInteraction: "+intactObject.getShortLabel());
+            throw new NullPointerException("Experiment without CvInteraction: " + intactObject.getShortLabel());
         }
 
         if (intactObject.getCvIdentification() != null) {
@@ -154,12 +158,26 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     }
 
     @Override
-    protected boolean update(Experiment objectToUpdate, Experiment existingObject) {
-        for (Interaction interaction : existingObject.getInteractions()) {
+    protected boolean update(Experiment candidateObject, Experiment objectToUpdate) throws PersisterException {
+        for (Interaction interaction : candidateObject.getInteractions()) {
             objectToUpdate.addInteraction(interaction);
         }
 
-        super.updateCommonAttributes(objectToUpdate, existingObject);
+        if (objectToUpdate.getPublication() == null && candidateObject.getPublication() != null) {
+            objectToUpdate.setPublication(candidateObject.getPublication());
+
+            PublicationPersister.getInstance().saveOrUpdate(candidateObject.getPublication());
+        }
+
+        for (ExperimentXref xref : candidateObject.getXrefs()) {
+            objectToUpdate.addXref(xref);
+        }
+
+        for (ExperimentAlias alias : candidateObject.getAliases()) {
+            objectToUpdate.addAlias(alias);
+        }
+
+        super.updateCommonAttributes(candidateObject, objectToUpdate);
 
         return true;
     }

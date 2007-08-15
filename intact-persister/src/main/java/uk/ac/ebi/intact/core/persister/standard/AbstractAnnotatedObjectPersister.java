@@ -120,7 +120,7 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
     }
 
     @Override
-    protected boolean update(T objectToUpdate, T existingObject) {
+    protected boolean update(T objectToUpdate, T existingObject) throws PersisterException {
         throw new UnsupportedOperationException();
     }
 
@@ -129,19 +129,14 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
         return super.syncIfTransient(intactObject);
     }
 
-    protected <X extends Xref, A extends Alias, T extends AnnotatedObject<X,A>>
-        boolean updateCommonAttributes(T objectToUpdate, T existingObject) {
-        for (X xref : existingObject.getXrefs()) {
-            objectToUpdate.addXref(xref);
+    protected
+        boolean  updateCommonAttributes(T candidateObject, T objectToBeUpdated) throws PersisterException {
+
+        for (Annotation annotation : candidateObject.getAnnotations()) {
+            objectToBeUpdated.addAnnotation(annotation);
         }
 
-        for (A alias : existingObject.getAliases()) {
-            objectToUpdate.addAlias(alias);
-        }
-
-        for (Annotation annotation : existingObject.getAnnotations()) {
-            objectToUpdate.addAnnotation(annotation);
-        }
+        saveOrUpdateAttributes(objectToBeUpdated);
 
         return true;
     }

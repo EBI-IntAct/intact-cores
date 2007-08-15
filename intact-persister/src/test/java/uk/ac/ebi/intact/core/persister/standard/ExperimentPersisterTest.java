@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
+import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.ExperimentXref;
@@ -132,6 +133,8 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         persister.commit();
         commitTransaction();
 
+        PersisterContext.getInstance().clear();
+
         Experiment exp2 = getMockBuilder().createExperimentRandom(1);
         exp2.setShortLabel("lala-2005-2");
         xref.setAc(null);
@@ -227,6 +230,34 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
 
         beginTransaction();
         Assert.assertEquals(BehaviourType.IGNORE, persister.syncedAndCandidateAreEqual(exp, exp));
+        commitTransaction();
+    }
+
+    @Test
+    public void existingExperimentWithouthPubInfo() throws Exception {
+        Experiment expWithout = getMockBuilder().createExperimentEmpty("nopub-2006-1");
+        expWithout.setPublication(null);
+        expWithout.getXrefs().clear();
+
+        beginTransaction();
+        persister.saveOrUpdate(expWithout);
+        persister.commit();
+        commitTransaction();
+
+        PersisterContext.getInstance().clear();
+
+        Experiment expWith = getMockBuilder().createExperimentEmpty("nopub-2006-1");
+        expWithout.setPublication(null);
+
+        beginTransaction();
+        persister.saveOrUpdate(expWith);
+        persister.commit();
+        commitTransaction();
+        
+        beginTransaction();
+        Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
+        Assert.assertNotNull(reloadedExp.getPublication());
+        Assert.assertEquals(1, reloadedExp.getXrefs().size());
         commitTransaction();
     }
 }

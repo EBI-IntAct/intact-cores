@@ -70,7 +70,16 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
                     intactObject.setAc(syncResponse.getValue().getAc());
 
                     if (!isDryRun()) {
-                        update(intactObject, syncResponse.getValue());
+                        T objectToUpdate = syncResponse.getValue();
+
+                        update(intactObject, objectToUpdate);
+
+                        // evict the objectToUpdate and the originalObject,
+                        // so the are not updated automatically on the next flush
+                        getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(intactObject);
+                        getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(objectToUpdate);
+
+                        PersisterContext.getInstance().addToUpdate(objectToUpdate);
                     }
                     break;
 
@@ -144,7 +153,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
     protected abstract BehaviourType syncedAndCandidateAreEqual(T synced, T candidate);
 
-    protected abstract boolean update(T objectToUpdate, T existingObject);
+    protected abstract boolean update(T objectToUpdate, T existingObject) throws PersisterException;
 
     protected IntactContext getIntactContext() {
         return IntactContext.getCurrentInstance();
