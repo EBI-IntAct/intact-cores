@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
@@ -32,6 +34,11 @@ import java.util.List;
  * @version $Id$
  */
 public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experiment> {
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(ExperimentPersister.class);
 
     private static ThreadLocal<ExperimentPersister> instance = new ThreadLocal<ExperimentPersister>() {
         @Override
@@ -57,6 +64,10 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     protected BehaviourType syncedAndCandidateAreEqual(Experiment synced, Experiment candidate) {
         if (synced == null) return BehaviourType.NEW;
 
+        if (!synced.getShortLabel().equals(candidate.getShortLabel())) {
+            return BehaviourType.NEW;
+        }
+
         if (!synced.getShortLabel().equals(candidate.getShortLabel())
             && ExperimentUtils.matchesSyncedLabel(synced.getShortLabel())) {
             return BehaviourType.NEW;
@@ -64,6 +75,8 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
 
         final String syncedPubmedId = ExperimentUtils.getPubmedId(synced);
         final String candidatePubmedId = ExperimentUtils.getPubmedId(candidate);
+
+        if (log.isDebugEnabled()) log.debug("Synced pubmedId: "+syncedPubmedId+" ("+synced.getShortLabel()+") - candidate pubmedId: "+candidatePubmedId+" ("+synced.getShortLabel()+")");
 
         if (!syncedPubmedId.equals(
                 candidatePubmedId) && ExperimentUtils.matchesSyncedLabel(candidate.getShortLabel())) {

@@ -15,12 +15,12 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.hibernate.NonUniqueResultException;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.model.CvInteractorType;
 import uk.ac.ebi.intact.model.Interactor;
+
+import java.util.Collection;
 
 /**
  * TODO comment this
@@ -75,11 +75,40 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
 
     @Override
     protected T fetchFromDataSource(T intactObject) {
+        // TODO the next section is commented out as there can be interactors with the same label (which is a bug)
+        // see IDU-2 (http://www.ebi.ac.uk/interpro/internal-tools/jira-intact/browse/IDU-2)
+        /*
         try {
             return (T) getIntactContext().getDataContext().getDaoFactory()
                     .getInteractorDao().getByShortLabel(intactObject.getShortLabel());
         } catch (NonUniqueResultException e) {
             throw new PersisterUnexpectedException("There is more than one interactor with this label in the database: "+intactObject.getShortLabel(), e);
+        }
+        */
+
+        Collection<T> fetchedObjects = (Collection<T>) getIntactContext().getDataContext().getDaoFactory()
+                .getInteractorDao().getColByPropertyName("shortLabel", intactObject.getShortLabel());
+
+        if (fetchedObjects.isEmpty()) {
+            return null;
+        } else if (fetchedObjects.size() == 1) {
+            return fetchedObjects.iterator().next();
+        } else {
+
+            // return the one that was last modified
+            T fetchedLastModified = null;
+
+            for (T fetchedObject : fetchedObjects) {
+                if (fetchedLastModified == null) {
+                    fetchedLastModified = fetchedObject;
+                } else {
+                    if (fetchedObject.getUpdated().compareTo(fetchedLastModified.getUpdated()) == 1) {
+                        fetchedLastModified = fetchedObject;
+                    }
+                }
+            }
+
+            return fetchedLastModified;
         }
     }
 }
