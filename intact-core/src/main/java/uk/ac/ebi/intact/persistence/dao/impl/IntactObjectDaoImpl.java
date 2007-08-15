@@ -178,4 +178,8 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
         getSession().refresh( objToRefresh );
     }
 
+    public void evict(T objToEvict) {
+        getSession().evict(objToEvict);
+    }
+
 }

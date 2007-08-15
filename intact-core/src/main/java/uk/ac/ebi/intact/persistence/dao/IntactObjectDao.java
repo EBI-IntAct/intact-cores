@@ -61,4 +61,6 @@ public interface IntactObjectDao<T extends IntactObject> {
     boolean exists( T obj );
 
     void refresh( T objToRefresh );
+
+    void evict( T objToEvict );
 }
