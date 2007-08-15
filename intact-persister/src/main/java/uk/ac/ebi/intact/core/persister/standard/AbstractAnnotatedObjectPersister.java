@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.core.persister.AbstractPersister;
+import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
 
@@ -110,9 +111,13 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
     }
 
     @Override
-    protected boolean syncedAndCandidateAreEqual(T synced, T candidate) {
-        // TODO implement. In the meanwhile, return true by default
-        return true;
+    protected BehaviourType syncedAndCandidateAreEqual(T synced, T candidate) {
+        if (synced == null) {
+            return BehaviourType.NEW;
+        }
+        
+        // TODO implement. In the meanwhile, return IGNORE by default
+        return BehaviourType.IGNORE;
     }
 
     @Override

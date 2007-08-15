@@ -47,24 +47,48 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
         SyncTransientResponse<T> syncResponse = syncIfTransientResponse(intactObject);
 
-        if (syncResponse.isAlreadyPresent()) {
-            intactObject.setAc(syncResponse.getValue().getAc());
-            if (syncedAndCandidateAreEqual(syncResponse.getValue(), intactObject)) {
-                if (log.isDebugEnabled()) log.debug("\tAlready present in a data source (synced) - "+syncResponse.getValue().getShortLabel()+" ("+syncResponse.getValue().getAc()+")");
-            } else {
-                if (log.isDebugEnabled()) log.debug("\tData source object and object to persist are not equal - update");
+        // This newAnnotatedObject will be persisted, depending on the resulting behaviour
+        T newAnnotatedObject = null;
 
-                if (!isDryRun()) {
-                    update(intactObject, syncResponse.getValue());
-                }
+        if (syncResponse.isAlreadyPresent()) {
+
+            BehaviourType behaviour =  syncedAndCandidateAreEqual(syncResponse.getValue(), intactObject);
+
+            switch (behaviour) {
+                case NEW:
+                    if (log.isDebugEnabled())
+                        log.debug("\tFound similar object in the DB, but not the same so will create a new one(Behaviour:"+behaviour+")");
+
+                    // the synced object will be persisted
+                    newAnnotatedObject = intactObject;
+
+                    break;
+                case UPDATE:
+                    if (log.isDebugEnabled())
+                        log.debug("\tData source object and object to persist are not equal (Behaviour:"+behaviour+")");
+
+                    intactObject.setAc(syncResponse.getValue().getAc());
+
+                    if (!isDryRun()) {
+                        update(intactObject, syncResponse.getValue());
+                    }
+                    break;
+
+                case IGNORE:
+                    if (log.isDebugEnabled()) log.debug("\tAlready present in a data source (Behaviour:"+behaviour+") - "+syncResponse.getValue().getShortLabel()+" ("+syncResponse.getValue().getAc()+")");
+                    intactObject.setAc(syncResponse.getValue().getAc());
+                    break;
             }
 
             // don't continue if the object already exists or has been updated
-            return;
+            if (behaviour == BehaviourType.UPDATE || behaviour == BehaviourType.IGNORE)  {
+                return;
+            }
+        } else {
+            newAnnotatedObject = syncResponse.getValue();
         }
 
         log.debug("\tNot present in a data source - Will persist - "+syncResponse.getValue().getShortLabel());
-        T newAnnotatedObject = syncResponse.getValue();
 
         PersisterContext.getInstance().addToPersist(newAnnotatedObject);
 
@@ -118,7 +142,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
     protected abstract T fetchFromDataSource(T intactObject);
 
-    protected abstract boolean syncedAndCandidateAreEqual(T synced, T candidate);
+    protected abstract BehaviourType syncedAndCandidateAreEqual(T synced, T candidate);
 
     protected abstract boolean update(T objectToUpdate, T existingObject);
 

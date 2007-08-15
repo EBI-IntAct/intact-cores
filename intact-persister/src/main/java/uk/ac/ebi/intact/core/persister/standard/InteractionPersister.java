@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.CvInteractionType;
@@ -47,25 +48,18 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         super();
     }
 
-    /**
-     * Syncing by the short label is not enough for an interaction. Additional checks are done
-     * to see if the interaction exists in the database
-     * @param intactObject the interaction to sync
-     * @return the interaction from the database, if exists
-     */
-    protected Interaction fetchFromDataSource(Interaction intactObject)
-    {
-        Interaction interaction = super.fetchFromDataSource(intactObject);
-
-        if (interaction == null) {
-            return null;
+    @Override
+    protected BehaviourType syncedAndCandidateAreEqual(Interaction synced, Interaction candidate) {
+        if (synced == null) {
+            return BehaviourType.NEW;
         }
 
-        if (experimentLabels(interaction).equals(experimentLabels(intactObject))) {
-            return interaction;
+        // never update interactions
+        if (experimentLabels(synced).equals(experimentLabels(candidate))) {
+            return BehaviourType.IGNORE;
+        } else {
+            return BehaviourType.NEW;
         }
-
-        return null;
     }
 
     /**
