@@ -80,6 +80,8 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
                         getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(objectToUpdate);
 
                         PersisterContext.getInstance().addToUpdate(objectToUpdate);
+
+                        SyncContext.getInstance().addToSynced(objectToUpdate);
                     }
                     break;
 
@@ -118,7 +120,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         return new SyncTransientResponse<T>(false, syncAttributes(intactObject));
     }
 
-    protected T syncIfTransient(T intactObject) {
+    public T syncIfTransient(T intactObject) {
         if (log.isDebugEnabled()) log.debug("\t\tSyncing "+intactObject.getClass().getSimpleName()+": "+intactObject.getShortLabel());
 
         T refreshedObject = get(intactObject);

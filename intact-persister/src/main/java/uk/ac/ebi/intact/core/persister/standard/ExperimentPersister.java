@@ -160,8 +160,10 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     @Override
     protected boolean update(Experiment candidateObject, Experiment objectToUpdate) throws PersisterException {
         for (Interaction interaction : candidateObject.getInteractions()) {
-            objectToUpdate.addInteraction(interaction);
+            objectToUpdate.getInteractions().add(interaction);
         }
+
+        getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(candidateObject.getPublication());
 
         if (objectToUpdate.getPublication() == null && candidateObject.getPublication() != null) {
             objectToUpdate.setPublication(candidateObject.getPublication());
@@ -169,8 +171,12 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
             PublicationPersister.getInstance().saveOrUpdate(candidateObject.getPublication());
         }
 
+        Collection<ExperimentXref> objToUpdateXrefs = objectToUpdate.getXrefs();
+
         for (ExperimentXref xref : candidateObject.getXrefs()) {
-            objectToUpdate.addXref(xref);
+            if (!objToUpdateXrefs.contains(xref)) {
+                objectToUpdate.addXref(xref);
+            }
         }
 
         for (ExperimentAlias alias : candidateObject.getAliases()) {

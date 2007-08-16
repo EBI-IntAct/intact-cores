@@ -124,11 +124,6 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected T syncIfTransient(T intactObject) {
-        return super.syncIfTransient(intactObject);
-    }
-
     protected
         boolean  updateCommonAttributes(T candidateObject, T objectToBeUpdated) throws PersisterException {
 

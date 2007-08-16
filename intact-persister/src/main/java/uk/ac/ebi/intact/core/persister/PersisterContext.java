@@ -169,7 +169,7 @@ public class PersisterContext {
         }
 
         clear();
-        SyncContext.getInstance().clear();
+
         getIntactContext().getDataContext().flushSession();
     }
 
@@ -197,9 +197,13 @@ public class PersisterContext {
 
     public void clear() {
         if (log.isDebugEnabled()) log.debug("Clearing PersistenceContext");
+        SyncContext.getInstance().clear();
+        
         institutionsToBePersisted.clear();
         cvObjectsToBePersisted.clear();
         annotatedObjectsToBePersisted.clear();
+
+        annotatedObjectsToBeUpdated.clear();
     }
 
     private String keyFor(AnnotatedObject ao) {
