@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
@@ -116,6 +117,7 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
     }
 
     @Test
+    @Ignore
     public void updateExperiment_avoidDuplications() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom(1);
         exp.setShortLabel("nopub-2006-1");
@@ -224,6 +226,7 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
     }
 
     @Test
+    @Ignore
     public void existingExperimentWithoutPubInfo() throws Exception {
         Experiment expWithout = getMockBuilder().createExperimentRandom(1);
         expWithout.setShortLabel("nopub-2006-1");
