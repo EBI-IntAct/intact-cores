@@ -46,12 +46,23 @@ public class CvContext implements Serializable {
     }
 
     public static CvContext getCurrentInstance( IntactSession session ) {
-        CvContext cvContext
-                = ( CvContext ) session.getAttribute(SESSION_PARAM_NAME);
+        CvContext cvContext;
+
+        if (session.isWebapp()) {
+            cvContext = ( CvContext ) session.getApplicationAttribute(SESSION_PARAM_NAME);
+        } else {
+            cvContext = ( CvContext ) session.getAttribute(SESSION_PARAM_NAME);
+        }
+
         if ( cvContext == null ) {
             log.debug( "Creating new CvContext" );
             cvContext = new CvContext( session );
-            session.setAttribute(SESSION_PARAM_NAME, cvContext );
+
+            if (session.isWebapp()) {
+                session.setApplicationAttribute(SESSION_PARAM_NAME, cvContext );
+            } else {
+                session.setAttribute(SESSION_PARAM_NAME, cvContext );
+            }
         }
 
         // check if the transaction
