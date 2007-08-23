@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnit;
+import uk.ac.ebi.intact.model.CvXrefQualifier;
 
 /**
  * TODO comment this
@@ -42,6 +43,24 @@ public class SmallCvPrimerTest extends IntactBasicTestCase {
         cvPrimer.createCVs();
 
         Assert.assertEquals(12, getDaoFactory().getCvObjectDao().countAll());
+        commitTransaction();
+    }
+
+    /**
+     * @see <a href="http://www.ebi.ac.uk/interpro/internal-tools/jira-intact/browse/IAC-95">IAC-95</a>
+     */
+    @Test
+    public void createCvs_iac95() throws Exception {
+        SmallCvPrimer cvPrimer = new SmallCvPrimer(getDaoFactory());
+
+        beginTransaction();
+        cvPrimer.createCVs();
+        commitTransaction();
+
+        beginTransaction();
+        CvXrefQualifier goDefinitonRef = getDaoFactory().getCvObjectDao(CvXrefQualifier.class).getByPsiMiRef(CvXrefQualifier.GO_DEFINITION_REF_MI_REF);
+        Assert.assertNotNull(goDefinitonRef);
+        Assert.assertEquals(goDefinitonRef.getShortLabel(), CvXrefQualifier.GO_DEFINITION_REF);
         commitTransaction();
     }
 }

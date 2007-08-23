@@ -98,7 +98,7 @@ public class SmallCvPrimer implements CvPrimer {
         getCvObject(CvDatabase.class, CvDatabase.RESID, CvDatabase.RESID_MI_REF);
 
         // CvXrefQualifier( go-definition-ref )
-        getCvObject(CvXrefQualifier.class, CvXrefQualifier.GO_DEFINITION_REF);
+        getCvObject(CvXrefQualifier.class, CvXrefQualifier.GO_DEFINITION_REF, CvXrefQualifier.GO_DEFINITION_REF_MI_REF);
 
         // CvXrefQualifier( see-also )
         getCvObject(CvXrefQualifier.class, CvXrefQualifier.SEE_ALSO, CvXrefQualifier.SEE_ALSO_MI_REF);
