@@ -106,6 +106,11 @@ public class IntactMockBuilder {
 
     public BioSource createBioSource(int taxId, String shortLabel) {
         BioSource bioSource = new BioSource(getInstitution(), shortLabel, String.valueOf(taxId));
+
+        CvDatabase newt = createCvObject(CvDatabase.class, CvDatabase.NEWT_MI_REF, CvDatabase.NEWT);
+        BioSourceXref newtXref = createIdentityXref(bioSource, String.valueOf(taxId), newt);
+        bioSource.addXref(newtXref);
+        
         return bioSource;
     }
 

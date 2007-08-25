@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.Protein;
+import uk.ac.ebi.intact.model.BioSource;
 
 /**
  * TODO comment this
@@ -44,12 +45,25 @@ public class IntactMockBuilderTest
     }
 
     @Test
-    public void createProteinRandomBinary() throws Exception {
+    public void createProteinRandom() throws Exception {
         Protein protein = mockBuilder.createProteinRandom();
 
         Assert.assertNotNull(protein);
         Assert.assertNotNull(protein.getSequence());
         Assert.assertFalse(protein.getXrefs().isEmpty());
         Assert.assertNotNull(protein.getCrc64());
+    }
+
+    @Test
+    public void createBioSourceRandom() throws Exception {
+        BioSource bioSource = mockBuilder.createBioSourceRandom();
+
+        Assert.assertNotNull(bioSource);
+
+        String taxId = bioSource.getTaxId();
+        
+        Assert.assertNotNull(taxId);
+        Assert.assertFalse(bioSource.getXrefs().isEmpty());
+        Assert.assertEquals(taxId, bioSource.getXrefs().iterator().next().getPrimaryId());
     }
 }
