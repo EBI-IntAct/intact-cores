@@ -6,6 +6,7 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.HibernateException;
+import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -178,6 +179,14 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
 
     public void evict(T objToEvict) {
         getSession().evict(objToEvict);
+    }
+
+    public void replicate(T objToReplicate) {
+        getSession().replicate(objToReplicate, ReplicationMode.LATEST_VERSION);
+    }
+
+    public void merge(T objToMerge) {
+        getSession().merge(objToMerge);
     }
 
 }

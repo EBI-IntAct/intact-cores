@@ -63,4 +63,8 @@ public interface IntactObjectDao<T extends IntactObject> {
     void refresh( T objToRefresh );
 
     void evict( T objToEvict );
+
+    void replicate( T objToReplicate );
+
+    void merge( T objToReplicate );
 }
