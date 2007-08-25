@@ -1,12 +1,8 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.junit.After;
-import org.junit.Assert;
+import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Ignore;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
@@ -127,6 +123,13 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         beginTransaction();
         persister.saveOrUpdate(exp);
         persister.commit();
+        commitTransaction();
+
+        beginTransaction();
+        Experiment reloadedExpBeforeUpdate = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
+        Assert.assertNull(reloadedExpBeforeUpdate.getPublication());
+        Assert.assertEquals(1, reloadedExpBeforeUpdate.getXrefs().size());
+        Assert.assertEquals(1, reloadedExpBeforeUpdate.getInteractions().size());
         commitTransaction();
 
         PersisterContext.getInstance().clear();
