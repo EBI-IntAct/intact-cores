@@ -4,12 +4,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.config.DataConfig;
-import uk.ac.ebi.intact.config.impl.StandardCoreDataConfig;
-import uk.ac.ebi.intact.config.impl.TemporaryH2DataConfig;
-import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
+import uk.ac.ebi.intact.config.impl.*;
 import uk.ac.ebi.intact.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.model.Institution;
 
+import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
@@ -54,6 +53,18 @@ public class IntactContext implements Serializable {
 
     public static void initStandaloneContext() {
         initContext( null, null );
+    }
+
+    public static void initStandaloneContext(File hibernateFile) {
+        IntactSession session = new StandaloneSession();
+        DataConfig dataConfig = new CustomCoreDataConfig("customDataConfig", hibernateFile, session);
+        initContext( dataConfig, session );
+    }
+
+    public static void initStandaloneContextInMemory() {
+        IntactSession session = new StandaloneSession();
+        DataConfig dataConfig = new InMemoryDataConfig(session);
+        initContext( dataConfig, session );
     }
 
     public static void initContext( DataConfig defaultDataConfig, IntactSession session ) {
