@@ -5,6 +5,8 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -202,13 +204,16 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<InteractorXref> getXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<InteractorAlias> getAliases() {
         return super.getAliases();

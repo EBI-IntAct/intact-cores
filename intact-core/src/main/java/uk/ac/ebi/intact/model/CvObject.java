@@ -5,6 +5,7 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
@@ -67,13 +68,15 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<CvObjectXref> getXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<CvObjectAlias> getAliases() {
         return super.getAliases();

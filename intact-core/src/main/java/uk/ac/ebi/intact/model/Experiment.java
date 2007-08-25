@@ -278,14 +278,15 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
     }
 
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
     @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<ExperimentXref> getXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<ExperimentAlias> getAliases() {
         return super.getAliases();

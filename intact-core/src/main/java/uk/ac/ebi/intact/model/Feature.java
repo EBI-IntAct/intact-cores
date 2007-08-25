@@ -6,6 +6,7 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
@@ -210,13 +211,15 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         this.cvFeatureIdentification = cvFeatureIdentification;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<FeatureXref> getXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<FeatureAlias> getAliases() {
         return super.getAliases();

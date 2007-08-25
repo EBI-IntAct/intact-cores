@@ -5,11 +5,13 @@
  */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Models a scientific paper and its relationship to (potentialy) many intact Experiments.
@@ -105,13 +107,15 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<PublicationXref> getXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<PublicationAlias> getAliases() {
         return super.getAliases();

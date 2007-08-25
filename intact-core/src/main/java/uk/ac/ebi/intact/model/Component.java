@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -379,7 +380,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     /**
      * {@inheritDoc}
      */
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<ComponentXref> getXrefs() {
         return super.getXrefs();
@@ -388,7 +390,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     /**
      * {@inheritDoc}
      */
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
     @Override
     public Collection<ComponentAlias> getAliases() {
         return super.getAliases();
