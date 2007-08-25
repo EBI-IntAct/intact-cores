@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Protein;
 
 /**
  * TODO comment this
@@ -40,5 +41,15 @@ public class IntactMockBuilderTest
         Assert.assertNotNull(interaction);
         Assert.assertNotNull(interaction.getShortLabel());
         Assert.assertEquals(2, interaction.getComponents().size());
+    }
+
+    @Test
+    public void createProteinRandomBinary() throws Exception {
+        Protein protein = mockBuilder.createProteinRandom();
+
+        Assert.assertNotNull(protein);
+        Assert.assertNotNull(protein.getSequence());
+        Assert.assertFalse(protein.getXrefs().isEmpty());
+        Assert.assertNotNull(protein.getCrc64());
     }
 }

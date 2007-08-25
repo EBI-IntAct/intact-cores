@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.unit;
 
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.*;
+import uk.ac.ebi.intact.util.Crc64;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,6 +130,11 @@ public class IntactMockBuilder {
 
         InteractorAlias alias = createAliasGeneName(protein, shortLabel.toUpperCase());
         protein.addAlias(alias);
+        
+        String sequence = randomPeptideSequence();
+        String crc64 = Crc64.getCrc64(sequence);
+        protein.setSequence(sequence);
+        protein.setCrc64(crc64);
 
         return protein;
     }
@@ -391,6 +397,19 @@ public class IntactMockBuilder {
     protected String randomExperimentLabel() {
         int year = 2000 + new Random().nextInt(8);
         return randomString()+"-"+year+"-"+(new Random().nextInt(7)+1);
+    }
+
+    public String randomPeptideSequence() {
+        String aminoacids = "ACDEFGHIKLMNPQRSTVWY";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("M");
+
+        for (int i=0; i<new Random().nextInt(500); i++) {
+            sb.append(aminoacids.charAt((int) (Math.random() * aminoacids.length())));
+        }
+
+        return sb.toString();
     }
 
 }
