@@ -66,5 +66,7 @@ public interface IntactObjectDao<T extends IntactObject> {
 
     void replicate( T objToReplicate );
 
+    void replicate(T objToReplicate, boolean ignoreIfExisting);
+
     void merge( T objToReplicate );
 }

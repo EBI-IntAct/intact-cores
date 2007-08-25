@@ -182,7 +182,18 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
     }
 
     public void replicate(T objToReplicate) {
-        getSession().replicate(objToReplicate, ReplicationMode.LATEST_VERSION);
+        replicate(objToReplicate, true);
+    }
+
+    public void replicate(T objToReplicate, boolean ignoreIfExisting) {
+        ReplicationMode replicationMode;
+
+        if (ignoreIfExisting) {
+            replicationMode = ReplicationMode.IGNORE;
+        } else {
+            replicationMode = ReplicationMode.LATEST_VERSION;
+        }
+        getSession().replicate(objToReplicate, replicationMode);
     }
 
     public void merge(T objToMerge) {
