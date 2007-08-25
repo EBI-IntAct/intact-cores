@@ -117,7 +117,6 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
     }
 
     @Test
-    @Ignore
     public void updateExperiment_avoidDuplications() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom(1);
         exp.setShortLabel("nopub-2006-1");

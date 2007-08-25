@@ -70,7 +70,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
                     if (intactObject.getAc() == null) {
                         intactObject.setAc(syncResponse.getValue().getAc());
                     }
-                     /*
+
                     if (!isDryRun()) {
                         T objectToUpdate = syncResponse.getValue();
 
@@ -84,7 +84,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
                         PersisterContext.getInstance().addToUpdate(objectToUpdate);
 
                         SyncContext.getInstance().addToSynced(objectToUpdate);
-                    } */
+                    } 
                     break;
 
                 case IGNORE:
