@@ -8,8 +8,12 @@ package uk.ac.ebi.intact.persistence.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.CvDatabase;
@@ -67,9 +71,17 @@ public class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends IntactObj
     }
 
     public Iterator<T> getByShortLabelLikeIterator( String value, boolean ignoreCase ) {
-        DetachedCriteria crit = DetachedCriteria.forClass( getEntityClass() )
-                .add( Restrictions.like( "shortLabel", value ) );
-        return new IntactObjectIterator<T>( getEntityClass(), crit );
+        Query query = null;
+
+        if (ignoreCase) {
+           getSession().createQuery("from "+getEntityClass().getSimpleName()+" where lower(shortlabel) = lower(:label)");
+        } else {
+           query = getSession().createQuery("from "+getEntityClass().getSimpleName()+" where shortlabel = :label");
+        }
+
+        query.setString("label", value);
+
+        return  query.iterate();
     }
 
     public T getByXref( String primaryId ) {

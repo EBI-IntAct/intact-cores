@@ -7,7 +7,6 @@ package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -80,8 +79,7 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
     }
 
     public Iterator<T> getAllIterator() {
-        return new IntactObjectIterator( getEntityClass(),
-                                         DetachedCriteria.forClass( getEntityClass() ) );
+        return getSession().createQuery("from "+getEntityClass().getSimpleName()).iterate();
     }
 
     public List<T> getAll( int firstResult, int maxResults ) {

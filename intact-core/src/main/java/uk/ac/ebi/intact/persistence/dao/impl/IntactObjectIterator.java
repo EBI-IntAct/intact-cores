@@ -38,6 +38,7 @@ import java.util.List;
  * @version $Id$
  * @since 1.5
  */
+@Deprecated
 public class IntactObjectIterator<T extends IntactObject> implements Iterator<T> {
 
     /**

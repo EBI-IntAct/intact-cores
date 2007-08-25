@@ -6,8 +6,8 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
@@ -56,18 +56,8 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
     }
 
     public Iterator<Interaction> getInteractionsForExperimentWithAcIterator( String ac ) {
-        DetachedCriteria crit = DetachedCriteria.forClass( InteractionImpl.class )
-                .createCriteria( "experiments" )
-                .add( Restrictions.idEq( ac ) );
-
-        return new IntactObjectIterator( getEntityClass(), crit );
-        /*
-        return new ScrollableIntactObjectsImpl( InteractionImpl.class,
-                getSession().createCriteria(InteractionImpl.class)
-                .createCriteria("experiments")
-                .add(Restrictions.idEq(ac))
-                .scroll());
-                */
+        Query query = getSession().createQuery("from InteractionImpl as interaction left join interaction.experiments as exp where exp.ac = :ac");
+        return query.iterate();
     }
 
     public List<Interaction> getInteractionsForExperimentWithAcExcluding( String ac, String[] excludedAcs, int firstResult, int maxResults ) {
