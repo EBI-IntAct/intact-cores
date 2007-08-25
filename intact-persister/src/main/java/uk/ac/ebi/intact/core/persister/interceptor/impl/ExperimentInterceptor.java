@@ -14,9 +14,13 @@ public class ExperimentInterceptor implements PrePersistInterceptor<Experiment>
 {
     public void onPrePersist(Experiment objToPersist)
     {
-        String shortLabel = objToPersist.getShortLabel();
+        updateShortLabel(objToPersist);
+    }
+
+    protected void updateShortLabel(Experiment experiment) {
+        String shortLabel = experiment.getShortLabel();
         shortLabel = ExperimentUtils.syncShortLabelWithDb(shortLabel);
-        objToPersist.setShortLabel(shortLabel);
+        experiment.setShortLabel(shortLabel);
     }
 
 }
