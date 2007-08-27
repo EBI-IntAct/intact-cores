@@ -17,12 +17,10 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import org.junit.Assert;
 import org.junit.Test;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.core.unit.mock.MockInteractorDao;
-import uk.ac.ebi.intact.model.CvAliasType;
-import uk.ac.ebi.intact.model.Interactor;
-import uk.ac.ebi.intact.model.InteractorImpl;
-import uk.ac.ebi.intact.model.Protein;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.ProteinUtils;
 
 import java.util.ArrayList;
@@ -41,11 +39,7 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
     @Test
     public void aliasPersisted() throws Exception {
         Interactor interactor = getMockBuilder().createProteinRandom();
-
-        InteractorPersister interactorPersister = InteractorPersister.getInstance();
-
-        interactorPersister.saveOrUpdate(interactor);
-        interactorPersister.commit();
+        PersisterHelper.saveOrUpdate(interactor);
 
         beginTransaction();
 
@@ -152,5 +146,33 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
 
         Assert.assertNull(InteractorPersister.getInstance().fetchFromDataSource(prot));
     }
+
+    @Test
+    public void update_containsMoreXrefs() throws Exception {
+        Protein prot = getMockBuilder().createProtein("Q00112", "lalaProt");
+        PersisterHelper.saveOrUpdate(prot);
+
+        beginTransaction();
+        Protein protBeforeUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
+        Assert.assertNotNull(protBeforeUpdate);
+        Assert.assertEquals(1, protBeforeUpdate.getXrefs().size());
+        commitTransaction();
+
+        Protein protUpdated = getMockBuilder().createProtein("Q00112", "lalaProt");
+        CvXrefQualifier secondaryAc = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.SECONDARY_AC_MI_REF, CvXrefQualifier.SECONDARY_AC);
+        InteractorXref secondaryXref = getMockBuilder().createIdentityXrefUniprot(protUpdated, "A12345");
+        secondaryXref.setCvXrefQualifier(secondaryAc);
+        protUpdated.addXref(secondaryXref);
+        PersisterHelper.saveOrUpdate(protUpdated);
+
+        beginTransaction();
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+        Protein protAfterUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
+        Assert.assertNotNull(protAfterUpdate);
+        Assert.assertEquals(2, protAfterUpdate.getXrefs().size());
+        commitTransaction();
+    }
+
+    
 
 }

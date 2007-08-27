@@ -120,7 +120,7 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
     }
 
     @Override
-    protected boolean update(T objectToUpdate, T existingObject) throws PersisterException {
+    protected boolean update(T candidateObject, T objectToUpdate) throws PersisterException {
         throw new UnsupportedOperationException();
     }
 

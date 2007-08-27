@@ -27,6 +27,18 @@ public class PersisterHelperTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void saveOrUpdate_transactionAlreadyOpened() throws Exception {
+        Experiment experiment = getMockBuilder().createExperimentRandom(1);
+        beginTransaction();
+        PersisterHelper.saveOrUpdate(experiment);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+        commitTransaction();
+    }
+
+    @Test
     public void persisterFor() throws Exception {
         Assert.assertEquals(BioSourcePersister.class, PersisterHelper.persisterFor(BioSource.class).getClass());
         Assert.assertEquals(ComponentPersister.class, PersisterHelper.persisterFor(Component.class).getClass());

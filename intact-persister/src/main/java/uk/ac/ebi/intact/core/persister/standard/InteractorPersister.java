@@ -15,10 +15,9 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.model.BioSource;
-import uk.ac.ebi.intact.model.CvInteractorType;
-import uk.ac.ebi.intact.model.Interactor;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
 
@@ -110,5 +109,29 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
 
             return fetchedLastModified;
         }
+    }
+
+    protected BehaviourType syncedAndCandidateAreEqual(T synced, T candidate) {
+        if (synced == null) return BehaviourType.NEW;
+        return BehaviourType.UPDATE;
+    }
+
+    protected boolean update(T candidateObject, T objectToUpdate) throws PersisterException
+    {
+        Collection<InteractorXref> objToUpdateXrefs = objectToUpdate.getXrefs();
+
+        for (InteractorXref xref : candidateObject.getXrefs()) {
+            if (!objToUpdateXrefs.contains(xref)) {
+                objectToUpdate.addXref(xref);
+            }
+        }
+
+        for (InteractorAlias alias : candidateObject.getAliases()) {
+            objectToUpdate.addAlias(alias);
+        }
+
+        super.updateCommonAttributes(candidateObject, objectToUpdate);
+
+        return true;
     }
 }
