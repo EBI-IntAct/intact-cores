@@ -51,32 +51,20 @@ public class ImexObject extends AbstractAuditable {
 
     private String message;
 
-    @Enumerated(EnumType.STRING)
-    private ImexObjectAction action;
-
     /////////////////////////////////
     // Constructors
 
     public ImexObject() {
     }
 
-    public ImexObject(Institution provider, String pmid, ImexObjectStatus status, ImexObjectAction action) {
+    public ImexObject(Institution provider, String pmid, ImexObjectStatus status) {
         this.provider = provider;
         this.pmid = pmid;
         this.status = status;
-        this.action = action;
     }
 
     ////////////////////////////////
     // Getters and Setters
-
-    public ImexObjectAction getAction() {
-        return action;
-    }
-
-    public void setAction(ImexObjectAction action) {
-        this.action = action;
-    }
 
     public String getId() {
         return id;

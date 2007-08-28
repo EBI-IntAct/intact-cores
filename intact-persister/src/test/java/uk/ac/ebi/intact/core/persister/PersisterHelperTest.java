@@ -1,9 +1,11 @@
 package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.standard.*;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.model.*;
 
 /**
@@ -13,6 +15,11 @@ import uk.ac.ebi.intact.model.*;
  * @version $Id$
  */
 public class PersisterHelperTest extends IntactBasicTestCase {
+
+    @Before
+    public void clearDb() throws Exception {
+        new IntactUnit().createSchema();
+    }
 
     @Test
     public void saveOrUpdate_default() throws Exception {

@@ -23,7 +23,6 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.model.meta.ImexObject;
 import uk.ac.ebi.intact.model.meta.ImexObjectStatus;
-import uk.ac.ebi.intact.model.meta.ImexObjectAction;
 
 /**
  * TODO comment this
@@ -53,7 +52,7 @@ public class ImexObjectDaoTest extends IntactBasicTestCase {
     @Test
     public void persist_default() throws Exception {
 
-        ImexObject imex1 = new ImexObject(getIntactContext().getInstitution(), "1234567", ImexObjectStatus.OK, ImexObjectAction.I);
+        ImexObject imex1 = new ImexObject(getIntactContext().getInstitution(), "1234567", ImexObjectStatus.OK);
 
         imexObjectDao.persist(imex1);
 

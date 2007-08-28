@@ -113,7 +113,15 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
 
     protected BehaviourType syncedAndCandidateAreEqual(T synced, T candidate) {
         if (synced == null) return BehaviourType.NEW;
-        return BehaviourType.UPDATE;
+
+        if (synced.getXrefs().size() != candidate.getXrefs().size()) {
+            return BehaviourType.UPDATE;
+        }
+        if (synced.getAliases().size() != candidate.getAliases().size()) {
+            return BehaviourType.UPDATE;
+        }
+        
+        return BehaviourType.IGNORE;
     }
 
     protected boolean update(T candidateObject, T objectToUpdate) throws PersisterException

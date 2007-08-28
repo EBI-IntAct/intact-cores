@@ -228,7 +228,6 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
     }
 
     @Test
-    @Ignore
     public void existingExperimentWithoutPubInfo() throws Exception {
         Experiment expWithout = getMockBuilder().createExperimentRandom(1);
         expWithout.setShortLabel("nopub-2006-1");
