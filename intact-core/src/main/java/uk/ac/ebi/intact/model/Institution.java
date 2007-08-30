@@ -5,9 +5,13 @@
  */
 package uk.ac.ebi.intact.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
+
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Represents the contact details for an institution.
@@ -18,16 +22,11 @@ import java.io.Serializable;
 // TODO cf. note
 
 @Entity
-@Table( name = "ia_institution" )
-public class Institution extends IntactObjectImpl implements Serializable {
+@Table(name = "ia_institution")
+public class Institution extends IntactObjectImpl implements Serializable, AnnotatedObject<InstitutionXref,InstitutionAlias> {
 
     ///////////////////////////////////////
     //attributes
-
-    /**
-     * The name of the institution.
-     */
-    protected String shortLabel;
 
     /**
      * Postal address.
@@ -38,12 +37,40 @@ public class Institution extends IntactObjectImpl implements Serializable {
     /**
      * TODO comments
      */
-    protected String fullName;
+    protected String url;
 
     /**
-     * TODO comments
+     * Short name for the object, not necessarily unique. To be used for example
+     * in minimised displays of the object.
      */
-    protected String url;
+
+    protected String shortLabel;
+
+    /**
+     * The full name or a minimal description of the object.
+     */
+    protected String fullName;
+
+    ///////////////////////////////////////
+    // associations
+
+    /**
+     *
+     */
+
+    public Collection<Annotation> annotations = new ArrayList<Annotation>();
+
+    /**
+     *
+     */
+
+    public Collection<InstitutionXref> xrefs = new ArrayList<InstitutionXref>();
+
+    /**
+     * Hold aliases of an Annotated object.
+     * ie. alternative name for the current object.
+     */
+    private Collection<InstitutionAlias> aliases = new ArrayList<InstitutionAlias>();
 
 
     ///////////////////////////////////////
@@ -63,121 +90,152 @@ public class Institution extends IntactObjectImpl implements Serializable {
      * @throws NullPointerException if an attempt is made to create an Instiution without
      *                              defining a shortLabel.
      */
-    public Institution( String shortLabel ) {
+    public Institution(String shortLabel) {
         this();
 
-        this.shortLabel = prepareLabel( shortLabel );
+        this.shortLabel = prepareLabel(shortLabel);
     }
 
-    ///////////////////////////////////////
-    // access methods for attributes
-
-    public String getShortLabel() {
-        return shortLabel;
-    }
-
-    public void setShortLabel( String shortLabel ) {
-        this.shortLabel = shortLabel;
-    }
-
-    private String prepareLabel( String shortLabel ) {
-        if ( shortLabel == null ) {
-            throw new NullPointerException( "Must define a short label to create an Institution!" );
+    private String prepareLabel(String shortLabel) {
+        if (shortLabel == null) {
+            throw new NullPointerException("Must define a short label to create an Institution!");
         }
 
         // delete leading and trailing spaces.
         shortLabel = shortLabel.trim();
 
-        if ( "".equals( shortLabel ) ) {
-            throw new IllegalArgumentException( "Must define a short label to create an Institution!" );
+        if ("".equals(shortLabel)) {
+            throw new IllegalArgumentException("Must define a short label to create an Institution!");
         }
 
-        if ( shortLabel.length() >= AnnotatedObject.MAX_SHORT_LABEL_LEN ) {
-            shortLabel = shortLabel.substring( 0, AnnotatedObject.MAX_SHORT_LABEL_LEN );
+        if (shortLabel.length() >= AnnotatedObject.MAX_SHORT_LABEL_LEN) {
+            shortLabel = shortLabel.substring(0, AnnotatedObject.MAX_SHORT_LABEL_LEN);
         }
 
         return shortLabel;
     }
 
+    ///////////////////////////////////////
+    // access methods for attributes
+
+
     public String getPostalAddress() {
         return postalAddress;
     }
 
-    public void setPostalAddress( String postalAddress ) {
+    public void setPostalAddress(String postalAddress) {
         this.postalAddress = postalAddress;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName( String fullName ) {
-        this.fullName = fullName;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl( String url ) {
+    public void setUrl(String url) {
         this.url = url;
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    public Collection<InstitutionAlias> getAliases() {
+        return aliases;
+    }
+
+    public void addAlias(InstitutionAlias alias) {
+        aliases.add(alias);
+    }
+
+    public void removeAlias(InstitutionAlias alias) {
+        aliases.remove(alias);
+    }
+
+    public void setAliases(Collection<InstitutionAlias> aliases) {
+        this.aliases = aliases;
+    }
+
+    @ManyToMany( cascade = {CascadeType.PERSIST} )
+    @JoinTable(
+            name = "ia_institution2annot",
+            joinColumns = {@JoinColumn( name = "institution_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
+    )
+    public Collection<Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Collection<Annotation> annotations) {
+        this.annotations = annotations;
+    }
+
+    public void addAnnotation(Annotation annotation) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void removeAnnotation(Annotation annotation) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    @Length( min = 1, max = MAX_SHORT_LABEL_LEN )
+    @NotNull
+    public String getShortLabel() {
+        return shortLabel;
+    }
+
+    public void setShortLabel(String shortLabel) {
+        this.shortLabel = shortLabel;
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    public Collection<InstitutionXref> getXrefs() {
+        return xrefs;
+    }
+
+    public void addXref(InstitutionXref aXref) {
+        xrefs.add(aXref);
+    }
+
+    public void removeXref(InstitutionXref xref) {
+        xrefs.remove(xref);
+    }
+
+    public void setXrefs(Collection<InstitutionXref> xrefs) {
+        this.xrefs = xrefs;
+    }
+
+
+    @Deprecated
+    @Transient
+    public Institution getOwner() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated
+    public void setOwner(Institution institution) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated
+    @Transient
+    public String getOwnerAc() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated
+    public void setOwnerAc(String ac) {
+        throw new UnsupportedOperationException();
     }
 
     ///////////////////////////////////////
     // instance methods
 
-    /**
-     * Equality for Institutions is currently based on equal shortLabels and fullNames.
-     *
-     * @param o The object to check
-     *
-     * @return true if the parameter equlas this object, false otherwise
-     */
-    @Override
-    public boolean equals( Object o ) {
-        if ( this == o ) return true;
-        if ( !( o instanceof Institution ) ) return false;
 
-        final Institution institution = ( Institution ) o;
-
-        if ( !shortLabel.equals( institution.shortLabel ) ) {
-            return false;
-        }
-
-        if ( fullName != null ) {
-            return ( fullName.equals( institution.fullName ) );
-        }
-
-        return institution.fullName == null;
-    }
-
-    /**
-     * This class overwrites equals. To ensure proper functioning of HashTable,
-     * hashCode must be overwritten, too.
-     *
-     * @return hash code of the object.
-     */
-    @Override
-    public int hashCode() {
-
-        int code = 29;
-
-        //still need shortLabel check as we still have no-arg constructor..
-        code = 29 * code + shortLabel.hashCode();
-        if ( null != fullName ) code = 29 * code + fullName.hashCode();
-
-        return code;
-    }
-
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer( 64 );
-
-        sb.append( "ShortLabel:" ).append( shortLabel );
-        sb.append( " Fullname:" ).append( fullName );
-
-        return sb.toString();
-    }
 } // end Institution
 
 
