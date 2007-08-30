@@ -13,18 +13,9 @@ import uk.ac.ebi.intact.persistence.dao.InstitutionDao;
  * @since <pre>07-jul-2006</pre>
  */
 @SuppressWarnings( {"unchecked"} )
-public class InstitutionDaoImpl extends IntactObjectDaoImpl<Institution> implements InstitutionDao {
+public class InstitutionDaoImpl extends AnnotatedObjectDaoImpl<Institution> implements InstitutionDao {
 
     public InstitutionDaoImpl( Session session, IntactSession intactSession ) {
         super( Institution.class, session, intactSession );
-    }
-
-    public Institution getByShortLabel( String shortLabel ) {
-        return getByPropertyName( "shortLabel", shortLabel );
-    }
-
-    @Override
-    public void persist( Institution objToPersist ) {
-        getSession().persist( objToPersist );
     }
 }

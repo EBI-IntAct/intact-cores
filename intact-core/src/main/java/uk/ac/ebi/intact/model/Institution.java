@@ -7,8 +7,12 @@ package uk.ac.ebi.intact.model;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.CascadeType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +28,18 @@ import java.util.Collection;
 @Entity
 @Table(name = "ia_institution")
 public class Institution extends IntactObjectImpl implements Serializable, AnnotatedObject<InstitutionXref,InstitutionAlias> {
+
+    //////////////////////
+    // Constants
+
+    public static final String INTACT = "intact";
+    public static final String INTACT_REF = "MI:0469";
+
+    public static final String MINT = "mint";
+    public static final String MINT_REF = "MI:0471";
+
+    public static final String DIP = "dip";
+    public static final String DIP_REF = "MI:0465";
 
     ///////////////////////////////////////
     //attributes
@@ -76,7 +92,6 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
     ///////////////////////////////////////
     // Constructors
     public Institution() {
-        super();
     }
 
     /**
@@ -91,8 +106,6 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
      *                              defining a shortLabel.
      */
     public Institution(String shortLabel) {
-        this();
-
         this.shortLabel = prepareLabel(shortLabel);
     }
 
@@ -135,7 +148,7 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
         this.url = url;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
     public Collection<InstitutionAlias> getAliases() {
         return aliases;
     }
@@ -153,6 +166,7 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
     }
 
     @ManyToMany( cascade = {CascadeType.PERSIST} )
+    @Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @JoinTable(
             name = "ia_institution2annot",
             joinColumns = {@JoinColumn( name = "institution_ac" )},
@@ -192,7 +206,7 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
         this.shortLabel = shortLabel;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
     public Collection<InstitutionXref> getXrefs() {
         return xrefs;
     }
@@ -209,11 +223,9 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
         this.xrefs = xrefs;
     }
 
-
-    @Deprecated
     @Transient
     public Institution getOwner() {
-        throw new UnsupportedOperationException();
+        return this;
     }
 
     @Deprecated

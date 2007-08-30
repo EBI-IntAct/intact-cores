@@ -9,7 +9,5 @@ import uk.ac.ebi.intact.model.Institution;
  * @since <pre>04-Jul-2006</pre>
  */
 @Mockable
-public interface InstitutionDao extends IntactObjectDao<Institution> {
-
-    Institution getByShortLabel( String shortLabel );
+public interface InstitutionDao extends AnnotatedObjectDao<Institution> {
 }

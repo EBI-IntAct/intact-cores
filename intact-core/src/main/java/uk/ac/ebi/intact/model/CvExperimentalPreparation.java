@@ -25,6 +25,11 @@ public class CvExperimentalPreparation extends CvObject {
     //////////////////////
     // Constants
 
+    public static final String PURIFIED = "purified";
+    public static final String PURIFIED_REF = "MI:0350";
+
+    public static final String ENDOGENOUS_LEVEL = "endogenous level";
+    public static final String ENDOGENOUS_LEVEL_REF = "MI:0222";
 
     /**
      * Necessary for hibernate, yet set to private as it should not be used for any other purpose.

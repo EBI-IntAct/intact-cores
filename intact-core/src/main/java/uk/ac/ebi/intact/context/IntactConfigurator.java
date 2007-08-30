@@ -15,7 +15,11 @@ import uk.ac.ebi.intact.config.SchemaVersion;
 import uk.ac.ebi.intact.config.impl.EmptyCvPrimer;
 import uk.ac.ebi.intact.context.impl.IntactContextWrapper;
 import uk.ac.ebi.intact.model.Institution;
+import uk.ac.ebi.intact.model.InstitutionAlias;
+import uk.ac.ebi.intact.model.InstitutionXref;
 import uk.ac.ebi.intact.model.meta.DbInfo;
+import uk.ac.ebi.intact.model.util.XrefUtils;
+import uk.ac.ebi.intact.model.util.AliasUtils;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.dao.IntactTransaction;
 
@@ -35,7 +39,8 @@ public class IntactConfigurator {
 
     private static final String DEFAULT_INSTITUTION_LABEL = "Unknown";
 
-    private static final String EBI_INSTITUTION_LABEL = "ebi";
+    private static final String EBI_INSTITUTION_LABEL = Institution.INTACT;
+    private static final String EBI_INSTITUTION_ALIAS = "ebi";
 
     private static final String EBI_INSTITUTION_FULL_NAME = "European Bioinformatics Institute";
 
@@ -342,7 +347,7 @@ public class IntactConfigurator {
             String postalAddress;
             String url;
 
-            if ( institutionLabel.equalsIgnoreCase( EBI_INSTITUTION_LABEL ) ) {
+            if ( institutionLabel.equalsIgnoreCase( EBI_INSTITUTION_LABEL ) || institutionLabel.equals( EBI_INSTITUTION_ALIAS )) {
                 fullName = getInitParamValue( session, IntactEnvironment.INSTITUTION_FULL_NAME.getFqn(), EBI_INSTITUTION_FULL_NAME);
                 postalAddress = getInitParamValue( session, IntactEnvironment.INSTITUTION_POSTAL_ADDRESS.getFqn(), EBI_INSTITUTION_POSTAL_ADDRESS);
                 url = getInitParamValue( session, IntactEnvironment.INSTITUTION_URL.getFqn(), EBI_INSTITUTION_URL);
@@ -350,6 +355,19 @@ public class IntactConfigurator {
                 fullName = getInitParamValue( session, IntactEnvironment.INSTITUTION_FULL_NAME.getFqn(), "" );
                 postalAddress = getInitParamValue( session, IntactEnvironment.INSTITUTION_POSTAL_ADDRESS.getFqn(), "" );
                 url = getInitParamValue( session, IntactEnvironment.INSTITUTION_URL.getFqn(), "" );
+            }
+
+            // try to assign an xref if intact or mint
+            if (institutionLabel.equals(Institution.INTACT)) {
+                InstitutionXref xref = XrefUtils.createIdentityXrefPsiMi(institution, Institution.INTACT_REF);
+                institution.addXref(xref);
+
+                InstitutionAlias alias = AliasUtils.createAlias(institution, EBI_INSTITUTION_ALIAS, null);
+                institution.addAlias(alias);
+
+            } else if (institutionLabel.equals(Institution.MINT)) {
+                InstitutionXref xref = XrefUtils.createIdentityXrefPsiMi(institution, Institution.MINT_REF);
+                institution.addXref(xref);
             }
 
             institution.setFullName( fullName );
