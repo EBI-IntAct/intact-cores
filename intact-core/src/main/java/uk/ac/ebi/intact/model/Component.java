@@ -95,6 +95,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     private Collection<CvIdentification> participantDetectionMethods;
 
+    /**
+     * Experimental preparations for this component. The allowed terms can be found in this URL http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI&termId=MI%3A0346&termName=experimental%20preparation
+     */
+    private Collection<CvExperimentalPreparation> experimentalPreparations;
+
     ///////////////////////
     // Constructor
 
@@ -232,7 +237,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         getParticipantDetectionMethods().add(particiantIdentification);
     }
 
-    @ManyToMany
+    @ManyToMany (cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "ia_component2part_detect",
             joinColumns = {@JoinColumn( name = "component_ac" )},
@@ -431,6 +436,102 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
     // instance methods
 
+
+    /**
+     * Getter for property 'interactorAc'.
+     *
+     * @return Value for property 'interactorAc'.
+     */ //attributes used for mapping BasicObjects
+    @Column( name = "interactor_ac", insertable = false, updatable = false )
+    public String getInteractorAc() {
+        return this.interactorAc;
+    }
+
+    /**
+     * Setter for property 'interactorAc'.
+     *
+     * @param ac Value to set for property 'interactorAc'.
+     */
+    public void setInteractorAc( String ac ) {
+        this.interactorAc = ac;
+    }
+
+    /**
+     * Getter for property 'interactionAc'.
+     *
+     * @return Value for property 'interactionAc'.
+     */
+    @Column( name = "interaction_ac", insertable = false, updatable = false )
+    public String getInteractionAc() {
+        return this.interactionAc;
+    }
+
+    /**
+     * Setter for property 'interactionAc'.
+     *
+     * @param ac Value to set for property 'interactionAc'.
+     */
+    public void setInteractionAc( String ac ) {
+        this.interactionAc = ac;
+    }
+
+    /**
+     * Getter for property 'expressedInAc'.
+     *
+     * @return Value for property 'expressedInAc'.
+     */
+    @Column( name = "expressedin_ac", insertable = false, updatable = false )
+    public String getExpressedInAc() {
+        return this.expressedInAc;
+    }
+
+    /**
+     * Setter for property 'expressedInAc'.
+     *
+     * @param ac Value to set for property 'expressedInAc'.
+     */
+    public void setExpressedInAc( String ac ) {
+        this.expressedInAc = ac;
+    }
+
+    @ManyToMany (cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "ia_component2exp_preps",
+            joinColumns = {@JoinColumn( name = "component_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "cvobject_ac" )}
+    )
+    public Collection<CvExperimentalPreparation> getExperimentalPreparations() {
+        if (experimentalPreparations == null) {
+            experimentalPreparations = new ArrayList<CvExperimentalPreparation>();
+        }
+        return experimentalPreparations;
+    }
+
+    public void setExperimentalPreparations(Collection<CvExperimentalPreparation> experimentalPreparations) {
+        this.experimentalPreparations = experimentalPreparations;
+    }
+
+    /**
+     * This method is specifically for the clone method of InteractionImpl class. The present setInteraction method
+     * changes the argument passed, thus causing changes to the source of the clone.
+     *
+     * @param interaction the interaction to set. This simply replaces the existing interaction.
+     */
+    @Transient
+    protected void setInteractionForClone( Interaction interaction ) {
+        this.interaction = interaction;
+    }
+
+    /**
+     * See the comments for {@link #setInteractionForClone(Interaction)} method.
+     *
+     * @param interactor
+     */
+    @Transient
+    protected void setInteractorForClone( Interactor interactor ) {
+        this.interactor = interactor;
+    }
+
     /**
      * Equality for Components is currently based on <b>object identity</b> (i.e. the references point to the same
      * objects) for Interactors, Interactions and CvComponentRoles.
@@ -520,81 +621,5 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
             copy.bindingDomains.add( copyFeature );
         }
         return copy;
-    }
-
-    /**
-     * Getter for property 'interactorAc'.
-     *
-     * @return Value for property 'interactorAc'.
-     */ //attributes used for mapping BasicObjects
-    @Column( name = "interactor_ac", insertable = false, updatable = false )
-    public String getInteractorAc() {
-        return this.interactorAc;
-    }
-
-    /**
-     * Setter for property 'interactorAc'.
-     *
-     * @param ac Value to set for property 'interactorAc'.
-     */
-    public void setInteractorAc( String ac ) {
-        this.interactorAc = ac;
-    }
-
-    /**
-     * Getter for property 'interactionAc'.
-     *
-     * @return Value for property 'interactionAc'.
-     */
-    @Column( name = "interaction_ac", insertable = false, updatable = false )
-    public String getInteractionAc() {
-        return this.interactionAc;
-    }
-
-    /**
-     * Setter for property 'interactionAc'.
-     *
-     * @param ac Value to set for property 'interactionAc'.
-     */
-    public void setInteractionAc( String ac ) {
-        this.interactionAc = ac;
-    }
-
-    /**
-     * Getter for property 'expressedInAc'.
-     *
-     * @return Value for property 'expressedInAc'.
-     */
-    @Column( name = "expressedin_ac", insertable = false, updatable = false )
-    public String getExpressedInAc() {
-        return this.expressedInAc;
-    }
-
-    /**
-     * Setter for property 'expressedInAc'.
-     *
-     * @param ac Value to set for property 'expressedInAc'.
-     */
-    public void setExpressedInAc( String ac ) {
-        this.expressedInAc = ac;
-    }
-
-    /**
-     * This method is specifically for the clone method of InteractionImpl class. The present setInteraction method
-     * changes the argument passed, thus causing changes to the source of the clone.
-     *
-     * @param interaction the interaction to set. This simply replaces the existing interaction.
-     */
-    protected void setInteractionForClone( Interaction interaction ) {
-        this.interaction = interaction;
-    }
-
-    /**
-     * See the comments for {@link #setInteractionForClone(Interaction)} method.
-     *
-     * @param interactor
-     */
-    protected void setInteractorForClone( Interactor interactor ) {
-        this.interactor = interactor;
     }
 }
