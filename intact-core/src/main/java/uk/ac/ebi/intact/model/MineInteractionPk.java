@@ -30,13 +30,13 @@ import java.io.Serializable;
 @Embeddable
 public class MineInteractionPk implements Serializable {
 
-    @ManyToOne
+    @ManyToOne 
     @JoinColumn( name = "protein1_ac" )
-    private ProteinImpl protein1;
+    private InteractorImpl protein1;
 
     @ManyToOne
     @JoinColumn( name = "protein2_ac" )
-    private ProteinImpl protein2;
+    private InteractorImpl protein2;
 
     @ManyToOne
     @JoinColumn( name = "interaction_ac" )
@@ -51,19 +51,19 @@ public class MineInteractionPk implements Serializable {
         this.interaction = interaction;
     }
 
-    public ProteinImpl getProtein1() {
+    public InteractorImpl getProtein1() {
         return protein1;
     }
 
-    public void setProtein1( ProteinImpl protein1 ) {
+    public void setProtein1( InteractorImpl protein1 ) {
         this.protein1 = protein1;
     }
 
-    public ProteinImpl getProtein2() {
+    public InteractorImpl getProtein2() {
         return protein2;
     }
 
-    public void setProtein2( ProteinImpl protein2 ) {
+    public void setProtein2( InteractorImpl protein2 ) {
         this.protein2 = protein2;
     }
 
