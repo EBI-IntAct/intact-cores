@@ -4,9 +4,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.ebi.intact.model.BioSource;
+import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.Protein;
-import uk.ac.ebi.intact.model.BioSource;
 
 /**
  * TODO comment this
@@ -65,5 +66,16 @@ public class IntactMockBuilderTest
         Assert.assertNotNull(taxId);
         Assert.assertFalse(bioSource.getXrefs().isEmpty());
         Assert.assertEquals(taxId, bioSource.getXrefs().iterator().next().getPrimaryId());
+    }
+
+    @Test
+    public void createComponentRandom() throws Exception {
+        Component component = mockBuilder.createComponentRandom();
+
+        Assert.assertNotNull(component.getCvExperimentalRole());
+        Assert.assertNotNull(component.getCvBiologicalRole());
+        Assert.assertFalse(component.getParticipantDetectionMethods().isEmpty());
+        Assert.assertFalse(component.getExperimentalPreparations().isEmpty());
+
     }
 }

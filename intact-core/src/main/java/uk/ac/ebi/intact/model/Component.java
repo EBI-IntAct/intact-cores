@@ -215,6 +215,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * @return Value for property 'particiantIdentification'.
      */
     @Deprecated
+    @Transient
     public CvIdentification getParticipantIdentification() {
         if (participantDetectionMethods == null) {
             return null;

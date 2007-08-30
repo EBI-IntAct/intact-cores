@@ -163,6 +163,9 @@ public class IntactMockBuilder {
         CvIdentification cvParticipantDetMethod = createCvObject(CvIdentification.class, CvIdentification.PREDETERMINED_MI_REF, CvIdentification.PREDETERMINED);
         component.getParticipantDetectionMethods().add(cvParticipantDetMethod);
 
+        CvExperimentalPreparation cvExperimentalPreparation = createCvObject(CvExperimentalPreparation.class, CvExperimentalPreparation.PURIFIED_REF, CvExperimentalPreparation.PURIFIED);
+        component.getExperimentalPreparations().add(cvExperimentalPreparation);
+
         return component;
     }
 
@@ -192,6 +195,10 @@ public class IntactMockBuilder {
 
     public Component createComponentPrey(Interactor interactor) {
         return createComponentPrey(null, interactor);
+    }
+
+    public Component createComponentRandom() {
+        return createInteractionRandomBinary().getComponents().iterator().next();
     }
 
     public Component createComponentPrey(Interaction interaction, Interactor interactor) {
