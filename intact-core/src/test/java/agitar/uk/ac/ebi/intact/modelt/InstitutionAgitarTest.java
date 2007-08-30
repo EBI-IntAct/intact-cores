@@ -117,23 +117,6 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         assertNull( "result", result );
     }
 
-    public void testHashCode() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
-        institution.setFullName( "testInstitutionFullName" );
-        int result = institution.hashCode();
-        assertEquals( "result", -1527398237, result );
-        assertEquals( "institution.shortLabel", "testInstitutionShort", institution.getShortLabel() );
-        assertEquals( "institution.fullName", "testInstitutionFullName", institution.getFullName());
-    }
-
-    public void testHashCode1() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
-        int result = institution.hashCode();
-        assertEquals( "result", 749136287, result );
-        assertEquals( "institution.shortLabel", "testInstitutionShort", institution.getShortLabel() );
-        assertNull( "institution.fullName", institution.getFullName());
-    }
-
     public void testSetFullName() throws Throwable {
         Institution institution = new Institution( "testInstitutionShortLabel" );
         institution.setFullName( "testInstitutionFullName" );
@@ -158,11 +141,6 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         assertEquals( "institution.url", "testInstitutionUrl", institution.getUrl() );
     }
 
-    public void testToString() throws Throwable {
-        String result = new Institution( "testInstitutionShortLabel" ).toString();
-        assertEquals( "result", "ShortLabel:testInstitutionShort Fullname:null", result );
-    }
-
     public void testConstructorThrowsIllegalArgumentException() throws Throwable {
         try {
             new Institution( "" );
@@ -183,30 +161,6 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         }
     }
 
-    public void testEqualsThrowsNullPointerException() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
-        institution.setShortLabel( null );
-        try {
-            institution.equals( new Institution( "testInstitutionShortLabel1" ) );
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( Institution.class, ex );
-        }
-    }
 
-    public void testHashCodeThrowsNullPointerException() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
-        institution.setShortLabel( null );
-        try {
-            institution.hashCode();
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( Institution.class, ex );
-            assertNull( "institution.shortLabel", institution.getShortLabel() );
-            assertNull( "institution.fullName", institution.getFullName());
-        }
-    }
 }
 
