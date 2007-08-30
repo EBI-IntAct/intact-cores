@@ -150,14 +150,19 @@ public class IntactMockBuilder {
     }
 
     public Component createComponent(Interaction interaction, Interactor interactor, CvExperimentalRole expRole, CvBiologicalRole bioRole) {
-        return new Component(getInstitution(), interaction, interactor, expRole, bioRole);
+        Component component = new Component(getInstitution(), interaction, interactor, expRole, bioRole);
+
+        CvIdentification cvParticipantDetMethod = createCvObject(CvIdentification.class, CvIdentification.PREDETERMINED_MI_REF, CvIdentification.PREDETERMINED);
+        component.getParticipantDetectionMethods().add(cvParticipantDetMethod);
+
+        return component;
     }
 
     public Component createComponentNeutral(Interaction interaction, Interactor interactor) {
         CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.NEUTRAL_PSI_REF, CvExperimentalRole.NEUTRAL);
         CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
 
-        Component component = new Component(getInstitution(), interaction, interactor, expRole, bioRole);
+        Component component = createComponent(interaction, interactor, expRole, bioRole);
 
         for (int i=0; i<childRandom(0,2); i++) {
             component.addBindingDomain(createFeatureRandom());

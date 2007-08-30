@@ -11,6 +11,7 @@ import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -87,6 +88,12 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * If not specified, the experiment's is to be considered.
      */
     private CvIdentification participantIdentification;
+
+    /**
+     * Participant identifications method that can override the one defined in the experiment.
+     * If not specified, the experiment's is to be considered.
+     */
+    private Collection<CvIdentification> participantDetectionMethods;
 
     ///////////////////////
     // Constructor
@@ -202,10 +209,17 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'particiantIdentification'.
      */
-    @ManyToOne( fetch = FetchType.LAZY )
-    @JoinColumn( name = "identmethod_ac" )
+    @Deprecated
     public CvIdentification getParticipantIdentification() {
-        return participantIdentification;
+        if (participantDetectionMethods == null) {
+            return null;
+        }
+
+        if (participantDetectionMethods.isEmpty()) {
+            return null;
+        }
+
+        return participantDetectionMethods.iterator().next();
     }
 
     /**
@@ -213,8 +227,26 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @param particiantIdentification Value to set for property 'particiantIdentification'.
      */
+    @Deprecated
     public void setParticipantIdentification( CvIdentification particiantIdentification ) {
-        this.participantIdentification = particiantIdentification;
+        getParticipantDetectionMethods().add(particiantIdentification);
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "ia_component2part_detect",
+            joinColumns = {@JoinColumn( name = "component_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "cvobject_ac" )}
+    )
+    public Collection<CvIdentification> getParticipantDetectionMethods() {
+        if (participantDetectionMethods == null) {
+            participantDetectionMethods = new ArrayList<CvIdentification>();
+        }
+        return participantDetectionMethods;
+    }
+
+    public void setParticipantDetectionMethods(Collection<CvIdentification> participantDetectionMethods) {
+        this.participantDetectionMethods = participantDetectionMethods;
     }
 
     /**
