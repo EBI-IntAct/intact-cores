@@ -111,6 +111,9 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
         }
     }
 
+    /**
+     * TODO: base this methods on the interactor equals (except AC check)
+     */
     protected BehaviourType syncedAndCandidateAreEqual(T synced, T candidate) {
         if (synced == null) return BehaviourType.NEW;
 

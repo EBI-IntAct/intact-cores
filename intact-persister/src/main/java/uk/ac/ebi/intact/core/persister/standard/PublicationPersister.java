@@ -41,6 +41,9 @@ public class PublicationPersister extends AbstractAnnotatedObjectPersister<Publi
         super();
     }
 
+    /**
+     * TODO: check on the primary ref xref first
+     */
     protected Publication fetchFromDataSource(Publication intactObject) {
         return getIntactContext().getDataContext().getDaoFactory()
                 .getPublicationDao().getByShortLabel(intactObject.getShortLabel());

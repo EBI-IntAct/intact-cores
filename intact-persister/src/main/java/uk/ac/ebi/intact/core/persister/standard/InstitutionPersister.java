@@ -6,9 +6,6 @@ import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.Institution;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * TODO comment this
  *
@@ -34,7 +31,7 @@ public class InstitutionPersister implements Persister<Institution>
     }
 
     public Institution syncIfTransient(Institution objToSync) {
-        if (objToSync.getShortLabel().equals(IntactContext.getCurrentInstance().getInstitution())) {
+        if (objToSync.getShortLabel().equals(IntactContext.getCurrentInstance().getInstitution().getShortLabel())) {
             return IntactContext.getCurrentInstance().getInstitution();
         }
 

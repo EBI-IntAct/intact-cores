@@ -40,11 +40,17 @@ public class BioSourcePersister extends AbstractAnnotatedObjectPersister<BioSour
         super();
     }
 
+    /**
+     * TODO: uniqueness - taxid,celltype,tissue
+     */
     protected BioSource fetchFromDataSource(BioSource intactObject) {
         if (intactObject.getTaxId() == null) {
             throw new IllegalArgumentException("Organism without a tax id");
         }
+
+        // TODO: this will fail with specific celltype
         return getIntactContext().getDataContext().getDaoFactory()
                 .getBioSourceDao().getByTaxonIdUnique(intactObject.getTaxId());
     }
+
 }

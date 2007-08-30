@@ -41,6 +41,9 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         super();
     }
 
+    /**
+     * TODO: check if the interaction fetching/syncing covers this - check by ac at least
+     */
     protected Component fetchFromDataSource(Component intactObject) {
         return null;
     }
@@ -57,6 +60,8 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
         cvPersister.saveOrUpdate(intactObject.getCvBiologicalRole());
         cvPersister.saveOrUpdate(intactObject.getCvExperimentalRole());
+
+        // TODO: saveOrUpdate (and sync) participantIdentitifaction
 
         InteractionPersister.getInstance().saveOrUpdate(intactObject.getInteraction());
 

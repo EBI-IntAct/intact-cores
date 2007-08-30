@@ -60,9 +60,14 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
                 .getExperimentDao().getByShortLabel(intactObject.getShortLabel());
     }
 
+    /**
+     * TODO: check on detmethod[interaction,interactor], biosource, pmid
+     */
     @Override
     protected BehaviourType syncedAndCandidateAreEqual(Experiment synced, Experiment candidate) {
         if (synced == null) return BehaviourType.NEW;
+
+        // TODO review in detail
 
         if (!synced.getShortLabel().equals(candidate.getShortLabel())) {
             return BehaviourType.NEW;
@@ -79,6 +84,9 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         if (syncedPubmedId == null && candidatePubmedId != null) {
             if (log.isDebugEnabled())
                 log.debug("Synced pubmedId: " + syncedPubmedId + " (" + synced.getShortLabel() + ") - candidate pubmedId: " + candidatePubmedId + " (" + synced.getShortLabel() + ")");
+
+            // TODO throw an exception!
+
             return BehaviourType.UPDATE;
         }
 

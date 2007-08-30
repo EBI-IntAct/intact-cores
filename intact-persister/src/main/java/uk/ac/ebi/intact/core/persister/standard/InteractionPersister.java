@@ -48,6 +48,19 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         super();
     }
 
+    /**
+     * TODO: (A) check ac(pk) always first, then ac(provider xref) in combination with the experiment, then same components[interactor,roles,detmethods,features], interaction type
+     * @param intactObject
+     * @return
+     */
+    @Override
+    protected Interaction fetchFromDataSource(Interaction intactObject) {
+        return super.fetchFromDataSource(intactObject);
+    }
+
+    /**
+     * TODO forget it. because of A -- I mean see A above
+     */
     @Override
     protected BehaviourType syncedAndCandidateAreEqual(Interaction synced, Interaction candidate) {
         if (synced == null) {

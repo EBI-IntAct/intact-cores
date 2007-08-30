@@ -65,6 +65,9 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
         }
     }
 
+    /**
+     * TODO: attempt identityXref(mi first and ia next)-cvType and then label-cvType
+     */
     @Override
     protected CvObject fetchFromDataSource(CvObject intactObject) {
         return getIntactContext().getDataContext().getDaoFactory()
