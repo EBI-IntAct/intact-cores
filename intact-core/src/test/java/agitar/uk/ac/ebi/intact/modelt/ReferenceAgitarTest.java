@@ -21,7 +21,6 @@ public class ReferenceAgitarTest extends AgitarTestCase {
     public void testConstructor() throws Throwable {
         Institution owner = new Institution( "testReferenceShortLabel" );
         Reference reference = new Reference( owner, "testReferenceTitle", "testReferenceAuthors" );
-        assertEquals( "reference.getEvidences().size()", 0, reference.getEvidences().size() );
         assertEquals( "reference.getAuthors()", "testReferenceAuthors", reference.getAuthors() );
         assertEquals( "reference.getTitle()", "testReferenceTitle", reference.getTitle() );
         assertEquals( "reference.getAnnotatedObjects().size()", 0, reference.getAnnotatedObjects().size() );
@@ -30,7 +29,6 @@ public class ReferenceAgitarTest extends AgitarTestCase {
 
     public void testConstructor1() throws Throwable {
         Reference reference = new Reference();
-        assertEquals( "reference.getEvidences().size()", 0, reference.getEvidences().size() );
         assertEquals( "reference.getAnnotatedObjects().size()", 0, reference.getAnnotatedObjects().size() );
     }
 

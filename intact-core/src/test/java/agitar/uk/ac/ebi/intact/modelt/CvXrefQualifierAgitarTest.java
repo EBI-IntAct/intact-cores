@@ -21,11 +21,9 @@ public class CvXrefQualifierAgitarTest extends AgitarTestCase {
         CvXrefQualifier cvXrefQualifier = new CvXrefQualifier( owner, "testCvXrefQualifierShortLabel" );
         assertEquals( "cvXrefQualifier.xrefs.size()", 0, cvXrefQualifier.xrefs.size() );
         assertEquals( "cvXrefQualifier.getAliases().size()", 0, cvXrefQualifier.getAliases().size() );
-        assertEquals( "cvXrefQualifier.getEvidences().size()", 0, cvXrefQualifier.getEvidences().size() );
         assertEquals( "cvXrefQualifier.shortLabel", "testCvXrefQualifierS", cvXrefQualifier.getShortLabel() );
         assertEquals( "cvXrefQualifier.annotations.size()", 0, cvXrefQualifier.annotations.size() );
         assertSame( "cvXrefQualifier.getOwner()", owner, cvXrefQualifier.getOwner() );
-        assertEquals( "cvXrefQualifier.references.size()", 0, cvXrefQualifier.references.size() );
     }
 
     public void testConstructorThrowsIllegalArgumentException() throws Throwable {

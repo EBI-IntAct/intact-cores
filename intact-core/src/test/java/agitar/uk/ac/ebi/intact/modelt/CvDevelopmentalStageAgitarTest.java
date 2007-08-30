@@ -23,11 +23,9 @@ public class CvDevelopmentalStageAgitarTest extends AgitarTestCase {
         CvDevelopmentalStage cvDevelopmentalStage = new CvDevelopmentalStage( owner, "testCvDevelopmentalStageShortLabel" );
         assertEquals( "cvDevelopmentalStage.xrefs.size()", 0, cvDevelopmentalStage.xrefs.size() );
         assertEquals( "cvDevelopmentalStage.getAliases().size()", 0, cvDevelopmentalStage.getAliases().size() );
-        assertEquals( "cvDevelopmentalStage.getEvidences().size()", 0, cvDevelopmentalStage.getEvidences().size() );
         assertEquals( "cvDevelopmentalStage.shortLabel", "testCvDevelopmentalS", cvDevelopmentalStage.getShortLabel() );
         assertEquals( "cvDevelopmentalStage.annotations.size()", 0, cvDevelopmentalStage.annotations.size() );
         assertSame( "cvDevelopmentalStage.getOwner()", owner, cvDevelopmentalStage.getOwner() );
-        assertEquals( "cvDevelopmentalStage.references.size()", 0, cvDevelopmentalStage.references.size() );
     }
 
     public void testConstructorThrowsIllegalArgumentException() throws Throwable {

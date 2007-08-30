@@ -21,11 +21,9 @@ public class CvTissueAgitarTest extends AgitarTestCase {
         CvTissue cvTissue = new CvTissue( owner, "testCvTissueShortLabel" );
         assertEquals( "cvTissue.xrefs.size()", 0, cvTissue.xrefs.size() );
         assertEquals( "cvTissue.getAliases().size()", 0, cvTissue.getAliases().size() );
-        assertEquals( "cvTissue.getEvidences().size()", 0, cvTissue.getEvidences().size() );
         assertEquals( "cvTissue.shortLabel", "testCvTissueShortLab", cvTissue.getShortLabel() );
         assertEquals( "cvTissue.annotations.size()", 0, cvTissue.annotations.size() );
         assertSame( "cvTissue.getOwner()", owner, cvTissue.getOwner() );
-        assertEquals( "cvTissue.references.size()", 0, cvTissue.references.size() );
     }
 
     public void testConstructorThrowsIllegalArgumentException() throws Throwable {

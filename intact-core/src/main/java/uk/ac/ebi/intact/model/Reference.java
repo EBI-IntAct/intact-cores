@@ -14,6 +14,7 @@ import java.util.Collection;
  * @author hhe
  * @version $Id$
  */
+@Deprecated
 public class Reference extends BasicObjectImpl {
 
     ///////////////////////////////////////
@@ -103,13 +104,11 @@ public class Reference extends BasicObjectImpl {
     public void addAnnotatedObject( AnnotatedObject annotatedObject ) {
         if ( !this.annotatedObjects.contains( annotatedObject ) ) {
             this.annotatedObjects.add( annotatedObject );
-            annotatedObject.addReference( this );
         }
     }
 
     public void removeAnnotatedObject( AnnotatedObject annotatedObject ) {
-        boolean removed = this.annotatedObjects.remove( annotatedObject );
-        if ( removed ) annotatedObject.removeReference( this );
+        this.annotatedObjects.remove( annotatedObject );
     }
 
     public SubmissionRef getSubmissionRef() {

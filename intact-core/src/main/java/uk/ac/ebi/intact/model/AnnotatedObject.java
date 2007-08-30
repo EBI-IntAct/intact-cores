@@ -57,18 +57,6 @@ public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicO
 
     void removeAlias( A alias );
 
-    void setReferences( Collection<Reference> someReferences );
-
-    Collection<Reference> getReferences();
-
-    void addReference( Reference reference );
-
-    void removeReference( Reference reference );
-
-//    AnnotatedObject update(IntactHelper helper) throws IntactException;
-//
-//    Annotation updateUniqueAnnotation(CvTopic topic, String description, Institution owner);
-
     boolean equals( Object o );
 
     int hashCode();

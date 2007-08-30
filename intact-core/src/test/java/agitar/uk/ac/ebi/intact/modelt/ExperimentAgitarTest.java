@@ -26,13 +26,11 @@ public class ExperimentAgitarTest extends AgitarTestCase {
         Experiment experiment = new Experiment( owner, "testExperimentShortLabel", source );
         assertEquals( "experiment.xrefs.size()", 0, experiment.xrefs.size() );
         assertEquals( "experiment.getAliases().size()", 0, experiment.getAliases().size() );
-        assertEquals( "experiment.getEvidences().size()", 0, experiment.getEvidences().size() );
         assertEquals( "experiment.shortLabel", "testExperimentShortL", experiment.getShortLabel() );
         assertSame( "experiment.getBioSource()", source, experiment.getBioSource() );
         assertEquals( "experiment.getInteractions().size()", 0, experiment.getInteractions().size() );
         assertEquals( "experiment.annotations.size()", 0, experiment.annotations.size() );
         assertSame( "experiment.getOwner()", owner, experiment.getOwner() );
-        assertEquals( "experiment.references.size()", 0, experiment.references.size() );
     }
 
     public void testClone() throws Throwable {

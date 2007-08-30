@@ -22,11 +22,6 @@ public abstract class BasicObjectImpl extends IntactObjectImpl implements BasicO
     // associations
 
     /**
-     * TODO comments + plural name
-     */
-    private Collection<Evidence> evidences = new ArrayList<Evidence>();
-
-    /**
      * TODO comments
      */
     private Institution owner;
@@ -48,22 +43,6 @@ public abstract class BasicObjectImpl extends IntactObjectImpl implements BasicO
     ///////////////////////////////////////
     // access methods for associations
 
-    public void setEvidences( Collection<Evidence> someEvidence ) {
-        this.evidences = someEvidence;
-    }
-
-    @Transient
-    public Collection<Evidence> getEvidences() {
-        return evidences;
-    }
-
-    public void addEvidence( Evidence evidence ) {
-        if ( !this.evidences.contains( evidence ) ) this.evidences.add( evidence );
-    }
-
-    public void removeEvidence( Evidence evidence ) {
-        this.evidences.remove( evidence );
-    }
 
     @ManyToOne( fetch = FetchType.LAZY )
     @JoinColumn( name = "owner_ac", nullable = false )

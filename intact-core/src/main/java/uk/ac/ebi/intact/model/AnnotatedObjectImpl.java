@@ -65,11 +65,6 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
     private Collection<A> aliases = new ArrayList<A>();
 
     /**
-     *
-     */
-    public Collection<Reference> references = new ArrayList<Reference>();
-
-    /**
      * no-arg constructor provided for compatibility with subclasses
      * that have no-arg constructors.
      */
@@ -201,30 +196,6 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
 
     public void removeAlias( A alias ) {
         this.aliases.remove( alias );
-    }
-
-
-    public void setReferences( Collection<Reference> someReferences ) {
-        this.references = someReferences;
-    }
-
-    @Transient
-    public Collection<Reference> getReferences() {
-        return references;
-    }
-
-    public void addReference( Reference reference ) {
-        if ( !this.references.contains( reference ) ) {
-            this.references.add( reference );
-            reference.addAnnotatedObject( this );
-        }
-    }
-
-    public void removeReference( Reference reference ) {
-        boolean removed = this.references.remove( reference );
-        if ( removed ) {
-            reference.removeAnnotatedObject( this );
-        }
     }
 
     ///////////////////////////////////////

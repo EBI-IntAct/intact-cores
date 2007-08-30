@@ -14,20 +14,14 @@ import java.util.Collection;
  */
 public interface BasicObject extends IntactObject {
 
-    public void setEvidences( Collection<Evidence> someEvidence );
-
-    public Collection<Evidence> getEvidences();
-
-    public void addEvidence( Evidence evidence );
-
-    public void removeEvidence( Evidence evidence );
-
     public Institution getOwner();
 
     public void setOwner( Institution institution );
 
+    @Deprecated
     public String getOwnerAc();
 
+    @Deprecated
     public void setOwnerAc( String ac );
 
     public String toString();

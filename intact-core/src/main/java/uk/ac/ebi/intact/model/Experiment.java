@@ -122,9 +122,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         ex.setAnnotations( experiment.getAnnotations() );
         ex.setCvInteraction( experiment.getCvInteraction() );
         ex.setCvIdentification( experiment.getCvIdentification() );
-        ex.setEvidences( experiment.getEvidences() );
         ex.setFullName( experiment.getFullName() );
-        ex.setReferences( experiment.getReferences() );
         ex.setRelatedExperiment( experiment.getRelatedExperiment() );
         ex.setXrefs( experiment.getXrefs() );
         ex.setPublication( experiment.getPublication() );

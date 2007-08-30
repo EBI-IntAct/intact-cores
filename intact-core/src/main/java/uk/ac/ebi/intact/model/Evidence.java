@@ -12,6 +12,7 @@ package uk.ac.ebi.intact.model;
  * @author hhe
  * @version $Id$
  */
+@Deprecated
 public class Evidence {
 
     ///////////////////////////////////////
