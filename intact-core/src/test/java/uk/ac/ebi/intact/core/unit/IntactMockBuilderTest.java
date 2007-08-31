@@ -4,10 +4,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.model.BioSource;
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.Protein;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.XrefUtils;
 
 /**
  * TODO comment this
@@ -27,6 +25,20 @@ public class IntactMockBuilderTest
     @After
     public void after() {
         mockBuilder = null;
+    }
+
+    @Test
+    public void createInstitution() throws Exception {
+        Institution institution = mockBuilder.createInstitution(Institution.MINT_REF, Institution.MINT);
+
+        InstitutionXref xref = XrefUtils.getPsiMiIdentityXref(institution);
+        String primaryId = xref.getPrimaryId();
+
+        Assert.assertEquals(Institution.MINT_REF, primaryId);
+
+        Assert.assertNotNull(xref.getOwner());
+        Assert.assertNotNull(xref.getCvDatabase().getOwner());
+        Assert.assertNotNull(xref.getCvXrefQualifier().getOwner());
     }
 
     @Test

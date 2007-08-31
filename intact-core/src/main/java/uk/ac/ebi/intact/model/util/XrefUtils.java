@@ -15,11 +15,12 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
-import uk.ac.ebi.intact.model.Xref;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.util.ClassUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Utils with xrefs
@@ -43,7 +44,13 @@ public class XrefUtils {
 
     public static <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvXrefQualifier identityQual, CvDatabase cvDatabase) {
         X xref = (X) newXrefInstanceFor(parent.getClass());
-        xref.setOwner(parent.getOwner());
+        Institution owner = parent.getOwner();
+
+        if (owner == null) {
+            owner = IntactContext.getCurrentInstance().getInstitution();
+        }
+
+        xref.setOwner(owner);
         xref.setCvDatabase(cvDatabase);
         xref.setCvXrefQualifier(identityQual);
         xref.setPrimaryId(primaryId);
@@ -55,5 +62,106 @@ public class XrefUtils {
     public static <X extends Xref> X newXrefInstanceFor(Class<? extends AnnotatedObject> aoClass) {
         Class<X> xrefClass = (Class<X>) AnnotatedObjectUtils.getXrefClassType(aoClass);
         return ClassUtils.newInstance(xrefClass);
+    }
+
+    public static <X extends Xref> Collection<X> getIdentityXrefs(AnnotatedObject<X,?> annotatedObject) {
+        Collection<X> xrefs = new ArrayList<X>();
+
+        for (X xref : annotatedObject.getXrefs()) {
+            CvXrefQualifier qualifier = xref.getCvXrefQualifier();
+            if (qualifier != null &&
+                CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF)) {
+                xrefs.add(xref);
+            }
+        }
+
+        return xrefs;
+    }
+
+    public static <X extends Xref> X getIdentityXref(AnnotatedObject<X,?> annotatedObject, CvDatabase cvDatabase) {
+        String dbMi = CvObjectUtils.getPsiMiIdentityXref(cvDatabase).getPrimaryId();
+
+        for (X xref : annotatedObject.getXrefs()) {
+            CvXrefQualifier qualifier = xref.getCvXrefQualifier();
+            if (qualifier != null &&
+                CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF) &&
+                CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(dbMi)) {
+
+                return xref;
+            }
+        }
+
+        return null;
+    }
+
+    public static <X extends Xref> X getPsiMiIdentityXref(AnnotatedObject<X,?> annotatedObject) {
+        if (annotatedObject == null) {
+            throw new NullPointerException("annotatedObject should not be null");
+        }
+        Collection<X> xrefs = annotatedObject.getXrefs();
+        X annotatedObjectXref = null;
+        for (X xref : xrefs) {
+            //Check that the cvdatabase of the xref has an psi-mi identity xref equal to CvDatabase.PSI_MI_MI_REF ( i.e:
+            //check that the database is Psi-mi)
+            if (hasIdentity(xref.getCvDatabase(), CvDatabase.PSI_MI_MI_REF)) {
+                //Check that the cvdatabase of the xref has an psi-mi identity xref equal to CvDatabase.IDENTITY_MI_REF ( i.e:
+                //check that the xref qualifier is identity)
+                if (xref.getCvXrefQualifier() != null && hasIdentity(xref.getCvXrefQualifier(), CvXrefQualifier.IDENTITY_MI_REF)) {
+                    //If annotatedObjectXref is null than affect it's value, if it is not null it means that the cvObject has 2
+                    //xref identity to psi-mi which is not allowed, then send an error message.
+                    if (annotatedObjectXref == null) {
+                        annotatedObjectXref = xref;
+                    } else {
+                        String clazz = annotatedObject.getClass().getSimpleName();
+                        throw new IllegalStateException("More than one psi-mi identity in " + clazz + " :" + annotatedObject.getAc());
+                    }
+                }
+            }
+        }
+
+        // if annotatedObjectXref is null, degrade the search so we search on short label rather than
+        // the identity xrefs. This is an ugly hack as it seems that sometimes the xrefs of the cvobject
+        // of the xref of the original cvobject are not lazily loaded. I hope you understand, my friend
+        if (annotatedObjectXref == null) {
+            for (X xref : xrefs) {
+                if (xref.getCvDatabase() != null && xref.getCvDatabase().getShortLabel() != null
+                        && xref.getCvXrefQualifier() != null && xref.getCvXrefQualifier().getShortLabel() != null) {
+                    if (xref.getCvDatabase().getShortLabel().equals(CvDatabase.PSI_MI) &&
+                            xref.getCvXrefQualifier().getShortLabel().equals(CvXrefQualifier.IDENTITY)) {
+                        if (annotatedObjectXref == null) {
+                            annotatedObjectXref = xref;
+                        } else {
+                            String clazz = annotatedObject.getClass().getSimpleName();
+                            throw new IllegalStateException("More than one psi-mi identity in " + clazz + " :" + annotatedObject.getAc());
+                        }
+                    }
+                }
+            }
+        }
+
+        return annotatedObjectXref;
+    }
+
+    // ex1 : annotatedObject is supposibly the CvDatabase psi-mi, psiMi is CvDatabase.PSI_MI_MI_REF
+    // ex2: annotatedObject is supposibly the CvXrefQualifier identity , psiMi is  CvXrefQualifier.IDENTITY_MI_REF
+    public static <X extends Xref> boolean hasIdentity(AnnotatedObject<X,?> annotatedObject, String psiMi) {
+        if (annotatedObject == null) {
+            throw new NullPointerException("annotatedObject should not be null");
+        }
+        if (psiMi == null) {
+            throw new NullPointerException("psiMi should not be null");
+        }
+        Collection<X> annotatedObjectXrefs = annotatedObject.getXrefs();
+        for (X xref : annotatedObjectXrefs) {
+            if (psiMi.equals(xref.getPrimaryId())) {
+                if (CvXrefQualifier.IDENTITY_MI_REF.equals(psiMi)) {
+                    return true;
+                }
+                if (xref.getCvXrefQualifier() != null && hasIdentity(xref.getCvXrefQualifier(), CvXrefQualifier.IDENTITY_MI_REF)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
