@@ -5,8 +5,6 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
-import uk.ac.ebi.intact.annotation.EditorTopic;
-
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -20,7 +18,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("uk.ac.ebi.intact.model.CvExperimentalPreparation")
-public class CvExperimentalPreparation extends CvObject {
+public class CvExperimentalPreparation extends CvDagObject {
 
     //////////////////////
     // Constants
