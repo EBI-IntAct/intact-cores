@@ -7,13 +7,12 @@ package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.Interactor;
-import uk.ac.ebi.intact.model.ProteinImpl;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Util methods for interactions
@@ -25,13 +24,11 @@ import java.util.Iterator;
 public class InteractionUtils {
 
     private static final Log log = LogFactory.getLog( InteractionUtils.class );
-    
 
     /**
      * Checks if the interaction is a binary interaction
      *
      * @param interaction
-     *
      * @return
      */
     public static boolean isBinaryInteraction( Interaction interaction ) {
@@ -70,7 +67,6 @@ public class InteractionUtils {
      * Checks if the interaction is a self interaction
      *
      * @param interaction
-     *
      * @return
      */
     public static boolean isSelfInteraction( Interaction interaction ) {
@@ -108,7 +104,6 @@ public class InteractionUtils {
      * Checks if the interaction is a binary self interaction
      *
      * @param interaction
-     *
      * @return
      */
     public static boolean isSelfBinaryInteraction( Interaction interaction ) {
@@ -136,7 +131,6 @@ public class InteractionUtils {
      * Checks if an interaction contain other interactor types than Protein
      *
      * @param interaction
-     *
      * @return
      */
     public static boolean containsNonProteinInteractors( Interaction interaction ) {
@@ -154,9 +148,7 @@ public class InteractionUtils {
      * Checks if the interaction involves a single component. That a single component with a stoichiometry of at most 1.
      *
      * @param interaction
-     *
      * @return
-     *
      * @since 1.5
      */
     public static boolean isUnaryInteraction( Interaction interaction ) {
@@ -179,34 +171,109 @@ public class InteractionUtils {
      * existing interactions with the same participants, the short label would be the same, so a prefix
      * with a number should be added)
      *
-     * @see uk.ac.ebi.intact.model.util.InteractionShortLabelGenerator
-     *
      * @param interaction the interaction used to calculate the shortlabel
      * @return the short label
-     *
+     * @see uk.ac.ebi.intact.model.util.InteractionShortLabelGenerator
      * @since 1.6
      */
-    public static String calculateShortLabel(final Interaction interaction) {
-        return InteractionShortLabelGenerator.createCandidateShortLabel(interaction);
+    public static String calculateShortLabel( final Interaction interaction ) {
+        return InteractionShortLabelGenerator.createCandidateShortLabel( interaction );
     }
 
     /**
      * Syncs a short label with the database, checking that there are no duplicates and that the correct suffix is added.
-     *
+     * <p/>
      * Concurrency note: just after getting the new short label, it is recommended to persist/update the interaction immediately
      * in the database - so this method should ONLY be used before saving the interaction to the database. In some
      * race conditions, two interactions could be created with the same id; currently there is no way to
      * reserve a short label
      *
-     * @see uk.ac.ebi.intact.model.util.InteractionShortLabelGenerator
-     *
      * @param shortLabel the short label to sync
      * @return the synced short label
-     *
+     * @see uk.ac.ebi.intact.model.util.InteractionShortLabelGenerator
      * @since 1.6
      */
-    public static String syncShortLabelWithDb(String shortLabel) {
-        return InteractionShortLabelGenerator.nextAvailableShortlabel(shortLabel);
+    public static String syncShortLabelWithDb( String shortLabel ) {
+        return InteractionShortLabelGenerator.nextAvailableShortlabel( shortLabel );
     }
 
+    /**
+     * Retreives Imex identifier stored in the Xrefs.
+     *
+     * @param interaction the interaction to search on.
+     * @return an imex id or null if not found.
+     */
+    public static String getImexIdentifier( Interaction interaction ) {
+
+        if ( interaction == null ) {
+            throw new IllegalArgumentException( "You must give a non null interaction" );
+        }
+
+        for ( InteractorXref xref : interaction.getXrefs() ) {
+            CvObjectXref idCvDatabase = CvObjectUtils.getPsiMiIdentityXref( xref.getCvDatabase() );
+            if ( idCvDatabase.getPrimaryId().equals( CvDatabase.IMEX_MI_REF ) ) {
+                return xref.getPrimaryId();
+            }
+        }
+
+        // Could not find an IMEx id
+        return null;
+    }
+
+    /**
+     * checkes if the given interaction has an IMEx identifier.
+     *
+     * @param interaction the interaction to seach on.
+     * @return true if the interaction has an IMEx identifier, false otherwise.
+     */
+    public static boolean hasImexIdentifier( Interaction interaction ) {
+        return getImexIdentifier( interaction ) != null;
+    }
+
+    /**
+     * Answers the question: "Has the given interaction got only interactors of the given type ?".
+     * <p/>
+     * note: an interaction without interactor is not valid.
+     *
+     * @param interaction the interaction.
+     * @param type        the interactor type.
+     * @return true if all interactor are of the given type, false otherwise.
+     */
+    public static boolean hasOnlyInteractorOfType( Interaction interaction, CvInteractorType type ) {
+
+        if ( type == null ) {
+            throw new IllegalArgumentException( "You must give a non null CvInteractorType." );
+        }
+
+        if ( interaction == null ) {
+            throw new IllegalArgumentException( "You must give a non null Interaction." );
+        }
+
+        if ( interaction.getComponents().isEmpty() ) {
+            return false;
+        }
+
+        for ( Component component : interaction.getComponents() ) {
+            Interactor interactor = component.getInteractor();
+            if ( !type.equals( interactor.getCvInteractorType() ) ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Collect a distinct set of Interactor associated to the given Interaction.
+     *
+     * @param interaction the interaction
+     * @return a non null Set of Interactor.
+     */
+    public static Set<Interactor> selectDistinctInteractors( Interaction interaction ) {
+        Set<Interactor> interactors = new HashSet<Interactor>( interaction.getComponents().size() );
+        for ( Component component : interaction.getComponents() ) {
+            interactors.add( component.getInteractor() );
+        }
+        return interactors;
+    }
 }
