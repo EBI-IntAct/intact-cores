@@ -158,7 +158,7 @@ public class PersisterContext {
             if (ao.getAc() != null) {
                 getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).replicate(ao);
             } else {
-                getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).saveOrUpdate(ao);
+                getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
             }
             logPersistence(ao);
         }

@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.persister.standard;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.*;
 
 /**
@@ -195,6 +196,14 @@ public class InteractionPersisterTest extends AbstractPersisterTest
         Assert.assertEquals(6, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
         commitTransaction();
+    }
+
+    @Test
+    public void persistInteractionWithAnnotations() throws Exception {
+        Experiment interaction = getMockBuilder().createExperimentEmpty();
+        interaction.addAnnotation(getMockBuilder().createAnnotationRandom());
+
+        PersisterHelper.saveOrUpdate(interaction);
     }
 
 }
