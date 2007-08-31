@@ -43,14 +43,7 @@ public class IntactMockBuilder {
     private CvObjectBuilder cvBuilder;
 
     public IntactMockBuilder() {
-        this.cvBuilder = new CvObjectBuilder();
-
         institution = createInstitution(Institution.INTACT_REF, Institution.INTACT);
-
-        for (InstitutionXref xref : institution.getXrefs()) {
-            xref.getCvXrefQualifier().setOwner(institution);
-            xref.getCvDatabase().setOwner(institution);
-        }
     }
 
     public IntactMockBuilder(Institution institution) {
@@ -63,7 +56,8 @@ public class IntactMockBuilder {
     }
 
     public Institution createInstitution(String miRef, String shortLabel) {
-        Institution institution = new Institution(shortLabel);
+        this.cvBuilder = new CvObjectBuilder();
+        institution = new Institution(shortLabel);
 
         InstitutionXref xref = createIdentityXrefPsiMi(institution, miRef);
         institution.addXref(xref);

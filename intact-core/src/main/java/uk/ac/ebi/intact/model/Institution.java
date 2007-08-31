@@ -150,6 +150,9 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
     public Collection<InstitutionAlias> getAliases() {
+        if (aliases == null) {
+            aliases = new ArrayList<InstitutionAlias>();
+        }
         return aliases;
     }
 
@@ -173,6 +176,9 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
             inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
     )
     public Collection<Annotation> getAnnotations() {
+        if (annotations == null) {
+            annotations = new ArrayList<Annotation>();
+        }
         return annotations;
     }
 
@@ -208,6 +214,9 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
     public Collection<InstitutionXref> getXrefs() {
+        if (xrefs == null) {
+            xrefs = new ArrayList<InstitutionXref>();
+        }
         return xrefs;
     }
 

@@ -17,6 +17,8 @@ public class AbstractPersisterTest extends IntactBasicTestCase {
     @Before
     public final void beforeTest() throws Exception {
         //new IntactUnit().createSchema();
+        PersisterContext.getInstance().clear();
+
         beginTransaction();
     }
 

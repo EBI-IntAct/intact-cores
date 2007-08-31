@@ -20,6 +20,7 @@ import uk.ac.ebi.intact.core.persister.AbstractPersister;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.context.IntactContext;
 
 /**
  * TODO comment this
@@ -62,7 +63,10 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
     @Override
     protected T syncAttributes(T intactObject) {
         InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
-        intactObject.setOwner(institutionPersister.syncIfTransient(intactObject.getOwner()));
+
+        if (!(intactObject instanceof Institution)) {
+            intactObject.setOwner(institutionPersister.syncIfTransient(intactObject.getOwner()));
+        }
 
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
 

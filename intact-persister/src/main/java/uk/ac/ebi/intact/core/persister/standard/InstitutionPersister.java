@@ -1,10 +1,12 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.core.persister.Persister;
+import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.model.Institution;
+import uk.ac.ebi.intact.model.*;
 
 /**
  * TODO comment this
@@ -12,8 +14,14 @@ import uk.ac.ebi.intact.model.Institution;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class InstitutionPersister implements Persister<Institution>
+public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Institution>
 {
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(InstitutionPersister.class);
+
     private static ThreadLocal<InstitutionPersister> instance = new ThreadLocal<InstitutionPersister>() {
         @Override
         protected InstitutionPersister initialValue() {
@@ -25,34 +33,68 @@ public class InstitutionPersister implements Persister<Institution>
         return instance.get();
     }
 
-    public void saveOrUpdate(Institution intactObject) throws PersisterException
-    {
-        syncIfTransient(intactObject);
-    }
 
-    public Institution syncIfTransient(Institution objToSync) {
-        if (objToSync.getShortLabel().equals(IntactContext.getCurrentInstance().getInstitution().getShortLabel())) {
-            return IntactContext.getCurrentInstance().getInstitution();
+    @Override
+    public Institution syncIfTransient(Institution intactObject) {
+        if (PersisterContext.getInstance().contains(intactObject)) {
+            return intactObject;
         }
 
-        if (PersisterContext.getInstance().contains(objToSync)) {
-            return PersisterContext.getInstance().get(objToSync);
-        } else {
-            Institution institution = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
-                    .getInstitutionDao().getByShortLabel(objToSync.getShortLabel());
+        Institution institution = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInstitutionDao().getByShortLabel(intactObject.getShortLabel());
 
-            if (institution == null) {
-                institution = objToSync;
-                PersisterContext.getInstance().addToPersist(objToSync);
+        if (institution == null) {
+            PersisterContext.getInstance().addToPersist(intactObject);
+
+            for (InstitutionXref xref : intactObject.getXrefs()) {
+                if (log.isDebugEnabled()) log.debug("\tSaving database: "+xref.getCvDatabase().getShortLabel());
+                PersisterContext.getInstance().addToPersist(xref.getCvDatabase());
+
+                CvXrefQualifier qualifier = xref.getCvXrefQualifier();
+                if (qualifier != null) {
+                    if (log.isDebugEnabled()) log.debug("\tSaving qualifier: "+qualifier.getShortLabel());
+                    PersisterContext.getInstance().addToPersist(qualifier);
+                }
             }
 
-            return institution;
+            for (InstitutionAlias alias : intactObject.getAliases()) {
+                CvAliasType aliasType = alias.getCvAliasType();
+                if (aliasType != null) {
+                    if (log.isDebugEnabled()) log.debug("\tSaving aliasType: "+aliasType.getShortLabel());
+                    PersisterContext.getInstance().addToPersist(aliasType);
+                }
+            }
+
+            for (Annotation annotation : intactObject.getAnnotations()) {
+                CvTopic topic = annotation.getCvTopic();
+                if (topic != null) {
+                    if (log.isDebugEnabled()) log.debug("\tSaving topic: "+topic.getShortLabel());
+                    PersisterContext.getInstance().addToPersist(topic);
+                }
+            }
+
+            institution = intactObject;
         }
+
+        return institution;
     }
 
-    public void commit()
-    {
-        EntryPersister.getInstance().commit();
+
+    protected Institution fetchFromDataSource(Institution intactObject) {
+        return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                    .getInstitutionDao().getByShortLabel(intactObject.getShortLabel());
     }
+
+    protected BehaviourType syncedAndCandidateAreEqual(Institution synced, Institution candidate) {
+        if (synced == null) {
+            return BehaviourType.NEW;
+        }
+
+        return BehaviourType.IGNORE;
+    }
+
+    protected boolean update(Institution objectToUpdate, Institution existingObject) throws PersisterException {
+        throw new UnsupportedOperationException();
+    }
+
 
 }

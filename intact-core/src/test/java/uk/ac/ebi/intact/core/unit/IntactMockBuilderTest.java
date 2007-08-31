@@ -88,6 +88,10 @@ public class IntactMockBuilderTest
         Assert.assertNotNull(component.getCvBiologicalRole());
         Assert.assertFalse(component.getParticipantDetectionMethods().isEmpty());
         Assert.assertFalse(component.getExperimentalPreparations().isEmpty());
+        
+        for (CvExperimentalPreparation experimentalPrep : component.getExperimentalPreparations()) {
+            Assert.assertNotNull(experimentalPrep.getOwner());
+        }
 
     }
 }

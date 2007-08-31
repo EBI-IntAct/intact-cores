@@ -132,10 +132,13 @@ public class PersisterContext {
             getDaoFactory().getInstitutionDao().persist(institution);
         }
 
-        getIntactContext().getDataContext().flushSession();
-
         for (CvObject cv : cvObjectsToBePersisted.values()) {
-            getDaoFactory().getCvObjectDao().persist(cv);
+            if (cv.getAc() != null) {
+                getDaoFactory().getCvObjectDao().replicate(cv);
+            } else {
+                getDaoFactory().getCvObjectDao().persist(cv);
+            }
+
             logPersistence(cv);
         }
 

@@ -18,6 +18,9 @@ package uk.ac.ebi.intact.core.persister.standard;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * TODO comment this
  *
@@ -61,7 +64,13 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         cvPersister.saveOrUpdate(intactObject.getCvBiologicalRole());
         cvPersister.saveOrUpdate(intactObject.getCvExperimentalRole());
 
-        // TODO: saveOrUpdate (and sync) participantIdentitifaction
+        for (CvIdentification participantDetection : intactObject.getParticipantDetectionMethods()) {
+            cvPersister.saveOrUpdate(participantDetection);
+        }
+
+        for (CvExperimentalPreparation experimentalPreparation : intactObject.getExperimentalPreparations()) {
+            cvPersister.saveOrUpdate(experimentalPreparation);
+        }
 
         InteractionPersister.getInstance().saveOrUpdate(intactObject.getInteraction());
 
@@ -82,6 +91,18 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
         intactObject.setCvBiologicalRole((CvBiologicalRole) cvPersister.syncIfTransient(intactObject.getCvBiologicalRole()));
         intactObject.setCvExperimentalRole((CvExperimentalRole) cvPersister.syncIfTransient(intactObject.getCvExperimentalRole()));
+
+        Collection<CvIdentification> syncedParticipantDetectionMethods = new ArrayList<CvIdentification>(intactObject.getParticipantDetectionMethods().size());
+        for (CvIdentification participantDetection : intactObject.getParticipantDetectionMethods()) {
+            syncedParticipantDetectionMethods.add((CvIdentification) cvPersister.syncIfTransient(participantDetection));
+        }
+        intactObject.setParticipantDetectionMethods(syncedParticipantDetectionMethods);
+
+        Collection<CvExperimentalPreparation> syncedExperimentalPreparations = new ArrayList<CvExperimentalPreparation>(intactObject.getExperimentalPreparations().size());
+        for (CvExperimentalPreparation experimentalPreparation : intactObject.getExperimentalPreparations()) {
+            syncedExperimentalPreparations.add((CvExperimentalPreparation) cvPersister.syncIfTransient(experimentalPreparation));
+        }
+        intactObject.setExperimentalPreparations(syncedExperimentalPreparations);
 
         // note that to avoid cyclic invocations, do not try to sync the interaction here
 

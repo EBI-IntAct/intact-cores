@@ -1,10 +1,12 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.Interaction;
 
@@ -19,14 +21,8 @@ public class ComponentPersisterTest extends AbstractPersisterTest
 
     @Test
     public void testPersistComponent_default() throws Exception {
-
-        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
-        Component component = interaction.getComponents().iterator().next();
-
-        beginTransaction();
-        ComponentPersister.getInstance().saveOrUpdate(component);
-        ComponentPersister.getInstance().commit();
-        commitTransaction();
+        Component component = getMockBuilder().createComponentRandom();
+        PersisterHelper.saveOrUpdate(component);
 
         String newComponentAc = component.getAc();
         assertNotNull(newComponentAc);
@@ -40,11 +36,10 @@ public class ComponentPersisterTest extends AbstractPersisterTest
         assertNotNull(newComponent.getCvExperimentalRole());
         assertNotNull(newComponent.getCvBiologicalRole());
 
+        Assert.assertFalse(newComponent.getParticipantDetectionMethods().isEmpty());
+        Assert.assertFalse(newComponent.getExperimentalPreparations().isEmpty());
+
         assertFalse(newComponent.getCvExperimentalRole().getXrefs().isEmpty());
     }
 
-    @Override
-    protected IntactMockBuilder getMockBuilder() {
-        return new IntactMockBuilder(IntactContext.getCurrentInstance().getInstitution());
-    }
 }
