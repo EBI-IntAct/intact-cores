@@ -123,7 +123,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         this.cvFeatureType = cvFeatureType;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn( name = "component_ac" )
     public Component getComponent() {
         return component;
@@ -225,7 +225,8 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         return super.getAliases();
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST} )
+    @ManyToMany( cascade = CascadeType.PERSIST)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_feature2annot",
             joinColumns = {@JoinColumn( name = "feature_ac" )},

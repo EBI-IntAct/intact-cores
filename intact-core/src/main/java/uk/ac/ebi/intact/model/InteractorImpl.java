@@ -113,7 +113,8 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
         this.objClass = objClass;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn( name = "biosource_ac" )
     public BioSource getBioSource() {
         return bioSource;
@@ -135,7 +136,8 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
         this.activeInstances = someActiveInstance;
     }
 
-    @OneToMany( mappedBy = "interactor" )
+
+    @OneToMany( mappedBy = "interactor", cascade = CascadeType.PERSIST)
     public Collection<Component> getActiveInstances() {
         return activeInstances;
     }
@@ -193,7 +195,8 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
         return interactorType;
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST} )
+    @ManyToMany( cascade = CascadeType.PERSIST)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_int2annot",
             joinColumns = {@JoinColumn( name = "interactor_ac" )},

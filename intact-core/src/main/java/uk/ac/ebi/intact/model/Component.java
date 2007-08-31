@@ -287,7 +287,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'expressedIn'.
      */
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
+    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn( name = "expressedin_ac" )
     public BioSource getExpressedIn() {
         return expressedIn;

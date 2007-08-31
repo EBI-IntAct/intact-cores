@@ -211,7 +211,8 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         this.cvInteraction = cvInteraction;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn( name = "biosource_ac" )
     public BioSource getBioSource() {
         return bioSource;
@@ -264,7 +265,8 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         this.bioSourceAc = ac;
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST} )
+    @ManyToMany( cascade = CascadeType.PERSIST)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_exp2annot",
             joinColumns = {@JoinColumn( name = "experiment_ac" )},

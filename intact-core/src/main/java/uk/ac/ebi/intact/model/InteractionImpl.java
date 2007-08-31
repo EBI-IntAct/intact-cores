@@ -6,9 +6,12 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.annotations.*;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -224,6 +227,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
     }
 
     @OneToMany( mappedBy = "interaction", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Collection<Component> getComponents() {
         return components;
     }
@@ -278,7 +282,8 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         this.experiments = someExperiment;
     }
 
-    @ManyToMany
+    @ManyToMany (cascade = CascadeType.PERSIST)
+    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_int2exp",
             joinColumns = {@JoinColumn( name = "interaction_ac" )},

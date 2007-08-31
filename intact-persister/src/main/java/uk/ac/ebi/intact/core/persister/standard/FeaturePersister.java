@@ -42,25 +42,30 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
     }
 
     protected Feature fetchFromDataSource(Feature intactObject) {
-        Feature feature = null;
+       /* Feature feature = null;
 
         if (intactObject.getAc() != null) {
             feature =  getIntactContext().getDataContext()
                     .getDaoFactory().getFeatureDao().getByAc(intactObject.getAc());
         }
-        return feature;
+        return feature;       */
+        return null;
     }
 
     @Override
     protected void saveOrUpdateAttributes(Feature intactObject) throws PersisterException {
         super.saveOrUpdateAttributes(intactObject);
 
-        CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();
+//        ComponentPersister.getInstance().saveOrUpdate(intactObject.getComponent());
 
-        cvObjectPersister.saveOrUpdate(intactObject.getCvFeatureType());
+        CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();
 
         if (intactObject.getCvFeatureIdentification() != null) {
             cvObjectPersister.saveOrUpdate(intactObject.getCvFeatureIdentification());
+        }
+
+        if (intactObject.getCvFeatureType() != null) {
+            cvObjectPersister.saveOrUpdate(intactObject.getCvFeatureType());
         }
 
         for (Range range : intactObject.getRanges()) {
@@ -71,16 +76,21 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
 
     @Override
     protected Feature syncAttributes(Feature intactObject) {
-        Feature feature = super.syncAttributes(intactObject);
+
+        ComponentPersister compPersister = ComponentPersister.getInstance();
+        Component component = compPersister.syncIfTransient(intactObject.getComponent());
+        intactObject.setComponent(component);
 
         CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();
 
-        CvFeatureType syncedFeatureType = (CvFeatureType) cvObjectPersister.syncIfTransient(intactObject.getCvFeatureType());
-        feature.setCvFeatureType(syncedFeatureType);
-
         if (intactObject.getCvFeatureIdentification() != null) {
             CvFeatureIdentification syncedFeatureDetMethod = (CvFeatureIdentification) cvObjectPersister.syncIfTransient(intactObject.getCvFeatureIdentification());
-            feature.setCvFeatureIdentification(syncedFeatureDetMethod);
+            intactObject.setCvFeatureIdentification(syncedFeatureDetMethod);
+        }
+
+        if (intactObject.getCvFeatureType() != null) {
+            CvFeatureType syncedFeatureType = (CvFeatureType) cvObjectPersister.syncIfTransient(intactObject.getCvFeatureType());
+            intactObject.setCvFeatureType(syncedFeatureType);
         }
 
         for (Range range : intactObject.getRanges()) {
@@ -91,6 +101,6 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
             range.setToCvFuzzyType(syncedToCvFuzzyType);
         }
 
-        return feature;
+        return super.syncAttributes(intactObject);
     }
 }
