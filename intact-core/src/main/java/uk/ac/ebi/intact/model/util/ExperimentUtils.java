@@ -20,6 +20,10 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.ExperimentDao;
 
 import java.util.List;
+import java.util.Collection;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -29,6 +33,8 @@ import java.util.List;
  * @since 1.6.1
  */
 public class ExperimentUtils {
+
+    private static final Log log = LogFactory.getLog( ExperimentUtils.class );
 
     private static final String SYNCED_LABEL_PATTERN = "\\w+-\\d{4}-\\d+";
     private static final String NOT_SYNCED_LABEL_PATTERN = "\\w+-\\d{4}";
@@ -122,5 +128,69 @@ public class ExperimentUtils {
      */
     public static boolean matchesMotSyncedLabel(String experimentShortLabel) {
         return experimentShortLabel.matches(NOT_SYNCED_LABEL_PATTERN);
+    }
+
+    /**
+     * Checks if the given Experiment has an annotation with CvTopic( accepted ).
+     *
+     * @param experiment the experiment to check on
+     * @return true is at least one of such annotation is found.
+     */
+    public static boolean isAccepted( Experiment experiment ) {
+
+        if ( experiment == null ) {
+            throw new NullPointerException( "You must give a non null experiment" );
+        }
+
+        for ( Annotation a : experiment.getAnnotations() ) {
+            if ( a.getCvTopic() != null && CvTopic.ACCEPTED.equals( a.getCvTopic().getShortLabel() ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if all given Experiments have an annotation with CvTopic( accepted ).
+     * <p/>
+     * An empty collection is seen as not accepted.
+     *
+     * @param experiments experiments to check on
+     * @return true is at least one of such annotation is found on each experiment.
+     */
+    public static boolean areAllAccepted( Collection<Experiment> experiments ) {
+
+        if ( experiments == null ) {
+            throw new IllegalArgumentException( "You must give a non null experiments" );
+        }
+
+        if ( experiments.isEmpty() ) {
+            return false;
+        }
+
+        boolean allAccepted = true;
+
+        // Check that all of these experiments have been accepted
+        for ( Experiment experiment : experiments ) {
+
+            boolean accepted = isAccepted( experiment );
+
+            if ( log.isDebugEnabled() ) {
+                if ( !accepted ) {
+                    log.debug( experiment.getShortLabel() + " was NOT accepted." );
+                } else {
+                    log.debug( experiment.getShortLabel() + " was accepted." );
+                }
+            }
+            allAccepted = accepted && allAccepted;
+        }
+
+        if ( log.isDebugEnabled() ) {
+            if ( !allAccepted ) {
+                log.debug( "Not all experiment were accepted. abort." );
+            }
+        }
+        return allAccepted;
     }
 }
