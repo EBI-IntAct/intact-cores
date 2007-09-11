@@ -58,6 +58,7 @@ public class SyncContext {
     }
 
     public void addToSynced(AnnotatedObject ao) {
+        // TODO Bruno: why that difference ? would be helpful to document this.
         if (ao instanceof CvObject) {
             syncedCvObjects.put(keyFor(ao), (CvObject) ao);
         } else {

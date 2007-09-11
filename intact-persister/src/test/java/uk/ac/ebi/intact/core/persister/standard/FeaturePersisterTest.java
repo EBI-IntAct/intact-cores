@@ -16,6 +16,8 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
 import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 import uk.ac.ebi.intact.model.Feature;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 
@@ -32,5 +34,4 @@ public class FeaturePersisterTest extends AbstractPersisterTest{
         Feature feature = getMockBuilder().createFeatureRandom();
         PersisterHelper.saveOrUpdate(feature);
     }
-
 }

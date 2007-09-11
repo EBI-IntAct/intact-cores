@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.model.*;
 
 /**
@@ -29,7 +30,6 @@ import uk.ac.ebi.intact.model.*;
  */
 public class InteractionPersisterTest extends AbstractPersisterTest
 {
-
     @Test
     public void allPersisted() throws Exception {
         IntactMockBuilder builder = super.getMockBuilder();
@@ -57,10 +57,10 @@ public class InteractionPersisterTest extends AbstractPersisterTest
         IntactMockBuilder builder = super.getMockBuilder();
         Interaction interaction = builder.createInteractionRandomBinary();
 
-        InteractionPersister interactorPersister = InteractionPersister.getInstance();
+        InteractionPersister interactionPersister = InteractionPersister.getInstance();
 
-        interactorPersister.saveOrUpdate(interaction);
-        interactorPersister.commit();
+        interactionPersister.saveOrUpdate(interaction);
+        interactionPersister.commit();
 
         beginTransaction();
 
@@ -123,15 +123,15 @@ public class InteractionPersisterTest extends AbstractPersisterTest
 
         Assert.assertEquals(institution, interaction.getOwner());
 
-        InteractionPersister interactorPersister = InteractionPersister.getInstance();
+        InteractionPersister interactionPersister = InteractionPersister.getInstance();
 
-        interactorPersister.saveOrUpdate(interaction);
-        interactorPersister.commit();
+        interactionPersister.saveOrUpdate(interaction);
+        interactionPersister.commit();
 
         beginTransaction();
-
         System.out.println(getDaoFactory().getInstitutionDao().getAll());
         Assert.assertEquals(1, getDaoFactory().getInstitutionDao().countAll());
+        commitTransaction();
     }
 
     @Test
@@ -145,36 +145,6 @@ public class InteractionPersisterTest extends AbstractPersisterTest
 
         beginTransaction();
         Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("lala-lolo");
-
-        Assert.assertNotNull(reloadedInteraction);
-        Assert.assertEquals(2, reloadedInteraction.getComponents().size());
-        commitTransaction();
-    }
-
-    @Test
-    public void onPersist_syncedLabel2() throws Exception {
-        Interaction interaction = getMockBuilder().createInteraction("foo", "bar");
-
-        beginTransaction();
-        InteractionPersister.getInstance().saveOrUpdate(interaction);
-        InteractionPersister.getInstance().commit();
-        commitTransaction();
-
-        interaction = getMockBuilder().createInteraction("foo", "bar");
-
-        beginTransaction();
-        InteractionPersister.getInstance().saveOrUpdate(interaction);
-        InteractionPersister.getInstance().commit();
-        commitTransaction();
-
-        beginTransaction();
-
-        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
-        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
-        Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
-        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
-
-        Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("bar-foo-1");
         Assert.assertNotNull(reloadedInteraction);
         Assert.assertEquals(2, reloadedInteraction.getComponents().size());
         commitTransaction();
@@ -200,10 +170,76 @@ public class InteractionPersisterTest extends AbstractPersisterTest
 
     @Test
     public void persistInteractionWithAnnotations() throws Exception {
-        Experiment interaction = getMockBuilder().createExperimentEmpty();
-        interaction.addAnnotation(getMockBuilder().createAnnotationRandom());
+        Experiment experiment = getMockBuilder().createExperimentEmpty();
+        experiment.addAnnotation(getMockBuilder().createAnnotationRandom());
+        PersisterHelper.saveOrUpdate(experiment);
+    }    
 
-        PersisterHelper.saveOrUpdate(interaction);
+    @Test
+    public void onPersist_syncedLabel2() throws Exception {
+        Interaction interaction = getMockBuilder().createInteraction("foo", "bar");
+
+        beginTransaction();
+        InteractionPersister.getInstance().saveOrUpdate(interaction);
+        InteractionPersister.getInstance().commit();
+        commitTransaction();
+
+
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+        System.out.println( "..............................................................................." );
+
+
+        interaction = getMockBuilder().createInteraction("foo", "bar");
+
+        beginTransaction();
+        InteractionPersister.getInstance().saveOrUpdate(interaction);
+        InteractionPersister.getInstance().commit();
+        commitTransaction();
+        
+        PersisterContext.getInstance().clear();
+
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+
+        beginTransaction();
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+
+        Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("bar-foo-1");
+        Assert.assertNotNull(reloadedInteraction);
+        Assert.assertEquals(2, reloadedInteraction.getComponents().size());
+        commitTransaction();
     }
-
 }

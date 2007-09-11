@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.validator.Length;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.Iterator;
@@ -223,8 +224,9 @@ public abstract class Xref extends BasicObjectImpl {
 
     ///////////////////////////////////////
     // access methods for associations
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn( name = "qualifier_ac" )
+    @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public CvXrefQualifier getCvXrefQualifier() {
         return cvXrefQualifier;
     }
@@ -233,8 +235,9 @@ public abstract class Xref extends BasicObjectImpl {
         this.cvXrefQualifier = cvXrefQualifier;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn( name = "database_ac" )
+    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public CvDatabase getCvDatabase() {
         return cvDatabase;
     }

@@ -101,7 +101,9 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
                 if (fetchedLastModified == null) {
                     fetchedLastModified = fetchedObject;
                 } else {
-                    if (fetchedObject.getUpdated().compareTo(fetchedLastModified.getUpdated()) == 1) {
+                    // TODO Bruno: was == 1 which contradict the use of that method, cf JavaDoc.
+                    if (fetchedObject.getUpdated().compareTo(fetchedLastModified.getUpdated()) > 0) {
+                        // fetchedObject.getUpdated() is after than fetchedLastModified.getUpdated()
                         fetchedLastModified = fetchedObject;
                     }
                 }

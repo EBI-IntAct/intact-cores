@@ -18,8 +18,10 @@ package uk.ac.ebi.intact.core.persister.standard;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.model.CvObject;
-import uk.ac.ebi.intact.model.CvObjectXref;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
+
+import java.util.Collection;
 
 /**
  * TODO comment this
@@ -32,9 +34,9 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
     /**
      * Sets up a logger for that class.
      */
-    private static final Log log = LogFactory.getLog(CvObjectPersister.class);
+    private static final Log log = LogFactory.getLog( CvObjectPersister.class );
 
-     private static ThreadLocal<CvObjectPersister> instance = new ThreadLocal<CvObjectPersister>() {
+    private static ThreadLocal<CvObjectPersister> instance = new ThreadLocal<CvObjectPersister>() {
         @Override
         protected CvObjectPersister initialValue() {
             return new CvObjectPersister();
@@ -50,18 +52,34 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
     }
 
     @Override
-    protected void saveOrUpdateAttributes(CvObject intactObject) throws PersisterException {
-        if (intactObject.getXrefs().isEmpty()) {
-            log.warn("CvObject without Xrefs: "+intactObject.getShortLabel());
+    protected void saveOrUpdateAttributes( CvObject intactObject ) throws PersisterException {
+        if ( intactObject.getXrefs().isEmpty() ) {
+            log.warn( "CvObject without Xrefs: " + intactObject.getShortLabel() );
             //throw new PersisterException("Cannot save or update a CvObject without Xrefs");
         }
 
-        for (CvObjectXref xref : intactObject.getXrefs()) {
-            saveOrUpdate(xref.getCvDatabase());
+        InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
+        institutionPersister.saveOrUpdate( intactObject.getOwner() );
 
-            if (xref.getCvXrefQualifier() != null) {
-                saveOrUpdate(xref.getCvXrefQualifier());
+        for ( CvObjectXref xref : intactObject.getXrefs() ) {
+            saveOrUpdate( xref.getCvDatabase() );
+            if ( xref.getCvXrefQualifier() != null ) {
+                saveOrUpdate( xref.getCvXrefQualifier() );
             }
+        }
+
+        for ( Alias alias : intactObject.getAliases() ) {
+            if ( alias.getCvAliasType() != null ) {
+                saveOrUpdate( alias.getCvAliasType() );
+            }
+            institutionPersister.saveOrUpdate( alias.getOwner() );
+        }
+
+        for ( Annotation annotation : intactObject.getAnnotations() ) {
+            if ( annotation.getCvTopic() != null ) {
+                saveOrUpdate( annotation.getCvTopic() );
+            }
+            institutionPersister.saveOrUpdate( annotation.getOwner() );
         }
     }
 
@@ -69,9 +87,37 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
      * TODO: attempt identityXref(mi first and ia next)-cvType and then label-cvType
      */
     @Override
-    protected CvObject fetchFromDataSource(CvObject intactObject) {
+    protected CvObject fetchFromDataSource( CvObject intactObject ) {
+
+        // First search by psi-mi identifier
+        CvDatabase psimi = getIntactContext().getDataContext().getDaoFactory()
+                .getCvObjectDao( CvDatabase.class ).getByPsiMiRef( CvDatabase.PSI_MI_MI_REF );
+
+        if ( psimi != null ) {
+            CvXrefQualifier identity = getIntactContext().getDataContext().getDaoFactory()
+                    .getCvObjectDao( CvXrefQualifier.class ).getByPsiMiRef( CvXrefQualifier.IDENTITY_MI_REF );
+
+            Collection<Xref> xrefs = AnnotatedObjectUtils.searchXrefs( intactObject, psimi, identity );
+
+            if ( !xrefs.isEmpty() ) {
+                if ( xrefs.size() == 1 ) {
+                    String mi = xrefs.iterator().next().getPrimaryId();
+                    CvObject cvObject = getIntactContext().getDataContext().getDaoFactory()
+                            .getCvObjectDao( intactObject.getClass() ).getByPsiMiRef( mi );
+                    if ( cvObject != null ) {
+                        return cvObject;
+                    }
+                }
+            }
+        } else {
+            if ( log.isDebugEnabled() ) {
+                log.debug( "Failed search by PSI-MI Xref as CvDatabase( psi-mi ) isn't in the database yet, searching by shortlabel..." );
+            }
+        }
+
+        // failed by MI, try by shortlabel
         return getIntactContext().getDataContext().getDaoFactory()
-                .getCvObjectDao().getByShortLabel(intactObject.getClass(), intactObject.getShortLabel());
+                .getCvObjectDao().getByShortLabel( intactObject.getClass(), intactObject.getShortLabel() );
     }
 
 }

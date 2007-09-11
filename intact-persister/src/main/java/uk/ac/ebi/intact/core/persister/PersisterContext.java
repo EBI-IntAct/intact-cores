@@ -53,7 +53,6 @@ public class PersisterContext {
     private Map<String, CvObject> cvObjectsToBePersisted;
     private Map<String, AnnotatedObject> annotatedObjectsToBePersisted;
     private Map<String, Institution> institutionsToBePersisted;
-
     private Map<String, AnnotatedObject> annotatedObjectsToBeUpdated;
 
     public static PersisterContext getInstance() {
@@ -69,6 +68,8 @@ public class PersisterContext {
     }
 
     public void addToPersist(AnnotatedObject ao) {
+
+
         if (ao instanceof CvObject) {
             cvObjectsToBePersisted.put(keyFor(ao),(CvObject)ao);
         } else {
@@ -80,9 +81,9 @@ public class PersisterContext {
         annotatedObjectsToBeUpdated.put(keyFor(ao), ao);
     }
 
-    public void addToPersistImmediately(AnnotatedObject ao) {
-        getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).saveOrUpdate(ao);
-    }
+//    public void addToPersistImmediately(AnnotatedObject ao) {
+//        getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).saveOrUpdate(ao);
+//    }
 
     public void addToPersist(Institution institution) {
         if (!institutionsToBePersisted.containsKey(institution)) {
@@ -93,10 +94,15 @@ public class PersisterContext {
     public boolean contains(AnnotatedObject ao) {
         final String key = keyFor(ao);
 
-        if (cvObjectsToBePersisted.containsKey(key)) {
-            return true;
+        if (ao instanceof CvObject) {
+            return cvObjectsToBePersisted.containsKey(key);
+        } else {
+            return annotatedObjectsToBePersisted.containsKey(key);
         }
-        return annotatedObjectsToBePersisted.containsKey(key);
+//        if (cvObjectsToBePersisted.containsKey(key)) {
+//            return true;
+//        }
+//        return annotatedObjectsToBePersisted.containsKey(key);
     }
 
     public boolean contains(Institution institution) {
@@ -108,11 +114,15 @@ public class PersisterContext {
     public AnnotatedObject get(AnnotatedObject ao) {
         final String key = keyFor(ao);
 
-        if (cvObjectsToBePersisted.containsKey(key)) {
+        if (ao instanceof CvObject) {
             return cvObjectsToBePersisted.get(key);
+        } else {
+            return annotatedObjectsToBePersisted.get(key);
         }
-
-        return annotatedObjectsToBePersisted.get(key);
+//        if (cvObjectsToBePersisted.containsKey(key)) {
+//            return cvObjectsToBePersisted.get(key);
+//        }
+//        return annotatedObjectsToBePersisted.get(key);
     }
 
     public Institution get(Institution institution) {
@@ -125,7 +135,10 @@ public class PersisterContext {
         if (log.isDebugEnabled()) {
             log.debug("Persisting all"+ (isDryRun()? " - DRY RUN" : ""));
             log.debug("\tCvObjects: "+cvObjectsToBePersisted.size());
-
+            for ( String key : cvObjectsToBePersisted.keySet() ) {
+                CvObject cv = cvObjectsToBePersisted.get( key );
+                log.debug( " - " + cv.getClass().getSimpleName() + ": " + cv.getShortLabel() );
+            }
         }
 
         for (Institution institution : institutionsToBePersisted.values()) {
@@ -134,8 +147,16 @@ public class PersisterContext {
 
         for (CvObject cv : cvObjectsToBePersisted.values()) {
             if (cv.getAc() != null) {
+                if ( log.isDebugEnabled() ) {
+                    log.debug( "\t\tReplicating " + cv.getClass().getSimpleName() + ": " + cv.getShortLabel() );
+                }
+
                 getDaoFactory().getCvObjectDao().replicate(cv);
             } else {
+                // TODO (A) use of persist and save-or-update have to be harmonized (cf. B)
+                if ( log.isDebugEnabled() ) {
+                    log.debug( "\t\tPersisting " + cv.getClass().getSimpleName() + ": " + cv.getShortLabel() );
+                }
                 getDaoFactory().getCvObjectDao().persist(cv);
             }
 
@@ -144,7 +165,13 @@ public class PersisterContext {
 
         getIntactContext().getDataContext().flushSession();
 
-        log.debug("\tOther AnnotatedObjects: "+annotatedObjectsToBePersisted.size());
+        if ( log.isDebugEnabled() ) {
+            log.debug( "\tSaving AnnotatedObjects to be persisted: " + annotatedObjectsToBePersisted.size() );
+            for ( String key : annotatedObjectsToBePersisted.keySet() ) {
+                AnnotatedObject ao = annotatedObjectsToBePersisted.get( key );
+                log.debug( " - " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+            }
+        }
 
         ExperimentInterceptor experimentInterceptor = new ExperimentInterceptor();
         InteractionInterceptor interactionInterceptor = new InteractionInterceptor();
@@ -156,20 +183,37 @@ public class PersisterContext {
                 interactionInterceptor.onPrePersist((Interaction)ao);
             }
             if (ao.getAc() != null) {
+                if ( log.isDebugEnabled() ) {
+                    log.debug( "\t\tReplicating " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+                }
                 getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).replicate(ao);
             } else {
-                getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).saveOrUpdate(ao);
+                if ( log.isDebugEnabled() ) {
+                    log.debug( "\t\tPersisting " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+                }
+                getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
             }
             logPersistence(ao);
         }
 
         getIntactContext().getDataContext().flushSession();
 
+        if ( log.isDebugEnabled() ) {
+            log.debug( "\tSaving AnnotatedObjects to be updated: " + annotatedObjectsToBeUpdated.size() );
+            for ( String key : annotatedObjectsToBeUpdated.keySet() ) {
+                AnnotatedObject ao = annotatedObjectsToBeUpdated.get( key );
+                log.debug( " - " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+            }
+        }
+
         for (AnnotatedObject ao : annotatedObjectsToBeUpdated.values()) {
             if (ao instanceof Experiment) {
                 experimentInterceptor.onPrePersist((Experiment)ao);
             } else if (ao instanceof Interaction) {
                 interactionInterceptor.onPrePersist((Interaction)ao);
+            }
+            if ( log.isDebugEnabled() ) {
+                    log.debug( "\t\tMerging " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
             }
             getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).merge(ao);
             logPersistence(ao);
@@ -182,7 +226,7 @@ public class PersisterContext {
 
     private static void logPersistence(AnnotatedObject<?,?> ao) {
         if (log.isDebugEnabled()) {
-            log.debug("\t\tPersisting: " + ao.getShortLabel() + " (" + ao.getAc() + ")");
+            log.debug("\t\tPersisting "+ ao.getClass().getSimpleName() + ": " + ao.getShortLabel() + " (" + ao.getAc() + ")");
 
             if (!ao.getXrefs().isEmpty()) {
                 log.debug("\t\t\tXrefs: " + ao.getXrefs().size());
@@ -199,6 +243,14 @@ public class PersisterContext {
                     log.debug("\t\t\t\t"+alias);
                 }
             }
+
+            if (!ao.getAnnotations().isEmpty()) {
+                log.debug("\t\t\tAnnotations: " + ao.getAnnotations().size());
+
+                for (Annotation annot: ao.getAnnotations()) {
+                    log.debug("\t\t\t\t"+annot);
+                }
+            }
         }
     }
 
@@ -209,7 +261,6 @@ public class PersisterContext {
         institutionsToBePersisted.clear();
         cvObjectsToBePersisted.clear();
         annotatedObjectsToBePersisted.clear();
-
         annotatedObjectsToBeUpdated.clear();
     }
 

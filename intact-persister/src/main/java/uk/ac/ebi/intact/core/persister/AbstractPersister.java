@@ -40,6 +40,10 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         }
 
         if (PersisterContext.getInstance().contains(intactObject)) {
+            if ( log.isDebugEnabled() ) {
+                log.debug( intactObject.getClass().getSimpleName() + ": " + intactObject.getShortLabel() + " is already in the PersisterContext, skipping..." );
+            }
+
             return;
         }
 
@@ -52,7 +56,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
         if (syncResponse.isAlreadyPresent()) {
 
-            BehaviourType behaviour =  syncedAndCandidateAreEqual(syncResponse.getValue(), intactObject);
+            BehaviourType behaviour = syncedAndCandidateAreEqual(syncResponse.getValue(), intactObject);
 
             switch (behaviour) {
                 case NEW:
@@ -63,6 +67,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
                     newAnnotatedObject = intactObject;
 
                     break;
+
                 case UPDATE:
                     if (log.isDebugEnabled())
                         log.debug("\tData source object and object to persist are not equal (Behaviour:"+behaviour+")");
@@ -114,6 +119,11 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
        PersisterContext.getInstance().persistAll();
     }
 
+    /**
+     * Checks is the given object already synchronized with the persistence session.
+     * @param intactObject object to be synced.
+     * @return a response that contains the answer.
+     */
     protected final SyncTransientResponse<T> syncIfTransientResponse(T intactObject) {
          T refreshedObject = syncIfTransient(intactObject);
 
@@ -130,7 +140,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         T refreshedObject = get(intactObject);
 
         if (refreshedObject != null) {
-            if (log.isDebugEnabled()) log.debug("\t\t\tAlready synced");
+            if (log.isDebugEnabled()) log.debug("\t\t\tAlready synced: " + intactObject.getClass().getSimpleName() + "(" + intactObject.getShortLabel() + " - " + intactObject.getAc() + ")");
             return refreshedObject;
         }
 
@@ -143,12 +153,29 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
     protected final T get(T intactObject) {
         if (PersisterContext.getInstance().contains(intactObject)) {
+            if ( log.isDebugEnabled() ) {
+                log.debug( "GET: Found it in PersisterContext" );
+            }
             return (T) PersisterContext.getInstance().get(intactObject);
         }
         if (SyncContext.getInstance().isAlreadySynced(intactObject)) {
+            if ( log.isDebugEnabled() ) {
+                log.debug( "GET: Found it in SyncContext" );
+            }
             return (T) SyncContext.getInstance().get(intactObject);
         }
-        return fetchFromDataSource(intactObject);
+
+        T t = fetchFromDataSource( intactObject );
+
+        if ( log.isDebugEnabled() ) {
+            if( t!= null ) {
+                log.debug( "GET: Found it in DataSource" );
+            } else {
+                log.debug( "GET: Could not find it" );
+            }
+        }
+
+        return t;
     }
 
     protected abstract void saveOrUpdateAttributes(T intactObject) throws PersisterException;

@@ -16,7 +16,6 @@ import uk.ac.ebi.intact.model.*;
  */
 public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Institution>
 {
-
     /**
      * Sets up a logger for that class.
      */
@@ -78,7 +77,6 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
         return institution;
     }
 
-
     protected Institution fetchFromDataSource(Institution intactObject) {
         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
                     .getInstitutionDao().getByShortLabel(intactObject.getShortLabel());
@@ -95,6 +93,5 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
     protected boolean update(Institution objectToUpdate, Institution existingObject) throws PersisterException {
         throw new UnsupportedOperationException();
     }
-
 
 }

@@ -54,10 +54,16 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
     @Override
     protected void saveOrUpdateAttributes(Component intactObject) throws PersisterException {
         super.saveOrUpdateAttributes(intactObject);
-        
+
+        // TODO replaced by the block below
+//        if (intactObject.getExpressedIn() != null) {
+//            BioSource bioSource = BioSourcePersister.getInstance().syncIfTransient(intactObject.getExpressedIn());
+//            intactObject.setExpressedIn(bioSource);
+//         }
+
         if (intactObject.getExpressedIn() != null) {
-            BioSource bioSource = BioSourcePersister.getInstance().syncIfTransient(intactObject.getExpressedIn());
-            intactObject.setExpressedIn(bioSource);
+            BioSourcePersister bioSourcePersister = BioSourcePersister.getInstance();
+            bioSourcePersister.saveOrUpdate(intactObject.getExpressedIn());
          }
 
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();

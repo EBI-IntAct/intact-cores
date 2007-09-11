@@ -307,7 +307,8 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         }
     }
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne( fetch = FetchType.LAZY/*, cascade = CascadeType.PERSIST*/ )
+    /*@Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)*/
     @JoinColumn( name = "interactiontype_ac" )
     public CvInteractionType getCvInteractionType() {
         return cvInteractionType;

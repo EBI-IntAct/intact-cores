@@ -32,11 +32,14 @@ public class AnnotKeyGenerator {
     public static String createKey(AnnotatedObject ao) {
         String key;
 
+        // TODO Bruno: why make a specific case of Component and BioSource ??
+
         if (ao instanceof Component) {
             Component comp = (Component)ao;
             String label = comp.getInteraction().getShortLabel()+"_"+comp.getInteractor().getShortLabel();
             key = comp.getClass().getSimpleName()+":"+label;
         } else if (ao instanceof BioSource) {
+            // TODO will probably need to add additional params here such as CvTissue, CvellType
             key = ao.getClass().getSimpleName()+":"+((BioSource)ao).getTaxId();
         } else {
             key = ao.getClass().getSimpleName()+":"+ao.getShortLabel();

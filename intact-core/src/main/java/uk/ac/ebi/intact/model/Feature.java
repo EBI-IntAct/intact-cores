@@ -35,7 +35,6 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      */
     private Component component;
 
-
     /**
      * <p/>
      * A feature may bind to another feature, usually on a different
@@ -123,7 +122,8 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         this.cvFeatureType = cvFeatureType;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
+    /* @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE )*/
     @JoinColumn( name = "component_ac" )
     public Component getComponent() {
         return component;
@@ -226,7 +226,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     }
 
     @ManyToMany( cascade = CascadeType.PERSIST)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     @JoinTable(
             name = "ia_feature2annot",
             joinColumns = {@JoinColumn( name = "feature_ac" )},

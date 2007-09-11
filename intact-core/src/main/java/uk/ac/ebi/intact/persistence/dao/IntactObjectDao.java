@@ -64,8 +64,19 @@ public interface IntactObjectDao<T extends IntactObject> {
 
     void evict( T objToEvict );
 
+    /**
+     * Persist the state of the given detached instance, reusing the current identifier value. This operation cascades
+     * to associated instances if the association is mapped with cascade="replicate".
+     * @param objToReplicate
+     */
     void replicate( T objToReplicate );
 
+    /**
+     * Persist the state of the given detached instance, reusing the current identifier value. This operation cascades
+     * to associated instances if the association is mapped with cascade="replicate".
+     * @param objToReplicate
+     * @param ignoreIfExisting
+     */
     void replicate(T objToReplicate, boolean ignoreIfExisting);
 
     void merge( T objToReplicate );

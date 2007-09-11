@@ -5,7 +5,11 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.annotations.*;
+
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 
 /**
  * An alternative name for the object.
@@ -117,7 +121,8 @@ public abstract class Alias extends BasicObjectImpl {
     ///////////////////////////////////////
     // access methods for associations
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn( name = "aliastype_ac" )
     public CvAliasType getCvAliasType() {
         return cvAliasType;

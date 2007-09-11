@@ -15,14 +15,13 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvExperimentalRole;
-import uk.ac.ebi.intact.model.CvObjectXref;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
@@ -32,48 +31,96 @@ import uk.ac.ebi.intact.model.util.CvObjectUtils;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class CvObjectPersisterTest extends AbstractPersisterTest{
+public class CvObjectPersisterTest extends AbstractPersisterTest {
+
+    @Test
+    public void persist_recursive_object() throws Exception {
+        // Note: CvDatabase( psi-mi ) has an Xref to psi-mi (that is itself)
+        CvObjectBuilder builder = new CvObjectBuilder();
+        CvDatabase psimi = builder.createPsiMiCvDatabase( getIntactContext().getInstitution() );
+        Protein protein = getMockBuilder().createProteinRandom();
+        CvObjectPersister persister = new CvObjectPersister();
+        persister.saveOrUpdate( psimi );
+        persister.commit();
+
+        Xref xref = AnnotatedObjectUtils.searchXrefs( psimi, psimi ).iterator().next();
+        Assert.assertEquals( psimi, xref.getCvDatabase() );
+        Assert.assertSame( psimi, xref.getCvDatabase() );
+    }
 
     @Test
     public void persist_default() throws Exception {
         CvObjectBuilder builder = new CvObjectBuilder();
-        CvXrefQualifier cvXrefQual = builder.createIdentityCvXrefQualifier(getIntactContext().getInstitution());
-        CvDatabase cvDb = builder.createPsiMiCvDatabase(getIntactContext().getInstitution());
+        CvXrefQualifier cvXrefQual = builder.createIdentityCvXrefQualifier( getIntactContext().getInstitution() );
+        CvDatabase cvDb = builder.createPsiMiCvDatabase( getIntactContext().getInstitution() );
 
         final String expRoleLabel = "EXP_ROLE";
-        CvExperimentalRole expRole = new CvExperimentalRole(getIntactContext().getInstitution(), expRoleLabel);
-        CvObjectXref identityXref = new CvObjectXref(getIntactContext().getInstitution(), cvDb, "rolePrimaryId", cvXrefQual);
+        CvExperimentalRole expRole = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
+        CvObjectXref identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "rolePrimaryId", cvXrefQual );
 
-        expRole.addXref(identityXref);
+        expRole.addXref( identityXref );
 
         CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();
 
-        cvObjectPersister.saveOrUpdate(expRole);
+        cvObjectPersister.saveOrUpdate( expRole );
         cvObjectPersister.commit();
 
         commitTransaction();
         beginTransaction();
 
-        CvExperimentalRole newExpRole = getDaoFactory().getCvObjectDao(CvExperimentalRole.class).getByShortLabel(expRoleLabel);
+        CvExperimentalRole newExpRole = getDaoFactory().getCvObjectDao( CvExperimentalRole.class ).getByShortLabel( expRoleLabel );
 
-        assertNotNull(newExpRole);
-        assertFalse(newExpRole.getXrefs().isEmpty());
+        assertNotNull( newExpRole );
+        assertFalse( newExpRole.getXrefs().isEmpty() );
 
-        CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref(newExpRole);
-        assertNotNull(cvObjectXref);
-        assertEquals("rolePrimaryId",cvObjectXref.getPrimaryId());
+        CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref( newExpRole );
+        assertNotNull( cvObjectXref );
+        assertEquals( "rolePrimaryId", cvObjectXref.getPrimaryId() );
     }
 
-    @Test (expected = PersisterException.class)
+    @Test
+    public void persist_existing_object() throws Exception {
+        CvObjectBuilder builder = new CvObjectBuilder();
+        CvXrefQualifier cvXrefQual = builder.createIdentityCvXrefQualifier( getIntactContext().getInstitution() );
+        CvDatabase cvDb = builder.createPsiMiCvDatabase( getIntactContext().getInstitution() );
+
+        final String expRoleLabel = "EXP_ROLE";
+        CvExperimentalRole expRole = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
+        CvObjectXref identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "rolePrimaryId", cvXrefQual );
+
+        expRole.addXref( identityXref );
+
+        CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();
+
+        cvObjectPersister.saveOrUpdate( expRole );
+        cvObjectPersister.commit();
+
+        // re-create the same object and check that it gets assigned the AC.
+        cvXrefQual = builder.createIdentityCvXrefQualifier( getIntactContext().getInstitution() );
+        cvDb = builder.createPsiMiCvDatabase( getIntactContext().getInstitution() );
+
+        CvExperimentalRole expRole2 = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
+        identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "rolePrimaryId", cvXrefQual );
+
+        expRole2.addXref( identityXref );
+
+        cvObjectPersister.saveOrUpdate( expRole2 );
+        cvObjectPersister.commit();
+
+        Assert.assertNotSame( expRole, expRole2 );
+        Assert.assertEquals( expRole.getAc(), expRole2.getAc() );
+    }
+
+    @Test( expected = PersisterException.class )
     @Ignore
     public void persist_noXref() throws Exception {
 
         final String expRoleLabel = "EXP_ROLE";
-        CvExperimentalRole expRole = new CvExperimentalRole(getIntactContext().getInstitution(), expRoleLabel);
+        CvExperimentalRole expRole = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
 
         CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();
 
-        cvObjectPersister.saveOrUpdate(expRole);
+        cvObjectPersister.saveOrUpdate( expRole );
     }
 
 }

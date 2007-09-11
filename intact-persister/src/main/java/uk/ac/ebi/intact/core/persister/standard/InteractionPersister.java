@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.Component;
@@ -32,6 +34,8 @@ import java.util.List;
  * @version $Id$
  */
 public class InteractionPersister extends InteractorPersister<Interaction>{
+
+    private static final Log log = LogFactory.getLog( InteractionPersister.class );
 
     private static ThreadLocal<InteractionPersister> instance = new ThreadLocal<InteractionPersister>() {
         @Override
@@ -80,10 +84,10 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
      * that could just have the same short label
      */
     private String experimentLabels(Interaction interaction) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder( interaction.getExperiments().size() * 21 ); // init to max size
 
         for (Experiment exp : interaction.getExperiments()) {
-            sb.append(exp.getShortLabel()+"_");
+            sb.append( exp.getShortLabel() ).append( '_' );
         }
 
         return sb.toString();
@@ -120,10 +124,9 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         for (Experiment experiment : intactObject.getExperiments()) {
             ExperimentPersister.getInstance().saveOrUpdate(experiment);
         }
-
     }
 
-     protected void syncComponents(Interaction intactObject)  {
+    protected void syncComponents(Interaction intactObject)  {
         ComponentPersister compPersister = ComponentPersister.getInstance();
 
         List<Component> components = new ArrayList<Component>(intactObject.getComponents().size());
@@ -152,5 +155,4 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         intactObject.setExperiments(experiments);
     }
-
 }
