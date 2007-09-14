@@ -173,6 +173,27 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
         commitTransaction();
     }
 
-    
+    @Test
+    public void update_protein() throws Exception {
+        // this test checks that a protein can be saved if it's CvInteractorType are already in the datatase.
+        Protein protein = getMockBuilder().createProteinRandom();
+        CvInteractorType type = protein.getCvInteractorType();
+        protein.setCvInteractorType( null );
 
+        Assert.assertNull( type.getAc() );
+        CvObjectPersister cvPersister = CvObjectPersister.getInstance();
+        cvPersister.saveOrUpdate( type );
+        cvPersister.commit();
+        Assert.assertNotNull( type.getAc() );
+        commitTransaction();
+
+        beginTransaction();
+        type = getDaoFactory().getCvObjectDao( CvInteractorType.class ).getByAc( type.getAc() );
+        protein.setCvInteractorType( type );
+        InteractorPersister interactorPersister = InteractorPersister.getInstance();
+        interactorPersister.saveOrUpdate( protein );
+        interactorPersister.commit();
+
+        commitTransaction();
+    }
 }
