@@ -143,11 +143,16 @@ public class DataContext implements Serializable {
     }
 
     private DaoFactory getDaoFactory( DataConfig dataConfig ) {
-        DaoFactory daoFactory = DaoFactory.getCurrentInstance( session, dataConfig );
-        return daoFactory;
+        return DaoFactory.getCurrentInstance( session, dataConfig );
     }
 
     private DataConfig getDefaultDataConfig() {
-        return RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig();
+        DataConfig dataConfig = RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig();
+
+        if (dataConfig == null) {
+            dataConfig = IntactContext.calculateDefaultDataConfig( session );
+        }
+
+        return dataConfig;
     }
 }
