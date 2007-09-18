@@ -6,10 +6,13 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.*;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -112,7 +115,8 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
 
     //----------------------- public methods ------------------------------
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     @JoinColumn( name = "featuretype_ac" )
     public CvFeatureType getCvFeatureType() {
         return cvFeatureType;
@@ -123,7 +127,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     }
 
     @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    /* @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE )*/
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     @JoinColumn( name = "component_ac" )
     public Component getComponent() {
         return component;
@@ -160,7 +164,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      * @return The Feature that the current Feature binds, or null if no such
      *         Feature exists.
      */
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
     @JoinColumn( name = "linkedfeature_ac", referencedColumnName = "ac" )
     public Feature getBoundDomain() {
         return binds;
@@ -201,7 +205,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         this.ranges.remove( range );
     }
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
     @JoinColumn( name = "identification_ac" )
     public CvFeatureIdentification getCvFeatureIdentification() {
         return cvFeatureIdentification;

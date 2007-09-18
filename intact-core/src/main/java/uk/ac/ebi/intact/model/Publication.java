@@ -76,12 +76,13 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
         }
     }
 
-    @OneToMany( mappedBy = "publication" )
     /**
      * Returns an unmodifiable collection of experiment.
      */
+    @OneToMany( mappedBy = "publication", cascade = {CascadeType.PERSIST} )
+    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Collection<Experiment> getExperiments() {
-        return Collections.unmodifiableCollection( experiments );
+        return experiments;
     }
 
     /**
@@ -89,7 +90,7 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
      *
      * @param experiments
      */
-    protected void setExperiments( Collection<Experiment> experiments ) {
+    public void setExperiments( Collection<Experiment> experiments ) {
         this.experiments = experiments;
     }
 
