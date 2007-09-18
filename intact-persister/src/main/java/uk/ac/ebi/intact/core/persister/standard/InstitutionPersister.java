@@ -32,7 +32,6 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
         return instance.get();
     }
 
-
     @Override
     public Institution syncIfTransient(Institution intactObject) {
         if (PersisterContext.getInstance().contains(intactObject)) {
@@ -77,11 +76,13 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
         return institution;
     }
 
+    @Override
     protected Institution fetchFromDataSource(Institution intactObject) {
         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
                     .getInstitutionDao().getByShortLabel(intactObject.getShortLabel());
     }
 
+    @Override
     protected BehaviourType syncedAndCandidateAreEqual(Institution synced, Institution candidate) {
         if (synced == null) {
             return BehaviourType.NEW;
@@ -90,8 +91,8 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
         return BehaviourType.IGNORE;
     }
 
+    @Override
     protected boolean update(Institution objectToUpdate, Institution existingObject) throws PersisterException {
         throw new UnsupportedOperationException();
     }
-
 }

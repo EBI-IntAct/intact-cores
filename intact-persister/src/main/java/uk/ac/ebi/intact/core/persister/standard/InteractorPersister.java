@@ -116,6 +116,7 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
     /**
      * TODO: base this methods on the interactor equals (except AC check)
      */
+    @Override
     protected BehaviourType syncedAndCandidateAreEqual(T synced, T candidate) {
         if (synced == null) return BehaviourType.NEW;
 
@@ -129,6 +130,7 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
         return BehaviourType.IGNORE;
     }
 
+    @Override
     protected boolean update(T candidateObject, T objectToUpdate) throws PersisterException
     {
         Collection<InteractorXref> objToUpdateXrefs = objectToUpdate.getXrefs();

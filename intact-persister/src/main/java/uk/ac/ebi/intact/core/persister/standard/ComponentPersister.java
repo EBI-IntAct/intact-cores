@@ -48,6 +48,7 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
      * TODO: check if the interaction fetching/syncing covers this - check by ac at least
      */
     protected Component fetchFromDataSource(Component intactObject) {
+        // Note: we do not try to reconnect to the database, we create a new one every time.
         return null;
     }
 
@@ -114,8 +115,13 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
 
         intactObject.setInteractor((Interactor) InteractorPersister.getInstance().syncIfTransient(intactObject.getInteractor()));
 
+        // TODO Bruno: Not syncing the features (and there sub-CVs) seems to have caused a bug !!
         // don't sync features (consider all them as new)
-
+        Collection<Feature> features = new ArrayList<Feature>( intactObject.getBindingDomains().size() );
+        for ( Feature feature : intactObject.getBindingDomains() ) {
+            features.add( FeaturePersister.getInstance().syncIfTransient( feature ) );
+        }
+        intactObject.setBindingDomains( features );
 
         return super.syncAttributes(intactObject);
     }

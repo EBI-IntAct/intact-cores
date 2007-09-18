@@ -35,32 +35,36 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
     }
 
     @Override
-    protected void saveOrUpdateAttributes(T intactObject) throws PersisterException {
-        if (intactObject == null) {
-            throw new NullPointerException("intactObject");
+    protected void saveOrUpdateAttributes( T intactObject ) throws PersisterException {
+        if ( intactObject == null ) {
+            throw new NullPointerException( "intactObject" );
         }
-        
+
         InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
-        institutionPersister.saveOrUpdate(intactObject.getOwner());
+        institutionPersister.saveOrUpdate( intactObject.getOwner() );
 
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
 
-        for (Xref xref : intactObject.getXrefs()) {
-            cvPersister.saveOrUpdate(xref.getCvDatabase());
-
-            if (xref.getCvXrefQualifier() != null) {
-                cvPersister.saveOrUpdate(xref.getCvXrefQualifier());
+        for ( Xref xref : intactObject.getXrefs() ) {
+            cvPersister.saveOrUpdate( xref.getCvDatabase() );
+            if ( xref.getCvXrefQualifier() != null ) {
+                cvPersister.saveOrUpdate( xref.getCvXrefQualifier() );
             }
+            institutionPersister.saveOrUpdate( xref.getOwner() );
+        }
 
-            institutionPersister.saveOrUpdate(xref.getOwner());
+        for ( Alias alias : intactObject.getAliases() ) {
+            if ( alias.getCvAliasType() != null ) {
+                cvPersister.saveOrUpdate( alias.getCvAliasType() );
+            }
+            institutionPersister.saveOrUpdate( alias.getOwner() );
         }
-        for (Alias alias : intactObject.getAliases()) {
-            cvPersister.saveOrUpdate(alias.getCvAliasType());
-            institutionPersister.saveOrUpdate(alias.getOwner());
-        }
-        for (Annotation annotation : intactObject.getAnnotations()) {
-            cvPersister.saveOrUpdate(annotation.getCvTopic());
-            institutionPersister.saveOrUpdate(annotation.getOwner());
+        
+        for ( Annotation annotation : intactObject.getAnnotations() ) {
+            if ( annotation.getCvTopic() != null ) {
+                cvPersister.saveOrUpdate( annotation.getCvTopic() );
+            }
+            institutionPersister.saveOrUpdate( annotation.getOwner() );
         }
     }
 

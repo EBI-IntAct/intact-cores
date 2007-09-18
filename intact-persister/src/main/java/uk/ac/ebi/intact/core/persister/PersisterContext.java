@@ -86,9 +86,13 @@ public class PersisterContext {
 //    }
 
     public void addToPersist(Institution institution) {
-        if (!institutionsToBePersisted.containsKey(institution)) {
-            institutionsToBePersisted.put(institution.getShortLabel(), institution);
+        if ( !contains( institution ) ) {
+            institutionsToBePersisted.put( institution.getShortLabel(), institution );
         }
+        // TODO Bruno: seems to be a mismatch between the call to containsKey and put !!
+//        if (!institutionsToBePersisted.containsKey(institution)) {
+//            institutionsToBePersisted.put(institution.getShortLabel(), institution);
+//        }
     }
 
     public boolean contains(AnnotatedObject ao) {
@@ -142,13 +146,25 @@ public class PersisterContext {
         }
 
         for (Institution institution : institutionsToBePersisted.values()) {
-            getDaoFactory().getInstitutionDao().persist(institution);
+
+            // TODO Bruno: added replicate( i ) as I got org.hibernate.PersistentObjectException: detached entity passed to persist: uk.ac.ebi.intact.model.CvDatabase
+            if( institution.getAc() != null ) {
+                if ( log.isDebugEnabled() ) {
+                    log.debug( "\t\tReplicating " + institution.getClass().getSimpleName() + ": " + institution.getShortLabel()+ " (AC:"+ institution.getAc() +")" );
+                }
+                getDaoFactory().getInstitutionDao().replicate(institution);
+            } else {
+                if ( log.isDebugEnabled() ) {
+                    log.debug( "\t\tPersisting " + institution.getClass().getSimpleName() + ": " + institution.getShortLabel() );
+                }
+                getDaoFactory().getInstitutionDao().persist(institution);
+            }
         }
 
         for (CvObject cv : cvObjectsToBePersisted.values()) {
             if (cv.getAc() != null) {
                 if ( log.isDebugEnabled() ) {
-                    log.debug( "\t\tReplicating " + cv.getClass().getSimpleName() + ": " + cv.getShortLabel() );
+                    log.debug( "\t\tReplicating " + cv.getClass().getSimpleName() + ": " + cv.getShortLabel()+ " (AC:"+ cv.getAc() +")" );
                 }
 
                 getDaoFactory().getCvObjectDao().replicate(cv);
@@ -184,7 +200,7 @@ public class PersisterContext {
             }
             if (ao.getAc() != null) {
                 if ( log.isDebugEnabled() ) {
-                    log.debug( "\t\tReplicating " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+                    log.debug( "\t\tReplicating " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() + " (AC: "+ ao.getAc() +")" );
                 }
                 getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).replicate(ao);
             } else {
@@ -213,7 +229,7 @@ public class PersisterContext {
                 interactionInterceptor.onPrePersist((Interaction)ao);
             }
             if ( log.isDebugEnabled() ) {
-                    log.debug( "\t\tMerging " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+                    log.debug( "\t\tMerging " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel()+ " (AC: "+ ao.getAc() +")" );
             }
             getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).merge(ao);
             logPersistence(ao);

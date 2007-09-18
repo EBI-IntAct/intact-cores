@@ -92,7 +92,8 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
             CvFeatureType syncedFeatureType = (CvFeatureType) cvObjectPersister.syncIfTransient(intactObject.getCvFeatureType());
             intactObject.setCvFeatureType(syncedFeatureType);
         }
-
+        
+        // TODO Bruno: Range is not replaced by a synced version here ? Potential issue ?
         for (Range range : intactObject.getRanges()) {
             CvFuzzyType synchedFromFuzzyType = (CvFuzzyType) cvObjectPersister.syncIfTransient(range.getFromCvFuzzyType());
             range.setFromCvFuzzyType(synchedFromFuzzyType);

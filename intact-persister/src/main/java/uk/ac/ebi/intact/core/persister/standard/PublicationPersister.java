@@ -16,10 +16,14 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
 import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Publication;
 
+import java.util.Collection;
+import java.util.ArrayList;
+
 /**
- * TODO comment this
+ * Publication persister.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -52,10 +56,21 @@ public class PublicationPersister extends AbstractAnnotatedObjectPersister<Publi
     @Override
     protected void saveOrUpdateAttributes(Publication intactObject) throws PersisterException {
         super.saveOrUpdateAttributes(intactObject);
+
+        for ( Experiment experiment : intactObject.getExperiments() ) {
+            ExperimentPersister.getInstance().saveOrUpdate( experiment );
+        }
     }
 
     @Override
     protected Publication syncAttributes(Publication intactObject) {
-        return super.syncAttributes(intactObject);
+
+        Collection<Experiment> experiments = new ArrayList<Experiment>( intactObject.getExperiments().size() );
+        for ( Experiment experiment : intactObject.getExperiments() ) {
+            experiments.add( ExperimentPersister.getInstance().syncIfTransient( experiment ) );
+        }
+        intactObject.setExperiments( experiments );
+
+        return super.syncAttributes( intactObject );
     }
 }

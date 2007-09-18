@@ -155,11 +155,13 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         intactObject.setCvInteraction((CvInteraction) CvObjectPersister.getInstance().syncIfTransient(intactObject.getCvInteraction()));
 
         if (intactObject.getCvIdentification() != null) {
-            intactObject.setCvIdentification((CvIdentification) CvObjectPersister.getInstance().syncIfTransient(intactObject.getCvIdentification()));
+            CvIdentification cvIdentification = ( CvIdentification ) CvObjectPersister.getInstance().syncIfTransient( intactObject.getCvIdentification() );
+            intactObject.setCvIdentification( cvIdentification );
         }
 
         if (intactObject.getPublication() != null) {
-            intactObject.setPublication(PublicationPersister.getInstance().syncAttributes(intactObject.getPublication()));
+            Publication publication = PublicationPersister.getInstance().syncAttributes( intactObject.getPublication() );
+            intactObject.setPublication( publication );
         }
 
         return super.syncAttributes(intactObject);
@@ -171,6 +173,7 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
             objectToUpdate.getInteractions().add(interaction);
         }
 
+        // TODO Bruno: why do we evict the publication from that experiment.
         getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(candidateObject.getPublication());
 
         if (objectToUpdate.getPublication() == null && candidateObject.getPublication() != null) {

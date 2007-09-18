@@ -101,7 +101,8 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
             }
 
             // don't continue if the object already exists or has been updated
-            if (behaviour == BehaviourType.UPDATE || behaviour == BehaviourType.IGNORE)  {
+            // TODO Bruno: Prevented a publication from being attached to the session.
+            if (behaviour == BehaviourType.UPDATE || behaviour == BehaviourType.IGNORE )  {
                 return;
             }
         } else {

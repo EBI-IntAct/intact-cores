@@ -58,29 +58,33 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
             //throw new PersisterException("Cannot save or update a CvObject without Xrefs");
         }
 
-        InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
-        institutionPersister.saveOrUpdate( intactObject.getOwner() );
+        super.saveOrUpdateAttributes( intactObject );
 
-        for ( CvObjectXref xref : intactObject.getXrefs() ) {
-            saveOrUpdate( xref.getCvDatabase() );
-            if ( xref.getCvXrefQualifier() != null ) {
-                saveOrUpdate( xref.getCvXrefQualifier() );
-            }
-        }
-
-        for ( Alias alias : intactObject.getAliases() ) {
-            if ( alias.getCvAliasType() != null ) {
-                saveOrUpdate( alias.getCvAliasType() );
-            }
-            institutionPersister.saveOrUpdate( alias.getOwner() );
-        }
-
-        for ( Annotation annotation : intactObject.getAnnotations() ) {
-            if ( annotation.getCvTopic() != null ) {
-                saveOrUpdate( annotation.getCvTopic() );
-            }
-            institutionPersister.saveOrUpdate( annotation.getOwner() );
-        }
+        // TODO Bruno: as it is now that method is identical to the one in AbstractAnnotatedObjectPersister
+//        InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
+//        institutionPersister.saveOrUpdate( intactObject.getOwner() );
+//
+//        for ( CvObjectXref xref : intactObject.getXrefs() ) {
+//            saveOrUpdate( xref.getCvDatabase() );
+//            if ( xref.getCvXrefQualifier() != null ) {
+//                saveOrUpdate( xref.getCvXrefQualifier() );
+//            }
+//            institutionPersister.saveOrUpdate( xref.getOwner() );
+//        }
+//
+//        for ( Alias alias : intactObject.getAliases() ) {
+//            if ( alias.getCvAliasType() != null ) {
+//                saveOrUpdate( alias.getCvAliasType() );
+//            }
+//            institutionPersister.saveOrUpdate( alias.getOwner() );
+//        }
+//
+//        for ( Annotation annotation : intactObject.getAnnotations() ) {
+//            if ( annotation.getCvTopic() != null ) {
+//                saveOrUpdate( annotation.getCvTopic() );
+//            }
+//            institutionPersister.saveOrUpdate( annotation.getOwner() );
+//        }
     }
 
     /**
@@ -88,6 +92,27 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
      */
     @Override
     protected CvObject fetchFromDataSource( CvObject intactObject ) {
+
+        if( intactObject.getShortLabel().equals( "purified" ) ) {
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+            System.out.println( "****************************************************************" );
+        }
 
         // First search by psi-mi identifier
         CvDatabase psimi = getIntactContext().getDataContext().getDaoFactory()
@@ -115,9 +140,8 @@ public class CvObjectPersister extends AbstractAnnotatedObjectPersister<CvObject
             }
         }
 
-        // failed by MI, try by shortlabel
+        // Failed by MI, try by shortlabel
         return getIntactContext().getDataContext().getDaoFactory()
                 .getCvObjectDao().getByShortLabel( intactObject.getClass(), intactObject.getShortLabel() );
     }
-
 }

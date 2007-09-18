@@ -17,19 +17,22 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 
+import java.util.Collection;
+import java.util.ArrayList;
+
 /**
- * TODO comment this
+ * InteractionPersister tester.
  *
- * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @author Bruno Aranda (baranda@ebi.ac.uk), Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  */
-public class InteractionPersisterTest extends AbstractPersisterTest
-{
+public class InteractionPersisterTest extends AbstractPersisterTest {
+    
     @Test
     public void allPersisted() throws Exception {
         IntactMockBuilder builder = super.getMockBuilder();
@@ -44,12 +47,117 @@ public class InteractionPersisterTest extends AbstractPersisterTest
         interactorPersister.commit();
 
         beginTransaction();
-
         Assert.assertEquals(intactEntry.getInteractions().size(), getDaoFactory().getInteractionDao().countAll());
-
         for (CvObject cv : getDaoFactory().getCvObjectDao().getAll()) {
             Assert.assertFalse(cv.getXrefs().isEmpty());
         }
+        commitTransaction();
+    }
+
+    private void addFeature( Component component ) {
+        IntactMockBuilder builder = super.getMockBuilder();
+        Feature feature = builder.createFeatureRandom();
+        Collection<Range> ranges = new ArrayList<Range>( );
+        Range range = builder.createRangeRandom();
+        range.setFeature( feature );
+        range.setFromCvFuzzyType( builder.createCvObject( CvFuzzyType.class, "IA:9999", CvFuzzyType.RANGE ));
+        range.setToCvFuzzyType( builder.createCvObject( CvFuzzyType.class, "IA:9999", CvFuzzyType.RANGE ));
+        ranges.add( range );
+        feature.setRanges( ranges );
+        component.addBindingDomain( feature );
+    }
+
+    @Test
+    public void allPersistedWithFeature() throws Exception {
+        IntactMockBuilder builder = super.getMockBuilder();
+        IntactEntry intactEntry = builder.createIntactEntryRandom(2, 2, 2);
+        Assert.assertEquals( "intact", builder.getInstitution().getShortLabel() );
+        getIntactContext().getConfig().setAcPrefix( "IA" );
+
+        // add extra features/ranges on components
+        for ( Interaction interaction : intactEntry.getInteractions() ) {
+            for ( Component component : interaction.getComponents() ) {
+                addFeature( component );
+            }
+        }
+
+        InteractionPersister interactorPersister = InteractionPersister.getInstance();
+
+        for (Interaction interaction : intactEntry.getInteractions()) {
+            interactorPersister.saveOrUpdate(interaction);
+        }
+
+        interactorPersister.commit();
+
+        beginTransaction();
+        int count = getDaoFactory().getInteractionDao().countAll();
+        Assert.assertEquals(intactEntry.getInteractions().size(), count);
+        for (CvObject cv : getDaoFactory().getCvObjectDao().getAll()) {
+            Assert.assertFalse(cv.getXrefs().isEmpty());
+        }
+
+        // print all publications
+        for ( Publication pub : getDaoFactory().getPublicationDao().getAll() ) {
+            System.out.println( pub );
+        }
+
+        commitTransaction();
+        PersisterContext.getInstance().clear();
+
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+        System.out.println( "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" );
+
+        beginTransaction();
+        // having already persisted an entry in the database, we will persist an other one.
+        // That involves reusing CV terms, Institution...
+
+        for ( Institution institution : getDaoFactory().getInstitutionDao().getAll() ) {
+            System.out.println( institution );
+        }
+
+        Assert.assertEquals( 2, getDaoFactory().getInstitutionDao().getAll().size() );
+        Assert.assertEquals( 61, getDaoFactory().getAnnotatedObjectDao().getAll().size() );
+        Assert.assertEquals(getDaoFactory().getInstitutionDao().getByShortLabel( "intact" ), 
+                            getDaoFactory().getAnnotatedObjectDao().getAll().iterator().next().getOwner() );
+        Assert.assertEquals( 17, getDaoFactory().getCvObjectDao().getAll().size() );
+        Assert.assertEquals( 4, getDaoFactory().getInteractionDao().getAll().size() );
+
+        intactEntry = builder.createIntactEntryRandom(2, 2, 2);
+
+        // add extra features/ranges on components
+        for ( Interaction interaction : intactEntry.getInteractions() ) {
+            for ( Component component : interaction.getComponents() ) {
+                addFeature( component );
+            }
+        }
+
+        interactorPersister = InteractionPersister.getInstance();
+
+        for (Interaction interaction : intactEntry.getInteractions()) {
+            interactorPersister.saveOrUpdate(interaction);
+        }
+
+        interactorPersister.commit();
+
+        beginTransaction();
+        Assert.assertEquals(intactEntry.getInteractions().size() + count, getDaoFactory().getInteractionDao().countAll());
+        for (CvObject cv : getDaoFactory().getCvObjectDao().getAll()) {
+            Assert.assertFalse(cv.getXrefs().isEmpty());
+        }
+        commitTransaction();
     }
 
     @Test
@@ -184,27 +292,6 @@ public class InteractionPersisterTest extends AbstractPersisterTest
         InteractionPersister.getInstance().commit();
         commitTransaction();
 
-
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-        System.out.println( "..............................................................................." );
-
-
         interaction = getMockBuilder().createInteraction("foo", "bar");
 
         beginTransaction();
@@ -213,23 +300,6 @@ public class InteractionPersisterTest extends AbstractPersisterTest
         commitTransaction();
         
         PersisterContext.getInstance().clear();
-
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-        System.out.println( "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
 
         beginTransaction();
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
