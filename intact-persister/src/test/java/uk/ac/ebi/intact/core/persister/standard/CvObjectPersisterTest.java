@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
@@ -109,6 +110,38 @@ public class CvObjectPersisterTest extends AbstractPersisterTest {
 
         Assert.assertNotSame( expRole, expRole2 );
         Assert.assertEquals( expRole.getAc(), expRole2.getAc() );
+    }
+
+    @Test
+    public void persist_sameMi_differentLabel() throws Exception {
+        CvObject cv1 = CvObjectUtils.createCvObject(getIntactContext().getInstitution(), CvExperimentalRole.class, "MI:0123", "label");
+        PersisterHelper.saveOrUpdate(cv1);
+
+        commitTransaction();
+
+        beginTransaction();
+        CvObject cv = getDaoFactory().getCvObjectDao(CvExperimentalRole.class).getByPsiMiRef("MI:0123");
+        Assert.assertNotNull(cv);
+        commitTransaction();
+
+        beginTransaction();
+        CvObject cv1Copy = CvObjectUtils.createCvObject(getIntactContext().getInstitution(), CvExperimentalRole.class, "MI:0123", "label");
+        CvObject cv1Fetched = CvObjectPersister.getInstance().fetchFromDataSource(cv1Copy);
+        Assert.assertNotNull(cv1Fetched);
+        Assert.assertNotNull(cv1Fetched.getAc());
+        commitTransaction();
+
+        CvObject cv2 = CvObjectUtils.createCvObject(getIntactContext().getInstitution(), CvExperimentalRole.class, "MI:0123", "another-label");
+        PersisterHelper.saveOrUpdate(cv2);
+
+        beginTransaction();
+
+        Assert.assertEquals(1, getDaoFactory().getCvObjectDao(CvExperimentalRole.class).countAll());
+
+        //CvObject cv = getDaoFactory().getCvObjectDao(CvExperimentalRole.class).getByPsiMiRef("MI:0123");
+
+
+        commitTransaction();
     }
 
     @Test( expected = PersisterException.class )

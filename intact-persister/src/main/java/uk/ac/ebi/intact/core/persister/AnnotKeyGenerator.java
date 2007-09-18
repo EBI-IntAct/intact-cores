@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.BioSource;
-import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 /**
  * TODO comment this
@@ -34,17 +34,33 @@ public class AnnotKeyGenerator {
 
         // TODO Bruno: why make a specific case of Component and BioSource ??
 
+        final String normalizedClassName = normalizeClassName(ao.getClass());
+        
         if (ao instanceof Component) {
             Component comp = (Component)ao;
             String label = comp.getInteraction().getShortLabel()+"_"+comp.getInteractor().getShortLabel();
-            key = comp.getClass().getSimpleName()+":"+label;
+            key = normalizedClassName +":"+label;
         } else if (ao instanceof BioSource) {
             // TODO will probably need to add additional params here such as CvTissue, CvellType
-            key = ao.getClass().getSimpleName()+":"+((BioSource)ao).getTaxId();
+            key = normalizedClassName +":"+((BioSource)ao).getTaxId();
+        } else if (ao instanceof CvObject) {
+            CvObject cv = (CvObject)ao;
+            CvObjectXref identity = CvObjectUtils.getPsiMiIdentityXref(cv);
+            if (identity != null) {
+                key = normalizedClassName +":"+identity.getPrimaryId();
+            } else {
+                key = normalizedClassName +":"+ao.getShortLabel();
+            }
         } else {
-            key = ao.getClass().getSimpleName()+":"+ao.getShortLabel();
+            key = normalizedClassName +":"+ao.getShortLabel();
         }
 
         return key;
+    }
+
+    protected static String normalizeClassName(Class clazz) {
+        Class realClass = CgLibUtil.removeCglibEnhanced(clazz);
+        return realClass.getSimpleName();
+        //return clazz.getSimpleName();
     }
 }
