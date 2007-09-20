@@ -5,13 +5,17 @@
  */
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
+import org.hibernate.ReplicationMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
 import uk.ac.ebi.intact.business.IntactException;
-import uk.ac.ebi.intact.context.*;
+import uk.ac.ebi.intact.context.AutoBeginTransactionException;
+import uk.ac.ebi.intact.context.IntactEnvironment;
+import uk.ac.ebi.intact.context.IntactSession;
+import uk.ac.ebi.intact.context.RuntimeConfig;
 import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.model.NotAnEntityException;
 import uk.ac.ebi.intact.persistence.dao.BaseDao;
@@ -20,6 +24,8 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import javax.persistence.Entity;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * TODO comment this
@@ -28,7 +34,7 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>24-Apr-2006</pre>
  */
-public abstract class HibernateBaseDaoImpl<T> implements BaseDao<Session> {
+public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
 
     public static final Log log = LogFactory.getLog( HibernateBaseDaoImpl.class );
 
@@ -83,6 +89,27 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<Session> {
         return url;
     }
 
+    public List<T> getAll() {
+        return getSession().createCriteria( getEntityClass() ).list();
+    }
+
+    public Iterator<T> getAllIterator() {
+        return getSession().createQuery("from "+getEntityClass().getSimpleName()).iterate();
+    }
+
+    public List<T> getAll( int firstResult, int maxResults ) {
+        return getSession().createCriteria( getEntityClass() )
+                .setFirstResult( firstResult )
+                .setMaxResults( maxResults ).list();
+    }
+
+    public int countAll() {
+        return ( Integer ) getSession()
+                .createCriteria( getEntityClass() )
+                .setProjection( Projections.rowCount() )
+                .uniqueResult();
+    }
+
     /**
      * Provides the user name that is connecting to the DB.
      *
@@ -92,6 +119,73 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<Session> {
      */
     public String getDbUserName() throws SQLException {
         return session.connection().getMetaData().getUserName();
+    }
+
+    public void update( T objToUpdate ) {
+        checkReadOnly();
+
+        getSession().update( objToUpdate );
+    }
+
+    public void persist( T objToPersist ) {
+        checkReadOnly();
+
+        getSession().persist( objToPersist );
+    }
+
+    public void persistAll( Collection<T> objsToPersist ) {
+        checkReadOnly();
+
+        for ( T objToPersist : objsToPersist ) {
+            persist( objToPersist );
+        }
+    }
+
+    public void delete( T objToDelete ) {
+        checkReadOnly();
+
+        getSession().delete( objToDelete );
+    }
+
+    public void deleteAll( Collection<T> objsToDelete ) {
+        checkReadOnly();
+
+        for ( T objToDelete : objsToDelete ) {
+            delete( objToDelete );
+        }
+    }
+
+    public void saveOrUpdate( T objToPersist ) {
+        checkReadOnly();
+
+        getSession().saveOrUpdate( objToPersist );
+    }
+
+    public void refresh( T objToRefresh ) {
+        getSession().refresh( objToRefresh );
+    }
+
+    public void evict(T objToEvict) {
+        getSession().evict(objToEvict);
+    }
+
+    public void replicate(T objToReplicate) {
+        replicate(objToReplicate, true);
+    }
+
+    public void replicate(T objToReplicate, boolean ignoreIfExisting) {
+        ReplicationMode replicationMode;
+
+        if (ignoreIfExisting) {
+            replicationMode = ReplicationMode.IGNORE;
+        } else {
+            replicationMode = ReplicationMode.LATEST_VERSION;
+        }
+        getSession().replicate(objToReplicate, replicationMode);
+    }
+
+    public void merge(T objToMerge) {
+        getSession().merge(objToMerge);
     }
 
     /**

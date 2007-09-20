@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
-import org.hibernate.Session;
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.query.impl.SearchableQuery;
@@ -29,7 +28,7 @@ import java.util.Map;
  * @since 1.5
  */
 @Mockable
-public interface SearchableDao extends BaseDao<Session> {
+public interface SearchableDao extends BaseDao<AnnotatedObjectImpl> {
 
     static final Class<? extends Searchable>[] STANDARD_SEARCHABLES = new Class[]{Experiment.class, InteractionImpl.class, ProteinImpl.class, NucleicAcidImpl.class, CvObject.class};
 

@@ -18,7 +18,7 @@ import java.util.List;
  * @since <pre>08-May-2006</pre>
  */
 @Mockable
-public interface IntactObjectDao<T extends IntactObject> {
+public interface IntactObjectDao<T extends IntactObject> extends BaseDao<T>{
 
     T getByAc( String ac );
 
@@ -30,54 +30,13 @@ public interface IntactObjectDao<T extends IntactObject> {
 
     List<T> getByAc( Collection<String> acs );
 
-    List<T> getAll();
-
-    Iterator<T> getAllIterator();
-
-    List<T> getAll( int firstResult, int maxResults );
-
-    public int countAll();
-
     public Iterator<T> iterator();
 
     public Iterator<T> iterator( int batchSize );
 
     Collection<T> getColByPropertyName( String propertyName, String value );
 
-    void update( T objToUpdate );
-
-    void persist( T objToPersist );
-
-    void persistAll( Collection<T> objsToPersist );
-
-    void delete( T objToDelete );
-
     int deleteByAc( String ac );
 
-    void deleteAll( Collection<T> objsToDelete );
-
-    void saveOrUpdate( T objToPersist );
-
-    boolean exists( T obj );
-
-    void refresh( T objToRefresh );
-
-    void evict( T objToEvict );
-
-    /**
-     * Persist the state of the given detached instance, reusing the current identifier value. This operation cascades
-     * to associated instances if the association is mapped with cascade="replicate".
-     * @param objToReplicate
-     */
-    void replicate( T objToReplicate );
-
-    /**
-     * Persist the state of the given detached instance, reusing the current identifier value. This operation cascades
-     * to associated instances if the association is mapped with cascade="replicate".
-     * @param objToReplicate
-     * @param ignoreIfExisting
-     */
-    void replicate(T objToReplicate, boolean ignoreIfExisting);
-
-    void merge( T objToReplicate );
+    boolean exists( T objToRefresh );
 }

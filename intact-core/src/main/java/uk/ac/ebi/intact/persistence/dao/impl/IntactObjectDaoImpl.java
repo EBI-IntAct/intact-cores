@@ -6,10 +6,8 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.HibernateException;
-import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.IntactObject;
@@ -75,26 +73,6 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
         return getByAc( acs.toArray( new String[acs.size()] ) );
     }
 
-    public List<T> getAll() {
-        return getSession().createCriteria( getEntityClass() ).list();
-    }
-
-    public Iterator<T> getAllIterator() {
-        return getSession().createQuery("from "+getEntityClass().getSimpleName()).iterate();
-    }
-
-    public List<T> getAll( int firstResult, int maxResults ) {
-        return getSession().createCriteria( getEntityClass() )
-                .setFirstResult( firstResult )
-                .setMaxResults( maxResults ).list();
-    }
-
-    public int countAll() {
-        return ( Integer ) getSession()
-                .createCriteria( getEntityClass() )
-                .setProjection( Projections.rowCount() )
-                .uniqueResult();
-    }
 
     /**
      * @deprecated use getAllIterator() instead. Method might be removed in version 1.6
@@ -112,33 +90,7 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
         return getAllIterator();
     }
 
-    public void update( T objToUpdate ) {
-        checkReadOnly();
-
-        getSession().update( objToUpdate );
-    }
-
-    public void persist( T objToPersist ) {
-        checkReadOnly();
-
-        getSession().persist( objToPersist );
-    }
-
-    public void persistAll( Collection<T> objsToPersist ) {
-        checkReadOnly();
-
-        for ( T objToPersist : objsToPersist ) {
-            persist( objToPersist );
-        }
-    }
-
-    public void delete( T objToDelete ) {
-        checkReadOnly();
-
-        getSession().delete( objToDelete );
-    }
-
-    public int deleteByAc( String ac ) {
+        public int deleteByAc( String ac ) {
 
         T o = getByAc( ac );
         if ( o == null ) {
@@ -155,49 +107,8 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
 //        return deleteQuery.executeUpdate();
     }
 
-    public void deleteAll( Collection<T> objsToDelete ) {
-        checkReadOnly();
-
-        for ( T objToDelete : objsToDelete ) {
-            delete( objToDelete );
-        }
-    }
-
-    public void saveOrUpdate( T objToPersist ) {
-        checkReadOnly();
-
-        getSession().saveOrUpdate( objToPersist );
-    }
-
     public boolean exists( T obj ) {
         return ( getSession().get( getEntityClass(), obj.getAc() ) != null );
-    }
-
-    public void refresh( T objToRefresh ) {
-        getSession().refresh( objToRefresh );
-    }
-
-    public void evict(T objToEvict) {
-        getSession().evict(objToEvict);
-    }
-
-    public void replicate(T objToReplicate) {
-        replicate(objToReplicate, true);
-    }
-
-    public void replicate(T objToReplicate, boolean ignoreIfExisting) {
-        ReplicationMode replicationMode;
-
-        if (ignoreIfExisting) {
-            replicationMode = ReplicationMode.IGNORE;
-        } else {
-            replicationMode = ReplicationMode.LATEST_VERSION;
-        }
-        getSession().replicate(objToReplicate, replicationMode);
-    }
-
-    public void merge(T objToMerge) {
-        getSession().merge(objToMerge);
     }
 
 }

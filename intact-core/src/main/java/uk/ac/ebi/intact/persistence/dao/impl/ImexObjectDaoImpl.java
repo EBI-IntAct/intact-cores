@@ -16,7 +16,6 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.meta.ImexObject;
@@ -31,21 +30,10 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ImexObjectDaoImpl extends HibernateBaseDaoImpl<ImexObject> implements ImexObjectDao {
+public class ImexObjectDaoImpl extends HibernateBaseDaoImpl<ImexObject> implements ImexObjectDao<ImexObject> {
 
     public ImexObjectDaoImpl(Session session, IntactSession intactSession) {
         super(ImexObject.class, session, intactSession);
-    }
-
-    public void persist(ImexObject imexObject) {
-        getSession().persist(imexObject);
-    }
-
-    public int countAll() {
-        return ( Integer ) getSession()
-                .createCriteria( getEntityClass() )
-                .setProjection( Projections.rowCount() )
-                .uniqueResult();
     }
 
     public List<ImexObject> getFailed() {

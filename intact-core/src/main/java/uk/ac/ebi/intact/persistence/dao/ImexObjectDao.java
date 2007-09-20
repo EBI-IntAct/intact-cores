@@ -26,9 +26,11 @@ import java.util.List;
  * @since 1.5
  */
 @Mockable
-public interface ImexObjectDao {
+public interface ImexObjectDao<T> extends BaseDao<T> {
 
     void persist( ImexObject imexObject );
+
+    void merge ( ImexObject imexObject );
 
     int countAll();
 
