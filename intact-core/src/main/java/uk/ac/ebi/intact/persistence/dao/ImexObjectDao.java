@@ -33,4 +33,6 @@ public interface ImexObjectDao {
     int countAll();
 
     List<ImexObject> getFailed();
+
+    ImexObject getByPmid(String pmid);
 }

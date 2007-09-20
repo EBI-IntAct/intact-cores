@@ -52,4 +52,9 @@ public class ImexObjectDaoImpl extends HibernateBaseDaoImpl<ImexObject> implemen
         return getSession().createCriteria(getEntityClass())
                 .add(Restrictions.eq("status", ImexObjectStatus.ERROR)).list();
     }
+
+    public ImexObject getByPmid(String pmid) {
+        return (ImexObject) getSession().createCriteria(getEntityClass())
+                .add(Restrictions.eq("pmid", pmid)).uniqueResult();
+    }
 }
