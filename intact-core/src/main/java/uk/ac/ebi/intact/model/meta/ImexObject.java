@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.model.meta;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
-import org.hibernate.annotations.GenericGenerator;
 import uk.ac.ebi.intact.model.AbstractAuditable;
 import uk.ac.ebi.intact.model.Institution;
 
@@ -112,5 +111,26 @@ public class ImexObject extends AbstractAuditable {
 
     public void setProvider(Institution provider) {
         this.provider = provider;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImexObject that = (ImexObject) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (pmid != null ? !pmid.equals(that.pmid) : that.pmid != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        result = (id != null ? id.hashCode() : 0);
+        result = 31 * result + (pmid != null ? pmid.hashCode() : 0);
+        return result;
     }
 }
