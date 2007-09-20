@@ -16,7 +16,6 @@
 package uk.ac.ebi.intact.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.model.MineInteraction;
 import uk.ac.ebi.intact.model.meta.ImexObject;
 
 import java.util.List;
@@ -33,5 +32,5 @@ public interface ImexObjectDao {
 
     int countAll();
 
-    List<String> getFailedPubmedIds();
+    List<ImexObject> getFailed();
 }

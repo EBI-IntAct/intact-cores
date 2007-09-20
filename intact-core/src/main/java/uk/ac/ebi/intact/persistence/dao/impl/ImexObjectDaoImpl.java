@@ -48,7 +48,7 @@ public class ImexObjectDaoImpl extends HibernateBaseDaoImpl<ImexObject> implemen
                 .uniqueResult();
     }
 
-    public List<String> getFailedPubmedIds() {
+    public List<ImexObject> getFailed() {
         return getSession().createCriteria(getEntityClass())
                 .add(Restrictions.eq("status", ImexObjectStatus.ERROR)).list();
     }
