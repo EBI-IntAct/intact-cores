@@ -133,4 +133,5 @@ public class ImexObject extends AbstractAuditable {
         result = 31 * result + (pmid != null ? pmid.hashCode() : 0);
         return result;
     }
+
 }
