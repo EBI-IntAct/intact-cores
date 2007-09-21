@@ -35,11 +35,11 @@ public class CvTopic extends CvObject implements Editable {
     public static final String THREE_D_R_RESOLUTION = "3d-resolution";
     public static final String THREE_D_R_RESOLUTION_MI_REF = "MI:0632";
 
-
     public static final String XREF_VALIDATION_REGEXP = "id-validation-regexp";
     public static final String XREF_VALIDATION_REGEXP_MI_REF = "MI:0628";
 
     public static final String AGONIST = "agonist";
+    public static final String AGONIST_MI_REF = "MI:0625";
 
     public static final String CAUTION = "caution";    
     public static final String CAUTION_MI_REF = "MI:0618";
