@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.meta.ImexObject;
@@ -44,5 +45,11 @@ public class ImexObjectDaoImpl extends HibernateBaseDaoImpl<ImexObject> implemen
     public ImexObject getByPmid(String pmid) {
         return (ImexObject) getSession().createCriteria(getEntityClass())
                 .add(Restrictions.eq("pmid", pmid)).uniqueResult();
+    }
+
+    public List<String> getAllOkPmids() {
+        return getSession().createCriteria(getEntityClass())
+                .add(Restrictions.eq("status", ImexObjectStatus.OK))
+                .setProjection(Projections.property("pmid")).list();
     }
 }
