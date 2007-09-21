@@ -41,12 +41,15 @@ public class CvTopic extends CvObject implements Editable {
 
     public static final String AGONIST = "agonist";
 
-    public static final String CAUTION = "caution";
+    public static final String CAUTION = "caution";    
+    public static final String CAUTION_MI_REF = "MI:0618";
 
     public static final String REMARK_INTERNAL = "remark-internal";
 
     public static final String RESULTING_PTM = "resulting-ptm";
+
     public static final String PREREQUISITE_PTM = "prerequisite-ptm";
+
     public static final String COMMENT = "comment";
     public static final String COMMENT_MI_REF = "MI:0612";
 
@@ -57,7 +60,10 @@ public class CvTopic extends CvObject implements Editable {
     public static final String UNIPROT_CC_EXPORT = "uniprot-cc-note";
 
     public static final String NEGATIVE = "negative";
+    
     public static final String FUNCTION = "function";
+    public static final String FUNCTION_MI_REF = "MI:0613";
+
     public static final String COPYRIGHT = "copyright";
 
     public static final String AUTHOR_CONFIDENCE = "author-confidence";
@@ -104,7 +110,11 @@ public class CvTopic extends CvObject implements Editable {
     public static final String HIDDEN = "hidden";
 
     public static final String JOURNAL = "journal";
+    public static final String JOURNAL_MI_REF = "MI:0885";
+
     public static final String PUBLICATION_YEAR = "publication-year";
+    public static final String PUBLICATION_YEAR_MI_REF = "MI:0886";
+
     public static final String REVIEWER = "reviewer";
 
     public static final String IMEX_RANGE_REQUESTED = "imex-range-requested";
