@@ -299,7 +299,14 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
         Collection<A> aliases = getAliases();
 
         // Append the "-x" to the short label.
-        copy.shortLabel += "-x";
+        if( copy.shortLabel.length() <= MAX_SHORT_LABEL_LEN - 2 ) {
+            // only append '-x' if it is not going to make the shortlabel longer than 20 chars.
+            copy.shortLabel += "-x";
+        } else {
+            log.error( "Could not append '-x' to this " + this.getClass().getSimpleName() + " shorltabel("+
+                       copy.shortLabel +") as it would make it longer than the maximum supported ("+
+                       MAX_SHORT_LABEL_LEN+" chars).");
+        }
 
         // Clone annotations; can't use annotations.clone here as annoatations
         // type is shown as a ListProxy (ClassCastException)
@@ -316,7 +323,6 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
             xrefClone.setParent( copy );
             copiedXrefs.add( xrefClone );
         }
-//        copy.setXrefs(null);
         copy.setXrefs( copiedXrefs );
 
         Collection<Alias> copiedAliases = new ArrayList<Alias>( aliases.size() );
@@ -335,10 +341,4 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
         return this.getAc() + "; owner=" + this.getOwner().getAc()
                + "; name=" + this.shortLabel + "; fullname=" + fullName;
     }
-
-} // end AnnotatedObject
-
-
-
-
-
+}
