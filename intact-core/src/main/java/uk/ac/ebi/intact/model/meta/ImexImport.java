@@ -59,7 +59,7 @@ public class ImexImport extends AbstractAuditable {
     // Getters and Setters
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="imex_sequence")
     public String getId() {
         return id;
     }
