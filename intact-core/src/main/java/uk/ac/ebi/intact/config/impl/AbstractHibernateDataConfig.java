@@ -45,10 +45,10 @@ public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFact
 
     private static final Log log = LogFactory.getLog( AbstractHibernateDataConfig.class );
 
-    // required version is 1.3.0 (build version should always be 0, as a change in the build
+    // required version is 1.7.0 (build version should always be 0, as a change in the build
     // version should no break compatibility)
     private static final Integer REQUIRED_VERSION_MAJOR = 1;
-    private static final Integer REQUIRED_VERSION_MINOR = 6;
+    private static final Integer REQUIRED_VERSION_MINOR = 7;
     private static final Integer REQUIERD_VERSION_BUILD = 0;
 
     private static final String INTERCEPTOR_CLASS = "hibernate.util.interceptor_class";
