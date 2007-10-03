@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +85,18 @@ public class InteractionUtilsTest {
 
         String syncedLabel = InteractionUtils.syncShortLabelWithDb("intera-interb");
         assertEquals("intera-interb-5", syncedLabel);
+    }
+
+    @Test
+    public void syncShortLabel_temporary() throws Exception {
+        String syncedLabel = InteractionUtils.syncShortLabelWithDb("unk-unk-123232");
+        Assert.assertEquals(syncedLabel, "unk-unk-123232");
+    }
+
+    @Test
+    public void isTemporary() throws Exception {
+        Assert.assertTrue(InteractionUtils.isTemporaryLabel("unk-unk-123232"));
+        Assert.assertFalse(InteractionUtils.isTemporaryLabel("la-la-4"));
     }
 
     private static String removePercent(String labelLike) {

@@ -31,21 +31,14 @@ import javax.persistence.*;
 @Entity (name="ia_imex_object")
 public class ImexObject extends AbstractAuditable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
 
-    @Column(name = "original_filename")
     private String originalFilename;
 
-    @ManyToOne
     private Institution provider;
 
-    @Length (max = 20)
-    @NotNull
     private String pmid;
 
-    @Enumerated(EnumType.STRING)
     private ImexObjectStatus status;
 
     private String message;
@@ -65,6 +58,8 @@ public class ImexObject extends AbstractAuditable {
     ////////////////////////////////
     // Getters and Setters
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public String getId() {
         return id;
     }
@@ -81,6 +76,7 @@ public class ImexObject extends AbstractAuditable {
         this.message = message;
     }
 
+    @Column(name = "original_filename")
     public String getOriginalFilename() {
         return originalFilename;
     }
@@ -89,6 +85,8 @@ public class ImexObject extends AbstractAuditable {
         this.originalFilename = originalFilename;
     }
 
+    @Length (max = 20)
+    @NotNull
     public String getPmid() {
         return pmid;
     }
@@ -97,6 +95,7 @@ public class ImexObject extends AbstractAuditable {
         this.pmid = pmid;
     }
 
+    @Enumerated(EnumType.STRING)
     public ImexObjectStatus getStatus() {
         return status;
     }
@@ -105,6 +104,7 @@ public class ImexObject extends AbstractAuditable {
         this.status = status;
     }
 
+    @ManyToOne
     public Institution getProvider() {
         return provider;
     }

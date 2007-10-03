@@ -25,6 +25,9 @@ public class InteractionUtils {
 
     private static final Log log = LogFactory.getLog( InteractionUtils.class );
 
+    public static final String INTERACTION_TEMP_LABEL_PREFIX = "unk-unk-";
+    private static final String INTERACTION_TEMP_LABEL_PATTERN = INTERACTION_TEMP_LABEL_PREFIX+"\\d*";
+
     /**
      * Checks if the interaction is a binary interaction
      *
@@ -194,6 +197,10 @@ public class InteractionUtils {
      * @since 1.6
      */
     public static String syncShortLabelWithDb( String shortLabel ) {
+        if (isTemporaryLabel(shortLabel)) {
+            if (log.isWarnEnabled()) log.warn("Label for interaction was temporary ("+shortLabel+"), hence not synced with the database");
+            return shortLabel;
+        }
         return InteractionShortLabelGenerator.nextAvailableShortlabel( shortLabel );
     }
 
@@ -275,5 +282,16 @@ public class InteractionUtils {
             interactors.add( component.getInteractor() );
         }
         return interactors;
+    }
+
+    /**
+     * Returns true if the label for the interaction is temporary
+     * @param label
+     * @return
+     *
+     * @since 1.6.3
+     */
+    public static boolean isTemporaryLabel(String label) {
+        return label.matches(INTERACTION_TEMP_LABEL_PATTERN);
     }
 }
