@@ -55,7 +55,7 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
     @Override
     protected void saveOrUpdateAttributes(Feature intactObject) throws PersisterException {
         super.saveOrUpdateAttributes(intactObject);
-        // TODO Bruno: Wht was this commented out ? Removing comment fixed the bug that persisted psi-mi twice.
+
         ComponentPersister.getInstance().saveOrUpdate(intactObject.getComponent());
 
         CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();

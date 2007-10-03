@@ -174,7 +174,7 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         }
 
         // TODO Bruno: why do we evict the publication from that experiment.
-        getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(candidateObject.getPublication());
+        //getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(candidateObject.getPublication());
 
         if (objectToUpdate.getPublication() == null && candidateObject.getPublication() != null) {
             objectToUpdate.setPublication(candidateObject.getPublication());

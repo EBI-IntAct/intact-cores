@@ -15,11 +15,10 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
-import uk.ac.ebi.intact.model.Feature;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.model.Feature;
 
 /**
  * TODO comment this
@@ -33,5 +32,19 @@ public class FeaturePersisterTest extends AbstractPersisterTest{
     public void persistFeature() throws Exception {
         Feature feature = getMockBuilder().createFeatureRandom();
         PersisterHelper.saveOrUpdate(feature);
+    }
+
+    @Test
+    public void persistFeature_sameLabelDifferentComponents() throws Exception {
+        Feature feature1 = getMockBuilder().createFeatureRandom();
+        Feature feature2 = getMockBuilder().createFeatureRandom();
+        feature2.setShortLabel(feature1.getShortLabel());
+
+        FeaturePersister.getInstance().saveOrUpdate(feature1);
+        FeaturePersister.getInstance().saveOrUpdate(feature2);
+
+        FeaturePersister.getInstance().commit();
+
+        Assert.assertEquals(2, getDaoFactory().getFeatureDao().countAll());
     }
 }

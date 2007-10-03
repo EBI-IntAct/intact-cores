@@ -17,6 +17,9 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
+import org.hibernate.impl.SessionImpl;
+import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 
@@ -41,7 +44,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
         if (PersisterContext.getInstance().contains(intactObject)) {
             if ( log.isDebugEnabled() ) {
-                log.debug( intactObject.getClass().getSimpleName() + ": " + intactObject.getShortLabel() + " is already in the PersisterContext, skipping..." );
+                log.debug( intactObject.getClass().getSimpleName() + ": " + intactObject.getShortLabel() + "("+ AnnotKeyGenerator.createKey(intactObject)+") is already in the PersisterContext, skipping..." );
             }
 
             return;
@@ -145,38 +148,44 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
             return refreshedObject;
         }
 
-        if (log.isDebugEnabled()) log.debug("\t\t\tNot previously synced");
+        if ( log.isDebugEnabled() ) {
+             log.debug( "\t\t\tAdding to SyncContext. Key: "+ AnnotKeyGenerator.createKey(intactObject));
+        }
 
         SyncContext.getInstance().addToSynced(intactObject);
-
+        
         return syncAttributes(intactObject);
     }
 
     protected final T get(T intactObject) {
         if (PersisterContext.getInstance().contains(intactObject)) {
-            if ( log.isDebugEnabled() ) {
-                log.debug( "GET: Found it in PersisterContext" );
+            if ( log.isDebugEnabled() )  log.debug( "\t\t\tFound it in PersisterContext" );
+            T current = (T) PersisterContext.getInstance().get(intactObject);
+
+            if (current == null) {
+                throw new IllegalStateException("IntactObject expected but not returned from the PersisterContext: "+intactObject);
             }
-            return (T) PersisterContext.getInstance().get(intactObject);
+            return current;
         }
         if (SyncContext.getInstance().isAlreadySynced(intactObject)) {
             if ( log.isDebugEnabled() ) {
-                log.debug( "GET: Found it in SyncContext" );
+                log.debug( "\t\t\tFound it in SyncContext. Key: "+ AnnotKeyGenerator.createKey(intactObject));
             }
             return (T) SyncContext.getInstance().get(intactObject);
         }
 
         T t = fetchFromDataSource( intactObject );
 
-        if ( log.isDebugEnabled() ) {
-            if( t!= null ) {
-                log.debug( "GET: Found it in DataSource" );
-            } else {
-                log.debug( "GET: Could not find it" );
-            }
+        if (t != null) {
+            if (log.isDebugEnabled()) log.debug("\t\t\tFound in data source");
+
+            SyncContext.getInstance().addToSynced(t);
+            return t;
+        } else {
+            if (log.isDebugEnabled()) log.debug("\t\t\tNot previously synced");
         }
 
-        return t;
+        return null;
     }
 
     protected abstract void saveOrUpdateAttributes(T intactObject) throws PersisterException;

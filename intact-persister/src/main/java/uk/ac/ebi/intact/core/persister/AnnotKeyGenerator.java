@@ -51,6 +51,9 @@ public class AnnotKeyGenerator {
             } else {
                 key = normalizedClassName +":"+ao.getShortLabel();
             }
+        } else if (ao instanceof Feature) {
+            String label = ao.getShortLabel()+"_"+createKey(((Feature)ao).getComponent());
+            key = normalizedClassName+":"+label;
         } else {
             key = normalizedClassName +":"+ao.getShortLabel();
         }

@@ -20,7 +20,7 @@ public class ComponentPersisterTest extends AbstractPersisterTest
 {
 
     @Test
-    public void testPersistComponent_default() throws Exception {
+    public void persist_default() throws Exception {
         Component component = getMockBuilder().createComponentRandom();
         PersisterHelper.saveOrUpdate(component);
 

@@ -80,7 +80,6 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         }
 
         InteractionPersister.getInstance().saveOrUpdate(intactObject.getInteraction());
-
         InteractorPersister.getInstance().saveOrUpdate(intactObject.getInteractor());
 
         for (Feature feature : intactObject.getBindingDomains()) {
@@ -101,7 +100,8 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
 
         Collection<CvIdentification> syncedParticipantDetectionMethods = new ArrayList<CvIdentification>(intactObject.getParticipantDetectionMethods().size());
         for (CvIdentification participantDetection : intactObject.getParticipantDetectionMethods()) {
-            syncedParticipantDetectionMethods.add((CvIdentification) cvPersister.syncIfTransient(participantDetection));
+            CvIdentification detMethod = (CvIdentification) cvPersister.syncIfTransient(participantDetection);
+            syncedParticipantDetectionMethods.add(detMethod);
         }
         intactObject.setParticipantDetectionMethods(syncedParticipantDetectionMethods);
 

@@ -20,12 +20,11 @@ import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.interceptor.impl.ExperimentInterceptor;
 import uk.ac.ebi.intact.core.persister.interceptor.impl.InteractionInterceptor;
+import uk.ac.ebi.intact.core.persister.util.PersistenceOrderComparator;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -68,7 +67,7 @@ public class PersisterContext {
     }
 
     public void addToPersist(AnnotatedObject ao) {
-
+        if (log.isDebugEnabled()) log.debug("\t\t\tAdding to PersisterContext: "+keyFor(ao));
 
         if (ao instanceof CvObject) {
             cvObjectsToBePersisted.put(keyFor(ao),(CvObject)ao);
@@ -81,18 +80,10 @@ public class PersisterContext {
         annotatedObjectsToBeUpdated.put(keyFor(ao), ao);
     }
 
-//    public void addToPersistImmediately(AnnotatedObject ao) {
-//        getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).saveOrUpdate(ao);
-//    }
-
     public void addToPersist(Institution institution) {
         if ( !contains( institution ) ) {
             institutionsToBePersisted.put( institution.getShortLabel(), institution );
         }
-        // TODO Bruno: seems to be a mismatch between the call to containsKey and put !!
-//        if (!institutionsToBePersisted.containsKey(institution)) {
-//            institutionsToBePersisted.put(institution.getShortLabel(), institution);
-//        }
     }
 
     public boolean contains(AnnotatedObject ao) {
@@ -103,10 +94,6 @@ public class PersisterContext {
         } else {
             return annotatedObjectsToBePersisted.containsKey(key);
         }
-//        if (cvObjectsToBePersisted.containsKey(key)) {
-//            return true;
-//        }
-//        return annotatedObjectsToBePersisted.containsKey(key);
     }
 
     public boolean contains(Institution institution) {
@@ -123,10 +110,6 @@ public class PersisterContext {
         } else {
             return annotatedObjectsToBePersisted.get(key);
         }
-//        if (cvObjectsToBePersisted.containsKey(key)) {
-//            return cvObjectsToBePersisted.get(key);
-//        }
-//        return annotatedObjectsToBePersisted.get(key);
     }
 
     public Institution get(Institution institution) {
@@ -147,7 +130,6 @@ public class PersisterContext {
 
         for (Institution institution : institutionsToBePersisted.values()) {
 
-            // TODO Bruno: added replicate( i ) as I got org.hibernate.PersistentObjectException: detached entity passed to persist: uk.ac.ebi.intact.model.CvDatabase
             if( institution.getAc() != null ) {
                 if ( log.isDebugEnabled() ) {
                     log.debug( "\t\tReplicating " + institution.getClass().getSimpleName() + ": " + institution.getShortLabel()+ " (AC:"+ institution.getAc() +")" );
@@ -167,9 +149,8 @@ public class PersisterContext {
                     log.debug( "\t\tReplicating " + cv.getClass().getSimpleName() + ": " + cv.getShortLabel()+ " (AC:"+ cv.getAc() +")" );
                 }
 
-                getDaoFactory().getCvObjectDao().replicate(cv);
+                getDaoFactory().getCvObjectDao().merge(cv);
             } else {
-                // TODO (A) use of persist and save-or-update have to be harmonized (cf. B)
                 if ( log.isDebugEnabled() ) {
                     log.debug( "\t\tPersisting " + cv.getClass().getSimpleName() + ": " + cv.getShortLabel() );
                 }
@@ -181,13 +162,7 @@ public class PersisterContext {
 
         getIntactContext().getDataContext().flushSession();
 
-        if ( log.isDebugEnabled() ) {
-            log.debug( "\tSaving AnnotatedObjects to be persisted: " + annotatedObjectsToBePersisted.size() );
-            for ( String key : annotatedObjectsToBePersisted.keySet() ) {
-                AnnotatedObject ao = annotatedObjectsToBePersisted.get( key );
-                log.debug( " - " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
-            }
-        }
+        if (log.isDebugEnabled()) log.debug("\tExecuting AnnotatedObject Interceptors.");
 
         ExperimentInterceptor experimentInterceptor = new ExperimentInterceptor();
         InteractionInterceptor interactionInterceptor = new InteractionInterceptor();
@@ -198,17 +173,42 @@ public class PersisterContext {
             } else if (ao instanceof Interaction) {
                 interactionInterceptor.onPrePersist((Interaction)ao);
             }
-            if (ao.getAc() != null) {
-                if ( log.isDebugEnabled() ) {
-                    log.debug( "\t\tReplicating " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() + " (AC: "+ ao.getAc() +")" );
-                }
-                getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).replicate(ao);
-            } else {
-                if ( log.isDebugEnabled() ) {
-                    log.debug( "\t\tPersisting " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
-                }
-                getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
+        }
+
+        if ( log.isDebugEnabled() ) {
+            log.debug( "\tSaving AnnotatedObjects to be persisted: " + annotatedObjectsToBePersisted.size() );
+            log.debug( "\t-------------------------------------------- " );
+            for ( AnnotatedObject ao : annotatedObjectsToBePersisted.values() ) {
+                String ac = (ao.getAc() == null? "" : " (AC: "+ao.getAc()+")");
+                log.debug( "\t - " + ao.getClass().getSimpleName() + ac+": " + ao.getShortLabel() + " (Context Key: "+ AnnotKeyGenerator.createKey(ao)+")");
             }
+            log.debug( "\t-------------------------------------------- " );
+        }
+
+        List<AnnotatedObject> annotObjects = new ArrayList<AnnotatedObject>(annotatedObjectsToBePersisted.values());
+        Collections.sort(annotObjects, new PersistenceOrderComparator());
+        
+        for (AnnotatedObject ao : annotObjects) {
+                if ( log.isDebugEnabled() ) {
+                    log.debug( "\t\tPersisting " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() + " (Context Key: "+ AnnotKeyGenerator.createKey(ao)+")");
+
+                    if (ao instanceof Component) {
+                        Component c = (Component)ao;
+                        log.debug("\t\t\tInteractor: "+c.getInteractor().getShortLabel()+" - Interaction: "+c.getInteraction().getShortLabel());
+                        log.debug("\t\t\tFeatures: ");
+                        for (Feature f : c.getBindingDomains()) {
+                            log.debug("\t\t\t\tFeature: "+f.getShortLabel());
+                        }
+                    }
+
+                    if (ao instanceof Feature) {
+                        Feature f = (Feature)ao;
+                        log.debug("\t\t\tComponent ("+f.getComponent().getAc()+") - Interactor: "+f.getComponent().getInteractor().getShortLabel()+" - Interaction: "+f.getComponent().getInteraction().getShortLabel());
+                    }
+                }
+                
+            getDaoFactory().getAnnotatedObjectDao((Class<AnnotatedObject>)ao.getClass()).persist(ao);
+
             logPersistence(ao);
         }
 
@@ -242,7 +242,7 @@ public class PersisterContext {
 
     private static void logPersistence(AnnotatedObject<?,?> ao) {
         if (log.isDebugEnabled()) {
-            log.debug("\t\tPersisting "+ ao.getClass().getSimpleName() + ": " + ao.getShortLabel() + " (" + ao.getAc() + ")");
+            log.debug("\t\t\tPersisted with AC: " + ao.getAc());
 
             if (!ao.getXrefs().isEmpty()) {
                 log.debug("\t\t\tXrefs: " + ao.getXrefs().size());
