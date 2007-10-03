@@ -326,7 +326,7 @@ public boolean isUndetermined() {
         this.linked = linked;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
+    @ManyToOne
     @JoinColumn( name = "fromfuzzytype_ac" )
     public CvFuzzyType getFromCvFuzzyType() {
         return fromCvFuzzyType;
@@ -342,7 +342,7 @@ public boolean isUndetermined() {
         fromCvFuzzyType = type;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
+    @ManyToOne
     @JoinColumn( name = "tofuzzytype_ac" )
     public CvFuzzyType getToCvFuzzyType() {
         return toCvFuzzyType;
@@ -563,7 +563,7 @@ public boolean isUndetermined() {
         return getSequence( sequence, start, true );
     }
 
-    @ManyToOne( cascade = CascadeType.PERSIST )
+    @ManyToOne
     @JoinColumn( name = "feature_ac" )
     public Feature getFeature() {
         return feature;

@@ -7,14 +7,10 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -177,8 +173,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'biologicalRole'.
      */
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE )
+    @ManyToOne
     @JoinColumn( name = "biologicalrole_ac" )
     public CvBiologicalRole getCvBiologicalRole() {
         return biologicalRole;
@@ -198,8 +193,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'experimentalRole'.
      */
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE )
+    @ManyToOne
     @JoinColumn( name = "experimentalrole_ac" )
     public CvExperimentalRole getCvExperimentalRole() {
         return experimentalRole;
@@ -243,8 +237,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         getParticipantDetectionMethods().add(particiantIdentification);
     }
 
-    @ManyToMany (cascade = CascadeType.PERSIST)
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToMany 
     @JoinTable(
             name = "ia_component2part_detect",
             joinColumns = {@JoinColumn( name = "component_ac" )},
@@ -293,8 +286,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'expressedIn'.
      */
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne
+
     @JoinColumn( name = "expressedin_ac" )
     public BioSource getExpressedIn() {
         return expressedIn;
@@ -317,8 +310,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'interactor'.
      */
-    @ManyToOne( targetEntity = InteractorImpl.class, cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne( targetEntity = InteractorImpl.class )
     @JoinColumn( name = "interactor_ac" )
     public Interactor getInteractor() {
         return interactor;
@@ -336,8 +328,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'interaction'.
      */
-    @ManyToOne( targetEntity = InteractionImpl.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne( targetEntity = InteractionImpl.class )
     @JoinColumn( name = "interaction_ac" )
     public Interaction getInteraction() {
         return interaction;
@@ -370,7 +361,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * @return Value for property 'bindingDomains'.
      */
     @OneToMany( mappedBy = "component", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Collection<Feature> getBindingDomains() {
         return bindingDomains;
     }
@@ -414,7 +404,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * {@inheritDoc}
      */
     @ManyToMany( cascade = {CascadeType.PERSIST} )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+
     @JoinTable(
             name = "ia_component2annot",
             joinColumns = {@JoinColumn( name = "component_ac" )},
@@ -507,7 +497,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     }
 
     @ManyToMany (cascade = CascadeType.PERSIST)
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_component2exp_preps",
             joinColumns = {@JoinColumn( name = "component_ac" )},

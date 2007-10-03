@@ -5,12 +5,9 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -116,8 +113,8 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
         this.objClass = objClass;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne
+
     @JoinColumn( name = "biosource_ac" )
     public BioSource getBioSource() {
         return bioSource;
@@ -140,8 +137,7 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
     }
 
 
-    @OneToMany( mappedBy = "interactor", cascade = CascadeType.PERSIST)
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @OneToMany( mappedBy = "interactor")
     public Collection<Component> getActiveInstances() {
         return activeInstances;
     }
@@ -193,8 +189,7 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
         interactorType = type;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne
     @JoinColumn( name = "interactortype_ac" )
     public CvInteractorType getCvInteractorType() {
         return interactorType;

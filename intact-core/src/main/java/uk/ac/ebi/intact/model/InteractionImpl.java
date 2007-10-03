@@ -6,12 +6,9 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.annotations.*;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -226,9 +223,11 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         this.components = someComponent;
     }
 
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.REMOVE} )
     public Collection<Component> getComponents() {
+        if (components == null) {
+            components = new ArrayList<Component>();
+        }
         return components;
     }
 
@@ -282,8 +281,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         this.experiments = someExperiment;
     }
 
-    @ManyToMany (cascade = CascadeType.PERSIST)
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToMany 
     @JoinTable(
             name = "ia_int2exp",
             joinColumns = {@JoinColumn( name = "interaction_ac" )},
@@ -307,8 +305,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         }
     }
 
-    @ManyToOne( fetch = FetchType.LAZY/*, cascade = CascadeType.PERSIST*/ )
-    /*@Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)*/
+    @ManyToOne
     @JoinColumn( name = "interactiontype_ac" )
     public CvInteractionType getCvInteractionType() {
         return cvInteractionType;

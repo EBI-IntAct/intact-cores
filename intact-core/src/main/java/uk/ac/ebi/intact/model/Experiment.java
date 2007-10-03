@@ -5,13 +5,10 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -145,8 +142,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         this.interactions = someInteraction;
     }
 
-    @ManyToMany( targetEntity = InteractionImpl.class, mappedBy = "experiments", cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToMany( targetEntity = InteractionImpl.class, mappedBy = "experiments" )
     public Collection<Interaction> getInteractions() {
         return interactions;
     }
@@ -175,8 +171,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         }
     }
 
-    @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @OneToOne( fetch = FetchType.LAZY )
     @JoinColumn( name = "relatedexperiment_ac", referencedColumnName = "ac" )
     public Experiment getRelatedExperiment() {
         return relatedExperiment;
@@ -186,8 +181,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         this.relatedExperiment = experiment;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne
     @JoinColumn( name = "identmethod_ac" )
     public CvIdentification getCvIdentification() {
         return cvIdentification;
@@ -202,8 +196,8 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
      *
      * @return
      */
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne
+
     @JoinColumn( name = "detectmethod_ac" )
     public CvInteraction getCvInteraction() {
         return cvInteraction;
@@ -218,8 +212,8 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         this.cvInteraction = cvInteraction;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne
+    
     @JoinColumn( name = "biosource_ac" )
     public BioSource getBioSource() {
         return bioSource;
@@ -240,8 +234,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         this.bioSource = bioSource;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne
     @JoinColumn( name = "publication_ac" )
     public Publication getPublication() {
         return publication;

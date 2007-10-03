@@ -10,7 +10,6 @@ import org.hibernate.annotations.Cascade;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -79,8 +78,7 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
     /**
      * Returns an unmodifiable collection of experiment.
      */
-    @OneToMany( mappedBy = "publication", cascade = {CascadeType.PERSIST} )
-    @Cascade (value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @OneToMany( mappedBy = "publication" )
     public Collection<Experiment> getExperiments() {
         return experiments;
     }
