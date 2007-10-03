@@ -39,7 +39,7 @@ public class ImexObjectDaoTest extends IntactBasicTestCase {
         new IntactUnit().createSchema();
         beginTransaction();
 
-        this.imexImportDao = getDaoFactory().getImexObjectDao();
+        this.imexImportDao = getDaoFactory().getImexImportDao();
     }
 
     @After

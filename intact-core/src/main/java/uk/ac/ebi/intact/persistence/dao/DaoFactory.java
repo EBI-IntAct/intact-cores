@@ -222,7 +222,7 @@ public class DaoFactory implements Serializable {
         return new XrefDaoImpl<T>( xrefClass, getCurrentSession(), intactSession );
     }
 
-    public ImexImportDao getImexObjectDao() {
+    public ImexImportDao getImexImportDao() {
         return new ImexImportDaoImpl(getCurrentSession(), intactSession);
     }
 
