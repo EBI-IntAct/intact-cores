@@ -31,7 +31,7 @@ import javax.persistence.*;
 @Entity (name="ia_imex_import")
 public class ImexImport extends AbstractAuditable {
 
-    private String id;
+    private Long id;
 
     private String originalFilename;
 
@@ -59,12 +59,13 @@ public class ImexImport extends AbstractAuditable {
     // Getters and Setters
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="imex_sequence")
-    public String getId() {
+    @SequenceGenerator(name="IMEX_SEQ_GENERATOR",sequenceName="imex_sequence", allocationSize=20)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="IMEX_SEQ_GENERATOR")
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
