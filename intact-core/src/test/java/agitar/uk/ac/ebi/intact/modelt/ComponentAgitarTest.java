@@ -324,7 +324,7 @@ public class ComponentAgitarTest extends AgitarTestCase {
 //            fail( "Expected NullPointerException to be thrown" );
 //        } catch ( NullPointerException ex ) {
 //            assertNull( "ex.getMessage()", ex.getMessage() );
-//            assertThrownBy( AnnotatedObjectImpl.class, ex );
+//            assertThrownBy( AnnotatedObjectTest.class, ex );
 //            assertNull( "component.getInteractionAc()", component.getInteractionAc() );
 //            assertSame( "component.getInteraction()", interaction, component.getInteraction() );
 //            assertNull( "component.getInteractorAc()", component.getInteractorAc() );

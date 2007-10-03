@@ -64,10 +64,10 @@ public class ComponentAliasAgitarTest extends AgitarTestCase {
 //        CvAliasType cvAliasType = new CvAliasType( null, "testComponentAliasShortLabel" );
 //        Object[] objects = new Object[0];
 //        CvExperimentalRole role2 = new CvExperimentalRole( null, "testComponentAliasShortLabel1" );
-//        AnnotatedObjectImpl component = new Component( null, "testComponentAliasShortLabel", new InteractionImpl( Arrays.asList( objects ), new CvInteractionType( new Institution( "testComponentAliasShortLabel" ), "testComponentAliasShortLabel" ), "testComponentAliasShortLabel", owner ), new SmallMoleculeImpl( "testComponentAliasShortLabel", new Institution( "testComponentAlias\tShortLabel" ), null ), role2 );
+//        AnnotatedObjectTest component = new Component( null, "testComponentAliasShortLabel", new InteractionImpl( Arrays.asList( objects ), new CvInteractionType( new Institution( "testComponentAliasShortLabel" ), "testComponentAliasShortLabel" ), "testComponentAliasShortLabel", owner ), new SmallMoleculeImpl( "testComponentAliasShortLabel", new Institution( "testComponentAlias\tShortLabel" ), null ), role2 );
 //        ComponentAlias alias = new ComponentAlias( new Institution( "testComponentAlias\nShortLabel" ), new Component( new Institution( "testComponentAlias\rShortLabel" ), new InteractionImpl( new ArrayList( 100 ), null, "testComponentAliasShortLabel1", new Institution( "testComponentAliasShortLabel2" ) ), new Complex(), role ), cvAliasType, "testComponentAliasName" );
 //        component.addAlias( alias );
-//        AnnotatedObjectImpl result = ( AnnotatedObjectImpl ) alias.getParent();
+//        AnnotatedObjectTest result = ( AnnotatedObjectTest ) alias.getParent();
 //        assertSame( "result", component, result );
 //    }
 //

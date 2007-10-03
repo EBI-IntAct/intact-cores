@@ -56,14 +56,14 @@ public class AnnotatedObjectImplAgitarTest extends AgitarTestCase {
         assertSame( "(CvFuzzyType) cvFuzzyType.annotations", arrayList2, ( ( CvFuzzyType ) cvFuzzyType ).annotations );
     }
 
-    public void testClone1() throws Throwable {
-        AnnotatedObjectImpl cvGoNode = new CvGoNode();
-        cvGoNode.addAlias(/* (CvObjectAlias)? */ new BioSourceAlias( new Institution( "testAnnotatedObjectImplShortLabel1" ), new BioSource( new Institution( "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplShortLabel", "20561" ), new CvAliasType( new Institution( "testAnnotatedObjectImplShortLabel2" ), "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplName" ) );
-        CvGoNode result = ( CvGoNode ) cvGoNode.clone();
-        assertNotNull( "result", result );
-        assertNull( "(CvGoNode) cvGoNode.shortLabel", ( ( CvGoNode ) cvGoNode ).getShortLabel() );
-        assertEquals( "(CvGoNode) cvGoNode.annotations.size()", 0, ( ( CvGoNode ) cvGoNode ).annotations.size() );
-    }
+//    public void testClone1() throws Throwable {
+//        AnnotatedObjectImpl cvGoNode = new CvGoNode();
+//        cvGoNode.addAlias(/* (CvObjectAlias)? */ new BioSourceAlias( new Institution( "testAnnotatedObjectImplShortLabel1" ), new BioSource( new Institution( "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplShortLabel", "20561" ), new CvAliasType( new Institution( "testAnnotatedObjectImplShortLabel2" ), "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplName" ) );
+//        CvGoNode result = ( CvGoNode ) cvGoNode.clone();
+//        assertNotNull( "result", result );
+//        assertNull( "(CvGoNode) cvGoNode.shortLabel", ( ( CvGoNode ) cvGoNode ).getShortLabel() );
+//        assertEquals( "(CvGoNode) cvGoNode.annotations.size()", 0, ( ( CvGoNode ) cvGoNode ).annotations.size() );
+//    }
 
     public void testClone2() throws Throwable {
         Institution anOwner = new Institution( "testAnnotatedObjectImpl\rShortLabel" );
@@ -111,13 +111,13 @@ public class AnnotatedObjectImplAgitarTest extends AgitarTestCase {
         assertEquals( "(CvFuzzyType) cvFuzzyType.annotations.size()", 0, ( ( CvFuzzyType ) cvFuzzyType ).annotations.size() );
     }
 
-    public void testClone6() throws Throwable {
-        AnnotatedObjectImpl cvGoNode = new CvGoNode();
-        CvGoNode result = ( CvGoNode ) cvGoNode.clone();
-        assertNotNull( "result", result );
-        assertNull( "(CvGoNode) cvGoNode.shortLabel", ( ( CvGoNode ) cvGoNode ).getShortLabel() );
-        assertEquals( "(CvGoNode) cvGoNode.annotations.size()", 0, ( ( CvGoNode ) cvGoNode ).annotations.size() );
-    }
+//    public void testClone6() throws Throwable {
+//        AnnotatedObjectImpl cvGoNode = new CvGoNode();
+//        CvGoNode result = ( CvGoNode ) cvGoNode.clone();
+//        assertNotNull( "result", result );
+//        assertNull( "(CvGoNode) cvGoNode.shortLabel", ( ( CvGoNode ) cvGoNode ).getShortLabel() );
+//        assertEquals( "(CvGoNode) cvGoNode.annotations.size()", 0, ( ( CvGoNode ) cvGoNode ).annotations.size() );
+//    }
 
     public void testGetFullName() throws Throwable {
         String result = new CvTopic( new Institution( "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplShortLabel" ).getFullName();
@@ -152,7 +152,7 @@ public class AnnotatedObjectImplAgitarTest extends AgitarTestCase {
     }
 
 //    public void testRemoveAlias() throws Throwable {
-//        AnnotatedObjectImpl cvDatabase = new CvDatabase( new Institution( "testAnnotatedObjectImplShortLabel1" ), "testAnnotatedObjectImplShortLabel" );
+//        AnnotatedObjectTest cvDatabase = new CvDatabase( new Institution( "testAnnotatedObjectImplShortLabel1" ), "testAnnotatedObjectImplShortLabel" );
 //        cvDatabase.removeAlias(/* (CvObjectAlias)? */ new ComponentAlias( new Institution( "testAnnotatedObjectImpl\rShortLabel" ), new Component( new Institution( "testAnnotatedObjectImpl\tShortLabel" ), new InteractionImpl( new ArrayList(), new CvInteractionType( new Institution( "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplShortLabel", new Institution( "testAnnotatedObjectImpl\nShortLabel" ) ), new Complex(), new CvExperimentalRole( new Institution( "testAnnotatedObjectImplShortLabel2" ), "testAnnotatedObjectImplShortLabel" ) ), new CvAliasType( new Institution( "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplShortLabel" ), "testAnnotatedObjectImplName" ) );
 //        assertEquals( "(CvDatabase) cvDatabase.getAliases().size()", 0, cvDatabase.getAliases().size() );
 //    }
