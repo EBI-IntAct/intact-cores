@@ -28,8 +28,8 @@ import javax.persistence.*;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Entity (name="ia_imex_object")
-public class ImexObject extends AbstractAuditable {
+@Entity (name="ia_imex_import")
+public class ImexImport extends AbstractAuditable {
 
     private String id;
 
@@ -39,17 +39,17 @@ public class ImexObject extends AbstractAuditable {
 
     private String pmid;
 
-    private ImexObjectStatus status;
+    private ImexImportStatus status;
 
     private String message;
 
     /////////////////////////////////
     // Constructors
 
-    public ImexObject() {
+    public ImexImport() {
     }
 
-    public ImexObject(Institution provider, String pmid, ImexObjectStatus status) {
+    public ImexImport(Institution provider, String pmid, ImexImportStatus status) {
         this.provider = provider;
         this.pmid = pmid;
         this.status = status;
@@ -96,11 +96,11 @@ public class ImexObject extends AbstractAuditable {
     }
 
     @Enumerated(EnumType.STRING)
-    public ImexObjectStatus getStatus() {
+    public ImexImportStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ImexObjectStatus status) {
+    public void setStatus(ImexImportStatus status) {
         this.status = status;
     }
 
@@ -118,7 +118,7 @@ public class ImexObject extends AbstractAuditable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ImexObject that = (ImexObject) o;
+        ImexImport that = (ImexImport) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (pmid != null ? !pmid.equals(that.pmid) : that.pmid != null) return false;

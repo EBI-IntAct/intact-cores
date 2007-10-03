@@ -19,9 +19,9 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
-import uk.ac.ebi.intact.model.meta.ImexObject;
-import uk.ac.ebi.intact.model.meta.ImexObjectStatus;
-import uk.ac.ebi.intact.persistence.dao.ImexObjectDao;
+import uk.ac.ebi.intact.model.meta.ImexImport;
+import uk.ac.ebi.intact.model.meta.ImexImportStatus;
+import uk.ac.ebi.intact.persistence.dao.ImexImportDao;
 
 import java.util.List;
 
@@ -31,25 +31,25 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ImexObjectDaoImpl extends HibernateBaseDaoImpl<ImexObject> implements ImexObjectDao<ImexObject> {
+public class ImexImportDaoImpl extends HibernateBaseDaoImpl<ImexImport> implements ImexImportDao<ImexImport> {
 
-    public ImexObjectDaoImpl(Session session, IntactSession intactSession) {
-        super(ImexObject.class, session, intactSession);
+    public ImexImportDaoImpl(Session session, IntactSession intactSession) {
+        super(ImexImport.class, session, intactSession);
     }
 
-    public List<ImexObject> getFailed() {
+    public List<ImexImport> getFailed() {
         return getSession().createCriteria(getEntityClass())
-                .add(Restrictions.eq("status", ImexObjectStatus.ERROR)).list();
+                .add(Restrictions.eq("status", ImexImportStatus.ERROR)).list();
     }
 
-    public ImexObject getByPmid(String pmid) {
-        return (ImexObject) getSession().createCriteria(getEntityClass())
+    public ImexImport getByPmid(String pmid) {
+        return (ImexImport) getSession().createCriteria(getEntityClass())
                 .add(Restrictions.eq("pmid", pmid)).uniqueResult();
     }
 
     public List<String> getAllOkPmids() {
         return getSession().createCriteria(getEntityClass())
-                .add(Restrictions.eq("status", ImexObjectStatus.OK))
+                .add(Restrictions.eq("status", ImexImportStatus.OK))
                 .setProjection(Projections.property("pmid")).list();
     }
 }

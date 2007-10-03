@@ -15,15 +15,13 @@
  */
 package uk.ac.ebi.intact.model.meta;
 
-import javax.persistence.Entity;
-
 /**
  * TODO comment this
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public enum ImexObjectStatus {
+public enum ImexImportStatus {
 
     OK, ERROR
 

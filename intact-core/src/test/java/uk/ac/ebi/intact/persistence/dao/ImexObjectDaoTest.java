@@ -21,8 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnit;
-import uk.ac.ebi.intact.model.meta.ImexObject;
-import uk.ac.ebi.intact.model.meta.ImexObjectStatus;
+import uk.ac.ebi.intact.model.meta.ImexImport;
+import uk.ac.ebi.intact.model.meta.ImexImportStatus;
 
 /**
  * TODO comment this
@@ -32,34 +32,34 @@ import uk.ac.ebi.intact.model.meta.ImexObjectStatus;
  */
 public class ImexObjectDaoTest extends IntactBasicTestCase {
 
-    private ImexObjectDao imexObjectDao;
+    private ImexImportDao imexImportDao;
 
     @Before
     public void prepareTest() throws Exception {
         new IntactUnit().createSchema();
         beginTransaction();
 
-        this.imexObjectDao = getDaoFactory().getImexObjectDao();
+        this.imexImportDao = getDaoFactory().getImexObjectDao();
     }
 
     @After
     public void endTest() throws Exception {
         commitTransaction();
 
-        this.imexObjectDao = null;
+        this.imexImportDao = null;
     }
 
     @Test
     public void persist_default() throws Exception {
 
-        ImexObject imex1 = new ImexObject(getIntactContext().getInstitution(), "1234567", ImexObjectStatus.OK);
+        ImexImport imex1 = new ImexImport(getIntactContext().getInstitution(), "1234567", ImexImportStatus.OK);
 
-        imexObjectDao.persist(imex1);
+        imexImportDao.persist(imex1);
 
         commitTransaction();
         beginTransaction();
 
-        Assert.assertEquals(1, imexObjectDao.countAll());
+        Assert.assertEquals(1, imexImportDao.countAll());
 
         
     }

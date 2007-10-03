@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.model.meta.ImexObject;
+import uk.ac.ebi.intact.model.meta.ImexImport;
 
 import java.util.List;
 
@@ -26,17 +26,17 @@ import java.util.List;
  * @since 1.5
  */
 @Mockable
-public interface ImexObjectDao<T> extends BaseDao<T> {
+public interface ImexImportDao<T> extends BaseDao<T> {
 
-    void persist( ImexObject imexObject );
+    void persist( ImexImport imexImport);
 
-    void merge ( ImexObject imexObject );
+    void merge ( ImexImport imexImport);
 
     int countAll();
 
-    List<ImexObject> getFailed();
+    List<ImexImport> getFailed();
 
-    ImexObject getByPmid(String pmid);
+    ImexImport getByPmid(String pmid);
 
     List<String> getAllOkPmids();
 }
