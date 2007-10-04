@@ -27,15 +27,11 @@ import org.dbunit.dataset.datatype.DefaultDataTypeFactory;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.commons.dataset.DbUnitTestDataset;
-import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
-import uk.ac.ebi.intact.context.DataContext;
-import uk.ac.ebi.intact.context.IntactConfigurator;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.util.SchemaUtils;
 import uk.ac.ebi.intact.model.Institution;
 
 import java.io.File;
@@ -101,24 +97,16 @@ public class IntactUnit {
      * Drops and creates the schema, initializing intact. Beware that it commits transactions
      */
     public void resetSchema() throws IntactTransactionException {
-        resetSchema(true);
+        SchemaUtils.resetSchema();
     }
 
     /**
      * Drops and creates the schema. Beware that it commits transactions
      * @param initializeDatabase If false, do not initialize the database (e.g. don't create Institution)
+     *
      */
     public void resetSchema(boolean initializeDatabase) throws IntactTransactionException {
-        if (log.isDebugEnabled()) log.debug("Resetting schema");
-
-        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
-
-        if (dataContext.isTransactionActive()) {
-            throw new IllegalStateException("To reset the schema, the transaction must NOT be active: "+dataContext.getDaoFactory().getCurrentTransaction());
-        }
-        
-        dropSchema();
-        createSchema(initializeDatabase);
+        SchemaUtils.resetSchema(initializeDatabase);
     }
 
     /**
@@ -133,53 +121,14 @@ public class IntactUnit {
      * @param initializeDatabase If false, do not initialize the database (e.g. don't create Institution)
      */
     public void createSchema(boolean initializeDatabase) throws IntactTransactionException {
-        if (log.isDebugEnabled()) log.debug("Creating schema");
-
-        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
-
-        if (dataContext.isTransactionActive()) {
-            throw new IllegalStateException("To reset the schema, the transaction must NOT be active: "+dataContext.getDaoFactory().getCurrentTransaction());
-        }
-
-        dataContext.beginTransaction();
-
-        SchemaExport se = new SchemaExport(getConfiguration());
-        se.create(false, true);
-
-        dataContext.commitTransaction();
-        dataContext.beginTransaction();
-
-        if (initializeDatabase) {
-            if (log.isDebugEnabled()) log.debug("Initializing database");
-            IntactConfigurator.initializeDatabase(IntactContext.getCurrentInstance());
-        }
-
-        dataContext.commitTransaction();
+        SchemaUtils.createSchema(initializeDatabase);
     }
 
     /**
      * Drops the current schema, emptying the database
      */
     public void dropSchema() throws IntactTransactionException {
-        if (log.isDebugEnabled()) log.debug("Droping schema");
-
-        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
-
-        if (dataContext.isTransactionActive()) {
-            throw new IllegalStateException("To drop the schema, the transaction must NOT be active");
-        }
-
-        dataContext.beginTransaction();
-
-        SchemaExport se = new SchemaExport(getConfiguration());
-        se.drop(false, true);
-
-        dataContext.commitTransaction();
-    }
-
-    private Configuration getConfiguration() {
-        AbstractHibernateDataConfig dataConfig = (AbstractHibernateDataConfig) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig();
-        return dataConfig.getConfiguration();
+        SchemaUtils.dropSchema();
     }
 
     public IDataSet createDbUnitDataset() throws SQLException {
