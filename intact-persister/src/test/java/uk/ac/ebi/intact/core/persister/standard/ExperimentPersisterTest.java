@@ -1,13 +1,19 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
+import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.ExperimentXref;
+import uk.ac.ebi.intact.model.Institution;
 
 /**
  * TODO comment this
@@ -71,6 +77,26 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("lala-2005-2");
         assertNotNull(refreshedExperiment);
         assertEquals(1, refreshedExperiment.getInteractions().size());
+
+        commitTransaction();
+    }
+
+    @Test
+    public void persistExperiment_institution() throws Exception {
+        Institution anotherInstitution = getMockBuilder().createInstitution("IA:0000", "anotherInstitution");
+        InstitutionPersister.getInstance().saveOrUpdate(anotherInstitution);
+        InstitutionPersister.getInstance().commit();
+
+        Experiment exp = new IntactMockBuilder(anotherInstitution).createExperimentRandom(1);
+        String label = exp.getShortLabel();
+
+        PersisterHelper.saveOrUpdate(exp);
+
+        beginTransaction();
+
+        Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByShortLabel(label);
+        assertNotNull(refreshedExperiment);
+        Assert.assertEquals(anotherInstitution.getShortLabel(), refreshedExperiment.getOwner().getShortLabel());
 
         commitTransaction();
     }
