@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.model;
 
 import uk.ac.ebi.intact.annotation.EditorTopic;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -25,31 +26,37 @@ public class CvFuzzyType extends CvObject implements Editable {
      * The constant name for <.
      */
     public static final String LESS_THAN = "less-than";
+    public static final String LESS_THAN_MI_REF = "MI:0337";
 
     /**
      * The constant for >.
      */
     public static final String GREATER_THAN = "greater-than";
+    public static final String GREATER_THAN_MI_REF = "MI:0336";
 
     /**
      * The constant for range.
      */
     public static final String RANGE = "range";
+    public static final String RANGE_MI_REF = "MI:0338";
 
     /**
      * The constant for undetermined.
      */
     public static final String UNDETERMINED = "undetermined";
+    public static final String UNDETERMINED_MI_REF = "MI:0339";
 
     /**
      * The constant for c-terminal.
      */
     public static final String C_TERMINAL = "c-terminal";
+    public static final String C_TERMINAL_MI_REF = "MI:0334";
 
     /**
      * The constant for n-terminal.
      */
     public static final String N_TERMINAL = "n-terminal";
+    public static final String N_TERMINAL_MI_REF = "MI:0340";
 
     // -- Start of Inner class ------------------------------------------------
 
@@ -218,7 +225,7 @@ public class CvFuzzyType extends CvObject implements Editable {
      */
     @Transient
     public final boolean isCTerminal() {
-        return getShortLabel().equals( C_TERMINAL );
+        return hasMiIdentity( C_TERMINAL_MI_REF ) || getShortLabel().equals( C_TERMINAL );
     }
 
     /**
@@ -226,7 +233,7 @@ public class CvFuzzyType extends CvObject implements Editable {
      */
     @Transient
     public final boolean isNTerminal() {
-        return getShortLabel().equals( N_TERMINAL );
+        return hasMiIdentity( N_TERMINAL_MI_REF ) || getShortLabel().equals( N_TERMINAL );
     }
 
     /**
@@ -234,6 +241,11 @@ public class CvFuzzyType extends CvObject implements Editable {
      */
     @Transient
     public final boolean isUndetermined() {
-        return getShortLabel().equals( UNDETERMINED );
+        return hasMiIdentity( UNDETERMINED_MI_REF ) || getShortLabel().equals( UNDETERMINED );
+    }
+
+    @Transient
+    private boolean hasMiIdentity( String miRef ) {
+        return CvObjectUtils.hasIdentity( this, miRef );
     }
 }
