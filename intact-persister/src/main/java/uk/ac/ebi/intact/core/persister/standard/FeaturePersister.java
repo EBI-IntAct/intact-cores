@@ -100,6 +100,8 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
 
             CvFuzzyType syncedToCvFuzzyType = (CvFuzzyType) cvObjectPersister.syncIfTransient(range.getToCvFuzzyType());
             range.setToCvFuzzyType(syncedToCvFuzzyType);
+
+            range.setOwner(InstitutionPersister.getInstance().syncIfTransient(range.getOwner()));
         }
 
         return super.syncAttributes(intactObject);
