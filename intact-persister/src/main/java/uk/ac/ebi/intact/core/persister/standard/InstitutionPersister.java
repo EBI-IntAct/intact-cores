@@ -6,6 +6,7 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.model.*;
 
 /**
@@ -45,12 +46,20 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
 
             for (InstitutionXref xref : intactObject.getXrefs()) {
                 if (log.isDebugEnabled()) log.debug("\tSaving database: "+xref.getCvDatabase().getShortLabel());
-                PersisterContext.getInstance().addToPersist(xref.getCvDatabase());
+                try {
+                    CvObjectPersister.getInstance().saveOrUpdate(xref.getCvDatabase());
+                } catch (PersisterException e) {
+                    throw new PersisterUnexpectedException(e);
+                }
 
                 CvXrefQualifier qualifier = xref.getCvXrefQualifier();
                 if (qualifier != null) {
                     if (log.isDebugEnabled()) log.debug("\tSaving qualifier: "+qualifier.getShortLabel());
-                    PersisterContext.getInstance().addToPersist(qualifier);
+                    try {
+                        CvObjectPersister.getInstance().saveOrUpdate(qualifier);
+                    } catch (PersisterException e) {
+                        throw new PersisterUnexpectedException(e);
+                    }
                 }
             }
 
@@ -58,7 +67,11 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
                 CvAliasType aliasType = alias.getCvAliasType();
                 if (aliasType != null) {
                     if (log.isDebugEnabled()) log.debug("\tSaving aliasType: "+aliasType.getShortLabel());
-                    PersisterContext.getInstance().addToPersist(aliasType);
+                    try {
+                        CvObjectPersister.getInstance().saveOrUpdate(aliasType);
+                    } catch (PersisterException e) {
+                        throw new PersisterUnexpectedException(e);
+                    }
                 }
             }
 
@@ -66,7 +79,11 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
                 CvTopic topic = annotation.getCvTopic();
                 if (topic != null) {
                     if (log.isDebugEnabled()) log.debug("\tSaving topic: "+topic.getShortLabel());
-                    PersisterContext.getInstance().addToPersist(topic);
+                    try {
+                        CvObjectPersister.getInstance().saveOrUpdate(topic);
+                    } catch (PersisterException e) {
+                        throw new PersisterUnexpectedException(e);
+                    }
                 }
             }
 

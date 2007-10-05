@@ -74,7 +74,8 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
 
         if (!(intactObject instanceof Institution)) {
             // breaks infinite loop as an Institution has also an owner, that is an institution that ....
-            intactObject.setOwner(institutionPersister.syncIfTransient(intactObject.getOwner()));
+            Institution owner = intactObject.getOwner();
+            intactObject.setOwner(institutionPersister.syncIfTransient(owner));
         }
 
         CvObjectPersister cvPersister = CvObjectPersister.getInstance();
