@@ -32,6 +32,8 @@ public class FeaturePersisterTest extends AbstractPersisterTest{
     public void persistFeature() throws Exception {
         Feature feature = getMockBuilder().createFeatureRandom();
         PersisterHelper.saveOrUpdate(feature);
+        
+        Assert.assertNotNull(feature.getCvFeatureType());
     }
 
     @Test
