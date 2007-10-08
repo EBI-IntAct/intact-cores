@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 /**
  * TODO comment this
@@ -39,7 +40,13 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
             return intactObject;
         }
 
-        Institution institution = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInstitutionDao().getByShortLabel(intactObject.getShortLabel());
+        Institution institution = fetchFromDataSource(intactObject);
+
+        if (institution != null) {
+            return institution;
+        }
+
+        institution = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInstitutionDao().getByShortLabel(intactObject.getShortLabel());
 
         if (institution == null) {
             PersisterContext.getInstance().addToPersist(intactObject);
@@ -95,6 +102,21 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
 
     @Override
     protected Institution fetchFromDataSource(Institution intactObject) {
+
+        InstitutionXref idXref = null;
+
+        for (InstitutionXref xref : intactObject.getXrefs()) {
+            if (CvObjectUtils.getPsiMiIdentityXref(xref.getCvDatabase()).getPrimaryId()
+                    .equals(CvDatabase.PSI_MI_MI_REF)) {
+                idXref = xref;
+            }
+        }
+
+        if (idXref != null) {
+            return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                    .getInstitutionDao().getByXref(idXref.getPrimaryId());
+        }
+
         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
                     .getInstitutionDao().getByShortLabel(intactObject.getShortLabel());
     }

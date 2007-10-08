@@ -93,7 +93,7 @@ public class InstitutionPersisterTest extends AbstractPersisterTest
         PersisterContext.getInstance().clear();
         beginTransaction();
 
-        institution = getMockBuilder().createInstitution(Institution.MINT_REF, Institution.MINT);
+        institution = getMockBuilder().createInstitution(Institution.MINT_REF, "mint2");
         institutionPersister = InstitutionPersister.getInstance();
         institutionPersister.saveOrUpdate(institution);
         institutionPersister.commit();
