@@ -94,11 +94,26 @@ public class GeneratedEntry extends IntactEntry {
                 .getProteinDao().getByUniprotId(uniprotId);
 
         if (interactors.isEmpty()) {
-            throw new IntactException("No interactors found with uniprot id: " + uniprotId);
+            throw new IntactException("No interactors found with uniprot ID: " + uniprotId);
         }
 
         for (Interactor interactor : interactors) {
             addInteractor(interactor);
+        }
+
+        return this;
+    }
+
+    public GeneratedEntry addPublicationId(String pubId) {
+        Publication publication = intactContext.getDataContext().getDaoFactory()
+                .getPublicationDao().getByShortLabel(pubId);
+
+        if (publication != null) {
+            for (Experiment experiment : publication.getExperiments()) {
+                addExperiment(experiment);
+            }
+        } else {
+            throw new IntactException("No publication found with ID: "+pubId);
         }
 
         return this;

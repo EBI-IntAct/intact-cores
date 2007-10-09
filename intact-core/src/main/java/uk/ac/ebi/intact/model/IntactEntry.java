@@ -17,8 +17,8 @@ package uk.ac.ebi.intact.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  * This class represents a PSI-MI XML entry in IntAct. It does not have a direct equivalence in the database.
@@ -57,6 +57,9 @@ public class IntactEntry implements Annotated {
     // Getters and Setters
 
     public Collection<Interaction> getInteractions() {
+        if (interactions == null) {
+            interactions = new HashSet<Interaction>();
+        }
         return interactions;
     }
 
@@ -102,7 +105,6 @@ public class IntactEntry implements Annotated {
     public Collection<Interactor> getInteractors() {
         if (interactors != null) {
             return interactors;
-
         }
 
         interactors = new HashSet<Interactor>();
