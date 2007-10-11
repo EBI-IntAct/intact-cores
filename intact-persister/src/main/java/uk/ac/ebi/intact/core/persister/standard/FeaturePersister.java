@@ -42,13 +42,7 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
     }
 
     protected Feature fetchFromDataSource(Feature intactObject) {
-       /* Feature feature = null;
-
-        if (intactObject.getAc() != null) {
-            feature =  getIntactContext().getDataContext()
-                    .getDaoFactory().getFeatureDao().getByAc(intactObject.getAc());
-        }
-        return feature;       */
+       // Note: we do not try to reconnect to the database, we create a new one every time.
         return null;
     }
 

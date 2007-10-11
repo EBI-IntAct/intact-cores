@@ -32,16 +32,14 @@ public class AnnotKeyGenerator {
     public static String createKey(AnnotatedObject ao) {
         String key;
 
-        // TODO Bruno: why make a specific case of Component and BioSource ??
-
         final String normalizedClassName = normalizeClassName(ao.getClass());
         
         if (ao instanceof Component) {
+            // So far, components have as shorltabel N/A => we need to create one that allows to discriminate them
             Component comp = (Component)ao;
             String label = comp.getInteraction().getShortLabel()+"_"+comp.getInteractor().getShortLabel();
             key = normalizedClassName +":"+label;
         } else if (ao instanceof BioSource) {
-            // TODO will probably need to add additional params here such as CvTissue, CvellType
             key = normalizedClassName +":"+((BioSource)ao).getTaxId();
         } else if (ao instanceof CvObject) {
             CvObject cv = (CvObject)ao;
