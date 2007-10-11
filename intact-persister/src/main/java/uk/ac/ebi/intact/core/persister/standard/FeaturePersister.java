@@ -69,8 +69,12 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
         }
 
         for (Range range : intactObject.getRanges()) {
-            cvObjectPersister.saveOrUpdate(range.getFromCvFuzzyType());
-            cvObjectPersister.saveOrUpdate(range.getToCvFuzzyType());
+            if ( range.getFromCvFuzzyType() != null ) {
+                cvObjectPersister.saveOrUpdate(range.getFromCvFuzzyType());
+            }
+            if ( range.getToCvFuzzyType() != null ) {
+                cvObjectPersister.saveOrUpdate(range.getToCvFuzzyType());
+            }
         }
     }
 
@@ -95,11 +99,15 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
         
         // TODO Bruno: Range is not replaced by a synced version here ? Potential issue ?
         for (Range range : intactObject.getRanges()) {
-            CvFuzzyType synchedFromFuzzyType = (CvFuzzyType) cvObjectPersister.syncIfTransient(range.getFromCvFuzzyType());
-            range.setFromCvFuzzyType(synchedFromFuzzyType);
+            if ( range.getFromCvFuzzyType() != null ) {
+                CvFuzzyType synchedFromFuzzyType = (CvFuzzyType) cvObjectPersister.syncIfTransient(range.getFromCvFuzzyType());
+                range.setFromCvFuzzyType(synchedFromFuzzyType);
+            }
 
-            CvFuzzyType syncedToCvFuzzyType = (CvFuzzyType) cvObjectPersister.syncIfTransient(range.getToCvFuzzyType());
-            range.setToCvFuzzyType(syncedToCvFuzzyType);
+            if ( range.getToCvFuzzyType() != null ) {
+                CvFuzzyType syncedToCvFuzzyType = (CvFuzzyType) cvObjectPersister.syncIfTransient(range.getToCvFuzzyType());
+                range.setToCvFuzzyType(syncedToCvFuzzyType);
+            }
 
             range.setOwner(InstitutionPersister.getInstance().syncIfTransient(range.getOwner()));
         }

@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Feature;
+import uk.ac.ebi.intact.model.Range;
 
 /**
  * TODO comment this
@@ -32,7 +33,7 @@ public class FeaturePersisterTest extends AbstractPersisterTest{
     public void persistFeature() throws Exception {
         Feature feature = getMockBuilder().createFeatureRandom();
         PersisterHelper.saveOrUpdate(feature);
-        
+
         Assert.assertNotNull(feature.getCvFeatureType());
     }
 
@@ -48,5 +49,17 @@ public class FeaturePersisterTest extends AbstractPersisterTest{
         FeaturePersister.getInstance().commit();
 
         Assert.assertEquals(2, getDaoFactory().getFeatureDao().countAll());
+    }
+
+    @Test
+    public void persistFeatureWithRangeWithoutFuzzyType() throws Exception {
+        Feature feature = getMockBuilder().createFeatureRandom();
+
+        final Range range = getMockBuilder().createRange( 1, 1, 2, 2 );
+        range.setFromCvFuzzyType( null );
+        range.setToCvFuzzyType( null );
+        feature.addRange( range );
+
+        PersisterHelper.saveOrUpdate(feature);
     }
 }
