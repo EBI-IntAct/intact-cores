@@ -17,15 +17,12 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
-import org.hibernate.impl.SessionImpl;
-import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 
 
 /**
- * TODO comment this
+ * Base of all the persisters
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -36,7 +33,14 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
     protected AbstractPersister() {
     }
-    
+
+    /**
+     * This method is the main method to be invoked when wanting to persist (or update) an intactObject
+     * into the database. It will always synchronize it first and all of its attributes, and it will finally
+     * add the object to the PersisterContext. It will be persisted when the <code>commit()</code> method is invoked
+     * @param intactObject the intactObject to persist
+     * @throws PersisterException if something occurs during the persistence
+     */
     public final void saveOrUpdate(T intactObject) throws PersisterException {
         if (intactObject == null) {
             throw new NullPointerException("intactObject");
@@ -119,6 +123,9 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         saveOrUpdateAttributes(newAnnotatedObject);
     }
 
+    /**
+     * Mandatory method to execute the actual data persister in the database.
+     */
     public final void commit() {
        PersisterContext.getInstance().persistAll();
     }
@@ -138,6 +145,12 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         return new SyncTransientResponse<T>(false, syncAttributes(intactObject));
     }
 
+    /**
+     * This method tries to get an object from any of the scopes (invoking the <code>get(IntactObject)</code> method.
+     * If it does not exist, it adds it to the SyncContext and returns the newly synced object.
+      * @param intactObject The object to sync (if transient)
+     * @return a synced object, which can be itself or a previously equal synced object
+     */
     public T syncIfTransient(T intactObject) {
         if (log.isDebugEnabled()) log.debug("\t\tSyncing "+intactObject.getClass().getSimpleName()+": "+intactObject.getShortLabel());
 
@@ -157,6 +170,12 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         return syncAttributes(intactObject);
     }
 
+    /**
+     * Tries to get an object from the PersisterContext, SyncContext and data source in this order. It is invoked
+     * by the sync methods to get the passed object if it exists in any of the scopes.
+     * @param intactObject The intactObject to get.
+     * @return The synced intactObject. Null otherwise.
+     */
     protected final T get(T intactObject) {
         if (PersisterContext.getInstance().contains(intactObject)) {
             if ( log.isDebugEnabled() )  log.debug( "\t\t\tFound it in PersisterContext" );
@@ -188,15 +207,47 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         return null;
     }
 
+    /**
+     * Save of update the attributes (entities referenced by the intactObject). For each attribute we will
+     * invoke the method <code>saveOrUpdate</code> of its corresponding Persister.
+     * @param intactObject the intactObject containing the attributes.
+     * @throws PersisterException if something unexpected occurs
+     */
     protected abstract void saveOrUpdateAttributes(T intactObject) throws PersisterException;
 
+    /**
+     * This method should go through all the entities referenced by the passed intactObject. For each
+     * of its entitities it should invoke <code>syncIfTransient</code>.<br/>
+     * The last call in this method normally should call to super.syncAttributes.
+     * @param intactObject the intactObject to sync
+     * @return a synced Object
+     */
     protected abstract T syncAttributes(T intactObject);
 
+    /**
+     * Actual call to the database to fetch this specific Object.
+     * @param intactObject The intactObject to get from the database
+     * @return If the object exists in the database, return it. Otherwise, return null.
+     */
     protected abstract T fetchFromDataSource(T intactObject);
 
+    /**
+     * Checks if two objects are equal according to its persistence rules.
+     * @param synced Usually is the object that comes from the database
+     * @param candidate It is the object that we want to persist
+     * @return a BehaviourType enum that will define the persister behaviour
+     */
     protected abstract BehaviourType syncedAndCandidateAreEqual(T synced, T candidate);
 
-    protected abstract boolean update(T objectToUpdate, T existingObject) throws PersisterException;
+    /**
+     * Updates an object using a model.
+     * @param candidateObject The object with the most up to date information.
+     * @param objectToUpdate The object to be updated. This object usually comes from the database, and we
+     * will use the candidateObject as a source of information.
+     * @return true if the has been an update
+     * @throws PersisterException if something occurs
+     */
+    protected abstract boolean update(T candidateObject, T objectToUpdate) throws PersisterException;
 
     protected IntactContext getIntactContext() {
         return IntactContext.getCurrentInstance();
