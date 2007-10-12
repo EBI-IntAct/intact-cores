@@ -15,15 +15,14 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.ExperimentDao;
 
-import java.util.List;
 import java.util.Collection;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
 
 /**
  *
@@ -53,18 +52,33 @@ public class ExperimentUtils {
         }
 
         if (pubmedId == null) {
-            for (ExperimentXref xref : experiment.getXrefs()) {
+            ExperimentXref xref = getPrimaryReferenceXref(experiment);
+
+            if (xref != null) {
+                pubmedId = xref.getPrimaryId();
+            }
+        }
+
+        return pubmedId;
+    }
+
+    /**
+     * Gets the primary reference of an existing experiment without connecting with the database
+     * @param experiment the experiment
+     * @return the primary reference xref
+     */
+    public static ExperimentXref getPrimaryReferenceXref(Experiment experiment) {
+         for (ExperimentXref xref : experiment.getXrefs()) {
                 CvObjectXref idQualXref = CvObjectUtils.getPsiMiIdentityXref(xref.getCvXrefQualifier());
                 CvObjectXref idCvDatabase = CvObjectUtils.getPsiMiIdentityXref(xref.getCvDatabase());
 
                 if (idQualXref.getPrimaryId().equals(CvXrefQualifier.PRIMARY_REFERENCE_MI_REF) &&
                         idCvDatabase.getPrimaryId().equals(CvDatabase.PUBMED_MI_REF)) {
-                    pubmedId = xref.getPrimaryId();
+                    return xref;
                 }
             }
-        }
 
-        return pubmedId;
+        return null;
     }
 
     /**
@@ -86,6 +100,8 @@ public class ExperimentUtils {
         if (matchesSyncedLabel(shortLabel)) {
             syncedLabel = shortLabel;
         } else  if (matchesMotSyncedLabel(shortLabel)) {
+            
+
             ExperimentDao experimentDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getExperimentDao();
             List<String> expLabels = experimentDao.getShortLabelsLike(shortLabel+"-%");
 
