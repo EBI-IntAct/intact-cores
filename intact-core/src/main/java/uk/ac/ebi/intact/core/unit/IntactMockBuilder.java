@@ -165,6 +165,9 @@ public class IntactMockBuilder {
         CvExperimentalPreparation cvExperimentalPreparation = createCvObject(CvExperimentalPreparation.class, CvExperimentalPreparation.PURIFIED_REF, CvExperimentalPreparation.PURIFIED);
         component.getExperimentalPreparations().add(cvExperimentalPreparation);
 
+        interactor.addActiveInstance( component );
+        interaction.addComponent( component );
+
         return component;
     }
 
@@ -207,7 +210,7 @@ public class IntactMockBuilder {
         return createComponent(interaction, interactor, expRole, bioRole);
     }
 
-     public Interaction createInteraction(String shortLabel, Interactor bait, Interactor prey, Experiment experiment) {
+    public Interaction createInteraction(String shortLabel, Interactor bait, Interactor prey, Experiment experiment) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
         Interaction interaction = new InteractionImpl(Arrays.asList(experiment), cvInteractionType, null, shortLabel, getInstitution());
@@ -267,7 +270,7 @@ public class IntactMockBuilder {
         return interaction;
     }
 
-     public Experiment createExperimentEmpty() {
+    public Experiment createExperimentEmpty() {
          return createExperimentEmpty(randomExperimentLabel());
      }
 
@@ -418,7 +421,7 @@ public class IntactMockBuilder {
         String vowels = "aeiou";
         String consonants = "qwrtypsdfghjklzxcvbnm";
 
-        StringBuilder random = new StringBuilder();
+        StringBuilder random = new StringBuilder( returnLength );
         for (int j = 0; j < returnLength; j++)
         {
             boolean nextIsVowel = new Random().nextBoolean();
