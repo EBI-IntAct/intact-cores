@@ -42,8 +42,8 @@ public class CvFuzzyTypeTest extends IntactBasicTestCase {
         Assert.assertFalse( fuzzyType.isCTerminal() );
 
         fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, CvFuzzyType.N_TERMINAL_MI_REF, "foobar" );
-        Assert.assertFalse( fuzzyType.isNTerminal() );
-        Assert.assertTrue( fuzzyType.isCTerminal() );
+        Assert.assertTrue( fuzzyType.isNTerminal() );
+        Assert.assertFalse( fuzzyType.isCTerminal() );
 
         fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, "MI:xxxx", CvFuzzyType.N_TERMINAL );
         Assert.assertTrue( fuzzyType.isNTerminal() );
