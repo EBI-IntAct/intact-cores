@@ -289,7 +289,9 @@ public class IntactMockBuilder {
         experiment.setCvInteraction(createCvObject(CvInteraction.class, CvInteraction.COSEDIMENTATION_MI_REF, CvInteraction.COSEDIMENTATION));
         experiment.setCvIdentification(createCvObject(CvIdentification.class, CvIdentification.PREDETERMINED_MI_REF, CvIdentification.PREDETERMINED));
 
-        experiment.setPublication(createPublication(pubId));
+        Publication publication = createPublication(pubId);
+        publication.getExperiments().add(experiment);
+        experiment.setPublication(publication);
         experiment.addXref(createPrimaryReferenceXref(experiment, pubId));
 
         return experiment;

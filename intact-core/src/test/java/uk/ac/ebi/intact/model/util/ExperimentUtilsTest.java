@@ -22,7 +22,6 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.mock.MockExperimentDao;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.ExperimentXref;
 import uk.ac.ebi.intact.model.Publication;
 
 import java.util.Arrays;
@@ -55,11 +54,8 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
     public void pubmedFromXref() {
         final String expectedPubmedId = "1234567";
 
-        Experiment experiment = getMockBuilder().createExperimentEmpty("myExp");
-        experiment.setPublication(null);
-        ExperimentXref xref = getMockBuilder().createPrimaryReferenceXref(experiment, expectedPubmedId);
-        experiment.addXref(xref);
-        
+        Experiment experiment = getMockBuilder().createExperimentEmpty("myExp", expectedPubmedId);
+
         String pubmedId = ExperimentUtils.getPubmedId(experiment);
 
         Assert.assertNotNull(pubmedId);
@@ -78,7 +74,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
             }
         });
 
-        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix);
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, null);
 
         Assert.assertEquals("lala-2007-4", syncedLabel);
 
@@ -97,7 +93,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
             }
         });
 
-        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix);
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, null);
 
         Assert.assertEquals("lala-2007-8", syncedLabel);
 
@@ -116,7 +112,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
             }
         });
 
-        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix);
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, null);
 
         Assert.assertEquals("lala-2007-1", syncedLabel);
 
@@ -127,7 +123,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
     public void syncShortLabelWithDb_alreadyWithSuffix() {
         final String expPrefix = "lala-2007-4";
 
-        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix);
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, null);
         Assert.assertEquals("lala-2007-4", syncedLabel);
     }
 
@@ -135,19 +131,97 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
     public void syncShortLabelWithDb_wrong() {
         final String expPrefix = "lala-5";
 
-        ExperimentUtils.syncShortLabelWithDb(expPrefix);
+        ExperimentUtils.syncShortLabelWithDb(expPrefix, null);
+    }
+
+    @Test
+    public void syncShortLabelWithDb_pubmedExisting() {
+        final String pubId = "1234567";
+        final String expPrefix = "lala-2007";
+
+        MockIntactContext.initMockContext();
+        MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
+            @Override
+            public List<Experiment> getByPubIdAndLabelLike(String pubId, String labelLike) {
+                return Arrays.asList(
+                     getMockBuilder().createExperimentEmpty("lala-2007-1", "0"),
+                     getMockBuilder().createExperimentEmpty("lala-2007a-1", "1"),
+                     getMockBuilder().createExperimentEmpty("lala-2007a-2", "1"),
+                     getMockBuilder().createExperimentEmpty("lala-2007b-1", "2")
+                );
+            }
+        });
+
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, pubId);
+
+        System.out.println(syncedLabel);
+        Assert.assertEquals("lala-2007c-1", syncedLabel);
+
+        IntactContext.getCurrentInstance().close();
+    }
+
+    @Test
+    public void syncShortLabelWithDb_samePubmedYear() {
+        final String pubId = "1234567";
+        final String expPrefix = "lala-2007";
+
+        MockIntactContext.initMockContext();
+        MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
+            @Override
+            public List<Experiment> getByPubIdAndLabelLike(String pubId, String labelLike) {
+                return Arrays.asList(
+                     getMockBuilder().createExperimentEmpty("lala-2007-1", "0"),
+                     getMockBuilder().createExperimentEmpty("lala-2007a-1", "1234567")
+                );
+            }
+        });
+
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, pubId);
+
+        System.out.println(syncedLabel);
+        Assert.assertEquals("lala-2007a-2", syncedLabel);
+
+        IntactContext.getCurrentInstance().close();
+    }
+
+    @Test
+    public void syncShortLabelWithDb_differentPubmedYear() {
+        final String pubId = "55";
+        final String expPrefix = "lala-2007";
+
+        MockIntactContext.initMockContext();
+        MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
+            @Override
+            public List<Experiment> getByPubIdAndLabelLike(String pubId, String labelLike) {
+                return Arrays.asList(
+                     getMockBuilder().createExperimentEmpty("lala-2005-1", "0"),
+                     getMockBuilder().createExperimentEmpty("lala-2005a-1", "1234567"),
+                     getMockBuilder().createExperimentEmpty("lala-2007-1", "55")
+                );
+            }
+        });
+
+        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, pubId);
+
+        System.out.println(syncedLabel);
+        Assert.assertEquals("lala-2007-2", syncedLabel);
+
+        IntactContext.getCurrentInstance().close();
     }
     
     @Test
     public void matchesSyncedLabel() {
         Assert.assertTrue(ExperimentUtils.matchesSyncedLabel("mike-2007-3"));
+        Assert.assertTrue(ExperimentUtils.matchesSyncedLabel("mike-2007a-3"));
         Assert.assertTrue(ExperimentUtils.matchesSyncedLabel("mike-2007-10"));
         Assert.assertFalse(ExperimentUtils.matchesSyncedLabel("mike-2007"));
+        Assert.assertFalse(ExperimentUtils.matchesSyncedLabel("mike-20079"));
     }
 
     @Test
     public void matchesNotSyncedLabel() {
         Assert.assertTrue(ExperimentUtils.matchesMotSyncedLabel("mike-2007"));
         Assert.assertFalse(ExperimentUtils.matchesMotSyncedLabel("mike-2007-3"));
+        Assert.assertFalse(ExperimentUtils.matchesMotSyncedLabel("mike-2007a-3"));
     }
 }

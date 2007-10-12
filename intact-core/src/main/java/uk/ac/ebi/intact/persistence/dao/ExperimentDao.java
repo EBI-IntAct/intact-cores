@@ -29,4 +29,19 @@ public interface ExperimentDao extends AnnotatedObjectDao<Experiment> {
     List<Interaction> getInteractionsForExperimentWithAcExcluding( String ac, String[] excludedAcs, int firstResult, int maxResults );
 
     List<Interaction> getInteractionsForExperimentWithAcExcludingLike( String ac, String[] excludedAcsLike, int firstResult, int maxResults );
+
+    /**
+     * Get a list of experiments for the provided publication id
+     * @param pubId the publication id
+     * @return experiments for that publication
+     */
+    List<Experiment> getByPubId( String pubId );
+
+    /**
+     * Get a list of experiments for the provided publication id and with a label like the provided
+     * @param pubId the publication id
+     * @param labelLike the label to use. It has to contain '%'
+     * @return experiments for that publication
+     */
+    List<Experiment> getByPubIdAndLabelLike( String pubId, String labelLike );
 }
