@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.persister;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.util.DebugUtil;
 
 /**
  * TODO comment this

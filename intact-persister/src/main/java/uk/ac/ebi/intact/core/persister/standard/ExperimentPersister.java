@@ -160,7 +160,7 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         }
 
         if (intactObject.getPublication() != null) {
-            Publication publication = PublicationPersister.getInstance().syncAttributes( intactObject.getPublication() );
+            Publication publication = PublicationPersister.getInstance().syncIfTransient( intactObject.getPublication() );
             intactObject.setPublication( publication );
         }
 

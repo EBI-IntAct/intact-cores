@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.hibernate.Query;
 import org.junit.After;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
@@ -14,6 +15,9 @@ import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.ExperimentXref;
 import uk.ac.ebi.intact.model.Institution;
+import uk.ac.ebi.intact.util.DebugUtil;
+
+import java.util.List;
 
 /**
  * TODO comment this
@@ -280,6 +284,23 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         Assert.assertNotNull(reloadedExp.getPublication());
         Assert.assertEquals(1, reloadedExp.getXrefs().size());
         Assert.assertEquals(2, reloadedExp.getInteractions().size());
+        commitTransaction();
+    }
+
+    @Test
+    public void differentExperiment_samePubId() throws Exception {
+        final String pubId = "1234567";
+        Experiment exp1 = getMockBuilder().createExperimentEmpty("exp-2007-1", pubId);
+        exp1.setPublication(null);
+        Experiment exp2 = getMockBuilder().createExperimentEmpty("exp-2007-2", pubId);
+
+        PersisterHelper.saveOrUpdate(exp1, exp2);
+
+        beginTransaction();
+        Assert.assertNotNull(getDaoFactory().getPublicationDao().getByShortLabel(pubId));
+
+        List<Experiment> experiments = getDaoFactory().getExperimentDao().getByPubId(pubId);
+        Assert.assertEquals(2, experiments.size());
         commitTransaction();
     }
 }
