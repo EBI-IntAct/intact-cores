@@ -17,9 +17,10 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import org.junit.Assert;
 import org.junit.Test;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.model.Feature;
-import uk.ac.ebi.intact.model.Range;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.model.*;
 
 /**
  * TODO comment this
@@ -27,28 +28,69 @@ import uk.ac.ebi.intact.model.Range;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class FeaturePersisterTest extends AbstractPersisterTest{
+public class FeaturePersisterTest extends AbstractPersisterTest {
 
     @Test
     public void persistFeature() throws Exception {
         Feature feature = getMockBuilder().createFeatureRandom();
-        PersisterHelper.saveOrUpdate(feature);
+        PersisterHelper.saveOrUpdate( feature );
 
-        Assert.assertNotNull(feature.getCvFeatureType());
+        Assert.assertNotNull( feature.getCvFeatureType() );
+    }
+
+    @Test
+    public void persistFeatureWithRange() throws Exception {
+
+        final String seq = "MQTIKCVVVGDGAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAG" + // 60
+                           "QEDYDRLRPLSYPQTDVFLVCFSVVSPSSFENVKEKWVPEITHHCPKTPFLLVGTQIDLR" + // 120
+                           "DDPSTIEKLAKNKQKPITPETAEKLARDLKAVKYVECSALTQRGLKNVFDEAILAALEPP" + // 180
+                           "ETQPKRKCCIF";                                                   // 191
+
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( IntactContext.getCurrentInstance().getInstitution() );
+        Experiment exp = mockBuilder.createExperimentEmpty( "kerrien-2007-1" );
+        Protein bait = mockBuilder.createProtein( "P12345", "foo" );
+        bait.setSequence( seq );
+        Protein prey = mockBuilder.createProtein( "Q98765", "bar" );
+        Interaction interaction = mockBuilder.createInteraction( "foo-bar", bait, prey, exp );
+
+        Assert.assertEquals( 2, interaction.getComponents().size() );
+        Assert.assertEquals( 1, bait.getActiveInstances().size() );
+        Assert.assertEquals( 1, prey.getActiveInstances().size() );
+
+        for ( Component component : interaction.getComponents() ) {
+            if ( component.getInteractor() == bait ) {
+                // add a feature
+                Feature feature = mockBuilder.createFeatureRandom();
+                feature.setCvFeatureType( mockBuilder.createCvObject( CvFeatureType.class, "MI:0117", "binding site" ) );
+                Range range = mockBuilder.createRange( 4, 4, 20, 20 ); // KCVVVGDGAVGKTCLL
+                range.setFromCvFuzzyType( null );
+                range.setToCvFuzzyType( null );
+                feature.addRange( range );
+                range.prepareSequence( bait.getSequence() );
+                Assert.assertEquals( 100, range.getSequence().length() );
+                Assert.assertEquals( seq.substring( 4, 104 ), range.getSequence() );
+                component.addBindingDomain( feature );
+            }
+        }
+
+        beginTransaction();
+        InteractionPersister.getInstance().saveOrUpdate( interaction );
+        InteractionPersister.getInstance().commit();
+        Assert.assertEquals( 1, bait.getActiveInstances().size() );
     }
 
     @Test
     public void persistFeature_sameLabelDifferentComponents() throws Exception {
         Feature feature1 = getMockBuilder().createFeatureRandom();
         Feature feature2 = getMockBuilder().createFeatureRandom();
-        feature2.setShortLabel(feature1.getShortLabel());
+        feature2.setShortLabel( feature1.getShortLabel() );
 
-        FeaturePersister.getInstance().saveOrUpdate(feature1);
-        FeaturePersister.getInstance().saveOrUpdate(feature2);
+        FeaturePersister.getInstance().saveOrUpdate( feature1 );
+        FeaturePersister.getInstance().saveOrUpdate( feature2 );
 
         FeaturePersister.getInstance().commit();
 
-        Assert.assertEquals(2, getDaoFactory().getFeatureDao().countAll());
+        Assert.assertEquals( 2, getDaoFactory().getFeatureDao().countAll() );
     }
 
     @Test
@@ -60,6 +102,6 @@ public class FeaturePersisterTest extends AbstractPersisterTest{
         range.setToCvFuzzyType( null );
         feature.addRange( range );
 
-        PersisterHelper.saveOrUpdate(feature);
+        PersisterHelper.saveOrUpdate( feature );
     }
 }

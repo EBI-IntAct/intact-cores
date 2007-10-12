@@ -133,12 +133,14 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         for (Component component : intactObject.getComponents()) {
             Component c = compPersister.syncIfTransient(component);
+            c.setInteraction(intactObject);
+            c.setInteractor( component.getInteractor() );
             components.add(c);
         }
 
-        for (Component c : components) {
-            c.setInteraction(intactObject);
-        }
+//        for (Component c : components) {
+//            c.setInteraction(intactObject);
+//        }
 
         intactObject.setComponents(components);
     }

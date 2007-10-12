@@ -20,6 +20,7 @@ import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * TODO comment this
@@ -55,6 +56,12 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
         if (intactObject.getCvInteractorType() != null) {
             CvObjectPersister.getInstance().saveOrUpdate(intactObject.getCvInteractorType());
         }
+
+        if ( intactObject.getActiveInstances() != null ) {
+            for ( Component c : intactObject.getActiveInstances() ) {
+                ComponentPersister.getInstance().saveOrUpdate( c );
+            }
+        }
     }
 
     @Override
@@ -67,6 +74,17 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
         if (intactObject.getCvInteractorType() != null) {
             CvInteractorType cvIntType = (CvInteractorType) CvObjectPersister.getInstance().syncIfTransient(intactObject.getCvInteractorType());
             intactObject.setCvInteractorType(cvIntType);
+        }
+
+        if ( intactObject.getActiveInstances() != null ) {
+            Collection<Component> components = new ArrayList<Component>( intactObject.getActiveInstances().size() );
+            for ( Component component : intactObject.getActiveInstances() ) {
+                final Component c = ComponentPersister.getInstance().syncIfTransient( component );
+                c.setInteractor( intactObject );
+                c.setInteraction( component.getInteraction() );
+                components.add( c );
+            }
+            intactObject.setActiveInstances( components );
         }
 
         return super.syncAttributes(intactObject);
