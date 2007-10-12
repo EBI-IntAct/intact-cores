@@ -283,6 +283,18 @@ public class IntactMockBuilder {
         return experiment;
     }
 
+    public Experiment createExperimentEmpty(String shortLabel, String pubId) {
+         Experiment experiment = new Experiment(getInstitution(), shortLabel, createBioSourceRandom());
+
+        experiment.setCvInteraction(createCvObject(CvInteraction.class, CvInteraction.COSEDIMENTATION_MI_REF, CvInteraction.COSEDIMENTATION));
+        experiment.setCvIdentification(createCvObject(CvIdentification.class, CvIdentification.PREDETERMINED_MI_REF, CvIdentification.PREDETERMINED));
+
+        experiment.setPublication(createPublication(pubId));
+        experiment.addXref(createPrimaryReferenceXref(experiment, pubId));
+
+        return experiment;
+    }
+
     public Experiment createExperimentRandom(int interactionNumber) {
         Experiment exp = createExperimentEmpty(randomExperimentLabel());
 
