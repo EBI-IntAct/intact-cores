@@ -4,13 +4,13 @@
     <parent>
         <groupId>uk.ac.ebi.intact.core</groupId>
         <artifactId>core</artifactId>
-        <version>1.7.1-SNAPSHOT</version>
+        <version>1.7.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>intact-persister</artifactId>
-    <version>1.7.1-SNAPSHOT</version>
+    <version>1.7.1</version>
 
     <name>IntAct Core :: Persister</name>
     <description>Synchronizes and persists IntAct model objects</description>
