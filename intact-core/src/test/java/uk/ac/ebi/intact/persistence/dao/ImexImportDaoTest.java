@@ -30,7 +30,7 @@ import uk.ac.ebi.intact.model.meta.ImexImportStatus;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ImexObjectDaoTest extends IntactBasicTestCase {
+public class ImexImportDaoTest extends IntactBasicTestCase {
 
     private ImexImportDao imexImportDao;
 
@@ -60,7 +60,38 @@ public class ImexObjectDaoTest extends IntactBasicTestCase {
         beginTransaction();
 
         Assert.assertEquals(1, imexImportDao.countAll());
+        Assert.assertNotNull(imexImportDao.getByPmid("1234567"));
+    }
 
-        
+    @Test
+    public void getByPmid() throws Exception {
+
+        ImexImport imex1 = new ImexImport(getIntactContext().getInstitution(), "1234567", ImexImportStatus.OK);
+
+        imexImportDao.persist(imex1);
+
+        commitTransaction();
+        beginTransaction();
+
+        final ImexImport imex = imexImportDao.getByPmid("1234567");
+        Assert.assertNotNull(imex);
+        Assert.assertEquals(ImexImportStatus.OK, imex.getStatus());
+    }
+    
+    @Test
+    public void getAllAndFailed() throws Exception {
+
+        ImexImport imex1 = new ImexImport(getIntactContext().getInstitution(), "1234567", ImexImportStatus.OK);
+        ImexImport imex2 = new ImexImport(getIntactContext().getInstitution(), "1234568", ImexImportStatus.ERROR);
+
+        imexImportDao.persist(imex1);
+        imexImportDao.persist(imex2);
+
+        commitTransaction();
+        beginTransaction();
+
+        Assert.assertEquals(2, imexImportDao.getAllPmids().size());
+        Assert.assertEquals(1, imexImportDao.getAllOkPmids().size());
+        Assert.assertEquals(1, imexImportDao.getFailed().size());
     }
 }
