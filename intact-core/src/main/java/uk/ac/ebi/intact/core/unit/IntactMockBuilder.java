@@ -85,6 +85,10 @@ public class IntactMockBuilder {
         return XrefUtils.createIdentityXrefUniprot(parent, primaryId);
     }
 
+    public <X extends Xref> X createIdentityXrefChebi(AnnotatedObject<X,?> parent, String chebiId) {
+        return XrefUtils.createIdentityXrefChebi(parent, chebiId);
+    }
+
     public <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvDatabase cvDatabase) {
         return XrefUtils.createIdentityXref(parent, primaryId, getIdentityQualifier(), cvDatabase);
     }
@@ -129,6 +133,24 @@ public class IntactMockBuilder {
         return CvObjectUtils.createCvObject(getInstitution(), cvClass, primaryId, shortLabel);
     }
 
+    public SmallMolecule createSmallMoleculeRandom() {
+          return createSmallMolecule(nextString("chebi:"), nextString());
+    }
+
+    public SmallMolecule createSmallMolecule(String chebiId, String shortLabel) {
+         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.SMALL_MOLECULE_MI_REF,
+                                                   CvInteractorType.SMALL_MOLECULE);
+
+        SmallMolecule smallMolecule = new SmallMoleculeImpl(shortLabel, getInstitution(), intType);
+        InteractorXref idXref = createIdentityXrefChebi(smallMolecule, chebiId);
+        smallMolecule.addXref(idXref);
+
+        InteractorAlias alias = createAliasGeneName(smallMolecule, shortLabel.toUpperCase());
+        smallMolecule.addAlias(alias);
+
+        return smallMolecule;
+    }
+
     public Protein createProteinRandom() {
         return createProtein(nextString("primId"), nextString(), createBioSourceRandom());
     }
@@ -150,7 +172,6 @@ public class IntactMockBuilder {
 
         return protein;
     }
-
 
     public Protein createProtein(String uniprotId, String shortLabel) {
         return createProtein(uniprotId, shortLabel, createBioSourceRandom());
