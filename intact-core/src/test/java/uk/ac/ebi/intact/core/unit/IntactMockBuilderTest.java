@@ -5,9 +5,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
-import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.model.util.XrefUtils;
 
 /**
  * IntactMockBuilder tester.
@@ -71,7 +70,7 @@ public class IntactMockBuilderTest {
         Assert.assertEquals( 1, protein.getXrefs().size() );
         final Xref xref = protein.getXrefs().iterator().next();
         Assert.assertTrue( CvObjectUtils.hasIdentity( xref.getCvDatabase(), CvDatabase.UNIPROT_MI_REF ) );
-        
+
         Assert.assertNotNull( protein.getSequence() );
         Assert.assertFalse( protein.getXrefs().isEmpty() );
         Assert.assertNotNull( protein.getCrc64() );
@@ -123,5 +122,23 @@ public class IntactMockBuilderTest {
 
         Assert.assertFalse( sm.getAliases().isEmpty() );
         Assert.assertEquals( sm.getShortLabel().toUpperCase(), sm.getAliases().iterator().next().getName() );
+    }
+
+    @Test
+    public void createComponentBait() {
+        SmallMolecule sm = mockBuilder.createSmallMoleculeRandom();
+        Component component = mockBuilder.createComponentBait( sm );
+        Assert.assertNotNull( component );
+        Assert.assertNotNull( component.getInteraction() );
+        Assert.assertEquals( 1, component.getInteraction().getComponents().size() );
+    }
+
+    @Test
+    public void createComponentPrey() {
+        SmallMolecule sm = mockBuilder.createSmallMoleculeRandom();
+        Component component = mockBuilder.createComponentPrey( sm );
+        Assert.assertNotNull( component );
+        Assert.assertNotNull( component.getInteraction() );
+        Assert.assertEquals( 1, component.getInteraction().getComponents().size() );
     }
 }

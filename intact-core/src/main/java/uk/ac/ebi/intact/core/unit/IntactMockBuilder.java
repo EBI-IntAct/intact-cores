@@ -206,7 +206,9 @@ public class IntactMockBuilder {
     }
 
     public Component createComponentBait(Interactor interactor) {
-        return createComponentBait(null, interactor);
+        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
+        return createComponentBait(interaction, interactor);
     }
 
     public Component createComponentBait(Interaction interaction, Interactor interactor) {
@@ -217,7 +219,9 @@ public class IntactMockBuilder {
     }
 
     public Component createComponentPrey(Interactor interactor) {
-        return createComponentPrey(null, interactor);
+        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
+        return createComponentPrey(interaction, interactor);
     }
 
     public Component createComponentRandom() {
