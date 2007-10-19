@@ -388,14 +388,47 @@ public class IntactMockBuilder {
         return createFeature(nextString("feat"), cvFeatureType);
     }
 
-    public Range createRange(int beginFrom, int endFrom, int beginTo, int endTo) {
-        Range range = new Range(institution, beginFrom, endTo, null);
-        range.setFromIntervalStart(beginFrom);
-        range.setFromIntervalEnd(endFrom);
-        range.setToIntervalStart(beginTo);
-        range.setToIntervalEnd(endTo);
+    public Range createRangeUndetermined() {
+        Range range = new Range(institution, 0, 0, null);
 
-        CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, "MI:0339", CvFuzzyType.UNDETERMINED);
+        CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.UNDETERMINED_MI_REF, CvFuzzyType.UNDETERMINED);
+        range.setFromCvFuzzyType(fuzzyType);
+        range.setToCvFuzzyType(fuzzyType);
+
+        return range;
+    }
+
+    public Range createRange(int beginFrom, int endFrom, int beginTo, int endTo) {
+
+        if( beginFrom == 0 && endFrom == 0 && beginTo == 0 && endTo == 0 ) {
+            return createRangeUndetermined();
+        }
+
+        Range range = new Range(institution, beginFrom, endFrom, beginTo, endTo, null);
+
+        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.RANGE_MI_REF, CvFuzzyType.RANGE);
+        range.setFromCvFuzzyType(fuzzyType);
+        range.setToCvFuzzyType(fuzzyType);
+
+        return range;
+    }
+
+    public Range createRangeCTerminal() {
+
+        Range range = new Range(institution, 0, 0, null);
+
+        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.C_TERMINAL_MI_REF, CvFuzzyType.C_TERMINAL);
+        range.setFromCvFuzzyType(fuzzyType);
+        range.setToCvFuzzyType(fuzzyType);
+
+        return range;
+    }
+
+    public Range createRangeCTerminal(int beginFrom, int endFrom, int beginTo, int endTo) {
+
+        Range range = new Range(institution, beginFrom, endFrom, beginTo, endTo, null);
+
+        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.C_TERMINAL_MI_REF, CvFuzzyType.C_TERMINAL);
         range.setFromCvFuzzyType(fuzzyType);
         range.setToCvFuzzyType(fuzzyType);
 
