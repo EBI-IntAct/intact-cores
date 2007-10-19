@@ -103,6 +103,11 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
     @Override
     protected Institution fetchFromDataSource(Institution intactObject) {
 
+        if (intactObject.getAc() != null) {
+            return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                    .getInstitutionDao().getByAc(intactObject.getAc());
+        }
+
         InstitutionXref idXref = null;
 
         for (InstitutionXref xref : intactObject.getXrefs()) {
