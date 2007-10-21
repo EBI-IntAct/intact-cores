@@ -85,10 +85,6 @@ public class IntactMockBuilder {
         return XrefUtils.createIdentityXrefUniprot(parent, primaryId);
     }
 
-    public <X extends Xref> X createIdentityXrefChebi(AnnotatedObject<X,?> parent, String chebiId) {
-        return XrefUtils.createIdentityXrefChebi(parent, chebiId);
-    }
-
     public <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvDatabase cvDatabase) {
         return XrefUtils.createIdentityXref(parent, primaryId, getIdentityQualifier(), cvDatabase);
     }
@@ -133,24 +129,6 @@ public class IntactMockBuilder {
         return CvObjectUtils.createCvObject(getInstitution(), cvClass, primaryId, shortLabel);
     }
 
-    public SmallMolecule createSmallMoleculeRandom() {
-          return createSmallMolecule(nextString("chebi:"), nextString());
-    }
-
-    public SmallMolecule createSmallMolecule(String chebiId, String shortLabel) {
-         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.SMALL_MOLECULE_MI_REF,
-                                                   CvInteractorType.SMALL_MOLECULE);
-
-        SmallMolecule smallMolecule = new SmallMoleculeImpl(shortLabel, getInstitution(), intType);
-        InteractorXref idXref = createIdentityXrefChebi(smallMolecule, chebiId);
-        smallMolecule.addXref(idXref);
-
-        InteractorAlias alias = createAliasGeneName(smallMolecule, shortLabel.toUpperCase());
-        smallMolecule.addAlias(alias);
-
-        return smallMolecule;
-    }
-
     public Protein createProteinRandom() {
         return createProtein(nextString("primId"), nextString(), createBioSourceRandom());
     }
@@ -172,6 +150,7 @@ public class IntactMockBuilder {
 
         return protein;
     }
+
 
     public Protein createProtein(String uniprotId, String shortLabel) {
         return createProtein(uniprotId, shortLabel, createBioSourceRandom());
@@ -206,9 +185,7 @@ public class IntactMockBuilder {
     }
 
     public Component createComponentBait(Interactor interactor) {
-        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
-        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
-        return createComponentBait(interaction, interactor);
+        return createComponentBait(null, interactor);
     }
 
     public Component createComponentBait(Interaction interaction, Interactor interactor) {
@@ -219,9 +196,7 @@ public class IntactMockBuilder {
     }
 
     public Component createComponentPrey(Interactor interactor) {
-        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
-        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
-        return createComponentPrey(interaction, interactor);
+        return createComponentPrey(null, interactor);
     }
 
     public Component createComponentRandom() {
@@ -305,9 +280,7 @@ public class IntactMockBuilder {
         experiment.setCvInteraction(createCvObject(CvInteraction.class, CvInteraction.COSEDIMENTATION_MI_REF, CvInteraction.COSEDIMENTATION));
         experiment.setCvIdentification(createCvObject(CvIdentification.class, CvIdentification.PREDETERMINED_MI_REF, CvIdentification.PREDETERMINED));
 
-        final Publication publication = createPublicationRandom();
-        experiment.setPublication(publication);
-        publication.addExperiment(experiment);
+        experiment.setPublication(createPublicationRandom());
         experiment.addXref(createPrimaryReferenceXref(experiment, experiment.getPublication().getShortLabel()));
 
         return experiment;
@@ -392,47 +365,14 @@ public class IntactMockBuilder {
         return createFeature(nextString("feat"), cvFeatureType);
     }
 
-    public Range createRangeUndetermined() {
-        Range range = new Range(institution, 0, 0, null);
-
-        CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.UNDETERMINED_MI_REF, CvFuzzyType.UNDETERMINED);
-        range.setFromCvFuzzyType(fuzzyType);
-        range.setToCvFuzzyType(fuzzyType);
-
-        return range;
-    }
-
     public Range createRange(int beginFrom, int endFrom, int beginTo, int endTo) {
+        Range range = new Range(institution, beginFrom, endTo, null);
+        range.setFromIntervalStart(beginFrom);
+        range.setFromIntervalEnd(endFrom);
+        range.setToIntervalStart(beginTo);
+        range.setToIntervalEnd(endTo);
 
-        if( beginFrom == 0 && endFrom == 0 && beginTo == 0 && endTo == 0 ) {
-            return createRangeUndetermined();
-        }
-
-        Range range = new Range(institution, beginFrom, endFrom, beginTo, endTo, null);
-
-        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.RANGE_MI_REF, CvFuzzyType.RANGE);
-        range.setFromCvFuzzyType(fuzzyType);
-        range.setToCvFuzzyType(fuzzyType);
-
-        return range;
-    }
-
-    public Range createRangeCTerminal() {
-
-        Range range = new Range(institution, 0, 0, null);
-
-        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.C_TERMINAL_MI_REF, CvFuzzyType.C_TERMINAL);
-        range.setFromCvFuzzyType(fuzzyType);
-        range.setToCvFuzzyType(fuzzyType);
-
-        return range;
-    }
-
-    public Range createRangeCTerminal(int beginFrom, int endFrom, int beginTo, int endTo) {
-
-        Range range = new Range(institution, beginFrom, endFrom, beginTo, endTo, null);
-
-        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.C_TERMINAL_MI_REF, CvFuzzyType.C_TERMINAL);
+        CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, "MI:0339", CvFuzzyType.UNDETERMINED);
         range.setFromCvFuzzyType(fuzzyType);
         range.setToCvFuzzyType(fuzzyType);
 

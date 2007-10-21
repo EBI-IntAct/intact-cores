@@ -19,10 +19,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.config.CvPrimer;
-import uk.ac.ebi.intact.context.CvContext;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
+import uk.ac.ebi.intact.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.lang.reflect.Constructor;
@@ -76,14 +76,10 @@ public class SmallCvPrimer implements CvPrimer {
             intactContext.getDataContext().getDaoFactory().getCvObjectDao(CvDatabase.class).persist(psi);
         }
 
-       intactContext.getDataContext().flushSession();
+        intactContext.getDataContext().flushSession();
 
-        identity = (CvXrefQualifier) getCvObject(CvXrefQualifier.class, CvXrefQualifier.IDENTITY, CvXrefQualifier.IDENTITY_MI_REF, "identical object");
-
-        psi = (CvDatabase) getCvObject(CvDatabase.class, CvDatabase.PSI_MI, CvDatabase.PSI_MI_MI_REF);
-
-        // CvDatabase( psi-mi )
-        CvDatabase intact = (CvDatabase) getCvObject(CvDatabase.class, CvDatabase.INTACT, CvDatabase.INTACT_MI_REF);
+        // CvDatabase( intact )
+        getCvObject(CvDatabase.class, CvDatabase.INTACT, CvDatabase.INTACT_MI_REF);
 
         // CvDatabase( pubmed )
         getCvObject(CvDatabase.class, CvDatabase.PUBMED, CvDatabase.PUBMED_MI_REF);
@@ -112,7 +108,7 @@ public class SmallCvPrimer implements CvPrimer {
         // CvTopic( obsolete )
         getCvObject(CvTopic.class, CvTopic.OBSOLETE, CvTopic.OBSOLETE_MI_REF);
 
-        intactContext.getDataContext().flushSession();
+        //intactContext.getDataContext().flushSession();
     }
 
     /**
@@ -165,25 +161,27 @@ public class SmallCvPrimer implements CvPrimer {
         }
 
         // Search by MI
-        CvObject cv = cvCache.get(clazz, mi, shortlabel);
+
+        CvObject cv = null;// = cvCache.get(clazz, mi, shortlabel);
 
         if (cv != null) {
             return cv;
         }
-
-        CvContext cvContext = IntactContext.getCurrentInstance().getCvContext();
+        
+        //CvContext cvContext = IntactContext.getCurrentInstance().getCvContext();
+        CvObjectDao dao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getCvObjectDao(clazz);
 
         // if an MI is available, search using it
         if (mi != null) {
             log.debug("Looking up term by mi: " + mi);
-            cv = cvContext.getByMiRef(clazz, mi);
+            cv = dao.getByPsiMiRef(mi);
         }
 
         // if not found by MI, then search by shortlabel
         if (cv == null) {
             // Search by Name
             log.debug("Not found. Now, looking up term by short label: " + shortlabel);
-            cv = cvContext.getByLabel(clazz, shortlabel);
+            cv = dao.getByShortLabel(clazz, shortlabel);
         }
 
         // if still not found, then create it.
@@ -201,43 +199,39 @@ public class SmallCvPrimer implements CvPrimer {
                 // by default add the shortLabel as fullName
                 cv.setFullName(defaultFullName);
 
-                // persist it
-                getDaoFactory()
-                        .getCvObjectDao(clazz).persist(cv);
-                log.debug("Created missing CV Term: " + clazz.getSimpleName() + "( " + cv.getShortLabel() + " - " + cv.getFullName() + " ).");
-
                 cvCache.put(clazz, mi, shortlabel, cv);
-                IntactContext.getCurrentInstance().getDataContext().flushSession();
+                //IntactContext.getCurrentInstance().getDataContext().flushSession();
 
                 // create MI Xref if necessary
                 if (mi != null && mi.startsWith("MI:")) {
-
                     CvDatabase psi = null;
                     if (mi.equals(CvDatabase.PSI_MI_MI_REF)) {
                         psi = (CvDatabase) cv;
                     } else {
-                        psi = (CvDatabase) getCvObject(CvDatabase.class,
-                                                       CvDatabase.PSI_MI,
-                                                       CvDatabase.PSI_MI_MI_REF,
-                                                       CvDatabase.PSI_MI);
+                        psi = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                            .getCvObjectDao(CvDatabase.class).getByPsiMiRef(CvDatabase.PSI_MI_MI_REF);
                     }
 
                     CvXrefQualifier identity = null;
                     if (mi.equals(CvXrefQualifier.IDENTITY_MI_REF)) {
                         identity = (CvXrefQualifier) cv;
                     } else {
-                        identity = (CvXrefQualifier) getCvObject(CvXrefQualifier.class,
-                                                                 CvXrefQualifier.IDENTITY,
-                                                                 CvXrefQualifier.IDENTITY_MI_REF,
-                                                                 "identical object");
+                        identity = (CvXrefQualifier) getCvObject(CvXrefQualifier.class, CvXrefQualifier.IDENTITY, CvXrefQualifier.IDENTITY_MI_REF, "identical object");
                     }
 
                     CvObjectXref xref = new CvObjectXref(IntactContext.getCurrentInstance().getInstitution(), psi, mi, null, null, identity);
 
                     cv.addXref(xref);
-                    getDaoFactory().getXrefDao().persist(xref);
+                    //getDaoFactory().getXrefDao().persist(xref);
                     log.debug("Added required PSI Xref to " + shortlabel + ": " + mi);
                 }
+
+// persist it
+                getDaoFactory()
+                        .getCvObjectDao(clazz).persist(cv);
+                log.debug("Created missing CV Term: " + clazz.getSimpleName() + "( " + cv.getShortLabel() + " - " + cv.getFullName() + " ).");
+                
+
             } catch (Exception e) {
                 // that's should not happen, but just in case...
                 throw new IntactException("Error while creating " + clazz.getSimpleName() + "(" + shortlabel +

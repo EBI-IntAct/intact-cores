@@ -15,12 +15,11 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.core.unit.mock.MockInteractionDao;
+import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +36,11 @@ public class InteractionUtilsTest {
     @Before
     public void prepare() throws Exception {
         MockIntactContext.initMockContext();
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        IntactContext.getCurrentInstance().close();
     }
 
     @Test

@@ -161,7 +161,7 @@ public class CvContext implements Serializable {
         try {
             cvObject = getDaoFactory().getCvObjectDao().getByPrimaryId( cvType, miRef );
         } catch (Exception e) {
-            throw new IntactException("Exception getting cvType "+cvType.getSimpleName()+" with miRef: "+miRef);
+            throw new IntactException("Exception getting cvType "+cvType.getSimpleName()+" with miRef: "+miRef, e);
         }
 
         if ( cvObject == null ) {

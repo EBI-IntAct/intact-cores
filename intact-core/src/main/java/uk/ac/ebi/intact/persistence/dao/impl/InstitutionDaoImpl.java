@@ -1,9 +1,10 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import org.hibernate.Session;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.persistence.dao.InstitutionDao;
+
+import javax.persistence.EntityManager;
 
 /**
  * DAO for institutions
@@ -15,7 +16,7 @@ import uk.ac.ebi.intact.persistence.dao.InstitutionDao;
 @SuppressWarnings( {"unchecked"} )
 public class InstitutionDaoImpl extends AnnotatedObjectDaoImpl<Institution> implements InstitutionDao {
 
-    public InstitutionDaoImpl( Session session, IntactSession intactSession ) {
-        super( Institution.class, session, intactSession );
+    public InstitutionDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
+        super( Institution.class, entityManager, intactSession );
     }
 }

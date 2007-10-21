@@ -16,7 +16,6 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
@@ -26,6 +25,7 @@ import uk.ac.ebi.intact.model.Searchable;
 import uk.ac.ebi.intact.persistence.dao.SearchableDao;
 import uk.ac.ebi.intact.persistence.dao.query.impl.SearchableQuery;
 
+import javax.persistence.EntityManager;
 import java.util.*;
 
 /**
@@ -37,8 +37,8 @@ import java.util.*;
  */
 public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl> implements SearchableDao {
 
-    public SearchableDaoImpl( Session session, IntactSession intactSession ) {
-        super( AnnotatedObjectImpl.class, session, intactSession );
+    public SearchableDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
+        super( AnnotatedObjectImpl.class, entityManager, intactSession);
     }
 
     public Integer countByQuery( Class<? extends Searchable> searchableClass, SearchableQuery query ) {

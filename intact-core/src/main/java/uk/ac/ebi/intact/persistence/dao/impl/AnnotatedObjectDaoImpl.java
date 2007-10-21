@@ -8,12 +8,11 @@ package uk.ac.ebi.intact.persistence.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.ejb.HibernateQuery;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.CvDatabase;
@@ -21,6 +20,8 @@ import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -38,8 +39,8 @@ public class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends IntactObj
 
     private static final Log log = LogFactory.getLog( AnnotatedObjectDaoImpl.class );
 
-    public AnnotatedObjectDaoImpl( Class<T> entityClass, Session session, IntactSession intactSession ) {
-        super( entityClass, session, intactSession );
+    public AnnotatedObjectDaoImpl( Class<T> entityClass, EntityManager entityManager, IntactSession intactSession ) {
+        super( entityClass, entityManager, intactSession );
     }
 
     public T getByShortLabel( String value ) {
@@ -71,17 +72,17 @@ public class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends IntactObj
     }
 
     public Iterator<T> getByShortLabelLikeIterator( String value, boolean ignoreCase ) {
-        Query query = null;
+        Query query;
 
         if (ignoreCase) {
-           getSession().createQuery("from "+getEntityClass().getSimpleName()+" where lower(shortlabel) = lower(:label)");
+           query = getEntityManager().createQuery("from "+getEntityClass().getSimpleName()+" where lower(shortlabel) = lower(:label)");
         } else {
-           query = getSession().createQuery("from "+getEntityClass().getSimpleName()+" where shortlabel = :label");
+           query = getEntityManager().createQuery("from "+getEntityClass().getSimpleName()+" where shortlabel = :label");
         }
 
-        query.setString("label", value);
+        query.setParameter("label", value);
 
-        return  query.iterate();
+        return  ((HibernateQuery)query).getHibernateQuery().iterate();
     }
 
     public T getByXref( String primaryId ) {

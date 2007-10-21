@@ -9,7 +9,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
@@ -18,6 +17,7 @@ import uk.ac.ebi.intact.model.InteractionImpl;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 
+import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +35,8 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
 
     private static final Log log = LogFactory.getLog( InteractionDaoImpl.class );
 
-    public InteractionDaoImpl( Session session, IntactSession intactSession ) {
-        super( InteractionImpl.class, session, intactSession );
+    public InteractionDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
+        super( InteractionImpl.class, entityManager, intactSession );
     }
 
     /**

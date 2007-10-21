@@ -34,7 +34,7 @@ public class IntactAbstractTestCaseTest extends IntactAbstractTestCase {
         assertTrue("Transaction must be active", getDataContext().isTransactionActive());
         assertEquals(1, getDataContext().getDaoFactory().getInstitutionDao().countAll());
 
-        assertEquals(getIntactContext().getConfig().getDefaultDataConfig().getName(), InMemoryDataConfig.NAME);
+        assertEquals(InMemoryDataConfig.NAME, getIntactContext().getConfig().getDefaultDataConfig().getName());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class IntactAbstractTestCaseTest extends IntactAbstractTestCase {
         assertEquals(1, getDataContext().getDaoFactory().getInstitutionDao().countAll());
         assertTrue("Wrong number of CvObjects", getDataContext().getDaoFactory().getCvObjectDao().countAll() > 1000);
 
-        assertEquals(getIntactContext().getConfig().getDefaultDataConfig().getName(), InMemoryDataConfig.NAME);
+        assertEquals(InMemoryDataConfig.NAME, getIntactContext().getConfig().getDefaultDataConfig().getName());
     }
 
     @Test
@@ -54,5 +54,5 @@ public class IntactAbstractTestCaseTest extends IntactAbstractTestCase {
         CvDatabase cvDb = getDaoFactory().getCvObjectDao(CvDatabase.class).getByPsiMiRef(CvDatabase.PSI_MI_MI_REF);
         assertNotNull(cvDb);
         assertFalse(cvDb.getXrefs().isEmpty());
-    }
+    }  
 }

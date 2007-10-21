@@ -73,6 +73,8 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
         Protein lastProt = (Protein) InteractorPersister.getInstance().fetchFromDataSource(prot);
 
         Assert.assertEquals("P12345", ProteinUtils.getUniprotXref(lastProt).getPrimaryId());
+
+        MockIntactContext.getCurrentInstance().close();
     }
 
     @Test
@@ -101,6 +103,8 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
         Protein lastProt = (Protein) InteractorPersister.getInstance().fetchFromDataSource(prot);
 
         Assert.assertEquals("P54321", ProteinUtils.getUniprotXref(lastProt).getPrimaryId());
+
+        MockIntactContext.getCurrentInstance().close();
     }
 
     @Test
@@ -125,6 +129,8 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
         Protein lastProt = (Protein) InteractorPersister.getInstance().fetchFromDataSource(prot);
 
         Assert.assertEquals("P12345", ProteinUtils.getUniprotXref(lastProt).getPrimaryId());
+
+        MockIntactContext.getCurrentInstance().close();
     }
 
     @Test
@@ -145,6 +151,8 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
         prot.setShortLabel("lala");
 
         Assert.assertNull(InteractorPersister.getInstance().fetchFromDataSource(prot));
+
+        MockIntactContext.getCurrentInstance().close();
     }
 
     @Test

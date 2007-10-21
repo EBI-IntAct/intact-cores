@@ -13,7 +13,7 @@ import uk.ac.ebi.intact.model.util.CvObjectBuilder;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class IntactUnitTest extends IntactAbstractTestCase
+public class IntactUnitTest extends IntactBasicTestCase
 {
 
     @Test
@@ -21,22 +21,21 @@ public class IntactUnitTest extends IntactAbstractTestCase
         CvObjectBuilder builder = new CvObjectBuilder();
         CvXrefQualifier cvXrefQual = builder.createIdentityCvXrefQualifier(getIntactContext().getInstitution());
         CvDatabase cvDatabase = builder.createPsiMiCvDatabase(getIntactContext().getInstitution());
+
+        getDataContext().beginTransaction();
+
         getDataContext().getDaoFactory().getCvObjectDao(CvXrefQualifier.class).persist(cvXrefQual);
         getDataContext().getDaoFactory().getCvObjectDao(CvDatabase.class).persist(cvDatabase);
 
         getDataContext().commitTransaction();
-        getDataContext().beginTransaction();
 
         assertEquals(2, getDataContext().getDaoFactory().getCvObjectDao().countAll());
 
-        getDataContext().commitTransaction();
         assertFalse(getDataContext().isTransactionActive());
 
         IntactUnit iu = new IntactUnit();
         iu.resetSchema();
 
-        getDataContext().beginTransaction();
         assertEquals(0, getDataContext().getDaoFactory().getCvObjectDao().countAll());
-        getDataContext().commitTransaction();
     }
 }

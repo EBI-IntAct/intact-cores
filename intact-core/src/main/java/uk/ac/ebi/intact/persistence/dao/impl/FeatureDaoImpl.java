@@ -1,9 +1,10 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import org.hibernate.Session;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Feature;
 import uk.ac.ebi.intact.persistence.dao.FeatureDao;
+
+import javax.persistence.EntityManager;
 
 /**
  * DAO for features
@@ -15,7 +16,7 @@ import uk.ac.ebi.intact.persistence.dao.FeatureDao;
 @SuppressWarnings( {"unchecked"} )
 public class FeatureDaoImpl extends AnnotatedObjectDaoImpl<Feature> implements FeatureDao {
 
-    public FeatureDaoImpl( Session session, IntactSession intactSession ) {
-        super( Feature.class, session, intactSession );
+    public FeatureDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
+        super( Feature.class, entityManager, intactSession );
     }
 }

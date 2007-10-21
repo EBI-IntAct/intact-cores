@@ -1,11 +1,11 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Annotation;
 import uk.ac.ebi.intact.persistence.dao.AnnotationDao;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 /**
@@ -18,8 +18,8 @@ import java.util.List;
 @SuppressWarnings( {"unchecked"} )
 public class AnnotationDaoImpl extends IntactObjectDaoImpl<Annotation> implements AnnotationDao {
 
-    public AnnotationDaoImpl( Session session, IntactSession intactSession ) {
-        super( Annotation.class, session, intactSession );
+    public AnnotationDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
+        super( Annotation.class, entityManager, intactSession );
     }
 
 

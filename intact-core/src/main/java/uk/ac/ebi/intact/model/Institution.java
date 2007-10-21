@@ -7,12 +7,8 @@ package uk.ac.ebi.intact.model;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
-import org.hibernate.annotations.*;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.CascadeType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -169,7 +165,7 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
     }
 
     @ManyToMany( cascade = {CascadeType.PERSIST} )
-    @Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    //@Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @JoinTable(
             name = "ia_institution2annot",
             joinColumns = {@JoinColumn( name = "institution_ac" )},

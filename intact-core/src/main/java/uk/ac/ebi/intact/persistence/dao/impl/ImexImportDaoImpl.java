@@ -15,14 +15,14 @@
  */
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.meta.ImexImport;
 import uk.ac.ebi.intact.model.meta.ImexImportStatus;
 import uk.ac.ebi.intact.persistence.dao.ImexImportDao;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 /**
@@ -33,15 +33,13 @@ import java.util.List;
  */
 public class ImexImportDaoImpl extends HibernateBaseDaoImpl<ImexImport> implements ImexImportDao<ImexImport> {
 
-    public ImexImportDaoImpl(Session session, IntactSession intactSession) {
-        super(ImexImport.class, session, intactSession);
+    public ImexImportDaoImpl(EntityManager entityManager, IntactSession intactSession) {
+        super(ImexImport.class, entityManager, intactSession);
     }
 
     public List<ImexImport> getFailed() {
-        Query query = getSession().createQuery("select imex from uk.ac.ebi.intact.model.meta.ImexImport imex where imex.status = :status");
-        query.setParameter("status", ImexImportStatus.ERROR);
-
-        return query.list();
+        return getSession().createCriteria(getEntityClass())
+                .add(Restrictions.eq("status", ImexImportStatus.ERROR)).list();
     }
 
     public ImexImport getByPmid(String pmid) {
@@ -50,13 +48,8 @@ public class ImexImportDaoImpl extends HibernateBaseDaoImpl<ImexImport> implemen
     }
 
     public List<String> getAllOkPmids() {
-        Query query = getSession().createQuery("select imex.pmid from uk.ac.ebi.intact.model.meta.ImexImport imex where imex.status = :status");
-        query.setParameter("status", ImexImportStatus.OK);
-
-        return query.list();
-    }
-
-    public List<String> getAllPmids() {
-        return getSession().createQuery("select pmid from uk.ac.ebi.intact.model.meta.ImexImport").list();
+        return getSession().createCriteria(getEntityClass())
+                .add(Restrictions.eq("status", ImexImportStatus.OK))
+                .setProjection(Projections.property("pmid")).list();
     }
 }

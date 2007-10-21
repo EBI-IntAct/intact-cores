@@ -155,12 +155,10 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         persister.commit();
         commitTransaction();
 
-        beginTransaction();
         Experiment reloadedExpBeforeUpdate = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertNull(reloadedExpBeforeUpdate.getPublication());
         Assert.assertEquals(1, reloadedExpBeforeUpdate.getXrefs().size());
         Assert.assertEquals(1, reloadedExpBeforeUpdate.getInteractions().size());
-        commitTransaction();
 
         PersisterContext.getInstance().clear();
 
@@ -175,12 +173,10 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         persister.commit();
         commitTransaction();
 
-        beginTransaction();
         Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertNotNull(reloadedExp.getPublication());
         Assert.assertEquals(1, reloadedExp.getXrefs().size());
         Assert.assertEquals(2, reloadedExp.getInteractions().size());
-        commitTransaction();
     }
 
     @Test (expected = PersisterUnexpectedException.class)
@@ -278,13 +274,11 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         persister.saveOrUpdate(expWith);
         persister.commit();
         commitTransaction();
-        
-        beginTransaction();
+
         Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertNotNull(reloadedExp.getPublication());
         Assert.assertEquals(1, reloadedExp.getXrefs().size());
         Assert.assertEquals(2, reloadedExp.getInteractions().size());
-        commitTransaction();
     }
 
     @Test

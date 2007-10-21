@@ -7,11 +7,8 @@ package uk.ac.ebi.intact.config.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.cfg.Configuration;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Interactor;
-import uk.ac.ebi.intact.model.event.IntactObjectEventListener;
-import uk.ac.ebi.intact.model.event.SearchItemSyncEventListener;
 import uk.ac.ebi.intact.model.meta.DbInfo;
 
 import java.io.File;
@@ -58,47 +55,10 @@ public class StandardCoreDataConfig extends AbstractHibernateDataConfig {
         return Arrays.asList("uk.ac.ebi.intact.model.SearchItem");
     }
 
-    @Override
-    public Configuration getConfiguration() {
-        Configuration configuration = super.getConfiguration();
-
-        if ( !isListenersRegistered() ) {
-            if ( log.isDebugEnabled() ) {
-                log.info( "Registering core EventListeners:" );
-                log.debug( "\tRegistering: " + IntactObjectEventListener.class );
-            }
-            configuration.setListener( "pre-insert", new IntactObjectEventListener() );
-            configuration.setListener( "pre-update", new IntactObjectEventListener() );
-
-            if ( log.isDebugEnabled() ) {
-                log.debug( "\tRegistering: " + SearchItemSyncEventListener.class );
-            }
-            SearchItemSyncEventListener sisl = new SearchItemSyncEventListener( getSession() );
-            configuration.setListener( "post-insert", sisl );
-            configuration.setListener( "post-commit-update", sisl );
-            configuration.setListener( "pre-delete", sisl );
-
-            setListenersRegistered( true );
-        }
-
-        return configuration;
-    }
-
     protected File getConfigFile() {
         URL resource = StandardCoreDataConfig.class.getResource("/hibernate.cfg.xml");
         File file = (resource == null)? null : new File(resource.getFile());
         return file;
     }
 
-    protected void setListenersRegistered( boolean listenersRegistered ) {
-        //getSession().setApplicationAttribute(LISTENERS_REGISTERED_FLAG, listenersRegistered);
-        this.listenersRegistered = listenersRegistered;
-    }
-
-    protected boolean isListenersRegistered() {
-        return listenersRegistered;
-
-        //Object listenersRegistered = getSession().getApplicationAttribute(LISTENERS_REGISTERED_FLAG);
-        //return (listenersRegistered == null)? Boolean.FALSE :(Boolean) listenersRegistered;
-    }
 }

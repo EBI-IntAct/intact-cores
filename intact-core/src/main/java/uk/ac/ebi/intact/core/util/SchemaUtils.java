@@ -22,6 +22,7 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.Oracle9Dialect;
 import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
@@ -52,7 +53,8 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDL(String dialect) {
-         Configuration cfg = ((AbstractHibernateDataConfig) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig()).getConfiguration();
+        Ejb3Configuration ejb3Cfg = (Ejb3Configuration) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().getConfiguration();
+        Configuration cfg = ejb3Cfg.getHibernateConfiguration();
 
         Properties props = new Properties();
         props.put(Environment.DIALECT, dialect);
@@ -82,7 +84,7 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateDropSchemaDDL(String dialect) {
-         Configuration cfg = ((AbstractHibernateDataConfig) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig()).getConfiguration();
+        Configuration cfg = ((AbstractHibernateDataConfig) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig()).getConfiguration();
 
         Properties props = new Properties();
         props.put(Environment.DIALECT, dialect);
@@ -126,22 +128,20 @@ public class SchemaUtils {
             throw new IllegalStateException("To reset the schema, the transaction must NOT be active: "+dataContext.getDaoFactory().getCurrentTransaction());
         }
 
-        dataContext.beginTransaction();
-
-        Configuration cfg = ((AbstractHibernateDataConfig) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig()).getConfiguration();
-
-        SchemaExport se = new SchemaExport(cfg);
+        SchemaExport se = newSchemaExport();
         se.create(false, true);
-
-        dataContext.commitTransaction();
-        dataContext.beginTransaction();
 
         if (initializeDatabase) {
             if (log.isDebugEnabled()) log.debug("Initializing database");
             IntactConfigurator.initializeDatabase(IntactContext.getCurrentInstance());
-        }
+        } 
+    }
 
-        dataContext.commitTransaction();
+    protected static SchemaExport newSchemaExport() {
+        Configuration config = (Configuration) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().getConfiguration();
+        
+        SchemaExport se =  new SchemaExport(config);
+        return se;
     }
 
     /**
@@ -158,9 +158,7 @@ public class SchemaUtils {
 
         dataContext.beginTransaction();
 
-        Configuration cfg = ((AbstractHibernateDataConfig) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig()).getConfiguration();
-
-        SchemaExport se = new SchemaExport(cfg);
+        SchemaExport se = newSchemaExport();
         se.drop(false, true);
 
         dataContext.commitTransaction();

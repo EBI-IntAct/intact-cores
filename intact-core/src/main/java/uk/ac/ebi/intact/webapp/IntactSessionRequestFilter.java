@@ -7,9 +7,6 @@ package uk.ac.ebi.intact.webapp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.IntactConfigurator;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.context.IntactSession;
@@ -54,7 +51,7 @@ public class IntactSessionRequestFilter implements Filter {
 
     private static final Log log = LogFactory.getLog( IntactSessionRequestFilter.class );
 
-        public static final String  COULD_NOT_LOGIN = "Could not login";
+    public static final String  COULD_NOT_LOGIN = "Could not login";
 
     private static final String FILTERED_PARAM_NAME = "uk.ac.ebi.intact.filter.EXCLUDED_EXTENSIONS";
 
@@ -154,23 +151,11 @@ public class IntactSessionRequestFilter implements Filter {
                    throw new ServletException( "Exception commiting, rollback sucessfull" + e );
                 }
 
-            } finally {
-                Session hibernateSession = getSession();
-                if ( hibernateSession.isOpen() ) {
-                    hibernateSession.close();
-                }
             }
 
         }
         out.close();
 
-    }
-
-    private Session getSession() {
-        AbstractHibernateDataConfig abstractHibernateDataConfig = ( AbstractHibernateDataConfig ) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig();
-        SessionFactory factory = abstractHibernateDataConfig.getSessionFactory();
-        Session session = factory.getCurrentSession();
-        return session;
     }
 
     public void init( FilterConfig filterConfig ) throws ServletException {

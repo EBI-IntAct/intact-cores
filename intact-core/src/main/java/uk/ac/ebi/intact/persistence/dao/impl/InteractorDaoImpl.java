@@ -6,7 +6,6 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
@@ -15,6 +14,7 @@ import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.InteractorImpl;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +42,8 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
         geneNameFilter.add( "locus name" );
     }
 
-    public InteractorDaoImpl( Class<T> entityClass, Session session, IntactSession intactSession ) {
-        super( entityClass, session, intactSession );
+    public InteractorDaoImpl( Class<T> entityClass, EntityManager entityManager, IntactSession intactSession ) {
+        super( entityClass, entityManager, intactSession );
     }
 
     public Integer countInteractionsForInteractorWithAc( String ac ) {

@@ -6,7 +6,6 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.annotation.PotentialThreat;
@@ -15,6 +14,9 @@ import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.persistence.dao.CvObjectDao;
 
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.Query;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,8 +30,8 @@ import java.util.List;
 @SuppressWarnings( "unchecked" )
 public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<T> implements CvObjectDao<T> {
 
-    public CvObjectDaoImpl( Class<T> entityClass, Session session, IntactSession intactSession ) {
-        super( entityClass, session, intactSession );
+    public CvObjectDaoImpl( Class<T> entityClass, EntityManager entityManager, IntactSession intactSession ) {
+        super( entityClass, entityManager, intactSession );
     }
 
     public List<T> getByPsiMiRefCollection( Collection<String> psiMis ) {
@@ -41,11 +43,25 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
     }
 
     public T getByPsiMiRef( String psiMiRef ) {
+        Query query = getEntityManager().createQuery(
+                "select cv from "+getEntityClass().getName()+" cv " +
+                "left join cv.xrefs as xref " +
+                        "join xref.cvDatabase as cvDb join cvDb.xrefs as cvDbXref " +
+                        "where cvDbXref.primaryId = :dbMiRef " +
+                        "and xref.primaryId = :psiMiRef ");
+
+        query.setParameter("dbMiRef", CvDatabase.PSI_MI_MI_REF);
+        query.setParameter("psiMiRef", psiMiRef);
+
+        query.setFlushMode(FlushModeType.COMMIT);
+
+        return uniqueResult(query);
+        /* 
         return ( T ) getSession().createCriteria( getEntityClass() ).createAlias( "xrefs", "xref" )
                 .createAlias( "xref.cvDatabase", "cvDb" )
                 .createAlias( "cvDb.xrefs", "cvDbXref" )
                 .add( Restrictions.eq( "cvDbXref.primaryId", CvDatabase.PSI_MI_MI_REF ) )
-                .add( Restrictions.eq( "xref.primaryId", psiMiRef ) ).uniqueResult();
+                .add( Restrictions.eq( "xref.primaryId", psiMiRef ) ).uniqueResult();  */
     }
 
     public List<T> getByObjClass( Class[] objClasses ) {

@@ -54,7 +54,10 @@ public class PersisterContext {
     private Map<String, Institution> institutionsToBePersisted;
     private Map<String, AnnotatedObject> annotatedObjectsToBeUpdated;
 
+    boolean originalAutoFlush;
+
     public static PersisterContext getInstance() {
+        IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().setAutoFlush(false);
         return instance.get();
     }
 
@@ -64,6 +67,8 @@ public class PersisterContext {
         this.institutionsToBePersisted = new HashMap<String,Institution>();
 
         this.annotatedObjectsToBeUpdated = new HashMap<String,AnnotatedObject>();
+
+        originalAutoFlush = IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().isAutoFlush();
     }
 
     public void addToPersist(AnnotatedObject ao) {
@@ -278,6 +283,8 @@ public class PersisterContext {
         cvObjectsToBePersisted.clear();
         annotatedObjectsToBePersisted.clear();
         annotatedObjectsToBeUpdated.clear();
+
+        IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().setAutoFlush(originalAutoFlush);
     }
 
     private String keyFor(AnnotatedObject ao) {

@@ -21,8 +21,6 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.mock.MockExperimentDao;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
-import uk.ac.ebi.intact.model.Annotation;
-import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Publication;
 
@@ -225,76 +223,5 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
         Assert.assertTrue(ExperimentUtils.matchesMotSyncedLabel("mike-2007"));
         Assert.assertFalse(ExperimentUtils.matchesMotSyncedLabel("mike-2007-3"));
         Assert.assertFalse(ExperimentUtils.matchesMotSyncedLabel("mike-2007a-3"));
-    }
-
-    @Test
-    public void isOnHold_false() {
-        Experiment exp = getMockBuilder().createExperimentEmpty();
-        Assert.assertFalse(ExperimentUtils.isOnHold(exp));
-    }
-
-    @Test
-    public void isOnHold_false_noPub() {
-        Experiment exp = getMockBuilder().createExperimentEmpty();
-        exp.setPublication(null);
-        Assert.assertFalse(ExperimentUtils.isOnHold(exp));
-    }
-
-    @Test
-    public void isOnHold_true() {
-        Experiment exp = getMockBuilder().createExperimentEmpty();
-        Annotation annot = getMockBuilder().createAnnotation("Reason", "IA:0", CvTopic.ON_HOLD);
-        exp.addAnnotation(annot);
-
-        Assert.assertTrue(ExperimentUtils.isOnHold(exp));
-    }
-
-    @Test
-    public void isOnHold_true_noPub() {
-        Experiment exp = getMockBuilder().createExperimentEmpty();
-        exp.setPublication(null);
-        Annotation annot = getMockBuilder().createAnnotation("Reason", "IA:0", CvTopic.ON_HOLD);
-        exp.addAnnotation(annot);
-
-        Assert.assertTrue(ExperimentUtils.isOnHold(exp));
-    }
-
-    @Test
-    public void isOnHold_false_manyExpsInPub() {
-        Experiment exp = getMockBuilder().createExperimentEmpty();
-
-        Experiment exp2 = getMockBuilder().createExperimentEmpty();
-        exp2.setPublication(exp.getPublication());
-        exp.getPublication().addExperiment(exp2);
-
-        Assert.assertFalse(ExperimentUtils.isOnHold(exp));
-    }
-
-    @Test
-    public void isOnHold_true_manyExpsInPub() {
-        Experiment exp = getMockBuilder().createExperimentEmpty();
-
-        Experiment exp2 = getMockBuilder().createExperimentEmpty();
-        exp2.setPublication(exp.getPublication());
-        exp.getPublication().addExperiment(exp2);
-        Annotation annot = getMockBuilder().createAnnotation("Reason", "IA:0", CvTopic.ON_HOLD);
-        exp2.addAnnotation(annot);
-
-        Assert.assertTrue(ExperimentUtils.isOnHold(exp));
-    }
-
-    @Test
-    public void toBeReviewed_false() {
-        Experiment exp = getMockBuilder().createExperimentEmpty();
-        Assert.assertFalse(ExperimentUtils.isToBeReviewed(exp));
-    }
-
-    @Test
-    public void toBeReviewed_true() {
-        Experiment exp = getMockBuilder().createExperimentEmpty();
-        Annotation annot = getMockBuilder().createAnnotation("", "IA:0", CvTopic.TO_BE_REVIEWED);
-        exp.addAnnotation(annot);
-
-        Assert.assertTrue(ExperimentUtils.isToBeReviewed(exp));
     }
 }

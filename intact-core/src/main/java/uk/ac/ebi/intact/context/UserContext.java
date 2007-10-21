@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import uk.ac.ebi.intact.business.IntactException;
-import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
+import uk.ac.ebi.intact.config.DataConfig;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -53,10 +53,8 @@ public class UserContext implements Serializable {
             log.debug( "Creating UserContext..." );
         }
 
-        AbstractHibernateDataConfig defaultDataConfig = ( AbstractHibernateDataConfig ) RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig();
-
-        Configuration configuration = defaultDataConfig.getConfiguration();
-        //configuration.configure();
+        DataConfig defaultDataConfig = RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig();
+        Configuration configuration = (Configuration) defaultDataConfig.getConfiguration();
 
         String currentUser = configuration.getProperty( Environment.USER );
         String password = configuration.getProperty( Environment.PASS );

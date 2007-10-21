@@ -7,7 +7,6 @@ package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
@@ -17,6 +16,7 @@ import uk.ac.ebi.intact.model.InteractionImpl;
 import uk.ac.ebi.intact.persistence.dao.DaoUtils;
 import uk.ac.ebi.intact.persistence.dao.ExperimentDao;
 
+import javax.persistence.EntityManager;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,8 +30,8 @@ import java.util.List;
 @SuppressWarnings( {"unchecked"} )
 public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implements ExperimentDao {
 
-    public ExperimentDaoImpl( Session session, IntactSession intactSession ) {
-        super( Experiment.class, session, intactSession );
+    public ExperimentDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
+        super( Experiment.class, entityManager, intactSession );
     }
 
     public Integer countInteractionsForExperimentWithAc( String ac ) {

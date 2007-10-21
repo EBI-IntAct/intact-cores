@@ -9,6 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactSession;
 
+import javax.persistence.EntityManagerFactory;
+
 /**
  * TODO comment this!
  *
@@ -19,6 +21,12 @@ import uk.ac.ebi.intact.context.IntactSession;
 public abstract class DataConfig<T, C> {
 
     private static final Log log = LogFactory.getLog( DataConfig.class );
+
+    // required version is 1.7.0 (build version should always be 0, as a change in the build
+    // version should no break compatibility)
+    protected static final Integer DEFAULT_REQUIRED_VERSION_MAJOR = 1;
+    protected static final Integer DEFAULT_REQUIRED_VERSION_MINOR = 7;
+    protected static final Integer DEFAULT_REQUIERD_VERSION_BUILD = 0;
 
     private IntactSession session;
 
@@ -32,8 +40,12 @@ public abstract class DataConfig<T, C> {
 
     public abstract void initialize();
 
+    @Deprecated
     public abstract T getSessionFactory();
 
+    public abstract EntityManagerFactory getEntityManagerFactory();
+
+    @Deprecated
     public abstract void closeSessionFactory();
 
     public abstract C getConfiguration();
@@ -76,6 +88,7 @@ public abstract class DataConfig<T, C> {
         this.autoFlush = autoFlush;
     }
 
+    @Deprecated
     public abstract void flushSession();
 
     public abstract boolean isConfigurable();

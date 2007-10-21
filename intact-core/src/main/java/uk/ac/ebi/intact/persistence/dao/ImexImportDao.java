@@ -39,6 +39,4 @@ public interface ImexImportDao<T> extends BaseDao<T> {
     ImexImport getByPmid(String pmid);
 
     List<String> getAllOkPmids();
-
-    List<String> getAllPmids();
 }

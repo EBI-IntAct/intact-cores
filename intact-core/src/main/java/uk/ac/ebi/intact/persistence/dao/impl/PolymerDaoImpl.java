@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
@@ -24,6 +23,7 @@ import uk.ac.ebi.intact.model.PolymerImpl;
 import uk.ac.ebi.intact.model.SequenceChunk;
 import uk.ac.ebi.intact.persistence.dao.PolymerDao;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 /**
@@ -36,8 +36,8 @@ import java.util.List;
 @SuppressWarnings( {"unchecked"} )
 public class PolymerDaoImpl<T extends PolymerImpl> extends InteractorDaoImpl<T> implements PolymerDao<T> {
 
-    public PolymerDaoImpl( Class<T> entityClass, Session session, IntactSession intactSession ) {
-        super( entityClass, session, intactSession );
+    public PolymerDaoImpl( Class<T> entityClass, EntityManager entityManager, IntactSession intactSession ) {
+        super( entityClass, entityManager, intactSession );
     }
 
     public String getSequenceByPolymerAc( String polymerAc ) {

@@ -36,6 +36,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>02-Oct-2006</pre>
  */
+@Deprecated
 public class SearchItemSyncEventListener implements PostInsertEventListener, PostUpdateEventListener, PreDeleteEventListener {
 
     private static final Log log = LogFactory.getLog( SearchItemSyncEventListener.class );

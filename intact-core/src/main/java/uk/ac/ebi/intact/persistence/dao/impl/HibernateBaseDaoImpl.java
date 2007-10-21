@@ -11,17 +11,19 @@ import org.hibernate.Criteria;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
+import org.hibernate.ejb.HibernateEntityManager;
 import uk.ac.ebi.intact.business.IntactException;
-import uk.ac.ebi.intact.context.AutoBeginTransactionException;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.context.IntactEnvironment;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.context.RuntimeConfig;
 import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.model.NotAnEntityException;
 import uk.ac.ebi.intact.persistence.dao.BaseDao;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,17 +41,20 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     public static final Log log = LogFactory.getLog( HibernateBaseDaoImpl.class );
 
     private Class<T> entityClass;
-    private Session session;
+    private EntityManager entityManager;
     private IntactSession intactSession;
 
-    public HibernateBaseDaoImpl( Class<T> entityClass, Session session, IntactSession intactSession ) {
+    public HibernateBaseDaoImpl( Class<T> entityClass, EntityManager entityManager, IntactSession intactSession ) {
         this.entityClass = entityClass;
-        this.session = session;
+        this.entityManager = entityManager;
         this.intactSession = intactSession;
     }
 
     public Session getSession() {
+        Session session = ((HibernateEntityManager)getEntityManager()).getSession();
+        return session;
 
+        /*
         RuntimeConfig config = RuntimeConfig.getCurrentInstance( intactSession );
         DaoFactory daoFactory = DaoFactory.getCurrentInstance( intactSession, config.getDefaultDataConfig() );
 
@@ -65,10 +70,23 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         // invoking the method from the session factory because if the session is closed it will automatically
         // open one
         return session.getSessionFactory().getCurrentSession();
+        */
     }
 
+    public EntityManager getEntityManager() {
+        if (entityManager != null && !entityManager.isOpen()) {
+            entityManager = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager();
+        }
+        return entityManager;
+    }
+
+    @Deprecated
     public void flushCurrentSession() {
-        session.flush();
+        flushEntityManager();
+    }
+
+    public void flushEntityManager() {
+        entityManager.flush();
     }
 
     protected IntactSession getIntactSession() {
@@ -81,7 +99,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      * @return String the database name, or an empty String if the query fails
      */
     public String getDbName() throws SQLException {
-        String url = session.connection().getMetaData().getURL();
+        String url = getSession().connection().getMetaData().getURL();
 
         if ( url.contains( ":" ) ) {
             url = url.substring( url.lastIndexOf( ":" ) + 1, url.length() );
@@ -118,7 +136,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      * @throws SQLException thrown if the metatdata can't be obtained
      */
     public String getDbUserName() throws SQLException {
-        return session.connection().getMetaData().getUserName();
+        return getSession().connection().getMetaData().getUserName();
     }
 
     public void update( T objToUpdate ) {
@@ -130,7 +148,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     public void persist( T objToPersist ) {
         checkReadOnly();
 
-        getSession().persist( objToPersist );
+        getEntityManager().persist( objToPersist );
     }
 
     public void persistAll( Collection<T> objsToPersist ) {
@@ -205,7 +223,13 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     }
 
     protected T getByPropertyName( String propertyName, String value, boolean ignoreCase ) {
-        return ( T ) getCriteriaByPropertyName( propertyName, value, ignoreCase ).uniqueResult();
+        Query query = getQueryByPropertyName(propertyName, value, ignoreCase);
+
+        List<T> results = query.getResultList();
+
+        if (results.isEmpty()) return null;
+
+        return results.iterator().next();
     }
 
     public Collection<T> getColByPropertyName( String propertyName, String value ) {
@@ -217,7 +241,20 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
             return getByPropertyNameLike( propertyName, value, ignoreCase, -1, -1 );
         }
 
-        return getCriteriaByPropertyName( propertyName, value, ignoreCase ).list();
+        return getQueryByPropertyName( propertyName, value, ignoreCase ).getResultList();
+    }
+
+    private Query getQueryByPropertyName(String propertyName, String value, boolean ignoreCase) {
+        Query query;
+
+        if (ignoreCase) {
+            query = getEntityManager().createQuery("from "+getEntityClass().getSimpleName()+" where lower("+propertyName+") = lower(:propValue)");
+        } else {
+            query = getEntityManager().createQuery("from "+getEntityClass().getSimpleName()+" where "+propertyName+" = :propValue");
+        }
+
+        query.setParameter("propValue", value);
+        return query;
     }
 
     protected Collection<T> getByPropertyNameLike( String propertyName, String value ) {
@@ -309,16 +346,16 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         }
     }
 
-    private Criteria getCriteriaByPropertyName( String propertyName, String value, boolean ignoreCase ) {
-        Criteria criteria = getSession().createCriteria( entityClass );
-        SimpleExpression restriction = Restrictions.eq( propertyName, value );
+    protected T uniqueResult(Query query) {
+        List results = query.getResultList();
 
-        if ( ignoreCase ) {
-            restriction.ignoreCase();
+        if (results.isEmpty()) {
+            return null;
+        } else if (results.size() > 1) {
+            throw new IntactException("Query returned more than one result");
         }
 
-        criteria.add( restriction );
-
-        return criteria;
+        return (T) results.iterator().next();
     }
+
 }

@@ -37,15 +37,12 @@ public class ImexImportDaoTest extends IntactBasicTestCase {
     @Before
     public void prepareTest() throws Exception {
         new IntactUnit().createSchema();
-        beginTransaction();
 
         this.imexImportDao = getDaoFactory().getImexImportDao();
     }
 
     @After
     public void endTest() throws Exception {
-        commitTransaction();
-
         this.imexImportDao = null;
     }
 
@@ -54,44 +51,12 @@ public class ImexImportDaoTest extends IntactBasicTestCase {
 
         ImexImport imex1 = new ImexImport(getIntactContext().getInstitution(), "1234567", ImexImportStatus.OK);
 
-        imexImportDao.persist(imex1);
-
-        commitTransaction();
         beginTransaction();
+        imexImportDao.persist(imex1);
+        commitTransaction();
 
         Assert.assertEquals(1, imexImportDao.countAll());
-        Assert.assertNotNull(imexImportDao.getByPmid("1234567"));
-    }
 
-    @Test
-    public void getByPmid() throws Exception {
-
-        ImexImport imex1 = new ImexImport(getIntactContext().getInstitution(), "1234567", ImexImportStatus.OK);
-
-        imexImportDao.persist(imex1);
-
-        commitTransaction();
-        beginTransaction();
-
-        final ImexImport imex = imexImportDao.getByPmid("1234567");
-        Assert.assertNotNull(imex);
-        Assert.assertEquals(ImexImportStatus.OK, imex.getStatus());
-    }
-    
-    @Test
-    public void getAllAndFailed() throws Exception {
-
-        ImexImport imex1 = new ImexImport(getIntactContext().getInstitution(), "1234567", ImexImportStatus.OK);
-        ImexImport imex2 = new ImexImport(getIntactContext().getInstitution(), "1234568", ImexImportStatus.ERROR);
-
-        imexImportDao.persist(imex1);
-        imexImportDao.persist(imex2);
-
-        commitTransaction();
-        beginTransaction();
-
-        Assert.assertEquals(2, imexImportDao.getAllPmids().size());
-        Assert.assertEquals(1, imexImportDao.getAllOkPmids().size());
-        Assert.assertEquals(1, imexImportDao.getFailed().size());
+        
     }
 }

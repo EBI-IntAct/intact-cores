@@ -63,7 +63,12 @@ public class IntactIdGenerator extends SequenceGenerator {
      */
     @Override
     public Serializable generate( SessionImplementor sessionImplementor, Object object ) throws HibernateException {
-        String prefix = IntactContext.getCurrentInstance().getConfig().getAcPrefix();
+        String prefix;
+        if (IntactContext.currentInstanceExists()) {
+            prefix = IntactContext.getCurrentInstance().getConfig().getAcPrefix();
+        } else {
+            prefix = "UNK";
+        }
 
         String id = prefix + "-" + super.generate( sessionImplementor, object );
 

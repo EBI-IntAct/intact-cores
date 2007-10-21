@@ -32,7 +32,7 @@ public class SmallCvPrimerTest extends IntactBasicTestCase {
 
     @Before
     public void prepare() throws Exception {
-        new IntactUnit().createSchema();
+        new IntactUnit().createSchema(true);
     }
 
     @Test
@@ -41,9 +41,9 @@ public class SmallCvPrimerTest extends IntactBasicTestCase {
 
         beginTransaction();
         cvPrimer.createCVs();
+        commitTransaction();
 
         Assert.assertEquals(12, getDaoFactory().getCvObjectDao().countAll());
-        commitTransaction();
     }
 
     /**

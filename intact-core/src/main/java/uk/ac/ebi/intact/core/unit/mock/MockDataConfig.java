@@ -15,14 +15,10 @@
  */
 package uk.ac.ebi.intact.core.unit.mock;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
+import uk.ac.ebi.intact.config.impl.JpaCoreDataConfig;
 import uk.ac.ebi.intact.context.IntactSession;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
+import javax.persistence.EntityManagerFactory;
 
 /**
  * TODO comment this
@@ -30,46 +26,21 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class MockDataConfig extends AbstractHibernateDataConfig {
+public class MockDataConfig extends JpaCoreDataConfig {
 
     private IntactSession intactSession;
 
     public MockDataConfig(IntactSession intactSession) {
-        super(intactSession);
+        super(intactSession, null);
         this.intactSession = intactSession;
-    }
-
-    public void closeSessionFactory() {
-    }
-
-    public void flushSession() {
-    }
-
-    public Configuration getConfiguration() {
-        return null;
     }
 
     public String getName() {
         return "MOCK-DATA-CONFIG";
     }
 
-    public SessionFactory getSessionFactory() {
+    public EntityManagerFactory getEntityManagerFactory() {
         throw new UnsupportedOperationException();
-    }
-
-    public void initialize() {
-    }
-
-    public boolean isConfigurable() {
-        throw new UnsupportedOperationException();
-    }
-
-    protected File getConfigFile() {
-        throw new UnsupportedOperationException();
-    }
-
-    protected List<String> getPackagesWithEntities() {
-        return Collections.EMPTY_LIST;
     }
 
 }

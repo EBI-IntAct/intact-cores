@@ -18,13 +18,15 @@ import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.InstitutionAlias;
 import uk.ac.ebi.intact.model.InstitutionXref;
 import uk.ac.ebi.intact.model.meta.DbInfo;
-import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.model.util.AliasUtils;
+import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.dao.IntactTransaction;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Class to initialize IntAct, and to initialize IntactContexts
@@ -78,7 +80,18 @@ public class IntactConfigurator {
      * @throws IntactInitializationError if something unexpected happends during loading or a check fails
      */
     public static void initIntact( IntactSession session ) throws IntactInitializationError {
-        log.info( "Initializing intact-core with session of class: " + session.getClass() );
+        if (log.isInfoEnabled()) {
+            Properties buildInfoProps = new Properties();
+            try {
+                buildInfoProps.load(IntactConfigurator.class.getResourceAsStream("/META-INF/BuildInfo.properties"));
+            }
+            catch (IOException e) {
+                throw new IntactInitializationError("Problem loading build info properties", e);
+            }
+            String version = buildInfoProps.getProperty("version");
+
+            log.info("Initializing intact-core (" + version + ") with session of class: " + session.getClass());
+        }
 
         if ( isInitialized( session ) ) {
             throw new IntactInitializationError( "IntAct already initialized" );
@@ -98,6 +111,7 @@ public class IntactConfigurator {
         RuntimeConfig config = RuntimeConfig.getCurrentInstance( session );
 
         if ( config.getDefaultDataConfig() == null ) {
+            if (log.isDebugEnabled()) log.debug("Registering default data-config");
             // add the core model data config
             DataConfig dataConfig = IntactContext.calculateDefaultDataConfig(session);
             registerDataConfig(dataConfig, config, true);
@@ -178,13 +192,11 @@ public class IntactConfigurator {
      */
     private static boolean registerDataConfig(DataConfig dataConfig, RuntimeConfig config, boolean isDefault) {
         log.info("Registering data-config: " + dataConfig.getName());
-        try {
-            dataConfig.getSessionFactory();
-        } catch (Throwable t) {
-            log.info("Data-config not found: " + dataConfig.getName()+" - "+t.getMessage());
-            t.printStackTrace();
-            return false;
+
+        if (!dataConfig.isInitialized()) {
+            dataConfig.initialize();
         }
+
         config.addDataConfig(dataConfig, isDefault);
 
         return true;
@@ -417,6 +429,14 @@ public class IntactConfigurator {
         daoFactory.beginTransaction();
         daoFactory.getInstitutionDao().persist(institution);
         context.getDataContext().commitTransaction();
+
+        /*
+        EntityManagerFactory emf = ((AbstractJpaDataConfig)context.getConfig().getDefaultDataConfig()).getSessionFactory();
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        new InstitutionDaoImpl(em, context.getSession()).persist(institution);
+        em.getTransaction().commit();
+         */
     }
 
     private static void persistSchemaVersionIfNecessary( IntactContext context ) {

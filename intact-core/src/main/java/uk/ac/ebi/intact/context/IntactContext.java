@@ -37,7 +37,7 @@ public class IntactContext implements Serializable {
             // stack trace element to know from where this method was called
             StackTraceElement ste = Thread.currentThread().getStackTrace()[3];
 
-            log.warn( "Current instance of IntactContext is null. Initializing with StandaloneSession," +
+            log.debug( "Current instance of IntactContext is null. Initializing with StandaloneSession," +
                       "because probably this application is not a web application.\nCalled at:\n\t" +
                       ste.toString() );
 
@@ -52,7 +52,7 @@ public class IntactContext implements Serializable {
     }
 
     public static void initStandaloneContext() {
-        initContext( null, null );
+        initContext( (String)null, new StandaloneSession() );
     }
 
     public static void initStandaloneContext(File hibernateFile) {
@@ -65,6 +65,19 @@ public class IntactContext implements Serializable {
         IntactSession session = new StandaloneSession();
         DataConfig dataConfig = new InMemoryDataConfig(session);
         initContext( dataConfig, session );
+    }
+
+    public static void initContext( String persistenceUnitName, IntactSession session ) {
+        DataConfig dataConfig;
+
+        if (persistenceUnitName != null) {
+            persistenceUnitName = "intact-core-mem";
+            dataConfig = new JpaCoreDataConfig(session, persistenceUnitName);
+        } else {
+            dataConfig = calculateDefaultDataConfig(session);
+        }
+
+        initContext(dataConfig, session);
     }
 
     public static void initContext( DataConfig defaultDataConfig, IntactSession session ) {
@@ -123,9 +136,7 @@ public class IntactContext implements Serializable {
 
     public void close() {
         for (DataConfig dataConfig : getConfig().getDataConfigs()) {
-            if (dataConfig instanceof AbstractHibernateDataConfig) {
-                ((AbstractHibernateDataConfig)dataConfig).getSessionFactory().close();
-            }
+            dataConfig.getEntityManagerFactory().close();
         }
         session = null;
         dataContext = null;
@@ -141,7 +152,7 @@ public class IntactContext implements Serializable {
     public static DataConfig calculateDefaultDataConfig(IntactSession session) {
         if (log.isDebugEnabled()) log.debug("Calculating default DataConfig");
 
-        DataConfig dataConfig = new StandardCoreDataConfig(session);
+        DataConfig dataConfig = new StandardCoreDataConfig( session );
 
         if (!dataConfig.isConfigurable()) {
             if (log.isDebugEnabled()) log.debug("\tDataConfig not configurable (hibernate.cfg.xml not found)");
@@ -151,7 +162,6 @@ public class IntactContext implements Serializable {
                  try {
                         Constructor constructor = Class.forName( dataConfigClass ).getConstructor(IntactSession.class);
                         dataConfig = ( DataConfig ) constructor.newInstance(session);
-                        dataConfig.getSessionFactory();
                     }
                     catch ( Exception e ) {
                         throw new IntactInitializationError( "Error initializing data configs. A data config must have a constructor" +
@@ -167,4 +177,6 @@ public class IntactContext implements Serializable {
 
         return dataConfig;
     }
+
+
 }

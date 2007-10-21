@@ -7,12 +7,12 @@ package uk.ac.ebi.intact.context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.FlushMode;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.ejb.HibernateEntityManager;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.config.DataConfig;
 import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
+import uk.ac.ebi.intact.config.impl.AbstractJpaDataConfig;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.io.Serializable;
@@ -74,6 +74,12 @@ public class DataContext implements Serializable {
     public void commitTransaction( String dataConfigName ) throws IntactTransactionException {
         DaoFactory daoFactory = getDaoFactory( dataConfigName );
 
+        if (log.isDebugEnabled()) {
+           log.debug( "Committing transaction for: " + dataConfigName );
+        }
+
+        daoFactory.commitTransaction();
+        /*
         if ( daoFactory.isTransactionActive() ) {
             try {
                 if (getSession().getFlushMode() == FlushMode.MANUAL)
@@ -90,7 +96,7 @@ public class DataContext implements Serializable {
                 log.debug( "Committed transaction: " + dataConfigName );
             }
         }
-
+        */
         assert ( daoFactory.isTransactionActive() == false );
 
         // flush the CvContext in to avoid lazy initialization errors
@@ -102,9 +108,21 @@ public class DataContext implements Serializable {
     }
 
     public Session getSession() {
-        AbstractHibernateDataConfig abstractHibernateDataConfig = ( AbstractHibernateDataConfig ) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig();
-        SessionFactory factory = abstractHibernateDataConfig.getSessionFactory();
-        Session session = factory.getCurrentSession();
+        return getSessionFromSessionFactory(IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig());
+    }
+
+     protected Session getSessionFromSessionFactory(DataConfig dataConfig) {
+        Session session;
+        if (dataConfig instanceof AbstractHibernateDataConfig) {
+            AbstractHibernateDataConfig hibernateDataConfig = (AbstractHibernateDataConfig) dataConfig;
+            session = hibernateDataConfig.getSessionFactory().getCurrentSession();
+        } else if (dataConfig instanceof AbstractJpaDataConfig) {
+            AbstractJpaDataConfig jpaDataConfig = (AbstractJpaDataConfig) dataConfig;
+            HibernateEntityManager hibernateEntityManager = (HibernateEntityManager) jpaDataConfig.getSessionFactory().createEntityManager();
+            session = hibernateEntityManager.getSession();
+        } else {
+            throw new IllegalStateException("Wrong DataConfig found: "+dataConfig);
+        }
         return session;
     }
 
@@ -136,7 +154,8 @@ public class DataContext implements Serializable {
 
     public void flushSession() {
         DataConfig dataConfig = RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig();
-        dataConfig.flushSession();
+        DaoFactory daoFactory = DaoFactory.getCurrentInstance(session, dataConfig);
+        daoFactory.getEntityManager().flush();
 
         // flush the CvContext in to avoid lazy initialization errors
         clearCvContext();

@@ -16,13 +16,13 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.MineInteraction;
 import uk.ac.ebi.intact.persistence.dao.MineInteractionDao;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 /**
@@ -36,8 +36,8 @@ import java.util.List;
 public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction>
         implements MineInteractionDao {
 
-    public MineInteractionDaoImpl( Session session, IntactSession intactSession ) {
-        super( MineInteraction.class, session, intactSession );
+    public MineInteractionDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
+        super( MineInteraction.class, entityManager, intactSession );
     }
 
     public void persist( MineInteraction mineInteraction ) {
@@ -45,7 +45,7 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
     }
 
     public int deleteAll() {
-        return getSession().createQuery( "DELETE MineInteraction" ).executeUpdate();
+        return getEntityManager().createQuery( "DELETE from MineInteraction" ).executeUpdate();
     }
 
     public MineInteraction get( String proteinIntactAc1, String proteinIntactAc2 ) {

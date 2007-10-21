@@ -32,12 +32,8 @@ public class IntactTransaction {
      */
     private StackTraceElement[] stackTrace;
 
-    public IntactTransaction( IntactSession session, Transaction transaction ) {
-        this.transaction = transaction;
-
-        log.debug( "Transaction started" );
-
-        if ( !RuntimeConfig.getCurrentInstance( session ).isDebugMode() ) {
+    protected IntactTransaction (IntactSession session) {
+         if ( !RuntimeConfig.getCurrentInstance( session ).isDebugMode() ) {
             if ( log.isDebugEnabled() ) {
                 log.debug( "Storing StackTrace on opening transaction, now the caller can be traced !!" );
             }
@@ -50,6 +46,13 @@ public class IntactTransaction {
         }
 
         this.id = String.valueOf("TR"+System.currentTimeMillis());
+    }
+
+    public IntactTransaction( IntactSession session, Transaction transaction ) {
+        this(session);
+        this.transaction = transaction;
+
+        log.debug( "Transaction started" );
     }
 
     /**

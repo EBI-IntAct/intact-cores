@@ -8,7 +8,6 @@ package uk.ac.ebi.intact.persistence.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
@@ -19,6 +18,7 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.persistence.dao.ProteinDao;
 
+import javax.persistence.EntityManager;
 import java.util.*;
 
 /**
@@ -33,8 +33,8 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
 
     private static Log log = LogFactory.getLog( ProteinDaoImpl.class );
 
-    public ProteinDaoImpl( Session session, IntactSession intactSession ) {
-        super( ProteinImpl.class, session, intactSession );
+    public ProteinDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
+        super( ProteinImpl.class, entityManager, intactSession );
     }
 
     public String getIdentityXrefByProteinAc( String proteinAc ) {

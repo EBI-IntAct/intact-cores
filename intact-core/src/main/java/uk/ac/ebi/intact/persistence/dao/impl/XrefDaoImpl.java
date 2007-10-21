@@ -5,11 +5,11 @@
  */
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import org.hibernate.Session;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Xref;
 import uk.ac.ebi.intact.persistence.dao.XrefDao;
 
+import javax.persistence.EntityManager;
 import java.util.Collection;
 
 /**
@@ -21,8 +21,8 @@ import java.util.Collection;
  */
 public class XrefDaoImpl<T extends Xref> extends IntactObjectDaoImpl<T> implements XrefDao<T> {
 
-    public XrefDaoImpl( Class<T> entityClass, Session session, IntactSession intactSession ) {
-        super( entityClass, session, intactSession );
+    public XrefDaoImpl( Class<T> entityClass, EntityManager entityManager, IntactSession intactSession ) {
+        super( entityClass, entityManager, intactSession );
     }
 
     public Collection<T> getByPrimaryId( String primaryId ) {

@@ -15,10 +15,7 @@
  */
 package uk.ac.ebi.intact.config.impl;
 
-import uk.ac.ebi.intact.config.ConfigurationException;
 import uk.ac.ebi.intact.context.IntactSession;
-
-import java.io.*;
 
 /**
  * This configuration uses a memory database (H2)
@@ -26,42 +23,14 @@ import java.io.*;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class InMemoryDataConfig extends StandardCoreDataConfig {
+public class InMemoryDataConfig extends JpaCoreDataConfig {
+
+    private static final String PERSISTENCE_UNIT_NAME = "intact-core-mem";
 
     public static final String NAME = "uk.ac.ebi.intact.config.IN_MEMORY";
 
-    private File configurationFile;
-
     public InMemoryDataConfig(IntactSession session) {
-        super(session);
-    }
-
-    @Override
-    protected File getConfigFile() {
-        if (configurationFile != null) {
-            return configurationFile;
-        }
-
-        try {
-            configurationFile = File.createTempFile("memory-hibernate-", ".cfg.xml");
-            configurationFile.deleteOnExit();
-
-            InputStream is = InMemoryDataConfig.class.getResourceAsStream("/META-INF/memory-hibernate.cfg.xml");
-
-            FileWriter writer = new FileWriter(configurationFile);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                writer.write(line+System.getProperty("line.separator"));
-            }
-
-            writer.close();
-        } catch (IOException e) {
-            throw new ConfigurationException("Exception getting configuration file", e);
-        }
-
-        return configurationFile;
+        super(session, PERSISTENCE_UNIT_NAME);
     }
 
     @Override
