@@ -34,6 +34,8 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
         return instance.get();
     }
 
+
+
     @Override
     public Institution syncIfTransient(Institution intactObject) {
         if (PersisterContext.getInstance().contains(intactObject)) {
@@ -102,6 +104,11 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
 
     @Override
     protected Institution fetchFromDataSource(Institution intactObject) {
+
+        if (intactObject.getAc() != null) {
+            return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                    .getInstitutionDao().getByAc(intactObject.getAc());
+        }
 
         InstitutionXref idXref = null;
 

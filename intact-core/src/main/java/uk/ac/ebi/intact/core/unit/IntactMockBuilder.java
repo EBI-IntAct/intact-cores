@@ -89,6 +89,10 @@ public class IntactMockBuilder {
         return XrefUtils.createIdentityXref(parent, primaryId, getIdentityQualifier(), cvDatabase);
     }
 
+    public <X extends Xref> X createIdentityXrefChebi(AnnotatedObject<X,?> parent, String chebiId) {
+        return XrefUtils.createIdentityXrefChebi(parent, chebiId);
+    }
+
     public <X extends Xref> X createPrimaryReferenceXref(AnnotatedObject<X,?> parent, String primaryId) {
         CvXrefQualifier primaryReference = createCvObject(CvXrefQualifier.class, CvXrefQualifier.PRIMARY_REFERENCE_MI_REF, CvXrefQualifier.PRIMARY_REFERENCE);
         CvDatabase pubmedDb = createCvObject(CvDatabase.class, CvDatabase.PUBMED_MI_REF, CvDatabase.PUBMED);
@@ -127,6 +131,24 @@ public class IntactMockBuilder {
 
     public <T extends CvObject> T createCvObject(Class<T> cvClass, String primaryId, String shortLabel) {
         return CvObjectUtils.createCvObject(getInstitution(), cvClass, primaryId, shortLabel);
+    }
+
+    public SmallMolecule createSmallMoleculeRandom() {
+          return createSmallMolecule(nextString("chebi:"), nextString());
+    }
+
+    public SmallMolecule createSmallMolecule(String chebiId, String shortLabel) {
+         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.SMALL_MOLECULE_MI_REF,
+                                                   CvInteractorType.SMALL_MOLECULE);
+
+        SmallMolecule smallMolecule = new SmallMoleculeImpl(shortLabel, getInstitution(), intType);
+        InteractorXref idXref = createIdentityXrefChebi(smallMolecule, chebiId);
+        smallMolecule.addXref(idXref);
+
+        InteractorAlias alias = createAliasGeneName(smallMolecule, shortLabel.toUpperCase());
+        smallMolecule.addAlias(alias);
+
+        return smallMolecule;
     }
 
     public Protein createProteinRandom() {
@@ -280,7 +302,9 @@ public class IntactMockBuilder {
         experiment.setCvInteraction(createCvObject(CvInteraction.class, CvInteraction.COSEDIMENTATION_MI_REF, CvInteraction.COSEDIMENTATION));
         experiment.setCvIdentification(createCvObject(CvIdentification.class, CvIdentification.PREDETERMINED_MI_REF, CvIdentification.PREDETERMINED));
 
-        experiment.setPublication(createPublicationRandom());
+        final Publication publication = createPublicationRandom();
+        experiment.setPublication(publication);
+        publication.addExperiment(experiment);
         experiment.addXref(createPrimaryReferenceXref(experiment, experiment.getPublication().getShortLabel()));
 
         return experiment;

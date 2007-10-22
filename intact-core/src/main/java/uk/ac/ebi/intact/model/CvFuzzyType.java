@@ -58,6 +58,12 @@ public class CvFuzzyType extends CvObject implements Editable {
     public static final String N_TERMINAL = "n-terminal";
     public static final String N_TERMINAL_MI_REF = "MI:0340";
 
+    /**
+     * The constant for certain.
+     */
+    public static final String CERTAIN = "certain";
+    public static final String CERTAIN_MI_REF = "MI:0335";
+
     // -- Start of Inner class ------------------------------------------------
 
     /**
@@ -242,6 +248,38 @@ public class CvFuzzyType extends CvObject implements Editable {
     @Transient
     public final boolean isUndetermined() {
         return hasMiIdentity( UNDETERMINED_MI_REF ) || getShortLabel().equals( UNDETERMINED );
+    }
+
+    /**
+     * @return true if this current type is of less-than type.
+     */
+    @Transient
+    public final boolean isLessThan() {
+        return hasMiIdentity( LESS_THAN_MI_REF ) || getShortLabel().equals( LESS_THAN );
+    }
+
+    /**
+     * @return true if this current type is greater-than type.
+     */
+    @Transient
+    public final boolean isGreaterThan() {
+        return hasMiIdentity( GREATER_THAN_MI_REF ) || getShortLabel().equals( GREATER_THAN );
+    }
+
+    /**
+     * @return true if this current type is range type.
+     */
+    @Transient
+    public final boolean isRange() {
+        return hasMiIdentity( RANGE_MI_REF ) || getShortLabel().equals( RANGE );
+    }
+
+    /**
+     * @return true if this current type is certain type.
+     */
+    @Transient
+    public final boolean isCertain() {
+        return hasMiIdentity( CERTAIN_MI_REF ) || getShortLabel().equals( CERTAIN );
     }
 
     @Transient
