@@ -85,12 +85,12 @@ public class IntactMockBuilder {
         return XrefUtils.createIdentityXrefUniprot(parent, primaryId);
     }
 
-    public <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvDatabase cvDatabase) {
-        return XrefUtils.createIdentityXref(parent, primaryId, getIdentityQualifier(), cvDatabase);
-    }
-
     public <X extends Xref> X createIdentityXrefChebi(AnnotatedObject<X,?> parent, String chebiId) {
         return XrefUtils.createIdentityXrefChebi(parent, chebiId);
+    }
+
+    public <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvDatabase cvDatabase) {
+        return XrefUtils.createIdentityXref(parent, primaryId, getIdentityQualifier(), cvDatabase);
     }
 
     public <X extends Xref> X createPrimaryReferenceXref(AnnotatedObject<X,?> parent, String primaryId) {
@@ -207,7 +207,9 @@ public class IntactMockBuilder {
     }
 
     public Component createComponentBait(Interactor interactor) {
-        return createComponentBait(null, interactor);
+        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
+        return createComponentBait(interaction, interactor);
     }
 
     public Component createComponentBait(Interaction interaction, Interactor interactor) {
@@ -218,7 +220,9 @@ public class IntactMockBuilder {
     }
 
     public Component createComponentPrey(Interactor interactor) {
-        return createComponentPrey(null, interactor);
+        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
+        return createComponentPrey(interaction, interactor);
     }
 
     public Component createComponentRandom() {
@@ -389,14 +393,47 @@ public class IntactMockBuilder {
         return createFeature(nextString("feat"), cvFeatureType);
     }
 
-    public Range createRange(int beginFrom, int endFrom, int beginTo, int endTo) {
-        Range range = new Range(institution, beginFrom, endTo, null);
-        range.setFromIntervalStart(beginFrom);
-        range.setFromIntervalEnd(endFrom);
-        range.setToIntervalStart(beginTo);
-        range.setToIntervalEnd(endTo);
+    public Range createRangeUndetermined() {
+        Range range = new Range(institution, 0, 0, null);
 
-        CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, "MI:0339", CvFuzzyType.UNDETERMINED);
+        CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.UNDETERMINED_MI_REF, CvFuzzyType.UNDETERMINED);
+        range.setFromCvFuzzyType(fuzzyType);
+        range.setToCvFuzzyType(fuzzyType);
+
+        return range;
+    }
+
+    public Range createRange(int beginFrom, int endFrom, int beginTo, int endTo) {
+
+        if( beginFrom == 0 && endFrom == 0 && beginTo == 0 && endTo == 0 ) {
+            return createRangeUndetermined();
+        }
+
+        Range range = new Range(institution, beginFrom, endFrom, beginTo, endTo, null);
+
+        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.RANGE_MI_REF, CvFuzzyType.RANGE);
+        range.setFromCvFuzzyType(fuzzyType);
+        range.setToCvFuzzyType(fuzzyType);
+
+        return range;
+    }
+
+    public Range createRangeCTerminal() {
+
+        Range range = new Range(institution, 0, 0, null);
+
+        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.C_TERMINAL_MI_REF, CvFuzzyType.C_TERMINAL);
+        range.setFromCvFuzzyType(fuzzyType);
+        range.setToCvFuzzyType(fuzzyType);
+
+        return range;
+    }
+
+    public Range createRangeCTerminal(int beginFrom, int endFrom, int beginTo, int endTo) {
+
+        Range range = new Range(institution, beginFrom, endFrom, beginTo, endTo, null);
+
+        final CvFuzzyType fuzzyType = createCvObject(CvFuzzyType.class, CvFuzzyType.C_TERMINAL_MI_REF, CvFuzzyType.C_TERMINAL);
         range.setFromCvFuzzyType(fuzzyType);
         range.setToCvFuzzyType(fuzzyType);
 
