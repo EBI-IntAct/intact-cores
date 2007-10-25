@@ -112,21 +112,6 @@ public class XrefUtils {
         return null;
     }
 
-    public static <X extends Xref> Collection<X> getIdentityXref(AnnotatedObject<X,?> annotatedObject ) {
-        Collection<X> xrefs = new ArrayList<X>( );
-
-        for (X xref : annotatedObject.getXrefs()) {
-            CvXrefQualifier qualifier = xref.getCvXrefQualifier();
-            if (qualifier != null &&
-                CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF) ) {
-
-                xrefs.add( xref );
-            }
-        }
-
-        return xrefs;
-    }
-
     public static <X extends Xref> X getPsiMiIdentityXref(AnnotatedObject<X,?> annotatedObject) {
         if (annotatedObject == null) {
             throw new NullPointerException("annotatedObject should not be null");
