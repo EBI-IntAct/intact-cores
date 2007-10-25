@@ -89,6 +89,10 @@ public class IntactMockBuilder {
         return XrefUtils.createIdentityXrefChebi(parent, chebiId);
     }
 
+    public <X extends Xref> X createIdentityXrefEmblGenbankDdbj(AnnotatedObject<X,?> parent, String emblGenbankDdbjId) {
+        return XrefUtils.createIdentityXrefEmblGenbankDdbj(parent, emblGenbankDdbjId);
+    }
+
     public <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvDatabase cvDatabase) {
         return XrefUtils.createIdentityXref(parent, primaryId, getIdentityQualifier(), cvDatabase);
     }
@@ -131,6 +135,25 @@ public class IntactMockBuilder {
 
     public <T extends CvObject> T createCvObject(Class<T> cvClass, String primaryId, String shortLabel) {
         return CvObjectUtils.createCvObject(getInstitution(), cvClass, primaryId, shortLabel);
+    }
+
+    public NucleicAcid createNucleicAcidRandom() {
+        return createNucleicAcid( nextString( ), createBioSourceRandom(), nextString( "NA-" ));
+    }
+
+    public NucleicAcid createNucleicAcid( String emblGenbankDdbjId, BioSource biosource, String shortlabel ) {
+        CvInteractorType type = createCvObject(CvInteractorType.class,
+                                               CvInteractorType.NUCLEIC_ACID_MI_REF,
+                                               CvInteractorType.NUCLEIC_ACID);
+
+        NucleicAcid na = new NucleicAcidImpl(getInstitution(), biosource, shortlabel, type);
+        InteractorXref idXref = createIdentityXrefEmblGenbankDdbj(na, emblGenbankDdbjId);
+        na.addXref(idXref);
+
+        InteractorAlias alias = createAliasGeneName(na, shortlabel.toUpperCase());
+        na.addAlias(alias);
+
+        return na;
     }
 
     public SmallMolecule createSmallMoleculeRandom() {
