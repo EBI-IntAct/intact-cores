@@ -66,6 +66,9 @@ public class CvDatabase extends CvObject implements Editable {
     public static final String PUBMED = "pubmed";
     public static final String PUBMED_MI_REF = "MI:0446";
 
+    public static final String DOI = "doi";
+    public static final String DOI_MI_REF = "MI:0574";
+
     public static final String PSI_MI = "psi-mi";
     public static final String PSI_MI_MI_REF = "MI:0488";
 
@@ -104,7 +107,6 @@ public class CvDatabase extends CvObject implements Editable {
 
     public static final String PDB = "pdb";
     public static final String PDB_MI_REF = "MI:0460";
-
 
     /**
      * This constructor should <b>not</b> be used as it could result in objects with invalid state. It is here for
