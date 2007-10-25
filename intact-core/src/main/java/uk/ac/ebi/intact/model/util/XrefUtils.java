@@ -42,6 +42,17 @@ public class XrefUtils {
         return createIdentityXref(parent, chebiId, builder.createIdentityCvXrefQualifier(parent.getOwner()), cvDatabase);
     }
 
+    public static <X extends Xref> X createIdentityXrefEmblGenbankDdbj(AnnotatedObject<X,?> parent, String emblGenbankDdbjId) {
+        CvObjectBuilder builder = new CvObjectBuilder();
+        CvDatabase cvDatabase = CvObjectUtils.createCvObject(parent.getOwner(),
+                                                             CvDatabase.class,
+                                                             CvDatabase.DDBG_MI_REF,
+                                                             CvDatabase.DDBG);
+        return createIdentityXref(parent, emblGenbankDdbjId,
+                                  builder.createIdentityCvXrefQualifier(parent.getOwner()),
+                                  cvDatabase);
+    }
+
     public static <X extends Xref> X createIdentityXrefUniprot(AnnotatedObject<X,?> parent, String primaryId) {
         CvObjectBuilder builder = new CvObjectBuilder();
         CvDatabase cvDatabase = CvObjectUtils.createCvObject(parent.getOwner(), CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
@@ -99,6 +110,21 @@ public class XrefUtils {
         }
 
         return null;
+    }
+
+    public static <X extends Xref> Collection<X> getIdentityXref(AnnotatedObject<X,?> annotatedObject ) {
+        Collection<X> xrefs = new ArrayList<X>( );
+
+        for (X xref : annotatedObject.getXrefs()) {
+            CvXrefQualifier qualifier = xref.getCvXrefQualifier();
+            if (qualifier != null &&
+                CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF) ) {
+
+                xrefs.add( xref );
+            }
+        }
+
+        return xrefs;
     }
 
     public static <X extends Xref> X getPsiMiIdentityXref(AnnotatedObject<X,?> annotatedObject) {
