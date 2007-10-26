@@ -46,9 +46,4 @@ public class ComponentTest extends IntactBasicTestCase {
         Assert.assertSame(component.getParticipantIdentification(), component.getParticipantDetectionMethods().iterator().next());
     }
 
-    @Test
-    public void deleteMe() throws Exception {
-        new IntactUnit().createSchema(true);
-    }
-
 }
