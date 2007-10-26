@@ -217,7 +217,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
     /**
      * This method should go through all the entities referenced by the passed intactObject. For each
-     * of its entitities it should invoke <code>syncIfTransient</code>.<br/>
+     * of its entities it should invoke <code>syncIfTransient</code>.<br/>
      * The last call in this method normally should call to super.syncAttributes.
      * @param intactObject the intactObject to sync
      * @return a synced Object
