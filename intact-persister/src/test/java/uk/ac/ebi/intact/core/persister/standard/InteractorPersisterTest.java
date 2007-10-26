@@ -41,16 +41,68 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
         Interactor interactor = getMockBuilder().createProteinRandom();
         PersisterHelper.saveOrUpdate(interactor);
 
-        beginTransaction();
-
         CvAliasType aliasType = getDaoFactory().getCvObjectDao(CvAliasType.class).getByPsiMiRef(CvAliasType.GENE_NAME_MI_REF);
         Assert.assertNotNull(aliasType);
     }
 
     @Test
+    public void fetchFromDb_existingAc() throws Exception {
+        commitTransaction();
+
+        Protein prot = getMockBuilder().createProteinRandom();
+        prot.setShortLabel("IDoExist");
+
+        PersisterHelper.saveOrUpdate(prot);
+
+        Protein newProt = getMockBuilder().createProteinRandom();
+        newProt.setAc(prot.getAc());
+        newProt.setShortLabel("doIExist?");
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
+        Protein fetchedProt = (Protein) InteractorPersister.getInstance().fetchFromDataSource(newProt);
+
+        Assert.assertEquals("IDoExist", fetchedProt.getShortLabel());
+    }
+
+    @Test
+    public void fetchFromDb_existingPrimaryId() throws Exception {
+        commitTransaction();
+
+        Protein prot = getMockBuilder().createProtein("P12345", "IDoExist");
+
+        PersisterHelper.saveOrUpdate(prot);
+
+        Protein newProt = getMockBuilder().createProtein("P12345", "doIExist?");
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
+        Protein fetchedProt = (Protein) InteractorPersister.getInstance().fetchFromDataSource(newProt);
+
+        Assert.assertEquals("IDoExist", fetchedProt.getShortLabel());
+    }
+
+    @Test
+    public void fetchFromDb_existingPrimaryIdAsAc() throws Exception {
+        commitTransaction();
+
+        Protein prot = getMockBuilder().createProtein("aPrimaryId", "IDoExist");
+
+        PersisterHelper.saveOrUpdate(prot);
+
+        Protein newProt = getMockBuilder().createProtein(prot.getAc(), "doIExist?");
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
+        Protein fetchedProt = (Protein) InteractorPersister.getInstance().fetchFromDataSource(newProt);
+
+        Assert.assertEquals("IDoExist", fetchedProt.getShortLabel());
+    }
+
+    @Test
     public void fetchFromDb_duplicatedInteractorsInDb() throws Exception {
         MockIntactContext.initMockContext();
-        MockIntactContext.configureMockDaoFactory().setMockInteractorDao(new MockInteractorDao<InteractorImpl>() {
+        MockIntactContext.configureMockDaoFactory().setMockInteractorDao(new MockInteractorFetchDao() {
             @Override
             public Collection<InteractorImpl> getColByPropertyName(String propertyName, String value) {
                 if (propertyName.equals("shortLabel")) {
@@ -80,7 +132,7 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
     @Test
     public void fetchFromDb_duplicatedInteractorsInDb2() throws Exception {
         MockIntactContext.initMockContext();
-        MockIntactContext.configureMockDaoFactory().setMockInteractorDao(new MockInteractorDao<InteractorImpl>() {
+        MockIntactContext.configureMockDaoFactory().setMockInteractorDao(new MockInteractorFetchDao() {
             @Override
             public Collection<InteractorImpl> getColByPropertyName(String propertyName, String value) {
                 if (propertyName.equals("shortLabel")) {
@@ -110,7 +162,7 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
     @Test
     public void fetchFromDb_oneInteractor() throws Exception {
         MockIntactContext.initMockContext();
-        MockIntactContext.configureMockDaoFactory().setMockInteractorDao(new MockInteractorDao<InteractorImpl>() {
+        MockIntactContext.configureMockDaoFactory().setMockInteractorDao(new MockInteractorFetchDao() {
             @Override
             public Collection<InteractorImpl> getColByPropertyName(String propertyName, String value) {
                 if (propertyName.equals("shortLabel")) {
@@ -136,7 +188,7 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
     @Test
     public void fetchFromDb_doesNotExit() throws Exception {
         MockIntactContext.initMockContext();
-        MockIntactContext.configureMockDaoFactory().setMockInteractorDao(new MockInteractorDao<InteractorImpl>() {
+        MockIntactContext.configureMockDaoFactory().setMockInteractorDao(new MockInteractorFetchDao() {
             @Override
             public Collection<InteractorImpl> getColByPropertyName(String propertyName, String value) {
                 if (propertyName.equals("shortLabel")) {
@@ -203,5 +255,24 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
         interactorPersister.commit();
 
         commitTransaction();
+    }
+
+    private class MockInteractorFetchDao extends MockInteractorDao<InteractorImpl> {
+
+        @Override
+        public InteractorImpl getByAc(String ac) {
+            return null;
+        }
+
+        @Override
+        public InteractorImpl getByXref(String primaryId) {
+            return null;
+        }
+
+        @Override
+        public Collection<InteractorImpl> getColByPropertyName(String propertyName, String value) {
+            return null;
+        }
+
     }
 }

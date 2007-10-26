@@ -15,12 +15,17 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.XrefUtils;
+import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * TODO comment this
@@ -29,6 +34,11 @@ import java.util.ArrayList;
  * @version $Id$
  */
 public class InteractorPersister<T  extends Interactor> extends AbstractAnnotatedObjectPersister<T>{
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(InteractorPersister.class);
 
     private static ThreadLocal<InteractorPersister> instance = new ThreadLocal<InteractorPersister>() {
         @Override
@@ -90,21 +100,52 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
         return super.syncAttributes(intactObject);
     }
 
+    /**
+     * This method tries to fetch an intactObject from the database that matches the object passed as parameter.
+     * The order of the fetch is: (1) AC, (2) primaryID, (3) primaryID as AC, (4) short label
+     * @param intactObject
+     * @return
+     */
     @Override
+    @SuppressWarnings("unchecked")
     protected T fetchFromDataSource(T intactObject) {
-        // TODO the next section is commented out as there can be interactors with the same label (which is a bug)
-        // see IDU-2 (http://www.ebi.ac.uk/interpro/internal-tools/jira-intact/browse/IDU-2)
-        /*
-        try {
-            return (T) getIntactContext().getDataContext().getDaoFactory()
-                    .getInteractorDao().getByShortLabel(intactObject.getShortLabel());
-        } catch (NonUniqueResultException e) {
-            throw new PersisterUnexpectedException("There is more than one interactor with this label in the database: "+intactObject.getShortLabel(), e);
-        }
-        */
 
-        Collection<T> fetchedObjects = (Collection<T>) getIntactContext().getDataContext().getDaoFactory()
-                .getInteractorDao().getColByPropertyName("shortLabel", intactObject.getShortLabel());
+        final InteractorDao<InteractorImpl> interactorDao = getIntactContext().getDataContext().getDaoFactory().getInteractorDao();
+
+        // 1. AC
+        if (intactObject.getAc() != null) {
+            return (T) interactorDao
+                    .getByAc(intactObject.getAc());
+        }
+
+        // 2. try to fetch first the object using the primary ID
+        final Collection<InteractorXref> identityXrefs = XrefUtils.getIdentityXrefs(intactObject);
+        if (identityXrefs.size() > 1) {
+            throw new UndefinedCaseException("Interactor with more than one xref");
+        }
+
+        if (identityXrefs.size() == 1) {
+            final String primaryId = identityXrefs.iterator().next().getPrimaryId();
+            T existingObject = (T) interactorDao
+                    .getByXref(primaryId);
+
+            if (existingObject != null) {
+                if (log.isDebugEnabled()) log.debug("Fetched existing object from the database: "+primaryId);
+                return existingObject;
+            }
+
+            // 3. special case: check if the xref corresponds to an identifier of the own database
+            existingObject = (T) interactorDao
+                    .getByAc(primaryId);
+
+            if (existingObject != null) {
+                if (log.isDebugEnabled()) log.debug("Fetched existing object from the databse; the primaryId is an object from this database: "+primaryId);
+                return existingObject;
+            }
+        }
+
+        // 4. if the primaryId is not found, try the short label
+        Collection<T> fetchedObjects = (Collection<T>) interactorDao.getColByPropertyName("shortLabel", intactObject.getShortLabel());
 
         if (fetchedObjects.isEmpty()) {
             return null;
