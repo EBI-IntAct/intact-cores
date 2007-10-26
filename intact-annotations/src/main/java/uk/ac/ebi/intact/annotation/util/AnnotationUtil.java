@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -87,9 +88,7 @@ public class AnnotationUtil {
      */
     public static Collection<Class> getClassesWithAnnotationFromJar(Class<? extends Annotation> annotationClass, String jarPath, String packageName, ClassLoader classLoader) throws IOException {
         Set<Class> annotatedClasses = new HashSet<Class>();
-
-        JarFile jarFile = new JarFile(jarPath);
-
+        JarFile jarFile = new JarFile( URLDecoder.decode( jarPath, "UTF-8" ) );
         Enumeration<JarEntry> e = jarFile.entries();
 
         while (e.hasMoreElements()) {
