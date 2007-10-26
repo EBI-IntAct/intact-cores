@@ -19,12 +19,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.CvInteractionType;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.XrefUtils;
+import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**

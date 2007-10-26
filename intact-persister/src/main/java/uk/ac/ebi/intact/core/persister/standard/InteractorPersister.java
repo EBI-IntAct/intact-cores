@@ -17,8 +17,11 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.NonUniqueResultException;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.XrefUtils;
@@ -126,8 +129,13 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
 
         if (identityXrefs.size() == 1) {
             final String primaryId = identityXrefs.iterator().next().getPrimaryId();
-            T existingObject = (T) interactorDao
-                    .getByXref(primaryId);
+            T existingObject = null;
+            try {
+                existingObject = (T) interactorDao
+                        .getByXref(primaryId);
+            } catch (NonUniqueResultException e) {
+                throw new PersisterUnexpectedException("Query for '"+primaryId+"' returned more than one xref: "+interactorDao.getByXrefLike(primaryId));
+            }
 
             if (existingObject != null) {
                 if (log.isDebugEnabled()) log.debug("Fetched existing object from the database: "+primaryId);
@@ -145,6 +153,11 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
         }
 
         // 4. if the primaryId is not found, try the short label
+        return fetchFromDataSourceByShortLabel(intactObject);
+    }
+
+    protected T fetchFromDataSourceByShortLabel(T intactObject) {
+        InteractorDao<InteractorImpl> interactorDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInteractorDao(InteractorImpl.class);
         Collection<T> fetchedObjects = (Collection<T>) interactorDao.getColByPropertyName("shortLabel", intactObject.getShortLabel());
 
         if (fetchedObjects.isEmpty()) {
