@@ -290,8 +290,9 @@ public class DaoFactory implements Serializable {
 
     @Deprecated
     public synchronized Session getCurrentSession() {
+        Session session = (Session) getEntityManager().getDelegate();
 
-        Session session = getSessionFromSessionFactory(dataConfig);
+        //Session session = getSessionFromSessionFactory(dataConfig);
 
         if (!dataConfig.isAutoFlush()) {
             session.setFlushMode(FlushMode.MANUAL);
