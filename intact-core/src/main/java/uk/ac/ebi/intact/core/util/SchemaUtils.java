@@ -122,12 +122,6 @@ public class SchemaUtils {
     public static void createSchema(boolean initializeDatabase) throws IntactTransactionException {
         if (log.isDebugEnabled()) log.debug("Creating schema");
 
-        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
-
-        if (dataContext.isTransactionActive()) {
-            throw new IllegalStateException("To reset the schema, the transaction must NOT be active: "+dataContext.getDaoFactory().getCurrentTransaction());
-        }
-
         SchemaExport se = newSchemaExport();
         se.create(false, true);
 

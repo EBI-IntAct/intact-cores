@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnit;
+import uk.ac.ebi.intact.model.CvDatabase;
+import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.meta.ImexImport;
 import uk.ac.ebi.intact.model.meta.ImexImportStatus;
 
@@ -48,8 +50,9 @@ public class ImexImportDaoTest extends IntactBasicTestCase {
 
     @Test
     public void persist_default() throws Exception {
+        Institution institution = getDaoFactory().getInstitutionDao().getByXref(CvDatabase.INTACT_MI_REF);
 
-        ImexImport imex1 = new ImexImport(getIntactContext().getInstitution(), "1234567", ImexImportStatus.OK);
+        ImexImport imex1 = new ImexImport(institution, "1234567", ImexImportStatus.OK);
 
         beginTransaction();
         imexImportDao.persist(imex1);

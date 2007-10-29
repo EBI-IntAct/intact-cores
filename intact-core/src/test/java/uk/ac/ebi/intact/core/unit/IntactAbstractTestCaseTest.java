@@ -32,6 +32,8 @@ public class IntactAbstractTestCaseTest extends IntactAbstractTestCase {
     @Test
     public void defaultEmpty() throws Exception {
         assertTrue("Transaction must be active", getDataContext().isTransactionActive());
+        commitTransaction();
+        
         assertEquals(1, getDataContext().getDaoFactory().getInstitutionDao().countAll());
 
         assertEquals(InMemoryDataConfig.NAME, getIntactContext().getConfig().getDefaultDataConfig().getName());

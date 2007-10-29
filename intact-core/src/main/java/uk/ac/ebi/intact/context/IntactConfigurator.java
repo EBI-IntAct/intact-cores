@@ -421,14 +421,18 @@ public class IntactConfigurator {
             throw new NullPointerException("Institution is null. Set an institution to the RuntimeConfig first");
         }
 
-        if (institution.getAc() != null)  {
-            return; // the object is already in the database
-        }
-
-        log.debug("Persisting institution: " + institution.getShortLabel());
         DaoFactory daoFactory = getDefaultDaoFactory(context);
         daoFactory.beginTransaction();
-        daoFactory.getInstitutionDao().persist(institution);
+
+        if (institution.getAc() != null)  {
+            log.warn("Institution already has an AC: '"+institution.getShortLabel()+"' ("+institution.getAc()+"), replicating.");
+            if (daoFactory.getInstitutionDao().getByAc(institution.getAc()) == null) {
+                daoFactory.getInstitutionDao().replicate(institution);
+            }
+        } else {
+            log.debug("Persisting institution: " + institution.getShortLabel());
+            daoFactory.getInstitutionDao().persist(institution);
+        }
         context.getDataContext().commitTransaction();
     }
 
