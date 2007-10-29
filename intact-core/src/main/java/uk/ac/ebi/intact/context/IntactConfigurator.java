@@ -47,10 +47,10 @@ public class IntactConfigurator {
     private static final String EBI_INSTITUTION_FULL_NAME = "European Bioinformatics Institute";
 
     private static final String EBI_INSTITUTION_POSTAL_ADDRESS = "European Bioinformatics Institute; " +
-                                                                     "Wellcome Trust Genome Campus; " +
-                                                                     "Hinxton, Cambridge; " +
-                                                                     "CB10 1SD; " +
-                                                                     "United Kingdom";
+                                                                 "Wellcome Trust Genome Campus; " +
+                                                                 "Hinxton, Cambridge; " +
+                                                                 "CB10 1SD; " +
+                                                                 "United Kingdom";
 
     private static final String EBI_INSTITUTION_URL = "http://www.ebi.ac.uk/";
 
@@ -421,22 +421,15 @@ public class IntactConfigurator {
             throw new NullPointerException("Institution is null. Set an institution to the RuntimeConfig first");
         }
 
-        // remove ac, it should not have one at this point to be persisted correctly
-        if (institution.getAc() != null)  institution.setAc(null);
+        if (institution.getAc() != null)  {
+            return; // the object is already in the database
+        }
 
         log.debug("Persisting institution: " + institution.getShortLabel());
         DaoFactory daoFactory = getDefaultDaoFactory(context);
         daoFactory.beginTransaction();
         daoFactory.getInstitutionDao().persist(institution);
         context.getDataContext().commitTransaction();
-
-        /*
-        EntityManagerFactory emf = ((AbstractJpaDataConfig)context.getConfig().getDefaultDataConfig()).getSessionFactory();
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        new InstitutionDaoImpl(em, context.getSession()).persist(institution);
-        em.getTransaction().commit();
-         */
     }
 
     private static void persistSchemaVersionIfNecessary( IntactContext context ) {
@@ -490,7 +483,6 @@ public class IntactConfigurator {
         } catch (IntactTransactionException e) {
             log.error(e);
         }
-
     }
 
     private static DaoFactory getDefaultDaoFactory(IntactContext context) {
@@ -520,5 +512,4 @@ public class IntactConfigurator {
 
         return ( Boolean ) obj;
     }
-
 }
