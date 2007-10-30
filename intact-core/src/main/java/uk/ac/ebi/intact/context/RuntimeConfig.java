@@ -18,7 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO: comment this!
+ * Runtime configuration - gives programatical access to IntAct configuration.
+ * <p/>
+ * Note: This class config gets initialized via the intact.properties file.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -48,8 +50,7 @@ public final class RuntimeConfig implements Serializable {
     }
 
     public static RuntimeConfig getCurrentInstance( IntactSession session ) {
-        RuntimeConfig runtimeConfig
-                = ( RuntimeConfig ) session.getApplicationAttribute( APPLICATION_PARAM_NAME );
+        RuntimeConfig runtimeConfig = ( RuntimeConfig ) session.getApplicationAttribute( APPLICATION_PARAM_NAME );
         if ( runtimeConfig == null ) {
             runtimeConfig = initRuntime( session, null );
 
