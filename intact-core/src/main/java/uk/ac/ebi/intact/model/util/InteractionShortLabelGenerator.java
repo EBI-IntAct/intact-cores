@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
@@ -34,6 +36,11 @@ import java.util.List;
 public class InteractionShortLabelGenerator {
 
     private static final String INTERACTION_SEPARATOR = "-";
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(InteractionShortLabelGenerator.class);
 
     /**
      * Creates a candiate short label - not taking into account if an interaction with the same name exists in the database.
@@ -314,10 +321,12 @@ public class InteractionShortLabelGenerator {
             this.suffix = suffix;
 
             if (this.baitLabel.contains(INTERACTION_SEPARATOR)) {
-                throw new IllegalArgumentException("Bait label cannot contain '" + INTERACTION_SEPARATOR + "': " + baitLabel);
+                log.warn("Interaction separator character '-' found in Bait label ("+baitLabel+"). Replaced by '_'");
+                baitLabel = baitLabel.replaceAll(INTERACTION_SEPARATOR, "_");
             }
             if (this.preyLabel != null && preyLabel.contains(INTERACTION_SEPARATOR)) {
-                throw new IllegalArgumentException("Prey label cannot contain '" + INTERACTION_SEPARATOR + "': " + preyLabel);
+                log.warn("Interaction separator character '-' found in Prey label ("+preyLabel+"). Replaced by '_'");
+                preyLabel = preyLabel.replaceAll(INTERACTION_SEPARATOR, "_");
             }
 
         }

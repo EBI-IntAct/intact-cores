@@ -57,6 +57,17 @@ public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void createCandidateShortLabel_labelWithHyphen() throws Exception {
+        String baitLabel = "lala";
+        String preyLabel ="EBI-12345";
+
+        String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(baitLabel, preyLabel);
+
+        assertNotNull(candLabel);
+        assertEquals("lala-ebi_12345", candLabel);
+    }
+
+    @Test
     public void createCandidateShortLabel_fromInteraction() throws Exception {
         Interactor interactorA = getMockBuilder().createProtein("P0A6F1", "cara");
         Interactor interactorB = getMockBuilder().createProtein("P00968", "carb");
