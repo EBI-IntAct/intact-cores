@@ -100,4 +100,21 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(false, "A1", "A2").size());
         Assert.assertEquals(0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(false, "A1", "B9").size());
     }
+
+    @Test
+    public void getByInteractorsPrimaryId_self() throws Exception{
+        final IntactMockBuilder mockBuilder = getMockBuilder();
+        Interaction mockInteraction = mockBuilder.createInteractionRandomBinary();
+        mockInteraction.getComponents().clear();
+
+        mockInteraction.getComponents().add(mockBuilder
+                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A1", "prot1")));
+
+        PersisterHelper.saveOrUpdate(mockInteraction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Assert.assertEquals(0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1", "A1").size());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1").size());
+    }
 }
