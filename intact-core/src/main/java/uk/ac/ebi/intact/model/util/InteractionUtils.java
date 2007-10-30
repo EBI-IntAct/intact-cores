@@ -9,10 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Util methods for interactions
@@ -293,5 +290,33 @@ public class InteractionUtils {
      */
     public static boolean isTemporaryLabel(String label) {
         return label.matches(INTERACTION_TEMP_LABEL_PATTERN);
+    }
+
+    /**
+     * Gets the Interactor Identifiers for that interactor
+     *
+     * @since 1.7.2
+     */
+    public static List<String> getInteractorPrimaryIDs(Interaction interaction) {
+        final Collection<Component> components = interaction.getComponents();
+
+        List<String> ids = new ArrayList<String>(components.size());
+
+        for (Component component : components) {
+            Interactor interactor = component.getInteractor();
+            final Collection<InteractorXref> idXrefs = XrefUtils.getIdentityXrefs(interactor);
+
+            if (idXrefs.size() > 0) {
+                final Iterator<InteractorXref> iterator = idXrefs.iterator();
+                ids.add(iterator.next().getPrimaryId());
+
+                if (iterator.hasNext()) {
+                    log.warn("Interaction contains interactor with more than one identities. Interaction: "+interaction.getShortLabel()+"("+interaction.getAc()+") "+
+                    " - Xrefs: "+ idXrefs);
+                }
+            }
+        }
+
+        return ids;
     }
 }

@@ -15,11 +15,16 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import org.junit.AfterClass;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.core.unit.mock.MockInteractionDao;
-import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.model.Interaction;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +36,7 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class InteractionUtilsTest {
+public class InteractionUtilsTest extends IntactBasicTestCase{
 
     @Before
     public void prepare() throws Exception {
@@ -101,6 +106,26 @@ public class InteractionUtilsTest {
     public void isTemporary() throws Exception {
         Assert.assertTrue(InteractionUtils.isTemporaryLabel("unk-unk-123232"));
         Assert.assertFalse(InteractionUtils.isTemporaryLabel("la-la-4"));
+    }
+
+    @Test
+    public void getInteractorPrimaryIDs_default() throws Exception {
+        Interaction interaction = getMockBuilder().createInteraction("A1", "A2");
+        Assert.assertEquals(2, InteractionUtils.getInteractorPrimaryIDs(interaction).size());
+    }
+
+    @Test
+    public void getInteractorPrimaryIDs_duplicatedIDs() throws Exception {
+        Interaction interaction = getMockBuilder().createInteraction("A1", "A1");
+        Assert.assertEquals(2, InteractionUtils.getInteractorPrimaryIDs(interaction).size());
+    }
+
+    @Test
+    public void getInteractorPrimaryIDs_moreThanOneIDInInteractor() throws Exception {
+        Interaction interaction = getMockBuilder().createInteraction("A1", "A2");
+        interaction.getComponents().iterator().next().getInteractor().getXrefs()
+                .add(getMockBuilder().createIdentityXrefUniprot(interaction, "B2"));
+        Assert.assertEquals(2, InteractionUtils.getInteractorPrimaryIDs(interaction).size());
     }
 
     private static String removePercent(String labelLike) {
