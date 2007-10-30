@@ -8,9 +8,9 @@ package uk.ac.ebi.intact.persistence.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
@@ -18,6 +18,7 @@ import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -94,19 +95,20 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
                 .add( Restrictions.eq( "interactor.ac", interactorAc ) ).list();
     }
 
+    @Deprecated
     public List<Interaction> getInteractionsForProtPair( String protAc1, String protAc2 ) {
-//        Query query = getSession().createQuery( "SELECT i FROM InteractionImpl AS i, Component AS c1, Component AS c2 " +
-//                                                "WHERE i.ac = c1.interactionAc AND i.ac = c2.interactionAc AND " +
-//                                                "c1.interactorAc = :protAc1 AND c2.interactorAc = :protAc2" );
+          return getInteractionsForProtPairAc(protAc1, protAc2);
+    }
 
-        Query query = getSession().createQuery( "SELECT i FROM InteractionImpl AS i, Component AS c1, Component AS c2 " +
+    public List<Interaction> getInteractionsForProtPairAc( String protAc1, String protAc2 ) {
+        Query query = getEntityManager().createQuery( "SELECT i FROM InteractionImpl AS i, Component AS c1, Component AS c2 " +
                                                 "WHERE i.ac = c1.interactionAc AND i.ac = c2.interactionAc AND " +
                                                 "c1.interactorAc = :protAc1 AND c2.interactorAc = :protAc2" );
 
         query.setParameter( "protAc1", protAc1 );
         query.setParameter( "protAc2", protAc2 );
 
-        return query.list();
+        return query.getResultList();
     }
 
     public Collection<Interaction> getSelfBinaryInteractionsByProtAc( String protAc ) {
@@ -123,5 +125,40 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         }
 
         return selfInteractions;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public List<Interaction> getByInteractorsPrimaryId(boolean exactComponents, String... primaryIds) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select i from InteractionImpl as i ");
+
+        for (int i=0; i<primaryIds.length; i++) {
+            sb.append("join i.components as comp").append(i).append(" ");
+            sb.append("join comp").append(i).append(".interactor.xrefs as xref").append(i).append(" ");
+        }
+
+        sb.append("where ");
+
+        for (int i=0; i<primaryIds.length; i++) {
+            if (i>0) {
+                sb.append("and ");
+            }
+            sb.append("lower(xref").append(i).append(".primaryId) = lower(:protPrimaryId").append(i).append(") ");
+        }
+
+        if (exactComponents) {
+            sb.append("and size(i.components) = "+primaryIds.length);
+        }
+
+        Query query = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                .getEntityManager().createQuery(sb.toString());
+
+        for (int i=0; i<primaryIds.length; i++) {
+            query.setParameter("protPrimaryId"+i, primaryIds[i]);
+        }
+
+        return query.getResultList();
     }
 }
