@@ -22,8 +22,10 @@ import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * InteractionPersister tester.
@@ -295,5 +297,70 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Assert.assertNotNull(reloadedInteraction);
         Assert.assertEquals(2, reloadedInteraction.getComponents().size());
         commitTransaction();
+    }
+
+    @Test
+    public void fetchFromDatasource_same() throws Exception {
+        Interaction interaction = createReproducibleInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Interaction interaction2 = createReproducibleInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction2);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+    }
+
+    @Test
+    public void fetchFromDatasource_switchedRoles() throws Exception {
+        Interaction interaction = createReproducibleInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Interaction interaction2 = createReproducibleInteraction();
+        Iterator<Component> componentIterator = interaction2.getComponents().iterator();
+        CvExperimentalRole expRole1 = componentIterator.next().getCvExperimentalRole();
+        CvExperimentalRole expRole2 = componentIterator.next().getCvExperimentalRole();
+
+        componentIterator = interaction2.getComponents().iterator();
+        componentIterator.next().setCvExperimentalRole(expRole2);
+        componentIterator.next().setCvExperimentalRole(expRole1);
+
+        PersisterHelper.saveOrUpdate(interaction2);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+    }
+
+    @Test
+    public void fetchFromDatasource_differentExperiments() throws Exception {
+        Interaction interaction = createReproducibleInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Interaction interaction2 = createReproducibleInteraction();
+        interaction2.setExperiments(Arrays.asList(getMockBuilder().createExperimentEmpty("exp-1979-2")));
+
+        PersisterHelper.saveOrUpdate(interaction2);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+    }
+
+    private Interaction createReproducibleInteraction() {
+        Experiment experiment = getMockBuilder().createExperimentEmpty("exp-2006-1");
+        Interaction interaction = getMockBuilder().createInteraction("fooprey-barbait",
+                                                                     getMockBuilder().createProtein("A2", "barbait"),
+                                                                     getMockBuilder().createProtein("A1", "fooprey"),
+                                                                     experiment);
+
+        Assert.assertEquals(2, interaction.getComponents().size());
+
+        return interaction;
     }
 }

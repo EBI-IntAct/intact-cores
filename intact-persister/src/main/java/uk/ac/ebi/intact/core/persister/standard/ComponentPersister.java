@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,5 +119,58 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         intactObject.setBindingDomains( features );
 
         return super.syncAttributes(intactObject);
+    }
+
+     /**
+     * Checks if two components are the same
+     */
+    protected static boolean areEquivalent(Component c1, Component c2) {
+        boolean areEquivalent = (haveSameRoles(c1, c2) && haveSameDetectionMethods(c1, c2));
+
+         if (!areEquivalent) return false;
+
+         return (InteractorPersister.haveSameIdentity(c1.getInteractor(), c2.getInteractor()));
+    }
+
+    /**
+     * Checks if two components have the same roles
+     */
+    protected static boolean haveSameRoles(Component c1, Component c2) {
+        String miExpRole1 = CvObjectUtils.getPsiMiIdentityXref(c1.getCvExperimentalRole()).getPrimaryId();
+        String miExpRole2 = CvObjectUtils.getPsiMiIdentityXref(c2.getCvExperimentalRole()).getPrimaryId();
+
+        String miBioRole1 = CvObjectUtils.getPsiMiIdentityXref(c1.getCvBiologicalRole()).getPrimaryId();
+        String miBioRole2 = CvObjectUtils.getPsiMiIdentityXref(c2.getCvBiologicalRole()).getPrimaryId();
+
+        return (miExpRole1.equals(miExpRole2) &&
+                miBioRole1.equals(miBioRole2));
+    }
+
+    /**
+     * Checks if two component shave the same detection methods
+     */
+    protected static boolean haveSameDetectionMethods(Component c1, Component c2) {
+        if (c1.getParticipantDetectionMethods().size() != c2.getParticipantDetectionMethods().size()) {
+            return false;
+        }
+
+        for (CvIdentification detMethod1 : c1.getParticipantDetectionMethods()) {
+            boolean found = false;
+
+            String mi1 = CvObjectUtils.getPsiMiIdentityXref(detMethod1).getPrimaryId();
+
+            for (CvIdentification detMethod2 : c2.getParticipantDetectionMethods()) {
+                String mi2 = CvObjectUtils.getPsiMiIdentityXref(detMethod2).getPrimaryId();
+
+                if (mi1.equals(mi2)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) return false;
+        }
+
+        return true;
     }
 }

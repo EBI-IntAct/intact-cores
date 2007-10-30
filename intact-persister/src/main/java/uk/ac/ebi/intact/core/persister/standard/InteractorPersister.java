@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.apache.commons.collections.Closure;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.NonUniqueResultException;
@@ -29,6 +31,7 @@ import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * TODO comment this
@@ -221,4 +224,36 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
 
         return true;
     }
+
+    /**
+     * Checks if all the identities for an interactor are the same
+     */
+    protected static boolean haveSameIdentity(Interactor interactor1, Interactor interactor2) {
+        Collection<InteractorXref> idXrefs1 = XrefUtils.getIdentityXrefs(interactor1);
+        Collection<InteractorXref> idXrefs2 = XrefUtils.getIdentityXrefs(interactor2);
+
+        List<String> ids1 = new ArrayList<String>(idXrefs1.size());
+        List<String> ids2 = new ArrayList<String>(idXrefs2.size());
+
+        CollectionUtils.forAllDo(idXrefs1, new AddToListClosure(ids1));
+        CollectionUtils.forAllDo(idXrefs2, new AddToListClosure(ids2));
+
+        return CollectionUtils.isEqualCollection(ids1, ids2);
+    }
+
+    private static class AddToListClosure implements Closure {
+
+        private List<String> listToPopulate;
+
+        public AddToListClosure(List<String> listToPopulate) {
+            this.listToPopulate = listToPopulate;
+        }
+
+        public void execute(Object input) {
+            if (input instanceof InteractorXref) {
+                listToPopulate.add(((InteractorXref)input).getPrimaryId());
+            }
+        }
+    }
+
 }

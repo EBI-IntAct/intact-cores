@@ -19,13 +19,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.XrefUtils;
+import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -54,14 +52,60 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
     }
 
     /**
-     * TODO: (A) check ac(pk) always first, then ac(provider xref) in combination with the experiment, then same components[interactor,roles,detmethods,features], interaction type
+     * TODO: checking for detmethods and features for the component still missing
      * @param intactObject
      * @return
      */
     @Override
     protected Interaction fetchFromDataSource(Interaction intactObject) {
-        return super.fetchFromDataSource(intactObject);
+        final InteractionDao interactionDao = getIntactContext().getDataContext().getDaoFactory().getInteractionDao();
+
+        // try the AC
+        if (intactObject.getAc() != null) {
+            return interactionDao.getByAc(intactObject.getAc());
+        }
+
+        // Get the interactors where exactly the same interactors are involved
+        List<String> interactorPrimaryIDs = InteractionUtils.getInteractorPrimaryIDs(intactObject);
+        List<Interaction> interactionsWithSameInteractors =
+                interactionDao.getByInteractorsPrimaryId(true, interactorPrimaryIDs.toArray(new String[interactorPrimaryIDs.size()]));
+
+        for (Interaction interactionWithSameInteractor : interactionsWithSameInteractors) {
+
+            if (containSameExperiments(intactObject, interactionWithSameInteractor) &&
+                 containSameComponents(intactObject, interactionWithSameInteractor)) {
+                return interactionWithSameInteractor;
+            }
+
+        }
+
+        return null;
     }
+
+    protected static boolean containSameExperiments(Interaction interaction1, Interaction interaction2) {
+         return experimentLabels(interaction1).equals(experimentLabels(interaction2));
+    }
+
+    protected static boolean containSameComponents(Interaction interaction1, Interaction interaction2) {
+        for (Component c1 : interaction1.getComponents()) {
+            boolean found = false;
+
+            for (Component c2 : interaction2.getComponents()) {
+                if (ComponentPersister.areEquivalent(c1, c2)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
 
     /**
      * TODO forget it. because of A -- I mean see A above
@@ -84,7 +128,7 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
      * Used to create a unique chain of experiment labels, used to differenciate interactions
      * that could just have the same short label
      */
-    private String experimentLabels(Interaction interaction) {
+    private static String experimentLabels(Interaction interaction) {
         StringBuilder sb = new StringBuilder( interaction.getExperiments().size() * 21 ); // init to max size
 
         for (Experiment exp : interaction.getExperiments()) {
