@@ -127,7 +127,8 @@ public class SchemaUtils {
 
         if (initializeDatabase) {
             if (log.isDebugEnabled()) log.debug("Initializing database");
-            IntactConfigurator.initializeDatabase(IntactContext.getCurrentInstance());
+            IntactContext.getCurrentInstance().close();
+            IntactContext.getCurrentInstance(); // Used to force re-initialization of the framework
         } 
     }
 

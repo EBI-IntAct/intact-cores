@@ -95,6 +95,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
     }
 
     public List<Interaction> getInteractionsForProtPair( String protAc1, String protAc2 ) {
+//        Query query = getSession().createQuery( "SELECT i FROM InteractionImpl AS i, Component AS c1, Component AS c2 " +
+//                                                "WHERE i.ac = c1.interactionAc AND i.ac = c2.interactionAc AND " +
+//                                                "c1.interactorAc = :protAc1 AND c2.interactorAc = :protAc2" );
+
         Query query = getSession().createQuery( "SELECT i FROM InteractionImpl AS i, Component AS c1, Component AS c2 " +
                                                 "WHERE i.ac = c1.interactionAc AND i.ac = c2.interactionAc AND " +
                                                 "c1.interactorAc = :protAc1 AND c2.interactorAc = :protAc2" );

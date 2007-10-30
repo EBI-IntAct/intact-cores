@@ -425,9 +425,12 @@ public class IntactConfigurator {
         daoFactory.beginTransaction();
 
         if (institution.getAc() != null)  {
-            log.warn("Institution already has an AC: '"+institution.getShortLabel()+"' ("+institution.getAc()+"), replicating.");
+            log.warn("Institution already has an AC: '"+institution.getShortLabel()+"' ("+institution.getAc()+").");
             if (daoFactory.getInstitutionDao().getByAc(institution.getAc()) == null) {
+                log.debug("\tAnd does not exist in the DB. Replicating.");
                 daoFactory.getInstitutionDao().replicate(institution);
+            } else {
+                log.debug("\tAnd already exists in the DB. Ignored.");
             }
         } else {
             log.debug("Persisting institution: " + institution.getShortLabel());

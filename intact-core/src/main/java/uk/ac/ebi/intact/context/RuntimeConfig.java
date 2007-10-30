@@ -54,8 +54,8 @@ public final class RuntimeConfig implements Serializable {
         if ( runtimeConfig == null ) {
             runtimeConfig = initRuntime( session, null );
 
-            Institution institution = new Institution("testInstitution");
-            runtimeConfig.setInstitution(institution);
+            //Institution institution = new Institution("testInstitution");
+            //runtimeConfig.setInstitution(institution);
         }
         return runtimeConfig;
     }
