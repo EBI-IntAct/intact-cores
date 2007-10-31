@@ -15,13 +15,14 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Ignore;
 import org.junit.Test;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 
 import java.util.Iterator;
@@ -33,7 +34,6 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Ignore
 @IntactUnitDataset(dataset = LegacyPsiTestDatasetProvider.INTACT_CORE, provider = LegacyPsiTestDatasetProvider.class)
 public class ExperimentDaoTest extends IntactAbstractTestCase {
 
@@ -88,4 +88,37 @@ public class ExperimentDaoTest extends IntactAbstractTestCase {
         assertEquals(1, interactions.size());
     }
 
+    @Test
+    public void saveAnnotation() throws Exception {
+
+        IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+        final ExperimentDao edao = daoFactory.getExperimentDao();
+        final Iterator<Experiment> iterator = edao.getAllIterator();
+        Assert.assertTrue( iterator.hasNext() );
+
+        Experiment e = iterator.next();
+        Assert.assertNotNull( e );
+
+        final int eSize = e.getAnnotations().size();
+
+        Institution owner = IntactContext.getCurrentInstance().getConfig().getInstitution();
+        CvTopic topic = new CvTopic( owner, "topic" );
+        daoFactory.getCvObjectDao(CvTopic.class).persist( topic );
+        Assert.assertNotNull( topic.getAc() );
+
+        Annotation annotation = new Annotation( owner, topic, "lala" );
+        e.addAnnotation( annotation );
+
+        edao.saveOrUpdate( e );
+        final String ac = e.getAc();
+
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction();
+
+        // now check that the new annotation has been persisted
+        final Experiment e2 = edao.getByAc( ac );
+        Assert.assertNotNull( e2 );
+        Assert.assertTrue( e2.getAnnotations().size() > eSize );
+    }
 }
