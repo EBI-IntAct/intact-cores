@@ -357,6 +357,46 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
     }
 
     @Test
+    public void fetchFromDatasource_differentAnnotations() throws Exception {
+        Interaction interaction = createReproducibleInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+
+        Interaction interaction2 = createReproducibleInteraction();
+        interaction2.getAnnotations().clear();
+        interaction2.getAnnotations().add(getMockBuilder().createAnnotation("This is a different annotation", CvTopic.COMMENT_MI_REF, CvTopic.COMMENT));
+
+        PersisterHelper.saveOrUpdate(interaction2);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
+    }
+
+    @Test
+    public void fetchFromDatasource_differentAnnotations2() throws Exception {
+        Interaction interaction = createReproducibleInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+
+        Interaction interaction2 = createReproducibleInteraction();
+        interaction2.getAnnotations().clear();
+        CvTopic topic = getMockBuilder().createCvObject(CvTopic.class, "IA:0", CvTopic.HIDDEN);
+        topic.getXrefs().iterator().next().setCvDatabase(getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT));
+        interaction2.getAnnotations().add(getMockBuilder().createAnnotation("This is an annotation", topic));
+
+        PersisterHelper.saveOrUpdate(interaction2);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
+    }
+
+    @Test
     public void fetchFromDatasource_differentExperiments() throws Exception {
         Interaction interaction = createReproducibleInteraction();
 
@@ -378,6 +418,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
                                                                      getMockBuilder().createProtein("A2", "barbait"),
                                                                      getMockBuilder().createProtein("A1", "fooprey"),
                                                                      experiment);
+        interaction.getAnnotations().add(getMockBuilder().createAnnotation("This is an annotation", CvTopic.COMMENT_MI_REF, CvTopic.COMMENT));
 
         CvFeatureType featureType = getMockBuilder().createCvObject(CvFeatureType.class, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, CvFeatureType.EXPERIMENTAL_FEATURE);
         Feature feature = getMockBuilder().createFeature("feature1", featureType);

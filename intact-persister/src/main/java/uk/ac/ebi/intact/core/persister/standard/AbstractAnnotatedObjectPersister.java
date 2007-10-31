@@ -20,7 +20,7 @@ import uk.ac.ebi.intact.core.persister.AbstractPersister;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 /**
  * TODO comment this
@@ -141,5 +141,37 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
         saveOrUpdateAttributes(objectToBeUpdated);
 
         return true;
+    }
+
+    /**
+     * Returns true if the annotated objects provided have the same annotations
+     */
+    protected static boolean haveSameAnnotations(AnnotatedObject<?,?> ao1, AnnotatedObject<?,?> ao2) {
+        for (Annotation a1 : ao1.getAnnotations()) {
+            boolean found = false;
+
+            for (Annotation a2 : ao2.getAnnotations()) {
+                if (a1.getAnnotationText().equals(a2.getAnnotationText())) {
+
+                    CvObjectXref topicXref1 = CvObjectUtils.getPsiMiIdentityXref(a1.getCvTopic());
+                    CvObjectXref topicXref2 = CvObjectUtils.getPsiMiIdentityXref(a2.getCvTopic());
+
+                    if (topicXref1 == null && topicXref2 == null) {
+                        if (a1.getCvTopic().getShortLabel().equals(a2.getCvTopic().getShortLabel())) {
+                            found = true;
+                            break;
+                        }
+                    } else if (topicXref1 == null || topicXref2 == null) {
+                        // ignore
+                    } else if (topicXref1.getPrimaryId().equals(topicXref2.getPrimaryId())){
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!found) return false;
+        }
+         return true;
     }
 }

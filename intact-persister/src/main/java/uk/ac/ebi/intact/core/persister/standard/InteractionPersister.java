@@ -27,7 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO comment this
+ * Persister for interactions.
+ *
+ * Two interactions can be considered different if:
+ *
+ * 1. Two interactions with the same bait and prey but different ranges - should go in as seperate interations
+ * 2. Two interactions same bait prey same ranges - should not go in as seperate interactions
+ * 3. Bait prey with roles reversed same ranges - should go in as seperate interactions
+ * 4. Same protein as bait and prey (may be same range or different ranges) - should go in as different interactions
+ * 5. Totally different interactions. - should go in as different interactions
+ * 6. Same interaction different annotations - should go in as different interactions
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -72,7 +81,8 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         for (Interaction interactionWithSameInteractor : interactionsWithSameInteractors) {
 
-            if (containSameExperiments(intactObject, interactionWithSameInteractor) &&
+            if (AbstractAnnotatedObjectPersister.haveSameAnnotations(intactObject, interactionWithSameInteractor) &&
+                 containSameExperiments(intactObject, interactionWithSameInteractor) &&
                  containSameComponents(intactObject, interactionWithSameInteractor)) {
                 return interactionWithSameInteractor;
             }
@@ -202,4 +212,5 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         intactObject.setExperiments(experiments);
     }
+    
 }
