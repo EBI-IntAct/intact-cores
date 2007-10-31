@@ -312,6 +312,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         PersisterHelper.saveOrUpdate(interaction2);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
     }
 
     @Test
@@ -343,6 +344,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
         Interaction interaction2 = createReproducibleInteraction();
         final Feature feature = interaction2.getComponents().iterator().next().getBindingDomains().iterator().next();
@@ -351,6 +353,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         PersisterHelper.saveOrUpdate(interaction2);
 
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
     }
 
     @Test
