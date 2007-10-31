@@ -52,7 +52,7 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
     }
 
     /**
-     * TODO: checking for detmethods and features for the component still missing
+     * Gets the object from the datasource. If it is found there, return it. Otherwise return null
      * @param intactObject
      * @return
      */

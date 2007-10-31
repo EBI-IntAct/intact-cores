@@ -15,12 +15,14 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.apache.commons.collections.CollectionUtils;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * TODO comment this
@@ -125,7 +127,9 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
      * Checks if two components are the same
      */
     protected static boolean areEquivalent(Component c1, Component c2) {
-        boolean areEquivalent = (haveSameRoles(c1, c2) && haveSameDetectionMethods(c1, c2));
+        boolean areEquivalent = (haveSameRoles(c1, c2) &&
+                                 haveSameDetectionMethods(c1, c2) &&
+                                 haveSameFeatures(c1, c2));
 
          if (!areEquivalent) return false;
 
@@ -163,6 +167,35 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
                 String mi2 = CvObjectUtils.getPsiMiIdentityXref(detMethod2).getPrimaryId();
 
                 if (mi1.equals(mi2)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) return false;
+        }
+
+        return true;
+    }
+
+    protected static boolean haveSameFeatures(Component c1, Component c2) {
+        final Collection<Feature> features1 = c1.getBindingDomains();
+        final Collection<Feature> features2 = c2.getBindingDomains();
+
+        if (features1.size() != features2.size()) {
+            return false;
+        }
+
+        for (Feature f1 : features1) {
+            boolean found = false;
+
+            String featureTypeMi1 = CvObjectUtils.getPsiMiIdentityXref(f1.getCvFeatureType()).getPrimaryId();
+
+            for (Feature f2 : features2) {
+                String featureTypeMi2 = CvObjectUtils.getPsiMiIdentityXref(f2.getCvFeatureType()).getPrimaryId();
+
+                if (featureTypeMi1.equals(featureTypeMi2) &&
+                    FeaturePersister.haveSameRanges(f1, f2)) {
                     found = true;
                     break;
                 }

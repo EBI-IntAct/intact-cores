@@ -17,6 +17,9 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
+
+import java.util.Collection;
 
 /**
  * TODO comment this
@@ -91,7 +94,8 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
             intactObject.setCvFeatureType(syncedFeatureType);
         }
         
-        // TODO Bruno: Range is not replaced by a synced version here ? Potential issue ?
+        // Note: Ranges are never synced from the database as they are always new
+
         for (Range range : intactObject.getRanges()) {
             if ( range.getFromCvFuzzyType() != null ) {
                 CvFuzzyType synchedFromFuzzyType = (CvFuzzyType) cvObjectPersister.syncIfTransient(range.getFromCvFuzzyType());
@@ -107,5 +111,52 @@ public class FeaturePersister extends AbstractAnnotatedObjectPersister<Feature>{
         }
 
         return super.syncAttributes(intactObject);
+    }
+
+    /**
+     * Returs true if the features provided contain the same ranges
+     */
+    protected static boolean haveSameRanges(Feature feature1, Feature feature2) {
+        final Collection<Range> ranges1 = feature1.getRanges();
+        final Collection<Range> ranges2 = feature2.getRanges();
+
+        if (ranges1.size() != ranges2.size()) {
+            return false;
+        }
+
+        for (Range r1 : ranges1) {
+            boolean found = false;
+
+            String fromFuzzyType1 = CvObjectUtils.getPsiMiIdentityXref(r1.getFromCvFuzzyType()).getPrimaryId();
+            String toFuzzyType1 = CvObjectUtils.getPsiMiIdentityXref(r1.getToCvFuzzyType()).getPrimaryId();
+            int fromIntervalStart1 = r1.getFromIntervalStart();
+            int fromIntervalEnd1 = r1.getFromIntervalEnd();
+            int toIntervalStart1 = r1.getToIntervalStart();
+            int toIntervalEnd1 = r1.getToIntervalEnd();
+
+
+            for (Range r2 : ranges2) {
+                String fromFuzzyType2 = CvObjectUtils.getPsiMiIdentityXref(r2.getFromCvFuzzyType()).getPrimaryId();
+                String toFuzzyType2 = CvObjectUtils.getPsiMiIdentityXref(r2.getToCvFuzzyType()).getPrimaryId();
+                int fromIntervalStart2 = r2.getFromIntervalStart();
+                int fromIntervalEnd2 = r2.getFromIntervalEnd();
+                int toIntervalStart2 = r2.getToIntervalStart();
+                int toIntervalEnd2 = r2.getToIntervalEnd();
+
+                if (fromFuzzyType1.equals(fromFuzzyType2) &&
+                    toFuzzyType1.equals(toFuzzyType2) &&
+                        fromIntervalStart1 == fromIntervalStart2 &&
+                        fromIntervalEnd1 == fromIntervalEnd2 &&
+                        toIntervalStart1 == toIntervalStart2 &&
+                        toIntervalEnd1 == toIntervalEnd2) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) return false;
+        }
+
+        return true;
     }
 }

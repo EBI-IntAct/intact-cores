@@ -337,6 +337,23 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
     }
 
     @Test
+    public void fetchFromDatasource_differentFeaturesInComponents() throws Exception {
+        Interaction interaction = createReproducibleInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Interaction interaction2 = createReproducibleInteraction();
+        final Feature feature = interaction2.getComponents().iterator().next().getBindingDomains().iterator().next();
+        feature.getRanges().iterator().next().setFromIntervalStart(3);
+
+        PersisterHelper.saveOrUpdate(interaction2);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+    }
+
+    @Test
     public void fetchFromDatasource_differentExperiments() throws Exception {
         Interaction interaction = createReproducibleInteraction();
 
@@ -358,6 +375,15 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
                                                                      getMockBuilder().createProtein("A2", "barbait"),
                                                                      getMockBuilder().createProtein("A1", "fooprey"),
                                                                      experiment);
+
+        CvFeatureType featureType = getMockBuilder().createCvObject(CvFeatureType.class, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, CvFeatureType.EXPERIMENTAL_FEATURE);
+        Feature feature = getMockBuilder().createFeature("feature1", featureType);
+        feature.setComponent(null);
+
+        Range range = getMockBuilder().createRange(1,1,5,5);
+        feature.addRange(range);
+
+        interaction.getComponents().iterator().next().addBindingDomain(feature);
 
         Assert.assertEquals(2, interaction.getComponents().size());
 
