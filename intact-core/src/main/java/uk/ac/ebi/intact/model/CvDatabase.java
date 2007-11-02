@@ -105,8 +105,19 @@ public class CvDatabase extends CvObject implements Editable {
     public static final String MIPS = "cygd";
     public static final String MIPS_MI_REF = "MI:0464";
 
-    public static final String PDB = "pdb";
+    @Deprecated
+    public static final String PDB = "rcsb pdb";
+    @Deprecated
     public static final String PDB_MI_REF = "MI:0460";
+
+    public static final String RCSB_PDB = "rcsb pdb";
+    public static final String RCSB_PDB_MI_REF = "MI:0460";
+
+    public static final String MSD_PDB = "msd pdb";
+    public static final String MSD_PDB_MI_REF = "MI:0472";
+
+    public static final String WWPDB = "wwpdb";
+    public static final String WWPDB_MI_REF = "MI:0805";
 
     /**
      * This constructor should <b>not</b> be used as it could result in objects with invalid state. It is here for

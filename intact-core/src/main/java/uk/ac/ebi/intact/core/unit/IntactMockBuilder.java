@@ -262,7 +262,8 @@ public class IntactMockBuilder {
     public Interaction createInteraction(String shortLabel, Interactor bait, Interactor prey, Experiment experiment) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
-        Interaction interaction = new InteractionImpl(Arrays.asList(experiment), cvInteractionType, null, shortLabel, getInstitution());
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(experiment)),
+                                                      cvInteractionType, null, shortLabel, getInstitution());
 
         interaction.addComponent(createComponentBait(interaction, bait));
         interaction.addComponent(createComponentPrey(interaction, prey));
@@ -317,6 +318,27 @@ public class IntactMockBuilder {
 
         String shortLabel = InteractionUtils.calculateShortLabel(interaction);
         interaction.setShortLabel(shortLabel);
+
+        return interaction;
+    }
+
+    public Interaction createInteractionFooBar() {
+        Experiment experiment = createExperimentEmpty("exp-2006-1","12345");
+        experiment.setBioSource(createBioSource(5, "lalaorg"));
+        Interaction interaction = createInteraction("fooprey-barbait",
+                                                    createProtein("A2", "barbait"),
+                                                    createProtein("A1", "fooprey"),
+                                                    experiment);
+        interaction.getAnnotations().add(createAnnotation("This is an annotation", CvTopic.COMMENT_MI_REF, CvTopic.COMMENT));
+
+        CvFeatureType featureType = createCvObject(CvFeatureType.class, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, CvFeatureType.EXPERIMENTAL_FEATURE);
+        Feature feature = createFeature("feature1", featureType);
+        feature.setComponent(null);
+
+        Range range = createRange(1, 1, 5, 5);
+        feature.addRange(range);
+
+        interaction.getComponents().iterator().next().addBindingDomain(feature);
 
         return interaction;
     }

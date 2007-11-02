@@ -14,48 +14,44 @@ import java.util.Collection;
  */
 public interface Interaction extends Interactor {
 
-    public Float getKD();
+    Float getKD();
 
-    public void setKD( Float kD );
+    void setKD( Float kD );
 
-    public void setComponents( Collection<Component> someComponent );
+    void setComponents( Collection<Component> someComponent );
 
-    public Collection<Component> getComponents();
+    Collection<Component> getComponents();
 
-    public void addComponent( Component component );
+    void addComponent( Component component );
 
-    public void removeComponent( Component component );
+    void removeComponent( Component component );
 
-    public void setReleased( Collection<Product> someReleased );
+    void setReleased( Collection<Product> someReleased );
 
-    public Collection<Product> getReleased();
+    Collection<Product> getReleased();
 
-    public void addReleased( Product product );
+    void addReleased( Product product );
 
-    public void removeReleased( Product product );
+    void removeReleased( Product product );
 
-    public void setExperiments( Collection<Experiment> someExperiment );
+    void setExperiments( Collection<Experiment> someExperiment );
 
-    public Collection<Experiment> getExperiments();
+    Collection<Experiment> getExperiments();
 
-    public void addExperiment( Experiment experiment );
+    void addExperiment( Experiment experiment );
 
-    public void removeExperiment( Experiment experiment );
+    void removeExperiment( Experiment experiment );
 
-    public CvInteractionType getCvInteractionType();
+    CvInteractionType getCvInteractionType();
 
-    public void setCvInteractionType( CvInteractionType cvInteractionType );
+    void setCvInteractionType( CvInteractionType cvInteractionType );
 
     //attributes used for mapping BasicObjects - project synchron
-    public String getCvInteractionTypeAc();
+    String getCvInteractionTypeAc();
 
-    public void setCvInteractionTypeAc( String ac );
+    void setCvInteractionTypeAc( String ac );
 
-    public Component getBait();
+    Component getBait();
 
-    public boolean equals( Object o );
-
-    public int hashCode();
-
-    public String toString();
+    String getCrc64();
 }

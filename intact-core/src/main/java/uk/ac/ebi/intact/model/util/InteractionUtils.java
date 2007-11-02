@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.util.Crc64;
 
 import java.util.*;
 
@@ -319,4 +320,31 @@ public class InteractionUtils {
 
         return ids;
     }
+
+    /**
+     * Calculates a CRC based on what IMEx considers an interaction as unique
+     * @param interaction The interaction to calculate
+     * @return a String containing the CRC
+     *
+     * @since 1.7.2
+     */
+    public static String calculateImexCRC(Interaction interaction) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Component component : interaction.getComponents()) {
+            addComponentUniquenesString(sb, component);
+        }
+
+        return Crc64.getCrc64(sb.toString());
+    }
+
+    protected static StringBuilder addComponentUniquenesString(StringBuilder sb, Component component) {
+
+        return sb;
+    }
+
+    protected static String calculateFeatureImexCRC(Feature feature) {
+        return null;
+    }
+
 }

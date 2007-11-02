@@ -352,6 +352,11 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     }
 
+    @Transient
+    public String getCrc64() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Equality for Interactions is currently based on equality for <code>Interactors</code>, CvInteractionType, kD and
      * Components.

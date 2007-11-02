@@ -87,8 +87,9 @@ public class XrefUtils {
 
         for (X xref : annotatedObject.getXrefs()) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
-            if (qualifier != null &&
-                CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF)) {
+            CvObjectXref idXref = null;
+            if (qualifier != null && ((idXref = CvObjectUtils.getPsiMiIdentityXref(qualifier)) != null &&
+                idXref.getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF))) {
                 xrefs.add(xref);
             }
         }
@@ -99,11 +100,15 @@ public class XrefUtils {
     public static <X extends Xref> X getIdentityXref(AnnotatedObject<X,?> annotatedObject, CvDatabase cvDatabase) {
         String dbMi = CvObjectUtils.getPsiMiIdentityXref(cvDatabase).getPrimaryId();
 
+        return getIdentityXref(annotatedObject, dbMi);
+    }
+
+    public static <X extends Xref> X getIdentityXref(AnnotatedObject<X,?> annotatedObject, String databaseMi) {
         for (X xref : annotatedObject.getXrefs()) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             if (qualifier != null &&
                 CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF) &&
-                CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(dbMi)) {
+                CvObjectUtils.getPsiMiIdentityXref(xref.getCvDatabase()).getPrimaryId().equals(databaseMi)) {
 
                 return xref;
             }
