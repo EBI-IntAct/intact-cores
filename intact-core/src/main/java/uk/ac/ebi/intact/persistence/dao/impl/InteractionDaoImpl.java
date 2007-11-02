@@ -145,7 +145,7 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
             if (i>0) {
                 sb.append("and ");
             }
-            sb.append("lower(xref").append(i).append(".primaryId) = lower(:protPrimaryId").append(i).append(") ");
+            sb.append("xref").append(i).append(".primaryId = :protPrimaryId").append(i).append(" ");
         }
 
         if (exactComponents) {
