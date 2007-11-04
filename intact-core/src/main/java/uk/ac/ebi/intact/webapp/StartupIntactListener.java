@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSessionListener;
  * @version $Id$
  * @since <pre>04/08/2006</pre>
  */
-public class StartupIntactListener implements ServletContextListener, HttpSessionListener {
+public class StartupIntactListener extends BasicStartupIntactListener {
 
     private static final Log log = LogFactory.getLog( StartupIntactListener.class );
 
@@ -39,28 +39,4 @@ public class StartupIntactListener implements ServletContextListener, HttpSessio
 
     }
 
-    public void sessionCreated( HttpSessionEvent httpSessionEvent ) {
-        HttpSession session = httpSessionEvent.getSession();
-
-        log.debug( "Session started: " + session.getId() );
-
-        //IntactSession intactSession = new WebappSession(session.getServletContext(), session);
-
-        // start a intactContext for this session
-        //IntactConfigurator.createIntactContext(intactSession);
-
-    }
-
-    public void contextDestroyed( ServletContextEvent servletContextEvent ) {
-        log.debug( "LogFactory.release and destroying application" );
-        LogFactory.release( Thread.currentThread().getContextClassLoader() );
-
-        log.debug( "Closing SessionFactory" );
-        IntactSession intactSession = new WebappSession( servletContextEvent.getServletContext(), null, null );
-        RuntimeConfig.getCurrentInstance( intactSession ).getDefaultDataConfig().closeSessionFactory();
-    }
-
-    public void sessionDestroyed( HttpSessionEvent httpSessionEvent ) {
-        log.debug( "Session destroyed: " + httpSessionEvent.getSession().getId() );
-    }
 }
