@@ -32,18 +32,19 @@ public class UserContext implements Serializable {
     }
 
     public static UserContext getCurrentInstance( IntactSession session ) {
-        if ( !session.isRequestAvailable() ) {
-            throw new IntactException( "Cannot get a UserContext if the IntactSession does not have request and session scope" );
-        }
+        if ( session.isRequestAvailable() ) {
+            Object obj = session.getAttribute( SESSION_ATT_NAME );
 
-        Object obj = session.getAttribute( SESSION_ATT_NAME );
-
-        if ( obj != null ) {
-            return ( UserContext ) obj;
+            if ( obj != null ) {
+                return ( UserContext ) obj;
+            }
         }
 
         UserContext userContext = createDefaultUserContext( session );
-        session.setAttribute( SESSION_ATT_NAME, userContext );
+
+        if ( session.isRequestAvailable() ) {
+            session.setAttribute( SESSION_ATT_NAME, userContext );
+        }
 
         return userContext;
     }
@@ -58,6 +59,11 @@ public class UserContext implements Serializable {
 
         String currentUser = configuration.getProperty( Environment.USER );
         String password = configuration.getProperty( Environment.PASS );
+
+        if (currentUser == null) {
+            currentUser = "UNKNOWN";
+            log.warn("No current user found. Using: "+currentUser);
+        }
 
         UserContext userContext = new UserContext( currentUser, password );
 

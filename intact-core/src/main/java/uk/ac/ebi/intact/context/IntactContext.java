@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.config.impl.*;
 import uk.ac.ebi.intact.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.model.Institution;
 
+import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -71,11 +72,19 @@ public class IntactContext implements Serializable {
         DataConfig dataConfig;
 
         if (persistenceUnitName != null) {
-            persistenceUnitName = "intact-core-mem";
             dataConfig = new JpaCoreDataConfig(session, persistenceUnitName);
         } else {
             dataConfig = calculateDefaultDataConfig(session);
         }
+
+        initContext(dataConfig, session);
+    }
+
+    public static void initContext( EntityManagerFactory emf, IntactSession session ) {
+        if (emf == null) {
+            throw new IllegalArgumentException("Trying to initialize IntactContext with null EntityManagerFactory");
+        }
+        DataConfig dataConfig = new JpaEntityManagerFactoryDataConfig(session, emf);
 
         initContext(dataConfig, session);
     }
