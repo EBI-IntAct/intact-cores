@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.persister.standard;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.core.unit.mock.MockInteractorDao;
 import uk.ac.ebi.intact.model.*;
@@ -183,6 +184,28 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
         Assert.assertEquals("P12345", ProteinUtils.getUniprotXref(lastProt).getPrimaryId());
 
         MockIntactContext.getCurrentInstance().close();
+    }
+
+    @Test (expected = UndefinedCaseException.class)
+    public void fetchFromDb_multipleIdXrefsToUniprot() throws Exception {
+        Protein prot = getMockBuilder().createProtein("Q00112", "lalaProt");
+        prot.addXref(getMockBuilder().createIdentityXrefUniprot(prot, "Q00113"));
+        PersisterHelper.saveOrUpdate(prot);
+    }
+
+    @Test
+    public void fetchFromDb_multipleIdXrefsMixed() throws Exception {
+        Protein prot = getMockBuilder().createProtein("Q00112", "lalaProt1");
+        PersisterHelper.saveOrUpdate(prot);
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
+        Protein prot2 = getMockBuilder().createProtein("Q00112", "lalaProt");
+        CvDatabase intact = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+        prot2.addXref(getMockBuilder().createIdentityXref(prot2, "EBI-12345", intact));
+        PersisterHelper.saveOrUpdate(prot2);
+        
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
     }
 
     @Test

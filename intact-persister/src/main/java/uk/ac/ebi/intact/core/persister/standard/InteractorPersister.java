@@ -27,11 +27,13 @@ import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.XrefUtils;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * TODO comment this
@@ -126,8 +128,22 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
 
         // 2. try to fetch first the object using the primary ID
         final Collection<InteractorXref> identityXrefs = XrefUtils.getIdentityXrefs(intactObject);
+
+        // remove Xrefs to intact, mint or dip
+        for (Iterator<InteractorXref> interactorXrefIterator = identityXrefs.iterator(); interactorXrefIterator.hasNext();)
+        {
+            InteractorXref interactorXref = interactorXrefIterator.next();
+
+            final String databaseMi = CvObjectUtils.getPsiMiIdentityXref(interactorXref.getCvDatabase()).getPrimaryId();
+            if (CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
+                    CvDatabase.MINT_MI_REF.equals(databaseMi) ||
+                    CvDatabase.DIP_MI_REF.equals(databaseMi)) {
+                interactorXrefIterator.remove();
+            }
+        }
+
         if (identityXrefs.size() > 1) {
-            throw new UndefinedCaseException("Interactor with more than one xref");
+            throw new UndefinedCaseException("Interactor with more than one xref: "+identityXrefs);
         }
 
         if (identityXrefs.size() == 1) {
