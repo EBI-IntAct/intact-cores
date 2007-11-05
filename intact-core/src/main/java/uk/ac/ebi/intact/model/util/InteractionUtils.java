@@ -196,7 +196,7 @@ public class InteractionUtils {
      */
     public static String syncShortLabelWithDb( String shortLabel ) {
         if (isTemporaryLabel(shortLabel)) {
-            if (log.isWarnEnabled()) log.warn("Label for interaction was temporary ("+shortLabel+"), hence not synced with the database");
+            if (log.isDebugEnabled()) log.debug("Label for interaction was temporary ("+shortLabel+"), hence not synced with the database");
             return shortLabel;
         }
         return InteractionShortLabelGenerator.nextAvailableShortlabel( shortLabel );
@@ -311,9 +311,11 @@ public class InteractionUtils {
                 final Iterator<InteractorXref> iterator = idXrefs.iterator();
                 ids.add(iterator.next().getPrimaryId());
 
-                if (iterator.hasNext()) {
-                    log.warn("Interaction contains interactor with more than one identities. Interaction: "+interaction.getShortLabel()+"("+interaction.getAc()+") "+
-                    " - Xrefs: "+ idXrefs);
+                if (log.isDebugEnabled()) {
+                    if (iterator.hasNext()) {
+                        log.debug("Interaction contains interactor with more than one identities. Interaction: "+interaction.getShortLabel()+"("+interaction.getAc()+") "+
+                        " - Xrefs: "+ idXrefs);
+                    }
                 }
             }
         }
