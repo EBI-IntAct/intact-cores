@@ -107,9 +107,13 @@ public class XrefUtils {
         for (X xref : annotatedObject.getXrefs()) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             CvDatabase database = xref.getCvDatabase();
+            CvObjectXref idXrefQual;
+            CvObjectXref idXrefDb;
             if (qualifier != null && database != null &&
-                CvObjectUtils.getPsiMiIdentityXref(qualifier).getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF) &&
-                CvObjectUtils.getPsiMiIdentityXref(database).getPrimaryId().equals(databaseMi)) {
+                (idXrefQual = CvObjectUtils.getPsiMiIdentityXref(qualifier)) != null &&
+                (idXrefDb = CvObjectUtils.getPsiMiIdentityXref(database)) != null &&
+                idXrefQual.getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF) &&
+                idXrefDb.getPrimaryId().equals(databaseMi)) {
 
                 return xref;
             }
