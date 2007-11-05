@@ -25,7 +25,9 @@ import java.util.Collection;
 import java.util.Random;
 
 /**
- * Simulates populated IntAct model objects - useful when testing
+ * Simulates populated IntAct model objects.
+ * <p/>
+ * <b>Useful when testing !!</b>
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -51,6 +53,9 @@ public class IntactMockBuilder {
         this.cvBuilder = new CvObjectBuilder();
     }
 
+    /////////////////////
+    // Institution
+
     public Institution getInstitution() {
         return institution;
     }
@@ -65,6 +70,9 @@ public class IntactMockBuilder {
         return institution;
     }
 
+    //////////////////////
+    // CvObjects
+
     public CvDatabase getPsiMiDatabase() {
         return cvBuilder.createPsiMiCvDatabase(getInstitution());
     }
@@ -72,6 +80,13 @@ public class IntactMockBuilder {
     public CvXrefQualifier getIdentityQualifier() {
         return cvBuilder.createIdentityCvXrefQualifier(getInstitution());
     }
+
+    public <T extends CvObject> T createCvObject(Class<T> cvClass, String primaryId, String shortLabel) {
+        return CvObjectUtils.createCvObject(getInstitution(), cvClass, primaryId, shortLabel);
+    }
+
+    /////////////////////
+    // Xref
 
     public <X extends Xref> X createIdentityXrefPsiMiRandom(AnnotatedObject<X,?> parent) {
         return createIdentityXrefPsiMi(parent, nextString("primId"));
@@ -115,6 +130,9 @@ public class IntactMockBuilder {
         return xref;
     }
 
+    //////////////////
+    // BioSource
+
     public BioSource createBioSourceRandom() {
         return createBioSource(nextId(), nextString("label"));
     }
@@ -129,13 +147,15 @@ public class IntactMockBuilder {
         return bioSource;
     }
 
+    //////////////////
+    // Alias
+
     public <A extends Alias> A createAliasGeneName(AnnotatedObject<?,A> parent, String name) {
         return AliasUtils.createAliasGeneName(parent, name);
     }
 
-    public <T extends CvObject> T createCvObject(Class<T> cvClass, String primaryId, String shortLabel) {
-        return CvObjectUtils.createCvObject(getInstitution(), cvClass, primaryId, shortLabel);
-    }
+    ///////////////////////
+    // Nucleic Acid
 
     public NucleicAcid createNucleicAcidRandom() {
         return createNucleicAcid( nextString( ), createBioSourceRandom(), nextString( "NA-" ));
@@ -156,6 +176,9 @@ public class IntactMockBuilder {
         return na;
     }
 
+    //////////////////////
+    // Small Molecule
+
     public SmallMolecule createSmallMoleculeRandom() {
           return createSmallMolecule(nextString("chebi:"), nextString());
     }
@@ -173,6 +196,9 @@ public class IntactMockBuilder {
 
         return smallMolecule;
     }
+
+    //////////////////////
+    // Protein
 
     public Protein createProteinRandom() {
         return createProtein(nextString("primId"), nextString(), createBioSourceRandom());
@@ -196,10 +222,12 @@ public class IntactMockBuilder {
         return protein;
     }
 
-
     public Protein createProtein(String uniprotId, String shortLabel) {
         return createProtein(uniprotId, shortLabel, createBioSourceRandom());
     }
+
+    //////////////////////
+    // Component
 
     public Component createComponent(Interaction interaction, Interactor interactor, CvExperimentalRole expRole, CvBiologicalRole bioRole) {
         Component component = new Component(getInstitution(), interaction, interactor, expRole, bioRole);
@@ -259,12 +287,17 @@ public class IntactMockBuilder {
         return createComponent(interaction, interactor, expRole, bioRole);
     }
 
+    //////////////////////
+    // Interaction
+
     public Interaction createInteraction(String shortLabel, Interactor bait, Interactor prey, Experiment experiment) {
-        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
+        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION );
 
         Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(experiment)),
                                                       cvInteractionType, null, shortLabel, getInstitution());
 
+        interaction.setCvInteractorType( intType );
         interaction.addComponent(createComponentBait(interaction, bait));
         interaction.addComponent(createComponentPrey(interaction, prey));
 
@@ -325,11 +358,11 @@ public class IntactMockBuilder {
     /**
      * This creates a stable (non-random) interaction
      */
-    public Interaction createInteractionFooBar() {
+    public Interaction createDeterministicInteraction() {
         Interaction interaction = createInteraction("fooprey-barbait",
                                                     createProtein("A2", "barbait"),
                                                     createProtein("A1", "fooprey"),
-                                                    createExperimentFooBar());
+                                                    createDeterministicExperiment());
         interaction.getAnnotations().add(createAnnotation("This is an annotation", CvTopic.COMMENT_MI_REF, CvTopic.COMMENT));
 
         CvFeatureType featureType = createCvObject(CvFeatureType.class, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, CvFeatureType.EXPERIMENTAL_FEATURE);
@@ -344,10 +377,13 @@ public class IntactMockBuilder {
         return interaction;
     }
 
+    ////////////////////
+    // Experiment
+
     /**
      * This creates a stable (non-random) experiment
      */
-    public Experiment createExperimentFooBar() {
+    public Experiment createDeterministicExperiment() {
         Experiment experiment = createExperimentEmpty("foobar-2006-1","12345");
         experiment.setBioSource(createBioSource(5, "lalaorg"));
 
@@ -398,6 +434,9 @@ public class IntactMockBuilder {
         return exp;
     }
 
+    ////////////////////
+    // Publication
+
     public Publication createPublicationRandom() {
         return createPublication(String.valueOf(nextInt()));
     }
@@ -406,6 +445,9 @@ public class IntactMockBuilder {
         Publication pub = new Publication(getInstitution(), pmid);
         return pub;
     }
+
+    /////////////////////
+    // Intact Entry
 
     public IntactEntry createIntactEntryRandom() {
        return createIntactEntryRandom(childRandom(), 1, childRandom(1, MAX_CHILDREN));
@@ -421,6 +463,9 @@ public class IntactMockBuilder {
 
         return new IntactEntry(interactions);
     }
+
+    /////////////////////
+    // Annotation
 
     public Annotation createAnnotation(String annotationText, CvTopic cvTopic) {
         Annotation annotation = new Annotation(institution, cvTopic);
@@ -438,6 +483,9 @@ public class IntactMockBuilder {
         return createAnnotation(nextString("annottext"), CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
     }
 
+    ////////////////////
+    // Feature
+
     public Feature createFeature(String shortLabel, CvFeatureType featureType) {
         Interaction interaction = createInteractionRandomBinary();
         Component component = interaction.getComponents().iterator().next();
@@ -450,6 +498,9 @@ public class IntactMockBuilder {
         CvFeatureType cvFeatureType = createCvObject(CvFeatureType.class, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, CvFeatureType.EXPERIMENTAL_FEATURE);
         return createFeature(nextString("feat"), cvFeatureType);
     }
+
+    //////////////////////
+    // Range
 
     public Range createRangeUndetermined() {
         Range range = new Range(institution, 0, 0, null);
@@ -504,6 +555,9 @@ public class IntactMockBuilder {
 
         return createRange(from, from, to, to);
     }
+
+    ///////////////////
+    // Utilities
 
     protected String nextString() {
         return randomString();
@@ -571,5 +625,4 @@ public class IntactMockBuilder {
 
         return sb.toString();
     }
-
 }
