@@ -291,13 +291,14 @@ public class IntactMockBuilder {
     // Interaction
 
     public Interaction createInteraction(String shortLabel, Interactor bait, Interactor prey, Experiment experiment) {
-        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION );
 
         Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(experiment)),
                                                       cvInteractionType, null, shortLabel, getInstitution());
 
+        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
         interaction.setCvInteractorType( intType );
+
         interaction.addComponent(createComponentBait(interaction, bait));
         interaction.addComponent(createComponentPrey(interaction, prey));
 
@@ -318,6 +319,9 @@ public class IntactMockBuilder {
         String shortLabel = InteractionUtils.calculateShortLabel(interaction);
         interaction.setShortLabel(shortLabel);
 
+        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
+        interaction.setCvInteractorType( intType );
+
         return interaction;
     }
 
@@ -331,6 +335,9 @@ public class IntactMockBuilder {
 
         String shortLabel = InteractionUtils.calculateShortLabel(interaction);
         interaction.setShortLabel(shortLabel);
+
+        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
+        interaction.setCvInteractorType( intType );
 
         return interaction;
     }
@@ -351,6 +358,9 @@ public class IntactMockBuilder {
 
         String shortLabel = InteractionUtils.calculateShortLabel(interaction);
         interaction.setShortLabel(shortLabel);
+
+        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
+        interaction.setCvInteractorType( intType );
 
         return interaction;
     }
