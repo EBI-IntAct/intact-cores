@@ -112,8 +112,6 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
 
         intactObject.setInteractor((Interactor) InteractorPersister.getInstance().syncIfTransient(intactObject.getInteractor()));
 
-        // TODO Bruno: Not syncing the features (and there sub-CVs) seems to have caused a bug !!
-        // don't sync features (consider all them as new)
         Collection<Feature> features = new ArrayList<Feature>( intactObject.getBindingDomains().size() );
         for ( Feature feature : intactObject.getBindingDomains() ) {
             features.add( FeaturePersister.getInstance().syncIfTransient( feature ) );
@@ -121,89 +119,5 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         intactObject.setBindingDomains( features );
 
         return super.syncAttributes(intactObject);
-    }
-
-     /**
-     * Checks if two components are the same
-     */
-    protected static boolean areEquivalent(Component c1, Component c2) {
-        boolean areEquivalent = (haveSameRoles(c1, c2) &&
-                                 haveSameDetectionMethods(c1, c2) &&
-                                 haveSameFeatures(c1, c2));
-
-         if (!areEquivalent) return false;
-
-         return (InteractorPersister.haveSameIdentity(c1.getInteractor(), c2.getInteractor()));
-    }
-
-    /**
-     * Checks if two components have the same roles
-     */
-    protected static boolean haveSameRoles(Component c1, Component c2) {
-        String miExpRole1 = CvObjectUtils.getPsiMiIdentityXref(c1.getCvExperimentalRole()).getPrimaryId();
-        String miExpRole2 = CvObjectUtils.getPsiMiIdentityXref(c2.getCvExperimentalRole()).getPrimaryId();
-
-        String miBioRole1 = CvObjectUtils.getPsiMiIdentityXref(c1.getCvBiologicalRole()).getPrimaryId();
-        String miBioRole2 = CvObjectUtils.getPsiMiIdentityXref(c2.getCvBiologicalRole()).getPrimaryId();
-
-        return (miExpRole1.equals(miExpRole2) &&
-                miBioRole1.equals(miBioRole2));
-    }
-
-    /**
-     * Checks if two component shave the same detection methods
-     */
-    protected static boolean haveSameDetectionMethods(Component c1, Component c2) {
-        if (c1.getParticipantDetectionMethods().size() != c2.getParticipantDetectionMethods().size()) {
-            return false;
-        }
-
-        for (CvIdentification detMethod1 : c1.getParticipantDetectionMethods()) {
-            boolean found = false;
-
-            String mi1 = CvObjectUtils.getPsiMiIdentityXref(detMethod1).getPrimaryId();
-
-            for (CvIdentification detMethod2 : c2.getParticipantDetectionMethods()) {
-                String mi2 = CvObjectUtils.getPsiMiIdentityXref(detMethod2).getPrimaryId();
-
-                if (mi1.equals(mi2)) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) return false;
-        }
-
-        return true;
-    }
-
-    protected static boolean haveSameFeatures(Component c1, Component c2) {
-        final Collection<Feature> features1 = c1.getBindingDomains();
-        final Collection<Feature> features2 = c2.getBindingDomains();
-
-        if (features1.size() != features2.size()) {
-            return false;
-        }
-
-        for (Feature f1 : features1) {
-            boolean found = false;
-
-            String featureTypeMi1 = CvObjectUtils.getPsiMiIdentityXref(f1.getCvFeatureType()).getPrimaryId();
-
-            for (Feature f2 : features2) {
-                String featureTypeMi2 = CvObjectUtils.getPsiMiIdentityXref(f2.getCvFeatureType()).getPrimaryId();
-
-                if (featureTypeMi1.equals(featureTypeMi2) &&
-                    FeaturePersister.haveSameRanges(f1, f2)) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) return false;
-        }
-
-        return true;
     }
 }

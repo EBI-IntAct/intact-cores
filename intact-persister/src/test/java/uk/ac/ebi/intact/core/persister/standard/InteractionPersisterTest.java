@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.hibernate.impl.SessionFactoryImpl;
+import org.hibernate.stat.Statistics;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
@@ -301,13 +303,13 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void fetchFromDatasource_same() throws Exception {
-        Interaction interaction = createReproducibleInteraction();
+        Interaction interaction = getMockBuilder().createInteractionFooBar();
 
         PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
 
-        Interaction interaction2 = createReproducibleInteraction();
+        Interaction interaction2 = getMockBuilder().createInteractionFooBar();
 
         PersisterHelper.saveOrUpdate(interaction2);
 
@@ -398,6 +400,9 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void fetchFromDatasource_differentExperiments() throws Exception {
+        final Statistics statistics = getDaoFactory().getCurrentSession().getSessionFactory().getStatistics();
+        statistics.setStatisticsEnabled(true);
+
         Interaction interaction = createReproducibleInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
@@ -410,6 +415,9 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         PersisterHelper.saveOrUpdate(interaction2);
 
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+
+        System.out.println(statistics);
+        System.out.println(statistics.getQueryExecutionMaxTimeQueryString());
     }
 
     private Interaction createReproducibleInteraction() {

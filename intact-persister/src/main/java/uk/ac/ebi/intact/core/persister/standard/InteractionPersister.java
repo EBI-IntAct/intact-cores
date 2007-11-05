@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 
 import java.util.ArrayList;
@@ -80,10 +81,18 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
                 interactionDao.getByInteractorsPrimaryId(true, interactorPrimaryIDs.toArray(new String[interactorPrimaryIDs.size()]));
 
         for (Interaction interactionWithSameInteractor : interactionsWithSameInteractors) {
-
+            /*
             if (AbstractAnnotatedObjectPersister.haveSameAnnotations(intactObject, interactionWithSameInteractor) &&
                  containSameExperiments(intactObject, interactionWithSameInteractor) &&
                  containSameComponents(intactObject, interactionWithSameInteractor)) {
+                return interactionWithSameInteractor;
+            }
+            */
+            CrcCalculator crcCalculator = new CrcCalculator();
+            String interactionCrc = crcCalculator.crc64(intactObject);
+            String interactionWithSameInteractorCrc = crcCalculator.crc64(interactionWithSameInteractor);
+
+            if (interactionCrc.equals(interactionWithSameInteractorCrc)) {
                 return interactionWithSameInteractor;
             }
 
@@ -91,31 +100,6 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         return null;
     }
-
-    protected static boolean containSameExperiments(Interaction interaction1, Interaction interaction2) {
-         return experimentLabels(interaction1).equals(experimentLabels(interaction2));
-    }
-
-    protected static boolean containSameComponents(Interaction interaction1, Interaction interaction2) {
-        for (Component c1 : interaction1.getComponents()) {
-            boolean found = false;
-
-            for (Component c2 : interaction2.getComponents()) {
-                if (ComponentPersister.areEquivalent(c1, c2)) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
 
     /**
      * TODO forget it. because of A -- I mean see A above
