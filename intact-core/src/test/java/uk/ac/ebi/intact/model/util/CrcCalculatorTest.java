@@ -39,8 +39,8 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
         //System.out.println(crcCalculator.crc64(interaction));
         //System.out.println(crcCalculator.createUniquenessString(interaction));
 
-        Assert.assertEquals("16A0EFAB4B2C811B", crcCalculator.crc64(interaction));
-        Assert.assertEquals("a1|0.0MI:0499|MI:0498|MI:0396|MI:0350|a2|0.0MI:0499|MI:0496|MI:0505|MI:0338|1-1|MI:0338|5-5|MI:0396|MI:0350|MI:0396|MI:0027|1|MI:0407|MI:0612|This is an annotation|",
+        Assert.assertEquals("51E12A43101D5171", crcCalculator.crc64(interaction));
+        Assert.assertEquals("a1|0.0MI:0499|MI:0498|MI:0396|MI:0350|a2|0.0MI:0499|MI:0496|MI:0505|MI:0338|1-1|MI:0338|5-5|MI:0396|MI:0350|foobar-2006-1|MI:0396|MI:0027|5|MI:0407|MI:0612|This is an annotation|",
                             crcCalculator.createUniquenessString(interaction).toString());
     }
 
@@ -51,7 +51,7 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
 
         CrcCalculator crcCalculator = new CrcCalculator();
 
-        Assert.assertNotSame(crcCalculator.crc64(interaction1),crcCalculator.crc64(interaction2));
+        Assert.assertFalse(crcCalculator.crc64(interaction1).equals(crcCalculator.crc64(interaction2)));
     }
 
     @Test
@@ -62,7 +62,18 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
 
         CrcCalculator crcCalculator = new CrcCalculator();
 
-        Assert.assertNotSame(crcCalculator.crc64(interaction1),crcCalculator.crc64(interaction2));
+        Assert.assertFalse(crcCalculator.crc64(interaction1).equals(crcCalculator.crc64(interaction2)));
+    }
+
+    @Test
+    public void crc_different_sameExpDifferentShortLabel() throws Exception {
+        Interaction interaction1 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction2 = getMockBuilder().createInteractionFooBar();
+        interaction2.getExperiments().iterator().next().setShortLabel("lala-1320-2");
+
+        CrcCalculator crcCalculator = new CrcCalculator();
+
+        Assert.assertFalse(crcCalculator.crc64(interaction1).equals(crcCalculator.crc64(interaction2)));
     }
 
     @Test
@@ -79,7 +90,7 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
 
         CrcCalculator crcCalculator = new CrcCalculator();
 
-        Assert.assertNotSame(crcCalculator.crc64(interaction1),crcCalculator.crc64(interaction2));
+        Assert.assertFalse(crcCalculator.crc64(interaction1).equals(crcCalculator.crc64(interaction2)));
     }
 
     @Test
@@ -92,8 +103,6 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
         interaction2.getXrefs().add(getMockBuilder().createIdentityXref(interaction2, "pdb1", pdb));
 
         CrcCalculator crcCalculator = new CrcCalculator();
-        System.out.println(crcCalculator.createUniquenessString(interaction1));
-        System.out.println(crcCalculator.createUniquenessString(interaction2));
 
         Assert.assertEquals(crcCalculator.crc64(interaction1),crcCalculator.crc64(interaction2));
     }
@@ -109,7 +118,7 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
 
         CrcCalculator crcCalculator = new CrcCalculator();
 
-        Assert.assertNotSame(crcCalculator.crc64(interaction1),crcCalculator.crc64(interaction2));
+        Assert.assertFalse(crcCalculator.crc64(interaction1).equals(crcCalculator.crc64(interaction2)));
     }
 
 }

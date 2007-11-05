@@ -322,13 +322,14 @@ public class IntactMockBuilder {
         return interaction;
     }
 
+    /**
+     * This creates a stable (non-random) interaction
+     */
     public Interaction createInteractionFooBar() {
-        Experiment experiment = createExperimentEmpty("exp-2006-1","12345");
-        experiment.setBioSource(createBioSource(5, "lalaorg"));
         Interaction interaction = createInteraction("fooprey-barbait",
                                                     createProtein("A2", "barbait"),
                                                     createProtein("A1", "fooprey"),
-                                                    experiment);
+                                                    createExperimentFooBar());
         interaction.getAnnotations().add(createAnnotation("This is an annotation", CvTopic.COMMENT_MI_REF, CvTopic.COMMENT));
 
         CvFeatureType featureType = createCvObject(CvFeatureType.class, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, CvFeatureType.EXPERIMENTAL_FEATURE);
@@ -341,6 +342,16 @@ public class IntactMockBuilder {
         interaction.getComponents().iterator().next().addBindingDomain(feature);
 
         return interaction;
+    }
+
+    /**
+     * This creates a stable (non-random) experiment
+     */
+    public Experiment createExperimentFooBar() {
+        Experiment experiment = createExperimentEmpty("foobar-2006-1","12345");
+        experiment.setBioSource(createBioSource(5, "lalaorg"));
+
+        return experiment;
     }
 
     public Experiment createExperimentEmpty() {

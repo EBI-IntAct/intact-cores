@@ -87,6 +87,9 @@ public class CrcCalculator {
 
         if (experiment == null) return sb;
 
+        // short label
+        sb.append(experiment.getShortLabel());
+
         // participant detection method
         sb.append(createUniquenessString(experiment.getCvIdentification()));
 
