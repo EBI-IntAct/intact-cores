@@ -32,7 +32,7 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
 
     @Test
     public void crc_default() throws Exception {
-        Interaction interaction = getMockBuilder().createInteractionFooBar();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         CrcCalculator crcCalculator = new CrcCalculator();
 
@@ -56,8 +56,8 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
 
     @Test
     public void crc_different_exp() throws Exception {
-        Interaction interaction1 = getMockBuilder().createInteractionFooBar();
-        Interaction interaction2 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         interaction2.getExperiments().add(getMockBuilder().createExperimentEmpty("lala-1714"));
 
         CrcCalculator crcCalculator = new CrcCalculator();
@@ -78,12 +78,12 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
 
     @Test
     public void crc_different_smallMolecules() throws Exception {
-        Interaction interaction1 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
         Component c1_1 = interaction1.getComponents().iterator().next();
         Component sm1 = getMockBuilder().createComponentPrey(getMockBuilder().createSmallMoleculeRandom());
         interaction1.setComponents(Arrays.asList(c1_1, sm1));
 
-        Interaction interaction2 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         Component c2_1 = interaction1.getComponents().iterator().next();
         Component sm2 = getMockBuilder().createComponentPrey(getMockBuilder().createSmallMoleculeRandom());
         interaction1.setComponents(Arrays.asList(c2_1, sm2));
@@ -97,9 +97,9 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
     public void crc_pdbXref_same() throws Exception {
         CvDatabase pdb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.RCSB_PDB_MI_REF, CvDatabase.RCSB_PDB);
 
-        Interaction interaction1 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
         interaction1.getXrefs().add(getMockBuilder().createIdentityXref(interaction1, "pdb1", pdb));
-        Interaction interaction2 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         interaction2.getXrefs().add(getMockBuilder().createIdentityXref(interaction2, "pdb1", pdb));
 
         CrcCalculator crcCalculator = new CrcCalculator();
@@ -111,9 +111,9 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
     public void crc_pdbXref_notSame() throws Exception {
         CvDatabase pdb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.RCSB_PDB_MI_REF, CvDatabase.RCSB_PDB);
 
-        Interaction interaction1 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
         interaction1.getXrefs().add(getMockBuilder().createIdentityXref(interaction1, "pdb1", pdb));
-        Interaction interaction2 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         interaction2.getXrefs().add(getMockBuilder().createIdentityXref(interaction1, "pdb2", pdb));
 
         CrcCalculator crcCalculator = new CrcCalculator();

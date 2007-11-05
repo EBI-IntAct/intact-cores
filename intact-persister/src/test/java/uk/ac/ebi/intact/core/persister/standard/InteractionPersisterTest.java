@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.hibernate.impl.SessionFactoryImpl;
 import org.hibernate.stat.Statistics;
 import org.junit.Assert;
 import org.junit.Test;
@@ -303,13 +302,13 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void fetchFromDatasource_same() throws Exception {
-        Interaction interaction = getMockBuilder().createInteractionFooBar();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
 
-        Interaction interaction2 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction2);
 
