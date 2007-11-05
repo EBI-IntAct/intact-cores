@@ -67,8 +67,8 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
 
     @Test
     public void crc_different_sameExpDifferentShortLabel() throws Exception {
-        Interaction interaction1 = getMockBuilder().createInteractionFooBar();
-        Interaction interaction2 = getMockBuilder().createInteractionFooBar();
+        Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         interaction2.getExperiments().iterator().next().setShortLabel("lala-1320-2");
 
         CrcCalculator crcCalculator = new CrcCalculator();
