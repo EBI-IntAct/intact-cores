@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO comment this
+ * Creates the minimum set of controlled vocabularies required to run an IntAct database.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -44,7 +44,6 @@ public class SmallCvPrimer implements CvPrimer {
 
     public SmallCvPrimer(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
-
         this.cvCache = new CvObjectCache();
     }
 
@@ -60,8 +59,11 @@ public class SmallCvPrimer implements CvPrimer {
 
         CvObjectBuilder cvBuilder = new CvObjectBuilder();
 
+        DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+        Institution owner = daoFactory.getInstitutionDao().getByAc( IntactContext.getCurrentInstance().getInstitution().getAc() );
+
         if (identity == null) {
-            identity = cvBuilder.createIdentityCvXrefQualifier(IntactContext.getCurrentInstance().getInstitution());
+            identity = cvBuilder.createIdentityCvXrefQualifier( owner );
             identity.setFullName("identical object");
             intactContext.getDataContext().getDaoFactory().getCvObjectDao(CvXrefQualifier.class).persist(identity);
         }
@@ -123,16 +125,11 @@ public class SmallCvPrimer implements CvPrimer {
      * @throws IntactException          is an error occur while writting on the database.
      * @throws IllegalArgumentException if the class given is not a concrete type of CvObject (eg. CvDatabase)
      */
-    public CvObject getCvObject(Class clazz,
-                                       String shortlabel
-    ) throws IntactException {
+    public CvObject getCvObject(Class clazz, String shortlabel ) throws IntactException {
         return getCvObject(clazz, shortlabel, null);
     }
 
-    public CvObject getCvObject(Class clazz,
-                                       String shortlabel,
-                                       String mi
-    ) throws IntactException {
+    public CvObject getCvObject(Class clazz, String shortlabel, String mi ) throws IntactException {
         return getCvObject(clazz, shortlabel, mi, null);
     }
 
@@ -151,9 +148,9 @@ public class SmallCvPrimer implements CvPrimer {
      * @throws IllegalArgumentException if the class given is not a concrete type of CvObject (eg. CvDatabase)
      */
     private CvObject getCvObject(Class clazz,
-                                       String shortlabel,
-                                       String mi,
-                                       String defaultFullName) {
+                                 String shortlabel,
+                                 String mi,
+                                 String defaultFullName) {
 
         // Check that the given class is a CvObject or one if its sub-type.
         if (!CvObject.class.isAssignableFrom(clazz)) {
@@ -226,11 +223,11 @@ public class SmallCvPrimer implements CvPrimer {
                     log.debug("Added required PSI Xref to " + shortlabel + ": " + mi);
                 }
 
-// persist it
-                getDaoFactory()
-                        .getCvObjectDao(clazz).persist(cv);
-                log.debug("Created missing CV Term: " + clazz.getSimpleName() + "( " + cv.getShortLabel() + " - " + cv.getFullName() + " ).");
-                
+                // persist it
+                getDaoFactory().getCvObjectDao( clazz ).persist(cv);
+                if ( log.isDebugEnabled() )
+                    log.debug("Created missing CV Term: " + clazz.getSimpleName() + "( " + cv.getShortLabel() + " - " +
+                              cv.getFullName() + " ).");
 
             } catch (Exception e) {
                 // that's should not happen, but just in case...
@@ -266,5 +263,4 @@ public class SmallCvPrimer implements CvPrimer {
             return cvClass.getSimpleName()+"_"+mi+"_"+label;
         }
     }
-    
 }
