@@ -20,11 +20,11 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 
 /**
- * TODO comment this
-*
-* @author Bruno Aranda (baranda@ebi.ac.uk)
-* @version $Id$
-*/
+ * Controlled vocabulary builder.
+ *
+ * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @version $Id$
+ */
 public class CvObjectBuilder {
 
     private CvDatabase cvDatabase;
@@ -84,7 +84,4 @@ public class CvObjectBuilder {
 
         return xref;
     }
-
-
-
 }
