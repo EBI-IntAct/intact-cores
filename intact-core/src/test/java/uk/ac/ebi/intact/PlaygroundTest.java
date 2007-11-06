@@ -1,11 +1,14 @@
 package uk.ac.ebi.intact;
 
+import org.junit.Test;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.InteractionImpl;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +19,14 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PlaygroundJpa {
+public class PlaygroundTest {
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    public void letsPlay() throws Exception {
 
 
         //IntactContext context = IntactContext.getCurrentInstance();
-        IntactContext.initStandaloneContext(new File(PlaygroundJpa.class.getResource("/META-INF/zpro-hibernate.cfg.xml").getFile()));
+        IntactContext.initStandaloneContext(new File(PlaygroundTest.class.getResource("/META-INF/zpro-hibernate.cfg.xml").getFile()));
 
 
 //        Query q = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager()
@@ -37,13 +41,15 @@ public class PlaygroundJpa {
 
         Map<String,String> crcs = new HashMap<String,String>();
 
-        int i=0;
+        int i=35000;
 
         List<InteractionImpl> interactionsPage;
-        int firstResult = 0;
+        int firstResult = i;
         int maxResults = 200;
 
         final DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
+
+        Writer writer = new FileWriter("/scratch/projects/intact-current/core/intact-core/src/test/resources/redundant.txt", true);
 
         do {
             //q.setFirstResult(firstResult);
@@ -57,7 +63,8 @@ public class PlaygroundJpa {
 
                 if (crcs.containsKey(crc)) {
                     String redundancy = crcs.get(crc);
-                    System.out.println("REDUNDANT: " + interaction.getAc() + " (" + interaction.getShortLabel() + ") - " + redundancy);
+                    writer.write("REDUNDANT: " + interaction.getAc() + " (" + interaction.getShortLabel() + ") - " + redundancy + "\n");
+                    writer.flush();
                 } else {
                     crcs.put(crc, interaction.getAc() + " (" + interaction.getShortLabel() + ")");
                 }
@@ -65,7 +72,8 @@ public class PlaygroundJpa {
                 i++;
 
                 if (i % 1000 == 0) {
-                    System.out.println("Processed: " + i);
+                    writer.write("Processed: " + i+"\n");
+                    writer.flush();
                 }
             }
             
@@ -75,5 +83,6 @@ public class PlaygroundJpa {
 
         } while (!interactionsPage.isEmpty());
 
+        writer.close();
     }
 }

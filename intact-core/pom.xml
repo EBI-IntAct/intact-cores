@@ -119,6 +119,18 @@
             <artifactId>dbunit</artifactId>
         </dependency>
 
+        <!-- JODA Time Utils -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time-hibernate</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!-- Spring 2.0 - Optional support -->
         <dependency>
             <groupId>org.springframework</groupId>

@@ -6,7 +6,12 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import uk.ac.ebi.intact.annotation.EditorTopic;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,6 +34,11 @@ import java.util.Iterator;
 @DiscriminatorValue( "uk.ac.ebi.intact.model.InteractionImpl" )
 @EditorTopic( name = "Interaction" )
 public class InteractionImpl extends InteractorImpl implements Editable, Interaction {
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(InteractionImpl.class);
 
     ///////////////////////////////////////
     //attributes
@@ -64,6 +74,11 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
      * TODO comments
      */
     private CvInteractionType cvInteractionType;
+
+    /**
+     * CRC of the interaction, that makes it unique and allows to check for redundancy
+     */
+    private String crc;
 
     public InteractionImpl() {
         //super call sets creation time data
@@ -199,6 +214,24 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
                             Institution owner
     ) {
         this( experiments, new ArrayList(), type, interactorType, shortLabel, owner );
+    }
+
+    ///////////////////////////////////////
+    // entity listeners
+
+    @PrePersist
+    @PreUpdate
+    public void calculateCrc() {
+        CrcCalculator crcCalculator = new CrcCalculator();
+
+        Instant before = new Instant();
+
+        crc = crcCalculator.crc64(this);
+
+        Instant after = new Instant();
+
+        if (log.isDebugEnabled()) log.debug("Calculated crc for interaction '" + getShortLabel() +
+                                            "' in " + new Duration(before, after).getMillis() + "ms: " + crc);
     }
 
     ///////////////////////////////////////
@@ -352,9 +385,13 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     }
 
-    @Transient
-    public String getCrc64() {
-        throw new UnsupportedOperationException();
+    @Column(length = 16)
+    public String getCrc() {
+        return crc;
+    }
+
+    public void setCrc(String crc) {
+        this.crc = crc;
     }
 
     /**

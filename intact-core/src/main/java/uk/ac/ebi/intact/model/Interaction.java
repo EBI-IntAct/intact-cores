@@ -53,5 +53,5 @@ public interface Interaction extends Interactor {
 
     Component getBait();
 
-    String getCrc64();
+    String getCrc();
 }
