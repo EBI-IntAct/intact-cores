@@ -367,7 +367,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
      * @return The first components marked as bait, otherwise null.
      *
      * @deprecated this method should not be part of the model. A utility class should instead,
-     *             for isntance: uk.ac.ebi.intact.model.util.InteractionUtils.
+     *             for instance: uk.ac.ebi.intact.model.util.InteractionUtils.
      */
     @Transient
     @Deprecated
@@ -385,7 +385,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     }
 
-    @Column(length = 16)
+    @Column(name="crc64", length = 16)
     public String getCrc() {
         return crc;
     }
