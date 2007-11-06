@@ -103,8 +103,16 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
             return BehaviourType.NEW;
         }
 
+        String candidateCrc;
+
+        if (candidate.getCrc() != null) {
+            candidateCrc = candidate.getCrc();
+        } else {
+            candidateCrc = new CrcCalculator().crc64(candidate);
+        }
+
         // never update interactions
-        if (experimentLabels(synced).equals(experimentLabels(candidate))) {
+        if (synced.getCrc().equals(candidateCrc)) {
             return BehaviourType.IGNORE;
         } else {
             return BehaviourType.NEW;

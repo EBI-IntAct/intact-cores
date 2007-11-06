@@ -22,6 +22,7 @@ import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,7 +117,6 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         }
 
         Assert.assertEquals( 2, getDaoFactory().getInstitutionDao().getAll().size() );
-        Assert.assertEquals( 61, getDaoFactory().getAnnotatedObjectDao().getAll().size() );
         Assert.assertEquals(getDaoFactory().getInstitutionDao().getByShortLabel( "intact" ), 
                             getDaoFactory().getAnnotatedObjectDao().getAll().iterator().next().getOwner() );
         Assert.assertEquals( 17, getDaoFactory().getCvObjectDao().getAll().size() );
@@ -318,13 +318,13 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void fetchFromDatasource_switchedRoles() throws Exception {
-        Interaction interaction = createReproducibleInteraction();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
 
-        Interaction interaction2 = createReproducibleInteraction();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         Iterator<Component> componentIterator = interaction2.getComponents().iterator();
         CvExperimentalRole expRole1 = componentIterator.next().getCvExperimentalRole();
         CvExperimentalRole expRole2 = componentIterator.next().getCvExperimentalRole();
@@ -340,14 +340,14 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void fetchFromDatasource_differentFeaturesInComponents() throws Exception {
-        Interaction interaction = createReproducibleInteraction();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
-        Interaction interaction2 = createReproducibleInteraction();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         final Feature feature = interaction2.getComponents().iterator().next().getBindingDomains().iterator().next();
         feature.getRanges().iterator().next().setFromIntervalStart(3);
 
@@ -359,14 +359,14 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void fetchFromDatasource_differentAnnotations() throws Exception {
-        Interaction interaction = createReproducibleInteraction();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
-        Interaction interaction2 = createReproducibleInteraction();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         interaction2.getAnnotations().clear();
         interaction2.getAnnotations().add(getMockBuilder().createAnnotation("This is a different annotation", CvTopic.COMMENT_MI_REF, CvTopic.COMMENT));
 
@@ -378,14 +378,14 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void fetchFromDatasource_differentAnnotations2() throws Exception {
-        Interaction interaction = createReproducibleInteraction();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
-        Interaction interaction2 = createReproducibleInteraction();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         interaction2.getAnnotations().clear();
         CvTopic topic = getMockBuilder().createCvObject(CvTopic.class, "IA:0", CvTopic.HIDDEN);
         topic.getXrefs().iterator().next().setCvDatabase(getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT));
@@ -417,5 +417,32 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
         //System.out.println(statistics);
         //System.out.println(statistics.getQueryExecutionMaxTimeQueryString());
+    }
+
+    @Test
+    public void crcPreInsert() throws Exception {
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
+        PersisterHelper.saveOrUpdate(interaction);
+        Assert.assertNotNull(interaction.getCrc());
+    }
+
+    @Test
+    public void crcPreUpdate() throws Exception {
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
+        PersisterHelper.saveOrUpdate(interaction);
+        Assert.assertNotNull(interaction.getCrc());
+
+        String originalCrc = interaction.getCrc();
+
+        beginTransaction();
+        InteractionImpl interaction2 = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+        final Component componentPrey = getMockBuilder().createComponentPrey(interaction, getMockBuilder().createProteinRandom());
+        PersisterHelper.saveOrUpdate(componentPrey);
+        interaction2.getComponents().add(componentPrey);
+        interaction2.setCrc(null);
+        commitTransaction();
+
+        Assert.assertFalse(originalCrc.equals(interaction2.getCrc()));
+
     }
 }
