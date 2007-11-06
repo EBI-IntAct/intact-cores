@@ -81,13 +81,6 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
                 interactionDao.getByInteractorsPrimaryId(true, interactorPrimaryIDs.toArray(new String[interactorPrimaryIDs.size()]));
 
         for (Interaction interactionWithSameInteractor : interactionsWithSameInteractors) {
-            /*
-            if (AbstractAnnotatedObjectPersister.haveSameAnnotations(intactObject, interactionWithSameInteractor) &&
-                 containSameExperiments(intactObject, interactionWithSameInteractor) &&
-                 containSameComponents(intactObject, interactionWithSameInteractor)) {
-                return interactionWithSameInteractor;
-            }
-            */
             CrcCalculator crcCalculator = new CrcCalculator();
             String interactionCrc = crcCalculator.crc64(intactObject);
             String interactionWithSameInteractorCrc = crcCalculator.crc64(interactionWithSameInteractor);

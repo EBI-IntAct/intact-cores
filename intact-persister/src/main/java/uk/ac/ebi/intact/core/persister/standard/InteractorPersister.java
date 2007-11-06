@@ -126,24 +126,33 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
                     .getByAc(intactObject.getAc());
         }
 
-        // 2. try to fetch first the object using the primary ID
-        final Collection<InteractorXref> identityXrefs = XrefUtils.getIdentityXrefs(intactObject);
+        // 2. try to fetch first the object using the uniprot ID
+        Collection<InteractorXref> identityXrefs = new ArrayList<InteractorXref>();
 
-        // remove Xrefs to intact, mint or dip
-        for (Iterator<InteractorXref> interactorXrefIterator = identityXrefs.iterator(); interactorXrefIterator.hasNext();)
-        {
-            InteractorXref interactorXref = interactorXrefIterator.next();
+        InteractorXref uniprotXref = XrefUtils.getIdentityXref(intactObject, CvDatabase.UNIPROT_MI_REF);
 
-            final String databaseMi = CvObjectUtils.getPsiMiIdentityXref(interactorXref.getCvDatabase()).getPrimaryId();
-            if (CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
-                    CvDatabase.MINT_MI_REF.equals(databaseMi) ||
-                    CvDatabase.DIP_MI_REF.equals(databaseMi)) {
-                interactorXrefIterator.remove();
+        if (uniprotXref != null) {
+            identityXrefs.add(uniprotXref);
+        } else {
+            // X. try to fetch first the object using the primary ID
+            identityXrefs = XrefUtils.getIdentityXrefs(intactObject);
+
+            // remove Xrefs to intact, mint or dip
+            for (Iterator<InteractorXref> interactorXrefIterator = identityXrefs.iterator(); interactorXrefIterator.hasNext();)
+            {
+                InteractorXref interactorXref = interactorXrefIterator.next();
+
+                final String databaseMi = CvObjectUtils.getPsiMiIdentityXref(interactorXref.getCvDatabase()).getPrimaryId();
+                if (CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
+                        CvDatabase.MINT_MI_REF.equals(databaseMi) ||
+                        CvDatabase.DIP_MI_REF.equals(databaseMi)) {
+                    interactorXrefIterator.remove();
+                }
             }
-        }
 
-        if (identityXrefs.size() > 1) {
-            throw new UndefinedCaseException("Interactor with more than one xref: "+identityXrefs);
+            if (identityXrefs.size() > 1) {
+                throw new UndefinedCaseException("Interactor with more than one non-uniprot xref: "+identityXrefs);
+            }
         }
 
         if (identityXrefs.size() == 1) {
@@ -210,14 +219,14 @@ public class InteractorPersister<T  extends Interactor> extends AbstractAnnotate
     @Override
     protected BehaviourType syncedAndCandidateAreEqual(T synced, T candidate) {
         if (synced == null) return BehaviourType.NEW;
-
+        
         if (synced.getXrefs().size() != candidate.getXrefs().size()) {
             return BehaviourType.UPDATE;
         }
         if (synced.getAliases().size() != candidate.getAliases().size()) {
             return BehaviourType.UPDATE;
         }
-        
+
         return BehaviourType.IGNORE;
     }
 
