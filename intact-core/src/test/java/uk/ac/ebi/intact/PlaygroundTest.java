@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
@@ -19,6 +20,7 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@Ignore
 public class PlaygroundTest {
 
     @Test
