@@ -399,45 +399,23 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void fetchFromDatasource_differentExperiments() throws Exception {
-        final Statistics statistics = getDaoFactory().getCurrentSession().getSessionFactory().getStatistics();
-        statistics.setStatisticsEnabled(true);
+        //final Statistics statistics = getDaoFactory().getCurrentSession().getSessionFactory().getStatistics();
+        //statistics.setStatisticsEnabled(true);
 
-        Interaction interaction = createReproducibleInteraction();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
 
-        Interaction interaction2 = createReproducibleInteraction();
+        Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         interaction2.setExperiments(Arrays.asList(getMockBuilder().createExperimentEmpty("exp-1979-2")));
 
         PersisterHelper.saveOrUpdate(interaction2);
 
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
 
-        System.out.println(statistics);
-        System.out.println(statistics.getQueryExecutionMaxTimeQueryString());
-    }
-
-    private Interaction createReproducibleInteraction() {
-        Experiment experiment = getMockBuilder().createExperimentEmpty("exp-2006-1");
-        Interaction interaction = getMockBuilder().createInteraction("fooprey-barbait",
-                                                                     getMockBuilder().createProtein("A2", "barbait"),
-                                                                     getMockBuilder().createProtein("A1", "fooprey"),
-                                                                     experiment);
-        interaction.getAnnotations().add(getMockBuilder().createAnnotation("This is an annotation", CvTopic.COMMENT_MI_REF, CvTopic.COMMENT));
-
-        CvFeatureType featureType = getMockBuilder().createCvObject(CvFeatureType.class, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, CvFeatureType.EXPERIMENTAL_FEATURE);
-        Feature feature = getMockBuilder().createFeature("feature1", featureType);
-        feature.setComponent(null);
-
-        Range range = getMockBuilder().createRange(1,1,5,5);
-        feature.addRange(range);
-
-        interaction.getComponents().iterator().next().addBindingDomain(feature);
-
-        Assert.assertEquals(2, interaction.getComponents().size());
-
-        return interaction;
+        //System.out.println(statistics);
+        //System.out.println(statistics.getQueryExecutionMaxTimeQueryString());
     }
 }
