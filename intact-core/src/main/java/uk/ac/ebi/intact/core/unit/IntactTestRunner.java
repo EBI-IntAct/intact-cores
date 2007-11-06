@@ -66,7 +66,7 @@ public class IntactTestRunner extends TestClassRunner {
 
                 if (className != null && methodName != null) {
                     try {
-                        Method method = Class.forName(className).getMethod(methodName, null);
+                        Method method = Class.forName(className).getMethod( methodName, (Class) null );
                         testMethod.set(method);
                     } catch (Exception e) {
                         throw new IntactTestException(e);
