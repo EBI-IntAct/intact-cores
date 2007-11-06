@@ -178,10 +178,33 @@ public class CrcCalculator {
 
         if (interactor == null) return sb;
 
+        // IDs
         Collection<InteractorXref> idXrefs = XrefUtils.getIdentityXrefs(interactor);
 
         for (InteractorXref idXref : idXrefs) {
             sb.append(idXref.getPrimaryId().toLowerCase());
+        }
+
+        // special case: if there are no xrefs, check on the sequence or the short label
+
+        if (idXrefs.isEmpty()) {
+            // sequence
+            boolean usedSequence = false;
+
+            if (interactor instanceof Polymer) {
+                Polymer polymer = (Polymer)interactor;
+
+                final String sequence = polymer.getSequence();
+                if (sequence != null) {
+                    sb.append(polymer.getSequence());
+                    usedSequence = true;
+                }
+            }
+
+            // shortlabel
+            if (!usedSequence) {
+                sb.append(interactor.getShortLabel());
+            }
         }
 
         return sb;
