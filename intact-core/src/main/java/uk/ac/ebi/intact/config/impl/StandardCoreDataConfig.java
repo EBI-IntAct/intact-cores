@@ -12,7 +12,9 @@ import uk.ac.ebi.intact.model.Interactor;
 import uk.ac.ebi.intact.model.meta.DbInfo;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,8 +59,20 @@ public class StandardCoreDataConfig extends AbstractHibernateDataConfig {
 
     protected File getConfigFile() {
         URL resource = StandardCoreDataConfig.class.getResource("/hibernate.cfg.xml");
-        File file = (resource == null)? null : new File(resource.getFile());
-        return file;
+
+        if (resource == null) return null;
+
+        String configFilePath = null;
+
+        // in windows, spaces are url encoded, decode the path
+        try {
+            configFilePath = URLDecoder.decode(resource.getFile(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            // will never get here. I am sure that encoding exists ;-)
+            e.printStackTrace();
+        }
+
+        return new File(configFilePath);
     }
 
 }
