@@ -25,7 +25,6 @@ import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import uk.ac.ebi.intact.business.IntactTransactionException;
-import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 
@@ -52,23 +51,29 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDL(String dialect) {
-        Configuration cfg;
-
-        final Object objConfig = IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().getConfiguration();
-
-        if (objConfig instanceof Configuration) {
-            cfg = (Configuration)objConfig;
-        } else if (objConfig instanceof Ejb3Configuration) {
-            Ejb3Configuration ejb3Cfg = (Ejb3Configuration) objConfig;
-            cfg = ejb3Cfg.getHibernateConfiguration();
-        } else {
-            throw new IllegalStateException("Wrong configuration type for the default data config: "+objConfig.getClass().getName());
-        }
-        
         Properties props = new Properties();
         props.put(Environment.DIALECT, dialect);
 
-        return cfg.generateSchemaCreationScript(Dialect.getDialect(props));
+        Configuration cfg = createConfiguration(props);
+
+        String[] sqls = cfg.generateSchemaCreationScript(Dialect.getDialect(props));
+        addDelimiters(sqls);
+
+        return sqls;
+    }
+
+    private static void addDelimiters(String[] sqls) {
+        for (int i=0; i<sqls.length; i++) {
+            sqls[i] = sqls[i]+";";
+        }
+    }
+
+    private static Configuration createConfiguration(Properties props) {
+        Ejb3Configuration ejbConfig = new Ejb3Configuration();
+        ejbConfig.configure("intact-core-default", props);
+
+        Configuration cfg = ejbConfig.getHibernateConfiguration();
+        return cfg;
     }
 
     /**
@@ -93,12 +98,15 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateDropSchemaDDL(String dialect) {
-        Configuration cfg = ((AbstractHibernateDataConfig) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig()).getConfiguration();
-
         Properties props = new Properties();
         props.put(Environment.DIALECT, dialect);
 
-        return cfg.generateDropSchemaScript(Dialect.getDialect(props));
+        Configuration cfg = createConfiguration(props);
+
+        String[] sqls = cfg.generateSchemaCreationScript(Dialect.getDialect(props));
+        addDelimiters(sqls);
+
+        return sqls;
     }
 
     /**
