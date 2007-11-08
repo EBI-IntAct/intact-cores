@@ -15,14 +15,14 @@
  */
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.meta.ImexImport;
-import uk.ac.ebi.intact.model.meta.ImexImportStatus;
+import uk.ac.ebi.intact.model.meta.ImexImportActivationType;
 import uk.ac.ebi.intact.persistence.dao.ImexImportDao;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.List;
 
 /**
@@ -31,25 +31,25 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ImexImportDaoImpl extends HibernateBaseDaoImpl<ImexImport> implements ImexImportDao<ImexImport> {
+public class ImexImportDaoImpl extends HibernateBaseDaoImpl<ImexImport> implements ImexImportDao {
 
     public ImexImportDaoImpl(EntityManager entityManager, IntactSession intactSession) {
         super(ImexImport.class, entityManager, intactSession);
     }
 
-    public List<ImexImport> getFailed() {
-        return getSession().createCriteria(getEntityClass())
-                .add(Restrictions.eq("status", ImexImportStatus.ERROR)).list();
-    }
 
-    public ImexImport getByPmid(String pmid) {
-        return (ImexImport) getSession().createCriteria(getEntityClass())
-                .add(Restrictions.eq("pmid", pmid)).uniqueResult();
-    }
+    public DateTime getLatestUpdate(ImexImportActivationType activationType) {
+        final Query query = getEntityManager()
+                .createQuery("select max(importDate) from uk.ac.ebi.intact.model.meta.ImexImport " +
+                             "where activationType = :activationType");
+        query.setParameter("activationType", activationType);
+        
+        List<DateTime> dateTimes = query.getResultList();
 
-    public List<String> getAllOkPmids() {
-        return getSession().createCriteria(getEntityClass())
-                .add(Restrictions.eq("status", ImexImportStatus.OK))
-                .setProjection(Projections.property("pmid")).list();
+        if (dateTimes.isEmpty()) {
+            return null;
+        }
+
+        return dateTimes.iterator().next();
     }
 }

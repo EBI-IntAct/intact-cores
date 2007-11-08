@@ -15,12 +15,13 @@
  */
 package uk.ac.ebi.intact.model.meta;
 
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotNull;
+import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
 import uk.ac.ebi.intact.model.AbstractAuditable;
-import uk.ac.ebi.intact.model.Institution;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TODO comment this
@@ -33,27 +34,55 @@ public class ImexImport extends AbstractAuditable {
 
     private Long id;
 
-    private String originalFilename;
+    private String repository;
 
-    private Institution provider;
+    private DateTime importDate;
 
-    private String pmid;
+    private int countTotal;
 
-    private ImexImportStatus status;
+    private int countFailed;
 
-    private String message;
+    private int countNotFound;
+
+    private ImexImportActivationType activationType;
+
+    private List<ImexImportPublication> imexImportPublications;
 
     /////////////////////////////////
     // Constructors
 
     public ImexImport() {
+        this.importDate = new DateTime();
     }
 
-    public ImexImport(Institution provider, String pmid, ImexImportStatus status) {
-        this.provider = provider;
-        this.pmid = pmid;
-        this.status = status;
+    public ImexImport(String repository, ImexImportActivationType activationType) {
+        this();
+        this.repository = repository;
+        this.activationType = activationType;
     }
+
+
+    ////////////////////////////////
+    // Listeners
+
+    @PrePersist
+    @PreUpdate
+    public void processStats() {
+        for (ImexImportPublication iip : getImexImportPublications()) {
+
+            countTotal++;
+
+            switch (iip.getStatus()) {
+                case ERROR:
+                    countFailed++;
+                    break;
+                case NOT_FOUND:
+                    countNotFound++;
+                    break;
+            }
+        }
+    }
+
 
     ////////////////////////////////
     // Getters and Setters
@@ -69,70 +98,69 @@ public class ImexImport extends AbstractAuditable {
         this.id = id;
     }
 
-    public String getMessage() {
-        return message;
+    @Column(name = "import_date")
+    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
+    public DateTime getImportDate() {
+        return importDate;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setImportDate(DateTime importDate) {
+        this.importDate = importDate;
     }
 
-    @Column(name = "original_filename")
-    public String getOriginalFilename() {
-        return originalFilename;
+    public String getRepository() {
+        return repository;
     }
 
-    public void setOriginalFilename(String originalFilename) {
-        this.originalFilename = originalFilename;
+    public void setRepository(String repository) {
+        this.repository = repository;
     }
 
-    @Length (max = 20)
-    @NotNull
-    public String getPmid() {
-        return pmid;
+    @OneToMany ( cascade = CascadeType.PERSIST )
+    public List<ImexImportPublication> getImexImportPublications() {
+        if (imexImportPublications == null) {
+            imexImportPublications = new ArrayList<ImexImportPublication>();
+        }
+        return imexImportPublications;
     }
 
-    public void setPmid(String pmid) {
-        this.pmid = pmid;
+    public void setImexImportPublications(List<ImexImportPublication> imexImportPublications) {
+        this.imexImportPublications = imexImportPublications;
+    }
+
+    @Column(name = "count_total")
+    public int getCountFailed() {
+        return countFailed;
+    }
+
+    public void setCountFailed(int countFailed) {
+        this.countFailed = countFailed;
+    }
+
+    @Column(name = "count_imported")
+    public int getCountTotal() {
+        return countTotal;
+    }
+
+    public void setCountTotal(int countTotal) {
+        this.countTotal = countTotal;
+    }
+
+    @Column(name = "count_not_found")
+    public int getCountNotFound() {
+        return countNotFound;
+    }
+
+    public void setCountNotFound(int countNotFound) {
+        this.countNotFound = countNotFound;
     }
 
     @Enumerated(EnumType.STRING)
-    public ImexImportStatus getStatus() {
-        return status;
+    public ImexImportActivationType getActivationType() {
+        return activationType;
     }
 
-    public void setStatus(ImexImportStatus status) {
-        this.status = status;
+    public void setActivationType(ImexImportActivationType activationType) {
+        this.activationType = activationType;
     }
-
-    @ManyToOne
-    public Institution getProvider() {
-        return provider;
-    }
-
-    public void setProvider(Institution provider) {
-        this.provider = provider;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ImexImport that = (ImexImport) o;
-
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (pmid != null ? !pmid.equals(that.pmid) : that.pmid != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result;
-        result = (id != null ? id.hashCode() : 0);
-        result = 31 * result + (pmid != null ? pmid.hashCode() : 0);
-        return result;
-    }
-
 }

@@ -16,13 +16,21 @@
 package uk.ac.ebi.intact.model.meta;
 
 /**
- * TODO comment this
+ * Type of activation of an import
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public enum ImexImportStatus {
+public enum ImexImportActivationType {
 
-    OK, ERROR
+    /**
+     * An import of failed PMIDs was attempted
+     */
+    ONLY_FAILED,
+
+    /**
+     * Imported all the new PMIDs, since the latest DATE_BASED import
+     */
+    DATE_BASED
 
 }

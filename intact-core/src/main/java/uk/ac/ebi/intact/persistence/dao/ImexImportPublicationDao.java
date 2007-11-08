@@ -15,10 +15,10 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
-import org.joda.time.DateTime;
 import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.model.meta.ImexImport;
-import uk.ac.ebi.intact.model.meta.ImexImportActivationType;
+import uk.ac.ebi.intact.model.meta.ImexImportPublication;
+
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -26,7 +26,12 @@ import uk.ac.ebi.intact.model.meta.ImexImportActivationType;
  * @since 1.5
  */
 @Mockable
-public interface ImexImportDao extends BaseDao<ImexImport> {
+public interface ImexImportPublicationDao extends BaseDao<ImexImportPublication> {
 
-    DateTime getLatestUpdate(ImexImportActivationType activationType);
+    int countAll();
+
+    List<ImexImportPublication> getFailed();
+
+    List<ImexImportPublication> getByPmid(String pmid);
+    
 }

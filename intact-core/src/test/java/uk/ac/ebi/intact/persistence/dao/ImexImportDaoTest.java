@@ -24,7 +24,8 @@ import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.meta.ImexImport;
-import uk.ac.ebi.intact.model.meta.ImexImportStatus;
+import uk.ac.ebi.intact.model.meta.ImexImportPublication;
+import uk.ac.ebi.intact.model.meta.ImexImportPublicationStatus;
 
 /**
  * TODO comment this
@@ -35,31 +36,35 @@ import uk.ac.ebi.intact.model.meta.ImexImportStatus;
 public class ImexImportDaoTest extends IntactBasicTestCase {
 
     private ImexImportDao imexImportDao;
+    private ImexImportPublicationDao imexImportPublicationDao;
 
     @Before
     public void prepareTest() throws Exception {
         new IntactUnit().createSchema();
 
         this.imexImportDao = getDaoFactory().getImexImportDao();
+        this.imexImportPublicationDao = getDaoFactory().getImexImportPublicationDao();
     }
 
     @After
     public void endTest() throws Exception {
         this.imexImportDao = null;
+        this.imexImportPublicationDao = null;
     }
 
     @Test
     public void persist_default() throws Exception {
         Institution institution = getDaoFactory().getInstitutionDao().getByXref(CvDatabase.INTACT_MI_REF);
 
-        ImexImport imex1 = new ImexImport(institution, "1234567", ImexImportStatus.OK);
+        ImexImport imexImport = new ImexImport();
+        imexImport.getImexImportPublications().add(new ImexImportPublication(imexImport, "1234567", institution, ImexImportPublicationStatus.OK));
+        imexImport.getImexImportPublications().add(new ImexImportPublication(imexImport, "7654321", institution, ImexImportPublicationStatus.ERROR));
 
         beginTransaction();
-        imexImportDao.persist(imex1);
+        imexImportDao.persist(imexImport);
         commitTransaction();
 
         Assert.assertEquals(1, imexImportDao.countAll());
-
-        
+        Assert.assertEquals(2, imexImportPublicationDao.countAll());
     }
 }

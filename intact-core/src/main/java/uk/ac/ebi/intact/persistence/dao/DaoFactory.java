@@ -159,6 +159,20 @@ public class DaoFactory implements Serializable {
         return new FeatureDaoImpl( getEntityManager(), intactSession );
     }
 
+    /**
+     * @since 1.7.2
+     */
+    public ImexImportDao getImexImportDao() {
+        return new ImexImportDaoImpl(getEntityManager(), intactSession);
+    }
+
+    /**
+     * @since 1.7.2
+     */
+    public ImexImportPublicationDao getImexImportPublicationDao() {
+        return new ImexImportPublicationDaoImpl(getEntityManager(), intactSession);
+    }
+
     public InstitutionDao getInstitutionDao() {
         return new InstitutionDaoImpl( getEntityManager(), intactSession );
     }
@@ -226,10 +240,6 @@ public class DaoFactory implements Serializable {
 
     public <T extends Xref> XrefDao<T> getXrefDao( Class<T> xrefClass ) {
         return new XrefDaoImpl<T>( xrefClass, getEntityManager(), intactSession );
-    }
-
-    public ImexImportDao getImexImportDao() {
-        return new ImexImportDaoImpl(getEntityManager(), intactSession);
     }
 
     public Connection connection() {
