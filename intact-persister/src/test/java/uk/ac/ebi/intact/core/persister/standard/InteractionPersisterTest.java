@@ -119,7 +119,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Assert.assertEquals( 2, getDaoFactory().getInstitutionDao().getAll().size() );
         Assert.assertEquals(getDaoFactory().getInstitutionDao().getByShortLabel( "intact" ), 
                             getDaoFactory().getAnnotatedObjectDao().getAll().iterator().next().getOwner() );
-        Assert.assertEquals( 17, getDaoFactory().getCvObjectDao().getAll().size() );
+        Assert.assertEquals( 18, getDaoFactory().getCvObjectDao().getAll().size() );
         Assert.assertEquals( 4, getDaoFactory().getInteractionDao().getAll().size() );
 
         intactEntry = builder.createIntactEntryRandom(2, 2, 2);
