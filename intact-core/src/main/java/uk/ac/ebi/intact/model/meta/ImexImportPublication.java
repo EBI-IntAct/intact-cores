@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.model.meta;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import uk.ac.ebi.intact.model.AbstractAuditable;
@@ -26,7 +27,9 @@ import javax.persistence.*;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Entity (name = "ia_imex_import_publication")
+@Entity (name = "ia_imex_import_pub")
+@org.hibernate.annotations.Table (appliesTo = "ia_imex_import_publication",
+                                  comment = "Table used to track the IMEx imported publications")
 @IdClass(ImexImportPublicationPk.class)
 public class ImexImportPublication extends AbstractAuditable {
 
@@ -110,6 +113,7 @@ public class ImexImportPublication extends AbstractAuditable {
     }
 
     @ManyToOne
+    @ForeignKey(name="fk_Institution_provider")
     public Institution getProvider() {
         return provider;
     }

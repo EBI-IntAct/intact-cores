@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.validator.NotNull;
 import uk.ac.ebi.intact.model.event.IntactObjectEventListener;
 
 import javax.persistence.*;
@@ -58,6 +59,7 @@ public abstract class AbstractAuditable implements Auditable {
     }
 
     @Temporal( value = TemporalType.TIMESTAMP )
+    @NotNull
     public Date getCreated() {
         return created;
     }
@@ -71,6 +73,7 @@ public abstract class AbstractAuditable implements Auditable {
     }
 
     @Temporal( value = TemporalType.TIMESTAMP )
+    @NotNull
     public Date getUpdated() {
         return updated;
     }
@@ -83,7 +86,8 @@ public abstract class AbstractAuditable implements Auditable {
         this.updated = updated;
     }
 
-    @Column( name = "created_user" )
+    @Column( name = "created_user", length = 30)
+    @NotNull
     public String getCreator() {
         return creator;
     }
@@ -92,7 +96,8 @@ public abstract class AbstractAuditable implements Auditable {
         this.creator = creator;
     }
 
-    @Column( name = "userstamp" )
+    @Column( name = "userstamp", length = 30 )
+    @NotNull
     public String getUpdator() {
         return updator;
     }

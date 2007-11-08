@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.intact.model.meta;
 
-import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
@@ -50,8 +50,8 @@ public class ImexImportPublicationPk implements Serializable {
         this.imexImport = imexImport;
     }
 
-    @Length(max = 20)
     @NotNull
+    @Column(length = 50)
     public String getPmid() {
         return pmid;
     }

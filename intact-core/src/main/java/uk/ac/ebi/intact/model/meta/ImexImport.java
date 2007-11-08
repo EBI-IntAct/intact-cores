@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.model.meta;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import uk.ac.ebi.intact.model.AbstractAuditable;
@@ -30,6 +31,8 @@ import java.util.List;
  * @version $Id$
  */
 @Entity (name="ia_imex_import")
+@org.hibernate.annotations.Table (appliesTo = "ia_imex_import",
+                                  comment = "Represents an IMEx import action, which may contain many publications.")
 public class ImexImport extends AbstractAuditable {
 
     private Long id;
@@ -116,7 +119,8 @@ public class ImexImport extends AbstractAuditable {
         this.repository = repository;
     }
 
-    @OneToMany ( cascade = CascadeType.PERSIST )
+    @OneToMany ( mappedBy = "imexImport", cascade = CascadeType.PERSIST )
+    @ForeignKey(name = "fk_ImexImport_imexImportPub", inverseName = "fk_ImexImportPub_imexImport")
     public List<ImexImportPublication> getImexImportPublications() {
         if (imexImportPublications == null) {
             imexImportPublications = new ArrayList<ImexImportPublication>();
@@ -128,7 +132,7 @@ public class ImexImport extends AbstractAuditable {
         this.imexImportPublications = imexImportPublications;
     }
 
-    @Column(name = "count_total")
+    @Column(name = "count_failed")
     public int getCountFailed() {
         return countFailed;
     }
@@ -137,7 +141,7 @@ public class ImexImport extends AbstractAuditable {
         this.countFailed = countFailed;
     }
 
-    @Column(name = "count_imported")
+    @Column(name = "count_total")
     public int getCountTotal() {
         return countTotal;
     }
