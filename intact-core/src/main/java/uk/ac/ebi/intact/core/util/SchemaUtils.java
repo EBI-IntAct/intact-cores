@@ -27,7 +27,6 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.DataContext;
-import uk.ac.ebi.intact.context.IntactConfigurator;
 import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.Properties;
@@ -53,9 +52,19 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDL(String dialect) {
-        Ejb3Configuration ejb3Cfg = (Ejb3Configuration) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().getConfiguration();
-        Configuration cfg = ejb3Cfg.getHibernateConfiguration();
+        Configuration cfg;
 
+        final Object objConfig = IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().getConfiguration();
+
+        if (objConfig instanceof Configuration) {
+            cfg = (Configuration)objConfig;
+        } else if (objConfig instanceof Ejb3Configuration) {
+            Ejb3Configuration ejb3Cfg = (Ejb3Configuration) objConfig;
+            cfg = ejb3Cfg.getHibernateConfiguration();
+        } else {
+            throw new IllegalStateException("Wrong configuration type for the default data config: "+objConfig.getClass().getName());
+        }
+        
         Properties props = new Properties();
         props.put(Environment.DIALECT, dialect);
 
