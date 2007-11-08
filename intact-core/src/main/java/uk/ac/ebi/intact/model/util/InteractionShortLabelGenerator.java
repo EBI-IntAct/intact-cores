@@ -303,7 +303,7 @@ public class InteractionShortLabelGenerator {
         return maxSuffix + 1;
     }
 
-    private static class InteractionShortLabel {
+    protected static class InteractionShortLabel {
 
         private String baitLabel;
         private String preyLabel;
