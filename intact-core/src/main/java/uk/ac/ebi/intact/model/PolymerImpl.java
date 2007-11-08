@@ -66,9 +66,7 @@ public abstract class PolymerImpl extends InteractorImpl implements Polymer {
      * @param shortLabel The memorable label to identify this instance
      * @param type       The interactor type
      */
-    protected PolymerImpl( Institution owner, BioSource source, String shortLabel,
-                           CvInteractorType type
-    ) {
+    protected PolymerImpl( Institution owner, BioSource source, String shortLabel, CvInteractorType type ) {
         super( shortLabel, owner, type );
         setBioSource( source );
     }
@@ -76,6 +74,7 @@ public abstract class PolymerImpl extends InteractorImpl implements Polymer {
     // access methods for attributes
     @Transient
     public String getSequence() {
+
         if ( ( null == sequenceChunks ) || 0 == ( sequenceChunks.size() ) ) {
             return null;
         }
@@ -91,9 +90,16 @@ public abstract class PolymerImpl extends InteractorImpl implements Polymer {
 
     public List<SequenceChunk> setSequence( String aSequence ) {
         // Save work if the new sequence is identical to the old one.
+
+        if( aSequence == null ) {
+            sequenceChunks = new ArrayList<SequenceChunk>();
+            return sequenceChunks;
+        }
+
         if ( aSequence.equals( getSequence() ) ) {
             return Collections.EMPTY_LIST;
         }
+
         // The container to hold redundant chunks.
         ArrayList<SequenceChunk> chunkPool = null;
 
@@ -121,7 +127,8 @@ public abstract class PolymerImpl extends InteractorImpl implements Polymer {
 
         for ( int i = 0; i < chunkCount; i++ ) {
             String chunk = aSequence.substring( i * MAX_SEQ_LENGTH_PER_CHUNK,
-                                                Math.min( ( i + 1 ) * MAX_SEQ_LENGTH_PER_CHUNK, aSequence.length() ) );
+                                                Math.min( ( i + 1 ) * MAX_SEQ_LENGTH_PER_CHUNK,
+                                                          aSequence.length() ) );
 
             if ( chunkPool != null && chunkPool.size() > 0 ) {
                 // recycle chunk
@@ -220,7 +227,7 @@ public abstract class PolymerImpl extends InteractorImpl implements Polymer {
 
     /**
      * Remember that hashCode and equals methods has to be develop in parallel
-     * since : if a.equals(b) then a.hoshCode() == b.hashCode()
+     * since : if a.equals(b) then a.hashCode() == b.hashCode()
      * The other way round is NOT true.
      * Unless it could break consistancy when storing object in a hash-based
      * collection such as HashMap...
