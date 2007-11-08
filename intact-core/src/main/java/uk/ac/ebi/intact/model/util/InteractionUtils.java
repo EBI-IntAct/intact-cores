@@ -194,7 +194,7 @@ public class InteractionUtils {
      * @see uk.ac.ebi.intact.model.util.InteractionShortLabelGenerator
      * @since 1.6
      */
-    public static String syncShortLabelWithDb( String shortLabel ) {
+    public static String syncShortLabelWithDb( String shortLabel ) throws IllegalLabelFormatException {
         if (isTemporaryLabel(shortLabel)) {
             if (log.isDebugEnabled()) log.debug("Label for interaction was temporary ("+shortLabel+"), hence not synced with the database");
             return shortLabel;

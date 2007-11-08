@@ -243,7 +243,7 @@ public class InteractionShortLabelGenerator {
      *
      * @return the shortlabel without suffix
      */
-    protected static String removeSuffix(String shortLabel) {
+    protected static String removeSuffix(String shortLabel) throws IllegalLabelFormatException{
         InteractionShortLabel label = new InteractionShortLabel(shortLabel);
         return label.getCompleteLabel(false);
     }
@@ -255,7 +255,7 @@ public class InteractionShortLabelGenerator {
      *
      * @return The next available shortLabel
      */
-    public static String nextAvailableShortlabel(String shortLabel) {
+    public static String nextAvailableShortlabel(String shortLabel) throws IllegalLabelFormatException {
         Integer nextSuffix = calculateNextSuffix(shortLabel);
 
         InteractionShortLabel label = new InteractionShortLabel(shortLabel);
@@ -275,7 +275,7 @@ public class InteractionShortLabelGenerator {
      *
      * @return the next available suffix.
      */
-    protected static Integer calculateNextSuffix(String shortLabel) {
+    protected static Integer calculateNextSuffix(String shortLabel) throws IllegalLabelFormatException {
         String labelWithoutSuffix = removeSuffix(shortLabel);
 
         // we get all the labels with the same bait-prey combination
@@ -303,7 +303,7 @@ public class InteractionShortLabelGenerator {
         return maxSuffix + 1;
     }
 
-    public static class InteractionShortLabel {
+    private static class InteractionShortLabel {
 
         private String baitLabel;
         private String preyLabel;
@@ -311,7 +311,7 @@ public class InteractionShortLabelGenerator {
 
         private Boolean selfInteraction;
 
-        public InteractionShortLabel(String completeLabel) {
+        public InteractionShortLabel(String completeLabel) throws IllegalLabelFormatException{
             parse(completeLabel);
         }
 
@@ -373,15 +373,15 @@ public class InteractionShortLabelGenerator {
          * Self-interactions follow label-suffix (where suffix is optional integer).
          * @param completeLabel
          */
-        private void parse(String completeLabel) {
+        private void parse(String completeLabel) throws IllegalLabelFormatException {
             if (!completeLabel.contains(INTERACTION_SEPARATOR)) {
-                throw new IllegalArgumentException("This label is not an interaction label (does not contain '" + INTERACTION_SEPARATOR + "'): " + completeLabel);
+                throw new IllegalLabelFormatException("This label is not an interaction label (does not contain '" + INTERACTION_SEPARATOR + "'): " + completeLabel);
             }
 
             String[] baitPrayLabels = completeLabel.split(INTERACTION_SEPARATOR);
 
             if (baitPrayLabels.length > 3) {
-                throw new IllegalArgumentException("This label is not an interaction label (contain more than one '" + INTERACTION_SEPARATOR + "'): " + completeLabel);
+                throw new IllegalLabelFormatException("This label is not an interaction label (contain more than one '" + INTERACTION_SEPARATOR + "'): " + completeLabel);
             }
 
             // self interactions
@@ -392,14 +392,26 @@ public class InteractionShortLabelGenerator {
             if (!isSelfInteraction) {
                 this.preyLabel = baitPrayLabels[1];
             } else {
-                this.suffix = Integer.valueOf(baitPrayLabels[1]);
+                try {
+                    suffix = Integer.valueOf(baitPrayLabels[1]);
+                } catch (NumberFormatException e) {
+                    throw new IllegalLabelFormatException(completeLabel, "Illegal value for self-interaction label. It was expecting a number for the second element.");
+                }
             }
 
             if (baitPrayLabels.length == 3) {
                 if (isSelfInteraction) {
-                    suffix = Integer.valueOf(baitPrayLabels[1]);
+                    try {
+                        suffix = Integer.valueOf(baitPrayLabels[1]);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalLabelFormatException(completeLabel, "Illegal value for self-interaction label. It was expecting a number for the second element.");
+                    }
                 } else {
-                    suffix = Integer.valueOf(baitPrayLabels[2]);
+                    try {
+                        suffix = Integer.valueOf(baitPrayLabels[2]);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalLabelFormatException(completeLabel, "Illegal value for interaction label. It was expecting a number for the third element.");
+                    }
                 }
             }
         }
