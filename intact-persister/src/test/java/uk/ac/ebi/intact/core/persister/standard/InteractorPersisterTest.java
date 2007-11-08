@@ -189,7 +189,9 @@ public class InteractorPersisterTest extends AbstractPersisterTest {
     @Test (expected = UndefinedCaseException.class)
     public void fetchFromDb_multipleIdXrefsToUniprot() throws Exception {
         Protein prot = getMockBuilder().createProtein("Q00112", "lalaProt");
-        prot.addXref(getMockBuilder().createIdentityXrefUniprot(prot, "Q00113"));
+        prot.getXrefs().clear();
+        prot.addXref(getMockBuilder().createIdentityXrefChebi(prot, "CHEBI:1"));
+        prot.addXref(getMockBuilder().createIdentityXrefChebi(prot, "CHEBI:2"));
         PersisterHelper.saveOrUpdate(prot);
     }
 
