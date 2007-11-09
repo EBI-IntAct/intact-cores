@@ -25,9 +25,9 @@ import java.lang.reflect.Method;
 
 /**
  * Runner for intact tests
- *
- * WARN: currently (idea7.0m1b), the listener is not correctly registered in IDEA, so the intact test configuration will be ignore
- * and tests could fail when being run in IDEA
+ * <p/>
+ * WARN: currently (idea 7.0m1b..7.0.1), the listener is not correctly registered in IDEA, so the intact test configuration will be ignore
+ * and tests could fail when being run in IDEA.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -44,7 +44,6 @@ public class IntactTestRunner extends TestClassRunner {
         return testMethod.get();
     }
 
-
     public IntactTestRunner(final Class<?> klass) throws InitializationError {
         super(klass);
     }
@@ -54,7 +53,6 @@ public class IntactTestRunner extends TestClassRunner {
         notifier.addListener(new MethodListener());
         super.run(notifier);
     }
-
 
     private static class MethodListener extends RunListener {
 
@@ -66,7 +64,8 @@ public class IntactTestRunner extends TestClassRunner {
 
                 if (className != null && methodName != null) {
                     try {
-                        Method method = Class.forName(className).getMethod( methodName, (Class) null );
+                        // WARNING - do not try to cast the null param into Class otherwise tests are failing (BUG in JDK ?) 
+                        Method method = Class.forName(className).getMethod( methodName, null );
                         testMethod.set(method);
                     } catch (Exception e) {
                         throw new IntactTestException(e);
@@ -95,5 +94,4 @@ public class IntactTestRunner extends TestClassRunner {
             return null;
         }
     }
-
 }
