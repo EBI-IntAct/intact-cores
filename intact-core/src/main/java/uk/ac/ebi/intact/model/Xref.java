@@ -310,9 +310,12 @@ public abstract class Xref extends BasicObjectImpl {
         	return false;
         }
 
-        if ( cvXrefQualifier != null && xref.getCvXrefQualifier() != null) {
+        int q = 0;
+        q += (cvXrefQualifier != null ? 1 : 0);
+        q += (xref.getCvXrefQualifier() != null ? 1 : 0);
+        if ( q == 2) {
         	if ( !cvXrefQualifier.getShortLabel().equals( xref.cvXrefQualifier.getShortLabel() ) ) return false;
-        } else if ( cvXrefQualifier == null || xref.cvXrefQualifier == null ) {
+        } else if ( q == 1 ) {
             return false;
         }
         
