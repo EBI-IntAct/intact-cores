@@ -21,17 +21,12 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.mock.MockExperimentDao;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
-import uk.ac.ebi.intact.model.Annotation;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.model.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
- * TODO comment this
+ * ExperimentUtils Tester.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -53,7 +48,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void pubmedFromXref() {
+    public void getPubmedId() {
         final String expectedPubmedId = "1234567";
 
         Experiment experiment = getMockBuilder().createExperimentEmpty("myExp", expectedPubmedId);
@@ -62,6 +57,35 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
 
         Assert.assertNotNull(pubmedId);
         Assert.assertEquals(expectedPubmedId, pubmedId);
+    }
+
+    @Test
+    public void getPrimaryReferenceXref_1() {
+        Experiment experiment = getMockBuilder().createExperimentEmpty("myExp", "12345678");
+        final ExperimentXref x = ExperimentUtils.getPrimaryReferenceXref( experiment );
+        Assert.assertNotNull(x);
+        Assert.assertEquals("12345678", x.getPrimaryId());
+    }
+
+    @Test
+    public void getPrimaryReferenceXref_2() {
+        Experiment experiment = getMockBuilder().createExperimentEmpty("myExp");
+        // remove existing Xref
+        Collection<ExperimentXref> xrefs = new ArrayList<ExperimentXref>( experiment.getXrefs() );
+        for ( ExperimentXref experimentXref : xrefs ) {
+            experiment.removeXref( experimentXref );
+        }
+
+        CvXrefQualifier q = getMockBuilder().createCvObject( CvXrefQualifier.class, "MI:zzzz", "toto" );
+        q.getXrefs().clear();
+
+        CvDatabase db = getMockBuilder().createCvObject( CvDatabase.class, "MI:xxxx", "lala" );
+        final ExperimentXref xref = getMockBuilder().createXref( experiment, "lala", q, db );
+        experiment.addXref( xref );
+
+        final ExperimentXref x = ExperimentUtils.getPrimaryReferenceXref( experiment );
+
+        Assert.assertNull(x);
     }
 
     @Test
