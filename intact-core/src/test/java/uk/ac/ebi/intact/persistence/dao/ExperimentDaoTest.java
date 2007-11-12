@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * TODO comment this!
+ * ExperimentDao Tester.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -38,7 +38,7 @@ import java.util.List;
 public class ExperimentDaoTest extends IntactAbstractTestCase {
 
     @Test
-    public void testGetAllScrolled() throws Exception
+    public void getAllScrolled() throws Exception
     {
         Iterator<Experiment> expIter = getDaoFactory().getExperimentDao().getAllIterator();
 
@@ -55,7 +55,7 @@ public class ExperimentDaoTest extends IntactAbstractTestCase {
 
     @Test
     @Ignore
-    public void testGetInteractionsForExperimentWithAcScroll() throws Exception
+    public void getInteractionsForExperimentWithAcScroll() throws Exception
     {
         Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
         Iterator<Interaction> expInteraction =
@@ -63,9 +63,8 @@ public class ExperimentDaoTest extends IntactAbstractTestCase {
 
         int i=0;
 
-        while (expInteraction.hasNext())
-        {
-            Interaction inter = expInteraction.next();
+        while (expInteraction.hasNext()) {
+            expInteraction.next();
             i++;
         }
 
@@ -73,7 +72,7 @@ public class ExperimentDaoTest extends IntactAbstractTestCase {
     }
 
     @Test
-    public void testCountInteractionsForExperimentWithAc(){
+    public void countInteractionsForExperimentWithAc(){
         Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
         String ac = exp.getAc();
         int interactionsCount = getDaoFactory().getExperimentDao().countInteractionsForExperimentWithAc(ac);
@@ -81,7 +80,7 @@ public class ExperimentDaoTest extends IntactAbstractTestCase {
     }
 
     @Test
-    public void testGetInteractionsForExperimentWithAc(){
+    public void getInteractionsForExperimentWithAc(){
         Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
         String ac = exp.getAc();
         List<Interaction> interactions = getDaoFactory().getExperimentDao().getInteractionsForExperimentWithAc(ac,0,50);
