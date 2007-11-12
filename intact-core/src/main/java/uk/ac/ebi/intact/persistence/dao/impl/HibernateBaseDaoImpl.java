@@ -104,6 +104,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         if ( url.contains( ":" ) ) {
             url = url.substring( url.lastIndexOf( ":" ) + 1, url.length() );
         }
+        getSession().connection().close();
         return url;
     }
 
@@ -136,7 +137,9 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      * @throws SQLException thrown if the metatdata can't be obtained
      */
     public String getDbUserName() throws SQLException {
-        return getSession().connection().getMetaData().getUserName();
+        final String name = getSession().connection().getMetaData().getUserName();
+        getSession().connection().close();
+        return name;
     }
 
     public void update( T objToUpdate ) {
