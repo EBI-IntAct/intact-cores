@@ -350,11 +350,8 @@ public class PolymerImplAgitarTest extends AgitarTestCase {
         PolymerImpl proteinImpl = new ProteinImpl( new Institution( "testPolymerImplShortLabel1" ), new BioSource( new Institution( "testPolymerImplShortLabel" ), "testPolymerImplShortLabel", "47508" ), "testPolymerImplShortLabel" );
         try {
             proteinImpl.setSequence( null );
-            fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( PolymerImpl.class, ex );
-            assertEquals( "(ProteinImpl) proteinImpl.getSequenceChunks().size()", 0, proteinImpl.getSequenceChunks().size() );
+            fail( "Expected not to throw NullPointerException" );
         }
     }
 }
