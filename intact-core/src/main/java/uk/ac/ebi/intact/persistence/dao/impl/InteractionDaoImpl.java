@@ -149,7 +149,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         }
 
         if (exactComponents) {
-            sb.append("and size(i.components) = "+primaryIds.length);
+            if (primaryIds.length > 0) {
+                sb.append("and ");
+            }
+            sb.append("size(i.components) = "+primaryIds.length);
         }
 
         Query query = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
