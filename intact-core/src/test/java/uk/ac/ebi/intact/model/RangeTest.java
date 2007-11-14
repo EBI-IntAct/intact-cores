@@ -15,6 +15,7 @@ public class RangeTest {
     
     @Test
     @Ignore
+    // TODO fix the ranges in intact that do have their first AA missing before fixing intact-core and enabling this test  
     public void prepareSequence() throws Exception {
         final Institution owner = new Institution( "ebi" );
         IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
