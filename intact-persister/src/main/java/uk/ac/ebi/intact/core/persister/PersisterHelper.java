@@ -43,7 +43,7 @@ public class PersisterHelper
 
     }
 
-    protected static Persister persisterFor(Class<? extends IntactObject> clazz) {
+    public static Persister persisterFor(Class<? extends IntactObject> clazz) {
         if (BioSource.class.isAssignableFrom(clazz)) {
             return BioSourcePersister.getInstance();
         } else if (Component.class.isAssignableFrom(clazz)) {
