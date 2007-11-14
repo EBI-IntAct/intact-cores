@@ -79,24 +79,7 @@ public class DataContext implements Serializable {
         }
 
         daoFactory.commitTransaction();
-        /*
-        if ( daoFactory.isTransactionActive() ) {
-            try {
-                if (getSession().getFlushMode() == FlushMode.MANUAL)
-                {
-                    flushSession();
-                }
 
-                daoFactory.getCurrentTransaction().commit();
-            } catch ( IntactTransactionException e ) {
-                log.debug( "An Exception occured commiting" + e.getMessage() );
-                throw new IntactTransactionException( e );
-            }
-            if ( log.isDebugEnabled() ) {
-                log.debug( "Committed transaction: " + dataConfigName );
-            }
-        }
-        */
         assert ( daoFactory.isTransactionActive() == false );
 
         // flush the CvContext in to avoid lazy initialization errors

@@ -262,6 +262,10 @@ public class DaoFactory implements Serializable {
         if (currentEntityManager.getTransaction().isActive()) {
             if (log.isDebugEnabled()) log.debug("Committing transaction");
 
+            //if (getEntityManager().getFlushMode() == FlushModeType.COMMIT) {
+                getEntityManager().flush();
+            //}
+
             currentEntityManager.getTransaction().commit();
             currentEntityManager.close();
             currentTransaction = null;
