@@ -6,7 +6,7 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Institution;
 
 /**
- * TODO comment this
+ * IntactObjectEventListener Tester.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -32,7 +32,8 @@ public class IntactObjectEventListenerTest extends IntactBasicTestCase {
 
         Assert.assertNotNull(institution.getCreated());
         Assert.assertNotNull(institution.getUpdated());
-        Assert.assertTrue( institution.getUpdated().after(institution.getCreated()));
+        Assert.assertTrue( "updated={"+institution.getUpdated()+"} created={"+institution.getCreated()+"}",
+                           institution.getUpdated().after(institution.getCreated()));
         Assert.assertEquals("SA", institution.getCreator());
         Assert.assertEquals("SAM", institution.getUpdator());
     }
