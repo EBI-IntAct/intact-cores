@@ -123,6 +123,8 @@ public class CvTopic extends CvObject implements Editable {
 
     public static final String IMEX_EXPORTED = "imex-exported";
 
+    public static final String DATASET = "dataset";
+
     /**
      * Cache a Vector of all shortLabels of the class, e.g. for menus. This should not be here as it has no model
      * functionality but is related to eg user interfaces.
