@@ -314,12 +314,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         this.experiments = someExperiment;
     }
 
-    @ManyToMany 
-    @JoinTable(
-            name = "ia_int2exp",
-            joinColumns = {@JoinColumn( name = "interaction_ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "experiment_ac" )}
-    )
+    @ManyToMany (mappedBy = "interactions")
     public Collection<Experiment> getExperiments() {
         return experiments;
     }
