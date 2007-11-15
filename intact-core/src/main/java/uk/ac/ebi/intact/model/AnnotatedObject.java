@@ -57,10 +57,4 @@ public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicO
 
     void removeAlias( A alias );
 
-    boolean equals( Object o );
-
-    int hashCode();
-
-    String toString();
-
 }
