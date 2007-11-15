@@ -26,6 +26,7 @@ import uk.ac.ebi.intact.model.util.ExperimentUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * TODO comment this
@@ -162,6 +163,23 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         if (intactObject.getPublication() != null) {
             Publication publication = PublicationPersister.getInstance().syncIfTransient( intactObject.getPublication() );
             intactObject.setPublication( publication );
+        }
+
+        // we remove the experiments from the interactions, because if an interaction
+        // was already present in the DB, but the experiment wasn't, a TransientException
+        // is thrown when automatically trying to update the interaction (because the experiment is transient).
+        // The relationship between the interaction and the experiment will be persisted anyway, as the experiment
+        // references the interaction.
+        for (Interaction interaction : intactObject.getInteractions()) {
+            if (interaction.getAc() != null) {  // only for existing interactions
+                for (Iterator<Experiment> expIterator = interaction.getExperiments().iterator(); expIterator.hasNext();)
+                {
+                    Experiment exp =  expIterator.next();
+                    if (exp.getShortLabel().equals(intactObject.getShortLabel()))
+                         expIterator.remove();
+                }
+            }
+
         }
 
         return super.syncAttributes(intactObject);

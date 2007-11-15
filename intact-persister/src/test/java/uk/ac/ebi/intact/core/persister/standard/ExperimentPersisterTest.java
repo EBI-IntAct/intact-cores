@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.hibernate.Query;
 import org.junit.After;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
@@ -15,7 +14,7 @@ import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.ExperimentXref;
 import uk.ac.ebi.intact.model.Institution;
-import uk.ac.ebi.intact.util.DebugUtil;
+import uk.ac.ebi.intact.model.Interaction;
 
 import java.util.List;
 
@@ -296,6 +295,23 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         List<Experiment> experiments = getDaoFactory().getExperimentDao().getByPubId(pubId);
         Assert.assertEquals(2, experiments.size());
         commitTransaction();
+    }
+
+    @Test
+    public void newExperiment_existingInteraction() throws Exception {
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Interaction loadedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        Experiment experiment = getMockBuilder().createExperimentEmpty();
+        experiment.addInteraction(loadedInteraction);
+
+        PersisterHelper.saveOrUpdate(experiment);
+
+        Experiment loadedExperiment = getDaoFactory().getExperimentDao().getByAc(experiment.getAc());
+        Assert.assertEquals(1, loadedExperiment.getInteractions().size());
     }
 }
 
