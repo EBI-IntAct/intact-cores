@@ -22,11 +22,13 @@ import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.ExperimentUtils;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.util.DebugUtil;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * TODO comment this
@@ -57,8 +59,13 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     }
 
     protected Experiment fetchFromDataSource(Experiment intactObject) {
-        return getIntactContext().getDataContext().getDaoFactory()
-                .getExperimentDao().getByShortLabel(intactObject.getShortLabel());
+        final DaoFactory daoFactory = getIntactContext().getDataContext().getDaoFactory();
+
+        if (intactObject.getAc() != null) {
+            return daoFactory
+                .getExperimentDao().getByAc(intactObject.getAc());
+        }
+        return daoFactory.getExperimentDao().getByShortLabel(intactObject.getShortLabel());
     }
 
     /**
@@ -85,9 +92,6 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         if (syncedPubmedId == null && candidatePubmedId != null) {
             if (log.isDebugEnabled())
                 log.debug("Synced pubmedId: " + syncedPubmedId + " (" + synced.getShortLabel() + ") - candidate pubmedId: " + candidatePubmedId + " (" + synced.getShortLabel() + ")");
-
-            // TODO throw an exception!
-
             return BehaviourType.UPDATE;
         }
 
@@ -165,34 +169,25 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
             intactObject.setPublication( publication );
         }
 
-        // we remove the experiments from the interactions, because if an interaction
-        // was already present in the DB, but the experiment wasn't, a TransientException
-        // is thrown when automatically trying to update the interaction (because the experiment is transient).
-        // The relationship between the interaction and the experiment will be persisted anyway, as the experiment
-        // references the interaction.
-        for (Interaction interaction : intactObject.getInteractions()) {
-            if (interaction.getAc() != null) {  // only for existing interactions
-                for (Iterator<Experiment> expIterator = interaction.getExperiments().iterator(); expIterator.hasNext();)
-                {
-                    Experiment exp =  expIterator.next();
-                    if (exp.getShortLabel().equals(intactObject.getShortLabel()))
-                         expIterator.remove();
-                }
-            }
-
-        }
-
         return super.syncAttributes(intactObject);
     }
 
     @Override
     protected boolean update(Experiment candidateObject, Experiment objectToUpdate) throws PersisterException {
+        List<Interaction> additionalInteractions = new ArrayList<Interaction>();
         for (Interaction interaction : candidateObject.getInteractions()) {
-            objectToUpdate.getInteractions().add(interaction);
+            if (!objectToUpdate.getInteractions().contains(interaction)) {
+                additionalInteractions.add(interaction);
+            }
         }
 
-        // TODO Bruno: why do we evict the publication from that experiment.
-        //getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(candidateObject.getPublication());
+        if (log.isDebugEnabled() && !additionalInteractions.isEmpty()) {
+            log.debug("Adding additional interactions to experiment "+objectToUpdate.getShortLabel()+": "+ DebugUtil.labelList(additionalInteractions));
+        }
+
+        for (Interaction additionalInteraction : additionalInteractions) {
+            InteractionPersister.getInstance().saveOrUpdate(additionalInteraction);
+        }
 
         if (objectToUpdate.getPublication() == null && candidateObject.getPublication() != null) {
             objectToUpdate.setPublication(candidateObject.getPublication());

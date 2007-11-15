@@ -15,6 +15,7 @@ import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.ExperimentXref;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
 
     @After
     public void after() {
+        IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager().clear();
+        PersisterContext.getInstance().clear();
         persister = null;
     }
 
@@ -259,25 +262,19 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         expWithout.setPublication(null);
         expWithout.getXrefs().clear();
 
-        beginTransaction();
-        persister.saveOrUpdate(expWithout);
-        persister.commit();
-        commitTransaction();
+        PersisterHelper.saveOrUpdate(expWithout);
 
         PersisterContext.getInstance().clear();
 
         Experiment expWith = getMockBuilder().createExperimentRandom(1);
         expWith.setShortLabel("nopub-2006-1");
 
-        beginTransaction();
-        persister.saveOrUpdate(expWith);
-        persister.commit();
-        commitTransaction();
+        PersisterHelper.saveOrUpdate(expWith);
 
         Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertNotNull(reloadedExp.getPublication());
         Assert.assertEquals(1, reloadedExp.getXrefs().size());
-        Assert.assertEquals(2, reloadedExp.getInteractions().size());
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
     }
 
     @Test
@@ -303,6 +300,9 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
 
         PersisterHelper.saveOrUpdate(interaction);
 
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+
         Interaction loadedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
 
         Experiment experiment = getMockBuilder().createExperimentEmpty();
@@ -310,8 +310,15 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
 
         PersisterHelper.saveOrUpdate(experiment);
 
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+        
         Experiment loadedExperiment = getDaoFactory().getExperimentDao().getByAc(experiment.getAc());
         Assert.assertEquals(1, loadedExperiment.getInteractions().size());
+
+        final Interaction interaction1 = loadedExperiment.getInteractions().iterator().next();
+
+        Assert.assertEquals(2, interaction1.getExperiments().size());
     }
 }
 

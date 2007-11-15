@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 
 /**
@@ -88,10 +89,10 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
                         update(intactObject, objectToUpdate);
 
-                        // evict the objectToUpdate and the originalObject,
+                        // evict the intactObject,
                         // so the are not updated automatically on the next flush
                         getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(intactObject);
-                        getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(objectToUpdate);
+                        //getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(objectToUpdate);
 
                         PersisterContext.getInstance().addToUpdate(objectToUpdate);
 
@@ -191,6 +192,11 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
                 log.debug( "\t\t\tFound it in SyncContext. Key: "+ AnnotKeyGenerator.createKey(intactObject));
             }
             return (T) SyncContext.getInstance().get(intactObject);
+        }
+
+        final DaoFactory daoFactory = getIntactContext().getDataContext().getDaoFactory();
+        if (intactObject.getAc() != null && daoFactory.getEntityManager().contains(intactObject)) {
+            daoFactory.getBaseDao().evict(intactObject);
         }
 
         T t = fetchFromDataSource( intactObject );

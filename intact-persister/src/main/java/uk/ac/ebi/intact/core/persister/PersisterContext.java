@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.TransientObjectException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.interceptor.impl.ExperimentInterceptor;
 import uk.ac.ebi.intact.core.persister.interceptor.impl.InteractionInterceptor;
@@ -165,7 +166,7 @@ public class PersisterContext {
             logPersistence(cv);
         }
 
-        getIntactContext().getDataContext().flushSession();
+        //getIntactContext().getDataContext().flushSession();
 
         if (log.isDebugEnabled()) log.debug("\tExecuting AnnotatedObject Interceptors.");
 

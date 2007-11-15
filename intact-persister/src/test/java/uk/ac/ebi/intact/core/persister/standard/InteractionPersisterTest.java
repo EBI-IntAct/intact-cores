@@ -445,4 +445,25 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Assert.assertFalse(originalCrc.equals(interaction2.getCrc()));
 
     }
+
+    @Test
+    public void newInteraction_existingExperiment() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentRandom(1);
+
+        PersisterHelper.saveOrUpdate(exp);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+
+        Experiment loadedExp = getDaoFactory().getExperimentDao().getByAc(exp.getAc());
+
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        interaction.getExperiments().clear();
+        loadedExp.addInteraction(interaction);
+
+        PersisterHelper.saveOrUpdate(loadedExp);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+    }
 }
