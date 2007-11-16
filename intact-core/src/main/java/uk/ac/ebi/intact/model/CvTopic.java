@@ -47,6 +47,7 @@ public class CvTopic extends CvObject implements Editable {
     public static final String REMARK_INTERNAL = "remark-internal";
 
     public static final String RESULTING_PTM = "resulting-ptm";
+    public static final String RESULTING_PTM_MI_REF = "MI:0639";
 
     public static final String PREREQUISITE_PTM = "prerequisite-ptm";
 
@@ -124,6 +125,7 @@ public class CvTopic extends CvObject implements Editable {
     public static final String IMEX_EXPORTED = "imex-exported";
 
     public static final String DATASET = "dataset";
+    public static final String DATASET_MI_REF = "MI:0875";
 
     /**
      * Cache a Vector of all shortLabels of the class, e.g. for menus. This should not be here as it has no model
