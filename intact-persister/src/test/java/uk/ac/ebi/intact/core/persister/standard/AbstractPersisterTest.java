@@ -22,9 +22,11 @@ public class AbstractPersisterTest extends IntactBasicTestCase {
         beginTransaction();
     }
 
+
     @After
     public final void afterTest() throws Exception {
         commitTransaction();
+        IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager().clear();
         PersisterContext.getInstance().clear();
 
         if (IntactContext.currentInstanceExists()) {

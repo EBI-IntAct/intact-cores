@@ -18,6 +18,9 @@ import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
 
 /**
  * TODO comment this
@@ -36,8 +39,6 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
 
     @After
     public void after() {
-        IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager().clear();
-        PersisterContext.getInstance().clear();
         persister = null;
     }
 
@@ -319,6 +320,34 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         final Interaction interaction1 = loadedExperiment.getInteractions().iterator().next();
 
         Assert.assertEquals(2, interaction1.getExperiments().size());
+    }
+
+    @Test
+    public void existingExperiment_existingInteraction() throws Exception {
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        Experiment experiment = getMockBuilder().createExperimentEmpty();
+
+        PersisterHelper.saveOrUpdate(interaction, experiment);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+
+        Experiment loadedExperiment = getDaoFactory().getExperimentDao().getByAc(experiment.getAc());
+        Interaction loadedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        loadedExperiment.addInteraction(loadedInteraction);
+
+        PersisterHelper.saveOrUpdate(loadedExperiment);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+
+        Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByAc(loadedInteraction.getAc());
+        Assert.assertEquals(2, reloadedInteraction.getExperiments().size());
+
+        Experiment reloadedExperiment = getDaoFactory().getExperimentDao().getByAc(loadedExperiment.getAc());
+        Assert.assertEquals(1, reloadedExperiment.getInteractions().size());
+
     }
 }
 

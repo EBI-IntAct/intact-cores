@@ -19,13 +19,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.InteractionUtils;
+import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.CvInteractionType;
+import uk.ac.ebi.intact.model.Experiment;
+import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
+import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
+import uk.ac.ebi.intact.util.DebugUtil;
+import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 /**
  * Persister for interactions.
@@ -81,7 +87,7 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
                 interactionDao.getByInteractorsPrimaryId(true, interactorPrimaryIDs.toArray(new String[interactorPrimaryIDs.size()]));
 
         for (Interaction interactionWithSameInteractor : interactionsWithSameInteractors) {
-            CrcCalculator crcCalculator = new CrcCalculator();
+            IgnoreExperimentCrcCalculator crcCalculator = new IgnoreExperimentCrcCalculator();
             String interactionCrc = crcCalculator.crc64(intactObject);
             String interactionWithSameInteractorCrc = crcCalculator.crc64(interactionWithSameInteractor);
 
@@ -103,34 +109,18 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
             return BehaviourType.NEW;
         }
 
-        String candidateCrc;
+        String candidateCrc = new CrcCalculator().crc64(candidate);
 
-        if (candidate.getCrc() != null) {
-            candidateCrc = candidate.getCrc();
-        } else {
-            candidateCrc = new CrcCalculator().crc64(candidate);
-        }
+        IgnoreExperimentCrcCalculator ieCrcCalc = new IgnoreExperimentCrcCalculator();
 
         // never update interactions
         if (synced.getCrc().equals(candidateCrc)) {
             return BehaviourType.IGNORE;
+        } else if (ieCrcCalc.crc64(synced).equals(ieCrcCalc.crc64(candidate))) {
+            return BehaviourType.UPDATE;
         } else {
             return BehaviourType.NEW;
         }
-    }
-
-    /**
-     * Used to create a unique chain of experiment labels, used to differenciate interactions
-     * that could just have the same short label
-     */
-    private static String experimentLabels(Interaction interaction) {
-        StringBuilder sb = new StringBuilder( interaction.getExperiments().size() * 21 ); // init to max size
-
-        for (Experiment exp : interaction.getExperiments()) {
-            sb.append( exp.getShortLabel() ).append( '_' );
-        }
-
-        return sb.toString();
     }
 
     @Override
@@ -141,6 +131,29 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         saveOrUpdateComponents(intactObject);
         saveOrUpdateExperiments(intactObject);
+    }
+
+    @Override
+    protected boolean update(Interaction candidateObject, Interaction objectToUpdate) throws PersisterException {
+        final Collection<Experiment> candidateExperiments = candidateObject.getExperiments();
+        List<Experiment> additionalExperiments = new ArrayList<Experiment>(candidateExperiments.size());
+
+        for (Experiment candidateExp : candidateExperiments) {
+            if (!objectToUpdate.getExperiments().contains(candidateExp)) {
+                additionalExperiments.add(candidateExp);
+            }
+        }
+
+        if (log.isDebugEnabled() && !additionalExperiments.isEmpty()) {
+            log.debug("Adding additional experiments to interaction "+objectToUpdate.getShortLabel()+": "+ DebugUtil.labelList(additionalExperiments));
+        }
+
+        for (Experiment additionalExperiment : additionalExperiments) {
+            objectToUpdate.addExperiment(additionalExperiment);
+            ExperimentPersister.getInstance().saveOrUpdate(additionalExperiment);
+        }
+
+        return true;
     }
 
     @Override
@@ -196,6 +209,14 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         }
 
         intactObject.setExperiments(experiments);
+    }
+
+    private class IgnoreExperimentCrcCalculator extends CrcCalculator {
+
+        @Override
+        protected UniquenessStringBuilder createUniquenessString(Experiment experiment) {
+            return new UniquenessStringBuilder();
+        }
     }
     
 }
