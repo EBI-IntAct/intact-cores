@@ -72,8 +72,19 @@ public class ExperimentUtils {
      */
     public static ExperimentXref getPrimaryReferenceXref(Experiment experiment) {
         for (ExperimentXref xref : experiment.getXrefs()) {
-            CvObjectXref idQualXref = CvObjectUtils.getPsiMiIdentityXref(xref.getCvXrefQualifier());
-            CvObjectXref idCvDatabase = CvObjectUtils.getPsiMiIdentityXref(xref.getCvDatabase());
+            CvObjectXref idQualXref = null;
+            CvObjectXref idCvDatabase = null;
+
+            if (xref.getCvXrefQualifier() != null) {
+                idQualXref = CvObjectUtils.getPsiMiIdentityXref(xref.getCvXrefQualifier());
+            } else {
+                log.warn("Experiment ("+experiment.getShortLabel()+") xref without qualifier: "+xref);
+            }
+            if (xref.getCvDatabase() != null) {
+                idCvDatabase = CvObjectUtils.getPsiMiIdentityXref(xref.getCvDatabase());
+            } else {
+                log.warn("Experiment ("+experiment.getShortLabel()+") xref without database: "+xref);
+            }
 
             if( idQualXref != null && idCvDatabase != null ) {
                 if (idQualXref.getPrimaryId().equals(CvXrefQualifier.PRIMARY_REFERENCE_MI_REF) &&
