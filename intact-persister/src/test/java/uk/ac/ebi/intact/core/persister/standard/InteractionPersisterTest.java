@@ -498,8 +498,10 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
-        System.out.println(interaction.getShortLabel());
+
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
 
         Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
         clonedInteraction.addComponent(getMockBuilder().createComponentPrey(clonedInteraction,
@@ -508,5 +510,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         PersisterHelper.saveOrUpdate(clonedInteraction);
 
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(5, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
     }
 }
