@@ -65,6 +65,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
         if (syncResponse.isAlreadyPresent()) {
 
             if (intactObject.getAc() != null) {
+                // TODO: this is wrong
                 intactObject = syncIfTransient(intactObject);
             }
 

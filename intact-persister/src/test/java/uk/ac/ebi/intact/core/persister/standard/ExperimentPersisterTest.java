@@ -91,21 +91,16 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
     @Test
     public void persistExperiment_institution() throws Exception {
         Institution anotherInstitution = getMockBuilder().createInstitution("IA:0000", "anotherInstitution");
-        InstitutionPersister.getInstance().saveOrUpdate(anotherInstitution);
-        InstitutionPersister.getInstance().commit();
+        PersisterHelper.saveOrUpdate(anotherInstitution);
 
         Experiment exp = new IntactMockBuilder(anotherInstitution).createExperimentRandom(1);
         String label = exp.getShortLabel();
 
         PersisterHelper.saveOrUpdate(exp);
 
-        beginTransaction();
-
         Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByShortLabel(label);
         assertNotNull(refreshedExperiment);
         Assert.assertEquals(anotherInstitution.getShortLabel(), refreshedExperiment.getOwner().getShortLabel());
-
-        commitTransaction();
     }
 
     @Test
@@ -153,10 +148,7 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         exp.getXrefs().clear();
         exp.addXref(getMockBuilder().createPrimaryReferenceXref(exp, "1234"));
 
-        beginTransaction();
-        persister.saveOrUpdate(exp);
-        persister.commit();
-        commitTransaction();
+        PersisterHelper.saveOrUpdate(exp);
 
         Experiment reloadedExpBeforeUpdate = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertNull(reloadedExpBeforeUpdate.getPublication());
@@ -171,10 +163,7 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         exp2.getXrefs().clear();
         exp2.addXref(getMockBuilder().createPrimaryReferenceXref(exp2, "1234"));
 
-        beginTransaction();
-        persister.saveOrUpdate(exp2);
-        persister.commit();
-        commitTransaction();
+        PersisterHelper.saveOrUpdate(exp2);
 
         Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertNotNull(reloadedExp.getPublication());

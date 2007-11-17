@@ -186,7 +186,7 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
         }
 
         for (Interaction additionalInteraction : additionalInteractions) {
-            objectToUpdate.addInteraction(additionalInteraction);
+            objectToUpdate.getInteractions().add(additionalInteraction);
         }
 
         if (objectToUpdate.getPublication() == null && candidateObject.getPublication() != null) {

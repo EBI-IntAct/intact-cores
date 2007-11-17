@@ -18,14 +18,11 @@ public class AbstractPersisterTest extends IntactBasicTestCase {
     public final void beforeTest() throws Exception {
         //new IntactUnit().createSchema();
         PersisterContext.getInstance().clear();
-
-        beginTransaction();
-    }
+   }
 
 
     @After
     public final void afterTest() throws Exception {
-        commitTransaction();
         IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager().clear();
         PersisterContext.getInstance().clear();
 

@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.util.DebugUtil;
 
@@ -53,6 +54,8 @@ public class AnnotKeyGenerator {
         } else if (ao instanceof Feature) {
             String label = ao.getShortLabel()+"_"+createKey(((Feature)ao).getComponent());
             key = normalizedClassName+":"+label;
+        } else if (ao instanceof Interaction) {
+            key = normalizedClassName +":"+new CrcCalculator().crc64((Interaction)ao);
         } else {
             key = normalizedClassName +":"+ao.getShortLabel();
         }
