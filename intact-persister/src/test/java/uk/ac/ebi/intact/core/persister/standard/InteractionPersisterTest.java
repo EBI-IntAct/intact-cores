@@ -508,7 +508,5 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         PersisterHelper.saveOrUpdate(clonedInteraction);
 
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
-
-        System.out.println(DebugUtil.labelList(getDaoFactory().getInteractionDao().getAll()));
     }
 }
