@@ -1,15 +1,13 @@
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.junit.After;
 import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.Institution;
-import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.model.CvTopic;
+import uk.ac.ebi.intact.model.Institution;
 
 /**
  * TODO comment this
@@ -19,6 +17,16 @@ import uk.ac.ebi.intact.core.persister.PersisterContext;
  */
 public class InstitutionPersisterTest extends AbstractPersisterTest
 {
+
+    @Before
+    public void before() throws Exception {
+        beginTransaction();
+    }
+
+    @After
+    public void after() throws Exception {
+        commitTransaction();
+    }
 
     @Test
     public void persistInstitution_default_withHelper() throws Exception {

@@ -15,10 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.junit.Assert;
+import org.junit.*;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
-import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.*;
@@ -33,6 +31,16 @@ import uk.ac.ebi.intact.model.util.CvObjectUtils;
  * @version $Id$
  */
 public class CvObjectPersisterTest extends AbstractPersisterTest {
+
+    @Before
+    public void before() throws Exception {
+        beginTransaction();
+    }
+
+    @After
+    public void after() throws Exception {
+        commitTransaction();
+    }
 
     @Test
     public void persist_recursive_object() throws Exception {

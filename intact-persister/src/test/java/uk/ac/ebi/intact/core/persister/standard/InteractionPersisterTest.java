@@ -15,14 +15,14 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
-import org.hibernate.stat.Statistics;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.CrcCalculator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +36,17 @@ import java.util.Iterator;
  * @version $Id$
  */
 public class InteractionPersisterTest extends AbstractPersisterTest {
+
+    @Before
+    public void before() throws Exception {
+        beginTransaction();
+    }
     
+    @After
+    public void after() throws Exception {
+        commitTransaction();
+    }
+
     @Test
     public void allPersisted() throws Exception {
         IntactMockBuilder builder = super.getMockBuilder();
@@ -274,21 +284,18 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
     public void onPersist_syncedLabel2() throws Exception {
         Interaction interaction = getMockBuilder().createInteraction("foo", "bar");
 
-        beginTransaction();
-        InteractionPersister.getInstance().saveOrUpdate(interaction);
-        InteractionPersister.getInstance().commit();
-        commitTransaction();
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
         interaction = getMockBuilder().createInteraction("foo", "bar");
 
-        beginTransaction();
-        InteractionPersister.getInstance().saveOrUpdate(interaction);
-        InteractionPersister.getInstance().commit();
-        commitTransaction();
+        PersisterHelper.saveOrUpdate(interaction);
         
         PersisterContext.getInstance().clear();
 
-        beginTransaction();
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
@@ -297,7 +304,6 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("bar-foo-1");
         Assert.assertNotNull(reloadedInteraction);
         Assert.assertEquals(2, reloadedInteraction.getComponents().size());
-        commitTransaction();
     }
 
     @Test
@@ -413,7 +419,8 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
         PersisterHelper.saveOrUpdate(interaction2);
 
-        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().getByAc(interaction2.getAc()).getExperiments().size());
 
         //System.out.println(statistics);
         //System.out.println(statistics.getQueryExecutionMaxTimeQueryString());
@@ -461,7 +468,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         interaction.getExperiments().clear();
         loadedExp.addInteraction(interaction);
 
-        PersisterHelper.saveOrUpdate(loadedExp);
+        PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());

@@ -19,7 +19,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 
 /**
@@ -64,11 +63,6 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
 
         if (syncResponse.isAlreadyPresent()) {
 
-            if (intactObject.getAc() != null) {
-                // TODO: this is wrong
-                intactObject = syncIfTransient(intactObject);
-            }
-
             BehaviourType behaviour = syncedAndCandidateAreEqual(syncResponse.getValue(), intactObject);
 
             switch (behaviour) {
@@ -92,12 +86,13 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
                     if (!isDryRun()) {
                         T objectToUpdate = syncResponse.getValue();
 
-                        update(intactObject, objectToUpdate);
 
                         // evict the intactObject,
                         // so the are not updated automatically on the next flush
-                        getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(intactObject);
+                        //getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(intactObject);
                         //getIntactContext().getDataContext().getDaoFactory().getIntactObjectDao().evict(objectToUpdate);
+
+                        update(intactObject, objectToUpdate);
 
                         PersisterContext.getInstance().addToUpdate(objectToUpdate);
 
@@ -148,7 +143,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
             return new SyncTransientResponse<T>(true, refreshedObject);
         }
         
-        return new SyncTransientResponse<T>(false, syncAttributes(intactObject));
+        return new SyncTransientResponse<T>(false, refreshedObject);
     }
 
     /**
@@ -197,11 +192,6 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
                 log.debug( "\t\t\tFound it in SyncContext. Key: "+ AnnotKeyGenerator.createKey(intactObject));
             }
             return (T) SyncContext.getInstance().get(intactObject);
-        }
-
-        final DaoFactory daoFactory = getIntactContext().getDataContext().getDaoFactory();
-        if (intactObject.getAc() != null && daoFactory.getEntityManager().contains(intactObject)) {
-            daoFactory.getBaseDao().evict(intactObject);
         }
 
         T t = fetchFromDataSource( intactObject );

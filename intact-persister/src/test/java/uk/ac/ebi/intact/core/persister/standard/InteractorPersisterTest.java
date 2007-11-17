@@ -15,7 +15,9 @@
  */
 package uk.ac.ebi.intact.core.persister.standard;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
@@ -36,6 +38,16 @@ import java.util.Date;
  * @version $Id$
  */
 public class InteractorPersisterTest extends AbstractPersisterTest {
+
+    @Before
+    public void before() throws Exception {
+        beginTransaction();
+    }
+
+    @After
+    public void after() throws Exception {
+        commitTransaction();
+    }
 
     @Test
     public void aliasPersisted() throws Exception {
