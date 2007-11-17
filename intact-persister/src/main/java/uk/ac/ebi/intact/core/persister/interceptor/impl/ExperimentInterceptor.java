@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.core.persister.interceptor.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.interceptor.PrePersistInterceptor;
+import uk.ac.ebi.intact.core.persister.interceptor.PreUpdateInterceptor;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.util.ExperimentUtils;
 import uk.ac.ebi.intact.model.util.InteractionUtils;

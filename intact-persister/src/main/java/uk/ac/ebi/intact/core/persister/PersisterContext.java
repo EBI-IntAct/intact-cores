@@ -229,10 +229,8 @@ public class PersisterContext {
         }
 
         for (AnnotatedObject ao : annotatedObjectsToBeUpdated.values()) {
-            if (ao instanceof Experiment) {
-                experimentInterceptor.onPrePersist((Experiment)ao);
-            } else if (ao instanceof Interaction) {
-                interactionInterceptor.onPrePersist((Interaction)ao);
+             if (ao instanceof Interaction) {
+                interactionInterceptor.onPreUpdate((Interaction)ao);
             }
             if ( log.isDebugEnabled() ) {
                     log.debug( "\t\tMerging " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel()+ " (AC: "+ ao.getAc() +")" );

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.core.persister.interceptor.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.interceptor.PrePersistInterceptor;
+import uk.ac.ebi.intact.core.persister.interceptor.PreUpdateInterceptor;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.model.util.IllegalLabelFormatException;
@@ -13,7 +14,7 @@ import uk.ac.ebi.intact.model.util.IllegalLabelFormatException;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class InteractionInterceptor implements PrePersistInterceptor<Interaction>
+public class InteractionInterceptor implements PrePersistInterceptor<Interaction>, PreUpdateInterceptor<Interaction>
 {
 
     /**
@@ -38,4 +39,7 @@ public class InteractionInterceptor implements PrePersistInterceptor<Interaction
         }
     }
 
+    public void onPreUpdate(Interaction objToPersist) {
+        // nothing
+    }
 }
