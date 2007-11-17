@@ -27,11 +27,10 @@ import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.util.DebugUtil;
-import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Persister for interactions.
@@ -135,6 +134,10 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
     @Override
     protected boolean update(Interaction candidateObject, Interaction objectToUpdate) throws PersisterException {
+        // if updating, the interaction should maintain the shortlabel
+        candidateObject.setShortLabel(objectToUpdate.getShortLabel());
+
+        // update the experiment relationships
         final Collection<Experiment> candidateExperiments = candidateObject.getExperiments();
         List<Experiment> additionalExperiments = new ArrayList<Experiment>(candidateExperiments.size());
 

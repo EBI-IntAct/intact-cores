@@ -23,6 +23,7 @@ import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.util.DebugUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -472,5 +473,42 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+    }
+
+    @Test
+    public void newInteraction_clonedInteraction() throws Exception {
+        commitTransaction();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
+
+        PersisterHelper.saveOrUpdate(clonedInteraction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals("fooprey-barbait", getDaoFactory().getInteractionDao().getByAc(clonedInteraction.getAc()).getShortLabel());
+    }
+
+    @Test
+    public void newInteraction_clonedInteractionWithDifferentInteractor() throws Exception {
+        commitTransaction();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
+
+        PersisterHelper.saveOrUpdate(interaction);
+        System.out.println(interaction.getShortLabel());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
+        clonedInteraction.addComponent(getMockBuilder().createComponentPrey(clonedInteraction,
+                                                        getMockBuilder().createProteinRandom()));
+
+        PersisterHelper.saveOrUpdate(clonedInteraction);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+
+        System.out.println(DebugUtil.labelList(getDaoFactory().getInteractionDao().getAll()));
     }
 }
