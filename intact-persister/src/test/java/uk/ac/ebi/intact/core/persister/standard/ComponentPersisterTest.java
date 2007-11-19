@@ -4,6 +4,8 @@ import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
@@ -18,6 +20,16 @@ import uk.ac.ebi.intact.model.Interaction;
  */
 public class ComponentPersisterTest extends AbstractPersisterTest
 {
+
+    @Before
+    public void before() throws Exception {
+        beginTransaction();
+    }
+
+    @After
+    public void after() throws Exception {
+        commitTransaction();
+    }
 
     @Test
     public void persist_default() throws Exception {

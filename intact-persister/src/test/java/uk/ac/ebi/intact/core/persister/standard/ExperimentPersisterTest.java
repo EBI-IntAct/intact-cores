@@ -35,11 +35,13 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
     @Before
     public void before() {
         persister = ExperimentPersister.getInstance();
+        beginTransaction();
     }
 
     @After
     public void after() {
         persister = null;
+        commitTransaction();
     }
 
     @Test
