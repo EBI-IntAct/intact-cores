@@ -420,8 +420,9 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
         PersisterHelper.saveOrUpdate(interaction2);
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
-        Assert.assertEquals(2, getDaoFactory().getInteractionDao().getByAc(interaction2.getAc()).getExperiments().size());
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByAc(interaction.getAc()).getExperiments().size());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByAc(interaction2.getAc()).getExperiments().size());
 
         //System.out.println(statistics);
         //System.out.println(statistics.getQueryExecutionMaxTimeQueryString());
@@ -485,6 +486,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
 
         Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
+        clonedInteraction.setExperiments(interaction.getExperiments());
 
         PersisterHelper.saveOrUpdate(clonedInteraction);
 
