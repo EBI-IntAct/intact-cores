@@ -87,7 +87,7 @@ public class InteractionShortLabelGenerator {
         Collection<Component> components = interaction.getComponents();
 
         if (components.isEmpty()) {
-            throw new IllegalStateException("Interaction without components");
+            throw new IllegalArgumentException("Interaction without components");
         }
 
         // Search for a gene name in the set, if none exist, take the protein ID.
@@ -166,6 +166,18 @@ public class InteractionShortLabelGenerator {
         // that updates the experiment collection and only leaves those for which we have to create a new interaction
         //createInteractionShortLabels( interaction, experiments, baitShortlabel, preyShortlabel );
 
+    }
+
+    /**
+     * Creates a candiate short label - not taking into account if an interaction with the same name exists in the database
+     *
+     * @param completeLabel label
+     *
+     * @return the short label
+     */
+    protected static String createCandidateShortLabel(String completeLabel) throws IllegalLabelFormatException {
+        InteractionShortLabel label = new InteractionShortLabel(completeLabel);
+        return label.getCompleteLabel();
     }
 
     /**
@@ -374,10 +386,6 @@ public class InteractionShortLabelGenerator {
          * @param completeLabel
          */
         private void parse(String completeLabel) throws IllegalLabelFormatException {
-            if (!completeLabel.contains(INTERACTION_SEPARATOR)) {
-                throw new IllegalLabelFormatException("This label is not an interaction label (does not contain '" + INTERACTION_SEPARATOR + "'): " + completeLabel);
-            }
-
             String[] baitPrayLabels = completeLabel.split(INTERACTION_SEPARATOR);
 
             if (baitPrayLabels.length > 3) {
@@ -392,10 +400,14 @@ public class InteractionShortLabelGenerator {
             if (!isSelfInteraction) {
                 this.preyLabel = baitPrayLabels[1];
             } else {
-                try {
-                    suffix = Integer.valueOf(baitPrayLabels[1]);
-                } catch (NumberFormatException e) {
-                    throw new IllegalLabelFormatException(completeLabel, "Illegal value for self-interaction label. It was expecting a number for the second element.");
+                if (baitPrayLabels.length == 1) {
+                    suffix = null;
+                } else {
+                    try {
+                        suffix = Integer.valueOf(baitPrayLabels[1]);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalLabelFormatException(completeLabel, "Illegal value for self-interaction label. It was expecting a number for the second element.");
+                    }
                 }
             }
 
@@ -425,13 +437,14 @@ public class InteractionShortLabelGenerator {
 
             // self interactions
             boolean isSelfInteraction = false;
-            if (baitPrayLabels.length > 0 && baitPrayLabels.length < 3) {
-                if (baitPrayLabels.length == 2) {
-                    String possibleSuffix = baitPrayLabels[1];
 
-                    boolean suffixIsAnInteger = possibleSuffix.matches("\\d+");
-                    isSelfInteraction = suffixIsAnInteger;
-                }
+            if (baitPrayLabels.length == 2) {
+                String possibleSuffix = baitPrayLabels[1];
+
+                boolean suffixIsAnInteger = possibleSuffix.matches("\\d+");
+                isSelfInteraction = suffixIsAnInteger;
+            } else if (baitPrayLabels.length == 1) {
+                isSelfInteraction = true;
             }
 
             return isSelfInteraction;

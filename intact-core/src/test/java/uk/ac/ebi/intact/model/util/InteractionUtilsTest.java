@@ -73,6 +73,14 @@ public class InteractionUtilsTest extends IntactBasicTestCase{
     }
 
     @Test
+    public void syncShortLabelWithDb_non_self_noPrefix() throws Exception {
+        MockIntactContext.configureMockDaoFactory().setMockInteractionDao(new NoneInteractionLabelDao());
+
+        String syncedLabel = InteractionUtils.syncShortLabelWithDb("interaself");
+        assertEquals("interaself", syncedLabel);
+    }
+
+    @Test
     public void syncShortLabelWithDb_normal_self() throws Exception {
         MockIntactContext.configureMockDaoFactory().setMockInteractionDao(new NormalInteractionLabelDao());
 
