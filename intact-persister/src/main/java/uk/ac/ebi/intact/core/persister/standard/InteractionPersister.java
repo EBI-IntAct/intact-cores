@@ -87,7 +87,7 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         for (Interaction interactionWithSameInteractor : interactionsWithSameInteractors) {
             IgnoreExperimentCrcCalculator crcCalculator = new IgnoreExperimentCrcCalculator();
-            String interactionCrc = crcCalculator.crc64(intactObject);
+                String interactionCrc = crcCalculator.crc64(intactObject);
             String interactionWithSameInteractorCrc = crcCalculator.crc64(interactionWithSameInteractor);
 
             if (interactionCrc.equals(interactionWithSameInteractorCrc)) {
@@ -111,9 +111,11 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         // only update an interaction if already has an AC
         if (synced.getCrc().equals(candidateCrc)) {
             return BehaviourType.IGNORE;
-        } else {
+        } else if (synced.getAc().equals(candidate.getAc())) {
             return BehaviourType.UPDATE;
-        } 
+        } else {
+           return BehaviourType.NEW;
+        }
     }
 
     @Override
