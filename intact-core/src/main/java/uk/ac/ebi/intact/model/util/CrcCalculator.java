@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.util.Crc64;
 
@@ -28,12 +30,24 @@ import java.util.*;
  */
 public class CrcCalculator {
 
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(CrcCalculator.class);
+
     public CrcCalculator() {
     }
 
     public String crc64(Interaction interaction) {
         UniquenessStringBuilder sb = createUniquenessString(interaction);
-        return Crc64.getCrc64(sb.toString().toLowerCase());
+        final String uniquenessString = sb.toString().toLowerCase();
+
+        String crc64 =  Crc64.getCrc64(uniquenessString);
+
+        if (log.isDebugEnabled())
+            log.debug("Created CRC for interaction '"+interaction.getShortLabel()+"': "+crc64+" ("+uniquenessString+")");
+
+        return crc64;
     }
 
     //////////////////////////////////

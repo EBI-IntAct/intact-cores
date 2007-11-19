@@ -16,9 +16,14 @@
 package uk.ac.ebi.intact.persistence;
 
 import org.h2.tools.Server;
+import org.hibernate.Session;
+import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.Interaction;
 
+import javax.persistence.EntityManager;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,7 +34,7 @@ import java.sql.ResultSet;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class DaoFactoryTest {
+public class DaoFactoryTest extends IntactBasicTestCase {
 
     /**
      * Bug: http://www.ebi.ac.uk/interpro/internal-tools/jira-intact/browse/IAC-140
@@ -43,9 +48,12 @@ public class DaoFactoryTest {
         File hibernateConfigFile = new File(DaoFactoryTest.class.getResource("/META-INF/h2server-hibernate.cfg.xml").getFile());
         IntactContext.initStandaloneContext(hibernateConfigFile);
 
+        beginTransaction();
+
+        Connection connection = null;
 
         for (int i = 0; i < 6; i++) {
-            Connection connection = IntactContext.getCurrentInstance().getDataContext()
+            connection = IntactContext.getCurrentInstance().getDataContext()
                     .getDaoFactory().connection();
 
             ResultSet rs = connection.createStatement().executeQuery("select shortlabel from ia_institution");
@@ -55,8 +63,58 @@ public class DaoFactoryTest {
             }
         }
 
+        commitTransaction();
+
         IntactContext.getCurrentInstance().close();
         server.stop();
+    }
+
+    @Test
+    public void getEntityManager() throws Exception {
+        EntityManager em1 = getDaoFactory().getEntityManager();
+        Assert.assertTrue(em1.isOpen());
+
+        beginTransaction();
+
+        EntityManager em2 = getDaoFactory().getEntityManager();
+
+        Assert.assertSame(em1, em2);
+
+        commitTransaction();
+
+        Assert.assertFalse(em1.isOpen());
+    }
+
+    @Test
+    public void getEntityManager2() throws Exception {
+        beginTransaction();
+        EntityManager em1 = getDaoFactory().getEntityManager();
+        Assert.assertTrue(em1.isOpen());
+
+        commitTransaction();
+
+        EntityManager em2 = getDaoFactory().getEntityManager();
+
+        Assert.assertNotSame(em1, em2);
+        Assert.assertFalse(em1.isOpen());
+    }
+
+    @Test
+    public void getEntityManager_andCurrentSession() throws Exception {
+        beginTransaction();
+        Session s1 = getDaoFactory().getCurrentSession();
+
+        EntityManager em1 = getDaoFactory().getEntityManager();
+
+        Session s2 = (Session) em1.getDelegate();
+
+        Assert.assertSame(s1, s2);
+
+        commitTransaction();
+
+        Session s3 = getDaoFactory().getCurrentSession();
+
+        Assert.assertNotSame(s1, s3);
     }
 
 }
