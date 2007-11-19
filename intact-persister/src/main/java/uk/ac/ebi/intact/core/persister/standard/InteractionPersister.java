@@ -99,9 +99,7 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         return null;
     }
 
-    /**
-     * TODO forget it. because of A -- I mean see A above
-     */
+
     @Override
     protected BehaviourType syncedAndCandidateAreEqual(Interaction synced, Interaction candidate) {
         if (synced == null) {
@@ -110,16 +108,12 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         String candidateCrc = new CrcCalculator().crc64(candidate);
 
-        IgnoreExperimentCrcCalculator ieCrcCalc = new IgnoreExperimentCrcCalculator();
-
-        // never update interactions
+        // only update an interaction if already has an AC
         if (synced.getCrc().equals(candidateCrc)) {
             return BehaviourType.IGNORE;
-        } else if (ieCrcCalc.crc64(synced).equals(ieCrcCalc.crc64(candidate))) {
-            return BehaviourType.UPDATE;
         } else {
-            return BehaviourType.NEW;
-        }
+            return BehaviourType.UPDATE;
+        } 
     }
 
     @Override
