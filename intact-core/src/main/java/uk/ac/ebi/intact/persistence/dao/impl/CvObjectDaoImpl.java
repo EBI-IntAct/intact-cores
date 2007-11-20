@@ -47,11 +47,11 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
                 "select cv from "+getEntityClass().getName()+" cv " +
                 "left join cv.xrefs as xref " +
                         "join xref.cvDatabase as cvDb join cvDb.xrefs as cvDbXref " +
-                        "where cvDbXref.primaryId = :dbMiRef " +
-                        "and xref.primaryId = :psiMiRef ");
+                        "where cvDbXref.primaryId = '" + CvDatabase.PSI_MI_MI_REF +
+                        "' and xref.primaryId = '"+psiMiRef+"'");
 
-        query.setParameter("dbMiRef", CvDatabase.PSI_MI_MI_REF);
-        query.setParameter("psiMiRef", psiMiRef);
+        //query.setParameter("dbMiRef", CvDatabase.PSI_MI_MI_REF);
+        //query.setParameter("psiMiRef", psiMiRef);
 
         query.setFlushMode(FlushModeType.COMMIT);
 
