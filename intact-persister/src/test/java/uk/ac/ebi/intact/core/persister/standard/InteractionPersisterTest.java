@@ -515,4 +515,39 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Assert.assertEquals(5, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
     }
+
+    @Test
+    public void existingInteraction_addingExistingExperiment() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentRandom(1);
+        Experiment exp2 = getMockBuilder().createExperimentRandom(1);
+
+        PersisterHelper.saveOrUpdate(exp, exp2);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+
+        Experiment loadedExp = getDaoFactory().getExperimentDao().getByAc(exp.getAc());
+
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        interaction.getExperiments().clear();
+        loadedExp.addInteraction(interaction);
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(3, getDaoFactory().getInteractionDao().countAll());
+
+        getDaoFactory().getInteractionDao().refresh((InteractionImpl)interaction);
+
+        interaction.addExperiment(exp2);
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(3, getDaoFactory().getInteractionDao().countAll());
+
+        getDaoFactory().getInteractionDao().refresh((InteractionImpl)interaction);
+
+        Assert.assertEquals(2, interaction.getExperiments().size());
+    }
 }
