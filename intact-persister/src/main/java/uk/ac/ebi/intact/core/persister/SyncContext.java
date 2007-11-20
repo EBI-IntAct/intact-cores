@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.CvObject;
 
@@ -67,7 +68,15 @@ public class SyncContext {
     }
 
     public boolean isAlreadySynced(AnnotatedObject ao) {
-        if (syncedCvObjects.containsKey(keyFor(ao))) {
+        final String key;
+        try {
+            key = keyFor(ao);
+        } catch (LazyInitializationException e) {
+            log.debug("Trying to retrieve for the SyncContext using a transient object (provokes a LazyInitializationException): " + ao.getShortLabel() + " - Will refetch from database");
+            return false;
+        }
+
+        if (syncedCvObjects.containsKey(key)) {
             return true;
         }
         return syncedAnnotatedObjects.containsKey(keyFor(ao));

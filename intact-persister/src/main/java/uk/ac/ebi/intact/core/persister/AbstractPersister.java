@@ -179,24 +179,20 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
      * @return The synced intactObject. Null otherwise.
      */
     protected final T get(T intactObject) {
-        try {
-            if (PersisterContext.getInstance().contains(intactObject)) {
-                if ( log.isDebugEnabled() )  log.debug( "\t\t\tFound it in PersisterContext" );
-                T current = (T) PersisterContext.getInstance().get(intactObject);
+        if (PersisterContext.getInstance().contains(intactObject)) {
+            if ( log.isDebugEnabled() )  log.debug( "\t\t\tFound it in PersisterContext" );
+            T current = (T) PersisterContext.getInstance().get(intactObject);
 
-                if (current == null) {
-                    throw new IllegalStateException("IntactObject expected but not returned from the PersisterContext: "+intactObject);
-                }
-                return current;
+            if (current == null) {
+                throw new IllegalStateException("IntactObject expected but not returned from the PersisterContext: "+intactObject);
             }
-            if (SyncContext.getInstance().isAlreadySynced(intactObject)) {
-                if ( log.isDebugEnabled() ) {
-                    log.debug( "\t\t\tFound it in SyncContext. Key: "+ AnnotKeyGenerator.createKey(intactObject));
-                }
-                return (T) SyncContext.getInstance().get(intactObject);
+            return current;
+        }
+        if (SyncContext.getInstance().isAlreadySynced(intactObject)) {
+            if ( log.isDebugEnabled() ) {
+                log.debug( "\t\t\tFound it in SyncContext. Key: "+ AnnotKeyGenerator.createKey(intactObject));
             }
-        } catch (LazyInitializationException e) {
-            log.debug("Trying to retrieve for the PersisterContext using a transient object (provokes a LazyInitializationException): "+intactObject.getShortLabel()+" - Will refetch from database");
+            return (T) SyncContext.getInstance().get(intactObject);
         }
 
         T t = fetchFromDataSource( intactObject );

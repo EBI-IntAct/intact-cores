@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.persister;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.TransientObjectException;
+import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.interceptor.impl.ExperimentInterceptor;
 import uk.ac.ebi.intact.core.persister.interceptor.impl.InteractionInterceptor;
@@ -93,7 +94,13 @@ public class PersisterContext {
     }
 
     public boolean contains(AnnotatedObject ao) {
-        final String key = keyFor(ao);
+        final String key;
+        try {
+            key = keyFor(ao);
+        } catch (LazyInitializationException e) {
+            log.debug("Trying to retrieve for the PersisterContext using a transient object (provokes a LazyInitializationException): " + ao.getShortLabel() + " - Will refetch from database");
+            return false;
+        }
 
         if (ao instanceof CvObject) {
             return cvObjectsToBePersisted.containsKey(key);
@@ -109,7 +116,13 @@ public class PersisterContext {
     }
 
     public AnnotatedObject get(AnnotatedObject ao) {
-        final String key = keyFor(ao);
+        final String key;
+        try {
+            key = keyFor(ao);
+        } catch (LazyInitializationException e) {
+            log.debug("Trying to retrieve for the PersisterContext using a transient object (provokes a LazyInitializationException): " + ao.getShortLabel() + " - Will refetch from database");
+            return null;
+        }
 
         if (ao instanceof CvObject) {
             return cvObjectsToBePersisted.get(key);
