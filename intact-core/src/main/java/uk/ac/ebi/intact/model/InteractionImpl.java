@@ -433,7 +433,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
             return false;
         }
 
-        if ( !super.equals( o, checkComponents ) ) {
+        if ( !super.equals( o, false ) ) {
             return false;
         }
 
