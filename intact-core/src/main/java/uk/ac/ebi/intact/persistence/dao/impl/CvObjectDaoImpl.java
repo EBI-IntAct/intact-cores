@@ -9,14 +9,19 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.annotation.PotentialThreat;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.CvDatabase;
+import uk.ac.ebi.intact.model.CvInteractorType;
 import uk.ac.ebi.intact.model.CvObject;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.persistence.dao.CvObjectDao;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -96,5 +101,22 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
         return ( T ) getSession().createCriteria( cvType )
                 .createCriteria( "xrefs" )
                 .add( Restrictions.eq( "primaryId", miRef ) ).uniqueResult();
+    }
+
+    public Collection<String> getNucleicAcidMIs() {
+
+        DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+        final CvObjectDao<CvInteractorType> itdao = daoFactory.getCvObjectDao( CvInteractorType.class );
+
+        // 1. load the root term
+        CvInteractorType root = itdao.getByPsiMiRef( CvInteractorType.NUCLEIC_ACID_MI_REF );
+
+        Collection<String> collectedMIs = new ArrayList<String>( );
+        if( root != null ) {
+            // 2. traverse children and collect their MIs
+            CvObjectUtils.getChildrenMIs( root, collectedMIs );
+        }
+        
+        return collectedMIs;
     }
 }

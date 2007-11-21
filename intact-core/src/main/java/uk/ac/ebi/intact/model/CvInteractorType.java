@@ -21,16 +21,6 @@ import java.util.List;
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvInteractorType" )
 public class CvInteractorType extends CvDagObject {
 
-    /**
-     * The MI number for an Interaction.
-     */
-    private static final String ourInteractionMI = "MI:0317";
-
-    /**
-     * The MI number for a Protein.
-     */
-    private static final String ourProteinMI = "MI:0326";
-
     public static final String INTERACTION_MI_REF = "MI:0317";
     public static final String INTERACTION = "interaction";
 
@@ -47,27 +37,17 @@ public class CvInteractorType extends CvDagObject {
     public static final String SMALL_MOLECULE_MI_REF = "MI:0328";
 
     public static final String PEPTIDE_MI_REF = "MI:0327";
-    /**
-     * A list of MI numbers for Nucleic acid type
-     */
-    private static final List<String> ourNucleicAcidMIs = Arrays.asList( new String[]{
-            "MI:0318", "MI:0319", "MI:0320", "MI:0321", "MI:0322", "MI:0323",
-            "MI:0324", "MI:0325", "MI:0607", "MI:0608", "MI:0609", "MI:0610", "MI:0611", "MI:0679", "MI:0680", "MI:0681"} );
-
-    /**
-     * A list of MI numbers for a Protein type.
-     */
-    private static final List<String> ourProteinMIs = Arrays.asList( new String[]{
-            ourProteinMI, "MI:0327"} );
 
     /**
      * @param mi the MI number to check
      *
      * @return true if given MI number belongs to a Protein menu item; false is
      *         returned for all other instances.
+     * @deprecated Use CvObjectUtils.isProteinType() instead.
      */
+    @Deprecated
     public static boolean isProteinMI( String mi ) {
-        return ourProteinMIs.contains( mi );
+        throw new UnsupportedOperationException( "DEPRECATED METHOD - please use CvObjectUtils.isProteinType() instead" );
     }
 
     /**
@@ -75,37 +55,43 @@ public class CvInteractorType extends CvDagObject {
      *
      * @return true if given MI number belongs to a NucleicAcid menu item; false is
      *         returned for all other instances.
+     * @deprecated Use CvObjectUtils.isNucleicAcidType() instead.
      */
+    @Deprecated
     public static boolean isNucleicAcidMI( String mi ) {
-        return ourNucleicAcidMIs.contains( mi );
+        throw new UnsupportedOperationException( "DEPRECATED METHOD - please use CvObjectUtils.isNucleicAcidType() instead" );
     }
 
     /**
      * @return returns an unmodifiable list consists of NucleicAcid MIs as strings.
+     * @deprecated Use CvObjectUtils.isNucleicAcidType() instead.
      */
+    @Deprecated
     public static List<String> getNucleicAcidMIs() {
-        return Collections.unmodifiableList( ourNucleicAcidMIs );
+        throw new UnsupportedOperationException( "DEPRECATED METHOD - please use CvObjectUtils.isNucleicAcidType() instead" );
     }
 
     /**
      * @return returns the default MI for a Protein as a string.
      */
     public static String getProteinMI() {
-        return ourProteinMI;
+        return PROTEIN_MI_REF;
     }
 
     /**
      * @return returns an unmodifiable list consists of Protein MIs as strings.
+     * @deprecated Use CvObjectUtils.getChildrenMIs() instead.
      */
+    @Deprecated
     public static List<String> getProteinMIs() {
-        return Collections.unmodifiableList( ourProteinMIs );
+        throw new UnsupportedOperationException( "DEPRECATED METHOD - please use CvObjectUtils.getChildrenMIs() instead" );
     }
 
     /**
      * @return the MI number for an Interaction as a String.
      */
     public static String getInteractionMI() {
-        return ourInteractionMI;
+        return INTERACTION_MI_REF;
     }
 
     /**

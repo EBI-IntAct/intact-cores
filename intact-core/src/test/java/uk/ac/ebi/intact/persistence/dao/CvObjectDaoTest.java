@@ -5,9 +5,11 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.persistence.dao;
 
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
 import uk.ac.ebi.intact.model.CvDatabase;
@@ -26,42 +28,52 @@ import java.util.List;
  * @author Catherine Leroy (cleroy@ebi.ac.uk)
  * @version $Id$
  */
-@IntactUnitDataset(dataset = PsiTestDatasetProvider.ALL_CVS, provider = PsiTestDatasetProvider.class)
+@IntactUnitDataset( dataset = PsiTestDatasetProvider.ALL_CVS, provider = PsiTestDatasetProvider.class )
 public class CvObjectDaoTest extends IntactAbstractTestCase {
 
     @Test
-    public void testgetByPsiMiRefCollection()
-    {
+    public void testgetByPsiMiRefCollection() {
         Collection<String> psiMiRefs = new ArrayList<String>();
-        psiMiRefs.add(CvDatabase.BIND_MI_REF);
-        psiMiRefs.add(CvDatabase.CABRI_MI_REF);
-        psiMiRefs.add(CvDatabase.IMEX_MI_REF);
+        psiMiRefs.add( CvDatabase.BIND_MI_REF );
+        psiMiRefs.add( CvDatabase.CABRI_MI_REF );
+        psiMiRefs.add( CvDatabase.IMEX_MI_REF );
 
-        CvObjectDao<CvDatabase> cvObjectDao = getDaoFactory().getCvObjectDao(CvDatabase.class);
+        CvObjectDao<CvDatabase> cvObjectDao = getDaoFactory().getCvObjectDao( CvDatabase.class );
 
-        List cvObjects = cvObjectDao.getByPsiMiRefCollection(psiMiRefs);
-        assertEquals(cvObjects.size(),3);
+        List cvObjects = cvObjectDao.getByPsiMiRefCollection( psiMiRefs );
+        assertEquals( cvObjects.size(), 3 );
     }
 
     @Test
-    public void testGetByObjClass (){
+    public void testGetByObjClass() {
         Class[] classes = {CvTopic.class, CvXrefQualifier.class};
-        CvObjectDao<CvObject> cvObjectDao = getDaoFactory().getCvObjectDao(CvObject.class);
-        List cvObjects = cvObjectDao.getByObjClass(classes);
+        CvObjectDao<CvObject> cvObjectDao = getDaoFactory().getCvObjectDao( CvObject.class );
+        List cvObjects = cvObjectDao.getByObjClass( classes );
         int cvTopicCount = 0;
         int cvXrefQualifierCount = 0;
-        for (int i = 0; i < cvObjects.size(); i++) {
-            Object o =  cvObjects.get(i);
-            if(o instanceof CvTopic){
+        for ( int i = 0; i < cvObjects.size(); i++ ) {
+            Object o = cvObjects.get( i );
+            if ( o instanceof CvTopic ) {
                 cvTopicCount++;
-            }else if(o instanceof CvXrefQualifier){
+            } else if ( o instanceof CvXrefQualifier ) {
                 cvXrefQualifierCount++;
             } else {
-                fail("Was excpecting an object of class CvObject or CvXrefQualifier but got a " + o.getClass().getName());
+                fail( "Was excpecting an object of class CvObject or CvXrefQualifier but got a " + o.getClass().getName() );
             }
         }
 
-        assertEquals(74,cvTopicCount);
-        assertEquals(25,cvXrefQualifierCount);
+        assertEquals( 74, cvTopicCount );
+        assertEquals( 25, cvXrefQualifierCount );
+    }
+
+    @Test
+    public void getNucleicAcidMIs() throws Exception {
+
+        DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+        final Collection<String> mis = daoFactory.getCvObjectDao().getNucleicAcidMIs();
+
+        System.out.println( mis );
+        Assert.assertNotNull( mis );
+        Assert.assertEquals( 16, mis.size() );
     }
 }
