@@ -408,6 +408,17 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
      */
     @Override
     public boolean equals( Object o ) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof Interaction ) ) {
+            return false;
+        }
+
+        if ( !super.equals( o ) ) {
+            return false;
+        }
+
         return equals(o, true);
     }
 
@@ -415,14 +426,14 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
      * Equals method that optionally checks on the components
      */
     public boolean equals( Object o, boolean checkComponents) {
-        if ( super.equals( o ) ) {
-            return true;
-        }
-
         if ( this == o ) {
             return true;
         }
         if ( !( o instanceof Interaction ) ) {
+            return false;
+        }
+
+        if ( !super.equals( o, checkComponents ) ) {
             return false;
         }
 
@@ -452,7 +463,13 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
             return false;
         }
 
-        return (!checkComponents) || CollectionUtils.isEqualCollection(getComponents(), interaction.getComponents());
+        if (checkComponents) {
+            if (!CollectionUtils.isEqualCollection(getComponents(), interaction.getComponents())) {
+                 return false;
+            }
+        }
+
+        return true;
     }
 
     @Override

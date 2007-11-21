@@ -241,15 +241,24 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
         return result + "]";
     }
 
+
     @Override
     public boolean equals( Object o ) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+        
+        if ( !super.equals( o ) ) {
+            return false;
+        }
+
         return equals(o, true);
     }
 
     protected boolean equals( Object o, boolean checkOnActiveInstances) {
-        if ( !super.equals( o ) ) {
-            return false;
-        }
         if ( this == o ) {
             return true;
         }
