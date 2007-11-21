@@ -13,6 +13,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
+
 /**
  * The specific instance of an interactor which participates in an interaction.
  * <p/>
@@ -555,13 +557,27 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
         final Component component = ( Component ) o;
 
-        // Compare if the component links the same objects.
-        // This comparision can be based on reference equality,
-        // so "==" can be used instead of "equals".
-        return this.interactor == component.getInteractor() &&
-               this.interaction == component.getInteraction() &&
-               this.experimentalRole == component.experimentalRole &&
-               this.biologicalRole == component.biologicalRole;
+        // check cvs and interactor first, and then check the interaction
+        if (experimentalRole != null && experimentalRole.equals(component.getCvExperimentalRole())) {
+            return false;
+        }
+        if (biologicalRole != null && biologicalRole.equals(component.getCvBiologicalRole())) {
+            return false;
+        }
+
+        if (interactor instanceof InteractorImpl && component.getInteractor() instanceof InteractorImpl) {
+            if (interactor != null && !((InteractorImpl)interactor).equals(component.getInteractor(), false)) {
+                return false;
+            }
+        }
+
+        if (interaction instanceof InteractionImpl && component.getInteraction() instanceof InteractorImpl) {
+            if (interaction != null && !((InteractionImpl)interaction).equals(component.getInteraction(), false)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -243,6 +243,10 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
 
     @Override
     public boolean equals( Object o ) {
+        return equals(o, true);
+    }
+
+    protected boolean equals( Object o, boolean checkOnActiveInstances) {
         if ( !super.equals( o ) ) {
             return false;
         }
@@ -255,8 +259,10 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
 
         final InteractorImpl that = ( InteractorImpl ) o;
 
-        if ( activeInstances != null ? !activeInstances.equals( that.activeInstances ) : that.activeInstances != null ) {
-            return false;
+        if (checkOnActiveInstances) {
+            if ( activeInstances != null ? !activeInstances.equals( that.activeInstances ) : that.activeInstances != null ) {
+                return false;
+            }
         }
         if ( bioSource != null ? !bioSource.equals( that.bioSource ) : that.bioSource != null ) {
             return false;

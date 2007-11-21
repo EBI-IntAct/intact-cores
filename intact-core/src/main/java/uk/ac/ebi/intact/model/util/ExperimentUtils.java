@@ -127,7 +127,7 @@ public class ExperimentUtils {
      * @param pubmedId the pubmed corresponding to the experiment
      * @return the synced short label
      *
-     * @since 7.0.1
+     * @since 1.7.0
      */
     public static String syncShortLabelWithDb(String shortLabel, String pubmedId) {
         String syncedLabel = null;

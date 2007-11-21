@@ -5,6 +5,8 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import uk.ac.ebi.intact.annotation.EditorTopic;
+
 /**
  * Deprecated since version 1.6, where the component role was splitted in two CVs: 
  * experimental and biological roles
