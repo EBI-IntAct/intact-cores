@@ -110,7 +110,7 @@ public class DefaultTraverser implements IntactObjectTraverser {
     ///////////////////////////////////////
     // AnnotatedObject traversers
 
-    public void traverseExperiment(Experiment experiment, IntactVisitor ... visitors) {
+    protected void traverseExperiment(Experiment experiment, IntactVisitor ... visitors) {
         if (experiment == null) return;
 
         for (IntactVisitor visitor : visitors) {
@@ -122,12 +122,15 @@ public class DefaultTraverser implements IntactObjectTraverser {
         traverseBioSource(experiment.getBioSource(), visitors);
         traversePublication(experiment.getPublication());
 
-        //
+        // TODO check if they have been processed to avoid infinite loops
+        for (Interaction interaction : experiment.getInteractions()) {
+            traverseInteraction(interaction);
+        }
 
         traverseAnnotatedObjectCommon(experiment, visitors);
     }
 
-    public void traverseFeature(Feature feature, IntactVisitor ... visitors) {
+    protected void traverseFeature(Feature feature, IntactVisitor ... visitors) {
         if (feature == null) return;
 
         for (IntactVisitor visitor : visitors) {
@@ -146,7 +149,7 @@ public class DefaultTraverser implements IntactObjectTraverser {
         throw new UnsupportedOperationException();
     }
 
-    public void traverseInstitution(Institution institution, IntactVisitor ... visitors) {
+    protected void traverseInstitution(Institution institution, IntactVisitor ... visitors) {
         if (institution == null) return;
 
         for (IntactVisitor visitor : visitors) {
@@ -156,43 +159,54 @@ public class DefaultTraverser implements IntactObjectTraverser {
         traverseAnnotatedObjectCommon(institution, visitors);
     }
 
-    public void traverseInteraction(Interaction interaction, IntactVisitor ... visitors) {
+    protected void traverseInteraction(Interaction interaction, IntactVisitor ... visitors) {
         if (interaction == null) return;
 
         for (IntactVisitor visitor : visitors) {
             visitor.visitInteraction(interaction);
         }
 
-        traverseAnnotatedObjectCommon(interaction, visitors);
+        traverseCvObject(interaction.getCvInteractionType());
 
-        throw new UnsupportedOperationException();
+        // TODO check if they have been processed to avoid infinite loops
+        for (Experiment experiment : interaction.getExperiments()) {
+            traverseExperiment(experiment);
+        }
+
+        for (Component component : interaction.getComponents()) {
+            traverseComponent(component);
+        }
+
+        traverseAnnotatedObjectCommon(interaction, visitors);
     }
 
-    public void traverseInteractor(Interactor interactor, IntactVisitor ... visitors) {
+    protected void traverseInteractor(Interactor interactor, IntactVisitor ... visitors) {
         if (interactor == null) return;
 
         for (IntactVisitor visitor : visitors) {
             visitor.visitInteractor(interactor);
         }
 
-        traverseAnnotatedObjectCommon(interactor, visitors);
+        traverseCvObject(interactor.getCvInteractorType(), visitors);
+        traverseBioSource(interactor.getBioSource(), visitors);
 
-        throw new UnsupportedOperationException();
+        traverseAnnotatedObjectCommon(interactor, visitors);
     }
 
-    public void traverseBioSource(BioSource bioSource, IntactVisitor ... visitors) {
+    protected void traverseBioSource(BioSource bioSource, IntactVisitor ... visitors) {
         if (bioSource == null) return;
 
         for (IntactVisitor visitor : visitors) {
             visitor.visitBioSource(bioSource);
         }
 
-        traverseAnnotatedObjectCommon(bioSource, visitors);
+        traverseCvObject(bioSource.getCvCellType());
+        traverseCvObject(bioSource.getCvTissue());
 
-        throw new UnsupportedOperationException();
+        traverseAnnotatedObjectCommon(bioSource, visitors);
     }
 
-    public void traversePublication(Publication publication, IntactVisitor ... visitors) {
+    protected void traversePublication(Publication publication, IntactVisitor ... visitors) {
         if (publication == null) return;
 
         for (IntactVisitor visitor : visitors) {
@@ -200,23 +214,37 @@ public class DefaultTraverser implements IntactObjectTraverser {
         }
 
         traverseAnnotatedObjectCommon(publication, visitors);
-
-        throw new UnsupportedOperationException();
     }
 
-    public void traverseComponent(Component component, IntactVisitor ... visitors) {
+    protected void traverseComponent(Component component, IntactVisitor ... visitors) {
         if (component == null) return;
 
         for (IntactVisitor visitor : visitors) {
             visitor.visitComponent(component);
         }
 
-        traverseAnnotatedObjectCommon(component, visitors);
+        //traverseInteraction(component.getInteraction());
+        traverseInteractor(component.getInteractor());
+        traverseCvObject(component.getCvExperimentalRole());
+        traverseCvObject(component.getCvBiologicalRole());
+        traverseBioSource(component.getExpressedIn());
 
-        throw new UnsupportedOperationException();
+        for (CvIdentification partDetMethod : component.getParticipantDetectionMethods()) {
+            traverseCvObject(partDetMethod);
+        }
+
+        for (CvExperimentalPreparation experimentalPreparation : component.getExperimentalPreparations()) {
+            traverseCvObject(experimentalPreparation);
+        }
+
+        for (Feature feature : component.getBindingDomains()) {
+            traverseFeature(feature);
+        }
+
+        traverseAnnotatedObjectCommon(component, visitors);
     }
 
-    public void traverseCvObject(CvObject cvObject, IntactVisitor ... visitors) {
+    protected void traverseCvObject(CvObject cvObject, IntactVisitor ... visitors) {
         if (cvObject == null) return;
 
         for (IntactVisitor visitor : visitors) {
@@ -224,8 +252,6 @@ public class DefaultTraverser implements IntactObjectTraverser {
         }
 
         traverseAnnotatedObjectCommon(cvObject, visitors);
-
-        throw new UnsupportedOperationException();
     }
 
     protected void traverseAnnotatedObjectCommon(AnnotatedObject ao, IntactVisitor ... visitors) {
