@@ -63,7 +63,9 @@ public class DefaultTraverser implements IntactObjectTraverser {
             traverseAlias((Alias)intactObject, visitors);
         } else if (intactObject instanceof Xref) {
             traverseXref((Xref)intactObject, visitors);
-         } else {
+        } else if (intactObject instanceof Range) {
+            traverseRange((Range)intactObject, visitors);
+        } else {
             throw new IllegalArgumentException("Cannot traverse objects of type: "+intactObject.getClass().getName());
         }
 
@@ -83,8 +85,6 @@ public class DefaultTraverser implements IntactObjectTraverser {
         for (IntactVisitor visitor : visitors) {
             visitor.visitAnnotatedObject(annotatedObject);
         }
-
-
 
         if (annotatedObject instanceof Interaction) {
             traverseInteraction((Interaction) annotatedObject, visitors);
@@ -240,7 +240,7 @@ public class DefaultTraverser implements IntactObjectTraverser {
         traverse(feature.getCvFeatureIdentification(), visitors);
 
         for (Range range : feature.getRanges()) {
-            traverseRange(range, visitors);
+            traverse(range, visitors);
         }
     }
 

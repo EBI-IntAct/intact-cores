@@ -15,8 +15,8 @@
  */
 package uk.ac.ebi.intact.model.visitor;
 
-import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.model.Feature;
 import uk.ac.ebi.intact.util.DebugUtil;
 
 /**
@@ -27,6 +27,7 @@ public class Playground {
 
      public static void main(String[] args) throws Exception {
         final IntactObject intactObject = new IntactMockBuilder().createInteractionRandomBinary().getComponents().iterator().next();
+
         DebugUtil.renderIntactObjectAsTree(intactObject);
         DebugUtil.printIntactObject(intactObject, System.out);
     }
