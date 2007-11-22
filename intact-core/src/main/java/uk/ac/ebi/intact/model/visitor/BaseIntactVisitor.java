@@ -21,10 +21,20 @@ import uk.ac.ebi.intact.model.*;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class BaseIntactVisitor extends IntactVisitor {
+public class BaseIntactVisitor implements IntactVisitor, HierarchyAware {
+
+    int hierarchyLevel = 0;
 
     //////////////////////////////////////////
     // IntactObjects
+
+    public void visitIntactObject(IntactObject intactObject) {
+        // nothing
+    }
+
+    public void visitAnnotatedObject(AnnotatedObject annotatedObject) {
+        // nothing
+    }
 
     public void visitAnnotation(Annotation annotation) {
         // nothing
@@ -78,6 +88,25 @@ public class BaseIntactVisitor extends IntactVisitor {
     }
 
     public void visitPublication(Publication publication) {
+        // nothing
+    }
+
+    //////////////////////////////////////
+    // Hierarchy aware
+
+    public int getHierarchyLevel() {
+        return hierarchyLevel;
+    }
+
+    public void setHierarchyLevel(int hierarchyLevel) {
+        this.hierarchyLevel = hierarchyLevel;
+    }
+
+    public void nextHierarchyLevel() {
+        // nothing
+    }
+
+    public void previousHierarchyLevel() {
         // nothing
     }
 }

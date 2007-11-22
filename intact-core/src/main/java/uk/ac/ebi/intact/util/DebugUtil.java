@@ -9,10 +9,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactObject;
+import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
+import uk.ac.ebi.intact.model.visitor.impl.PrintVisitor;
+import uk.ac.ebi.intact.model.visitor.impl.JTreeBuilderVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.io.PrintStream;
 
 /**
  * Class for debugging / logging purposes
@@ -57,6 +61,27 @@ public class DebugUtil {
         }
 
         return acs;
+    }
+
+    /**
+     * Prints an IntactObject recursively
+     * @param intactObject
+     * @param ps
+     */
+    public static void printIntactObject(IntactObject intactObject, PrintStream ps) {
+        DefaultTraverser traverser = new DefaultTraverser();
+        traverser.traverse(intactObject, new PrintVisitor(ps));
+    }
+
+    /**
+     * Renders a JFrame with the tree for the provided IntactObject
+     * @param intactObject
+     */
+    public static void renderIntactObjectAsTree(IntactObject intactObject) {
+        DefaultTraverser traverser = new DefaultTraverser();
+        final JTreeBuilderVisitor builderVisitor = new JTreeBuilderVisitor();
+        traverser.traverse(intactObject, builderVisitor);
+        builderVisitor.renderTree();
     }
 
 }

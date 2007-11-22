@@ -17,7 +17,9 @@ package uk.ac.ebi.intact.model.visitor;
 
 import uk.ac.ebi.intact.model.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -25,7 +27,34 @@ import java.util.Collection;
  */
 public class DefaultTraverser implements IntactObjectTraverser {
 
-    public void traverse(IntactObject intactObject, IntactVisitor ... visitors) {
+    private int currentHierarchyLevel = -1;
+
+    private RecursionChecker recursionChecker;
+
+    public DefaultTraverser() {
+        this.recursionChecker = new RecursionChecker();
+    }
+
+    public void traverse(IntactObject intactObject, IntactVisitor... visitors) {
+        if (intactObject == null) return;
+
+        if (visitors.length == 0) {
+            throw new IllegalArgumentException("No visitors passed");
+        }
+
+        nextHierarchyLevel();
+
+        for (IntactVisitor visitor : visitors) {
+            visitor.visitIntactObject(intactObject);
+
+            if (visitor instanceof HierarchyAware) {
+                final HierarchyAware hierarchyAwareVisitor = (HierarchyAware) visitor;
+                hierarchyAwareVisitor.setHierarchyLevel(getCurrentHierarchyLevel());
+
+                hierarchyAwareVisitor.nextHierarchyLevel();
+            }
+        }
+
         if (intactObject instanceof AnnotatedObject) {
             traverseAnnotatedObject((AnnotatedObject)intactObject, visitors);
         } else if (intactObject instanceof Annotation) {
@@ -34,12 +63,29 @@ public class DefaultTraverser implements IntactObjectTraverser {
             traverseAlias((Alias)intactObject, visitors);
         } else if (intactObject instanceof Xref) {
             traverseXref((Xref)intactObject, visitors);
-        } else {
+         } else {
             throw new IllegalArgumentException("Cannot traverse objects of type: "+intactObject.getClass().getName());
+        }
+
+        previousHierarchyLevel();
+
+        for (IntactVisitor visitor : visitors) {
+            if (visitor instanceof HierarchyAware) {
+                final HierarchyAware hierarchyAwareVisitor = (HierarchyAware) visitor;
+                hierarchyAwareVisitor.previousHierarchyLevel();
+            }
         }
     }
 
     protected void traverseAnnotatedObject(AnnotatedObject annotatedObject, IntactVisitor... visitors) {
+        if (annotatedObject == null) return;
+
+        for (IntactVisitor visitor : visitors) {
+            visitor.visitAnnotatedObject(annotatedObject);
+        }
+
+
+
         if (annotatedObject instanceof Interaction) {
             traverseInteraction((Interaction) annotatedObject, visitors);
         } else if (annotatedObject instanceof Interactor) {
@@ -61,50 +107,96 @@ public class DefaultTraverser implements IntactObjectTraverser {
         } else {
             throw new IllegalArgumentException("Cannot process annotated object of type: " + annotatedObject.getClass().getName());
         }
+
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(annotatedObject)) {
+            return;
+        }
+
+        traverseAnnotatedObjectCommon(annotatedObject, visitors);
+    }
+
+    protected void traverseAnnotatedObjectCommon(AnnotatedObject ao, IntactVisitor ... visitors) {
+
+        traverse(ao.getOwner(), visitors);
+
+        for (Annotation annotation : ao.getAnnotations()) {
+            traverse(annotation, visitors);
+        }
+        for (Alias alias : (Collection<Alias>) ao.getAliases()) {
+            traverse(alias, visitors);
+        }
+        for (Xref xref : (Collection<Xref>) ao.getXrefs()) {
+            traverse(xref, visitors);
+        }
     }
 
     ///////////////////////////////////////
     // IntactObject traversers
 
-    protected void traverseAnnotation(Annotation annotation, IntactVisitor ... visitors) {
+    protected void traverseAnnotation(Annotation annotation, IntactVisitor... visitors) {
         if (annotation == null) return;
 
-        traverseCvObject(annotation.getCvTopic(), visitors);
-        traverseInstitution(annotation.getOwner());
+        for (IntactVisitor visitor : visitors) {
+            visitor.visitAnnotation(annotation);
+        }
+
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(annotation)) {
+            return;
+        }
+
+        traverse(annotation.getCvTopic(), visitors);
+        traverse(annotation.getOwner(), visitors);
     }
 
-    protected void traverseAlias(Alias alias, IntactVisitor ... visitors) {
+    protected void traverseAlias(Alias alias, IntactVisitor... visitors) {
         if (alias == null) return;
 
         for (IntactVisitor visitor : visitors) {
             visitor.visitAlias(alias);
         }
 
-        traverseCvObject(alias.getCvAliasType());
-        traverseInstitution(alias.getOwner());
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(alias)) {
+            return;
+        }
+
+        traverse(alias.getCvAliasType(), visitors);
+        traverse(alias.getOwner(), visitors);
     }
 
-    protected void traverseXref(Xref xref, IntactVisitor ... visitors) {
+    protected void traverseXref(Xref xref, IntactVisitor... visitors) {
         if (xref == null) return;
 
         for (IntactVisitor visitor : visitors) {
             visitor.visitXref(xref);
         }
 
-        traverseCvObject(xref.getCvXrefQualifier());
-        traverseCvObject(xref.getCvDatabase());
-        traverseInstitution(xref.getOwner());
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(xref)) {
+            return;
+        }
+
+        traverse(xref.getCvXrefQualifier(), visitors);
+        traverse(xref.getCvDatabase(), visitors);
+        traverse(xref.getOwner(), visitors);
     }
 
-    protected void traverseRange(Range range, IntactVisitor ... visitors) {
+    protected void traverseRange(Range range, IntactVisitor... visitors) {
         if (range == null) return;
 
         for (IntactVisitor visitor : visitors) {
             visitor.visitRange(range);
         }
 
-        traverseCvObject(range.getFromCvFuzzyType(), visitors);
-        traverseCvObject(range.getToCvFuzzyType(), visitors);
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(range)) {
+            return;
+        }
+
+        traverse(range.getFromCvFuzzyType(), visitors);
+        traverse(range.getToCvFuzzyType(), visitors);
     }
 
     ///////////////////////////////////////
@@ -117,17 +209,19 @@ public class DefaultTraverser implements IntactObjectTraverser {
             visitor.visitExperiment(experiment);
         }
 
-        traverseCvObject(experiment.getCvIdentification());
-        traverseCvObject(experiment.getCvInteraction());
-        traverseBioSource(experiment.getBioSource(), visitors);
-        traversePublication(experiment.getPublication());
-
-        // TODO check if they have been processed to avoid infinite loops
-        for (Interaction interaction : experiment.getInteractions()) {
-            traverseInteraction(interaction);
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(experiment)) {
+            return;
         }
 
-        traverseAnnotatedObjectCommon(experiment, visitors);
+        traverse(experiment.getCvIdentification(), visitors);
+        traverse(experiment.getCvInteraction(), visitors);
+        traverse(experiment.getBioSource(), visitors);
+        traverse(experiment.getPublication(), visitors);
+
+        for (Interaction interaction : experiment.getInteractions()) {
+            traverse(interaction, visitors);
+        }
     }
 
     protected void traverseFeature(Feature feature, IntactVisitor ... visitors) {
@@ -137,16 +231,17 @@ public class DefaultTraverser implements IntactObjectTraverser {
             visitor.visitFeature(feature);
         }
 
-        traverseCvObject(feature.getCvFeatureType());
-        traverseCvObject(feature.getCvFeatureIdentification());
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(feature)) {
+            return;
+        }
+
+        traverse(feature.getCvFeatureType(), visitors);
+        traverse(feature.getCvFeatureIdentification(), visitors);
 
         for (Range range : feature.getRanges()) {
             traverseRange(range, visitors);
         }
-
-        traverseAnnotatedObjectCommon(feature, visitors);
-
-        throw new UnsupportedOperationException();
     }
 
     protected void traverseInstitution(Institution institution, IntactVisitor ... visitors) {
@@ -155,8 +250,6 @@ public class DefaultTraverser implements IntactObjectTraverser {
         for (IntactVisitor visitor : visitors) {
             visitor.visitInstitution(institution);
         }
-
-        traverseAnnotatedObjectCommon(institution, visitors);
     }
 
     protected void traverseInteraction(Interaction interaction, IntactVisitor ... visitors) {
@@ -166,18 +259,20 @@ public class DefaultTraverser implements IntactObjectTraverser {
             visitor.visitInteraction(interaction);
         }
 
-        traverseCvObject(interaction.getCvInteractionType());
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(interaction)) {
+            return;
+        }
 
-        // TODO check if they have been processed to avoid infinite loops
+        traverse(interaction.getCvInteractionType(), visitors);
+
         for (Experiment experiment : interaction.getExperiments()) {
-            traverseExperiment(experiment);
+            traverse(experiment, visitors);
         }
 
         for (Component component : interaction.getComponents()) {
-            traverseComponent(component);
-        }
-
-        traverseAnnotatedObjectCommon(interaction, visitors);
+            traverse(component, visitors);
+        }        
     }
 
     protected void traverseInteractor(Interactor interactor, IntactVisitor ... visitors) {
@@ -187,10 +282,13 @@ public class DefaultTraverser implements IntactObjectTraverser {
             visitor.visitInteractor(interactor);
         }
 
-        traverseCvObject(interactor.getCvInteractorType(), visitors);
-        traverseBioSource(interactor.getBioSource(), visitors);
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(interactor)) {
+            return;
+        }
 
-        traverseAnnotatedObjectCommon(interactor, visitors);
+        traverse(interactor.getCvInteractorType(), visitors);
+        traverse(interactor.getBioSource(), visitors);
     }
 
     protected void traverseBioSource(BioSource bioSource, IntactVisitor ... visitors) {
@@ -200,10 +298,13 @@ public class DefaultTraverser implements IntactObjectTraverser {
             visitor.visitBioSource(bioSource);
         }
 
-        traverseCvObject(bioSource.getCvCellType());
-        traverseCvObject(bioSource.getCvTissue());
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(bioSource)) {
+            return;
+        }
 
-        traverseAnnotatedObjectCommon(bioSource, visitors);
+        traverse(bioSource.getCvCellType(), visitors);
+        traverse(bioSource.getCvTissue(), visitors);
     }
 
     protected void traversePublication(Publication publication, IntactVisitor ... visitors) {
@@ -212,8 +313,6 @@ public class DefaultTraverser implements IntactObjectTraverser {
         for (IntactVisitor visitor : visitors) {
             visitor.visitPublication(publication);
         }
-
-        traverseAnnotatedObjectCommon(publication, visitors);
     }
 
     protected void traverseComponent(Component component, IntactVisitor ... visitors) {
@@ -223,25 +322,28 @@ public class DefaultTraverser implements IntactObjectTraverser {
             visitor.visitComponent(component);
         }
 
-        //traverseInteraction(component.getInteraction());
-        traverseInteractor(component.getInteractor());
-        traverseCvObject(component.getCvExperimentalRole());
-        traverseCvObject(component.getCvBiologicalRole());
-        traverseBioSource(component.getExpressedIn());
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(component)) {
+            return;
+        }
+
+        traverse(component.getInteraction(), visitors);
+        traverse(component.getInteractor(), visitors);
+        traverse(component.getCvExperimentalRole(), visitors);
+        traverse(component.getCvBiologicalRole(), visitors);
+        traverse(component.getExpressedIn(), visitors);
 
         for (CvIdentification partDetMethod : component.getParticipantDetectionMethods()) {
-            traverseCvObject(partDetMethod);
+            traverse(partDetMethod, visitors);
         }
 
         for (CvExperimentalPreparation experimentalPreparation : component.getExperimentalPreparations()) {
-            traverseCvObject(experimentalPreparation);
+            traverse(experimentalPreparation, visitors);
         }
 
         for (Feature feature : component.getBindingDomains()) {
-            traverseFeature(feature);
+            traverse(feature, visitors);
         }
-
-        traverseAnnotatedObjectCommon(component, visitors);
     }
 
     protected void traverseCvObject(CvObject cvObject, IntactVisitor ... visitors) {
@@ -250,22 +352,36 @@ public class DefaultTraverser implements IntactObjectTraverser {
         for (IntactVisitor visitor : visitors) {
             visitor.visitCvObject(cvObject);
         }
-
-        traverseAnnotatedObjectCommon(cvObject, visitors);
     }
 
-    protected void traverseAnnotatedObjectCommon(AnnotatedObject ao, IntactVisitor ... visitors) {
-        for (IntactVisitor visitor : visitors) {
-            for (Annotation annotation : ao.getAnnotations()) {
-                visitor.visitAnnotation(annotation);
-            }
-            for (Alias alias : (Collection<Alias>) ao.getAliases()) {
-                visitor.visitAlias(alias);
-            }
-            for (Xref xref : (Collection<Xref>) ao.getXrefs()) {
-                visitor.visitXref(xref);
-            }
-            visitor.visitInstitution(ao.getOwner());
+    protected void nextHierarchyLevel() {
+        currentHierarchyLevel++;
+    }
+
+    protected void previousHierarchyLevel() {
+        currentHierarchyLevel--;
+    }
+
+    public int getCurrentHierarchyLevel() {
+        return currentHierarchyLevel;
+    }
+
+    protected class RecursionChecker {
+
+        private List<IntactObject> intactObjects;
+
+        private RecursionChecker() {
+            this.intactObjects = new ArrayList<IntactObject>();
+        }
+
+        public boolean isAlreadyTraversed(IntactObject intactObject) {
+             if (intactObjects.contains(intactObject)) {
+                 return true;
+             } else {
+                 intactObjects.add(intactObject);
+             }
+
+            return false;
         }
     }
 }
