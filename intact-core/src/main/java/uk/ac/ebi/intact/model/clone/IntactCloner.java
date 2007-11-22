@@ -20,6 +20,8 @@ import uk.ac.ebi.intact.model.*;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * IntAct Object cloner.
@@ -30,8 +32,35 @@ import java.util.Date;
  */
 public class IntactCloner {
 
+    private class ClonerManager {
+
+        Map<IntactObject, IntactObject> register = new HashMap<IntactObject, IntactObject>();
+
+        public ClonerManager() {
+        }
+
+        public IntactObject getClonedObject( IntactObject io ) {
+            return register.get( io );
+        }
+
+        public boolean isAlreadyCloned( IntactObject io ) {
+            return register.containsKey( io );
+        }
+    }
+
+    private ClonerManager clonerManager;
+
+    public IntactCloner() {
+        clonerManager = new ClonerManager();
+    }
+
     public IntactObject clone( IntactObject intactObject ) throws IntactClonerException {
         IntactObject io = null;
+
+        if ( clonerManager.isAlreadyCloned( intactObject ) ) {
+            return clonerManager.getClonedObject( intactObject );
+        }
+
         if ( intactObject instanceof AnnotatedObject ) {
             io = cloneAnnotatedObject( ( AnnotatedObject ) intactObject );
         } else if ( intactObject instanceof Annotation ) {
@@ -40,9 +69,14 @@ public class IntactCloner {
             io = cloneAlias( ( Alias ) intactObject );
         } else if ( intactObject instanceof Xref ) {
             io = cloneXref( ( Xref ) intactObject );
+        } else if ( intactObject instanceof Range ) {
+            io = cloneRange( ( Range ) intactObject );
         } else {
             throw new IllegalArgumentException( "Cannot clone objects of type: " + intactObject.getClass().getName() );
         }
+
+        cloneIntactObjectCommon( intactObject, io );
+
         return io;
     }
 
@@ -69,6 +103,9 @@ public class IntactCloner {
         } else {
             throw new IllegalArgumentException( "Cannot process annotated object of type: " + annotatedObject.getClass().getName() );
         }
+
+        cloneAnnotatedObjectCommon( annotatedObject, ao );
+
         return ao;
     }
 
@@ -77,42 +114,40 @@ public class IntactCloner {
 
     protected Annotation cloneAnnotation( Annotation annotation ) throws IntactClonerException {
         if ( annotation == null ) return null;
-        return new Annotation( cloneInstitution( annotation.getOwner() ),
-                               ( CvTopic ) cloneCvObject( annotation.getCvTopic() ),
+        return new Annotation( ( Institution ) clone( annotation.getOwner() ),
+                               ( CvTopic ) clone( annotation.getCvTopic() ),
                                annotation.getAnnotationText() );
     }
 
-    protected Alias cloneAlias( AnnotatedObject clonedParent, Alias alias ) throws IntactClonerException {
+    protected Alias cloneAlias( Alias alias ) throws IntactClonerException {
         if ( alias == null ) return null;
-        if ( clonedParent == null ) {
-            throw new IllegalArgumentException( "Parent AnnotatedObject must not be null" );
-        }
 
         Class clazz = alias.getClass();
-        Alias clonedAlias = null;
+        Alias clone = null;
         try {
-            final Constructor constructor = clazz.getConstructor( Institution.class,
-                                                                  AnnotatedObject.class,
-                                                                  CvTopic.class,
-                                                                  String.class );
-            clonedAlias = ( Alias ) constructor.newInstance( cloneInstitution( alias.getOwner() ),
-                                                             clonedParent,
-                                                             ( CvTopic ) cloneCvObject( alias.getCvAliasType() ),
-                                                             alias.getName() );
+            final Constructor constructor = clazz.getConstructor( );
+            clone = ( Alias ) constructor.newInstance( );
+
+            clone.setCvAliasType( (CvAliasType) clone( alias.getCvAliasType() ));
+            clone.setName( alias.getName() );
         } catch ( Exception e ) {
             throw new IntactClonerException( "An error occured upon building a " + clazz.getSimpleName(), e );
         }
-        return clonedAlias;
+        return clone;
     }
 
-    protected Xref cloneXref( AnnotatedObject clonedParent, Xref xref ) throws IntactClonerException {
+    /**
+     * Note: this does not clone the parent.
+     * @param xref
+     * @return
+     * @throws IntactClonerException
+     */
+    protected Xref cloneXref( Xref xref ) throws IntactClonerException {
         if ( xref == null ) return null;
-        if ( clonedParent == null ) {
-            throw new IllegalArgumentException( "Parent AnnotatedObject must not be null" );
-        }
 
         Class clazz = xref.getClass();
-        Xref clonedXref = null;
+        Xref clone = null;
+
         try {
             final Constructor constructor = clazz.getConstructor( Institution.class,
                                                                   CvDatabase.class,
@@ -120,18 +155,17 @@ public class IntactCloner {
                                                                   String.class,
                                                                   String.class,
                                                                   CvXrefQualifier.class );
-            clonedXref = ( Xref ) constructor.newInstance( cloneInstitution( xref.getOwner() ),
-                                                           ( CvDatabase ) cloneCvObject( xref.getCvDatabase() ),
+            clone = ( Xref ) constructor.newInstance( clone( xref.getOwner() ),
+                                                           ( CvDatabase ) clone( xref.getCvDatabase() ),
                                                            xref.getPrimaryId(),
                                                            xref.getSecondaryId(),
                                                            xref.getDbRelease(),
-                                                           ( CvXrefQualifier ) cloneCvObject( xref.getCvXrefQualifier() ) );
-            clonedParent.addXref( xref );
+                                                           ( CvXrefQualifier ) clone( xref.getCvXrefQualifier() ) );
         } catch ( Exception e ) {
             throw new IntactClonerException( "An error occured upon building a " + clazz.getSimpleName(), e );
         }
 
-        return clonedXref;
+        return clone;
     }
 
     protected Range cloneRange( Range range ) throws IntactClonerException {
@@ -139,15 +173,15 @@ public class IntactCloner {
             throw new IllegalArgumentException( "You must give a non null range" );
         }
 
-        Range clonedRange = new Range( cloneInstitution( range.getOwner() ),
+        Range clonedRange = new Range( ( Institution ) clone( range.getOwner() ),
                                        range.getFromIntervalStart(),
                                        range.getFromIntervalEnd(),
                                        range.getToIntervalStart(),
                                        range.getToIntervalEnd(),
                                        range.getSequence() );
 
-        clonedRange.setFromCvFuzzyType( ( CvFuzzyType ) cloneCvObject( range.getFromCvFuzzyType() ) );
-        clonedRange.setToCvFuzzyType( ( CvFuzzyType ) cloneCvObject( range.getToCvFuzzyType() ) );
+        clonedRange.setFromCvFuzzyType( ( CvFuzzyType ) clone( range.getFromCvFuzzyType() ) );
+        clonedRange.setToCvFuzzyType( ( CvFuzzyType ) clone( range.getToCvFuzzyType() ) );
 
         return clonedRange;
     }
@@ -157,40 +191,34 @@ public class IntactCloner {
 
     public Experiment cloneExperiment( Experiment experiment ) throws IntactClonerException {
         if ( experiment == null ) return null;
-        Experiment clone = new Experiment( cloneInstitution( experiment.getOwner() ),
+        Experiment clone = new Experiment( ( Institution ) clone( experiment.getOwner() ),
                                            experiment.getShortLabel(),
                                            cloneBioSource( experiment.getBioSource() ) );
 
-        cloneCvObject( experiment.getCvIdentification() );
-        cloneCvObject( experiment.getCvInteraction() );
-        cloneBioSource( experiment.getBioSource() );
-        clonePublication( experiment.getPublication() );
+        experiment.setCvIdentification( ( CvIdentification ) clone( experiment.getCvIdentification() ) );
+        experiment.setCvInteraction( ( CvInteraction ) clone( experiment.getCvInteraction() ) );
+        experiment.setBioSource( ( BioSource ) clone( experiment.getBioSource() ) );
+        experiment.setPublication( ( Publication ) clone( experiment.getPublication() ) );
 
         for ( Interaction i : experiment.getInteractions() ) {
-            clone.addInteraction( cloneInteraction(  i ) );
+            clone.addInteraction( ( Interaction ) clone( i ) );
         }
-
-        cloneAnnotatedObjectCommon( experiment, clone );
-        cloneIntactObjectCommon( experiment, clone );
 
         return clone;
     }
 
-    public Feature cloneFeature( Feature feature, Component clonedComponent ) throws IntactClonerException {
+    public Feature cloneFeature( Feature feature ) throws IntactClonerException {
         if ( feature == null ) return null;
-        Feature clone = new Feature( cloneInstitution( feature.getOwner() ),
-                                     feature.getShortLabel(),
-                                     clonedComponent,
-                                     ( CvFeatureType ) cloneCvObject( feature.getCvFeatureType() ) );
+        Feature clone = new Feature();
 
-        clone.setCvFeatureIdentification( ( CvFeatureIdentification ) cloneCvObject( feature.getCvFeatureIdentification() ) );
+        clone.setOwner( ( Institution ) clone( feature.getOwner() ) );
+        clone.setShortLabel( feature.getShortLabel() );
+        clone.setCvFeatureType( ( CvFeatureType ) clone( feature.getCvFeatureType() ) );
+        clone.setCvFeatureIdentification( ( CvFeatureIdentification ) clone( feature.getCvFeatureIdentification() ) );
 
         for ( Range range : feature.getRanges() ) {
-            clone.addRange( cloneRange( range ) );
+            clone.addRange( ( Range ) clone( range ) );
         }
-
-        cloneAnnotatedObjectCommon( feature, clone );
-        cloneIntactObjectCommon( feature, clone );
 
         return clone;
     }
@@ -202,25 +230,29 @@ public class IntactCloner {
 
         clone.setUrl( institution.getUrl() );
         clone.setPostalAddress( institution.getPostalAddress() );
-        
-        cloneAnnotatedObjectCommon( institution, clone );
-        cloneIntactObjectCommon( institution, clone );
 
         return clone;
     }
 
     public Interaction cloneInteraction( Interaction interaction ) throws IntactClonerException {
         if ( interaction == null ) return null;
-        Interaction clone = null;
+        Interaction clone = new InteractionImpl( );
 
+        for ( Component component : interaction.getComponents() ) {
+            clone.addComponent( ( Component ) clone( component ) );
+        }
 
-        //TODO clone
+        clone.setCvInteractionType( ( CvInteractionType ) clone( interaction.getCvInteractionType() ));
+        clone.setCvInteractorType( ( CvInteractorType ) clone( interaction.getCvInteractorType() ));
 
+        for ( Experiment experiment : interaction.getExperiments() ) {
+            clone.addExperiment( ( Experiment ) clone( experiment ));
+        }
 
-        cloneAnnotatedObjectCommon( interaction, clone );
-        cloneIntactObjectCommon( interaction, clone );
+        clone.setKD( interaction.getKD());
+        clone.setCrc( interaction.getCrc() );
 
-        throw new UnsupportedOperationException();
+        return clone;
     }
 
     public Interactor cloneInteractor( Interactor interactor ) throws IntactClonerException {
@@ -241,18 +273,18 @@ public class IntactCloner {
                                                     Institution.class,
                                                     CvInteractorType.class );
                 clone = ( Interactor ) constructor.newInstance( interactor.getShortLabel(),
-                                                                cloneInstitution( interactor.getOwner() ),
-                                                                ( CvInteractorType ) cloneCvObject( interactor.getCvInteractorType() ) );
+                                                                clone( interactor.getOwner() ),
+                                                                ( CvInteractorType ) clone( interactor.getCvInteractorType() ) );
             } else if ( interactor instanceof Polymer ) {
 
                 constructor = clazz.getConstructor( Institution.class,
                                                     BioSource.class,
                                                     String.class,
                                                     CvInteractorType.class );
-                clone = ( Interactor ) constructor.newInstance( cloneInstitution( interactor.getOwner() ),
+                clone = ( Interactor ) constructor.newInstance( clone( interactor.getOwner() ),
                                                                 cloneBioSource( interactor.getBioSource() ),
                                                                 interactor.getShortLabel(),
-                                                                ( CvInteractorType ) cloneCvObject( interactor.getCvInteractorType() ) );
+                                                                ( CvInteractorType ) clone( interactor.getCvInteractorType() ) );
                 Polymer p = ( Polymer ) clone;
                 p.setSequence( ( ( Polymer ) interactor ).getSequence() );
                 p.setCrc64( ( ( Polymer ) interactor ).getCrc64() );
@@ -265,24 +297,18 @@ public class IntactCloner {
             throw new IntactClonerException( "An error occured upon cloning a " + clazz.getSimpleName(), e );
         }
 
-        cloneAnnotatedObjectCommon( interactor, clone );
-        cloneIntactObjectCommon( interactor, clone );
-
         return clone;
     }
 
     public BioSource cloneBioSource( BioSource bioSource ) throws IntactClonerException {
         if ( bioSource == null ) return null;
 
-        BioSource clone = new BioSource( cloneInstitution( bioSource.getOwner() ),
+        BioSource clone = new BioSource( ( Institution ) clone( bioSource.getOwner() ),
                                          bioSource.getShortLabel(),
                                          bioSource.getTaxId() );
 
-        clone.setCvCellType( ( CvCellType ) cloneCvObject( bioSource.getCvCellType() ) );
-        clone.setCvTissue( ( CvTissue ) cloneCvObject( bioSource.getCvTissue() ) );
-
-        cloneAnnotatedObjectCommon( bioSource, clone );
-        cloneIntactObjectCommon( bioSource, clone );
+        clone.setCvCellType( ( CvCellType ) clone( bioSource.getCvCellType() ) );
+        clone.setCvTissue( ( CvTissue ) clone( bioSource.getCvTissue() ) );
 
         return bioSource;
     }
@@ -290,45 +316,41 @@ public class IntactCloner {
     public Publication clonePublication( Publication publication ) throws IntactClonerException {
         if ( publication == null ) return null;
 
-        Publication clone = new Publication( cloneInstitution( publication.getOwner() ),
+        Publication clone = new Publication( ( Institution ) clone( publication.getOwner() ),
                                              publication.getShortLabel() );
         for ( Experiment e : publication.getExperiments() ) {
             clone.addExperiment( cloneExperiment( e ) );
         }
 
-        cloneAnnotatedObjectCommon( publication, clone );
-        cloneIntactObjectCommon( publication, clone );
-
         return clone;
     }
 
-    public Component cloneComponent( Component component, Interaction interaction ) throws IntactClonerException {
+    public Component cloneComponent( Component component ) throws IntactClonerException {
         if ( component == null ) return null;
-        Component clone = new Component( cloneInstitution( component.getOwner() ),
-                                         interaction,
-                                         cloneInteractor( component.getInteractor() ),
-                                         ( CvExperimentalRole ) cloneCvObject( component.getCvExperimentalRole() ),
-                                         ( CvBiologicalRole ) cloneCvObject( component.getCvBiologicalRole() ) );
+
+        Component clone = new Component();
+
+        clone.setInteractor( ( Interactor ) clone( component.getInteractor() ) );
+        clone.setInteraction( ( Interaction ) clone( component.getInteraction() ) );
+        clone.setCvExperimentalRole( ( CvExperimentalRole ) clone( component.getCvExperimentalRole() ) );
+        clone.setCvBiologicalRole( ( CvBiologicalRole ) clone( component.getCvBiologicalRole() ) );
 
         clone.setStoichiometry( component.getStoichiometry() );
-        clone.setExpressedIn( cloneBioSource( component.getExpressedIn() ) );
+        clone.setExpressedIn( ( BioSource ) clone( component.getExpressedIn() ) );
 
         for ( Feature feature : component.getBindingDomains() ) {
-            clone.addBindingDomain( cloneFeature( feature, clone ) );
+            clone.addBindingDomain( ( Feature ) clone( feature ) );
         }
 
         for ( CvExperimentalPreparation preparation : component.getExperimentalPreparations() ) {
-            clone.getExperimentalPreparations().add( ( CvExperimentalPreparation ) cloneCvObject( preparation ) );
+            clone.getExperimentalPreparations().add( ( CvExperimentalPreparation ) clone( preparation ) );
         }
 
         for ( CvIdentification method : component.getParticipantDetectionMethods() ) {
-            clone.getParticipantDetectionMethods().add( ( CvIdentification ) cloneCvObject( method ) );
+            clone.getParticipantDetectionMethods().add( ( CvIdentification ) clone( method ) );
         }
 
-        cloneAnnotatedObjectCommon( component, clone );
-        cloneIntactObjectCommon( component, clone );
-
-        throw new UnsupportedOperationException();
+        return clone;
     }
 
     public CvObject cloneCvObject( CvObject cvObject ) throws IntactClonerException {
@@ -338,10 +360,8 @@ public class IntactCloner {
         CvObject clone = null;
         try {
             final Constructor constructor = clazz.getConstructor( Institution.class, String.class );
-            clone = ( CvObject ) constructor.newInstance( cloneInstitution( cvObject.getOwner() ),
+            clone = ( CvObject ) constructor.newInstance( clone( cvObject.getOwner() ),
                                                           cvObject.getShortLabel() );
-            cloneAnnotatedObjectCommon( cvObject, clone );
-            cloneIntactObjectCommon( cvObject, clone );
         } catch ( Exception e ) {
             throw new IntactClonerException( "An error occured upon cloning a " + clazz.getSimpleName(), e );
         }
@@ -351,16 +371,19 @@ public class IntactCloner {
 
     protected AnnotatedObject cloneAnnotatedObjectCommon( AnnotatedObject ao, AnnotatedObject clone ) throws IntactClonerException {
 
+        clone.setOwner( ( Institution ) clone( ao.getOwner() ) );
+
+        clone.setShortLabel( ao.getShortLabel() );
         clone.setFullName( ao.getFullName() );
-        
+
         for ( Annotation annotation : ao.getAnnotations() ) {
-            clone.addAnnotation( cloneAnnotation( annotation ) );
+            clone.addAnnotation( ( Annotation ) clone( annotation ) );
         }
         for ( Alias alias : ( Collection<Alias> ) ao.getAliases() ) {
-            clone.addAlias( cloneAlias( clone, alias ) );
+            clone.addAlias( ( Alias ) clone( alias ) );
         }
         for ( Xref xref : ( Collection<Xref> ) ao.getXrefs() ) {
-            clone.addXref( cloneXref( clone, xref ) );
+            clone.addXref( ( Xref ) clone( xref ) );
         }
         return clone;
     }
