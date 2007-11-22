@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.model.visitor;
 
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.model.Feature;
+import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.util.DebugUtil;
 
 /**
