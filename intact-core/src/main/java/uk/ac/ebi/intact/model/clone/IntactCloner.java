@@ -19,6 +19,7 @@ import uk.ac.ebi.intact.model.*;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * IntAct Object cloner.
@@ -214,7 +215,7 @@ public class IntactCloner {
         throw new UnsupportedOperationException();
     }
 
-    public AnnotatedObject cloneInteractor( Interactor interactor ) {
+    public Interactor cloneInteractor( Interactor interactor ) {
         AnnotatedObject ao = null;
         if ( interactor == null ) return null;
 
@@ -226,38 +227,58 @@ public class IntactCloner {
         throw new UnsupportedOperationException();
     }
 
-    public BioSource cloneBioSource( BioSource bioSource ) {
-        AnnotatedObject ao = null;
+    public BioSource cloneBioSource( BioSource bioSource ) throws IntactClonerException {
         if ( bioSource == null ) return null;
 
-        //TODO clone
+        BioSource clone = new BioSource( cloneInstitution( bioSource.getOwner() ),
+                                         bioSource.getShortLabel(),
+                                         bioSource.getTaxId() );
 
+        clone.setFullName( bioSource.getFullName() );
+        clone.setCvCellType( ( CvCellType ) cloneCvObject( bioSource.getCvCellType() ) );
+        clone.setCvTissue( ( CvTissue ) cloneCvObject( bioSource.getCvTissue() ) );
 
-        cloneAnnotatedObjectCommon( bioSource );
+        cloneAnnotatedObjectCommon( bioSource, clone );
+        cloneIntactObjectCommon( bioSource, clone );
 
-        throw new UnsupportedOperationException();
+        return bioSource;
     }
 
-    public Publication clonePublication( Publication publication ) {
-        AnnotatedObject ao = null;
+    public Publication clonePublication( Publication publication ) throws IntactClonerException {
         if ( publication == null ) return null;
 
-        //TODO clone
+        Publication clone = new Publication( cloneInstitution( publication.getOwner() ),
+                                             publication.getShortLabel() );
+        clone.setFullName( publication.getFullName() );
+        for ( Experiment e : publication.getExperiments() ) {
+            clone.addExperiment( cloneExperiment( e ) );
+        }
 
+        cloneAnnotatedObjectCommon( publication, clone );
+        cloneIntactObjectCommon( publication, clone );
 
-        cloneAnnotatedObjectCommon( publication );
-
-        throw new UnsupportedOperationException();
+        return clone;
     }
 
-    public Component cloneComponent( Component component ) {
-        AnnotatedObject ao = null;
+    public Component cloneComponent( Component component, Interaction interaction ) throws IntactClonerException {
         if ( component == null ) return null;
+        Component clone = new Component( cloneInstitution( component.getOwner() ),
+                                         interaction,
+                                         cloneInteractor( component.getInteractor() ),
+                                         ( CvExperimentalRole ) cloneCvObject( component.getCvExperimentalRole() ),
+                                         ( CvBiologicalRole ) cloneCvObject( component.getCvBiologicalRole() ) );
 
-        //TODO clone
+        clone.setStoichiometry( component.getStoichiometry() );
+
+        // TODO it !!
+        clone.setBindingDomains( null );
+        clone.setExperimentalPreparations( null );
+        clone.setExpressedIn( null );
+        clone.setParticipantDetectionMethods( null );
 
 
-        cloneAnnotatedObjectCommon( component );
+        cloneAnnotatedObjectCommon( component, clone );
+        cloneIntactObjectCommon( component, clone );
 
         throw new UnsupportedOperationException();
     }
@@ -273,6 +294,7 @@ public class IntactCloner {
                                                           cvObject.getShortLabel() );
             clone.setFullName( cvObject.getFullName() );
             cloneAnnotatedObjectCommon( cvObject, clone );
+            cloneIntactObjectCommon( cvObject, clone );
         } catch ( Exception e ) {
             throw new IntactClonerException( "An error occured upon building a " + clazz.getSimpleName(), e );
         }
@@ -290,6 +312,15 @@ public class IntactCloner {
         for ( Xref xref : ( Collection<Xref> ) ao.getXrefs() ) {
             clone.addXref( cloneXref( clone, xref ) );
         }
+        return clone;
+    }
+
+    protected IntactObject cloneIntactObjectCommon( IntactObject ao, IntactObject clone ) throws IntactClonerException {
+        clone.setAc( ao.getAc() );
+        clone.setCreated( new Date( ao.getCreated().getTime() ) );
+        clone.setUpdated( new Date( ao.getUpdated().getTime() ) );
+        clone.setCreator( ao.getCreator() );
+        clone.setUpdator( ao.getUpdator() );
         return clone;
     }
 }
