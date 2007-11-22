@@ -21,7 +21,7 @@ import uk.ac.ebi.intact.model.*;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class BaseIntactVisitor implements IntactVisitor, HierarchyAware {
+public abstract class BaseIntactVisitor implements IntactVisitor, HierarchyAware {
 
     int hierarchyLevel = 0;
 
