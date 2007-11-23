@@ -18,30 +18,18 @@ import uk.ac.ebi.intact.model.Institution;
 public class InstitutionPersisterTest extends AbstractPersisterTest
 {
 
-    @Before
-    public void before() throws Exception {
-        beginTransaction();
-    }
-
-    @After
-    public void after() throws Exception {
-        commitTransaction();
-    }
-
     @Test
     public void persistInstitution_default_withHelper() throws Exception {
+        commitTransaction();
 
         Institution institution = getMockBuilder().createInstitution(Institution.MINT_REF, Institution.MINT);
         PersisterHelper.saveOrUpdate(institution);
 
-        beginTransaction();
         Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref(Institution.MINT_REF);
 
         Assert.assertNotNull(reloadedInstitution);
         Assert.assertEquals(1, reloadedInstitution.getXrefs().size());
         Assert.assertEquals(0, reloadedInstitution.getAliases().size());
-
-        commitTransaction();
     }
 
     @Test

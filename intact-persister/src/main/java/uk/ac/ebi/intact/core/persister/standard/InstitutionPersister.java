@@ -34,72 +34,14 @@ public class InstitutionPersister extends AbstractAnnotatedObjectPersister<Insti
         return instance.get();
     }
 
-
-
     @Override
-    public Institution syncIfTransient(Institution intactObject) {
-        if (PersisterContext.getInstance().contains(intactObject)) {
-            return intactObject;
-        }
+    protected void saveOrUpdateAttributes(Institution intactObject) throws PersisterException {
+        super.saveOrUpdateAttributes(intactObject);
+    }
 
-        Institution institution = fetchFromDataSource(intactObject);
-
-        if (institution != null) {
-            return institution;
-        }
-
-        institution = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInstitutionDao().getByShortLabel(intactObject.getShortLabel());
-
-        if (institution == null) {
-            PersisterContext.getInstance().addToPersist(intactObject);
-
-            for (InstitutionXref xref : intactObject.getXrefs()) {
-                if (log.isDebugEnabled()) log.debug("\tSaving database: "+xref.getCvDatabase().getShortLabel());
-                try {
-                    CvObjectPersister.getInstance().saveOrUpdate(xref.getCvDatabase());
-                } catch (PersisterException e) {
-                    throw new PersisterUnexpectedException(e);
-                }
-
-                CvXrefQualifier qualifier = xref.getCvXrefQualifier();
-                if (qualifier != null) {
-                    if (log.isDebugEnabled()) log.debug("\tSaving qualifier: "+qualifier.getShortLabel());
-                    try {
-                        CvObjectPersister.getInstance().saveOrUpdate(qualifier);
-                    } catch (PersisterException e) {
-                        throw new PersisterUnexpectedException(e);
-                    }
-                }
-            }
-
-            for (InstitutionAlias alias : intactObject.getAliases()) {
-                CvAliasType aliasType = alias.getCvAliasType();
-                if (aliasType != null) {
-                    if (log.isDebugEnabled()) log.debug("\tSaving aliasType: "+aliasType.getShortLabel());
-                    try {
-                        CvObjectPersister.getInstance().saveOrUpdate(aliasType);
-                    } catch (PersisterException e) {
-                        throw new PersisterUnexpectedException(e);
-                    }
-                }
-            }
-
-            for (Annotation annotation : intactObject.getAnnotations()) {
-                CvTopic topic = annotation.getCvTopic();
-                if (topic != null) {
-                    if (log.isDebugEnabled()) log.debug("\tSaving topic: "+topic.getShortLabel());
-                    try {
-                        CvObjectPersister.getInstance().saveOrUpdate(topic);
-                    } catch (PersisterException e) {
-                        throw new PersisterUnexpectedException(e);
-                    }
-                }
-            }
-
-            institution = intactObject;
-        }
-
-        return institution;
+     @Override
+    protected Institution syncAttributes(Institution intactObject) {
+        return super.syncAttributes(intactObject);
     }
 
     @Override

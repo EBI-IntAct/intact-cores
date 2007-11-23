@@ -76,7 +76,9 @@ public class PersisterContext {
     public void addToPersist(AnnotatedObject ao) {
         if (log.isDebugEnabled()) log.debug("\t\t\tAdding to PersisterContext: "+keyFor(ao));
 
-        if (ao instanceof CvObject) {
+        if (ao instanceof Institution) {
+            institutionsToBePersisted.put(keyFor(ao), (Institution)ao);
+        } else if (ao instanceof CvObject) {
             cvObjectsToBePersisted.put(keyFor(ao),(CvObject)ao);
         } else {
             annotatedObjectsToBePersisted.put(keyFor(ao), ao);
@@ -85,12 +87,6 @@ public class PersisterContext {
 
     public void addToUpdate(AnnotatedObject ao) {
         annotatedObjectsToBeUpdated.put(keyFor(ao), ao);
-    }
-
-    public void addToPersist(Institution institution) {
-        if ( !contains( institution ) ) {
-            institutionsToBePersisted.put( institution.getShortLabel(), institution );
-        }
     }
 
     public boolean contains(AnnotatedObject ao) {
@@ -102,17 +98,13 @@ public class PersisterContext {
             return false;
         }
 
-        if (ao instanceof CvObject) {
+        if (ao instanceof Institution) {
+            return institutionsToBePersisted.containsKey(key);
+        } else if (ao instanceof CvObject) {
             return cvObjectsToBePersisted.containsKey(key);
         } else {
             return annotatedObjectsToBePersisted.containsKey(key);
         }
-    }
-
-    public boolean contains(Institution institution) {
-        final String key = institution.getShortLabel();
-
-        return institutionsToBePersisted.containsKey(key);
     }
 
     public AnnotatedObject get(AnnotatedObject ao) {
@@ -124,7 +116,9 @@ public class PersisterContext {
             return null;
         }
 
-        if (ao instanceof CvObject) {
+        if (ao instanceof Institution) {
+            return institutionsToBePersisted.get(key);
+        } else if (ao instanceof CvObject) {
             return cvObjectsToBePersisted.get(key);
         } else {
             return annotatedObjectsToBePersisted.get(key);
