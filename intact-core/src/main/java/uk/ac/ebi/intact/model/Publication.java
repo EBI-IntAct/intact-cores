@@ -34,7 +34,7 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
     /**
      * Necessary constructor for hibernate to instanciate a bean.
      */
-    protected Publication() {
+    public Publication() {
     }
 
     public Publication( Institution owner, String name ) {
