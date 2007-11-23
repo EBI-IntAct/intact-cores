@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
 
@@ -27,6 +28,24 @@ public class CvObjectXref extends Xref {
 
     public CvObjectXref() {
     }
+
+    @PrePersist
+    @PreUpdate
+    public void prepareParentMi() {
+        CvObject parent = (CvObject) getParent();
+
+        if (parent == null) {
+            throw new IllegalStateException("Trying to persist or update an cv xref without parent: "+this);
+        }
+
+        CvObjectXref idXref = CvObjectUtils.getPsiMiIdentityXref(parent);
+
+        if (idXref != null) {
+            parent.setMiIdentifier(idXref.getPrimaryId());
+        }
+    }
+
+
 
     public CvObjectXref( Institution anOwner, CvDatabase aDatabase, String aPrimaryId, String aSecondaryId, String aDatabaseRelease, CvXrefQualifier aCvXrefQualifier ) {
         super( anOwner, aDatabase, aPrimaryId, aSecondaryId, aDatabaseRelease, aCvXrefQualifier );

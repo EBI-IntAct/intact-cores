@@ -6,12 +6,12 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Index;
+import org.hibernate.validator.Length;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Represents a controlled vocabulary object. CvObject is derived from AnnotatedObject to allow to store annotation of
@@ -95,6 +95,8 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      * @since 1.8
      */
     @Column(name = "mi_identifier", length = 10)
+    @Length(max = 10)
+    //@Index (name = "cvobject_mi_identifier_idx")
     public String getMiIdentifier() {
         return miIdentifier;
     }
@@ -117,35 +119,21 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      */
     @Override
     public boolean equals( Object obj ) {
-        if ( !super.equals( obj ) ) {
+        if ( !( obj instanceof CvObject ) ) {
             return false;
         }
 
-        if ( !( obj instanceof CvObject ) ) {
+        if (!getClass().equals(obj.getClass())) {
             return false;
         }
 
         final CvObject other = ( CvObject ) obj;
 
-        if ( ac != null && other.getAc() != null ) {
-            if ( ac.equals( other.getAc() ) ) {
-                return true;
-            }
+        if (( miIdentifier != null && !miIdentifier.equals(other.getMiIdentifier()))) {
+            return false;
         }
 
-        // Check this object has an identity xref first.
-        Xref idXref = CvObjectUtils.getPsiMiIdentityXref( this );
-        Xref idOther = CvObjectUtils.getPsiMiIdentityXref( other );
-
-        if ( ( idXref != null ) && ( idOther != null ) ) {
-            // Both objects have the identity xrefs
-            return idXref.getPrimaryId().equals( idOther.getPrimaryId() );
-        }
-        if ( ( idXref == null ) && ( idOther == null ) ) {
-            // Revert to short labels.
-            return getShortLabel().equals( other.getShortLabel() );
-        }
-        return false;
+        return super.equals(other);
     }
 
 

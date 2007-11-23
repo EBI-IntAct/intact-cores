@@ -20,14 +20,6 @@ public class CvDagObjectAgitarTest extends AgitarTestCase {
 
     static Class TARGET_CLASS = CvDagObject.class;
 
-    public void testAddChild() throws Throwable {
-        CvDagObject cvDagObject = new CvIdentification( null, "testString" );
-        CvDagObject cvFeatureIdentification = new CvFeatureIdentification( new Institution( "testCvDagObjectShortLabel" ), "testCvDagObjectShortLabel" );
-        cvFeatureIdentification.addChild( new CvFeatureType( null, "testString" ) );
-        cvFeatureIdentification.addChild( cvDagObject );
-        assertEquals( "(CvFeatureIdentification) cvFeatureIdentification.getChildren().size()", 1, cvFeatureIdentification.getChildren().size() );
-    }
-
     public void testAddChild1() throws Throwable {
         Institution owner = new Institution( "testCvDagObjectShortLabel" );
         CvDagObject cvInteraction = new CvInteraction( new Institution( "testCvDagObjectShortLabel1" ), "testCvDagObjectShortLabel" );
@@ -130,56 +122,6 @@ public class CvDagObjectAgitarTest extends AgitarTestCase {
         CvDagObject cvFeatureIdentification = new CvFeatureIdentification( new Institution( "testCvDagObjectShortLabel" ), "testCvDagObjectShortLabel" );
         cvFeatureIdentification.setRightBound( 100L );
         assertEquals( "(CvFeatureIdentification) cvFeatureIdentification.getRightBound()", 100L, cvFeatureIdentification.getRightBound() );
-    }
-
-    public void testAddParentThrowsNullPointerException() throws Throwable {
-        CvDagObject cvDagObject = new CvGoNode();
-        CvDagObject cvGoNode = new CvGoNode();
-        cvGoNode.addParent( new CvInteractorType( null, "testCvDagObjectShortLabel" ) );
-        try {
-            cvGoNode.addParent( cvDagObject );
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( CvObject.class, ex );
-            assertEquals( "(CvGoNode) cvGoNode.getParents().size()", 2, cvGoNode.getParents().size() );
-        }
-    }
-
-    public void testGetRootThrowsNullPointerException() throws Throwable {
-        Collection parents = new ArrayList( 100 );
-        parents.add( null );
-        CvDagObject cvInteraction = new CvInteraction( new Institution( "testCvDagObjectShortLabel" ), "testCvDagObjectShortLabel" );
-        super.callPrivateMethod("uk.ac.ebi.intact.model.CvDagObject", "setParents", new Class[]{Collection.class}, cvInteraction, new Object[]{parents} );
-
-//        cvInteraction.setParents( parents );
-        try {
-            cvInteraction.getRoot();
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( CvDagObject.class, ex );
-            assertSame( "(CvInteraction) cvInteraction.getParents()", parents, cvInteraction.getParents() );
-        }
-    }
-
-    public void testRemoveParentThrowsNullPointerException() throws Throwable {
-        Collection parents = new ArrayList( 100 );
-        CvDagObject cvDagObject = new CvGoNode();
-        parents.add( new CvInteractionType( new Institution( "testCvDagObjectShortLabel1" ), "testCvDagObjectShortLabel" ) );
-        parents.add( cvDagObject );
-        CvDagObject cvFeatureType = new CvFeatureType( new Institution( "testCvDagObjectShortLabel" ), "testCvDagObjectShortLabel" );
-        super.callPrivateMethod("uk.ac.ebi.intact.model.CvDagObject", "setParents", new Class[]{Collection.class}, cvFeatureType, new Object[]{parents} );
-
-//        cvFeatureType.setParents( parents );
-        try {
-            cvFeatureType.removeParent( cvDagObject );
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( CvObject.class, ex );
-            assertSame( "(CvFeatureType) cvFeatureType.getParents()", parents, cvFeatureType.getParents() );
-        }
     }
 
     public void testSetChildrenThrowsIllegalArgumentException() throws Throwable {

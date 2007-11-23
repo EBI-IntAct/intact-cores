@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.util.ClassUtils;
@@ -29,6 +31,11 @@ import java.util.Collection;
  * @version $Id$
  */
 public class XrefUtils {
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(XrefUtils.class);
 
     public static <X extends Xref> X createIdentityXrefPsiMi(AnnotatedObject<X,?> parent, String primaryId) {
         CvObjectBuilder builder = new CvObjectBuilder();
@@ -126,36 +133,33 @@ public class XrefUtils {
         if (annotatedObject == null) {
             throw new NullPointerException("annotatedObject should not be null");
         }
+
         Collection<X> xrefs = annotatedObject.getXrefs();
         X annotatedObjectXref = null;
+
         for (X xref : xrefs) {
-            //Check that the cvdatabase of the xref has an psi-mi identity xref equal to CvDatabase.PSI_MI_MI_REF ( i.e:
-            //check that the database is Psi-mi)
-            if (hasIdentity(xref.getCvDatabase(), CvDatabase.PSI_MI_MI_REF)) {
-                //Check that the cvdatabase of the xref has an psi-mi identity xref equal to CvDatabase.IDENTITY_MI_REF ( i.e:
-                //check that the xref qualifier is identity)
-                if (xref.getCvXrefQualifier() != null && hasIdentity(xref.getCvXrefQualifier(), CvXrefQualifier.IDENTITY_MI_REF)) {
-                    //If annotatedObjectXref is null than affect it's value, if it is not null it means that the cvObject has 2
-                    //xref identity to psi-mi which is not allowed, then send an error message.
-                    if (annotatedObjectXref == null) {
-                        annotatedObjectXref = xref;
-                    } else {
-                        String clazz = annotatedObject.getClass().getSimpleName();
-                        throw new IllegalStateException("More than one psi-mi identity in " + clazz + " :" + annotatedObject.getAc());
-                    }
+            if (xref.getCvXrefQualifier() != null && xref.getCvDatabase() != null) {
+                String miQualifier = xref.getCvXrefQualifier().getMiIdentifier();
+                String miDatabase = xref.getCvDatabase().getMiIdentifier();
+
+                if (CvXrefQualifier.IDENTITY_MI_REF.equals(miQualifier) && CvDatabase.PSI_MI_MI_REF.equals(miDatabase)) {
+                    annotatedObjectXref = xref;
                 }
             }
         }
 
-        // if annotatedObjectXref is null, degrade the search so we search on short label rather than
-        // the identity xrefs. This is an ugly hack as it seems that sometimes the xrefs of the cvobject
-        // of the xref of the original cvobject are not lazily loaded. I hope you understand, my friend
         if (annotatedObjectXref == null) {
+            log.warn("Trying to get the PSI-MI identifier using the xrefs");
+
             for (X xref : xrefs) {
-                if (xref.getCvDatabase() != null && xref.getCvDatabase().getShortLabel() != null
-                        && xref.getCvXrefQualifier() != null && xref.getCvXrefQualifier().getShortLabel() != null) {
-                    if (xref.getCvDatabase().getShortLabel().equals(CvDatabase.PSI_MI) &&
-                            xref.getCvXrefQualifier().getShortLabel().equals(CvXrefQualifier.IDENTITY)) {
+                //Check that the cvdatabase of the xref has an psi-mi identity xref equal to CvDatabase.PSI_MI_MI_REF ( i.e:
+                //check that the database is Psi-mi)
+                if (hasIdentity(xref.getCvDatabase(), CvDatabase.PSI_MI_MI_REF)) {
+                    //Check that the cvdatabase of the xref has an psi-mi identity xref equal to CvDatabase.IDENTITY_MI_REF ( i.e:
+                    //check that the xref qualifier is identity)
+                    if (xref.getCvXrefQualifier() != null && hasIdentity(xref.getCvXrefQualifier(), CvXrefQualifier.IDENTITY_MI_REF)) {
+                        //If annotatedObjectXref is null than affect it's value, if it is not null it means that the cvObject has 2
+                        //xref identity to psi-mi which is not allowed, then send an error message.
                         if (annotatedObjectXref == null) {
                             annotatedObjectXref = xref;
                         } else {

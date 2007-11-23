@@ -46,6 +46,7 @@ public class CvObjectUtils {
 
         CvObjectXref idXref = XrefUtils.createIdentityXrefPsiMi( cv, primaryId );
         cv.addXref( idXref );
+        idXref.prepareParentMi();
 
         return cv;
     }
