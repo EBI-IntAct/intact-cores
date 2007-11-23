@@ -47,7 +47,7 @@ public class CvObjectPersisterTest extends AbstractPersisterTest {
         // Note: CvDatabase( psi-mi ) has an Xref to psi-mi (that is itself)
         CvObjectBuilder builder = new CvObjectBuilder();
         CvDatabase psimi = builder.createPsiMiCvDatabase( getIntactContext().getInstitution() );
-        Protein protein = getMockBuilder().createProteinRandom();
+
         CvObjectPersister persister = new CvObjectPersister();
         persister.saveOrUpdate( psimi );
         persister.commit();
@@ -65,7 +65,7 @@ public class CvObjectPersisterTest extends AbstractPersisterTest {
 
         final String expRoleLabel = "EXP_ROLE";
         CvExperimentalRole expRole = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
-        CvObjectXref identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "rolePrimaryId", cvXrefQual );
+        CvObjectXref identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "roleMi", cvXrefQual );
 
         expRole.addXref( identityXref );
 
@@ -84,7 +84,7 @@ public class CvObjectPersisterTest extends AbstractPersisterTest {
 
         CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref( newExpRole );
         assertNotNull( cvObjectXref );
-        assertEquals( "rolePrimaryId", cvObjectXref.getPrimaryId() );
+        assertEquals( "roleMi", cvObjectXref.getPrimaryId() );
     }
 
     @Test
@@ -95,7 +95,7 @@ public class CvObjectPersisterTest extends AbstractPersisterTest {
 
         final String expRoleLabel = "EXP_ROLE";
         CvExperimentalRole expRole = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
-        CvObjectXref identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "rolePrimaryId", cvXrefQual );
+        CvObjectXref identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "roleMi", cvXrefQual );
 
         expRole.addXref( identityXref );
 
@@ -152,16 +152,18 @@ public class CvObjectPersisterTest extends AbstractPersisterTest {
         commitTransaction();
     }
 
-    @Test( expected = PersisterException.class )
-    @Ignore
-    public void persist_noXref() throws Exception {
+    @Test
+    public void persist_prepareMi() throws Exception {
+        commitTransaction();
+        CvObject cv = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPARC_MI_REF, CvDatabase.UNIPARC);
+        Assert.assertNotNull(cv.getMiIdentifier());
 
-        final String expRoleLabel = "EXP_ROLE";
-        CvExperimentalRole expRole = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
+        cv.setMiIdentifier(null);
 
-        CvObjectPersister cvObjectPersister = CvObjectPersister.getInstance();
+        PersisterHelper.saveOrUpdate(cv);
 
-        cvObjectPersister.saveOrUpdate( expRole );
+        Assert.assertNotNull(cv.getMiIdentifier());
+        Assert.assertEquals(CvDatabase.UNIPARC_MI_REF, cv.getMiIdentifier());
     }
 
 }
