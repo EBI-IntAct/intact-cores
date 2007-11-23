@@ -74,7 +74,7 @@ public class DebugUtil {
     }
 
     public static void renderIntactObjectAsTree( IntactObject intactObject ) {
-        renderIntactObjectAsTree( intactObject, "" );
+        renderIntactObjectAsTree( intactObject, null );
     }
 
     /**
