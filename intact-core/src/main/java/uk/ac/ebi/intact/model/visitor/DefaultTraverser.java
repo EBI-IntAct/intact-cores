@@ -108,17 +108,10 @@ public class DefaultTraverser implements IntactObjectTraverser {
             throw new IllegalArgumentException("Cannot process annotated object of type: " + annotatedObject.getClass().getName());
         }
 
-        // check if this element has been traversed already, to avoid cyclic recursion
-        if (recursionChecker.isAlreadyTraversed(annotatedObject)) {
-            return;
-        }
-
         traverseAnnotatedObjectCommon(annotatedObject, visitors);
     }
 
     protected void traverseAnnotatedObjectCommon(AnnotatedObject ao, IntactVisitor ... visitors) {
-
-        traverse(ao.getOwner(), visitors);
 
         for (Annotation annotation : ao.getAnnotations()) {
             traverse(annotation, visitors);
@@ -129,6 +122,13 @@ public class DefaultTraverser implements IntactObjectTraverser {
         for (Xref xref : (Collection<Xref>) ao.getXrefs()) {
             traverse(xref, visitors);
         }
+
+        // check if this element has been traversed already, to avoid cyclic recursion
+        if (recursionChecker.isAlreadyTraversed(ao)) {
+            return;
+        }
+
+        traverse(ao.getOwner(), visitors);
     }
 
     ///////////////////////////////////////
