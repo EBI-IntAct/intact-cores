@@ -44,7 +44,7 @@ public class JTreeBuilderVisitor extends BaseIntactVisitor{
     public void nextHierarchyLevel() {
         if (currentNode != null) {
             parent = currentNode;
-        } 
+        }
     }
 
     @Override
@@ -107,18 +107,21 @@ public class JTreeBuilderVisitor extends BaseIntactVisitor{
     }
 
     public void renderTree() {
-        JFrame frame = new JFrame();
-        frame.setTitle("Tree for: "+getJTree().getModel().getRoot());
-        
-        JPanel panel = new JPanel();
-        frame.getContentPane().add(panel);
-        frame.setSize(600,600);
-        panel.setLayout( new BorderLayout() );
-        panel.add(new JScrollPane(getJTree()));
-
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        frame.setVisible(true);
+        renderTree( "Tree for: " + getJTree().getModel().getRoot() );
     }
 
+    public void renderTree( String frameName ) {
+        JFrame frame = new JFrame();
+        frame.setTitle( frameName );
+
+        JPanel panel = new JPanel();
+        frame.getContentPane().add( panel );
+        frame.setSize( 600, 600 );
+        panel.setLayout( new BorderLayout() );
+        panel.add( new JScrollPane( getJTree() ) );
+
+        frame.setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+
+        frame.setVisible( true );
+    }
 }

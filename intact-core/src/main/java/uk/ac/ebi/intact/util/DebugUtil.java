@@ -73,15 +73,23 @@ public class DebugUtil {
         traverser.traverse(intactObject, new PrintVisitor(ps));
     }
 
-    /**
-     * Renders a JFrame with the tree for the provided IntactObject
-     * @param intactObject
-     */
-    public static void renderIntactObjectAsTree(IntactObject intactObject) {
-        DefaultTraverser traverser = new DefaultTraverser();
-        final JTreeBuilderVisitor builderVisitor = new JTreeBuilderVisitor();
-        traverser.traverse(intactObject, builderVisitor);
-        builderVisitor.renderTree();
+    public static void renderIntactObjectAsTree( IntactObject intactObject ) {
+        renderIntactObjectAsTree( intactObject, "" );
     }
 
+    /**
+     * Renders a JFrame with the tree for the provided IntactObject
+     *
+     * @param intactObject the object to be rendered
+     */
+    public static void renderIntactObjectAsTree( IntactObject intactObject, String windowTitle ) {
+        DefaultTraverser traverser = new DefaultTraverser();
+        final JTreeBuilderVisitor builderVisitor = new JTreeBuilderVisitor();
+        traverser.traverse( intactObject, builderVisitor );
+        if ( windowTitle == null ) {
+            builderVisitor.renderTree();
+        } else {
+            builderVisitor.renderTree( windowTitle );
+        }
+    }
 }
