@@ -4,8 +4,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.CvTopic;
+import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.IntactObject;
-import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Protein;
 
 /**
  * IntactCloner Tester.
@@ -17,18 +19,89 @@ import uk.ac.ebi.intact.model.Interaction;
 public class IntactClonerTest extends IntactBasicTestCase {
 
     IntactCloner cloner;
-    
+
     @Before
     public void init() {
         cloner = new IntactCloner();
     }
 
-    @Test
-    public void getClonedObject() throws Exception {
-        final Interaction interaction = getMockBuilder().createDeterministicInteraction();
-        final IntactObject clone = cloner.clone( interaction );
+    private void clone( IntactObject io ) throws IntactClonerException {
+        final IntactObject clone = cloner.clone( io );
 
-        Assert.assertNotSame( clone, interaction );
-        Assert.assertEquals( clone, interaction );
+//        DebugUtil.renderIntactObjectAsTree( clone, "Clone", true );
+//        DebugUtil.printIntactObject( clone, System.out );
+//        DebugUtil.renderIntactObjectAsTree( io, "Original Object", true );
+//        DebugUtil.printIntactObject( io, System.err);
+//        try {
+//            for(;;)Thread.currentThread().sleep(1000);
+//        } catch ( InterruptedException e ) {
+//            e.printStackTrace();
+//        }
+
+        Assert.assertNotSame( io, clone );
+        Assert.assertEquals( io, clone );
+    }
+
+    @Test
+    public void cloneInteraction() throws Exception {
+        clone( getMockBuilder().createDeterministicInteraction() );
+    }
+
+    @Test
+    public void cloneProtein() throws Exception {
+        clone( getMockBuilder().createProteinRandom() );
+    }
+
+    @Test
+    public void cloneEmptyExperiment() throws Exception {
+        clone( getMockBuilder().createExperimentEmpty( "123456789" ) );
+    }
+
+    @Test
+    public void cloneBioSource() throws Exception {
+        clone( getMockBuilder().createBioSource( 9606, "human" ) );
+    }
+
+    @Test
+    public void cloneXref() throws Exception {
+        final Protein prot = getMockBuilder().createProteinRandom();
+        clone( prot.getXrefs().iterator().next() );
+    }
+
+    @Test
+    public void cloneAlias() throws Exception {
+        final Protein prot = getMockBuilder().createProteinRandom();
+        clone( prot.getAliases().iterator().next() );
+    }
+
+    @Test
+    public void cloneAnnotation() throws Exception {
+        clone( getMockBuilder().createAnnotationRandom() );
+    }
+
+    @Test
+    public void cloneCvObject() throws Exception {
+        clone( getMockBuilder().createCvObject( CvTopic.class, "MI:0001", "lala" ) );
+    }
+
+    @Test
+    public void cloneInstitution() throws Exception {
+        final Institution institution = getMockBuilder().getInstitution();
+        clone( institution );
+    }
+
+    @Test
+    public void clonePublication() throws Exception {
+        clone( getMockBuilder().createPublication( "1" ) );
+    }
+
+    @Test
+    public void cloneFeature() throws Exception {
+        clone( getMockBuilder().createFeatureRandom() );
+    }
+
+    @Test
+    public void cloneComponent() throws Exception {
+        clone( getMockBuilder().createComponentRandom() );
     }
 }
