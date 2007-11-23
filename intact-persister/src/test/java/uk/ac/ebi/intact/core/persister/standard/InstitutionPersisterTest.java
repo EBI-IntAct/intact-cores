@@ -36,18 +36,13 @@ public class InstitutionPersisterTest extends AbstractPersisterTest
     public void persistInstitution_default() throws Exception {
 
         Institution institution = getMockBuilder().createInstitution(Institution.MINT_REF, Institution.MINT);
-        InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
-        institutionPersister.saveOrUpdate(institution);
-        institutionPersister.commit();
+        PersisterHelper.saveOrUpdate(institution);
 
-        beginTransaction();
         Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref(Institution.MINT_REF);
 
         Assert.assertNotNull(reloadedInstitution);
         Assert.assertEquals(1, reloadedInstitution.getXrefs().size());
         Assert.assertEquals(0, reloadedInstitution.getAliases().size());
-
-        commitTransaction();
     }
 
     @Test
@@ -56,50 +51,34 @@ public class InstitutionPersisterTest extends AbstractPersisterTest
         Institution institution = getMockBuilder().createInstitution(Institution.MINT_REF, Institution.MINT);
         institution.getAnnotations().add(getMockBuilder().createAnnotation("nowhere", CvTopic.CONTACT_EMAIL_MI_REF, CvTopic.CONTACT_EMAIL));
 
-        InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
-        institutionPersister.saveOrUpdate(institution);
-        institutionPersister.commit();
+        PersisterHelper.saveOrUpdate(institution);
 
-        beginTransaction();
         Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref(Institution.MINT_REF);
 
         Assert.assertNotNull(reloadedInstitution);
         Assert.assertEquals(1, reloadedInstitution.getXrefs().size());
         Assert.assertEquals(0, reloadedInstitution.getAliases().size());
         Assert.assertEquals(1, reloadedInstitution.getAnnotations().size());
-
-        commitTransaction();
     }
 
     @Test
     public void persistInstitution_syncWithDatabase() throws Exception {
 
         Institution institution = getMockBuilder().createInstitution(Institution.MINT_REF, Institution.MINT);
-        InstitutionPersister institutionPersister = InstitutionPersister.getInstance();
-        institutionPersister.saveOrUpdate(institution);
-        institutionPersister.commit();
+        PersisterHelper.saveOrUpdate(institution);
 
-        beginTransaction();
         Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref(Institution.MINT_REF);
         Assert.assertNotNull(reloadedInstitution);
         Assert.assertEquals(1, reloadedInstitution.getXrefs().size());
         Assert.assertEquals(0, reloadedInstitution.getAliases().size());
-        commitTransaction();
         
-        PersisterContext.getInstance().clear();
-        beginTransaction();
-
         institution = getMockBuilder().createInstitution(Institution.MINT_REF, "mint2");
-        institutionPersister = InstitutionPersister.getInstance();
-        institutionPersister.saveOrUpdate(institution);
-        institutionPersister.commit();
+        PersisterHelper.saveOrUpdate(institution);
 
-        beginTransaction();
         reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref(Institution.MINT_REF);
         Assert.assertNotNull(reloadedInstitution);
         Assert.assertEquals(1, reloadedInstitution.getXrefs().size());
         Assert.assertEquals(0, reloadedInstitution.getAliases().size());
-        commitTransaction();
     }
 
 }
