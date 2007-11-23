@@ -28,6 +28,12 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
 
     private String objClass;
 
+    /**
+     * PSI-MI Identifier for this object, which is a de-normalization of the
+     * value contained in the 'identity' xref from the 'psimi' database 
+     */
+    private String miIdentifier;
+
     public CvObject() {
         //super call sets creation time data
         super();
@@ -80,6 +86,21 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     @Override
     public Collection<CvObjectAlias> getAliases() {
         return super.getAliases();
+    }
+
+    /**
+     * PSI-MI Identifier for this object, which is a de-normalization of the
+     * value contained in the 'identity' xref from the 'psimi' database
+     * @return the MI Identifier for this CVObject
+     * @since 1.8
+     */
+    @Column(name = "mi_identifier", length = 10)
+    public String getMiIdentifier() {
+        return miIdentifier;
+    }
+
+    public void setMiIdentifier(String miIdentifier) {
+        this.miIdentifier = miIdentifier;
     }
 
     /**
@@ -149,33 +170,6 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         return result;
     }
 
-    /**
-     * Returns the Identity xref.
-     * This method does not take into account that a cvObject can have several identity xref, therefore it will be
-     * deprecated and will disappear from version 1.7 use instead : getPsiMiIdentityXref from the
-     * uk.ac.ebi.intact.model.util.CvObjectUtils method.
-     * It will throw an IllegalStateException if one CvObject is found 2 identity xref.
-     *
-     * @return the Identity xref or null if there is no Identity xref found.
-     */
-    @Transient
-    @Deprecated
-
-    public Xref getIdentityXref() {
-        List<Xref> xrefs = new ArrayList<Xref>();
-        for ( Xref xref : getXrefs() ) {
-
-            CvXrefQualifier xq = xref.getCvXrefQualifier();
-            if ( ( xq != null ) && CvXrefQualifier.IDENTITY.equals( xq.getShortLabel() ) ) {
-                xrefs.add( xref );
-            }
-            if ( xrefs.size() > 1 ) {
-                throw new IllegalStateException( "This cv has 2 xref identities. Can not decide on witch one to return" );
-            }
-
-        }
-        return xrefs.get( 0 );
-    }
 } // end CvObject
 
 
