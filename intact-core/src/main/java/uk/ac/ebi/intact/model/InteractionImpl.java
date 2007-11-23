@@ -83,6 +83,9 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
     public InteractionImpl() {
         //super call sets creation time data
         super();
+
+        components = new ArrayList<Component>( );
+        experiments =  new ArrayList<Experiment>( );
     }
 
     /**
