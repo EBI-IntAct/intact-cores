@@ -28,9 +28,9 @@ public class IntactClonerTest extends IntactBasicTestCase {
     private void clone( IntactObject io ) throws IntactClonerException {
         final IntactObject clone = cloner.clone( io );
 
-//        DebugUtil.renderIntactObjectAsTree( clone, "Clone", true );
+//        DebugUtil.renderIntactObjectAsTree( clone, "Clone" );
 //        DebugUtil.printIntactObject( clone, System.out );
-//        DebugUtil.renderIntactObjectAsTree( io, "Original Object", true );
+//        DebugUtil.renderIntactObjectAsTree( io, "Original Object" );
 //        DebugUtil.printIntactObject( io, System.err);
 //        try {
 //            for(;;)Thread.currentThread().sleep(1000);
