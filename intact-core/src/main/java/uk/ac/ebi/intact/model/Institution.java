@@ -153,11 +153,11 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
     }
 
     public void addAlias(InstitutionAlias alias) {
-        aliases.add(alias);
+        getAliases().add(alias);
     }
 
     public void removeAlias(InstitutionAlias alias) {
-        aliases.remove(alias);
+        getAliases().remove(alias);
     }
 
     public void setAliases(Collection<InstitutionAlias> aliases) {
@@ -183,11 +183,11 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
     }
 
     public void addAnnotation(Annotation annotation) {
-        throw new UnsupportedOperationException();
+        getAnnotations().add(annotation);
     }
 
     public void removeAnnotation(Annotation annotation) {
-        throw new UnsupportedOperationException();
+        getAnnotations().remove(annotation);
     }
 
     public String getFullName() {
@@ -217,11 +217,11 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
     }
 
     public void addXref(InstitutionXref aXref) {
-        xrefs.add(aXref);
+        getXrefs().add(aXref);
     }
 
     public void removeXref(InstitutionXref xref) {
-        xrefs.remove(xref);
+        getXrefs().remove(xref);
     }
 
     public void setXrefs(Collection<InstitutionXref> xrefs) {

@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.model.clone;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -147,7 +148,7 @@ public class IntactCloner {
     protected Alias cloneAlias( Alias alias ) throws IntactClonerException {
         if ( alias == null ) return null;
 
-        Class clazz = alias.getClass();
+        Class clazz = CgLibUtil.removeCglibEnhanced(alias.getClass());
         Alias clone = null;
         try {
             final Constructor constructor = clazz.getConstructor();
@@ -173,7 +174,7 @@ public class IntactCloner {
     protected Xref cloneXref( Xref xref ) throws IntactClonerException {
         if ( xref == null ) return null;
 
-        Class clazz = xref.getClass();
+        Class clazz = CgLibUtil.removeCglibEnhanced(xref.getClass());
         Xref clone = null;
 
         try {
@@ -310,7 +311,7 @@ public class IntactCloner {
 
         Interactor clone = null;
 
-        final Class clazz = interactor.getClass();
+        final Class clazz = CgLibUtil.removeCglibEnhanced(interactor.getClass());
 
         try {
             final Constructor constructor = clazz.getConstructor();
@@ -399,7 +400,7 @@ public class IntactCloner {
     public CvObject cloneCvObject( CvObject cvObject ) throws IntactClonerException {
         if ( cvObject == null ) return null;
 
-        Class clazz = cvObject.getClass();
+        Class clazz = CgLibUtil.removeCglibEnhanced(cvObject.getClass());
         CvObject clone = null;
         try {
             final Constructor constructor = clazz.getConstructor();
