@@ -20,6 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
+import uk.ac.ebi.intact.model.clone.IntactClonerException;
 
 
 /**
@@ -133,7 +135,7 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
     }
 
     /**
-     * Checks is the given object already synchronized with the persistence session.
+     * Checks is the given object is already synchronized with the persistence session.
      * @param intactObject object to be synced.
      * @return a response that contains the answer.
      */
@@ -194,6 +196,14 @@ public abstract class AbstractPersister<T extends AnnotatedObject> implements Pe
             }
             return (T) SyncContext.getInstance().get(intactObject);
         }
+
+        // we clone the object at this point, so we ensure that the fetchFromDataSource does
+        // not return the same instance of the object
+        try {
+            intactObject = (T) new IntactCloner().clone(intactObject);
+        } catch (IntactClonerException e) {
+            throw new PersisterUnexpectedException("Exception when cloning "+intactObject.getClass().getSimpleName()+": "+intactObject, e);
+        } 
 
         T t = fetchFromDataSource( intactObject );
 

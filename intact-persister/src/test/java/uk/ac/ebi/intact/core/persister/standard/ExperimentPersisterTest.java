@@ -6,15 +6,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
+import org.apache.commons.lang.SerializationUtils;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterContext;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.persister.PersisterUnexpectedException;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.ExperimentXref;
-import uk.ac.ebi.intact.model.Institution;
-import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.List;
@@ -339,6 +337,65 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
         Experiment reloadedExperiment = getDaoFactory().getExperimentDao().getByAc(loadedExperiment.getAc());
         Assert.assertEquals(1, reloadedExperiment.getInteractions().size());
 
+    }
+
+    @Test
+    public void interactionInExpPersistedCorrectly() throws Exception {
+        commitTransaction();
+
+        Experiment experiment = getMockBuilder().createExperimentEmpty();
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        interaction.getExperiments().clear();
+        experiment.addInteraction(interaction);
+
+        PersisterHelper.saveOrUpdate(experiment);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+
+        Experiment exp2 = getDaoFactory().getExperimentDao().getByAc(experiment.getAc());
+
+        Assert.assertEquals(interaction, exp2.getInteractions().iterator().next());
+    }
+
+    @Test
+    public void removingExperiments() throws Exception {
+        commitTransaction();
+
+        Experiment experiment = getMockBuilder().createExperimentRandom(1);
+        Interaction interactionToDelete = getMockBuilder().createInteractionRandomBinary();
+        interactionToDelete.setShortLabel("intToDel");
+        interactionToDelete.getExperiments().clear();
+        experiment.addInteraction(interactionToDelete);
+
+        PersisterHelper.saveOrUpdate(experiment);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+          
+        Experiment exp2 = reloadByAc(experiment);
+        Assert.assertEquals(2, exp2.getInteractions().size());
+
+        // remove interaction
+        exp2.removeInteraction(interactionToDelete);
+
+        Assert.assertEquals(1, exp2.getInteractions().size());
+
+
+        PersisterHelper.saveOrUpdate(exp2);
+        //getDaoFactory().getInteractionDao().update((InteractionImpl)interactionToDelete);
+        refresh(exp2);
+
+        Assert.assertEquals(1, exp2.getInteractions().size());
+    }
+
+    private Experiment reloadByAc(Experiment experiment) {
+        return getDaoFactory().getExperimentDao().getByAc(experiment.getAc());
+    }
+
+    private void refresh(Experiment experiment) {
+        getDaoFactory().getExperimentDao().refresh(experiment);
     }
 }
 

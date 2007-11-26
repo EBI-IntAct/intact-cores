@@ -61,11 +61,19 @@ public class ExperimentPersister extends AbstractAnnotatedObjectPersister<Experi
     protected Experiment fetchFromDataSource(Experiment intactObject) {
         final DaoFactory daoFactory = getIntactContext().getDataContext().getDaoFactory();
 
+        Experiment fetchedExperiment = null;
+
         if (intactObject.getAc() != null) {
-            return daoFactory
+            fetchedExperiment = daoFactory
                 .getExperimentDao().getByAc(intactObject.getAc());
+        } else {
+            fetchedExperiment =  daoFactory.getExperimentDao().getByShortLabel(intactObject.getShortLabel());
         }
-        return daoFactory.getExperimentDao().getByShortLabel(intactObject.getShortLabel());
+
+
+        assert intactObject != fetchedExperiment;
+
+        return fetchedExperiment;
     }
 
     /**

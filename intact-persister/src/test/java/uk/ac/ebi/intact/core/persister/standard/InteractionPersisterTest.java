@@ -518,6 +518,8 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
 
     @Test
     public void existingInteraction_addingExistingExperiment() throws Exception {
+        commitTransaction();
+
         Experiment exp = getMockBuilder().createExperimentRandom(1);
         Experiment exp2 = getMockBuilder().createExperimentRandom(1);
 
@@ -537,7 +539,7 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
         Assert.assertEquals(3, getDaoFactory().getInteractionDao().countAll());
 
-        getDaoFactory().getInteractionDao().refresh((InteractionImpl)interaction);
+        refresh(interaction);
 
         interaction.addExperiment(exp2);
 
@@ -549,5 +551,40 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         getDaoFactory().getInteractionDao().refresh((InteractionImpl)interaction);
 
         Assert.assertEquals(2, interaction.getExperiments().size());
+    }
+
+    @Test
+    public void removingExperiments() throws Exception {
+        commitTransaction();
+        
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        Experiment experimentToDelete = getMockBuilder().createExperimentEmpty("exptodelete-2007-1");
+        interaction.addExperiment(experimentToDelete);
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        interaction = reloadByAc(interaction);
+
+        Assert.assertEquals(2, interaction.getExperiments().size());
+
+        // remove experiment
+        interaction.removeExperiment(experimentToDelete);
+
+        Assert.assertEquals(1, interaction.getExperiments().size());
+        
+        PersisterHelper.saveOrUpdate(interaction);
+        interaction = reloadByAc(interaction);
+
+        Assert.assertEquals(1, interaction.getExperiments().size());
+    }
+
+    private Interaction reloadByAc(Interaction interaction) {
+        return getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+    }
+
+    private void refresh(Interaction interaction) {
+        getDaoFactory().getInteractionDao().refresh((InteractionImpl)interaction);
     }
 }

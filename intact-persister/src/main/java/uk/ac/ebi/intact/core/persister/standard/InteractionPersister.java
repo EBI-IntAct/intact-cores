@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
 import uk.ac.ebi.intact.model.Component;
@@ -106,7 +107,13 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
             return BehaviourType.NEW;
         }
 
-        String candidateCrc = new CrcCalculator().crc64(candidate);
+        String candidateCrc = null;
+        try {
+            candidateCrc = new CrcCalculator().crc64(candidate);
+        } catch (LazyInitializationException e) {
+            log.warn("While calculating the crc for the candidate, a lazy exception was thrown. Using the existing candidate crc");
+            candidateCrc = candidate.getCrc();
+        }
 
         // only update an interaction if already has an AC
         if (synced.getCrc().equals(candidateCrc)) {

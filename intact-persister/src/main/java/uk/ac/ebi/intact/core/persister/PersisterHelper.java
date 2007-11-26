@@ -63,7 +63,7 @@ public class PersisterHelper
         } else if (Publication.class.isAssignableFrom(clazz)) {
             return PublicationPersister.getInstance();
         } else {
-            throw new IllegalStateException("Persister for this class not found: "+clazz.getName());
+            throw new IllegalArgumentException("Persister for this class not found: "+clazz.getName());
         }
     }
 
