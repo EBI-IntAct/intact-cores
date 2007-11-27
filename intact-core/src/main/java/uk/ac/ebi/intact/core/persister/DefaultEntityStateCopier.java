@@ -66,38 +66,38 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyInstitution( Institution from, Institution to ) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void copyPublication( Publication from, Publication to ) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void copyExperiment( Experiment from, Experiment to ) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void copyInteraction( Interaction from, Interaction to ) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void copyInteractor( Interactor from, Interactor to ) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void copyComponent( Component from, Component to ) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void copyFeature( Feature from, Feature to ) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void copyBioSource( BioSource from, BioSource to ) {
-
+        throw new UnsupportedOperationException();
     }
 
     protected void copyCvObject( CvObject from, CvObject to ) {
-
+        throw new UnsupportedOperationException();
     }
 }
