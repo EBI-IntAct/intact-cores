@@ -287,7 +287,17 @@ public class DefaultFinder implements Finder {
           query.setParameter("mi", cvObject.getMiIdentifier());
           query.setParameter("objclass", cvObject.getObjClass());
 
-          return getFirstAcForQuery(query, cvObject);
+          String value = getFirstAcForQuery( query, cvObject );
+
+          if( value == null ) {
+              // TODO we should check on CvXrefQualifier(identity)
+
+              query = getEntityManager().createQuery("select cv.ac from CvObject cv where cv.shortLabel = :label ");
+              query.setParameter("label", cvObject.getShortLabel());
+              value = getFirstAcForQuery( query, cvObject );
+          }
+
+          return value;
       }
 
     private String getFirstAcForQuery(Query query, AnnotatedObject ao) {
