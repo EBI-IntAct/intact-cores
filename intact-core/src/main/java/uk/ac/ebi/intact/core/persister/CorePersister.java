@@ -21,10 +21,7 @@ import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Persists intact object in the database.
@@ -65,6 +62,10 @@ public class CorePersister implements Persister {
 
         final Key key = keyBuilder.keyFor( ao );
 
+        if ( key == null ) {
+            throw new IllegalArgumentException( "Cannot handle null key" );
+        }
+
         if ( annotatedObjectsToMerge.containsKey( key ) ) {
             return annotatedObjectsToMerge.get( key );
         }
@@ -99,7 +100,10 @@ public class CorePersister implements Persister {
                 annotatedObjectsToMerge.put( key, ao );
 
                 synchronizeChildren( ao );
+
             }
+
+            synched = ao;
 
         } else {
 
@@ -123,11 +127,19 @@ public class CorePersister implements Persister {
 
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
 
+        // order the collection of objects to persist: institution, cvs, others
+        List<AnnotatedObject> thingsToMerge = new ArrayList<AnnotatedObject>( annotatedObjectsToMerge.values() );
+        Collections.sort( thingsToMerge, new PersistenceOrderComparator() );
         for ( AnnotatedObject ao : annotatedObjectsToMerge.values() ) {
             daoFactory.getBaseDao().merge( ao );
         }
 
-        for ( AnnotatedObject ao : annotatedObjectsToPersist.values() ) {
+        SortedMap m = new TreeMap();
+
+        // order the collection of objects to persist: institution, cvs, others
+        List<AnnotatedObject> thingsToPersist = new ArrayList<AnnotatedObject>( annotatedObjectsToPersist.values() );
+        Collections.sort( thingsToPersist, new PersistenceOrderComparator() );
+        for ( AnnotatedObject ao : thingsToPersist ) {
             daoFactory.getBaseDao().persist( ao );
         }
 
@@ -166,34 +178,42 @@ public class CorePersister implements Persister {
         experiment.setInteractions( synchronizeCollection( experiment.getInteractions() ) );
         experiment.setCvIdentification( ( CvIdentification ) synchronize( experiment.getCvIdentification() ) );
         experiment.setCvInteraction( ( CvInteraction ) synchronize( experiment.getCvInteraction() ) );
+        experiment.setBioSource( ( BioSource ) synchronize( experiment.getBioSource() ) );
+        synchronizeAnnotatedObjectCommons( experiment );
     }
 
     private void synchronizeInteraction( Interaction interaction ) {
         interaction.setCvInteractionType( ( CvInteractionType ) synchronize( interaction.getCvInteractionType() ) );
+        interaction.setCvInteractorType( ( CvInteractorType ) synchronize( interaction.getCvInteractorType() ) );
         interaction.setComponents( synchronizeCollection( interaction.getComponents() ) );
         interaction.setBioSource( ( BioSource ) synchronize( interaction.getBioSource() ) );
         interaction.setExperiments( synchronizeCollection( interaction.getExperiments() ) );
+        synchronizeAnnotatedObjectCommons( interaction );
     }
 
     private void synchronizeInteractor( Interactor interactor ) {
         interactor.setActiveInstances( synchronizeCollection( interactor.getActiveInstances() ) );
         interactor.setBioSource( ( BioSource ) synchronize( interactor.getBioSource() ) );
         interactor.setCvInteractorType( ( CvInteractorType ) synchronize( interactor.getCvInteractorType() ) );
+        synchronizeAnnotatedObjectCommons( interactor );
     }
 
     private void synchronizeBioSource( BioSource bioSource ) {
         bioSource.setCvCellType( ( CvCellType ) synchronize( bioSource.getCvCellType() ) );
         bioSource.setCvTissue( ( CvTissue ) synchronize( bioSource.getCvTissue() ) );
+        synchronizeAnnotatedObjectCommons( bioSource );
     }
 
     private void synchronizeComponent( Component component ) {
         component.setBindingDomains( synchronizeCollection( component.getBindingDomains() ) );
         component.setCvBiologicalRole( ( CvBiologicalRole ) synchronize( component.getCvBiologicalRole() ) );
         component.setCvExperimentalRole( ( CvExperimentalRole ) synchronize( component.getCvExperimentalRole() ) );
+        component.setExperimentalPreparations( synchronizeCollection( component.getExperimentalPreparations() ) );
         component.setExpressedIn( ( BioSource ) synchronize( component.getExpressedIn() ) );
         component.setInteraction( ( Interaction ) synchronize( component.getInteraction() ) );
         component.setInteractor( ( Interactor ) synchronize( component.getInteractor() ) );
         component.setParticipantDetectionMethods( synchronizeCollection( component.getParticipantDetectionMethods() ) );
+        synchronizeAnnotatedObjectCommons( component );
     }
 
     private void synchronizeFeature( Feature feature ) {
@@ -202,19 +222,23 @@ public class CorePersister implements Persister {
         feature.setCvFeatureIdentification( ( CvFeatureIdentification ) synchronize( feature.getCvFeatureIdentification() ) );
         feature.setCvFeatureType( ( CvFeatureType ) synchronize( feature.getCvFeatureType() ) );
         feature.setRanges( synchronizeCollection( feature.getRanges() ) );
+        synchronizeAnnotatedObjectCommons( feature );
     }
 
     private void synchronizeCvObject( CvObject cvObject ) {
         // no sub-object, do nothing
         // TODO handle parents and children in case the instance is a CvDagObject
+        synchronizeAnnotatedObjectCommons( cvObject );
     }
 
     private void synchronizePublication( Publication publication ) {
         publication.setExperiments( synchronizeCollection( publication.getExperiments() ) );
+        synchronizeAnnotatedObjectCommons( publication );
     }
 
     private void synchronizeInstitution( Institution institution ) {
         // no sub-object, do nothing
+        synchronizeAnnotatedObjectCommons( institution );
     }
 
     private Collection synchronizeCollection( Collection collection ) {
@@ -223,5 +247,46 @@ public class CorePersister implements Persister {
             synchedCollection.add( synchronize( ( AnnotatedObject ) o ) );
         }
         return synchedCollection;
+    }
+
+    private void synchronizeAnnotatedObjectCommons( AnnotatedObject<? extends Xref, ? extends Alias> ao ) {
+
+        if ( !( ao instanceof Institution ) ) {
+            ao.setOwner( ( Institution ) synchronize( ao.getOwner() ) );
+        }
+
+        Collection synchedXrefs = new ArrayList( ao.getXrefs().size() );
+        for ( Xref xref : ao.getXrefs() ) {
+            synchedXrefs.add( synchronizeXrefs( xref ) );
+        }
+        ao.setXrefs( synchedXrefs );
+
+        Collection synchedAliases = new ArrayList( ao.getAliases().size() );
+        for ( Alias alias : ao.getAliases() ) {
+            synchedAliases.add( synchronizeAlias( alias ) );
+        }
+        ao.setAliases( synchedAliases );
+
+        Collection synchedAnnotations = new ArrayList( ao.getAnnotations().size() );
+        for ( Annotation annotation : ao.getAnnotations() ) {
+            synchedAnnotations.add( synchronizeAnnotation( annotation ) );
+        }
+        ao.setAnnotations( synchedAnnotations );
+    }
+
+    private Xref synchronizeXrefs( Xref xref ) {
+        xref.setCvDatabase( ( CvDatabase ) synchronize( xref.getCvDatabase() ) );
+        xref.setCvXrefQualifier( ( CvXrefQualifier ) synchronize( xref.getCvXrefQualifier() ) );
+        return xref;
+    }
+
+    private Alias synchronizeAlias( Alias alias ) {
+        alias.setCvAliasType( ( CvAliasType ) synchronize( alias.getCvAliasType() ) );
+        return alias;
+    }
+
+    private Annotation synchronizeAnnotation( Annotation annotation ) {
+        annotation.setCvTopic( ( CvTopic ) synchronize( annotation.getCvTopic() ) );
+        return annotation;
     }
 }
