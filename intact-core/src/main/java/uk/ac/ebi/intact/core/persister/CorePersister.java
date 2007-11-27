@@ -19,11 +19,12 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.persistence.dao.BaseDao;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ArrayList;
 
 /**
  * Persists intact object in the database.
@@ -34,8 +35,8 @@ import java.util.ArrayList;
  */
 public class CorePersister implements Persister {
 
-    Map<Key, AnnotatedObject> annotatedObjectToPersist = new HashMap<Key, AnnotatedObject>();
-    Map<Key, AnnotatedObject> annotatedObjectToMerge = new HashMap<Key, AnnotatedObject>();
+    private Map<Key, AnnotatedObject> annotatedObjectsToPersist;
+    private Map<Key, AnnotatedObject> annotatedObjectsToMerge;
 
     private Finder finder;
     private KeyBuilder keyBuilder;
@@ -43,6 +44,10 @@ public class CorePersister implements Persister {
     private EntityStateCopier entityStateCopier;
 
     public CorePersister() {
+
+        annotatedObjectsToPersist = new HashMap<Key, AnnotatedObject>();
+        annotatedObjectsToMerge = new HashMap<Key, AnnotatedObject>();
+
         finder = new DefaultFinder();
         keyBuilder = new KeyBuilder();
         transientObjectHandler = new DefaultTransientObjectHandler();
@@ -55,17 +60,17 @@ public class CorePersister implements Persister {
     public AnnotatedObject synchronize( AnnotatedObject ao ) {
 
         if ( ao == null ) {
-            throw new IllegalArgumentException( "The given annotatedObject must not be null" );
+            return null;
         }
 
         final Key key = keyBuilder.keyFor( ao );
 
-        if ( annotatedObjectToMerge.containsKey( key ) ) {
-            return annotatedObjectToMerge.get( key );
+        if ( annotatedObjectsToMerge.containsKey( key ) ) {
+            return annotatedObjectsToMerge.get( key );
         }
 
-        if ( annotatedObjectToPersist.containsKey( key ) ) {
-            return annotatedObjectToPersist.get( key );
+        if ( annotatedObjectsToPersist.containsKey( key ) ) {
+            return annotatedObjectsToPersist.get( key );
         }
 
         AnnotatedObject synched = null;
@@ -78,7 +83,7 @@ public class CorePersister implements Persister {
             if ( ac == null ) {
 
                 // doesn't exist in the database, we will persist it
-                annotatedObjectToPersist.put( key, ao );
+                annotatedObjectsToPersist.put( key, ao );
 
                 synchronizeChildren( ao );
 
@@ -91,7 +96,7 @@ public class CorePersister implements Persister {
 
                 // updated the managed object based on ao's properties
                 entityStateCopier.copy( ao, managedObject );
-                annotatedObjectToMerge.put( key, ao );
+                annotatedObjectsToMerge.put( key, ao );
 
                 synchronizeChildren( ao );
             }
@@ -116,10 +121,21 @@ public class CorePersister implements Persister {
 
     public void commit() {
 
+        DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+
+        for ( AnnotatedObject ao : annotatedObjectsToMerge.values() ) {
+            daoFactory.getBaseDao().merge( ao );
+        }
+
+        for ( AnnotatedObject ao : annotatedObjectsToPersist.values() ) {
+            daoFactory.getBaseDao().persist( ao );
+        }
+
+        daoFactory.commitTransaction();
     }
 
-    //////////////////////
-    // Private methods
+    /////////////////////////////////////////////
+    // Private methods - synchronize children
 
     private void synchronizeChildren( AnnotatedObject ao ) {
         if ( ao instanceof Institution ) {
@@ -146,50 +162,66 @@ public class CorePersister implements Persister {
     }
 
     private void synchronizeExperiment( Experiment experiment ) {
-
-        synchronizeAnnotatedObjectCommons( experiment );
-
-        Collection<Interaction> interactions = new ArrayList<Interaction>( experiment.getInteractions().size() );
-        for ( Interaction interaction : experiment.getInteractions() ) {
-            interactions.add( (Interaction ) synchronize( interaction ) );
-        }
-        experiment.setInteractions( interactions );
-
-
-
+        experiment.setPublication( ( Publication ) synchronize( experiment.getPublication() ) );
+        experiment.setInteractions( synchronizeCollection( experiment.getInteractions() ) );
+        experiment.setCvIdentification( ( CvIdentification ) synchronize( experiment.getCvIdentification() ) );
+        experiment.setCvInteraction( ( CvInteraction ) synchronize( experiment.getCvInteraction() ) );
     }
 
     private void synchronizeInteraction( Interaction interaction ) {
+        interaction.setCvInteractionType( ( CvInteractionType ) synchronize( interaction.getCvInteractionType() ) );
+        interaction.setComponents( synchronizeCollection( interaction.getComponents() ) );
+        interaction.setBioSource( ( BioSource ) synchronize( interaction.getBioSource() ) );
+        interaction.setExperiments( synchronizeCollection( interaction.getExperiments() ) );
     }
 
     private void synchronizeInteractor( Interactor interactor ) {
+        interactor.setActiveInstances( synchronizeCollection( interactor.getActiveInstances() ) );
+        interactor.setBioSource( ( BioSource ) synchronize( interactor.getBioSource() ) );
+        interactor.setCvInteractorType( ( CvInteractorType ) synchronize( interactor.getCvInteractorType() ) );
     }
 
     private void synchronizeBioSource( BioSource bioSource ) {
+        bioSource.setCvCellType( ( CvCellType ) synchronize( bioSource.getCvCellType() ) );
+        bioSource.setCvTissue( ( CvTissue ) synchronize( bioSource.getCvTissue() ) );
     }
 
     private void synchronizeComponent( Component component ) {
+        component.setBindingDomains( synchronizeCollection( component.getBindingDomains() ) );
+        component.setCvBiologicalRole( ( CvBiologicalRole ) synchronize( component.getCvBiologicalRole() ) );
+        component.setCvExperimentalRole( ( CvExperimentalRole ) synchronize( component.getCvExperimentalRole() ) );
+        component.setExpressedIn( ( BioSource ) synchronize( component.getExpressedIn() ) );
+        component.setInteraction( ( Interaction ) synchronize( component.getInteraction() ) );
+        component.setInteractor( ( Interactor ) synchronize( component.getInteractor() ) );
+        component.setParticipantDetectionMethods( synchronizeCollection( component.getParticipantDetectionMethods() ) );
     }
 
     private void synchronizeFeature( Feature feature ) {
+        feature.setBoundDomain( ( Feature ) synchronize( feature.getBoundDomain() ) );
+        feature.setComponent( ( Component ) synchronize( feature.getComponent() ) );
+        feature.setCvFeatureIdentification( ( CvFeatureIdentification ) synchronize( feature.getCvFeatureIdentification() ) );
+        feature.setCvFeatureType( ( CvFeatureType ) synchronize( feature.getCvFeatureType() ) );
+        feature.setRanges( synchronizeCollection( feature.getRanges() ) );
     }
 
     private void synchronizeCvObject( CvObject cvObject ) {
+        // no sub-object, do nothing
+        // TODO handle parents and children in case the instance is a CvDagObject
     }
 
     private void synchronizePublication( Publication publication ) {
+        publication.setExperiments( synchronizeCollection( publication.getExperiments() ) );
     }
 
     private void synchronizeInstitution( Institution institution ) {
+        // no sub-object, do nothing
     }
 
-    private void synchronizeAnnotatedObjectCommons( AnnotatedObject ao ) {
-
-        if( ! ( ao instanceof Institution ) ) {
-            ao.setOwner( (Institution ) synchronize( ao.getOwner() ) );
+    private Collection synchronizeCollection( Collection collection ) {
+        Collection synchedCollection = new ArrayList( collection.size() );
+        for ( Object o : collection ) {
+            synchedCollection.add( synchronize( ( AnnotatedObject ) o ) );
         }
-
-
-
+        return synchedCollection;
     }
 }
