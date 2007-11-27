@@ -129,15 +129,17 @@ public abstract class AbstractAnnotatedObjectPersister<T extends AnnotatedObject
 
     @Override
     protected boolean update(T candidateObject, T objectToUpdate) throws PersisterException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("No update behaviour defined for: "+objectToUpdate.getClass().getName());
     }
 
     protected boolean updateCommonAttributes(T candidateObject, T objectToBeUpdated) throws PersisterException {
-
-        for (Annotation annotation : candidateObject.getAnnotations()) {
-            objectToBeUpdated.addAnnotation(annotation);
-        }
-
+        objectToBeUpdated.setShortLabel(candidateObject.getShortLabel());
+        objectToBeUpdated.setFullName(candidateObject.getFullName());
+        
+        objectToBeUpdated.setXrefs(candidateObject.getXrefs());
+        objectToBeUpdated.setAliases(candidateObject.getAliases());
+        objectToBeUpdated.setAnnotations(objectToBeUpdated.getAnnotations());
+  
         saveOrUpdateAttributes(objectToBeUpdated);
 
         return true;

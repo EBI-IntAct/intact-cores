@@ -4,13 +4,9 @@ import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
-import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Feature;
 
 /**
  * TODO comment this
@@ -21,16 +17,6 @@ import uk.ac.ebi.intact.model.Interaction;
 public class ComponentPersisterTest extends AbstractPersisterTest
 {
 
-    @Before
-    public void before() throws Exception {
-        beginTransaction();
-    }
-
-    @After
-    public void after() throws Exception {
-        commitTransaction();
-    }
-
     @Test
     public void persist_default() throws Exception {
         Component component = getMockBuilder().createComponentRandom();
@@ -38,9 +24,6 @@ public class ComponentPersisterTest extends AbstractPersisterTest
 
         String newComponentAc = component.getAc();
         assertNotNull(newComponentAc);
-
-
-        beginTransaction();
 
         Component newComponent = getDaoFactory().getComponentDao().getByAc(newComponentAc);
 
@@ -52,6 +35,36 @@ public class ComponentPersisterTest extends AbstractPersisterTest
         Assert.assertFalse(newComponent.getExperimentalPreparations().isEmpty());
 
         assertFalse(newComponent.getCvExperimentalRole().getXrefs().isEmpty());
+    }
+
+    @Test
+    public void persistComponent_detached() throws Exception {
+        Component component = getMockBuilder().createDeterministicInteraction().getComponents().iterator().next();
+        PersisterHelper.saveOrUpdate(component);
+
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+
+        getDaoFactory().getEntityManager().clear();
+        getDaoFactory().getEntityManager().close();
+
+        Feature feature = getMockBuilder().createFeatureRandom();
+        component.addBindingDomain(feature);
+
+        PersisterHelper.saveOrUpdate(component);
+        
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+
+        Component comp2 = reloadByAc(component);
+
+        Assert.assertEquals(2, comp2.getBindingDomains().size());
+    }
+
+    private Component reloadByAc(Component interaction) {
+        return getDaoFactory().getComponentDao().getByAc(interaction.getAc());
+    }
+
+    private void refresh(Component interaction) {
+        getDaoFactory().getComponentDao().refresh(interaction);
     }
 
 }

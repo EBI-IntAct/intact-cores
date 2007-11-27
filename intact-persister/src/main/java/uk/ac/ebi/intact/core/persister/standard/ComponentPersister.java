@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister.standard;
 
 import org.apache.commons.collections.CollectionUtils;
 import uk.ac.ebi.intact.core.persister.PersisterException;
+import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
@@ -47,12 +48,24 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         super();
     }
 
-    /**
-     * TODO: check if the interaction fetching/syncing covers this - check by ac at least
-     */
     protected Component fetchFromDataSource(Component intactObject) {
-        // Note: we do not try to reconnect to the database, we create a new one every time.
+        if (intactObject.getAc() != null) {
+            return getIntactContext().getDataContext().getDaoFactory().getComponentDao().getByAc(intactObject.getAc());
+        }
         return null;
+    }
+
+    @Override
+    protected BehaviourType syncedAndCandidateAreEqual(Component synced, Component candidate) {
+        if (synced == null) {
+            return BehaviourType.NEW;
+        }
+
+        if (synced.getAc().equals(candidate.getAc())) {
+            return BehaviourType.UPDATE;
+        }
+
+        return BehaviourType.IGNORE;
     }
 
     @Override
@@ -119,5 +132,24 @@ public class ComponentPersister extends AbstractAnnotatedObjectPersister<Compone
         intactObject.setBindingDomains( features );
 
         return super.syncAttributes(intactObject);
+    }
+
+    @Override
+    protected boolean update(Component candidateObject, Component objectToUpdate) throws PersisterException {
+        objectToUpdate.setStoichiometry(candidateObject.getStoichiometry());
+        objectToUpdate.setExpressedIn(candidateObject.getExpressedIn());
+
+        objectToUpdate.setCvBiologicalRole(candidateObject.getCvBiologicalRole());
+        objectToUpdate.setCvExperimentalRole(candidateObject.getCvExperimentalRole());
+
+        objectToUpdate.setExperimentalPreparations(candidateObject.getExperimentalPreparations());
+        objectToUpdate.setInteraction(candidateObject.getInteraction());
+        objectToUpdate.setInteractor(candidateObject.getInteractor());
+        objectToUpdate.setParticipantDetectionMethods(candidateObject.getParticipantDetectionMethods());
+
+        objectToUpdate.setBindingDomains(candidateObject.getBindingDomains());
+
+
+        return super.updateCommonAttributes(candidateObject, objectToUpdate);
     }
 }

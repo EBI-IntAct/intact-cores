@@ -373,8 +373,9 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
-          
+
         Experiment exp2 = reloadByAc(experiment);
+
         Assert.assertEquals(2, exp2.getInteractions().size());
 
         // remove interaction
@@ -382,9 +383,8 @@ public class ExperimentPersisterTest extends AbstractPersisterTest
 
         Assert.assertEquals(1, exp2.getInteractions().size());
 
-
         PersisterHelper.saveOrUpdate(exp2);
-        //getDaoFactory().getInteractionDao().update((InteractionImpl)interactionToDelete);
+
         refresh(exp2);
 
         Assert.assertEquals(1, exp2.getInteractions().size());

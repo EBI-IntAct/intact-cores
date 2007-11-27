@@ -20,10 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.core.persister.BehaviourType;
 import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.CvInteractionType;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
@@ -117,6 +114,9 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
 
         // only update an interaction if already has an AC
         if (synced.getCrc().equals(candidateCrc)) {
+            if (!candidate.getFullName().equals(synced.getFullName())) {
+                return BehaviourType.UPDATE;
+            }
             return BehaviourType.IGNORE;
         } else if (synced.getAc().equals(candidate.getAc())) {
             return BehaviourType.UPDATE;
@@ -140,6 +140,9 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
         // if updating, the interaction should maintain the shortlabel
         candidateObject.setShortLabel(objectToUpdate.getShortLabel());
 
+        // full name
+        objectToUpdate.setFullName(candidateObject.getFullName());
+
         // update the experiment relationships
         final Collection<Experiment> candidateExperiments = candidateObject.getExperiments();
         List<Experiment> additionalExperiments = new ArrayList<Experiment>(candidateExperiments.size());
@@ -159,7 +162,7 @@ public class InteractionPersister extends InteractorPersister<Interaction>{
             ExperimentPersister.getInstance().saveOrUpdate(additionalExperiment);
         }
 
-        return true;
+         return super.updateCommonAttributes(candidateObject, objectToUpdate);
     }
 
     @Override

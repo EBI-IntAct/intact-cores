@@ -580,6 +580,25 @@ public class InteractionPersisterTest extends AbstractPersisterTest {
         Assert.assertEquals(1, interaction.getExperiments().size());
     }
 
+    @Test
+    public void persistDisconnectedInteraction() throws Exception {
+        commitTransaction();
+
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
+        PersisterHelper.saveOrUpdate(interaction);
+
+        getDaoFactory().getEntityManager().clear();
+        getDaoFactory().getEntityManager().close();
+
+        interaction.setFullName("newFullName");
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Interaction int2 = reloadByAc(interaction);
+
+        Assert.assertEquals("newFullName", int2.getFullName());
+    }
+
     private Interaction reloadByAc(Interaction interaction) {
         return getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
     }
