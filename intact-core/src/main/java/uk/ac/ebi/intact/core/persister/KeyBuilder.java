@@ -36,30 +36,33 @@ import java.util.List;
 class KeyBuilder {
 
     public Key keyFor( AnnotatedObject ao ) {
-        Key key = null;
+        Key key;
+
         if ( ao instanceof Institution ) {
-            key = keyFor( ao );
-        } else if ( ao instanceof Institution ) {
-            key = keyFor( ao );
+            key = keyForInstitution( (Institution) ao );
         } else if ( ao instanceof Publication ) {
-            key = keyFor( ao );
+            key = keyForPublication( (Publication) ao );
+        } else if ( ao instanceof CvObject ) {
+            key = keyForCvObject( (CvObject) ao );
         } else if ( ao instanceof Experiment ) {
-            key = keyFor( ao );
+            key = keyForExperiment( (Experiment) ao );
+        } else if ( ao instanceof Interaction ) {
+            key = keyForInteraction( (Interaction) ao );
         } else if ( ao instanceof Interactor ) {
-            key = keyFor( ao );
+            key = keyForInteractor( (Interactor) ao );
+       } else if ( ao instanceof BioSource ) {
+            key = keyForBioSource( (BioSource) ao );
         } else if ( ao instanceof Component ) {
-            key = keyFor( ao );
+            key = keyForComponent( (Component) ao );
         } else if ( ao instanceof Feature ) {
-            key = keyFor( ao );
-        } else if ( ao instanceof Range ) {
-            key = keyFor( ao );
+            key = keyForFeature( (Feature) ao );
         } else {
-            throw new UnsupportedOperationException( "KeyBuilder doesn't build key for: " + ao.getClass().getName() );
+            throw new IllegalArgumentException( "KeyBuilder doesn't build key for: " + ao.getClass().getName() );
         }
         return key;
     }
 
-    public Key keyFor( Institution institution ) {
+    public Key keyForInstitution( Institution institution ) {
         final Collection<InstitutionXref> institutionXrefs = XrefUtils.getIdentityXrefs( institution );
 
         Key key;
@@ -73,19 +76,19 @@ class KeyBuilder {
         return key;
     }
 
-    public Key keyFor( Publication publication ) {
+    public Key keyForPublication( Publication publication ) {
         return keyForAnnotatedObject( publication );
     }
 
-    public Key keyFor( Experiment experiment ) {
+    public Key keyForExperiment( Experiment experiment ) {
         return keyForAnnotatedObject( experiment );
     }
 
-    public Key keyFor( Interaction interaction ) {
+    public Key keyForInteraction( Interaction interaction ) {
         return new Key( new CrcCalculator().crc64( interaction ) );
     }
 
-    public Key keyFor( Interactor interactor ) {
+    public Key keyForInteractor( Interactor interactor ) {
         final Collection<InteractorXref> interactorXrefs = XrefUtils.getIdentityXrefs( interactor );
 
         Key key;
@@ -100,7 +103,11 @@ class KeyBuilder {
         return key;
     }
 
-    public Key keyFor( Component component ) {
+    public Key keyForBioSource( BioSource bioSource ) {
+        return new Key("BioSource:"+bioSource.getTaxId());
+    }
+
+    public Key keyForComponent( Component component ) {
         if ( component.getInteraction() == null ) {
             throw new IllegalArgumentException( "Cannot create a component key for component without interaction: " + component );
         }
@@ -112,7 +119,7 @@ class KeyBuilder {
         return new Key( label );
     }
 
-    public Key keyFor( Feature feature ) {
+    public Key keyForFeature( Feature feature ) {
         if ( feature.getComponent() == null ) {
             throw new IllegalArgumentException( "Cannot create a feature key for feature without component: " + feature );
         }
@@ -122,21 +129,7 @@ class KeyBuilder {
         return new Key( keyForAnnotatedObject( feature ).getUniqueString() + "___" + componentKey.getUniqueString() );
     }
 
-    public Key keyFor( Range range ) {
-        Key featureKey = keyFor( range.getFeature() );
-
-        Key fromFuzzyKey = keyFor( range.getFromCvFuzzyType() );
-        Key toFuzzyKey = keyFor( range.getToCvFuzzyType() );
-
-        String uniqueString = "Range:" + range.getFromIntervalStart() + "_" + range.getFromIntervalEnd() + "-" +
-                              range.getToIntervalStart() + "_" + range.getToIntervalEnd() + "___" +
-                              fromFuzzyKey.getUniqueString() + "___" + toFuzzyKey.getUniqueString() + "___" +
-                              featureKey.getUniqueString();
-
-        return new Key( uniqueString );
-    }
-
-    public Key keyFor( CvObject cvObject ) {
+    public Key keyForCvObject( CvObject cvObject ) {
         return new Key( cvObject.getMiIdentifier() );
     }
 
