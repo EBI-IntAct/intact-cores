@@ -72,4 +72,6 @@ public interface BaseDao<T> {
 
     void merge( T objToReplicate );
 
+    boolean isTransient(T object);
+
 }

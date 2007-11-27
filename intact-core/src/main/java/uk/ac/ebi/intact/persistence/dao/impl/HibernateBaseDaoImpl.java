@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
+import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.criterion.*;
 import org.hibernate.ejb.HibernateEntityManager;
 import uk.ac.ebi.intact.business.IntactException;
@@ -207,6 +208,17 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
 
     public void merge(T objToMerge) {
         getSession().merge(objToMerge);
+    }
+
+    /**
+     * Checks if an object is transient (not contained in the current session)
+     * @param object the object to check
+     * @return True if the object is transient - may contain uninitialized lazy collections
+     *
+     * @since 1.8.0
+     */
+    public boolean isTransient(T object) {
+        return !getSession().contains(object);
     }
 
     /**
