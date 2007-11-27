@@ -122,6 +122,10 @@ public class IntactContext implements Serializable {
         return UserContext.getCurrentInstance( session );
     }
 
+    /**
+     * @deprecated Use the CvObjectDaos for safe access to CVs
+     */
+    @Deprecated
     public CvContext getCvContext() {
         return CvContext.getCurrentInstance( session );
     }

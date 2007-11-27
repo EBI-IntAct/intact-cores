@@ -22,7 +22,11 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  * @since <pre>15-Aug-2006</pre>
+ *
+ * @deprecated it is not safe to use the context in environments where sessions are constantly opened and closed
+ * as persisting Cvs to the database may provoke LazyInitializationExceptions
  */
+@Deprecated
 public class CvContext implements Serializable {
 
     private static final Log log = LogFactory.getLog( CvContext.class );

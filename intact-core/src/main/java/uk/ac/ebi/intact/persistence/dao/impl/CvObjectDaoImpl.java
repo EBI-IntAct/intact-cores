@@ -40,25 +40,14 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
     }
 
     public List<T> getByPsiMiRefCollection( Collection<String> psiMis ) {
-        return getSession().createCriteria( getEntityClass() ).createAlias( "xrefs", "xref" )
-                .createAlias( "xref.cvDatabase", "cvDb" )
-                .createAlias( "cvDb.xrefs", "cvDbXref" )
-                .add( Restrictions.eq( "cvDbXref.primaryId", CvDatabase.PSI_MI_MI_REF ) )
-                .add( Restrictions.in( "xref.primaryId", psiMis ) ).list();
+        return getSession().createCriteria( getEntityClass() )
+                .add( Restrictions.in( "miIdentifier", psiMis ) ).list();
     }
 
     public T getByPsiMiRef( String psiMiRef ) {
         Query query = getEntityManager().createQuery(
                 "select cv from "+getEntityClass().getName()+" cv " +
-                "left join cv.xrefs as xref " +
-                        "join xref.cvDatabase as cvDb join cvDb.xrefs as cvDbXref " +
-                        "where cvDbXref.primaryId = '" + CvDatabase.PSI_MI_MI_REF +
-                        "' and xref.primaryId = '"+psiMiRef+"'");
-
-        //query.setParameter("dbMiRef", CvDatabase.PSI_MI_MI_REF);
-        //query.setParameter("psiMiRef", psiMiRef);
-
-        query.setFlushMode(FlushModeType.COMMIT);
+                "where miIdentifier = '"+psiMiRef+"'");
 
         return uniqueResult(query);
         /* 
