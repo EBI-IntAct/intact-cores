@@ -12,6 +12,14 @@ import uk.ac.ebi.intact.model.*;
 public interface Finder {
 
     /**
+     * Finds an annotatedObject based on its properties.
+     *
+     * @param annotatedObject the object we are searching an AC for.
+     * @return an AC or null if it couldn't be found.
+     */
+    public String findAc( AnnotatedObject annotatedObject );
+
+    /**
      * Finds an institution based on its properties.
      *
      * @param institution the object we are searching an AC for.

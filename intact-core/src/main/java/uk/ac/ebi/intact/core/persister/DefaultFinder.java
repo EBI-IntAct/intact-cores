@@ -25,7 +25,11 @@ import uk.ac.ebi.intact.model.*;
  * @since 1.8.0
  */
 public class DefaultFinder implements Finder {
-    
+
+    public String findAc( AnnotatedObject annotatedObject ) {
+        throw new UnsupportedOperationException( );
+    }
+
     public String findAc( Institution institution ) {
         throw new UnsupportedOperationException( );
     }
