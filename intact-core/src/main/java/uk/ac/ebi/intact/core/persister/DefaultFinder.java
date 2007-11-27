@@ -88,8 +88,6 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForInstitution( Institution institution ) {
-        failIfTransient(institution);
-
         String ac = null;
 
         // try to fetch it first using the xref. If not, use the shortlabel
@@ -147,8 +145,6 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForInteraction(Interaction interaction) {
-        failIfTransient(interaction);
-
         // replace all this eventually by just using the CRC
         
         InteractionDao interactionDao = getDaoFactory().getInteractionDao();
@@ -188,8 +184,6 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForInteractor( Interactor interactor ){
-        failIfTransient(interactor);
-
         String ac = null;
 
         InteractorDao<InteractorImpl> interactorDao = getDaoFactory().getInteractorDao();
@@ -268,8 +262,6 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForComponent( Component component ){
-        failIfTransient(component);
-
         return null;
     }
 
@@ -280,8 +272,6 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForFeature( Feature feature ){
-        failIfTransient(feature);
-
         return null;
     }
 
@@ -311,20 +301,6 @@ public class DefaultFinder implements Finder {
         }
 
         return ac;
-    }
-
-    /**
-     * Methods that need to traverse collections in an entity may throw a LazyInitializationException
-     * if the entity is detached from the session. This method is call in those cases, to fail early
-     * if the entity is transient.
-     * @param ao The object being checked
-     */
-    @SuppressWarnings("unchecked")
-    private void failIfTransient(AnnotatedObject ao) {
-        if (getDaoFactory()
-                .getBaseDao().isTransient(ao)) {
-             throw new IllegalArgumentException("Cannot find an AC for a transient "+ao.getClass().getName());
-        }
     }
 
     private EntityManager getEntityManager() {
