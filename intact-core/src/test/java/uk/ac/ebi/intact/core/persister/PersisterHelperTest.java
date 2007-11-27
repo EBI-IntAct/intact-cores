@@ -6,6 +6,8 @@ import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.util.SchemaUtils;
 import uk.ac.ebi.intact.model.Experiment;
+import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
+import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
 
 /**
  * PersisterHelper Tester.
