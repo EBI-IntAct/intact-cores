@@ -158,6 +158,10 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "MI="+miIdentifier+", "+super.toString();
+    }
 } // end CvObject
 
 

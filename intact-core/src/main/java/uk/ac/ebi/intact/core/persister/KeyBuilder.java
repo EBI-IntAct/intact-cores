@@ -134,8 +134,8 @@ class KeyBuilder {
         if ( key == null ) {
             // search for identity
             final Collection<CvObjectXref> xrefs = XrefUtils.getIdentityXrefs( cvObject );
-            if ( xrefs.isEmpty() ) {
-                key = concatPrimaryIds( xrefs );
+            if ( !xrefs.isEmpty() ) {
+                    key = concatPrimaryIds( xrefs );
             } else {
                 key = cvObject.getShortLabel();
             }
