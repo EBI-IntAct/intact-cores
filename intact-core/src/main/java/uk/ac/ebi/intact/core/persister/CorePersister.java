@@ -43,7 +43,6 @@ public class CorePersister implements Persister {
 
     private Finder finder;
     private KeyBuilder keyBuilder;
-    private TransientObjectHandler transientObjectHandler;
     private EntityStateCopier entityStateCopier;
 
     public CorePersister() {
@@ -54,15 +53,7 @@ public class CorePersister implements Persister {
 
         finder = new DefaultFinder();
         keyBuilder = new KeyBuilder();
-        transientObjectHandler = new MergeTransientObjectHandler();
         entityStateCopier = new DefaultEntityStateCopier();
-    }
-
-    public void setTransientObjectHandler( TransientObjectHandler transientObjectHandler ) {
-        if ( transientObjectHandler == null ) {
-            throw new IllegalArgumentException();
-        }
-        this.transientObjectHandler = transientObjectHandler;
     }
 
     public void setEntityStateCopier( EntityStateCopier entityStateCopier ) {
