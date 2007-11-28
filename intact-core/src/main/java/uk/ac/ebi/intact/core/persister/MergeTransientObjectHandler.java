@@ -15,18 +15,21 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 /**
- * Default implementation of the transient object handler.
+ * TODO comment that class header
  *
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
- * @since 1.8.0
+ * @since TODO specify the maven artifact version
  */
-public class DefaultTransientObjectHandler implements TransientObjectHandler {
-
+public class MergeTransientObjectHandler implements TransientObjectHandler {
     public AnnotatedObject handle( AnnotatedObject ao ) {
-        throw new UnsupportedOperationException( "We do not support transient object so far..." );
+        DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+        daoFactory.getEntityManager().merge( ao );
+        return ao;
     }
 }

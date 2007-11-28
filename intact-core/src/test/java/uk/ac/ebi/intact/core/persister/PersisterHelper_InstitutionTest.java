@@ -15,8 +15,7 @@ import uk.ac.ebi.intact.model.Institution;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PersisterHelper_InstitutionTest extends IntactBasicTestCase
-{
+public class PersisterHelper_InstitutionTest extends IntactBasicTestCase {
 
     @Test
     public void persistInstitution_default_withHelper() throws Exception {
@@ -47,6 +46,8 @@ public class PersisterHelper_InstitutionTest extends IntactBasicTestCase
 
     @Test
     public void persistInstitution_annotations() throws Exception {
+
+        Assert.assertNull( getDaoFactory().getInstitutionDao().getByXref( Institution.MINT_REF ) );
 
         Institution institution = getMockBuilder().createInstitution(Institution.MINT_REF, Institution.MINT);
         institution.getAnnotations().add(getMockBuilder().createAnnotation("nowhere", CvTopic.CONTACT_EMAIL_MI_REF, CvTopic.CONTACT_EMAIL));

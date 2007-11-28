@@ -44,8 +44,8 @@ public abstract class IntactBasicTestCase
         mockBuilder = null;
     }
 
-    @AfterClass
-    public static void end() throws Exception {
+    @After
+    public final void end() throws Exception {
         if (IntactContext.currentInstanceExists()) {
             IntactContext.getCurrentInstance().close();
         }

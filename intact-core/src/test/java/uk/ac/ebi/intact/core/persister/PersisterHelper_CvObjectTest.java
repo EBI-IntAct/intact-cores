@@ -15,10 +15,11 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.*;
-import uk.ac.ebi.intact.core.persister.PersisterException;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import org.junit.Test;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
@@ -26,7 +27,7 @@ import uk.ac.ebi.intact.model.util.CvObjectBuilder;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 /**
- * TODO comment this
+ * PersisterHelper tester.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -39,6 +40,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         CvObjectBuilder builder = new CvObjectBuilder();
         CvDatabase psimi = builder.createPsiMiCvDatabase( getIntactContext().getInstitution() );
 
+        Assert.assertFalse( getDaoFactory().isTransactionActive() );
         PersisterHelper.saveOrUpdate(psimi);
 
         Xref xref = AnnotatedObjectUtils.searchXrefs( psimi, psimi ).iterator().next();
@@ -72,28 +74,15 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
     @Test
     public void persist_existing_object() throws Exception {
-        CvObjectBuilder builder = new CvObjectBuilder();
-        CvXrefQualifier cvXrefQual = builder.createIdentityCvXrefQualifier( getIntactContext().getInstitution() );
-        CvDatabase cvDb = builder.createPsiMiCvDatabase( getIntactContext().getInstitution() );
-
         final String expRoleLabel = "EXP_ROLE";
-        CvExperimentalRole expRole = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
-        CvObjectXref identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "roleMi", cvXrefQual );
 
-        expRole.addXref( identityXref );
-
+        CvExperimentalRole expRole = getMockBuilder().createCvObject( CvExperimentalRole.class, "MI:xxxx", expRoleLabel);
         PersisterHelper.saveOrUpdate(expRole);
 
-        // re-create the same object and check that it gets assigned the AC.
-        cvXrefQual = builder.createIdentityCvXrefQualifier( getIntactContext().getInstitution() );
-        cvDb = builder.createPsiMiCvDatabase( getIntactContext().getInstitution() );
-
-        CvExperimentalRole expRole2 = new CvExperimentalRole( getIntactContext().getInstitution(), expRoleLabel );
-        identityXref = new CvObjectXref( getIntactContext().getInstitution(), cvDb, "rolePrimaryId", cvXrefQual );
-
-        expRole2.addXref( identityXref );
-
+        CvExperimentalRole expRole2 = getMockBuilder().createCvObject( CvExperimentalRole.class, "MI:xxxx", expRoleLabel);
         PersisterHelper.saveOrUpdate(expRole2);
+
+
 
         Assert.assertNotSame( expRole, expRole2 );
         Assert.assertEquals( expRole.getAc(), expRole2.getAc() );

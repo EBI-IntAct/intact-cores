@@ -12,6 +12,8 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
+import uk.ac.ebi.intact.model.util.InteractionUtils;
+import uk.ac.ebi.intact.model.util.IllegalLabelFormatException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -223,7 +225,16 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
     // entity listeners
 
     @PrePersist
+    public void onPrePersist() {
+//        calculateCrc();
+        synchronizeShortLabel();
+    }
+
     @PreUpdate
+    public void onPreUpdate() {
+//        calculateCrc();
+    }
+
     public void calculateCrc() {
         CrcCalculator crcCalculator = new CrcCalculator();
 
@@ -235,6 +246,26 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
         if (log.isDebugEnabled()) log.debug("Calculated crc for interaction '" + getShortLabel() +
                                             "' in " + new Duration(before, after).getMillis() + "ms: " + crc);
+    }
+
+    /**
+     * Update the shortlabel based on the data available in the database.
+     * <p/>
+     * Note: this will initialise an IntactContext even if there was none available before calling.
+     */
+    public void synchronizeShortLabel() {
+        String newShortLabel = null;
+        try {
+            newShortLabel = InteractionUtils.syncShortLabelWithDb(shortLabel);
+        } catch ( IllegalLabelFormatException e) {
+            if (log.isErrorEnabled()) log.error("Interaction with unexpected label, but will be persisted as is: "+this, e);
+            newShortLabel = shortLabel;
+        }
+
+        if (!shortLabel.equals(newShortLabel)) {
+            if (log.isDebugEnabled()) log.debug("Interaction with label '"+shortLabel+"' renamed '"+newShortLabel+"'" );
+            setShortLabel(newShortLabel);
+        }
     }
 
     ///////////////////////////////////////
@@ -390,6 +421,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     @Column(name="crc64", length = 16)
     public String getCrc() {
+        calculateCrc();
         return crc;
     }
 

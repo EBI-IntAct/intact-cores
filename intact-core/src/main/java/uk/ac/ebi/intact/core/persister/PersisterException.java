@@ -19,7 +19,7 @@ package uk.ac.ebi.intact.core.persister;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PersisterException extends Exception{
+public class PersisterException extends RuntimeException{
 
     public PersisterException() {
     }

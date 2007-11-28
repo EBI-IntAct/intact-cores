@@ -498,7 +498,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         this.expressedInAc = ac;
     }
 
-    @ManyToMany (cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(
             name = "ia_component2exp_preps",
             joinColumns = {@JoinColumn( name = "component_ac" )},

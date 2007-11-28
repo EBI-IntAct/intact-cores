@@ -36,16 +36,6 @@ import java.util.Iterator;
  */
 public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
-    @Before
-    public void before() throws Exception {
-        beginTransaction();
-    }
-
-    @After
-    public void after() throws Exception {
-        commitTransaction();
-    }
-
     @Test
     public void allPersisted() throws Exception {
         IntactMockBuilder builder = super.getMockBuilder();
@@ -75,7 +65,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void allPersistedWithFeature() throws Exception {
-        IntactMockBuilder builder = super.getMockBuilder();
+        IntactMockBuilder builder = getMockBuilder();
         IntactEntry intactEntry = builder.createIntactEntryRandom(2, 2, 2);
         Assert.assertEquals( "intact", builder.getInstitution().getShortLabel() );
         getIntactContext().getConfig().setAcPrefix( "IA" );
@@ -96,21 +86,17 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
             Assert.assertFalse(cv.getXrefs().isEmpty());
         }
 
-        // print all publications
-        for ( Publication pub : getDaoFactory().getPublicationDao().getAll() ) {
-            System.out.println( pub );
-        }
-
         // having already persisted an entry in the database, we will persist an other one.
         // That involves reusing CV terms, Institution...
-
-        for ( Institution institution : getDaoFactory().getInstitutionDao().getAll() ) {
-            System.out.println( institution );
-        }
-
         Assert.assertEquals( 2, getDaoFactory().getInstitutionDao().getAll().size() );
-        Assert.assertEquals(getDaoFactory().getInstitutionDao().getByShortLabel( "intact" ),
-                            getDaoFactory().getAnnotatedObjectDao().getAll().iterator().next().getOwner() );
+        final Institution intact1 = getDaoFactory().getInstitutionDao().getByShortLabel( "intact" );
+        System.out.println( "1" );
+        System.out.println( intact1.getAliases() );
+        final Institution intact2 = getDaoFactory().getAnnotatedObjectDao().getAll().iterator().next().getOwner();
+        System.out.println( "2" );
+        System.out.println( intact2.getAliases() );
+        Assert.assertEquals( intact1, intact2 );
+
         Assert.assertEquals( 18, getDaoFactory().getCvObjectDao().getAll().size() );
         Assert.assertEquals( 4, getDaoFactory().getInteractionDao().getAll().size() );
 
@@ -383,16 +369,12 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         String originalCrc = interaction.getCrc();
 
-        beginTransaction();
         InteractionImpl interaction2 = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-        final Component componentPrey = getMockBuilder().createComponentPrey(interaction, getMockBuilder().createProteinRandom());
-        PersisterHelper.saveOrUpdate(componentPrey);
-        interaction2.getComponents().add(componentPrey);
-        interaction2.setCrc(null);
-        commitTransaction();
+        final Component componentPrey = getMockBuilder().createComponentPrey(interaction2, getMockBuilder().createProteinRandom());
+        interaction2.addComponent(componentPrey);
+        PersisterHelper.saveOrUpdate(interaction2);
 
         Assert.assertFalse(originalCrc.equals(interaction2.getCrc()));
-
     }
 
     @Test
@@ -418,7 +400,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void newInteraction_clonedInteraction() throws Exception {
-        commitTransaction();
         Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
@@ -431,12 +412,11 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(clonedInteraction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
-        Assert.assertEquals("fooprey-barbait", getDaoFactory().getInteractionDao().getByAc(clonedInteraction.getAc()).getShortLabel());
+        Assert.assertEquals("fooprey-barbait-x", getDaoFactory().getInteractionDao().getByAc(clonedInteraction.getAc()).getShortLabel());
     }
 
     @Test
     public void newInteraction_clonedInteractionWithDifferentInteractor() throws Exception {
-        commitTransaction();
         Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         PersisterHelper.saveOrUpdate(interaction);
@@ -458,8 +438,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void existingInteraction_addingExistingExperiment() throws Exception {
-        commitTransaction();
-
         Experiment exp = getMockBuilder().createExperimentRandom(1);
         Experiment exp2 = getMockBuilder().createExperimentRandom(1);
 
@@ -495,8 +473,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void removingExperiments() throws Exception {
-        commitTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
         Experiment experimentToDelete = getMockBuilder().createExperimentEmpty("exptodelete-2007-1");
         interaction.addExperiment(experimentToDelete);
@@ -522,8 +498,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void persistDisconnectedInteraction() throws Exception {
-        commitTransaction();
-
         Interaction interaction = getMockBuilder().createDeterministicInteraction();
         PersisterHelper.saveOrUpdate(interaction);
 

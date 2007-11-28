@@ -28,6 +28,9 @@ public class IntactObjectEventListener  {
     @PrePersist
     public void prePersist(Object object) {
         if (object instanceof AbstractAuditable) {
+            if ( log.isDebugEnabled() ) {
+                log.debug( "Running @PrePersist on " + object );
+            }
             AbstractAuditable auditable = (AbstractAuditable)object;
 
             final Date now = new Date();
@@ -46,6 +49,10 @@ public class IntactObjectEventListener  {
     @PreUpdate
     public void preUpdate(Object object) {
         if (object instanceof AbstractAuditable) {
+            if ( log.isDebugEnabled() ) {
+                log.debug( "Running @PreUpdate on " + object );
+            }
+
             AbstractAuditable auditable = (AbstractAuditable)object;
             auditable.setUpdated(new Date());
 
@@ -53,6 +60,4 @@ public class IntactObjectEventListener  {
             auditable.setUpdator( currentUser );
         }
     }
-
-
 }

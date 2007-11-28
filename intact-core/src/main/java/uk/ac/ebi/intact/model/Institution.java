@@ -23,7 +23,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "ia_institution")
-public class Institution extends IntactObjectImpl implements Serializable, AnnotatedObject<InstitutionXref,InstitutionAlias> {
+public class Institution extends AnnotatedObjectImpl<InstitutionXref,InstitutionAlias> implements Serializable, AnnotatedObject<InstitutionXref,InstitutionAlias> {
 
     //////////////////////
     // Constants
@@ -102,7 +102,7 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
      *                              defining a shortLabel.
      */
     public Institution(String shortLabel) {
-        this.shortLabel = prepareLabel(shortLabel);
+        setShortLabel(shortLabel);
     }
 
     private String prepareLabel(String shortLabel) {
@@ -152,18 +152,6 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
         return aliases;
     }
 
-    public void addAlias(InstitutionAlias alias) {
-        getAliases().add(alias);
-    }
-
-    public void removeAlias(InstitutionAlias alias) {
-        getAliases().remove(alias);
-    }
-
-    public void setAliases(Collection<InstitutionAlias> aliases) {
-        this.aliases = aliases;
-    }
-
     @ManyToMany( cascade = {CascadeType.PERSIST} )
     //@Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @JoinTable(
@@ -178,54 +166,12 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
         return annotations;
     }
 
-    public void setAnnotations(Collection<Annotation> annotations) {
-        this.annotations = annotations;
-    }
-
-    public void addAnnotation(Annotation annotation) {
-        getAnnotations().add(annotation);
-    }
-
-    public void removeAnnotation(Annotation annotation) {
-        getAnnotations().remove(annotation);
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    @Length( min = 1, max = MAX_SHORT_LABEL_LEN )
-    @NotNull
-    public String getShortLabel() {
-        return shortLabel;
-    }
-
-    public void setShortLabel(String shortLabel) {
-        this.shortLabel = shortLabel;
-    }
-
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
     public Collection<InstitutionXref> getXrefs() {
         if (xrefs == null) {
             xrefs = new ArrayList<InstitutionXref>();
         }
         return xrefs;
-    }
-
-    public void addXref(InstitutionXref aXref) {
-        getXrefs().add(aXref);
-    }
-
-    public void removeXref(InstitutionXref xref) {
-        getXrefs().remove(xref);
-    }
-
-    public void setXrefs(Collection<InstitutionXref> xrefs) {
-        this.xrefs = xrefs;
     }
 
     @Transient
@@ -253,19 +199,40 @@ public class Institution extends IntactObjectImpl implements Serializable, Annot
     // instance methods
 
     public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof Institution ) ) {
+            return false;
+        }
+
+        if ( !super.equals( o ) ) {
+            return false;
+        }
+
+//        return equals(o, true);
+
+
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null ) return false;
+
+//        boolean sameClass = getClass().isAssignableFrom( o.getClass() ) || o.getClass().isAssignableFrom( getClass() );
+//        if( !sameClass ) {
+//            return false;
+//        }
 
         Institution that = (Institution) o;
 
-        if (aliases != null ? !aliases.equals(that.aliases) : that.aliases != null) return false;
-        if (annotations != null ? !annotations.equals(that.annotations) : that.annotations != null) return false;
-        if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
+
+
+//        if (aliases != null ? !aliases.equals(that.aliases) : that.aliases != null) return false;
+//        if (annotations != null ? !annotations.equals(that.annotations) : that.annotations != null) return false;
+//        if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
         if (postalAddress != null ? !postalAddress.equals(that.postalAddress) : that.postalAddress != null)
             return false;
-        if (shortLabel != null ? !shortLabel.equals(that.shortLabel) : that.shortLabel != null) return false;
+//        if (shortLabel != null ? !shortLabel.equals(that.shortLabel) : that.shortLabel != null) return false;
         if (url != null ? !url.equals(that.url) : that.url != null) return false;
-        if (xrefs != null ? !xrefs.equals(that.xrefs) : that.xrefs != null) return false;
+//        if (xrefs != null ? !xrefs.equals(that.xrefs) : that.xrefs != null) return false;
 
         return true;
     }

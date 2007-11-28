@@ -151,27 +151,18 @@ public class DefaultFinder implements Finder {
 
         CrcCalculator crcCalculator = new CrcCalculator();
 
-        CrcCalculator ignoreExperimentCrcCalc = new CrcCalculator() {
-
-            @Override
-            protected UniquenessStringBuilder createUniquenessString(Experiment experiment) {
-                return new UniquenessStringBuilder();
-            }
-        };
-
         // Get the interactors where exactly the same interactors are involved
         List<String> interactorPrimaryIDs = InteractionUtils.getInteractorPrimaryIDs(interaction);
         List<Interaction> interactionsWithSameInteractors =
                 interactionDao.getByInteractorsPrimaryId(true, interactorPrimaryIDs.toArray(new String[interactorPrimaryIDs.size()]));
 
         for (Interaction interactionWithSameInteractor : interactionsWithSameInteractors) {
-            String interactionCrc = ignoreExperimentCrcCalc.crc64(interaction);
+            String interactionCrc = crcCalculator.crc64(interaction);
             String interactionWithSameInteractorCrc = crcCalculator.crc64(interactionWithSameInteractor);
 
             if (interactionCrc.equals(interactionWithSameInteractorCrc)) {
                 return interactionWithSameInteractor.getAc();
             }
-
         }
 
         return null;

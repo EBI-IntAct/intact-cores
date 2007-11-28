@@ -39,23 +39,23 @@ class KeyBuilder {
         Key key;
 
         if ( ao instanceof Institution ) {
-            key = keyForInstitution( (Institution) ao );
+            key = keyForInstitution( ( Institution ) ao );
         } else if ( ao instanceof Publication ) {
-            key = keyForPublication( (Publication) ao );
+            key = keyForPublication( ( Publication ) ao );
         } else if ( ao instanceof CvObject ) {
-            key = keyForCvObject( (CvObject) ao );
+            key = keyForCvObject( ( CvObject ) ao );
         } else if ( ao instanceof Experiment ) {
-            key = keyForExperiment( (Experiment) ao );
+            key = keyForExperiment( ( Experiment ) ao );
         } else if ( ao instanceof Interaction ) {
-            key = keyForInteraction( (Interaction) ao );
+            key = keyForInteraction( ( Interaction ) ao );
         } else if ( ao instanceof Interactor ) {
-            key = keyForInteractor( (Interactor) ao );
-       } else if ( ao instanceof BioSource ) {
-            key = keyForBioSource( (BioSource) ao );
+            key = keyForInteractor( ( Interactor ) ao );
+        } else if ( ao instanceof BioSource ) {
+            key = keyForBioSource( ( BioSource ) ao );
         } else if ( ao instanceof Component ) {
-            key = keyForComponent( (Component) ao );
+            key = keyForComponent( ( Component ) ao );
         } else if ( ao instanceof Feature ) {
-            key = keyForFeature( (Feature) ao );
+            key = keyForFeature( ( Feature ) ao );
         } else {
             throw new IllegalArgumentException( "KeyBuilder doesn't build key for: " + ao.getClass().getName() );
         }
@@ -104,7 +104,7 @@ class KeyBuilder {
     }
 
     public Key keyForBioSource( BioSource bioSource ) {
-        return new Key("BioSource:"+bioSource.getTaxId());
+        return new Key( "BioSource:" + bioSource.getTaxId() );
     }
 
     public Key keyForComponent( Component component ) {
@@ -130,7 +130,17 @@ class KeyBuilder {
     }
 
     public Key keyForCvObject( CvObject cvObject ) {
-        return new Key( cvObject.getMiIdentifier() );
+        String key = cvObject.getMiIdentifier();
+        if ( key == null ) {
+            // search for identity
+            final Collection<CvObjectXref> xrefs = XrefUtils.getIdentityXrefs( cvObject );
+            if ( xrefs.isEmpty() ) {
+                key = concatPrimaryIds( xrefs );
+            } else {
+                key = cvObject.getShortLabel();
+            }
+        }
+        return new Key( key );
     }
 
     protected Key keyForAnnotatedObject( AnnotatedObject annotatedObject ) {
@@ -139,6 +149,10 @@ class KeyBuilder {
     }
 
     protected String concatPrimaryIds( Collection<? extends Xref> xrefs ) {
+        if ( xrefs.isEmpty() ) {
+            throw new IllegalArgumentException( "Expecting a non empty collection of Xrefs" );
+        }
+
         List<String> primaryIds = new ArrayList<String>( xrefs.size() );
 
         for ( Xref xref : xrefs ) {

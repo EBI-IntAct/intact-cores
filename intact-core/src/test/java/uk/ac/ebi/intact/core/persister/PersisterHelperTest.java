@@ -17,11 +17,6 @@ import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
  */
 public class PersisterHelperTest extends IntactBasicTestCase {
 
-    @Before
-    public void clearDb() throws Exception {
-        SchemaUtils.createSchema();
-    }
-
     @Test
     public void saveOrUpdate_default() throws Exception {
         Experiment experiment = getMockBuilder().createExperimentRandom(1);

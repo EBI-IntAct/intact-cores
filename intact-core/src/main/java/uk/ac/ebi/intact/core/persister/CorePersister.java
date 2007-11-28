@@ -15,6 +15,9 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
@@ -32,8 +35,11 @@ import java.util.*;
  */
 public class CorePersister implements Persister {
 
+    private static final Log log = LogFactory.getLog( CorePersister.class );
+
     private Map<Key, AnnotatedObject> annotatedObjectsToPersist;
     private Map<Key, AnnotatedObject> annotatedObjectsToMerge;
+    private Map<Key, AnnotatedObject> synched;
 
     private Finder finder;
     private KeyBuilder keyBuilder;
@@ -44,17 +50,60 @@ public class CorePersister implements Persister {
 
         annotatedObjectsToPersist = new HashMap<Key, AnnotatedObject>();
         annotatedObjectsToMerge = new HashMap<Key, AnnotatedObject>();
+        synched = new HashMap<Key, AnnotatedObject>();
 
         finder = new DefaultFinder();
         keyBuilder = new KeyBuilder();
-        transientObjectHandler = new DefaultTransientObjectHandler();
+        transientObjectHandler = new MergeTransientObjectHandler();
         entityStateCopier = new DefaultEntityStateCopier();
+    }
+
+    public void setTransientObjectHandler( TransientObjectHandler transientObjectHandler ) {
+        if ( transientObjectHandler == null ) {
+            throw new IllegalArgumentException();
+        }
+        this.transientObjectHandler = transientObjectHandler;
+    }
+
+    public void setEntityStateCopier( EntityStateCopier entityStateCopier ) {
+        if ( entityStateCopier == null ) {
+            throw new IllegalArgumentException();
+        }
+        this.entityStateCopier = entityStateCopier;
     }
 
     ////////////////////////
     // Implement Persister
 
-    public AnnotatedObject synchronize( AnnotatedObject ao ) {
+    public void saveOrUpdate( AnnotatedObject ao ) {
+
+        boolean inTransaction = IntactContext.getCurrentInstance().getDataContext().isTransactionActive();
+
+        if ( !inTransaction ) IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        synchronize( ao );
+        commit();
+
+        reload( ao );
+
+        if ( !inTransaction ) commitTransactionAndRollbackIfNecessary();
+    }
+
+    protected void commitTransactionAndRollbackIfNecessary() throws PersisterException {
+        try {
+            IntactContext.getCurrentInstance().getDataContext().commitTransaction();
+        }
+        catch ( IntactTransactionException e ) {
+            try {
+                IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getCurrentTransaction().rollback();
+            }
+            catch ( IntactTransactionException e1 ) {
+                throw new PersisterException( e1 );
+            }
+        }
+    }
+
+    protected AnnotatedObject synchronize( AnnotatedObject ao ) {
 
         if ( ao == null ) {
             return null;
@@ -66,15 +115,10 @@ public class CorePersister implements Persister {
             throw new IllegalArgumentException( "Cannot handle null key" );
         }
 
-        if ( annotatedObjectsToMerge.containsKey( key ) ) {
-            return annotatedObjectsToMerge.get( key );
+        if ( synched.containsKey( key ) ) {
+            return synched.get( key );
         }
-
-        if ( annotatedObjectsToPersist.containsKey( key ) ) {
-            return annotatedObjectsToPersist.get( key );
-        }
-
-        AnnotatedObject synched = null;
+        synched.put( key, ao );
 
         if ( ao.getAc() == null ) {
 
@@ -91,19 +135,15 @@ public class CorePersister implements Persister {
             } else {
 
                 // object exists in the database, we will update it
-                final AnnotatedObjectDao<? extends AnnotatedObject> dao =
-                        IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getAnnotatedObjectDao( ao.getClass() );
+                final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+                final AnnotatedObjectDao<? extends AnnotatedObject> dao = daoFactory.getAnnotatedObjectDao( ao.getClass() );
                 final AnnotatedObject managedObject = dao.getByAc( ac );
 
-                // updated the managed object based on ao's properties
+                // Solution I - updated the managed object based on ao's properties
                 entityStateCopier.copy( ao, managedObject );
-                annotatedObjectsToMerge.put( key, ao );
-
-                synchronizeChildren( ao );
-
+                ao.setAc( managedObject.getAc() );
+                synchronizeChildren( managedObject );
             }
-
-            synched = ao;
 
         } else {
 
@@ -111,39 +151,112 @@ public class CorePersister implements Persister {
             if ( baseDao.isTransient( ao ) ) {
 
                 // transient object: that is not attached to the session
-                synched = transientObjectHandler.handle( ao );
+                ao = transientObjectHandler.handle( ao );
 
             } else {
 
                 // managed object
+                // annotatedObjectsToMerge.put( key, ao );
                 synchronizeChildren( ao );
             }
         }
 
-        return synched;
+        return ao;
     }
 
-    public void commit() {
+    protected void reload( AnnotatedObject ao ) {
+        if ( ao.getAc() == null ) {
+            throw new IllegalStateException( "Annotated object without ac, cannot be reloaded: " + ao );
+        }
+        DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+        daoFactory.getAnnotatedObjectDao( ao.getClass() ).getByAc( ao.getAc() );
+    }
+
+    protected void commit() {
 
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
 
-        // order the collection of objects to persist: institution, cvs, others
+        if ( log.isDebugEnabled() ) {
+            log.debug( "Persisting objects..." );
+        }
+
+        // Order the collection of objects to persist: institution, cvs, others
+        List<AnnotatedObject> thingsToPersist = new ArrayList<AnnotatedObject>( annotatedObjectsToPersist.values() );
+        Collections.sort( thingsToPersist, new PersistenceOrderComparator() );
+        boolean finishedCvs = false;
+        for ( AnnotatedObject ao : thingsToPersist ) {
+            if ( !finishedCvs && !( ao instanceof Institution || ao instanceof CvObject ) ) {
+                finishedCvs = true;
+                daoFactory.getEntityManager().flush();
+            }
+            if ( log.isDebugEnabled() ) {
+                log.debug( "\tAbout to persist " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+            }
+
+            // this may happen if there is a cascade on this object from the parent
+            if ( ao.getAc() != null ) {
+                log.warn( "Object to persist should NOT have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+            }
+
+            daoFactory.getBaseDao().persist( ao );
+            logPersistence( ao );
+        }
+
+        if ( log.isDebugEnabled() ) {
+            log.debug( "Merging objects..." );
+        }
+
+        // Order the collection of objects to persist: institution, cvs, others
         List<AnnotatedObject> thingsToMerge = new ArrayList<AnnotatedObject>( annotatedObjectsToMerge.values() );
         Collections.sort( thingsToMerge, new PersistenceOrderComparator() );
         for ( AnnotatedObject ao : annotatedObjectsToMerge.values() ) {
+            if ( log.isDebugEnabled() ) {
+                log.debug( "\tAbout to merge " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+            }
+
+            if ( ao.getAc() == null ) {
+                throw new IllegalStateException( "Object to persist should have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+            }
+
             daoFactory.getBaseDao().merge( ao );
+            logPersistence( ao );
         }
 
-        SortedMap m = new TreeMap();
+        annotatedObjectsToMerge.clear();
+        annotatedObjectsToPersist.clear();
+        daoFactory.getEntityManager().flush();
 
-        // order the collection of objects to persist: institution, cvs, others
-        List<AnnotatedObject> thingsToPersist = new ArrayList<AnnotatedObject>( annotatedObjectsToPersist.values() );
-        Collections.sort( thingsToPersist, new PersistenceOrderComparator() );
-        for ( AnnotatedObject ao : thingsToPersist ) {
-            daoFactory.getBaseDao().persist( ao );
+        synched.clear();
+    }
+
+    private static void logPersistence( AnnotatedObject<?, ?> ao ) {
+        if ( log.isDebugEnabled() ) {
+            log.debug( "\t\t\tPersisted with AC: " + ao.getAc() );
+
+            if ( !ao.getXrefs().isEmpty() ) {
+                log.debug( "\t\t\tXrefs: " + ao.getXrefs().size() );
+
+                for ( Xref xref : ao.getXrefs() ) {
+                    log.debug( "\t\t\t\t" + xref );
+                }
+            }
+
+            if ( !ao.getAliases().isEmpty() ) {
+                log.debug( "\t\t\tAliases: " + ao.getAliases().size() );
+
+                for ( Alias alias : ao.getAliases() ) {
+                    log.debug( "\t\t\t\t" + alias );
+                }
+            }
+
+            if ( !ao.getAnnotations().isEmpty() ) {
+                log.debug( "\t\t\tAnnotations: " + ao.getAnnotations().size() );
+
+                for ( Annotation annot : ao.getAnnotations() ) {
+                    log.debug( "\t\t\t\t" + annot );
+                }
+            }
         }
-
-        daoFactory.commitTransaction();
     }
 
     /////////////////////////////////////////////
@@ -208,11 +321,11 @@ public class CorePersister implements Persister {
         component.setBindingDomains( synchronizeCollection( component.getBindingDomains() ) );
         component.setCvBiologicalRole( ( CvBiologicalRole ) synchronize( component.getCvBiologicalRole() ) );
         component.setCvExperimentalRole( ( CvExperimentalRole ) synchronize( component.getCvExperimentalRole() ) );
-        component.setExperimentalPreparations( synchronizeCollection( component.getExperimentalPreparations() ) );
         component.setExpressedIn( ( BioSource ) synchronize( component.getExpressedIn() ) );
         component.setInteraction( ( Interaction ) synchronize( component.getInteraction() ) );
         component.setInteractor( ( Interactor ) synchronize( component.getInteractor() ) );
         component.setParticipantDetectionMethods( synchronizeCollection( component.getParticipantDetectionMethods() ) );
+        component.setExperimentalPreparations( synchronizeCollection( component.getExperimentalPreparations() ) );
         synchronizeAnnotatedObjectCommons( component );
     }
 
@@ -221,13 +334,20 @@ public class CorePersister implements Persister {
         feature.setComponent( ( Component ) synchronize( feature.getComponent() ) );
         feature.setCvFeatureIdentification( ( CvFeatureIdentification ) synchronize( feature.getCvFeatureIdentification() ) );
         feature.setCvFeatureType( ( CvFeatureType ) synchronize( feature.getCvFeatureType() ) );
-        feature.setRanges( synchronizeCollection( feature.getRanges() ) );
+        for ( Range range : feature.getRanges() ) {
+            synchronizeRange( range );
+        }
         synchronizeAnnotatedObjectCommons( feature );
     }
 
+    private void synchronizeRange( Range range ) {
+        range.setFromCvFuzzyType( ( CvFuzzyType ) synchronize( range.getFromCvFuzzyType() ) );
+        range.setToCvFuzzyType( ( CvFuzzyType ) synchronize( range.getToCvFuzzyType() ) );
+    }
+
     private void synchronizeCvObject( CvObject cvObject ) {
-        // no sub-object, do nothing
         // TODO handle parents and children in case the instance is a CvDagObject
+
         synchronizeAnnotatedObjectCommons( cvObject );
     }
 
@@ -237,14 +357,13 @@ public class CorePersister implements Persister {
     }
 
     private void synchronizeInstitution( Institution institution ) {
-        // no sub-object, do nothing
         synchronizeAnnotatedObjectCommons( institution );
     }
 
-    private Collection synchronizeCollection( Collection collection ) {
-        Collection synchedCollection = new ArrayList( collection.size() );
-        for ( Object o : collection ) {
-            synchedCollection.add( synchronize( ( AnnotatedObject ) o ) );
+    private <X extends AnnotatedObject> Collection<X> synchronizeCollection( Collection<X> collection ) {
+        Collection<X> synchedCollection = new ArrayList<X>( collection.size() );
+        for ( X ao : collection ) {
+            synchedCollection.add( ( X ) synchronize( ao ) );
         }
         return synchedCollection;
     }
@@ -275,17 +394,20 @@ public class CorePersister implements Persister {
     }
 
     private Xref synchronizeXrefs( Xref xref ) {
+        xref.setOwner( ( Institution ) synchronize( xref.getOwner() ) );
         xref.setCvDatabase( ( CvDatabase ) synchronize( xref.getCvDatabase() ) );
         xref.setCvXrefQualifier( ( CvXrefQualifier ) synchronize( xref.getCvXrefQualifier() ) );
         return xref;
     }
 
     private Alias synchronizeAlias( Alias alias ) {
+        alias.setOwner( ( Institution ) synchronize( alias.getOwner() ) );
         alias.setCvAliasType( ( CvAliasType ) synchronize( alias.getCvAliasType() ) );
         return alias;
     }
 
     private Annotation synchronizeAnnotation( Annotation annotation ) {
+        annotation.setOwner( ( Institution ) synchronize( annotation.getOwner() ) );
         annotation.setCvTopic( ( CvTopic ) synchronize( annotation.getCvTopic() ) );
         return annotation;
     }

@@ -15,22 +15,10 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
-import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
-import uk.ac.ebi.intact.core.unit.mock.MockInteractorDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.ProteinUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 
 /**
  * TODO comment this
@@ -39,16 +27,6 @@ import java.util.Date;
  * @version $Id$
  */
 public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
-
-    @Before
-    public void before() throws Exception {
-        beginTransaction();
-    }
-
-    @After
-    public void after() throws Exception {
-        commitTransaction();
-    }
 
     @Test
     public void aliasPersisted() throws Exception {
@@ -88,11 +66,9 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Protein prot = getMockBuilder().createProtein("Q00112", "lalaProt");
         PersisterHelper.saveOrUpdate(prot);
 
-        beginTransaction();
         Protein protBeforeUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
         Assert.assertNotNull(protBeforeUpdate);
         Assert.assertEquals(1, protBeforeUpdate.getXrefs().size());
-        commitTransaction();
 
         Protein protUpdated = getMockBuilder().createProtein("Q00112", "lalaProt");
         CvXrefQualifier secondaryAc = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.SECONDARY_AC_MI_REF, CvXrefQualifier.SECONDARY_AC);
@@ -101,12 +77,10 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         protUpdated.addXref(secondaryXref);
         PersisterHelper.saveOrUpdate(protUpdated);
 
-        beginTransaction();
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
         Protein protAfterUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
         Assert.assertNotNull(protAfterUpdate);
         Assert.assertEquals(2, protAfterUpdate.getXrefs().size());
-        commitTransaction();
     }
 
     @Test
@@ -125,5 +99,4 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(protein);
 
     }
-
 }

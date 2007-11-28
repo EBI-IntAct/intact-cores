@@ -10,8 +10,6 @@ import uk.ac.ebi.intact.model.AnnotatedObject;
  * @since 1.8.0
  */
 public interface Persister {
-    
-    public AnnotatedObject synchronize( AnnotatedObject ao );
 
-    public void commit();
+    public void saveOrUpdate( AnnotatedObject ao );
 }

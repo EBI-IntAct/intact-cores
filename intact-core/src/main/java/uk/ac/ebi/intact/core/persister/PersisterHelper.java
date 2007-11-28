@@ -15,62 +15,47 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.business.IntactTransactionException;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.model.IntactEntry;
+import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 /**
- * Helper class to reduce the code needed to save or update an Annotated object
+ * Helper class to reduce the code needed to save or update an Annotated object.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PersisterHelper
-{
+public class PersisterHelper {
     private PersisterHelper() {}
 
-    public static void saveOrUpdate(IntactEntry... intactEntries) throws PersisterException {
-        for (IntactEntry intactEntry : intactEntries) {
-            boolean inTransaction = IntactContext.getCurrentInstance().getDataContext().isTransactionActive();
-
-            throw new UnsupportedOperationException();
-
-//            if (!inTransaction) IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-//
-//            EntryPersister.getInstance().saveOrUpdate(intactEntry);
-//            EntryPersister.getInstance().commit();
-//
-//            if (!inTransaction) commitTransactionAndRollbackIfNecessary();
+    public static void saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException {
+        for ( IntactEntry intactEntry : intactEntries ) {
+            for ( Interaction interaction : intactEntry.getInteractions() ) {
+                saveOrUpdate( interaction );
+            }
         }
     }
 
-    public static void saveOrUpdate(AnnotatedObject... annotatedObject) throws PersisterException {
+    public static void saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
         boolean inTransaction = IntactContext.getCurrentInstance().getDataContext().isTransactionActive();
 
-        if (!inTransaction) IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+        if ( !inTransaction ) IntactContext.getCurrentInstance().getDataContext().beginTransaction();
 
         CorePersister corePersister = new CorePersister();
 
-        for (AnnotatedObject ao : annotatedObject) {
-            corePersister.synchronize(ao);
+        for ( AnnotatedObject ao : annotatedObjects ) {
+            corePersister.synchronize( ao );
         }
         corePersister.commit();
 
-        if (!inTransaction) commitTransactionAndRollbackIfNecessary();
-
-    }
-
-    private static void commitTransactionAndRollbackIfNecessary() throws PersisterException {
-        try {
-            IntactContext.getCurrentInstance().getDataContext().commitTransaction();
+        for ( AnnotatedObject ao : annotatedObjects ) {
+            corePersister.reload( ao );
         }
-        catch (IntactTransactionException e) {
-            try {
-                IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getCurrentTransaction().rollback();
-            }
-            catch (IntactTransactionException e1) {
-                throw new PersisterException(e1);
-            }
-        }
+
+        if ( !inTransaction ) corePersister.commitTransactionAndRollbackIfNecessary();
+
     }
 }

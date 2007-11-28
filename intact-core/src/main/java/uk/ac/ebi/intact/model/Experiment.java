@@ -5,8 +5,11 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.annotation.EditorTopic;
+import uk.ac.ebi.intact.model.util.ExperimentUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ import java.util.Collection;
 @Table( name = "ia_experiment" )
 @EditorTopic
 public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAlias> implements Editable, Searchable {
+
+    private static final Log log = LogFactory.getLog( Experiment.class );
 
     ///////////////////////////////////////
     // associations
@@ -127,6 +132,19 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         ex.setXrefs( experiment.getXrefs() );
         ex.setPublication( experiment.getPublication() );
         return ex;
+    }
+
+    //////////////////////////
+    // Entity Listener
+
+    @PrePersist
+    public void synchronizeShortLabel() {
+        String newShortLabel = ExperimentUtils.syncShortLabelWithDb(shortLabel, ExperimentUtils.getPubmedId( this ));
+
+        if (!shortLabel.equals(newShortLabel)) {
+            if (log.isDebugEnabled()) log.debug("Experiment with label '"+shortLabel+"' renamed '"+newShortLabel+"'" );
+            setShortLabel(newShortLabel);
+        }
     }
 
     ///////////////////////////////////////

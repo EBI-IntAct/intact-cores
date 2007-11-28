@@ -15,7 +15,12 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
+
+import java.util.Collection;
 
 /**
  * Default implementation of the entity state copier.
@@ -25,6 +30,8 @@ import uk.ac.ebi.intact.model.*;
  * @since 1.8.0
  */
 public class DefaultEntityStateCopier implements EntityStateCopier {
+
+    private static final Log log = LogFactory.getLog( DefaultEntityStateCopier.class );
 
     public void copy( AnnotatedObject source, AnnotatedObject target ) {
 
@@ -36,7 +43,9 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
             throw new IllegalArgumentException( "You must give a non null target" );
         }
 
-        if ( !target.getClass().equals( source.getClass() ) ) {
+        if ( !( target.getClass().isAssignableFrom( source.getClass() ) ||
+                source.getClass().isAssignableFrom( target.getClass() ) ) ) {
+
             throw new IllegalArgumentException( "You can only copy object of the same type [" +
                                                 source.getClass().getSimpleName() + " -> " +
                                                 target.getClass().getSimpleName() + "]" );
@@ -63,41 +72,63 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         } else {
             throw new IllegalArgumentException( "DefaultEntityStateCopier doesn't copy " + source.getClass().getName() );
         }
+
+        copyAnotatedObjectCommons( source, target );
     }
 
-    protected void copyInstitution( Institution from, Institution to ) {
-        throw new UnsupportedOperationException();
+    protected void copyInstitution( Institution source, Institution target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
     }
 
-    protected void copyPublication( Publication from, Publication to ) {
-        throw new UnsupportedOperationException();
+    protected void copyPublication( Publication source, Publication target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
     }
 
-    protected void copyExperiment( Experiment from, Experiment to ) {
-        throw new UnsupportedOperationException();
+    protected void copyExperiment( Experiment source, Experiment target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
     }
 
-    protected void copyInteraction( Interaction from, Interaction to ) {
-        throw new UnsupportedOperationException();
+    protected void copyInteraction( Interaction source, Interaction target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
     }
 
-    protected void copyInteractor( Interactor from, Interactor to ) {
-        throw new UnsupportedOperationException();
+    protected void copyInteractor( Interactor source, Interactor target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
     }
 
-    protected void copyComponent( Component from, Component to ) {
-        throw new UnsupportedOperationException();
+    protected void copyComponent( Component source, Component target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
     }
 
-    protected void copyFeature( Feature from, Feature to ) {
-        throw new UnsupportedOperationException();
+    protected void copyFeature( Feature source, Feature target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
     }
 
-    protected void copyBioSource( BioSource from, BioSource to ) {
-        throw new UnsupportedOperationException();
+    protected void copyBioSource( BioSource source, BioSource target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
     }
 
-    protected void copyCvObject( CvObject from, CvObject to ) {
-        throw new UnsupportedOperationException();
+    protected void copyCvObject( CvObject source, CvObject target ) {
+        log.warn( "Method to be implemented: " + source.getClass() );
+    }
+
+    protected <X extends Xref> void copyAnotatedObjectCommons( AnnotatedObject<X, ?> source, AnnotatedObject<X, ?> target ) {
+        target.setShortLabel( source.getShortLabel() );
+        target.setFullName( source.getFullName() );
+
+        Collection xrefToAdd = CollectionUtils.subtract( source.getXrefs(), target.getXrefs() );
+        Collection xrefToRemove = CollectionUtils.subtract( target.getXrefs(), source.getXrefs() );
+        target.getXrefs().removeAll( xrefToRemove );
+        target.getXrefs().addAll( xrefToAdd );
+
+        Collection aliasToAdd = CollectionUtils.subtract( source.getAliases(), target.getAliases() );
+        Collection aliasToRemove = CollectionUtils.subtract( target.getAliases(), source.getAliases() );
+        target.getAliases().removeAll( aliasToRemove );
+        target.getAliases().addAll( aliasToAdd );
+
+        Collection annotToAdd = CollectionUtils.subtract( source.getAnnotations(), target.getAnnotations() );
+        Collection annotToRemove = CollectionUtils.subtract( target.getAnnotations(), source.getAnnotations() );
+        target.getAnnotations().removeAll( annotToRemove );
+        target.getAnnotations().addAll( annotToAdd );
     }
 }
