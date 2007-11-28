@@ -31,7 +31,6 @@
         <module>intact-annotations</module>
         <module>intact-apt</module>
         <module>intact-core</module>
-        <module>intact-persister</module>
     </modules>
 
     <build>
