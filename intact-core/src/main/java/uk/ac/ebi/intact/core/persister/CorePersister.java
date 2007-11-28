@@ -139,9 +139,13 @@ public class CorePersister implements Persister {
                 final AnnotatedObjectDao<? extends AnnotatedObject> dao = daoFactory.getAnnotatedObjectDao( ao.getClass() );
                 final AnnotatedObject managedObject = dao.getByAc( ac );
 
-                // Solution I - updated the managed object based on ao's properties
+                // updated the managed object based on ao's properties
                 entityStateCopier.copy( ao, managedObject );
+
+                // this will allow to reload the AO by its AC after flushing
                 ao.setAc( managedObject.getAc() );
+
+                // synchronize the children
                 synchronizeChildren( managedObject );
             }
 
@@ -151,7 +155,9 @@ public class CorePersister implements Persister {
             if ( baseDao.isTransient( ao ) ) {
 
                 // transient object: that is not attached to the session
-                ao = transientObjectHandler.handle( ao );
+                //ao = transientObjectHandler.handle( ao );
+                annotatedObjectsToMerge.put(key, ao);
+                synchronizeChildren(ao);
 
             } else {
 
@@ -183,12 +189,8 @@ public class CorePersister implements Persister {
         // Order the collection of objects to persist: institution, cvs, others
         List<AnnotatedObject> thingsToPersist = new ArrayList<AnnotatedObject>( annotatedObjectsToPersist.values() );
         Collections.sort( thingsToPersist, new PersistenceOrderComparator() );
-        boolean finishedCvs = false;
+
         for ( AnnotatedObject ao : thingsToPersist ) {
-            if ( !finishedCvs && !( ao instanceof Institution || ao instanceof CvObject ) ) {
-                finishedCvs = true;
-                daoFactory.getEntityManager().flush();
-            }
             if ( log.isDebugEnabled() ) {
                 log.debug( "\tAbout to persist " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
             }

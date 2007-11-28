@@ -4,10 +4,10 @@ import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.Feature;
+import uk.ac.ebi.intact.model.Xref;
 
 /**
  * TODO comment this
@@ -50,6 +50,8 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         Feature feature = getMockBuilder().createFeatureRandom();
         component.addBindingDomain(feature);
+
+        Assert.assertTrue(getDaoFactory().getBaseDao().isTransient(component));
 
         PersisterHelper.saveOrUpdate(component);
 

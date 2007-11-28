@@ -18,9 +18,11 @@ package uk.ac.ebi.intact.core.persister;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.beanutils.BeanUtils;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Default implementation of the entity state copier.
@@ -77,58 +79,88 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyInstitution( Institution source, Institution target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        target.setUrl(source.getUrl());
+        target.setPostalAddress(source.getPostalAddress());
     }
 
     protected void copyPublication( Publication source, Publication target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        copyCollection(source.getExperiments(), target.getExperiments());
     }
 
     protected void copyExperiment( Experiment source, Experiment target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        target.setBioSource(source.getBioSource());
+        target.setPublication(source.getPublication());
+        target.setCvIdentification(source.getCvIdentification());
+        target.setCvInteraction(source.getCvInteraction());
+
+        copyCollection(source.getInteractions(), target.getInteractions());
     }
 
     protected void copyInteraction( Interaction source, Interaction target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        target.setKD(target.getKD());
+
+        target.setCvInteractionType(source.getCvInteractionType());
+
+        copyCollection(source.getComponents(), target.getComponents());
+        copyCollection(source.getExperiments(), target.getExperiments());
+
+        copyInteractorCommons(source, target);
     }
 
     protected void copyInteractor( Interactor source, Interactor target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        copyCollection(source.getActiveInstances(), target.getActiveInstances());
+
+        copyInteractorCommons(source, target);
+    }
+
+    protected void copyInteractorCommons( Interactor source, Interactor target ) {
+        target.setBioSource(source.getBioSource());
+        target.setCvInteractorType(source.getCvInteractorType());
     }
 
     protected void copyComponent( Component source, Component target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        target.setStoichiometry(source.getStoichiometry());
+
+        target.setInteraction(source.getInteraction());
+        target.setInteractor(source.getInteractor());
+        target.setCvBiologicalRole(source.getCvBiologicalRole());
+        target.setCvExperimentalRole(source.getCvExperimentalRole());
+        target.setExpressedIn(source.getExpressedIn());
+
+        copyCollection(source.getBindingDomains(), target.getBindingDomains());
+        copyCollection(source.getExperimentalPreparations(), target.getExperimentalPreparations());
+        copyCollection(source.getParticipantDetectionMethods(), target.getParticipantDetectionMethods());
     }
 
     protected void copyFeature( Feature source, Feature target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        target.setComponent(source.getComponent());
+        target.setCvFeatureIdentification(source.getCvFeatureIdentification());
+        target.setCvFeatureType(source.getCvFeatureType());
     }
 
     protected void copyBioSource( BioSource source, BioSource target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        target.setTaxId(source.getTaxId());
+        target.setCvTissue(source.getCvTissue());
+        target.setCvCellType(source.getCvCellType());
     }
 
     protected void copyCvObject( CvObject source, CvObject target ) {
-        log.warn( "Method to be implemented: " + source.getClass() );
+        target.setMiIdentifier(source.getMiIdentifier());
     }
 
     protected <X extends Xref> void copyAnotatedObjectCommons( AnnotatedObject<X, ?> source, AnnotatedObject<X, ?> target ) {
         target.setShortLabel( source.getShortLabel() );
         target.setFullName( source.getFullName() );
 
-        Collection xrefToAdd = CollectionUtils.subtract( source.getXrefs(), target.getXrefs() );
-        Collection xrefToRemove = CollectionUtils.subtract( target.getXrefs(), source.getXrefs() );
-        target.getXrefs().removeAll( xrefToRemove );
-        target.getXrefs().addAll( xrefToAdd );
+        copyCollection(source.getXrefs(), target.getXrefs());
+        copyCollection(source.getAliases(), target.getAliases());
+        copyCollection(source.getAnnotations(), target.getAnnotations());
+    }
 
-        Collection aliasToAdd = CollectionUtils.subtract( source.getAliases(), target.getAliases() );
-        Collection aliasToRemove = CollectionUtils.subtract( target.getAliases(), source.getAliases() );
-        target.getAliases().removeAll( aliasToRemove );
-        target.getAliases().addAll( aliasToAdd );
-
-        Collection annotToAdd = CollectionUtils.subtract( source.getAnnotations(), target.getAnnotations() );
-        Collection annotToRemove = CollectionUtils.subtract( target.getAnnotations(), source.getAnnotations() );
-        target.getAnnotations().removeAll( annotToRemove );
-        target.getAnnotations().addAll( annotToAdd );
+    protected void copyCollection(Collection sourceCol, Collection targetCol) {
+        Collection elementsToAdd = CollectionUtils.subtract( sourceCol, targetCol );
+        Collection elementsToRemove = CollectionUtils.subtract( sourceCol, targetCol );
+        targetCol.removeAll( elementsToRemove );
+        targetCol.addAll( elementsToAdd );
     }
 }

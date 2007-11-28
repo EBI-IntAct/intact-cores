@@ -7,9 +7,12 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
 

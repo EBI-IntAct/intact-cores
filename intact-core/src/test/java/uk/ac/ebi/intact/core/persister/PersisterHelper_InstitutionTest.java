@@ -19,8 +19,6 @@ public class PersisterHelper_InstitutionTest extends IntactBasicTestCase {
 
     @Test
     public void persistInstitution_default_withHelper() throws Exception {
-        commitTransaction();
-
         Institution institution = getMockBuilder().createInstitution(Institution.MINT_REF, Institution.MINT);
         PersisterHelper.saveOrUpdate(institution);
 

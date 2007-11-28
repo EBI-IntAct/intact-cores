@@ -90,11 +90,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         // That involves reusing CV terms, Institution...
         Assert.assertEquals( 2, getDaoFactory().getInstitutionDao().getAll().size() );
         final Institution intact1 = getDaoFactory().getInstitutionDao().getByShortLabel( "intact" );
-        System.out.println( "1" );
-        System.out.println( intact1.getAliases() );
         final Institution intact2 = getDaoFactory().getAnnotatedObjectDao().getAll().iterator().next().getOwner();
-        System.out.println( "2" );
-        System.out.println( intact2.getAliases() );
         Assert.assertEquals( intact1, intact2 );
 
         Assert.assertEquals( 18, getDaoFactory().getCvObjectDao().getAll().size() );

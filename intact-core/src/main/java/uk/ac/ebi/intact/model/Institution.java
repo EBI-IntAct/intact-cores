@@ -51,40 +51,6 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
      */
     protected String url;
 
-    /**
-     * Short name for the object, not necessarily unique. To be used for example
-     * in minimised displays of the object.
-     */
-
-    protected String shortLabel;
-
-    /**
-     * The full name or a minimal description of the object.
-     */
-    protected String fullName;
-
-    ///////////////////////////////////////
-    // associations
-
-    /**
-     *
-     */
-
-    public Collection<Annotation> annotations = new ArrayList<Annotation>();
-
-    /**
-     *
-     */
-
-    public Collection<InstitutionXref> xrefs = new ArrayList<InstitutionXref>();
-
-    /**
-     * Hold aliases of an Annotated object.
-     * ie. alternative name for the current object.
-     */
-    private Collection<InstitutionAlias> aliases = new ArrayList<InstitutionAlias>();
-
-
     ///////////////////////////////////////
     // Constructors
     public Institution() {
@@ -103,25 +69,6 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
      */
     public Institution(String shortLabel) {
         setShortLabel(shortLabel);
-    }
-
-    private String prepareLabel(String shortLabel) {
-        if (shortLabel == null) {
-            throw new NullPointerException("Must define a short label to create an Institution!");
-        }
-
-        // delete leading and trailing spaces.
-        shortLabel = shortLabel.trim();
-
-        if ("".equals(shortLabel)) {
-            throw new IllegalArgumentException("Must define a short label to create an Institution!");
-        }
-
-        if (shortLabel.length() >= AnnotatedObject.MAX_SHORT_LABEL_LEN) {
-            shortLabel = shortLabel.substring(0, AnnotatedObject.MAX_SHORT_LABEL_LEN);
-        }
-
-        return shortLabel;
     }
 
     ///////////////////////////////////////
@@ -146,10 +93,7 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
     public Collection<InstitutionAlias> getAliases() {
-        if (aliases == null) {
-            aliases = new ArrayList<InstitutionAlias>();
-        }
-        return aliases;
+        return super.getAliases();
     }
 
     @ManyToMany( cascade = {CascadeType.PERSIST} )
@@ -160,18 +104,12 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
             inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
     )
     public Collection<Annotation> getAnnotations() {
-        if (annotations == null) {
-            annotations = new ArrayList<Annotation>();
-        }
-        return annotations;
+        return super.getAnnotations();
     }
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
     public Collection<InstitutionXref> getXrefs() {
-        if (xrefs == null) {
-            xrefs = new ArrayList<InstitutionXref>();
-        }
-        return xrefs;
+        return super.getXrefs();
     }
 
     @Transient
@@ -179,21 +117,6 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
         return this;
     }
 
-    @Deprecated
-    public void setOwner(Institution institution) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Deprecated
-    @Transient
-    public String getOwnerAc() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Deprecated
-    public void setOwnerAc(String ac) {
-        throw new UnsupportedOperationException();
-    }
 
     ///////////////////////////////////////
     // instance methods
@@ -210,29 +133,11 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
             return false;
         }
 
-//        return equals(o, true);
-
-
-        if (this == o) return true;
-        if (o == null ) return false;
-
-//        boolean sameClass = getClass().isAssignableFrom( o.getClass() ) || o.getClass().isAssignableFrom( getClass() );
-//        if( !sameClass ) {
-//            return false;
-//        }
-
         Institution that = (Institution) o;
 
-
-
-//        if (aliases != null ? !aliases.equals(that.aliases) : that.aliases != null) return false;
-//        if (annotations != null ? !annotations.equals(that.annotations) : that.annotations != null) return false;
-//        if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
         if (postalAddress != null ? !postalAddress.equals(that.postalAddress) : that.postalAddress != null)
             return false;
-//        if (shortLabel != null ? !shortLabel.equals(that.shortLabel) : that.shortLabel != null) return false;
         if (url != null ? !url.equals(that.url) : that.url != null) return false;
-//        if (xrefs != null ? !xrefs.equals(that.xrefs) : that.xrefs != null) return false;
 
         return true;
     }
@@ -241,12 +146,7 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
         int result;
         result = (postalAddress != null ? postalAddress.hashCode() : 0);
         result = 31 * result + (url != null ? url.hashCode() : 0);
-        result = 31 * result + (shortLabel != null ? shortLabel.hashCode() : 0);
-        result = 31 * result + (fullName != null ? fullName.hashCode() : 0);
-        result = 31 * result + (annotations != null ? annotations.hashCode() : 0);
-        result = 31 * result + (xrefs != null ? xrefs.hashCode() : 0);
-        result = 31 * result + (aliases != null ? aliases.hashCode() : 0);
-        return result;
+        return 31*super.hashCode();
     }
 
     public String toString() {
