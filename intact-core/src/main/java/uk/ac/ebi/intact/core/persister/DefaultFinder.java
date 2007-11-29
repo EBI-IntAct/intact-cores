@@ -256,8 +256,11 @@ public class DefaultFinder implements Finder {
      */
     protected String findAcForBioSource( BioSource bioSource ) {
 
-        Query query = getEntityManager().createQuery( "select bio.ac, bio.cvCellType, bio.cvTissue " +
-                                                      "from BioSource bio where bio.taxId = :taxId" );
+        Query query = getEntityManager().createQuery( "select bio.ac, cellType, tissue " +
+                                                      "from BioSource bio " +
+                                                      "left join bio.cvCellType as cellType " +
+                                                      "left join bio.cvTissue as tissue " +
+                                                      "where bio.taxId = :taxId" );
         query.setParameter( "taxId", bioSource.getTaxId() );
 
         final List<Object[]> biosources = query.getResultList();

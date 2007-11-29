@@ -131,8 +131,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
                 // object exists in the database, we will update it
                 final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
-                final AnnotatedObjectDao<? extends AnnotatedObject> dao = daoFactory.getAnnotatedObjectDao( ao.getClass() );
-                final AnnotatedObject managedObject = dao.getByAc( ac );
+                final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( (Class<T>)ao.getClass() );
+                final T managedObject = dao.getByAc( ac );
 
                 if (managedObject == null) {
                     throw new IllegalStateException("No managed object found with ac '"+ac+"' and type '"+ao.getClass()+"' and one was expected");

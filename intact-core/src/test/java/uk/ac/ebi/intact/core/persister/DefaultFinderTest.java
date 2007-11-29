@@ -220,19 +220,6 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void test4bruno() throws Exception {
-
-        BioSource bs1 = getMockBuilder().createBioSource( 9606, "human" );
-        PersisterHelper.saveOrUpdate( bs1 );
-        String queryAc1 = bs1.getAc();
-
-        BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
-        PersisterHelper.saveOrUpdate( bs2 );
-        String queryAc2 = bs2.getAc();
-
-    }
-
-    @Test
     public void findAcForBioSource() {
         // TODO split this test !!
         CvTissue brain = getMockBuilder().createCvObject( CvTissue.class, "MI:xxxx", "brain" );
