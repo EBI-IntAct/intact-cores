@@ -33,7 +33,7 @@ import java.util.*;
  * @version $Id$
  * @since 1.8.0
  */
-public class CorePersister implements Persister {
+public class CorePersister implements Persister<AnnotatedObject> {
 
     private static final Log log = LogFactory.getLog( CorePersister.class );
 
@@ -94,11 +94,13 @@ public class CorePersister implements Persister {
         }
     }
 
-    protected AnnotatedObject synchronize( AnnotatedObject ao ) {
+    protected <T extends AnnotatedObject> T synchronize( T ao ) {
 
         if ( ao == null ) {
             return null;
         }
+
+        Class<T> aoClass = (Class<T>) ao.getClass();
 
         final Key key = keyBuilder.keyFor( ao );
 
@@ -107,7 +109,9 @@ public class CorePersister implements Persister {
         }
 
         if ( synched.containsKey( key ) ) {
-            return synched.get( key );
+            ao = (T) synched.get( key );
+            verifyExpectedType(ao, aoClass);
+            return ao;
         }
         synched.put( key, ao );
 
@@ -158,7 +162,17 @@ public class CorePersister implements Persister {
             }
         }
 
+        // check if the object class after synchronization is the same as in the beginning
+        verifyExpectedType(ao, aoClass);
+
         return ao;
+    }
+
+    private <T extends AnnotatedObject> void verifyExpectedType(T ao, Class<T> aoClass) {
+        if (!aoClass.isAssignableFrom(ao.getClass())) {
+            throw new IllegalArgumentException("Wrong type returned after synchronization. Expected "+aoClass.getName()+" but found "+
+            ao.getClass().getName()+". The offender was: "+ao);
+        }
     }
 
     protected void reload( AnnotatedObject ao ) {
@@ -280,65 +294,59 @@ public class CorePersister implements Persister {
     }
 
     private void synchronizeExperiment( Experiment experiment ) {
-        verifyObjectToSynchronize(Experiment.class, experiment);
 
-        experiment.setPublication( ( Publication ) synchronize( experiment.getPublication() ) );
+        experiment.setPublication( synchronize( experiment.getPublication() ) );
         experiment.setInteractions( synchronizeCollection( experiment.getInteractions() ) );
-        experiment.setCvIdentification( ( CvIdentification ) synchronize( experiment.getCvIdentification() ) );
-        experiment.setCvInteraction( ( CvInteraction ) synchronize( experiment.getCvInteraction() ) );
-        experiment.setBioSource( ( BioSource ) synchronize( experiment.getBioSource() ) );
+        experiment.setCvIdentification( synchronize( experiment.getCvIdentification() ) );
+        experiment.setCvInteraction( synchronize( experiment.getCvInteraction() ) );
+        experiment.setBioSource( synchronize( experiment.getBioSource() ) );
         synchronizeAnnotatedObjectCommons( experiment );
     }
 
     private void synchronizeInteraction( Interaction interaction ) {
-        verifyObjectToSynchronize(Interaction.class, interaction);
 
-        interaction.setCvInteractionType( ( CvInteractionType ) synchronize( interaction.getCvInteractionType() ) );
-        interaction.setCvInteractorType( ( CvInteractorType ) synchronize( interaction.getCvInteractorType() ) );
+        interaction.setCvInteractionType( synchronize( interaction.getCvInteractionType() ) );
+        interaction.setCvInteractorType( synchronize( interaction.getCvInteractorType() ) );
         interaction.setComponents( synchronizeCollection( interaction.getComponents() ) );
-        interaction.setBioSource( ( BioSource ) synchronize( interaction.getBioSource() ) );
+        interaction.setBioSource( synchronize( interaction.getBioSource() ) );
         interaction.setExperiments( synchronizeCollection( interaction.getExperiments() ) );
         synchronizeAnnotatedObjectCommons( interaction );
     }
 
     private void synchronizeInteractor( Interactor interactor ) {
-        verifyObjectToSynchronize(Interactor.class, interactor);
 
         interactor.setActiveInstances( synchronizeCollection( interactor.getActiveInstances() ) );
-        interactor.setBioSource( ( BioSource ) synchronize( interactor.getBioSource() ) );
-        interactor.setCvInteractorType( ( CvInteractorType ) synchronize( interactor.getCvInteractorType() ) );
+        interactor.setBioSource( synchronize( interactor.getBioSource() ) );
+        interactor.setCvInteractorType( synchronize( interactor.getCvInteractorType() ) );
         synchronizeAnnotatedObjectCommons( interactor );
     }
 
     private void synchronizeBioSource( BioSource bioSource ) {
-        verifyObjectToSynchronize(BioSource.class, bioSource);
 
-        bioSource.setCvCellType( ( CvCellType ) synchronize( bioSource.getCvCellType() ) );
-        bioSource.setCvTissue( ( CvTissue ) synchronize( bioSource.getCvTissue() ) );
+        bioSource.setCvCellType( synchronize( bioSource.getCvCellType() ) );
+        bioSource.setCvTissue( synchronize( bioSource.getCvTissue() ) );
         synchronizeAnnotatedObjectCommons( bioSource );
     }
 
     private void synchronizeComponent( Component component ) {
-        verifyObjectToSynchronize(Component.class, component);
 
         component.setBindingDomains( synchronizeCollection( component.getBindingDomains() ) );
-        component.setCvBiologicalRole( ( CvBiologicalRole ) synchronize( component.getCvBiologicalRole() ) );
-        component.setCvExperimentalRole( ( CvExperimentalRole ) synchronize( component.getCvExperimentalRole() ) );
-        component.setExpressedIn( ( BioSource ) synchronize( component.getExpressedIn() ) );
-        component.setInteraction( ( Interaction ) synchronize( component.getInteraction() ) );
-        component.setInteractor( ( Interactor ) synchronize( component.getInteractor() ) );
+        component.setCvBiologicalRole( synchronize( component.getCvBiologicalRole() ) );
+        component.setCvExperimentalRole( synchronize( component.getCvExperimentalRole() ) );
+        component.setExpressedIn( synchronize( component.getExpressedIn() ) );
+        component.setInteraction( synchronize( component.getInteraction() ) );
+        component.setInteractor( synchronize( component.getInteractor() ) );
         component.setParticipantDetectionMethods( synchronizeCollection( component.getParticipantDetectionMethods() ) );
         component.setExperimentalPreparations( synchronizeCollection( component.getExperimentalPreparations() ) );
         synchronizeAnnotatedObjectCommons( component );
     }
 
     private void synchronizeFeature( Feature feature ) {
-        verifyObjectToSynchronize(Feature.class, feature);
 
-        feature.setBoundDomain( ( Feature ) synchronize( feature.getBoundDomain() ) );
-        feature.setComponent( ( Component ) synchronize( feature.getComponent() ) );
-        feature.setCvFeatureIdentification( ( CvFeatureIdentification ) synchronize( feature.getCvFeatureIdentification() ) );
-        feature.setCvFeatureType( ( CvFeatureType ) synchronize( feature.getCvFeatureType() ) );
+        feature.setBoundDomain( synchronize( feature.getBoundDomain() ) );
+        feature.setComponent( synchronize( feature.getComponent() ) );
+        feature.setCvFeatureIdentification( synchronize( feature.getCvFeatureIdentification() ) );
+        feature.setCvFeatureType( synchronize( feature.getCvFeatureType() ) );
         for ( Range range : feature.getRanges() ) {
             synchronizeRange( range );
         }
@@ -346,14 +354,12 @@ public class CorePersister implements Persister {
     }
 
     private void synchronizeRange( Range range ) {
-        verifyObjectToSynchronize(Range.class, range);
 
-        range.setFromCvFuzzyType( ( CvFuzzyType ) synchronize( range.getFromCvFuzzyType() ) );
-        range.setToCvFuzzyType( ( CvFuzzyType ) synchronize( range.getToCvFuzzyType() ) );
+        range.setFromCvFuzzyType(synchronize( range.getFromCvFuzzyType() ) );
+        range.setToCvFuzzyType(synchronize( range.getToCvFuzzyType() ) );
     }
 
     private void synchronizeCvObject( CvObject cvObject ) {
-        verifyObjectToSynchronize(CvObject.class, cvObject);
 
         // TODO handle parents and children in case the instance is a CvDagObject
 
@@ -361,14 +367,12 @@ public class CorePersister implements Persister {
     }
 
     private void synchronizePublication( Publication publication ) {
-        verifyObjectToSynchronize(Publication.class, publication);
 
         publication.setExperiments( synchronizeCollection( publication.getExperiments() ) );
         synchronizeAnnotatedObjectCommons( publication );
     }
 
     private void synchronizeInstitution( Institution institution ) {
-        verifyObjectToSynchronize(Institution.class, institution);
 
         synchronizeAnnotatedObjectCommons( institution );
     }
@@ -376,7 +380,7 @@ public class CorePersister implements Persister {
     private <X extends AnnotatedObject> Collection<X> synchronizeCollection( Collection<X> collection ) {
         Collection<X> synchedCollection = new ArrayList<X>( collection.size() );
         for ( X ao : collection ) {
-            synchedCollection.add( ( X ) synchronize( ao ) );
+            synchedCollection.add( synchronize( ao ) );
         }
         return synchedCollection;
     }
@@ -384,7 +388,7 @@ public class CorePersister implements Persister {
     private void synchronizeAnnotatedObjectCommons( AnnotatedObject<? extends Xref, ? extends Alias> ao ) {
 
         if ( !( ao instanceof Institution ) ) {
-            ao.setOwner( ( Institution ) synchronize( ao.getOwner() ) );
+            ao.setOwner(synchronize(ao.getOwner() ) );
         }
 
         Collection synchedXrefs = new ArrayList( ao.getXrefs().size() );
@@ -407,34 +411,25 @@ public class CorePersister implements Persister {
     }
 
     private Xref synchronizeXrefs( Xref xref ) {
-        verifyObjectToSynchronize(Xref.class, xref);
 
-        xref.setOwner( ( Institution ) synchronize( xref.getOwner() ) );
-        xref.setCvDatabase( ( CvDatabase ) synchronize( xref.getCvDatabase() ) );
-        xref.setCvXrefQualifier( ( CvXrefQualifier ) synchronize( xref.getCvXrefQualifier() ) );
+        xref.setOwner( synchronize( xref.getOwner() ) );
+        xref.setCvDatabase( synchronize( xref.getCvDatabase() ) );
+        xref.setCvXrefQualifier( synchronize( xref.getCvXrefQualifier() ) );
         return xref;
     }
 
     private Alias synchronizeAlias( Alias alias ) {
-        verifyObjectToSynchronize(Alias.class, alias);
 
-        alias.setOwner( ( Institution ) synchronize( alias.getOwner() ) );
-        alias.setCvAliasType( ( CvAliasType ) synchronize( alias.getCvAliasType() ) );
+        alias.setOwner( synchronize( alias.getOwner() ) );
+        alias.setCvAliasType( synchronize( alias.getCvAliasType() ) );
         return alias;
     }
 
     private Annotation synchronizeAnnotation( Annotation annotation ) {
-        verifyObjectToSynchronize(Annotation.class, annotation);
 
-        annotation.setOwner( ( Institution ) synchronize( annotation.getOwner() ) );
-        annotation.setCvTopic( ( CvTopic ) synchronize( annotation.getCvTopic() ) );
+        annotation.setOwner( synchronize( annotation.getOwner() ) );
+        annotation.setCvTopic( synchronize( annotation.getCvTopic() ) );
         return annotation;
     }
 
-    private <T extends IntactObject> void verifyObjectToSynchronize(Class<T> expectedType, T objToSynchronize) {
-        if (!expectedType.isAssignableFrom(objToSynchronize.getClass())) {
-            throw new IllegalArgumentException("Wrong type passed to synchronize. Expected "+expectedType.getName()+" but found "+
-            objToSynchronize.getClass().getName()+". The offender was: "+objToSynchronize);
-        }
-    }
 }

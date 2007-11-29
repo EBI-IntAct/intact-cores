@@ -9,7 +9,7 @@ import uk.ac.ebi.intact.model.AnnotatedObject;
  * @version $Id$
  * @since 1.8.0
  */
-public interface Persister {
+public interface Persister<T> {
 
-    public void saveOrUpdate( AnnotatedObject ao );
+    public void saveOrUpdate( T object );
 }
