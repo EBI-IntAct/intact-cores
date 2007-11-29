@@ -140,6 +140,9 @@ class KeyBuilder {
                 key = cvObject.getShortLabel();
             }
         }
+
+        key = cvObject.getClass().getSimpleName()+"__"+key;
+
         return new Key( key );
     }
 
