@@ -67,7 +67,7 @@ public class DefaultFinder implements Finder {
         } else if (annotatedObject instanceof Interaction) {
             ac = findAcForInteraction((Interaction) annotatedObject);
         } else if (annotatedObject instanceof Interactor) {
-            ac = findAcForInteractor((Interactor) annotatedObject);
+            ac = findAcForInteractor((InteractorImpl) annotatedObject);
         } else if (annotatedObject instanceof BioSource) {
             ac = findAcForBioSource((BioSource) annotatedObject);
         } else if (annotatedObject instanceof Component) {
@@ -170,16 +170,19 @@ public class DefaultFinder implements Finder {
 
     /**
      * Finds an interactor based on its properties.
+     * <p/>
+     * <b>Search criteria</b>: uniprot identity, or if not found, the first identity found (that is not INTACT, MINT or DIP) and finally shortlabel.
      *
      * @param interactor the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForInteractor( Interactor interactor ){
+    protected <T extends InteractorImpl> String findAcForInteractor( T interactor ){
         String ac = null;
 
-        InteractorDao<InteractorImpl> interactorDao = getDaoFactory().getInteractorDao();
+        // BUG - if a small molecule have the same Xref as a protein is searched - protein might be returned
+        final InteractorDao<T> interactorDao = getDaoFactory().getInteractorDao( (Class<T>) interactor.getClass() );
 
-        // Try to fetch first the object using the uniprot ID
+        // 1. Try to fetch first the object using the uniprot ID
         Collection<InteractorXref> identityXrefs = new ArrayList<InteractorXref>();
 
         InteractorXref uniprotXref = XrefUtils.getIdentityXref(interactor, CvDatabase.UNIPROT_MI_REF);
@@ -187,24 +190,32 @@ public class DefaultFinder implements Finder {
         if (uniprotXref != null) {
             identityXrefs.add(uniprotXref);
         } else {
-            // X. try to fetch first the object using the primary ID
+            // 2. try to fetch first the object using the primary ID
             identityXrefs = XrefUtils.getIdentityXrefs(interactor);
 
             // remove Xrefs to intact, mint or dip
-            for (Iterator<InteractorXref> interactorXrefIterator = identityXrefs.iterator(); interactorXrefIterator.hasNext();)
-            {
-                InteractorXref interactorXref = interactorXrefIterator.next();
+            for (Iterator<InteractorXref> xrefIterator = identityXrefs.iterator(); xrefIterator.hasNext();) {
+                InteractorXref interactorXref = xrefIterator.next();
 
-                final String databaseMi = CvObjectUtils.getPsiMiIdentityXref(interactorXref.getCvDatabase()).getPrimaryId();
-                if (CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
+                String databaseMi = interactorXref.getCvDatabase().getMiIdentifier();
+                if( databaseMi == null ) {
+                    final CvObjectXref miXref = CvObjectUtils.getPsiMiIdentityXref( interactorXref.getCvDatabase() );
+                    if( miXref != null ) {
+                        databaseMi = miXref.getPrimaryId();
+                    }
+                }
+                if( databaseMi != null ) {
+
+                    if (CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
                         CvDatabase.MINT_MI_REF.equals(databaseMi) ||
                         CvDatabase.DIP_MI_REF.equals(databaseMi)) {
-                    interactorXrefIterator.remove();
+                        xrefIterator.remove();
+                    }
                 }
             }
 
             if (identityXrefs.size() > 1) {
-                throw new UndefinedCaseException("Interactor with more than one non-uniprot xref: "+identityXrefs);
+                throw new UndefinedCaseException("Interactor with more than one non-uniprot identity xref: "+identityXrefs);
             }
         }
 
@@ -212,6 +223,7 @@ public class DefaultFinder implements Finder {
             final String primaryId = identityXrefs.iterator().next().getPrimaryId();
             Interactor existingObject = null;
             try {
+                // db filter ?
                 existingObject = interactorDao.getByXref(primaryId);
             } catch (NonUniqueResultException e) {
                 throw new FinderException("Query for '"+primaryId+"' returned more than one xref: "+interactorDao.getByXrefLike(primaryId));
@@ -282,9 +294,10 @@ public class DefaultFinder implements Finder {
 
           if( value == null ) {
               // TODO we should check on CvXrefQualifier(identity)
-
-              query = getEntityManager().createQuery("select cv.ac from CvObject cv where cv.shortLabel = :label ");
+              query = getEntityManager().createQuery("select cv.ac from CvObject cv where cv.shortLabel = :label " +
+                                                     "and cv.objClass = :objclass");
               query.setParameter("label", cvObject.getShortLabel());
+              query.setParameter("objclass", cvObject.getObjClass());
               value = getFirstAcForQuery( query, cvObject );
           }
 
