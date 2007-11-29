@@ -47,35 +47,35 @@ public class DefaultFinder implements Finder {
     /**
      * Sets up a logger for that class.
      */
-    private static final Log log = LogFactory.getLog(DefaultFinder.class);
+    private static final Log log = LogFactory.getLog( DefaultFinder.class );
 
     public String findAc( AnnotatedObject annotatedObject ) {
         String ac;
 
-        if (annotatedObject.getAc() != null) {
+        if ( annotatedObject.getAc() != null ) {
             return annotatedObject.getAc();
         }
 
-        if (annotatedObject instanceof Institution) {
-            ac = findAcForInstitution((Institution) annotatedObject);
-        } else if (annotatedObject instanceof Publication) {
-            ac = findAcForPublication((Publication) annotatedObject);
-        } else if (annotatedObject instanceof CvObject) {
-            ac = findAcForCvObject((CvObject) annotatedObject);
-        } else if (annotatedObject instanceof Experiment) {
-            ac = findAcForExperiment((Experiment) annotatedObject);
-        } else if (annotatedObject instanceof Interaction) {
-            ac = findAcForInteraction((Interaction) annotatedObject);
-        } else if (annotatedObject instanceof Interactor) {
-            ac = findAcForInteractor((InteractorImpl) annotatedObject);
-        } else if (annotatedObject instanceof BioSource) {
-            ac = findAcForBioSource((BioSource) annotatedObject);
-        } else if (annotatedObject instanceof Component) {
-            ac = findAcForComponent((Component) annotatedObject);
-        } else if (annotatedObject instanceof Feature) {
-            ac = findAcForFeature((Feature) annotatedObject);
+        if ( annotatedObject instanceof Institution ) {
+            ac = findAcForInstitution( ( Institution ) annotatedObject );
+        } else if ( annotatedObject instanceof Publication ) {
+            ac = findAcForPublication( ( Publication ) annotatedObject );
+        } else if ( annotatedObject instanceof CvObject ) {
+            ac = findAcForCvObject( ( CvObject ) annotatedObject );
+        } else if ( annotatedObject instanceof Experiment ) {
+            ac = findAcForExperiment( ( Experiment ) annotatedObject );
+        } else if ( annotatedObject instanceof Interaction ) {
+            ac = findAcForInteraction( ( Interaction ) annotatedObject );
+        } else if ( annotatedObject instanceof Interactor ) {
+            ac = findAcForInteractor( ( InteractorImpl ) annotatedObject );
+        } else if ( annotatedObject instanceof BioSource ) {
+            ac = findAcForBioSource( ( BioSource ) annotatedObject );
+        } else if ( annotatedObject instanceof Component ) {
+            ac = findAcForComponent( ( Component ) annotatedObject );
+        } else if ( annotatedObject instanceof Feature ) {
+            ac = findAcForFeature( ( Feature ) annotatedObject );
         } else {
-            throw new IllegalArgumentException("Cannot find Ac for type: " + annotatedObject.getClass().getName());
+            throw new IllegalArgumentException( "Cannot find Ac for type: " + annotatedObject.getClass().getName() );
         }
 
         return ac;
@@ -91,20 +91,20 @@ public class DefaultFinder implements Finder {
         String ac = null;
 
         // try to fetch it first using the xref. If not, use the shortlabel
-        Xref institutionXref = XrefUtils.getPsiMiIdentityXref(institution);
+        Xref institutionXref = XrefUtils.getPsiMiIdentityXref( institution );
 
-        if (institutionXref != null) {
-            Query query = getEntityManager().createQuery("select distinct institution.ac from Institution institution " +
-                                                         "left join institution.xrefs as xref " +
-                                                         "where xref.primaryId = :primaryId");
-            query.setParameter("primaryId", institutionXref.getPrimaryId());
-            ac = getFirstAcForQuery(query, institution);
+        if ( institutionXref != null ) {
+            Query query = getEntityManager().createQuery( "select distinct institution.ac from Institution institution " +
+                                                          "left join institution.xrefs as xref " +
+                                                          "where xref.primaryId = :primaryId" );
+            query.setParameter( "primaryId", institutionXref.getPrimaryId() );
+            ac = getFirstAcForQuery( query, institution );
         }
 
-        if (ac == null) {
-            Institution fetchedInstitution = getDaoFactory().getInstitutionDao().getByShortLabel(institution.getShortLabel());
+        if ( ac == null ) {
+            Institution fetchedInstitution = getDaoFactory().getInstitutionDao().getByShortLabel( institution.getShortLabel() );
 
-            if (fetchedInstitution != null) {
+            if ( fetchedInstitution != null ) {
                 ac = fetchedInstitution.getAc();
             }
         }
@@ -118,11 +118,12 @@ public class DefaultFinder implements Finder {
      * @param publication the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForPublication( Publication publication ){
-        Query query = getEntityManager().createQuery("select pub.ac from Publication pub where pub.shortLabel = :shortLabel");
-        query.setParameter("shortLabel", publication.getShortLabel());
+    protected String findAcForPublication( Publication publication ) {
+        // TODO add primary-reference first, then shortlabel
+        Query query = getEntityManager().createQuery( "select pub.ac from Publication pub where pub.shortLabel = :shortLabel" );
+        query.setParameter( "shortLabel", publication.getShortLabel() );
 
-        return getFirstAcForQuery(query, publication);
+        return getFirstAcForQuery( query, publication );
     }
 
     /**
@@ -131,11 +132,13 @@ public class DefaultFinder implements Finder {
      * @param experiment the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForExperiment( Experiment experiment ){
-        Query query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel");
-        query.setParameter("shortLabel", experiment.getShortLabel());
+    protected String findAcForExperiment( Experiment experiment ) {
 
-        return getFirstAcForQuery(query, experiment);
+        // TODO add primary-reference
+        Query query = getEntityManager().createQuery( "select exp.ac from Experiment exp where exp.shortLabel = :shortLabel" );
+        query.setParameter( "shortLabel", experiment.getShortLabel() );
+
+        return getFirstAcForQuery( query, experiment );
     }
 
     /**
@@ -144,23 +147,23 @@ public class DefaultFinder implements Finder {
      * @param interaction the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForInteraction(Interaction interaction) {
+    protected String findAcForInteraction( Interaction interaction ) {
         // replace all this eventually by just using the CRC
-        
+
         InteractionDao interactionDao = getDaoFactory().getInteractionDao();
 
         CrcCalculator crcCalculator = new CrcCalculator();
 
         // Get the interactors where exactly the same interactors are involved
-        List<String> interactorPrimaryIDs = InteractionUtils.getInteractorPrimaryIDs(interaction);
+        List<String> interactorPrimaryIDs = InteractionUtils.getInteractorPrimaryIDs( interaction );
         List<Interaction> interactionsWithSameInteractors =
-                interactionDao.getByInteractorsPrimaryId(true, interactorPrimaryIDs.toArray(new String[interactorPrimaryIDs.size()]));
+                interactionDao.getByInteractorsPrimaryId( true, interactorPrimaryIDs.toArray( new String[interactorPrimaryIDs.size()] ) );
 
-        for (Interaction interactionWithSameInteractor : interactionsWithSameInteractors) {
-            String interactionCrc = crcCalculator.crc64(interaction);
-            String interactionWithSameInteractorCrc = crcCalculator.crc64(interactionWithSameInteractor);
+        for ( Interaction interactionWithSameInteractor : interactionsWithSameInteractors ) {
+            String interactionCrc = crcCalculator.crc64( interaction );
+            String interactionWithSameInteractorCrc = crcCalculator.crc64( interactionWithSameInteractor );
 
-            if (interactionCrc.equals(interactionWithSameInteractorCrc)) {
+            if ( interactionCrc.equals( interactionWithSameInteractorCrc ) ) {
                 return interactionWithSameInteractor.getAc();
             }
         }
@@ -176,72 +179,72 @@ public class DefaultFinder implements Finder {
      * @param interactor the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected <T extends InteractorImpl> String findAcForInteractor( T interactor ){
+    protected <T extends InteractorImpl> String findAcForInteractor( T interactor ) {
         String ac = null;
 
         // BUG - if a small molecule have the same Xref as a protein is searched - protein might be returned
-        final InteractorDao<T> interactorDao = getDaoFactory().getInteractorDao( (Class<T>) interactor.getClass() );
+        final InteractorDao<T> interactorDao = getDaoFactory().getInteractorDao( ( Class<T> ) interactor.getClass() );
 
         // 1. Try to fetch first the object using the uniprot ID
         Collection<InteractorXref> identityXrefs = new ArrayList<InteractorXref>();
 
-        InteractorXref uniprotXref = XrefUtils.getIdentityXref(interactor, CvDatabase.UNIPROT_MI_REF);
+        InteractorXref uniprotXref = XrefUtils.getIdentityXref( interactor, CvDatabase.UNIPROT_MI_REF );
 
-        if (uniprotXref != null) {
-            identityXrefs.add(uniprotXref);
+        if ( uniprotXref != null ) {
+            identityXrefs.add( uniprotXref );
         } else {
             // 2. try to fetch first the object using the primary ID
-            identityXrefs = XrefUtils.getIdentityXrefs(interactor);
+            identityXrefs = XrefUtils.getIdentityXrefs( interactor );
 
             // remove Xrefs to intact, mint or dip
-            for (Iterator<InteractorXref> xrefIterator = identityXrefs.iterator(); xrefIterator.hasNext();) {
+            for ( Iterator<InteractorXref> xrefIterator = identityXrefs.iterator(); xrefIterator.hasNext(); ) {
                 InteractorXref interactorXref = xrefIterator.next();
 
                 String databaseMi = interactorXref.getCvDatabase().getMiIdentifier();
-                if( databaseMi == null ) {
+                if ( databaseMi == null ) {
                     final CvObjectXref miXref = CvObjectUtils.getPsiMiIdentityXref( interactorXref.getCvDatabase() );
-                    if( miXref != null ) {
+                    if ( miXref != null ) {
                         databaseMi = miXref.getPrimaryId();
                     }
                 }
-                if( databaseMi != null ) {
+                if ( databaseMi != null ) {
 
-                    if (CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
-                        CvDatabase.MINT_MI_REF.equals(databaseMi) ||
-                        CvDatabase.DIP_MI_REF.equals(databaseMi)) {
+                    if ( CvDatabase.INTACT_MI_REF.equals( databaseMi ) ||
+                         CvDatabase.MINT_MI_REF.equals( databaseMi ) ||
+                         CvDatabase.DIP_MI_REF.equals( databaseMi ) ) {
                         xrefIterator.remove();
                     }
                 }
             }
 
-            if (identityXrefs.size() > 1) {
-                throw new UndefinedCaseException("Interactor with more than one non-uniprot identity xref: "+identityXrefs);
+            if ( identityXrefs.size() > 1 ) {
+                throw new UndefinedCaseException( "Interactor with more than one non-uniprot identity xref: " + identityXrefs );
             }
         }
 
-        if (identityXrefs.size() == 1) {
+        if ( identityXrefs.size() == 1 ) {
             final String primaryId = identityXrefs.iterator().next().getPrimaryId();
             Interactor existingObject = null;
             try {
                 // db filter ?
-                existingObject = interactorDao.getByXref(primaryId);
-            } catch (NonUniqueResultException e) {
-                throw new FinderException("Query for '"+primaryId+"' returned more than one xref: "+interactorDao.getByXrefLike(primaryId));
+                existingObject = interactorDao.getByXref( primaryId );
+            } catch ( NonUniqueResultException e ) {
+                throw new FinderException( "Query for '" + primaryId + "' returned more than one xref: " + interactorDao.getByXrefLike( primaryId ) );
             }
 
-            if (existingObject != null) {
-                if (log.isDebugEnabled()) log.debug("Fetched existing object from the database: "+primaryId);
+            if ( existingObject != null ) {
+                if ( log.isDebugEnabled() ) log.debug( "Fetched existing object from the database: " + primaryId );
                 ac = existingObject.getAc();
             }
         }
 
-        if (ac == null) {
-            Interactor existingObject = interactorDao.getByShortLabel(interactor.getShortLabel());
-            if (existingObject != null) {
+        if ( ac == null ) {
+            Interactor existingObject = interactorDao.getByShortLabel( interactor.getShortLabel() );
+            if ( existingObject != null ) {
                 ac = existingObject.getAc();
             }
         }
-        
+
         return ac;
     }
 
@@ -251,11 +254,38 @@ public class DefaultFinder implements Finder {
      * @param bioSource the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForBioSource( BioSource bioSource ){
-        Query query = getEntityManager().createQuery("select bio.ac from BioSource bio where bio.taxId = :taxId");
-        query.setParameter("taxId", bioSource.getTaxId());
+    protected String findAcForBioSource( BioSource bioSource ) {
 
-        return getFirstAcForQuery(query, bioSource);
+        Query query = getEntityManager().createQuery( "select bio.ac, bio.cvCellType, bio.cvTissue " +
+                                                      "from BioSource bio where bio.taxId = :taxId" );
+        query.setParameter( "taxId", bioSource.getTaxId() );
+
+        final List<Object[]> biosources = query.getResultList();
+        for ( Object[] bs : biosources ) {
+
+            String ac = ( String ) bs[0];
+            CvCellType cellType = ( CvCellType ) bs[1];
+            CvTissue tissue = ( CvTissue ) bs[2];
+
+            if ( same( tissue, bioSource.getCvTissue() ) &&
+                 same( cellType, bioSource.getCvCellType() ) ) {
+                return ac;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean same( CvObject cv1, CvObject cv2 ) {
+        if ( cv1 == null && cv2 == null ) {
+            return true;
+        }
+
+        if ( cv1 != null && cv2 != null ) {
+            return cv1.equals( cv2 );
+        }
+
+        return false; // only one of them is null
     }
 
     /**
@@ -264,7 +294,7 @@ public class DefaultFinder implements Finder {
      * @param component the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForComponent( Component component ){
+    protected String findAcForComponent( Component component ) {
         return null;
     }
 
@@ -274,44 +304,44 @@ public class DefaultFinder implements Finder {
      * @param feature the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForFeature( Feature feature ){
+    protected String findAcForFeature( Feature feature ) {
         return null;
     }
 
-      /**
+    /**
      * Finds a cvObject based on its properties.
      *
      * @param cvObject the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForCvObject(CvObject cvObject) {
-          Query query = getEntityManager().createQuery("select cv.ac from CvObject cv where cv.miIdentifier = :mi " +
-                                                       "and cv.objClass = :objclass");
-          query.setParameter("mi", cvObject.getMiIdentifier());
-          query.setParameter("objclass", cvObject.getObjClass());
+    protected String findAcForCvObject( CvObject cvObject ) {
+        Query query = getEntityManager().createQuery( "select cv.ac from CvObject cv where cv.miIdentifier = :mi " +
+                                                      "and cv.objClass = :objclass" );
+        query.setParameter( "mi", cvObject.getMiIdentifier() );
+        query.setParameter( "objclass", cvObject.getObjClass() );
 
-          String value = getFirstAcForQuery( query, cvObject );
+        String value = getFirstAcForQuery( query, cvObject );
 
-          if( value == null ) {
-              // TODO we should check on CvXrefQualifier(identity)
-              query = getEntityManager().createQuery("select cv.ac from CvObject cv where cv.shortLabel = :label " +
-                                                     "and cv.objClass = :objclass");
-              query.setParameter("label", cvObject.getShortLabel());
-              query.setParameter("objclass", cvObject.getObjClass());
-              value = getFirstAcForQuery( query, cvObject );
-          }
+        if ( value == null ) {
+            // TODO we should check on CvXrefQualifier(identity)
+            query = getEntityManager().createQuery( "select cv.ac from CvObject cv where cv.shortLabel = :label " +
+                                                    "and cv.objClass = :objclass" );
+            query.setParameter( "label", cvObject.getShortLabel() );
+            query.setParameter( "objclass", cvObject.getObjClass() );
+            value = getFirstAcForQuery( query, cvObject );
+        }
 
-          return value;
-      }
+        return value;
+    }
 
-    private String getFirstAcForQuery(Query query, AnnotatedObject ao) {
+    private String getFirstAcForQuery( Query query, AnnotatedObject ao ) {
         List<String> results = query.getResultList();
         String ac = null;
 
-        if (!results.isEmpty()) {
-            ac = results.get(0);
-        } else if (results.size() > 1) {
-            throw new IllegalStateException("Found more than one AC (" + results + ") for " + ao.getClass().getSimpleName() + ": " + ao);
+        if ( !results.isEmpty() ) {
+            ac = results.get( 0 );
+        } else if ( results.size() > 1 ) {
+            throw new IllegalStateException( "Found more than one AC (" + results + ") for " + ao.getClass().getSimpleName() + ": " + ao );
         }
 
         return ac;
