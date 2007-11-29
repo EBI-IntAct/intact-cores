@@ -401,10 +401,6 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
     private void synchronizeAnnotatedObjectCommons( AnnotatedObject<? extends Xref, ? extends Alias> ao ) {
 
-        if ( !( ao instanceof Institution ) ) {
-            ao.setOwner(synchronize(ao.getOwner() ) );
-        }
-
         Collection synchedXrefs = new ArrayList( ao.getXrefs().size() );
         for ( Xref xref : ao.getXrefs() ) {
             synchedXrefs.add( synchronizeXrefs( xref ) );
@@ -422,13 +418,16 @@ public class CorePersister implements Persister<AnnotatedObject> {
             synchedAnnotations.add( synchronizeAnnotation( annotation ) );
         }
         ao.setAnnotations( synchedAnnotations );
+
+         if ( !( ao instanceof Institution ) ) {
+            ao.setOwner(synchronize(ao.getOwner() ) );
+        }
     }
 
     private Xref synchronizeXrefs( Xref xref ) {
-
-        xref.setOwner( synchronize( xref.getOwner() ) );
         xref.setCvDatabase( synchronize( xref.getCvDatabase() ) );
         xref.setCvXrefQualifier( synchronize( xref.getCvXrefQualifier() ) );
+        xref.setOwner( synchronize( xref.getOwner() ) );
         return xref;
     }
 

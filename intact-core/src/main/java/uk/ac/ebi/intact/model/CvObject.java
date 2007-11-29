@@ -56,6 +56,9 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
 
     @Column( name = "objclass", insertable = false, updatable = false )
     public String getObjClass() {
+        if (objClass == null) {
+            objClass = getClass().getName();
+        }
         return objClass;
     }
 
