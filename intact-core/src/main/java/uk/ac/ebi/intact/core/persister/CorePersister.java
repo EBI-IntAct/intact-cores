@@ -237,11 +237,17 @@ public class CorePersister implements Persister<AnnotatedObject> {
             logPersistence( ao );
         }
 
-        daoFactory.getEntityManager().flush();
-
-        annotatedObjectsToMerge.clear();
-        annotatedObjectsToPersist.clear();
-        synched.clear();
+        try {
+            daoFactory.getEntityManager().flush();
+        } catch (Throwable t) {
+            throw new PersisterException("Exception when flushing the Persister, which contained " +
+                                         annotatedObjectsToPersist.size()+" objects to persist and " +
+                                         annotatedObjectsToMerge.size()+" objects to merge.", t);
+        } finally {
+            annotatedObjectsToMerge.clear();
+            annotatedObjectsToPersist.clear();
+            synched.clear();
+        }
     }
 
     private static void logPersistence( AnnotatedObject<?, ?> ao ) {
