@@ -134,11 +134,19 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 final AnnotatedObjectDao<? extends AnnotatedObject> dao = daoFactory.getAnnotatedObjectDao( ao.getClass() );
                 final AnnotatedObject managedObject = dao.getByAc( ac );
 
+                if (managedObject == null) {
+                    throw new IllegalStateException("No managed object found with ac '"+ac+"' and type '"+ao.getClass()+"' and one was expected");
+                }
+
                 // updated the managed object based on ao's properties
                 entityStateCopier.copy( ao, managedObject );
 
                 // this will allow to reload the AO by its AC after flushing
                 ao.setAc( managedObject.getAc() );
+
+                // and the created info, so the merge does not fail due to missing created data
+                ao.setCreated( managedObject.getCreated() );
+                ao.setCreator( managedObject.getCreator() );
 
                 // synchronize the children
                 synchronizeChildren( managedObject );
@@ -169,7 +177,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
     }
 
     private <T extends AnnotatedObject> void verifyExpectedType(T ao, Class<T> aoClass) {
-        if (!aoClass.isAssignableFrom(ao.getClass())) {
+        if (!(aoClass.isAssignableFrom(ao.getClass()) || ao.getClass().isAssignableFrom(aoClass))) {
             throw new IllegalArgumentException("Wrong type returned after synchronization. Expected "+aoClass.getName()+" but found "+
             ao.getClass().getName()+". The offender was: "+ao);
         }
@@ -229,10 +237,10 @@ public class CorePersister implements Persister<AnnotatedObject> {
             logPersistence( ao );
         }
 
-        annotatedObjectsToMerge.clear();
-        annotatedObjectsToPersist.clear();
         daoFactory.getEntityManager().flush();
 
+        annotatedObjectsToMerge.clear();
+        annotatedObjectsToPersist.clear();
         synched.clear();
     }
 
