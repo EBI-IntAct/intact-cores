@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
@@ -129,6 +130,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
             } else {
 
+
                 // object exists in the database, we will update it
                 final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
                 final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( (Class<T>)ao.getClass() );
@@ -137,6 +139,9 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 if (managedObject == null) {
                     throw new IllegalStateException("No managed object found with ac '"+ac+"' and type '"+ao.getClass()+"' and one was expected");
                 }
+
+                // warn if an instance for this interaction is found in the database, as it could be a duplicate
+                warnIfInteractionDuplicate(ao, managedObject);
 
                 // updated the managed object based on ao's properties
                 entityStateCopier.copy( ao, managedObject );
@@ -159,7 +164,9 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
                 // transient object: that is not attached to the session
                 //ao = transientObjectHandler.handle( ao );
-                annotatedObjectsToMerge.put(key, ao);
+
+                // TODO: commented this - causes havoc
+                //annotatedObjectsToMerge.put(key, ao);
                 synchronizeChildren(ao);
 
             } else {
@@ -174,6 +181,17 @@ public class CorePersister implements Persister<AnnotatedObject> {
         verifyExpectedType(ao, aoClass);
 
         return ao;
+    }
+
+    private <T extends AnnotatedObject> void warnIfInteractionDuplicate(T ao, T managedObject) {
+        if (log.isWarnEnabled() && ao instanceof Interaction) {
+            Interaction newInteraction = (Interaction) ao;
+            Interaction existingInteraction = (Interaction) managedObject;
+            String newImexId = InteractionUtils.getImexIdentifier(newInteraction);
+            String existingImexId = InteractionUtils.getImexIdentifier(existingInteraction);
+            log.warn("An AC already exists for this interaction. Possibly a duplicate? : Existing ["+managedObject.getAc()+", "+managedObject.getShortLabel()+", "+existingImexId+"] - " +
+                     "New [-, "+ao.getShortLabel()+", "+newImexId+"]. The existing interaction will be updated");
+        }
     }
 
     private <T extends AnnotatedObject> void verifyExpectedType(T ao, Class<T> aoClass) {
@@ -231,10 +249,11 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
             if ( ao.getAc() == null ) {
                 throw new IllegalStateException( "Object to persist should have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
-            }
+            } else {
 
             daoFactory.getBaseDao().merge( ao );
             logPersistence( ao );
+            }
         }
 
         try {
