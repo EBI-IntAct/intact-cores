@@ -118,7 +118,8 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     protected void copyInteractorCommons( Interactor source, Interactor target ) {
 
         if ( target.getBioSource() != null && source.getBioSource() != null &&
-             target.getBioSource().equals( source.getBioSource() ) ) {
+             !source.getBioSource().getTaxId().equals(target.getBioSource().getTaxId()) &&
+             !source.getBioSource().getShortLabel().equals(target.getBioSource().getShortLabel())   ) {
 
             throw new PersisterException( "Operation not permitted: updating biosource of a " +
                                           target.getClass().getSimpleName() + " (" + target.getShortLabel() + ") " +

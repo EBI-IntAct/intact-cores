@@ -33,7 +33,11 @@ import java.lang.reflect.Method;
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
+ *
+ * @deprecated It is recommented to use IntactBasicTestCase instead and not to rely on unit-datasets,
+ * because they are difficult to mainain
  */
+@Deprecated
 @RunWith(IntactTestRunner.class)
 public class IntactAbstractTestCase extends IntactBasicTestCase{
 

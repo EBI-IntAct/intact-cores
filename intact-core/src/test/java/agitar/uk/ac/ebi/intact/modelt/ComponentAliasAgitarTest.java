@@ -100,7 +100,7 @@ public class ComponentAliasAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
         try {
-            new ComponentAlias( new Institution( "testComponentAliasShortLabel1" ), null, new CvAliasType( new Institution( "testComponentAliasShortLabel" ), "testComponentAliasShortLabel" ), "testComponentAliasName" );
+            new ComponentAlias( new Institution( "testLabel1" ), null, new CvAliasType( new Institution( "testLabel" ), "testLabel" ), "testComponentAliasName" );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertNull( "ex.getMessage()", ex.getMessage() );

@@ -45,10 +45,8 @@ public abstract class IntactBasicTestCase
     }
 
     @After
-    public final void end() throws Exception {
-        if (IntactContext.currentInstanceExists()) {
-            IntactContext.getCurrentInstance().close();
-        }
+    public void end() throws Exception {
+        IntactContext.closeCurrentInstance();
     }
 
     protected void beginTransaction() {

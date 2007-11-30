@@ -49,14 +49,14 @@ public class ExperimentAliasAgitarTest extends AgitarTestCase {
 //    }
 
 //    public void testGetParent() throws Throwable {
-//        Institution anOwner = new Institution( "testExperimentAliasShortLabel" );
-//        CvAliasType cvAliasType = new CvAliasType( new Institution( "testExperimentAliasShortLabel1" ), "testExperimentAliasShortLabel" );
+//        Institution anOwner = new Institution( "testExpLabel" );
+//        CvAliasType cvAliasType = new CvAliasType( new Institution( "testExpLabel1" ), "testExpLabel" );
 //        Experiment experiment = ( Experiment ) Mockingbird.getProxyObject( Experiment.class );
 //        Mockingbird.enterRecordingMode();
 //        Mockingbird.setReturnValue( experiment.getAc(), null );
 //        Mockingbird.enterTestMode();
 //        ExperimentAlias experimentAlias = new ExperimentAlias( anOwner, experiment, cvAliasType, "testExperimentAliasName" );
-//        AnnotatedObject parent = new CvComponentRole( new Institution( "testExperimentAliasShortLabel2" ), "testExperimentAliasShortLabel" );
+//        AnnotatedObject parent = new CvComponentRole( new Institution( "testExpLabel2" ), "testExpLabel" );
 //        experimentAlias.setParent( parent );
 //        Mockingbird.enterTestMode();
 //        AnnotatedObject result = experimentAlias.getParent();
@@ -79,7 +79,7 @@ public class ExperimentAliasAgitarTest extends AgitarTestCase {
 //    }
 
     public void testGetParentAc() throws Throwable {
-        ExperimentAlias experimentAlias = new ExperimentAlias( new Institution( "testExperimentAliasShortLabel2" ), Experiment.getShallowCopy( new Experiment( new Institution( "testExperimentAliasShortLabel1" ), "testExperimentAliasShortLabel", new BioSource( new Institution( "testExperimentAliasShortLabel" ), "testExperimentAliasShortLabel", "-92975" ) ) ), new CvAliasType( null, "testExperimentAliasShortLabel" ), "testExperimentAliasName" );
+        ExperimentAlias experimentAlias = new ExperimentAlias( new Institution( "testExpLabel2" ), Experiment.getShallowCopy( new Experiment( new Institution( "testExpLabel1" ), "testExpLabel", new BioSource( new Institution( "testExpLabel" ), "testExpLabel", "-92975" ) ) ), new CvAliasType( null, "testExpLabel" ), "testExperimentAliasName" );
         String result = experimentAlias.getParentAc();
         assertNull( "result", result );
         assertNull( "experimentAlias.getParent()", experimentAlias.getParent() );
@@ -103,9 +103,9 @@ public class ExperimentAliasAgitarTest extends AgitarTestCase {
 //    }
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
-        Institution owner = new Institution( "testExperimentAliasShortLabel" );
+        Institution owner = new Institution( "testExpLabel" );
         try {
-            new ExperimentAlias( owner, null, new CvAliasType( owner, "testExperimentAliasShortLabel" ), "testExperimentAliasName" );
+            new ExperimentAlias( owner, null, new CvAliasType( owner, "testExpLabel" ), "testExperimentAliasName" );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertNull( "ex.getMessage()", ex.getMessage() );

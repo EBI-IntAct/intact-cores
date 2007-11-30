@@ -284,11 +284,7 @@ public class DefaultFinder implements Finder {
             return true;
         }
 
-        if ( cv1 != null && cv2 != null ) {
-            return cv1.equals( cv2 );
-        }
-
-        return false; // only one of them is null
+        return CvObjectUtils.areEqual(cv1, cv2);
     }
 
     /**

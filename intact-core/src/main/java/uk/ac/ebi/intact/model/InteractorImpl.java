@@ -251,9 +251,9 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
             return false;
         }
         
-        if ( !super.equals( o ) ) {
-            return false;
-        }
+//        if ( !super.equals( o ) ) {
+//            return false;
+//        }
 
         return equals(o, true);
     }
@@ -263,6 +263,10 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
             return true;
         }
         if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        if ( !super.equals( o ) ) {
             return false;
         }
 

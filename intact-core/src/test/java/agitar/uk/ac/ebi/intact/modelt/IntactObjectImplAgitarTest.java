@@ -16,7 +16,7 @@ public class IntactObjectImplAgitarTest extends AgitarTestCase {
     static Class TARGET_CLASS = IntactObjectImpl.class;
 
     public void testClone() throws Throwable {
-        Institution result = ( Institution ) new Institution( "testIntactObjectImplShortLabel" ).clone();
+        Institution result = ( Institution ) new Institution( "testIntactLabel" ).clone();
         assertNull( "result.getFullName()", result.getFullName() );
     }
 

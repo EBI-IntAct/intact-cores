@@ -16,28 +16,18 @@ public class InstitutionAgitarTest extends AgitarTestCase {
 
     static Class TARGET_CLASS = Institution.class;
 
-    public void testConstructor() throws Throwable {
-        Institution institution = new Institution( "XXXXXXXXXXXXXXX\rXXX#  " );
-        assertEquals( "institution.shortLabel", "XXXXXXXXXXXXXXX\rXXX#", institution.getShortLabel() );
-    }
-
-    public void testConstructor1() throws Throwable {
-        Institution institution = new Institution( "21CharactersXXXXXXXXX" );
-        assertEquals( "institution.shortLabel", "21CharactersXXXXXXXX", institution.getShortLabel() );
-    }
-
     public void testConstructor2() throws Throwable {
         Institution institution = new Institution( "testString" );
         assertEquals( "institution.shortLabel", "testString", institution.getShortLabel() );
     }
 
     public void testEquals() throws Throwable {
-        boolean result = new Institution( "testInstitutionShortLabel" ).equals( Boolean.FALSE );
+        boolean result = new Institution( "testInstLabel" ).equals( Boolean.FALSE );
         assertFalse( "result", result );
     }
 
     public void testEquals1() throws Throwable {
-        boolean result = new Institution( "testInstitutionShortLabel" ).equals( new Institution( "testInstitution\rShortLabel" ) );
+        boolean result = new Institution( "testInstLabel" ).equals( new Institution( "testInstitution2" ) );
         assertFalse( "result", result );
     }
 
@@ -71,94 +61,74 @@ public class InstitutionAgitarTest extends AgitarTestCase {
     }
 
     public void testEquals6() throws Throwable {
-        Institution o = new Institution( "testInstitutionShortLabel" );
+        Institution o = new Institution( "testInstLabel" );
         boolean result = o.equals( o );
         assertTrue( "result", result );
     }
 
     public void testGetFullName() throws Throwable {
-        String result = new Institution( "testInstitutionShortLabel" ).getFullName();
+        String result = new Institution( "testInstLabel" ).getFullName();
         assertNull( "result", result );
     }
 
     public void testGetFullName1() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
+        Institution institution = new Institution( "testInstLabel" );
         institution.setFullName( "testInstitutionFullName" );
         String result = institution.getFullName();
         assertEquals( "result", "testInstitutionFullName", result );
     }
 
     public void testGetPostalAddress() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
+        Institution institution = new Institution( "testInstLabel" );
         institution.setPostalAddress( "testInstitutionPostalAddress" );
         String result = institution.getPostalAddress();
         assertEquals( "result", "testInstitutionPostalAddress", result );
     }
 
     public void testGetPostalAddress1() throws Throwable {
-        String result = new Institution( "testInstitutionShortLabel" ).getPostalAddress();
+        String result = new Institution( "testInstLabel" ).getPostalAddress();
         assertNull( "result", result );
     }
 
     public void testGetShortLabel() throws Throwable {
-        String result = new Institution( "testInstitutionShortLabel" ).getShortLabel();
-        assertEquals( "result", "testInstitutionShort", result );
+        String result = new Institution( "testInstLabel" ).getShortLabel();
+        assertEquals( "result", "testInstLabel", result );
     }
 
     public void testGetUrl() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
+        Institution institution = new Institution( "testInstLabel" );
         institution.setUrl( "testInstitutionUrl" );
         String result = institution.getUrl();
         assertEquals( "result", "testInstitutionUrl", result );
     }
 
     public void testGetUrl1() throws Throwable {
-        String result = new Institution( "testInstitutionShortLabel" ).getUrl();
+        String result = new Institution( "testInstLabel" ).getUrl();
         assertNull( "result", result );
     }
 
     public void testSetFullName() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
+        Institution institution = new Institution( "testInstLabel" );
         institution.setFullName( "testInstitutionFullName" );
         assertEquals( "institution.fullName", "testInstitutionFullName", institution.getFullName());
     }
 
     public void testSetPostalAddress() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
+        Institution institution = new Institution( "testInstLabel" );
         institution.setPostalAddress( "testInstitutionPostalAddress" );
         assertEquals( "institution.postalAddress", "testInstitutionPostalAddress", institution.getPostalAddress() );
     }
 
     public void testSetShortLabel() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
-        institution.setShortLabel( "testInstitutionShortLabel" );
-        assertEquals( "institution.shortLabel", "testInstitutionShortLabel", institution.getShortLabel() );
+        Institution institution = new Institution( "testInstLabel" );
+        institution.setShortLabel( "testInstLabel" );
+        assertEquals( "institution.shortLabel", "testInstLabel", institution.getShortLabel() );
     }
 
     public void testSetUrl() throws Throwable {
-        Institution institution = new Institution( "testInstitutionShortLabel" );
+        Institution institution = new Institution( "testInstLabel" );
         institution.setUrl( "testInstitutionUrl" );
         assertEquals( "institution.url", "testInstitutionUrl", institution.getUrl() );
-    }
-
-    public void testConstructorThrowsIllegalArgumentException() throws Throwable {
-        try {
-            new Institution( "" );
-            fail( "Expected IllegalArgumentException to be thrown" );
-        } catch ( IllegalArgumentException ex ) {
-            assertEquals( "ex.getMessage()", "Must define a short label to create an Institution!", ex.getMessage() );
-            assertThrownBy( Institution.class, ex );
-        }
-    }
-
-    public void testConstructorThrowsNullPointerException() throws Throwable {
-        try {
-            new Institution( null );
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertEquals( "ex.getMessage()", "Must define a short label to create an Institution!", ex.getMessage() );
-            assertThrownBy( Institution.class, ex );
-        }
     }
 
 

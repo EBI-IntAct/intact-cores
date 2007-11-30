@@ -19,18 +19,18 @@ public class CvDevelopmentalStageAgitarTest extends AgitarTestCase {
     static Class TARGET_CLASS = CvDevelopmentalStage.class;
 
     public void testConstructor() throws Throwable {
-        Institution owner = new Institution( "testCvDevelopmentalStageShortLabel" );
-        CvDevelopmentalStage cvDevelopmentalStage = new CvDevelopmentalStage( owner, "testCvDevelopmentalStageShortLabel" );
+        Institution owner = new Institution( "testCvLabel" );
+        CvDevelopmentalStage cvDevelopmentalStage = new CvDevelopmentalStage( owner, "testCvLabel" );
         assertEquals( "cvDevelopmentalStage.xrefs.size()", 0, cvDevelopmentalStage.xrefs.size() );
         assertEquals( "cvDevelopmentalStage.getAliases().size()", 0, cvDevelopmentalStage.getAliases().size() );
-        assertEquals( "cvDevelopmentalStage.shortLabel", "testCvDevelopmentalS", cvDevelopmentalStage.getShortLabel() );
+        assertEquals( "cvDevelopmentalStage.shortLabel", "testCvLabel", cvDevelopmentalStage.getShortLabel() );
         assertEquals( "cvDevelopmentalStage.annotations.size()", 0, cvDevelopmentalStage.annotations.size() );
         assertSame( "cvDevelopmentalStage.getOwner()", owner, cvDevelopmentalStage.getOwner() );
     }
 
     public void testConstructorThrowsIllegalArgumentException() throws Throwable {
         try {
-            new CvDevelopmentalStage( new Institution( "testCvDevelopmentalStageShortLabel" ), "" );
+            new CvDevelopmentalStage( new Institution( "testCvLabel" ), "" );
             fail( "Expected IllegalArgumentException to be thrown" );
         } catch ( IllegalArgumentException ex ) {
             assertEquals( "ex.getMessage()", "Must define a non empty short label", ex.getMessage() );
@@ -40,7 +40,7 @@ public class CvDevelopmentalStageAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
         try {
-            new CvDevelopmentalStage( new Institution( "testCvDevelopmentalStageShortLabel" ), null );
+            new CvDevelopmentalStage( new Institution( "testCvLabel" ), null );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertEquals( "ex.getMessage()", "Must define a non null short label", ex.getMessage() );

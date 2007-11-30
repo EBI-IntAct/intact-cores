@@ -19,8 +19,8 @@ public class CvExperimentalRoleAgitarTest extends AgitarTestCase {
     static Class TARGET_CLASS = CvExperimentalRole.class;
 
 //    public void testConstructor() throws Throwable {
-//        Institution owner = new Institution( "testcvExperimentalRoleShortLabel" );
-//        CvExperimentalRole cvExperimentalRole = new CvExperimentalRole( owner, "testcvExperimentalRoleShortLabel" );
+//        Institution owner = new Institution( "testcvExperimLabel" );
+//        CvExperimentalRole cvExperimentalRole = new CvExperimentalRole( owner, "testcvExperimLabel" );
 //        assertEquals( "cvExperimentalRole.xrefs.size()", 0, cvExperimentalRole.xrefs.size() );
 //        assertEquals( "cvExperimentalRole.getAliases().size()", 0, cvExperimentalRole.getAliases().size() );
 //        assertEquals( "cvExperimentalRole.getEvidences().size()", 0, cvExperimentalRole.getEvidences().size() );
@@ -32,7 +32,7 @@ public class CvExperimentalRoleAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsIllegalArgumentException() throws Throwable {
         try {
-            new CvExperimentalRole( new Institution( "testcvExperimentalRoleShortLabel" ), "" );
+            new CvExperimentalRole( new Institution( "testcvExperimLabel" ), "" );
             fail( "Expected IllegalArgumentException to be thrown" );
         } catch ( IllegalArgumentException ex ) {
             assertEquals( "ex.getMessage()", "Must define a non empty short label", ex.getMessage() );
@@ -42,7 +42,7 @@ public class CvExperimentalRoleAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
         try {
-            new CvExperimentalRole( new Institution( "testcvExperimentalRoleShortLabel" ), null );
+            new CvExperimentalRole( new Institution( "testcvExperimLabel" ), null );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertEquals( "ex.getMessage()", "Must define a non null short label", ex.getMessage() );

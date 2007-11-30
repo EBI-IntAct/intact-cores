@@ -181,6 +181,11 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         PersisterHelper.saveOrUpdate(interaction);
 
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+
+        System.out.println(getDaoFactory().getInteractionDao().getAll());
+
         Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("lala-lolo");
         Assert.assertNotNull(reloadedInteraction);
         Assert.assertEquals(2, reloadedInteraction.getComponents().size());

@@ -17,18 +17,18 @@ public class CvXrefQualifierAgitarTest extends AgitarTestCase {
     static Class TARGET_CLASS = CvXrefQualifier.class;
 
     public void testConstructor() throws Throwable {
-        Institution owner = new Institution( "testCvXrefQualifierShortLabel" );
-        CvXrefQualifier cvXrefQualifier = new CvXrefQualifier( owner, "testCvXrefQualifierShortLabel" );
+        Institution owner = new Institution( "testCvXrefQualLab" );
+        CvXrefQualifier cvXrefQualifier = new CvXrefQualifier( owner, "testCvXrefQualLab" );
         assertEquals( "cvXrefQualifier.xrefs.size()", 0, cvXrefQualifier.xrefs.size() );
         assertEquals( "cvXrefQualifier.getAliases().size()", 0, cvXrefQualifier.getAliases().size() );
-        assertEquals( "cvXrefQualifier.shortLabel", "testCvXrefQualifierS", cvXrefQualifier.getShortLabel() );
+        assertEquals( "cvXrefQualifier.shortLabel", "testCvXrefQualLab", cvXrefQualifier.getShortLabel() );
         assertEquals( "cvXrefQualifier.annotations.size()", 0, cvXrefQualifier.annotations.size() );
         assertSame( "cvXrefQualifier.getOwner()", owner, cvXrefQualifier.getOwner() );
     }
 
     public void testConstructorThrowsIllegalArgumentException() throws Throwable {
         try {
-            new CvXrefQualifier( new Institution( "testCvXrefQualifierShortLabel" ), "" );
+            new CvXrefQualifier( new Institution( "testCvXrefQualLab" ), "" );
             fail( "Expected IllegalArgumentException to be thrown" );
         } catch ( IllegalArgumentException ex ) {
             assertEquals( "ex.getMessage()", "Must define a non empty short label", ex.getMessage() );
@@ -38,7 +38,7 @@ public class CvXrefQualifierAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
         try {
-            new CvXrefQualifier( new Institution( "testCvXrefQualifierShortLabel" ), null );
+            new CvXrefQualifier( new Institution( "testCvXrefQualLab" ), null );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertEquals( "ex.getMessage()", "Must define a non null short label", ex.getMessage() );

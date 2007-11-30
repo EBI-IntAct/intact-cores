@@ -167,7 +167,7 @@ public class FeatureAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
         try {
-            new Feature( new Institution( "testFeatureShortLabel1" ), "testFeatureShortLabel", null, new CvFeatureType( new Institution( "testFeatureShortLabel" ), "testFeatureShortLabel" ) );
+            new Feature( new Institution( "testFeatureShortLab1" ), "testFeatureShortLab", null, new CvFeatureType( new Institution( "testFeatureShortLab" ), "testFeatureShortLab" ) );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertEquals( "ex.getMessage()", "Cannot create Feature without a Component!", ex.getMessage() );

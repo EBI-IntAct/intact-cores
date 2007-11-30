@@ -57,6 +57,7 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
 
     public Iterator<Interaction> getInteractionsForExperimentWithAcIterator( String ac ) {
         Query query = getSession().createQuery("from InteractionImpl as interaction left join interaction.experiments as exp where exp.ac = :ac");
+        query.setParameter("ac", ac);
         return query.iterate();
     }
 

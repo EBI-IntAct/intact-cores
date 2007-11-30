@@ -17,8 +17,8 @@ public class CvTissueAgitarTest extends AgitarTestCase {
     static Class TARGET_CLASS = CvTissue.class;
 
     public void testConstructor() throws Throwable {
-        Institution owner = new Institution( "testCvTissueShortLabel" );
-        CvTissue cvTissue = new CvTissue( owner, "testCvTissueShortLabel" );
+        Institution owner = new Institution( "testCvTissueShortLab" );
+        CvTissue cvTissue = new CvTissue( owner, "testCvTissueShortLab" );
         assertEquals( "cvTissue.xrefs.size()", 0, cvTissue.xrefs.size() );
         assertEquals( "cvTissue.getAliases().size()", 0, cvTissue.getAliases().size() );
         assertEquals( "cvTissue.shortLabel", "testCvTissueShortLab", cvTissue.getShortLabel() );
@@ -28,7 +28,7 @@ public class CvTissueAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsIllegalArgumentException() throws Throwable {
         try {
-            new CvTissue( new Institution( "testCvTissueShortLabel" ), "" );
+            new CvTissue( new Institution( "testCvTissueShortLab" ), "" );
             fail( "Expected IllegalArgumentException to be thrown" );
         } catch ( IllegalArgumentException ex ) {
             assertEquals( "ex.getMessage()", "Must define a non empty short label", ex.getMessage() );
@@ -38,7 +38,7 @@ public class CvTissueAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
         try {
-            new CvTissue( new Institution( "testCvTissueShortLabel" ), null );
+            new CvTissue( new Institution( "testCvTissueShortLab" ), null );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertEquals( "ex.getMessage()", "Must define a non null short label", ex.getMessage() );

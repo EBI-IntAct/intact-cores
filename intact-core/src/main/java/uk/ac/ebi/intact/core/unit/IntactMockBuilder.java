@@ -137,6 +137,10 @@ public class IntactMockBuilder {
         return createBioSource(nextId(), nextString("label"));
     }
 
+    public BioSource createDeterministicBioSource() {
+        return createBioSource(9606, "human");
+    }
+
     public BioSource createBioSource(int taxId, String shortLabel) {
         BioSource bioSource = new BioSource(getInstitution(), shortLabel, String.valueOf(taxId));
 
@@ -224,6 +228,10 @@ public class IntactMockBuilder {
 
     public Protein createProtein(String uniprotId, String shortLabel) {
         return createProtein(uniprotId, shortLabel, createBioSourceRandom());
+    }
+
+    public Protein createDeterministicProtein(String uniprotId, String shortLabel) {
+        return createProtein(uniprotId, shortLabel, createDeterministicBioSource());
     }
 
     //////////////////////
@@ -325,6 +333,21 @@ public class IntactMockBuilder {
         return interaction;
     }
 
+     public Interaction createInteraction(Interactor ... interactors) {
+         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+         Experiment experiment = createExperimentEmpty();
+         Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(experiment)), cvInteractionType, null, "temp", getInstitution());
+
+         Component[] components = new Component[interactors.length];
+
+         for (int i=0; i<interactors.length; i++) {
+             components[i] = createComponentNeutral(interaction, interactors[i]);
+             components[i].setInteraction(null);
+         }
+
+         return createInteraction(components);
+    }
+
     public Interaction createInteractionRandomBinary() {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
@@ -348,7 +371,7 @@ public class IntactMockBuilder {
 
         Protein prot = null;
         for (String interactorShortLabel : interactorShortLabels) {
-            prot = createProtein("uniprotId_" + interactorShortLabel, interactorShortLabel);
+            prot = createDeterministicProtein("uniprotId_" + interactorShortLabel, interactorShortLabel);
             interaction.addComponent(createComponentNeutral(interaction, prot));
         }
 
@@ -370,8 +393,8 @@ public class IntactMockBuilder {
      */
     public Interaction createDeterministicInteraction() {
         Interaction interaction = createInteraction("fooprey-barbait",
-                                                    createProtein("A2", "barbait"),
-                                                    createProtein("A1", "fooprey"),
+                                                    createDeterministicProtein("A2", "barbait"),
+                                                    createDeterministicProtein("A1", "fooprey"),
                                                     createDeterministicExperiment());
         interaction.getAnnotations().add(createAnnotation("This is an annotation", CvTopic.COMMENT_MI_REF, CvTopic.COMMENT));
 
@@ -434,6 +457,19 @@ public class IntactMockBuilder {
 
     public Experiment createExperimentRandom(int interactionNumber) {
         Experiment exp = createExperimentEmpty(randomExperimentLabel());
+
+        for (int i=0; i<interactionNumber; i++) {
+            Interaction interaction = createInteractionRandomBinary();
+            interaction.setExperiments(new ArrayList<Experiment>(Arrays.asList(exp)));
+            exp.addInteraction(interaction);
+        }
+
+        return exp;
+    }
+
+    public Experiment createExperimentRandom(String shortLabel, int interactionNumber) {
+        Experiment exp = createExperimentEmpty(randomExperimentLabel());
+        exp.setShortLabel(shortLabel);
 
         for (int i=0; i<interactionNumber; i++) {
             Interaction interaction = createInteractionRandomBinary();

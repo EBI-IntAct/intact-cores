@@ -48,12 +48,12 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
 
     @Test
     public void fetchFromDb_multipleIdXrefsMixed() throws Exception {
-        Protein prot = getMockBuilder().createProtein("Q00112", "lalaProt1");
+        Protein prot = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt1");
         PersisterHelper.saveOrUpdate(prot);
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
 
-        Protein prot2 = getMockBuilder().createProtein("Q00112", "lalaProt");
+        Protein prot2 = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt1");
         CvDatabase intact = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
         prot2.addXref(getMockBuilder().createIdentityXref(prot2, "EBI-12345", intact));
         PersisterHelper.saveOrUpdate(prot2);
@@ -63,14 +63,14 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
 
     @Test
     public void update_containsMoreXrefs() throws Exception {
-        Protein prot = getMockBuilder().createProtein("Q00112", "lalaProt");
+        Protein prot = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt");
         PersisterHelper.saveOrUpdate(prot);
 
         Protein protBeforeUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
         Assert.assertNotNull(protBeforeUpdate);
         Assert.assertEquals(1, protBeforeUpdate.getXrefs().size());
 
-        Protein protUpdated = getMockBuilder().createProtein("Q00112", "lalaProt");
+        Protein protUpdated = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt");
         CvXrefQualifier secondaryAc = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.SECONDARY_AC_MI_REF, CvXrefQualifier.SECONDARY_AC);
         InteractorXref secondaryXref = getMockBuilder().createIdentityXrefUniprot(protUpdated, "A12345");
         secondaryXref.setCvXrefQualifier(secondaryAc);

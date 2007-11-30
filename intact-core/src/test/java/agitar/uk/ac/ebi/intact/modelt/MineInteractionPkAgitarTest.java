@@ -62,7 +62,7 @@ public class MineInteractionPkAgitarTest extends AgitarTestCase {
     }
 
     public void testEquals4() throws Throwable {
-        boolean result = new MineInteractionPk().equals( new MineInteractionPk( null, null, new InteractionImpl( new ArrayList( 100 ), null, "testMineInteractionPkShortLabel", new Institution( "testMineInteractionPkShortLabel" ) ) ) );
+        boolean result = new MineInteractionPk().equals( new MineInteractionPk( null, null, new InteractionImpl( new ArrayList( 100 ), null, "testMineInter", new Institution( "testMineInter" ) ) ) );
         assertFalse( "result", result );
     }
 
@@ -76,21 +76,21 @@ public class MineInteractionPkAgitarTest extends AgitarTestCase {
     }
 
     public void testHashCode1() throws Throwable {
-        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineInteractionPkShortLabel1" ), new BioSource( new Institution( "testMineInteractionPkShortLabel" ), "testMineInteractionPkShortLabel", "25718" ), "testMineInteractionPkShortLabel" );
+        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineInter1" ), new BioSource( new Institution( "testMineInter" ), "testMineInter", "25718" ), "testMineInter" );
         MineInteractionPk mineInteractionPk = new MineInteractionPk( null, protein2, null );
         int result = mineInteractionPk.hashCode();
-        assertEquals( "result", -1742337792, result );
+        assertEquals( "result", 81573420, result );
         assertSame( "mineInteractionPk.getProtein2()", protein2, mineInteractionPk.getProtein2() );
         assertNull( "mineInteractionPk.getProtein1()", mineInteractionPk.getProtein1() );
         assertNull( "mineInteractionPk.getInteraction()", mineInteractionPk.getInteraction() );
     }
 
     public void testHashCode2() throws Throwable {
-        ProteinImpl protein1 = new ProteinImpl( null, null, "testMineInteractionPkShortLabel", null );
-        InteractionImpl interaction = new InteractionImpl( new ArrayList(), new CvInteractionType( null, "testMineInteractionPkShortLabel" ), "testMineInteractionPkShortLabel", new Institution( "testMineInteractionPkShortLabel" ) );
+        ProteinImpl protein1 = new ProteinImpl( null, null, "testMineInter", null );
+        InteractionImpl interaction = new InteractionImpl( new ArrayList(), new CvInteractionType( null, "testMinePkLabel" ), "testMinePkLabel", new Institution( "testMinePkLabel" ) );
         MineInteractionPk mineInteractionPk = new MineInteractionPk( protein1, protein1, interaction );
         int result = mineInteractionPk.hashCode();
-        assertEquals( "result", 1262756091, result );
+        assertEquals( "result", -1643296178, result );
         assertSame( "mineInteractionPk.getProtein2()", protein1, mineInteractionPk.getProtein2() );
         assertSame( "mineInteractionPk.getProtein1()", protein1, mineInteractionPk.getProtein1() );
         assertSame( "mineInteractionPk.getInteraction()", interaction, mineInteractionPk.getInteraction() );

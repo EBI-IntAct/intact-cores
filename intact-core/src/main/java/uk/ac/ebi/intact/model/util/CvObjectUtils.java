@@ -143,4 +143,26 @@ public class CvObjectUtils {
         getChildrenMIs( root, collectedMIs );
         return collectedMIs;
     }
+
+
+    /**
+     * This method is an alternative equals to the CvObject.equals method, that basically checks
+     * on the MI identifiers and then of the short label if the first check returns false
+     * @param cv1 One of the CvObjects
+     * @param cv2 The other CvObject
+     * @return True if (A) the MI are the same or (B) the short labels are the same in case A has failed
+     *
+     * @since 1.8.0
+     */
+    public static boolean areEqual(CvObject cv1, CvObject cv2) {
+        if ( cv1 == null || cv2 == null ) {
+            return false;
+        }
+        
+        if (cv1.getMiIdentifier() != null && cv2.getMiIdentifier() != null) {
+            return cv1.getMiIdentifier().equals(cv2.getMiIdentifier());
+        }
+
+        return cv1.getShortLabel().equals(cv2.getShortLabel());
+    }
 }

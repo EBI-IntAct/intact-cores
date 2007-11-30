@@ -60,7 +60,7 @@ public class MineInteraction implements Serializable {
 
     @ManyToOne
     @JoinColumn( name = "detectmethod_ac" )
-    private CvTopic detectionMethod;
+    private CvInteraction detectionMethod;
 
     @Column( name = "pubmed_id" )
     private String pubmedId;
@@ -132,11 +132,11 @@ public class MineInteraction implements Serializable {
         this.experiment = experiment;
     }
 
-    public CvTopic getDetectionMethod() {
+    public CvInteraction getDetectionMethod() {
         return detectionMethod;
     }
 
-    public void setDetectionMethod( CvTopic detectionMethod ) {
+    public void setDetectionMethod( CvInteraction detectionMethod ) {
         this.detectionMethod = detectionMethod;
     }
 

@@ -17,7 +17,7 @@ public class FeatureAliasAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
         try {
-            new FeatureAlias( new Institution( "testFeatureAliasShortLabel1" ), null, new CvAliasType( new Institution( "testFeatureAliasShortLabel" ), "testFeatureAliasShortLabel" ), "testFeatureAliasName" );
+            new FeatureAlias( new Institution( "testFeatAliasLab1" ), null, new CvAliasType( new Institution( "testFeatAliasLab" ), "testFeatAliasLab" ), "testFeatureAliasName" );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertNull( "ex.getMessage()", ex.getMessage() );

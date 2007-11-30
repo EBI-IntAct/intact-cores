@@ -19,7 +19,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Polymer;
+import uk.ac.ebi.intact.model.Protein;
 import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 
 /**
@@ -29,18 +32,21 @@ import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
  * @version $Id: PolymerDaoTest.java 6881 2006-11-21 10:58:30Z baranda $
  * @since <pre>08-Aug-2006</pre>
  */
-public class PolymerDaoTest extends IntactAbstractTestCase
+public class PolymerDaoTest extends IntactBasicTestCase
 {
     @Test
-    @IntactUnitDataset(dataset = LegacyPsiTestDatasetProvider.INTACT_CORE, provider = LegacyPsiTestDatasetProvider.class)
     public void testGetSequenceByPolymerAc() throws Exception
     {
+        String originalSeq = "MNSYFEQASGFYGHPHQATGMAMGSGGHHDQTASAAAAAYRGFPLSLGMSPYANHHLQRTTQDSPYDASITAACNKIYGDGAGAYKQDCLNIKADAVNGYKDIWNTGGSNGGGGGGGGGGGGGAGGTGGAGNANGGNAANANGQNNPAGGMPVRPSACTPDSRVGGYLDTSGGSPVSHRGGSAGGNVSVSGGNGNAGGVQSGVGVAGAGTAWNANCTISGAAAQTAAASSLHQASNHTFYPWMAIAGECPEDPTKSKIRSDLTQYGGISTDMGKRYSESLAGSLLPDWLGTNGLRRRGRQTYTRYQTLELEKEFHTNHYLTRRRRIEMAHALCLTERQIKIWFQNRRMKLKKEIQAIKELNEQEKQAQAQKAAAAAAAAAAVQGGHLDQ";
+
+        Protein protein = getMockBuilder().createDeterministicProtein("P83949-1", "P83949-1");
+        protein.setSequence(originalSeq);
+
+        PersisterHelper.saveOrUpdate(protein);
+
         Polymer polymer = getDaoFactory().getPolymerDao().getByShortLabel("p83949-1");
 
         String seq = getIntactContext().getDataContext().getDaoFactory().getPolymerDao().getSequenceByPolymerAc(polymer.getAc());
-
-        String originalSeq = "MNSYFEQASGFYGHPHQATGMAMGSGGHHDQTASAAAAAYRGFPLSLGMSPYANHHLQRTTQDSPYDASITAACNKIYGDGAGAYKQDCLNIKADAVNGYKDIWNTGGSNGGGGGGGGGGGGGAGGTGGAGNANGGNAANANGQNNPAGGMPVRPSACTPDSRVGGYLDTSGGSPVSHRGGSAGGNVSVSGGNGNAGGVQSGVGVAGAGTAWNANCTISGAAAQTAAASSLHQASNHTFYPWMAIAGECPEDPTKSKIRSDLTQYGGISTDMGKRYSESLAGSLLPDWLGTNGLRRRGRQTYTRYQTLELEKEFHTNHYLTRRRRIEMAHALCLTERQIKIWFQNRRMKLKKEIQAIKELNEQEKQAQAQKAAAAAAAAAAVQGGHLDQ";
-
         Assert.assertEquals(originalSeq, seq);
     }
 

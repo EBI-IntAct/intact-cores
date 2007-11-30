@@ -21,7 +21,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     static Class TARGET_CLASS = InteractorImpl.class;
 
 //    public void testAddActiveInstance() throws Throwable {
-//        InteractorImpl interactionImpl = new InteractionImpl( ( Collection ) Mockingbird.getProxyObject( Collection.class ), null, "testInteractorImplShortLabel", ( Institution ) Mockingbird.getProxyObject( Institution.class ) );
+//        InteractorImpl interactionImpl = new InteractionImpl( ( Collection ) Mockingbird.getProxyObject( Collection.class ), null, "testIntLabel", ( Institution ) Mockingbird.getProxyObject( Institution.class ) );
 //        Collection someActiveInstance = ( Collection ) Mockingbird.getProxyObject( Collection.class );
 //        interactionImpl.setActiveInstances( someActiveInstance );
 //        Mockingbird.enterRecordingMode();
@@ -44,7 +44,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     }
 
     public void testGetAliases() throws Throwable {
-        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testInteractorImplShortLabel", ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( CvInteractorType ) Mockingbird.getProxyObject( CvInteractorType.class ) );
+        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( CvInteractorType ) Mockingbird.getProxyObject( CvInteractorType.class ) );
         Mockingbird.enterTestMode();
         ArrayList result = ( ArrayList ) smallMoleculeImpl.getAliases();
         assertEquals( "result.size()", 0, result.size() );
@@ -56,7 +56,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     }
 
     public void testGetAnnotations1() throws Throwable {
-        InteractorImpl proteinImpl = new ProteinImpl( new Institution( "testInteractorImplShortLabel1" ), new BioSource( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel", "-100000" ), "testInteractorImplShortLabel" );
+        InteractorImpl proteinImpl = new ProteinImpl( new Institution( "testIntLabel1" ), new BioSource( new Institution( "testIntLabel" ), "testIntLabel", "-100000" ), "testIntLabel" );
         proteinImpl.addAnnotation( null );
         ArrayList result = ( ArrayList ) proteinImpl.getAnnotations();
         assertEquals( "result.size()", 1, result.size() );
@@ -64,9 +64,9 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     }
 
     public void testGetXrefs() throws Throwable {
-        CvDatabase aDatabase = new CvDatabase( null, "testInteractorImplShortLabel" );
-        InteractorImpl proteinImpl = new ProteinImpl( null, null, "testInteractorImplShortLabel", null );
-        Xref aXref = new InteractorXref( new Institution( "testInteractorImplShortLabel" ), aDatabase, "testInteractorImplAPrimaryId", "testInteractorImplASecondaryId", "testInteractorImplADatabaseRelease", new CvXrefQualifier( null, "testInteractorImplShortLabel" ) );
+        CvDatabase aDatabase = new CvDatabase( null, "testIntLabel" );
+        InteractorImpl proteinImpl = new ProteinImpl( null, null, "testIntLabel", null );
+        Xref aXref = new InteractorXref( new Institution( "testIntLabel" ), aDatabase, "testInteractorImplAPrimaryId", "testInteractorImplASecondaryId", "testInteractorImplADatabaseRelease", new CvXrefQualifier( null, "testIntLabel" ) );
         proteinImpl.addXref( ( InteractorXref ) aXref );
         ArrayList result = ( ArrayList ) proteinImpl.getXrefs();
         assertEquals( "result.size()", 1, result.size() );
@@ -79,15 +79,15 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     }
 
     public void testHashCode() throws Throwable {
-        BioSource bioSource = new BioSource( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel", "-100000" );
-        CvInteractorType type = new CvInteractorType( new Institution( "testInteractorImplShortLabel1" ), "testInteractorImplShortLabel" );
-        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testInteractorImplShortLabel", new Institution( "testInteractorImplShortLabel2" ), type );
+        BioSource bioSource = new BioSource( new Institution( "testIntLabel" ), "testIntLabel", "-100000" );
+        CvInteractorType type = new CvInteractorType( new Institution( "testIntLabel1" ), "testIntLabel" );
+        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", new Institution( "testIntLabel2" ), type );
         smallMoleculeImpl.setBioSource( bioSource );
         int result = smallMoleculeImpl.hashCode();
-        assertEquals( "result", -881360777, result );
+        assertEquals( "result", 853113368, result );
         assertSame( "(SmallMoleculeImpl) smallMoleculeImpl.getBioSource()", bioSource, smallMoleculeImpl.getBioSource() );
         assertEquals( "(SmallMoleculeImpl) smallMoleculeImpl.xrefs.size()", 0, ( ( SmallMoleculeImpl ) smallMoleculeImpl ).xrefs.size() );
-        assertEquals( "(SmallMoleculeImpl) smallMoleculeImpl.shortLabel", "testInteractorImplSh", ( ( SmallMoleculeImpl ) smallMoleculeImpl ).getShortLabel() );
+        assertEquals( "(SmallMoleculeImpl) smallMoleculeImpl.shortLabel", "testIntLabel", ( ( SmallMoleculeImpl ) smallMoleculeImpl ).getShortLabel() );
         assertNull( "(SmallMoleculeImpl) smallMoleculeImpl.ac", ( ( SmallMoleculeImpl ) smallMoleculeImpl ).getAc());
         assertNull( "(SmallMoleculeImpl) smallMoleculeImpl.fullName", ( ( SmallMoleculeImpl ) smallMoleculeImpl ).getFullName());
         assertSame( "(SmallMoleculeImpl) smallMoleculeImpl.getCvInteractorType()", type, smallMoleculeImpl.getCvInteractorType() );
@@ -106,13 +106,13 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     }
 
     public void testHashCode2() throws Throwable {
-        CvInteractorType type = new CvInteractorType( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel" );
-        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testInteractorImplShortLabel", new Institution( "testInteractorImplShortLabel1" ), type );
+        CvInteractorType type = new CvInteractorType( new Institution( "testIntLabel" ), "testIntLabel" );
+        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", new Institution( "testIntLabel1" ), type );
         int result = smallMoleculeImpl.hashCode();
-        assertEquals( "result", 1506737878, result );
+        assertEquals( "result", -1053755273, result );
         assertNull( "(SmallMoleculeImpl) smallMoleculeImpl.getBioSource()", smallMoleculeImpl.getBioSource() );
         assertEquals( "(SmallMoleculeImpl) smallMoleculeImpl.xrefs.size()", 0, ( ( SmallMoleculeImpl ) smallMoleculeImpl ).xrefs.size() );
-        assertEquals( "(SmallMoleculeImpl) smallMoleculeImpl.shortLabel", "testInteractorImplSh", ( ( SmallMoleculeImpl ) smallMoleculeImpl ).getShortLabel() );
+        assertEquals( "(SmallMoleculeImpl) smallMoleculeImpl.shortLabel", "testIntLabel", ( ( SmallMoleculeImpl ) smallMoleculeImpl ).getShortLabel() );
         assertNull( "(SmallMoleculeImpl) smallMoleculeImpl.ac", ( ( SmallMoleculeImpl ) smallMoleculeImpl ).getAc());
         assertNull( "(SmallMoleculeImpl) smallMoleculeImpl.fullName", ( ( SmallMoleculeImpl ) smallMoleculeImpl ).getFullName());
         assertSame( "(SmallMoleculeImpl) smallMoleculeImpl.getCvInteractorType()", type, smallMoleculeImpl.getCvInteractorType() );
@@ -120,7 +120,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
 
     public void testHashCode3() throws Throwable {
         InteractorImpl complex = new Complex();
-        BioSource bioSource = new BioSource( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel", "-100000" );
+        BioSource bioSource = new BioSource( new Institution( "testIntLabel" ), "testIntLabel", "-100000" );
         complex.setBioSource( bioSource );
         int result = complex.hashCode();
         assertEquals( "result", 1906893030, result );
@@ -134,37 +134,37 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
 
     public void testSetActiveInstances() throws Throwable {
         Collection someActiveInstance = new ArrayList( 100 );
-        Institution owner = new Institution( "testInteractorImplShortLabel" );
-        InteractorImpl proteinImpl = new ProteinImpl( owner, new BioSource( owner, "testInteractorImplShortLabel", "-100000" ), "testInteractorImplShortLabel" );
+        Institution owner = new Institution( "testIntLabel" );
+        InteractorImpl proteinImpl = new ProteinImpl( owner, new BioSource( owner, "testIntLabel", "-100000" ), "testIntLabel" );
         proteinImpl.setActiveInstances( someActiveInstance );
         assertSame( "(ProteinImpl) proteinImpl.getActiveInstances()", someActiveInstance, proteinImpl.getActiveInstances() );
     }
 
     public void testSetBioSource() throws Throwable {
-        BioSource source = new BioSource( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel", "-100000" );
-        InteractorImpl nucleicAcidImpl = new NucleicAcidImpl( ( Institution ) new Institution( "testInteractorImplShortLabel1" ).clone(), source, "testInteractorImplShortLabel", new CvInteractorType( new Institution( "testInteractorImplShortLabel2" ), "testInteractorImplShortLabel" ) );
+        BioSource source = new BioSource( new Institution( "testIntLabel" ), "testIntLabel", "-100000" );
+        InteractorImpl nucleicAcidImpl = new NucleicAcidImpl( ( Institution ) new Institution( "testIntLabel1" ).clone(), source, "testIntLabel", new CvInteractorType( new Institution( "testIntLabel2" ), "testIntLabel" ) );
         nucleicAcidImpl.setBioSource( source );
         assertSame( "(NucleicAcidImpl) nucleicAcidImpl.getBioSource()", source, nucleicAcidImpl.getBioSource() );
     }
 
     public void testSetCvInteractorType() throws Throwable {
-        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testInteractorImplShortLabel", new Institution( "testInteractorImplShortLabel2" ), new CvInteractorType( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel" ) );
-        CvInteractorType type = new CvInteractorType( new Institution( "testInteractorImplShortLabel1" ), "testInteractorImplShortLabel1" );
+        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", new Institution( "testIntLabel2" ), new CvInteractorType( new Institution( "testIntLabel" ), "testIntLabel" ) );
+        CvInteractorType type = new CvInteractorType( new Institution( "testIntLabel1" ), "testIntLabel1" );
         smallMoleculeImpl.setCvInteractorType( type );
         assertSame( "(SmallMoleculeImpl) smallMoleculeImpl.getCvInteractorType()", type, smallMoleculeImpl.getCvInteractorType() );
     }
 
     public void testSetObjClass() throws Throwable {
-        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testInteractorImplShortLabel", new Institution( "testInteractorImplShortLabel1" ), new CvInteractorType( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel" ) );
+        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", new Institution( "testIntLabel1" ), new CvInteractorType( new Institution( "testIntLabel" ), "testIntLabel" ) );
         smallMoleculeImpl.setObjClass( "testInteractorImplObjClass" );
         assertEquals( "(SmallMoleculeImpl) smallMoleculeImpl.getObjClass()", "testInteractorImplObjClass", smallMoleculeImpl.getObjClass() );
     }
 
     public void testToString() throws Throwable {
         InteractorImpl complex = new Complex();
-        complex.setOwner( ( Institution ) new Institution( "testInteractorImplShortLabel" ).clone() );
+        complex.setOwner( ( Institution ) new Institution( "testIntLabel" ).clone() );
         String result = complex.toString();
-        assertEquals( "result", "AC: null Owner: testInteractorImplSh Label: null[]", result );
+        assertEquals( "result", "AC: null Owner: testIntLabel-x Label: null[]", result );
     }
 
     public void testAddActiveInstanceThrowsNullPointerException() throws Throwable {
@@ -180,7 +180,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     }
 
     public void testAddProductThrowsNullPointerException() throws Throwable {
-        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testInteractorImplShortLabel", new Institution( "testInteractorImplShortLabel1" ), new CvInteractorType( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel" ) );
+        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", new Institution( "testIntLabel1" ), new CvInteractorType( new Institution( "testIntLabel" ), "testIntLabel" ) );
         try {
             smallMoleculeImpl.addProduct( null );
             fail( "Expected NullPointerException to be thrown" );
@@ -193,7 +193,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
 
     public void testGetProductsThrowsUnsupportedOperationException() throws Throwable {
         try {
-            new SmallMoleculeImpl( "testInteractorImplShortLabel", null, null ).getProducts();
+            new SmallMoleculeImpl( "testIntLabel", null, null ).getProducts();
             fail( "Expected UnsupportedOperationException to be thrown" );
         } catch ( UnsupportedOperationException ex ) {
             assertNull( "ex.getMessage()", ex.getMessage() );
@@ -202,7 +202,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     }
 
     public void testRemoveActiveInstanceThrowsNullPointerException() throws Throwable {
-        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testInteractorImplShortLabel", new Institution( "testInteractorImplShortLabel1" ), new CvInteractorType( new Institution( "testInteractorImplShortLabel" ), "testInteractorImplShortLabel" ) );
+        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", new Institution( "testIntLabel1" ), new CvInteractorType( new Institution( "testIntLabel" ), "testIntLabel" ) );
         Collection someActiveInstance = new ArrayList( 100 );
         someActiveInstance.add( null );
         smallMoleculeImpl.setActiveInstances( someActiveInstance );
@@ -217,7 +217,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
     }
 
     public void testRemoveProductThrowsNullPointerException() throws Throwable {
-        InteractorImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testInteractorImplShortLabel" );
+        InteractorImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testIntLabel" );
         Mockingbird.enterTestMode();
         try {
             proteinImpl.removeProduct( null );

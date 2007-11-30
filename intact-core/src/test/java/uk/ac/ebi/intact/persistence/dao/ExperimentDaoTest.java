@@ -15,15 +15,18 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
 import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
+import uk.ac.ebi.intact.config.impl.SmallCvPrimer;
 
 import java.util.Iterator;
 import java.util.List;
@@ -34,8 +37,32 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@IntactUnitDataset(dataset = LegacyPsiTestDatasetProvider.INTACT_CORE, provider = LegacyPsiTestDatasetProvider.class)
-public class ExperimentDaoTest extends IntactAbstractTestCase {
+public class ExperimentDaoTest extends IntactBasicTestCase {
+
+     @After
+    public void end() throws Exception {
+        // nothing
+    }
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
+        IntactMockBuilder mockBuilder = new IntactMockBuilder();
+
+        Experiment exp1 = mockBuilder.createExperimentRandom("thoden-1999-1", 1);
+        Experiment exp2 = mockBuilder.createExperimentRandom("kerrien-2007-1", 2);
+        Experiment exp3 = mockBuilder.createExperimentRandom("baranda-2007-1", 3);
+        Experiment exp4 = mockBuilder.createExperimentEmpty("lala-2014-5");
+        Experiment exp5 = mockBuilder.createExperimentEmpty("guru-1974-1");
+        Experiment exp6 = mockBuilder.createExperimentEmpty("lolo-2001-1");
+
+        PersisterHelper.saveOrUpdate(exp1, exp2, exp3, exp4, exp5, exp6);
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        IntactContext.closeCurrentInstance();
+    }
 
     @Test
     public void getAllScrolled() throws Exception
@@ -54,7 +81,6 @@ public class ExperimentDaoTest extends IntactAbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void getInteractionsForExperimentWithAcScroll() throws Exception
     {
         Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");

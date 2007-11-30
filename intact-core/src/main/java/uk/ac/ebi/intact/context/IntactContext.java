@@ -157,6 +157,17 @@ public class IntactContext implements Serializable {
     }
 
     /**
+     * Closes the IntactContext, finallizing all the thread locals
+     */
+    public static void closeCurrentInstance() {
+        if (currentInstanceExists()) {
+            currentInstance.get().close();
+        } else {
+            if (log.isDebugEnabled()) log.debug("No IntactContext found, so it didn't need to be closed");
+        }
+    }
+
+    /**
      * Calculate the default data config. If the standard data-config exists (there is a hibernate.cfg.xml file in the classpath)
      * use it, otherwise use the memory data-config;
      * @param session

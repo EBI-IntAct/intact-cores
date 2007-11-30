@@ -24,12 +24,12 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
     }
 
     public void testConstructor1() throws Throwable {
-        ProteinImpl protein1 = new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ), "testMineInteractionShortLabel" );
-        InteractionImpl interaction = new InteractionImpl( new ArrayList( 100 ), new ArrayList( 1000 ), ( CvInteractionType ) null, "testMineInteractionShortLabel", new Institution( "testMineInteractionShortLabel2" ) );
+        ProteinImpl protein1 = new ProteinImpl( new Institution( "testMineLabel1" ), new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ), "testMineLabel" );
+        InteractionImpl interaction = new InteractionImpl( new ArrayList( 100 ), new ArrayList( 1000 ), ( CvInteractionType ) null, "testMineLabel", new Institution( "testMineLabel2" ) );
         MineInteraction mineInteraction = new MineInteraction( protein1, protein1, interaction );
         assertSame( "mineInteraction.getPk().getInteraction()", interaction, mineInteraction.getPk().getInteraction() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionS", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionS", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel", mineInteraction.getShortLabel2() );
     }
 
     public void testEquals() throws Throwable {
@@ -51,7 +51,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
     }
 
     public void testEquals2() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setDetectionMethod( detectionMethod );
@@ -94,7 +94,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testEquals6() throws Throwable {
         MineInteraction o = new MineInteraction();
-        o.setShortLabel2( "testMineInteractionShortLabel2" );
+        o.setShortLabel2( "testMineLabel2" );
         boolean result = new MineInteraction().equals( o );
         assertFalse( "result", result );
     }
@@ -145,31 +145,31 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testHashCode() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 147249307, result );
+        assertEquals( "result", -572493819, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode1() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -461462335, result );
+        assertEquals( "result", 1150881665, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
@@ -206,103 +206,82 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testHashCode4() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -1038375372, result );
+        assertEquals( "result", -1758118498, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode5() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -1117179352, result );
+        assertEquals( "result", 334767898, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode6() throws Throwable {
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel1" ), "testMineInteractionShortLabel", new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ) );
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel1" ), "testMineLabel", new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ) );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel2" ), "testMineLabel" );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 405133527, result );
+        assertEquals( "result", -809915942, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
-        assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
-    }
-
-    public void testHashCode7() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteraction\nShortLabel" ), "testMineInteractionShortLabel" );
-        MineInteractionPk pk = new MineInteractionPk( null, new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ), "testMineInteractionShortLabel" ), new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", new Institution( "testMineInteraction\rShortLabel" ) ) );
-        MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
-        mineInteraction.setDetectionMethod( detectionMethod );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
-        mineInteraction.setTaxid( "testMineInteractionTaxid" );
-        mineInteraction.setPk( pk );
-        int result = mineInteraction.hashCode();
-        assertEquals( "result", -855190603, result );
-        assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
-        assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
-        assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode8() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 68445327, result );
+        assertEquals( "result", 1520392577, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode9() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setDetectionMethod( detectionMethod );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -655717017, result );
+        assertEquals( "result", -816113767, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
@@ -314,63 +293,63 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testHashCode10() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 1106820699, result );
+        assertEquals( "result", -1016456221, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode11() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 576913037, result );
+        assertEquals( "result", -1385967133, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode12() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 724162344, result );
+        assertEquals( "result", -1958460952, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode13() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -655717017, result );
+        assertEquals( "result", -816113767, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
@@ -382,109 +361,61 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testHashCode14() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 68445327, result );
+        assertEquals( "result", 1520392577, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
-        assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
-    }
-
-    public void testHashCode15() throws Throwable {
-        BioSource source = new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" );
-        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), source, "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteraction\nShortLabel" ), "testMineInteractionShortLabel", source );
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteraction\tShortLabel" ), "testMineInteractionShortLabel" );
-        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", new Institution( "testMineInteraction\rShortLabel" ) ) );
-        MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
-        mineInteraction.setDetectionMethod( detectionMethod );
-        mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
-        mineInteraction.setTaxid( "testMineInteractionTaxid" );
-        mineInteraction.setPk( pk );
-        int result = mineInteraction.hashCode();
-        assertEquals( "result", -987512369, result );
-        assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
-        assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
-        assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
-        assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
-    }
-
-    public void testHashCode16() throws Throwable {
-        BioSource source = new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" );
-        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), source, "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteraction\nShortLabel" ), "testMineInteractionShortLabel", source );
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteraction\tShortLabel" ), "testMineInteractionShortLabel" );
-        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", new Institution( "testMineInteraction\rShortLabel" ) ) );
-        MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
-        mineInteraction.setDetectionMethod( detectionMethod );
-        mineInteraction.setExperiment( experiment );
-        mineInteraction.setTaxid( "testMineInteractionTaxid" );
-        mineInteraction.setPk( pk );
-        int result = mineInteraction.hashCode();
-        assertEquals( "result", -1862115662, result );
-        assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
-        assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
-        assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode17() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -461462335, result );
+        assertEquals( "result", 1150881665, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode18() throws Throwable {
-        BioSource source = new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" );
-        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), source, "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteraction\nShortLabel" ), "testMineInteractionShortLabel", source );
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteraction\tShortLabel" ), "testMineInteractionShortLabel" );
-        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", new Institution( "testMineInteraction\rShortLabel" ) ) );
+        BioSource source = new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" );
+        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineLabel1" ), source, "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMine2Interaction" ), "testMineLabel", source );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMine3Interaction" ), "testMineLabel" );
+        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineLabel2" ), "testMineLabel" ), "testMineLabel", new Institution( "testMine2Label" ) ) );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 817563225, result );
+        assertEquals( "result", 482502580, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
@@ -492,82 +423,82 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
     public void testHashCode19() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -1038375372, result );
+        assertEquals( "result", -1758118498, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode20() throws Throwable {
-        BioSource source = new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" );
-        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), source, "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteraction\nShortLabel" ), "testMineInteractionShortLabel", source );
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteraction\tShortLabel" ), "testMineInteractionShortLabel" );
-        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", new Institution( "testMineInteraction\rShortLabel" ) ) );
+        BioSource source = new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" );
+        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineLabel1" ), source, "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMine2Interaction" ), "testMineLabel", source );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMine3Interaction" ), "testMineLabel" );
+        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineLabel2" ), "testMineLabel" ), "testMineLabel", new Institution( "testMine2Label" ) ) );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 208851583, result );
+        assertEquals( "result", -2089089232, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode21() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setDetectionMethod( detectionMethod );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -508467710, result );
+        assertEquals( "result", -1388607586, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode22() throws Throwable {
-        BioSource source = new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" );
-        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), source, "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteraction\nShortLabel" ), "testMineInteractionShortLabel", source );
-        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", new Institution( "testMineInteraction\rShortLabel" ) ) );
+        BioSource source = new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" );
+        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineLabel1" ), source, "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMine2Interaction" ), "testMineLabel", source );
+        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineLabel2" ), "testMineLabel" ), "testMineLabel", new Institution( "testMine2Label" ) ) );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 2050193279, result );
+        assertEquals( "result", -87350786, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
@@ -588,95 +519,95 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -1188816321, result );
+        assertEquals( "result", 423527679, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode25() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 1762537716, result );
+        assertEquals( "result", -200342454, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode26() throws Throwable {
-        BioSource source = new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" );
-        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), source, "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteraction\nShortLabel" ), "testMineInteractionShortLabel", source );
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteraction\tShortLabel" ), "testMineInteractionShortLabel" );
-        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", new Institution( "testMineInteraction\rShortLabel" ) ) );
+        BioSource source = new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" );
+        ProteinImpl protein2 = new ProteinImpl( new Institution( "testMineLabel1" ), source, "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMine2Interaction" ), "testMineLabel", source );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMine3Interaction" ), "testMineLabel" );
+        MineInteractionPk pk = new MineInteractionPk( null, protein2, new InteractionImpl( new ArrayList( 100 ), ( CvInteractionType ) null, new CvInteractorType( new Institution( "testMineLabel2" ), "testMineLabel" ), "testMineLabel", new Institution( "testMine2Label" ) ) );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 1394476262, result );
+        assertEquals( "result", -903464553, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode27() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel1" ), "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel", new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ) );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel1" ), "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel2" ), "testMineLabel", new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ) );
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 257884220, result );
+        assertEquals( "result", -237422123, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode28() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 147249307, result );
+        assertEquals( "result", -572493819, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
@@ -684,19 +615,19 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
     public void testHashCode29() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setWeight( 100.0 );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -1761421528, result );
+        assertEquals( "result", -149077528, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
@@ -704,57 +635,57 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setWeight( 100.0 );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 620567103, result );
+        assertEquals( "result", -2062056193, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode31() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setWeight( 100.0 );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 620567103, result );
+        assertEquals( "result", -2062056193, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode32() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel1" ), "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel", new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ) );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel1" ), "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel2" ), "testMineLabel", new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ) );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setWeight( 100.0 );
         mineInteraction.setExperiment( experiment );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 2067267644, result );
+        assertEquals( "result", 1571961301, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
@@ -763,16 +694,16 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
         mineInteraction.setWeight( 100.0 );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 43654066, result );
+        assertEquals( "result", -676089060, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
@@ -781,59 +712,59 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setWeight( 100.0 );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -565057576, result );
+        assertEquals( "result", 1047286424, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode35() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setWeight( 100.0 );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -182399221, result );
+        assertEquals( "result", 1989291155, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode36() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel1" ), "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel", new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ) );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel1" ), "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel2" ), "testMineLabel", new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ) );
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setWeight( 100.0 );
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -314720987, result );
+        assertEquals( "result", -810027330, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
@@ -841,66 +772,66 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setWeight( 100.0 );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 1658942475, result );
+        assertEquals( "result", -303937695, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode38() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel1" ), "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel", new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ) );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel1" ), "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel2" ), "testMineLabel", new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ) );
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setDetectionMethod( detectionMethod );
         mineInteraction.setWeight( 100.0 );
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 2067267644, result );
+        assertEquals( "result", 1571961301, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode39() throws Throwable {
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel1" ), "testMineInteractionShortLabel", new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ) );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel1" ), "testMineLabel", new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ) );
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setWeight( 100.0 );
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -1571982635, result );
+        assertEquals( "result", -1906892228, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
         assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
     }
 
     public void testHashCode40() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel1" ), "testMineInteractionShortLabel" );
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel2" ), "testMineInteractionShortLabel", new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ) );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel1" ), "testMineLabel" );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel2" ), "testMineLabel", new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ) );
         MineInteractionPk pk = new MineInteractionPk();
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
@@ -909,7 +840,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 1490354607, result );
+        assertEquals( "result", -1337038862, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -920,7 +851,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
     }
 
     public void testSetDetectionMethod() throws Throwable {
-        CvTopic detectionMethod = new CvTopic( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel" );
+        CvInteraction detectionMethod = new CvInteraction( new Institution( "testMineLabel" ), "testMineLabel" );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setDetectionMethod( detectionMethod );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -973,14 +904,14 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testSetShortLabel1() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
-        assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
+        assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
     }
 
     public void testSetShortLabel2() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
-        assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
+        assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
     }
 
     public void testSetTaxid() throws Throwable {
@@ -1013,7 +944,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testConstructorThrowsNullPointerException1() throws Throwable {
         try {
-            new MineInteraction( null, new ProteinImpl( new Institution( "testMineInteractionShortLabel1" ), new BioSource( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", "-68833" ), "testMineInteractionShortLabel" ), new InteractionImpl( new ArrayList( 100 ), null, "testMineInteractionShortLabel", new Institution( "testMineInteractionShortLabel2" ) ) );
+            new MineInteraction( null, new ProteinImpl( new Institution( "testMineLabel1" ), new BioSource( new Institution( "testMineLabel" ), "testMineLabel", "-68833" ), "testMineLabel" ), new InteractionImpl( new ArrayList( 100 ), null, "testMineLabel", new Institution( "testMineLabel2" ) ) );
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertNull( "ex.getMessage()", ex.getMessage() );
@@ -1022,11 +953,11 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
     }
 
     public void testHashCodeThrowsNullPointerException() throws Throwable {
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", null );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel" ), "testMineLabel", null );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         try {
             mineInteraction.hashCode();
             fail( "Expected NullPointerException to be thrown" );
@@ -1036,18 +967,18 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
             assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
             assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
             assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-            assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-            assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+            assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+            assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
             assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
             assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
         }
     }
 
     public void testHashCodeThrowsNullPointerException1() throws Throwable {
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", null );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel" ), "testMineLabel", null );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         try {
             mineInteraction.hashCode();
@@ -1058,7 +989,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
             assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
             assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
             assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-            assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+            assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
             assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
             assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
             assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -1067,9 +998,9 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testHashCodeThrowsNullPointerException2() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
-        Experiment experiment = Experiment.getShallowCopy( Experiment.getShallowCopy( new Experiment( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", null ) ) );
+        Experiment experiment = Experiment.getShallowCopy( Experiment.getShallowCopy( new Experiment( new Institution( "testMineLabel" ), "testMineLabel", null ) ) );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setExperiment( experiment );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
@@ -1083,7 +1014,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
             assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
             assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
             assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-            assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+            assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
             assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
             assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
         }
@@ -1091,10 +1022,10 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testHashCodeThrowsNullPointerException3() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
-        Experiment experiment = Experiment.getShallowCopy( Experiment.getShallowCopy( new Experiment( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", null ) ) );
+        Experiment experiment = Experiment.getShallowCopy( Experiment.getShallowCopy( new Experiment( new Institution( "testMineLabel" ), "testMineLabel", null ) ) );
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         try {
@@ -1106,7 +1037,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
             assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
             assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
             assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-            assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
+            assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
             assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
             assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
             assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -1114,11 +1045,11 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
     }
 
     public void testHashCodeThrowsNullPointerException4() throws Throwable {
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", null );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel" ), "testMineLabel", null );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         try {
             mineInteraction.hashCode();
@@ -1129,17 +1060,17 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
             assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
             assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
             assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-            assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-            assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+            assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+            assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
             assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
             assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
         }
     }
 
     public void testHashCodeThrowsNullPointerException5() throws Throwable {
-        Experiment experiment = new Experiment( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", null );
+        Experiment experiment = new Experiment( new Institution( "testMineLabel" ), "testMineLabel", null );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setExperiment( experiment );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         try {
@@ -1152,7 +1083,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
             assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
             assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
             assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
-            assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+            assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
             assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
             assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
         }
@@ -1160,11 +1091,11 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
 
     public void testHashCodeThrowsNullPointerException6() throws Throwable {
         MineInteractionPk pk = new MineInteractionPk();
-        Experiment experiment = Experiment.getShallowCopy( Experiment.getShallowCopy( new Experiment( new Institution( "testMineInteractionShortLabel" ), "testMineInteractionShortLabel", null ) ) );
+        Experiment experiment = Experiment.getShallowCopy( Experiment.getShallowCopy( new Experiment( new Institution( "testMineLabel" ), "testMineLabel", null ) ) );
         MineInteraction mineInteraction = new MineInteraction();
-        mineInteraction.setShortLabel2( "testMineInteractionShortLabel2" );
+        mineInteraction.setShortLabel2( "testMineLabel2" );
         mineInteraction.setExperiment( experiment );
-        mineInteraction.setShortLabel1( "testMineInteractionShortLabel1" );
+        mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         try {
@@ -1176,8 +1107,8 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
             assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
             assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
             assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
-            assertEquals( "mineInteraction.getShortLabel1()", "testMineInteractionShortLabel1", mineInteraction.getShortLabel1() );
-            assertEquals( "mineInteraction.getShortLabel2()", "testMineInteractionShortLabel2", mineInteraction.getShortLabel2() );
+            assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
+            assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
             assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
             assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
         }
