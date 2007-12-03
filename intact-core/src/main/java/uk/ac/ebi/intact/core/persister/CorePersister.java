@@ -110,10 +110,26 @@ public class CorePersister implements Persister<AnnotatedObject> {
         }
 
         if ( synched.containsKey( key ) ) {
-            ao = (T) synched.get( key );
+            final T synchedAo = (T) synched.get(key);
+
+            if (synchedAo == null) {
+                throw new IllegalStateException("The synchronized cache was expected to return an non-null object for: "+ao);
+            }
+
+            // check if the synchronized AO and the provided AO are the same instance. If not, it should be
+            // considered a duplicate (the provide AO has an equivalent synchronized AO).
+            if (ao != synchedAo) {
+                if (log.isDebugEnabled() && !(ao instanceof CvObject)) {
+                    log.debug("Duplicated "+ao.getClass().getSimpleName()+": [new:["+ao+"]] duplicates [synch:["+synchedAo+"]]");
+                }
+            }
+
+            ao = synchedAo;
+
             verifyExpectedType(ao, aoClass);
             return ao;
         }
+
         synched.put( key, ao );
 
         if ( ao.getAc() == null ) {
@@ -131,7 +147,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 synchronizeChildren( ao );
 
             } else {
-                if (log.isDebugEnabled()) log.debug("Existing "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
+                if (log.isDebugEnabled()) log.debug("New (with AC Duplicate) "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
 
                 // object exists in the database, we will update it
                 final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();

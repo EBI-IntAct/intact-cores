@@ -21,6 +21,8 @@ import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactEntry;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 /**
  * Helper class to reduce the code needed to save or update an Annotated object.
@@ -29,6 +31,12 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
  * @version $Id$
  */
 public class PersisterHelper {
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(PersisterHelper.class);
+
     private PersisterHelper() {}
 
     public static void saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException {
@@ -51,7 +59,26 @@ public class PersisterHelper {
         }
         corePersister.commit();
 
+        // we reload the annotated objects by its AC
+        // note: if an object does not have one, it is probably a duplicate
         for ( AnnotatedObject ao : annotatedObjects ) {
+            if (ao.getAc() == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Trying to reload "+ao.getClass().getSimpleName()+" without AC. Probably a duplicate: "+ao);
+                }
+                DefaultFinder defaultFinder = new DefaultFinder();
+                final String ac = defaultFinder.findAc(ao);
+
+                if (ac == null) {
+                    throw new PersisterException(ao.getClass().getSimpleName()+" without AC couldn't be reloaded because " +
+                                                 "no equivalent object was found in the database: "+ao);
+                }
+
+                if (log.isDebugEnabled()) log.debug("\tFound AC: "+ac);
+
+                ao.setAc(ac);
+            }
+
             corePersister.reload( ao );
         }
 

@@ -539,6 +539,21 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(3, getDaoFactory().getInteractionDao().countAll());
     }
 
+    @Test
+    public void persistDuplicated() throws Exception {
+        Interaction interaction1 = getMockBuilder().createInteractionRandomBinary();
+
+        final IntactCloner intactCloner = new IntactCloner();
+        intactCloner.setExcludeACs(true);
+
+        Interaction clonedInteraction1 = intactCloner.clone(interaction1);
+        Assert.assertNull(clonedInteraction1.getAc());
+
+        PersisterHelper.saveOrUpdate(interaction1, clonedInteraction1);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+    }
+
     private Interaction reloadByAc(Interaction interaction) {
         return getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
     }
