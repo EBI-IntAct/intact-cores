@@ -51,11 +51,13 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
         Feature feature = getMockBuilder().createFeatureRandom();
         component.addBindingDomain(feature);
 
+        Assert.assertEquals(2, component.getBindingDomains().size());
+
         Assert.assertTrue(getDaoFactory().getBaseDao().isTransient(component));
 
         PersisterHelper.saveOrUpdate(component);
 
-        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(3, getDaoFactory().getComponentDao().countAll());
 
         Component comp2 = reloadByAc(component);
 
