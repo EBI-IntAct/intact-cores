@@ -58,11 +58,11 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         PersisterHelper.saveOrUpdate(component);
 
-        Assert.assertEquals(3, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
         Component comp2 = reloadByAc(component);
 
-        Assert.assertEquals(3, comp2.getBindingDomains().size());
+        Assert.assertEquals(2, comp2.getBindingDomains().size());
     }
 
     private Component reloadByAc(Component interaction) {

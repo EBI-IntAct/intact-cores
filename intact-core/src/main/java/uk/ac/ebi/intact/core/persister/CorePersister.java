@@ -170,7 +170,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 //ao = transientObjectHandler.handle( ao );
 
                 // TODO: commented this - causes havoc
-                //annotatedObjectsToMerge.put(key, ao);
+                annotatedObjectsToMerge.put(key, ao);
                 synchronizeChildren(ao);
 
             } else {
