@@ -57,11 +57,28 @@ public class CorePersister implements Persister<AnnotatedObject> {
         entityStateCopier = new DefaultEntityStateCopier();
     }
 
+    ////////////////////////////
+    // Strategy configuration
+
     public void setEntityStateCopier( EntityStateCopier entityStateCopier ) {
         if ( entityStateCopier == null ) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException( "You must give a non null EntityStateCopier" );
         }
         this.entityStateCopier = entityStateCopier;
+    }
+
+    public void setFinder( Finder finder ) {
+        if ( finder == null ) {
+            throw new IllegalArgumentException( "You must give a non null Finder" );
+        }
+        this.finder = finder;
+    }
+
+    public void setKeyBuilder( KeyBuilder keyBuilder ) {
+        if ( keyBuilder == null ) {
+            throw new IllegalArgumentException( "You must give a non null KeyBuilder" );
+        }
+        this.keyBuilder = keyBuilder;
     }
 
     ////////////////////////
@@ -101,7 +118,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
             return null;
         }
 
-        Class<T> aoClass = (Class<T>) ao.getClass();
+        Class<T> aoClass = ( Class<T> ) ao.getClass();
 
         final Key key = keyBuilder.keyFor( ao );
 
@@ -151,21 +168,24 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
                 // object exists in the database, we will update it
                 final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
-                final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( (Class<T>)ao.getClass() );
+                final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( ( Class<T> ) ao.getClass() );
                 final T managedObject = dao.getByAc( ac );
 
-                if (managedObject == null) {
-                    throw new IllegalStateException("No managed object found with ac '"+ac+"' and type '"+ao.getClass()+"' and one was expected");
+                if ( managedObject == null ) {
+                    throw new IllegalStateException( "No managed object found with ac '" + ac + "' and type '" + ao.getClass() + "' and one was expected" );
                 }
 
                 // warn if an instance for this interaction is found in the database, as it could be a duplicate
-                warnIfInteractionDuplicate(ao, managedObject);
+                warnIfInteractionDuplicate( ao, managedObject );
 
                 // updated the managed object based on ao's properties
                 entityStateCopier.copy( ao, managedObject );
 
                 // this will allow to reload the AO by its AC after flushing
                 ao.setAc( managedObject.getAc() );
+
+                // traverse annotatedObject's properties and assign AC where appropriate
+                copyAnnotatedObjectAttributeAcs( managedObject, ao );
 
                 // and the created info, so the merge does not fail due to missing created data
                 ao.setCreated( managedObject.getCreated() );
@@ -187,7 +207,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
                 // TODO: commented this - causes havoc
                 annotatedObjectsToMerge.put(key, ao);
-                synchronizeChildren(ao);
+                synchronizeChildren( ao );
 
             } else {
                 if (log.isDebugEnabled()) log.debug("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
@@ -199,26 +219,97 @@ public class CorePersister implements Persister<AnnotatedObject> {
         }
 
         // check if the object class after synchronization is the same as in the beginning
-        verifyExpectedType(ao, aoClass);
+        verifyExpectedType( ao, aoClass );
 
         return ao;
     }
 
-    private <T extends AnnotatedObject> void warnIfInteractionDuplicate(T ao, T managedObject) {
-        if (log.isWarnEnabled() && ao instanceof Interaction) {
-            Interaction newInteraction = (Interaction) ao;
-            Interaction existingInteraction = (Interaction) managedObject;
-            String newImexId = InteractionUtils.getImexIdentifier(newInteraction);
-            String existingImexId = InteractionUtils.getImexIdentifier(existingInteraction);
-            log.warn("An AC already exists for this interaction. Possibly a duplicate? : Existing ["+managedObject.getAc()+", "+managedObject.getShortLabel()+", "+existingImexId+"] - " +
-                     "New [-, "+ao.getShortLabel()+", "+newImexId+"]. The existing interaction will be updated");
+    private <T extends AnnotatedObject> void copyAnnotatedObjectAttributeAcs( T source, T target ) {
+
+        Collection<Xref> xrefsToAdd = new ArrayList<Xref>( );
+        for ( Iterator itXrefTarget = target.getXrefs().iterator(); itXrefTarget.hasNext(); ) {
+            Xref targetXref = (Xref) itXrefTarget.next();
+
+            for ( Iterator itXrefSrc = source.getXrefs().iterator(); itXrefSrc.hasNext(); ) {
+                Xref sourceXref = ( Xref ) itXrefSrc.next();
+
+                if( EqualsUtils.sameXref( sourceXref, targetXref ) ) {
+                    // set the AC of that Xref so it doesn't get inserted again in the database
+//                    targetXref.setAc( sourceXref.getAc() );
+                    itXrefTarget.remove();
+                    itXrefSrc.remove();
+                    xrefsToAdd.add( sourceXref );
+
+
+                    if ( log.isDebugEnabled() ) {
+                        log.debug( "Reconnected 1 Xref to its original AC ("+ targetXref.getParentAc() +"): " + targetXref );
+                    }
+
+                    // go to next target xref
+                    break;
+                }
+            }
+        }
+
+        for ( Xref xref : xrefsToAdd ) {
+            target.addXref( xref );
+        }
+
+
+        for ( Iterator itAliasTarget = target.getAliases().iterator(); itAliasTarget.hasNext(); ) {
+            Alias targetAlias = (Alias) itAliasTarget.next();
+
+            for ( Iterator itAliasSrc = source.getAliases().iterator(); itAliasSrc.hasNext(); ) {
+                Alias sourceXref = ( Alias ) itAliasSrc.next();
+
+                if( EqualsUtils.sameAlias( sourceXref, targetAlias ) ) {
+                    // set the AC of that Xref so it doesn't get inserted again in the database
+                    targetAlias.setAc( sourceXref.getAc() );
+                    if ( log.isDebugEnabled() ) {
+                        log.debug( "Reconnected 1 Alias to its original AC: " + targetAlias );
+                    }
+
+                    // go to next target xref
+                    break;
+                }
+            }
+        }
+
+        for ( Iterator itAnnotTarget = target.getAnnotations().iterator(); itAnnotTarget.hasNext(); ) {
+            Annotation targetAnnot = (Annotation) itAnnotTarget.next();
+
+            for ( Iterator itAnnotSrc = source.getAnnotations().iterator(); itAnnotSrc.hasNext(); ) {
+                Annotation sourceAnnot = ( Annotation ) itAnnotSrc.next();
+
+                if( EqualsUtils.sameAnnotation( sourceAnnot, targetAnnot ) ) {
+                    // set the AC of that Xref so it doesn't get inserted again in the database
+                    targetAnnot.setAc( sourceAnnot.getAc() );
+                    if ( log.isDebugEnabled() ) {
+                        log.debug( "Reconnected 1 Annotation to its original AC: "+ sourceAnnot );
+                    }
+
+                    // go to next target xref
+                    break;
+                }
+            }
         }
     }
 
-    private <T extends AnnotatedObject> void verifyExpectedType(T ao, Class<T> aoClass) {
-        if (!(aoClass.isAssignableFrom(ao.getClass()) || ao.getClass().isAssignableFrom(aoClass))) {
-            throw new IllegalArgumentException("Wrong type returned after synchronization. Expected "+aoClass.getName()+" but found "+
-            ao.getClass().getName()+". The offender was: "+ao);
+    private <T extends AnnotatedObject> void warnIfInteractionDuplicate( T ao, T managedObject ) {
+        if ( log.isWarnEnabled() && ao instanceof Interaction ) {
+            Interaction newInteraction = ( Interaction ) ao;
+            Interaction existingInteraction = ( Interaction ) managedObject;
+            String newImexId = InteractionUtils.getImexIdentifier( newInteraction );
+            String existingImexId = InteractionUtils.getImexIdentifier( existingInteraction );
+            log.warn( "An AC already exists for this interaction. Possibly a duplicate? : Existing [" + managedObject.getAc() + ", " + managedObject.getShortLabel() + ", " + existingImexId + "] - " +
+                      "New [-, " + ao.getShortLabel() + ", " + newImexId + "]. The existing interaction will be updated" );
+        }
+    }
+
+    private <T extends AnnotatedObject> void verifyExpectedType( T ao, Class<T> aoClass ) {
+        if ( !( aoClass.isAssignableFrom( ao.getClass() ) || ao.getClass().isAssignableFrom( aoClass ) ) ) {
+            throw new IllegalArgumentException( "Wrong type returned after synchronization. Expected " + aoClass.getName() + " but found " +
+                                                ao.getClass().getName() + ". The offender was: " + ao );
         }
     }
 
@@ -272,17 +363,17 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 throw new IllegalStateException( "Object to persist should have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
             } else {
 
-            daoFactory.getBaseDao().merge( ao );
-            logPersistence( ao );
+                daoFactory.getBaseDao().merge( ao );
+                logPersistence( ao );
             }
         }
 
         try {
             daoFactory.getEntityManager().flush();
-        } catch (Throwable t) {
-            throw new PersisterException("Exception when flushing the Persister, which contained " +
-                                         annotatedObjectsToPersist.size()+" objects to persist and " +
-                                         annotatedObjectsToMerge.size()+" objects to merge.", t);
+        } catch ( Throwable t ) {
+            throw new PersisterException( "Exception when flushing the Persister, which contained " +
+                                          annotatedObjectsToPersist.size() + " objects to persist and " +
+                                          annotatedObjectsToMerge.size() + " objects to merge.", t );
         } finally {
             annotatedObjectsToMerge.clear();
             annotatedObjectsToPersist.clear();
@@ -409,8 +500,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
     private void synchronizeRange( Range range ) {
 
-        range.setFromCvFuzzyType(synchronize( range.getFromCvFuzzyType() ) );
-        range.setToCvFuzzyType(synchronize( range.getToCvFuzzyType() ) );
+        range.setFromCvFuzzyType( synchronize( range.getFromCvFuzzyType() ) );
+        range.setToCvFuzzyType( synchronize( range.getToCvFuzzyType() ) );
     }
 
     private void synchronizeCvObject( CvObject cvObject ) {
@@ -459,8 +550,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
         }
         ao.setAnnotations( synchedAnnotations );
 
-         if ( !( ao instanceof Institution ) ) {
-            ao.setOwner(synchronize(ao.getOwner() ) );
+        if ( !( ao instanceof Institution ) ) {
+            ao.setOwner( synchronize( ao.getOwner() ) );
         }
     }
 

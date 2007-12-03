@@ -20,7 +20,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Default implementation of the entity state copier.
@@ -118,8 +120,8 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     protected void copyInteractorCommons( Interactor source, Interactor target ) {
 
         if ( target.getBioSource() != null && source.getBioSource() != null &&
-             !source.getBioSource().getTaxId().equals(target.getBioSource().getTaxId()) &&
-             !source.getBioSource().getShortLabel().equals(target.getBioSource().getShortLabel())   ) {
+             !source.getBioSource().getTaxId().equals( target.getBioSource().getTaxId() ) &&
+             !source.getBioSource().getShortLabel().equals( target.getBioSource().getShortLabel() ) ) {
 
             throw new PersisterException( "Operation not permitted: updating biosource of a " +
                                           target.getClass().getSimpleName() + " (" + target.getShortLabel() + ") " +
@@ -167,13 +169,98 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         target.setMiIdentifier( source.getMiIdentifier() );
     }
 
-    protected <X extends Xref> void copyAnotatedObjectCommons( AnnotatedObject<X, ?> source, AnnotatedObject<X, ?> target ) {
+    protected <X extends Xref, A extends Alias> void copyAnotatedObjectCommons( AnnotatedObject<X, A> source,
+                                                                                AnnotatedObject<X, A> target ) {
         target.setShortLabel( source.getShortLabel() );
         target.setFullName( source.getFullName() );
 
-        copyCollection( source.getXrefs(), target.getXrefs() );
-        copyCollection( source.getAliases(), target.getAliases() );
-        copyCollection( source.getAnnotations(), target.getAnnotations() );
+        copyXrefCollection( source.getXrefs(), target.getXrefs() );
+        copyAliasCollection( source.getAliases(), target.getAliases() );
+        copyAnnotationCollection( source.getAnnotations(), target.getAnnotations() );
+    }
+
+    private void copyAnnotationCollection( Collection<Annotation> sourceCol, Collection<Annotation> targetCol ) {
+        Collection elementsToAdd = subtractAnnotations( sourceCol, targetCol );
+        Collection elementsToRemove = subtractAnnotations( sourceCol, targetCol );
+        targetCol.removeAll( elementsToRemove );
+        targetCol.addAll( elementsToAdd );
+    }
+
+    private Collection<Annotation> subtractAnnotations( Collection<Annotation> sourceCol, Collection<Annotation> targetCol ) {
+        Collection<Annotation> annotations = new ArrayList<Annotation>( Math.max( sourceCol.size(), targetCol.size() ) );
+
+        for ( Annotation source : sourceCol ) {
+            boolean found = false;
+            for ( Iterator<Annotation> iterator = targetCol.iterator(); iterator.hasNext() && !found; ) {
+                Annotation target = iterator.next();
+                if ( EqualsUtils.sameAnnotation( source, target ) ) {
+                    // found it, we do not copy if to the resulting collection
+                    found = true;
+                }
+            }
+
+            if ( !found ) {
+                annotations.add( source );
+            }
+        }
+
+        return annotations;
+    }
+
+    private <X extends Xref> void copyXrefCollection( Collection<X> sourceCol, Collection<X> targetCol ) {
+        Collection elementsToAdd = subtractXrefs( sourceCol, targetCol );
+        Collection elementsToRemove = subtractXrefs( sourceCol, targetCol );
+        targetCol.removeAll( elementsToRemove );
+        targetCol.addAll( elementsToAdd );
+    }
+
+    private <A extends Alias> void copyAliasCollection( Collection<A> sourceCol, Collection<A> targetCol ) {
+        Collection elementsToAdd = subtractAliases( sourceCol, targetCol );
+        Collection elementsToRemove = subtractAliases( sourceCol, targetCol );
+        targetCol.removeAll( elementsToRemove );
+        targetCol.addAll( elementsToAdd );
+    }
+
+    private <X extends Xref> Collection<X> subtractXrefs( Collection<X> sourceCol, Collection<X> targetCol ) {
+        Collection<X> xrefs = new ArrayList<X>( Math.max( sourceCol.size(), targetCol.size() ) );
+
+        for ( X source : sourceCol ) {
+            boolean found = false;
+            for ( Iterator<X> iterator = targetCol.iterator(); iterator.hasNext() && !found; ) {
+                X target = iterator.next();
+                if ( EqualsUtils.sameXref( source, target ) ) {
+                    // found it, we do not copy if to the resulting collection
+                    found = true;
+                }
+            }
+
+            if ( !found ) {
+                xrefs.add( source );
+            }
+        }
+
+        return xrefs;
+    }
+
+    private <A extends Alias> Collection<A> subtractAliases( Collection<A> sourceCol, Collection<A> targetCol ) {
+        Collection<A> aliases = new ArrayList<A>( Math.max( sourceCol.size(), targetCol.size() ) );
+
+        for ( A source : sourceCol ) {
+            boolean found = false;
+            for ( Iterator<A> iterator = targetCol.iterator(); iterator.hasNext() && !found; ) {
+                A target = iterator.next();
+                if ( EqualsUtils.sameAlias( source, target ) ) {
+                    // found it, we do not copy if to the resulting collection
+                    found = true;
+                }
+            }
+
+            if ( !found ) {
+                aliases.add( source );
+            }
+        }
+
+        return aliases;
     }
 
     protected void copyCollection( Collection sourceCol, Collection targetCol ) {
