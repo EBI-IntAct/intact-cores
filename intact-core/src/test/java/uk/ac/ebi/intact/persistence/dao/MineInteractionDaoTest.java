@@ -16,14 +16,10 @@
 package uk.ac.ebi.intact.persistence.dao;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
-import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 
 /**
  * TODO comment this!
@@ -31,39 +27,37 @@ import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class MineInteractionDaoTest extends IntactBasicTestCase
-{
+public class MineInteractionDaoTest extends IntactBasicTestCase {
 
     @Test
-    public void testGet() throws Exception
-    {
+    public void testGet() throws Exception {
         Protein prot1 = getMockBuilder().createProteinRandom();
         Protein prot2 = getMockBuilder().createProteinRandom();
 
-        Interaction interaction = getMockBuilder().createInteraction(prot1, prot2);
+        Interaction interaction = getMockBuilder().createInteraction( prot1, prot2 );
 
-        CvInteraction detMethod = getMockBuilder().createCvObject(CvInteraction.class, CvInteraction.COSEDIMENTATION_MI_REF, CvInteraction.COSEDIMENTATION);
+        CvInteraction detMethod = getMockBuilder().createCvObject( CvInteraction.class, CvInteraction.COSEDIMENTATION_MI_REF, CvInteraction.COSEDIMENTATION );
 
-        PersisterHelper.saveOrUpdate(interaction);
-        PersisterHelper.saveOrUpdate(detMethod);
+        PersisterHelper.saveOrUpdate( interaction );
+        PersisterHelper.saveOrUpdate( detMethod );
 
-        MineInteraction newMi = new MineInteraction((ProteinImpl)prot1, (ProteinImpl)prot2, (InteractionImpl)interaction);
-        newMi.setDetectionMethod(detMethod);
-        newMi.setGraphId(5);
-        newMi.setExperiment(interaction.getExperiments().iterator().next());
+        MineInteraction newMi = new MineInteraction( ( ProteinImpl ) prot1, ( ProteinImpl ) prot2, ( InteractionImpl ) interaction );
+        newMi.setDetectionMethod( detMethod );
+        newMi.setGraphId( 5 );
+        newMi.setExperiment( interaction.getExperiments().iterator().next() );
 
         beginTransaction();
-        getDaoFactory().getMineInteractionDao().persist(newMi);
+        getDaoFactory().getMineInteractionDao().persist( newMi );
         getDataContext().flushSession();
         commitTransaction();
 
         String ac1 = prot1.getAc();
         String ac2 = prot2.getAc();
 
-        MineInteraction mineInt = getDaoFactory().getMineInteractionDao().get(ac1, ac2);
-        MineInteraction mineIntSame = getDaoFactory().getMineInteractionDao().get(ac2, ac1);
-        Assert.assertNotNull(mineInt);
-        Assert.assertEquals(mineInt, mineIntSame);
+        MineInteraction mineInt = getDaoFactory().getMineInteractionDao().get( ac1, ac2 );
+        MineInteraction mineIntSame = getDaoFactory().getMineInteractionDao().get( ac2, ac1 );
+        Assert.assertNotNull( mineInt );
+        Assert.assertEquals( mineInt, mineIntSame );
     }
 
 }

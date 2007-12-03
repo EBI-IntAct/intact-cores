@@ -15,18 +15,14 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.*;
-import uk.ac.ebi.intact.context.IntactContext;
+import static org.junit.Assert.assertEquals;
 import uk.ac.ebi.intact.context.DataContext;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
-import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
-import uk.ac.ebi.intact.config.impl.SmallCvPrimer;
 
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +35,7 @@ import java.util.List;
  */
 public class ExperimentDaoTest extends IntactBasicTestCase {
 
-     @After
+    @After
     public void end() throws Exception {
         // nothing
     }
@@ -49,14 +45,14 @@ public class ExperimentDaoTest extends IntactBasicTestCase {
         DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
         IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
-        Experiment exp1 = mockBuilder.createExperimentRandom("thoden-1999-1", 1);
-        Experiment exp2 = mockBuilder.createExperimentRandom("kerrien-2007-1", 2);
-        Experiment exp3 = mockBuilder.createExperimentRandom("baranda-2007-1", 3);
-        Experiment exp4 = mockBuilder.createExperimentEmpty("lala-2014-5");
-        Experiment exp5 = mockBuilder.createExperimentEmpty("guru-1974-1");
-        Experiment exp6 = mockBuilder.createExperimentEmpty("lolo-2001-1");
+        Experiment exp1 = mockBuilder.createExperimentRandom( "thoden-1999-1", 1 );
+        Experiment exp2 = mockBuilder.createExperimentRandom( "kerrien-2007-1", 2 );
+        Experiment exp3 = mockBuilder.createExperimentRandom( "baranda-2007-1", 3 );
+        Experiment exp4 = mockBuilder.createExperimentEmpty( "lala-2014-5" );
+        Experiment exp5 = mockBuilder.createExperimentEmpty( "guru-1974-1" );
+        Experiment exp6 = mockBuilder.createExperimentEmpty( "lolo-2001-1" );
 
-        PersisterHelper.saveOrUpdate(exp1, exp2, exp3, exp4, exp5, exp6);
+        PersisterHelper.saveOrUpdate( exp1, exp2, exp3, exp4, exp5, exp6 );
     }
 
     @AfterClass
@@ -65,52 +61,49 @@ public class ExperimentDaoTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void getAllScrolled() throws Exception
-    {
+    public void getAllScrolled() throws Exception {
         Iterator<Experiment> expIter = getDaoFactory().getExperimentDao().getAllIterator();
 
-        int i=0;
+        int i = 0;
 
-        while (expIter.hasNext())
-        {
+        while ( expIter.hasNext() ) {
             Experiment exp = expIter.next();
             i++;
         }
 
-        assertEquals(6, i);
+        assertEquals( 6, i );
     }
 
     @Test
-    public void getInteractionsForExperimentWithAcScroll() throws Exception
-    {
-        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
+    public void getInteractionsForExperimentWithAcScroll() throws Exception {
+        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel( "thoden-1999-1" );
         Iterator<Interaction> expInteraction =
-                getDaoFactory().getExperimentDao().getInteractionsForExperimentWithAcIterator(exp.getAc()); //giot
+                getDaoFactory().getExperimentDao().getInteractionsForExperimentWithAcIterator( exp.getAc() ); //giot
 
-        int i=0;
+        int i = 0;
 
-        while (expInteraction.hasNext()) {
+        while ( expInteraction.hasNext() ) {
             expInteraction.next();
             i++;
         }
 
-        assertEquals(exp.getInteractions().size(), i);
+        assertEquals( exp.getInteractions().size(), i );
     }
 
     @Test
-    public void countInteractionsForExperimentWithAc(){
-        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
+    public void countInteractionsForExperimentWithAc() {
+        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel( "thoden-1999-1" );
         String ac = exp.getAc();
-        int interactionsCount = getDaoFactory().getExperimentDao().countInteractionsForExperimentWithAc(ac);
-        assertEquals(1,interactionsCount);
+        int interactionsCount = getDaoFactory().getExperimentDao().countInteractionsForExperimentWithAc( ac );
+        assertEquals( 1, interactionsCount );
     }
 
     @Test
-    public void getInteractionsForExperimentWithAc(){
-        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel("thoden-1999-1");
+    public void getInteractionsForExperimentWithAc() {
+        Experiment exp = getDaoFactory().getExperimentDao().getByShortLabel( "thoden-1999-1" );
         String ac = exp.getAc();
-        List<Interaction> interactions = getDaoFactory().getExperimentDao().getInteractionsForExperimentWithAc(ac,0,50);
-        assertEquals(1, interactions.size());
+        List<Interaction> interactions = getDaoFactory().getExperimentDao().getInteractionsForExperimentWithAc( ac, 0, 50 );
+        assertEquals( 1, interactions.size() );
     }
 
     @Test
@@ -130,7 +123,7 @@ public class ExperimentDaoTest extends IntactBasicTestCase {
 
         Institution owner = IntactContext.getCurrentInstance().getConfig().getInstitution();
         CvTopic topic = new CvTopic( owner, "topic" );
-        daoFactory.getCvObjectDao(CvTopic.class).persist( topic );
+        daoFactory.getCvObjectDao( CvTopic.class ).persist( topic );
         Assert.assertNotNull( topic.getAc() );
 
         Annotation annotation = new Annotation( owner, topic, "lala" );

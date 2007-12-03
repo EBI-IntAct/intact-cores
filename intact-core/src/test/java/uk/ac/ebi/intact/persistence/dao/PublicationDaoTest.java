@@ -5,21 +5,14 @@
  */
 package uk.ac.ebi.intact.persistence.dao;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.junit.*;
 import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.context.DataContext;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
-import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Publication;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
 
 /**
  * TODO comment this!
@@ -28,13 +21,11 @@ import uk.ac.ebi.intact.unitdataset.LegacyPsiTestDatasetProvider;
  * @version $Id$
  * @since <pre>08-Aug-2006</pre>
  */
-public class PublicationDaoTest extends IntactBasicTestCase
-{
+public class PublicationDaoTest extends IntactBasicTestCase {
     private PublicationDao publicationDao;
 
     @Before
-    public void prepare() throws Exception
-    {
+    public void prepare() throws Exception {
         publicationDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getPublicationDao();
     }
 
@@ -47,8 +38,8 @@ public class PublicationDaoTest extends IntactBasicTestCase
     public static void beforeClass() throws Exception {
         IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
-        Publication pub1 = mockBuilder.createPublication("10029528");
-        PersisterHelper.saveOrUpdate(pub1);
+        Publication pub1 = mockBuilder.createPublication( "10029528" );
+        PersisterHelper.saveOrUpdate( pub1 );
     }
 
     @AfterClass
@@ -57,12 +48,11 @@ public class PublicationDaoTest extends IntactBasicTestCase
     }
 
     @Test
-    public void getByShortLabel()
-    {
+    public void getByShortLabel() {
         final String label = "10029528";
-        Publication pub = publicationDao.getByShortLabel(label);
-        assertNotNull(pub);
-        assertEquals(label, pub.getShortLabel());
+        Publication pub = publicationDao.getByShortLabel( label );
+        assertNotNull( pub );
+        assertEquals( label, pub.getShortLabel() );
     }
 
 }

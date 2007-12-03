@@ -38,94 +38,94 @@ public class InteractionDaoTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void getByInteractorsPrimaryId_exact() throws Exception{
+    public void getByInteractorsPrimaryId_exact() throws Exception {
         final IntactMockBuilder mockBuilder = getMockBuilder();
         Interaction mockInteraction = mockBuilder.createInteractionRandomBinary();
         mockInteraction.getComponents().clear();
 
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A1", "prot1")));
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A2", "prot2")));
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A1", "prot1" ) ) );
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A2", "prot2" ) ) );
 
-        PersisterHelper.saveOrUpdate(mockInteraction);
+        PersisterHelper.saveOrUpdate( mockInteraction );
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1", "A2").size());
-        Assert.assertEquals(0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1").size());
-        Assert.assertEquals(0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A2").size());
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( true, "A1", "A2" ).size() );
+        Assert.assertEquals( 0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( true, "A1" ).size() );
+        Assert.assertEquals( 0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( true, "A2" ).size() );
     }
 
     @Test
-    public void getByInteractorsPrimaryId_exact2() throws Exception{
+    public void getByInteractorsPrimaryId_exact2() throws Exception {
         final IntactMockBuilder mockBuilder = getMockBuilder();
         Interaction mockInteraction = mockBuilder.createInteractionRandomBinary();
         mockInteraction.getComponents().clear();
 
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A1", "prot1")));
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A2", "prot2")));
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A3", "prot3")));
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A1", "prot1" ) ) );
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A2", "prot2" ) ) );
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A3", "prot3" ) ) );
 
-        PersisterHelper.saveOrUpdate(mockInteraction);
+        PersisterHelper.saveOrUpdate( mockInteraction );
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1", "A2", "A3").size());
-        Assert.assertEquals(0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1", "A2").size());
-        Assert.assertEquals(0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1", "B9").size());
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( true, "A1", "A2", "A3" ).size() );
+        Assert.assertEquals( 0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( true, "A1", "A2" ).size() );
+        Assert.assertEquals( 0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( true, "A1", "B9" ).size() );
     }
 
     @Test
-    public void getByInteractorsPrimaryId_notExact() throws Exception{
+    public void getByInteractorsPrimaryId_notExact() throws Exception {
         final IntactMockBuilder mockBuilder = getMockBuilder();
         Interaction mockInteraction = mockBuilder.createInteractionRandomBinary();
         mockInteraction.getComponents().clear();
 
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A1", "prot1")));
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A2", "prot2")));
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A3", "prot3")));
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A1", "prot1" ) ) );
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A2", "prot2" ) ) );
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A3", "prot3" ) ) );
 
-        PersisterHelper.saveOrUpdate(mockInteraction);
+        PersisterHelper.saveOrUpdate( mockInteraction );
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(false, "A1", "A2", "A3").size());
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(false, "A1", "A2").size());
-        Assert.assertEquals(0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(false, "A1", "B9").size());
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( false, "A1", "A2", "A3" ).size() );
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( false, "A1", "A2" ).size() );
+        Assert.assertEquals( 0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( false, "A1", "B9" ).size() );
     }
 
     @Test
-    public void getByInteractorsPrimaryId_self() throws Exception{
+    public void getByInteractorsPrimaryId_self() throws Exception {
         final IntactMockBuilder mockBuilder = getMockBuilder();
         Interaction mockInteraction = mockBuilder.createInteractionRandomBinary();
         mockInteraction.getComponents().clear();
 
-        mockInteraction.getComponents().add(mockBuilder
-                .createComponentNeutral(mockInteraction, mockBuilder.createProtein("A1", "prot1")));
+        mockInteraction.getComponents().add( mockBuilder
+                .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A1", "prot1" ) ) );
 
-        PersisterHelper.saveOrUpdate(mockInteraction);
+        PersisterHelper.saveOrUpdate( mockInteraction );
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
-        Assert.assertEquals(0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1", "A1").size());
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, "A1").size());
+        Assert.assertEquals( 0, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( true, "A1", "A1" ).size() );
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId( true, "A1" ).size() );
     }
 
     @Test
-    public void getByInteractorsPrimaryId_noComponents() throws Exception{
+    public void getByInteractorsPrimaryId_noComponents() throws Exception {
         final IntactMockBuilder mockBuilder = getMockBuilder();
         Interaction mockInteraction = mockBuilder.createInteractionRandomBinary();
         mockInteraction.getComponents().clear();
 
-        PersisterHelper.saveOrUpdate(mockInteraction);
+        PersisterHelper.saveOrUpdate( mockInteraction );
 
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
     }
 }

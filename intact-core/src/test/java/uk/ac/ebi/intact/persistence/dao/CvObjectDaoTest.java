@@ -5,19 +5,16 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.persistence.dao;
 
+import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import org.junit.*;
-import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.config.impl.SmallCvPrimer;
 import uk.ac.ebi.intact.context.DataContext;
-import uk.ac.ebi.intact.core.unit.IntactAbstractTestCase;
-import uk.ac.ebi.intact.core.unit.IntactUnitDataset;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.unitdataset.PsiTestDatasetProvider;
-import uk.ac.ebi.intact.config.impl.SmallCvPrimer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,20 +36,20 @@ public class CvObjectDaoTest extends IntactBasicTestCase {
     @BeforeClass
     public static void beforeClass() throws Exception {
         final DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
-        SmallCvPrimer primer = new SmallCvPrimer(dataContext.getDaoFactory());
+        SmallCvPrimer primer = new SmallCvPrimer( dataContext.getDaoFactory() );
 
         dataContext.beginTransaction();
         primer.createCVs();
         dataContext.commitTransaction();
 
         // add some nucleic acid CVs
-        CvInteractorType nucAcid = new IntactMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.NUCLEIC_ACID_MI_REF, CvInteractorType.NUCLEIC_ACID);
-        CvInteractorType dna = new IntactMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.DNA_MI_REF, CvInteractorType.DNA);
-        CvInteractorType otherNucAcid = new IntactMockBuilder().createCvObject(CvInteractorType.class, "IA:xxxx", "otherNucAcid");
-        nucAcid.addChild(dna);
-        nucAcid.addChild(otherNucAcid);
+        CvInteractorType nucAcid = new IntactMockBuilder().createCvObject( CvInteractorType.class, CvInteractorType.NUCLEIC_ACID_MI_REF, CvInteractorType.NUCLEIC_ACID );
+        CvInteractorType dna = new IntactMockBuilder().createCvObject( CvInteractorType.class, CvInteractorType.DNA_MI_REF, CvInteractorType.DNA );
+        CvInteractorType otherNucAcid = new IntactMockBuilder().createCvObject( CvInteractorType.class, "IA:xxxx", "otherNucAcid" );
+        nucAcid.addChild( dna );
+        nucAcid.addChild( otherNucAcid );
 
-        PersisterHelper.saveOrUpdate(nucAcid, dna, otherNucAcid);
+        PersisterHelper.saveOrUpdate( nucAcid, dna, otherNucAcid );
     }
 
     @AfterClass
