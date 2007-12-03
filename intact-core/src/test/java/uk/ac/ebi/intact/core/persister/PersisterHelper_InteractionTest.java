@@ -22,6 +22,7 @@ import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -512,6 +513,30 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Interaction int2 = reloadByAc(interaction);
 
         Assert.assertEquals("newFullName", int2.getFullName());
+    }
+
+    @Test
+    public void persistSeveralInteractions() throws Exception {
+        Interaction interaction1 = getMockBuilder().createInteractionRandomBinary();
+
+        PersisterHelper.saveOrUpdate(interaction1);
+
+        getDaoFactory().getEntityManager().clear();
+        getDaoFactory().getEntityManager().close();
+
+        final IntactCloner intactCloner = new IntactCloner();
+        intactCloner.setExcludeACs(true);
+
+        Interaction clonedInteraction1 = intactCloner.clone(interaction1);
+
+        Assert.assertNull(clonedInteraction1.getAc());
+
+        Interaction interaction2 = getMockBuilder().createInteractionRandomBinary();
+        Interaction interaction3 = getMockBuilder().createInteractionRandomBinary();
+
+        PersisterHelper.saveOrUpdate(clonedInteraction1, interaction2, interaction3);
+
+        Assert.assertEquals(3, getDaoFactory().getInteractionDao().countAll());
     }
 
     private Interaction reloadByAc(Interaction interaction) {
