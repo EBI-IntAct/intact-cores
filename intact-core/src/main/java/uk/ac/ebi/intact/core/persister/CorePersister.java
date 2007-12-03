@@ -123,13 +123,15 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
             if ( ac == null ) {
 
+                if (log.isDebugEnabled()) log.debug("New "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: PERSIST");
+
                 // doesn't exist in the database, we will persist it
                 annotatedObjectsToPersist.put( key, ao );
 
                 synchronizeChildren( ao );
 
             } else {
-
+                if (log.isDebugEnabled()) log.debug("Existing "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
 
                 // object exists in the database, we will update it
                 final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
@@ -162,6 +164,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
             final BaseDao baseDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getBaseDao();
             if ( baseDao.isTransient( ao ) ) {
 
+                if (log.isDebugEnabled()) log.debug("Transient "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: SYNCHRONIZE-REFRESH");
+
                 // transient object: that is not attached to the session
                 //ao = transientObjectHandler.handle( ao );
 
@@ -170,6 +174,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 synchronizeChildren(ao);
 
             } else {
+                if (log.isDebugEnabled()) log.debug("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
 
                 // managed object
                 // annotatedObjectsToMerge.put( key, ao );
