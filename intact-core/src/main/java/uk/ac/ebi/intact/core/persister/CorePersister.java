@@ -164,7 +164,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 synchronizeChildren( ao );
 
             } else {
-                if (log.isDebugEnabled()) log.debug("New (with AC Duplicate) "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
+                if (log.isDebugEnabled()) log.debug("New (but found in database: "+ ac +") "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
 
                 // object exists in the database, we will update it
                 final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
@@ -234,47 +234,43 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 Xref sourceXref = ( Xref ) itXrefSrc.next();
 
                 if( EqualsUtils.sameXref( sourceXref, targetXref ) ) {
-                    // set the AC of that Xref so it doesn't get inserted again in the database
-//                    targetXref.setAc( sourceXref.getAc() );
+                    // replace Xref of the target and store the managed one so it can be added later
                     itXrefTarget.remove();
-                    itXrefSrc.remove();
                     xrefsToAdd.add( sourceXref );
-
-
-                    if ( log.isDebugEnabled() ) {
-                        log.debug( "Reconnected 1 Xref to its original AC ("+ targetXref.getParentAc() +"): " + targetXref );
-                    }
 
                     // go to next target xref
                     break;
                 }
             }
         }
-
         for ( Xref xref : xrefsToAdd ) {
             target.addXref( xref );
         }
 
 
+        Collection<Alias> aliasesToAdd = new ArrayList<Alias>( );
         for ( Iterator itAliasTarget = target.getAliases().iterator(); itAliasTarget.hasNext(); ) {
             Alias targetAlias = (Alias) itAliasTarget.next();
 
             for ( Iterator itAliasSrc = source.getAliases().iterator(); itAliasSrc.hasNext(); ) {
-                Alias sourceXref = ( Alias ) itAliasSrc.next();
+                Alias sourceAlias = ( Alias ) itAliasSrc.next();
 
-                if( EqualsUtils.sameAlias( sourceXref, targetAlias ) ) {
-                    // set the AC of that Xref so it doesn't get inserted again in the database
-                    targetAlias.setAc( sourceXref.getAc() );
-                    if ( log.isDebugEnabled() ) {
-                        log.debug( "Reconnected 1 Alias to its original AC: " + targetAlias );
-                    }
+                if( EqualsUtils.sameAlias( sourceAlias, targetAlias ) ) {
+                    // replaces Alias of the target and store the managed one so it can be added later
+                    itAliasTarget.remove();
+                    aliasesToAdd.add( sourceAlias );
 
                     // go to next target xref
                     break;
                 }
             }
         }
+        for ( Alias alias : aliasesToAdd ) {
+            target.addAlias( alias );
+        }
 
+
+        Collection<Annotation> annotToAdd = new ArrayList<Annotation>( );
         for ( Iterator itAnnotTarget = target.getAnnotations().iterator(); itAnnotTarget.hasNext(); ) {
             Annotation targetAnnot = (Annotation) itAnnotTarget.next();
 
@@ -282,16 +278,17 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 Annotation sourceAnnot = ( Annotation ) itAnnotSrc.next();
 
                 if( EqualsUtils.sameAnnotation( sourceAnnot, targetAnnot ) ) {
-                    // set the AC of that Xref so it doesn't get inserted again in the database
-                    targetAnnot.setAc( sourceAnnot.getAc() );
-                    if ( log.isDebugEnabled() ) {
-                        log.debug( "Reconnected 1 Annotation to its original AC: "+ sourceAnnot );
-                    }
+                    // replaces Alias of the target and store the managed one so it can be added later
+                    itAnnotTarget.remove();
+                    annotToAdd.add( sourceAnnot );
 
                     // go to next target xref
                     break;
                 }
             }
+        }
+        for ( Annotation annotation : annotToAdd ) {
+            target.addAnnotation( annotation );
         }
     }
 

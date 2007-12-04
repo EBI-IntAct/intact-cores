@@ -128,6 +128,9 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
     @Test
     public void existingExperimentWithoutPubInfo() throws Exception {
+
+        // create an experiment without publication or xrefs
+
         Experiment expWithout = getMockBuilder().createExperimentRandom(1);
         expWithout.setShortLabel("nopub-2006-1");
         expWithout.setPublication(null);
@@ -139,6 +142,7 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
         expWith.setShortLabel("nopub-2006-1");
 
         Assert.assertNotNull(expWith.getPublication());
+        Assert.assertEquals(1, expWith.getXrefs().size());
 
         PersisterHelper.saveOrUpdate(expWith);
 
