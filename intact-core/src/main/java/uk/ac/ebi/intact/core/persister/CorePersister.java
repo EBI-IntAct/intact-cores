@@ -206,7 +206,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 //ao = transientObjectHandler.handle( ao );
 
                 // TODO: commented this - causes havoc
-                annotatedObjectsToMerge.put(key, ao);
+                //annotatedObjectsToMerge.put(key, ao);
                 synchronizeChildren( ao );
 
             } else {
@@ -499,9 +499,10 @@ public class CorePersister implements Persister<AnnotatedObject> {
     }
 
     private void synchronizeRange( Range range ) {
-
         range.setFromCvFuzzyType( synchronize( range.getFromCvFuzzyType() ) );
         range.setToCvFuzzyType( synchronize( range.getToCvFuzzyType() ) );
+        
+        synchronizeBasicObjectCommons(range);
     }
 
     private void synchronizeCvObject( CvObject cvObject ) {
@@ -550,8 +551,12 @@ public class CorePersister implements Persister<AnnotatedObject> {
         }
         ao.setAnnotations( synchedAnnotations );
 
-        if ( !( ao instanceof Institution ) ) {
-            ao.setOwner( synchronize( ao.getOwner() ) );
+        synchronizeBasicObjectCommons(ao);
+    }
+
+    private void synchronizeBasicObjectCommons (BasicObject bo) {
+        if ( !( bo instanceof Institution ) ) {
+            bo.setOwner( synchronize( bo.getOwner() ) );
         }
     }
 
