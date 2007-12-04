@@ -158,6 +158,14 @@ public class IntactMockBuilder {
         return AliasUtils.createAliasGeneName(parent, name);
     }
 
+    public <A extends Alias> A createAlias(AnnotatedObject<?,A> parent, String name, CvAliasType type) {
+        return AliasUtils.createAlias(parent, name, type );
+    }
+
+    public <A extends Alias> A createAlias(AnnotatedObject<?,A> parent, String name, String typeIdentity, String type) {
+        return AliasUtils.createAlias(parent, name, createCvObject( CvAliasType.class, typeIdentity, type ) );
+    }
+
     ///////////////////////
     // Nucleic Acid
 
