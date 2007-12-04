@@ -15,10 +15,9 @@
  */
 package uk.ac.ebi.intact.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
+import org.apache.commons.collections.map.IdentityMap;
+
+import java.util.*;
 
 /**
  * This class represents a PSI-MI XML entry in IntAct. It does not have a direct equivalence in the database.
@@ -39,9 +38,10 @@ public class IntactEntry implements Annotated {
     private Date releasedDate;
 
     private Collection<Interaction> interactions;
-    private Collection<Experiment> experiments;
-    private Collection<Interactor> interactors;
     private Collection<Annotation> annotations;
+
+    private transient Map<Experiment,Experiment> experiments;
+    private transient Map<Interactor,Interactor> interactors;
 
     //////////////////
     // Constructors
@@ -58,7 +58,7 @@ public class IntactEntry implements Annotated {
 
     public Collection<Interaction> getInteractions() {
         if (interactions == null) {
-            interactions = new HashSet<Interaction>();
+            interactions = new ArrayList<Interaction>();
         }
         return interactions;
     }
@@ -74,17 +74,19 @@ public class IntactEntry implements Annotated {
      */
     public Collection<Experiment> getExperiments() {
         if (experiments != null) {
-            return experiments;
+            return experiments.keySet();
 
         }
 
-        experiments = new HashSet<Experiment>();
+        experiments = new IdentityMap();
 
         for (Interaction interaction : getInteractions()) {
-            experiments.addAll(interaction.getExperiments());
+            for (Experiment experiment : interaction.getExperiments()) {
+                experiments.put(experiment, null);
+            }
         }
 
-        return experiments;
+        return experiments.keySet();
     }
 
     /**
@@ -104,19 +106,19 @@ public class IntactEntry implements Annotated {
      */
     public Collection<Interactor> getInteractors() {
         if (interactors != null) {
-            return interactors;
+            return interactors.keySet();
         }
 
-        interactors = new HashSet<Interactor>();
+        interactors = new IdentityMap();
 
         for (Interaction interaction : getInteractions()) {
             for (Component comp : interaction.getComponents()) {
-                interactors.add(comp.getInteractor());
+                interactors.put(comp.getInteractor(), null);
             }
 
         }
 
-        return interactors;
+        return interactors.keySet();
     }
 
     public Collection<Annotation> getAnnotations() {
@@ -145,4 +147,5 @@ public class IntactEntry implements Annotated {
     public void setReleasedDate( Date releasedDate ) {
         this.releasedDate = releasedDate;
     }
+
 }
