@@ -155,6 +155,62 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
+    public void existingExperiment_annotations() throws Exception {
+        Experiment expWithout = getMockBuilder().createExperimentRandom(1);
+        expWithout.setShortLabel("nopub-2006-1");
+        expWithout.setPublication(null);
+        expWithout.getXrefs().clear();
+        expWithout.getAliases().clear();
+        expWithout.getAnnotations().clear();
+
+        PersisterHelper.saveOrUpdate(expWithout);
+
+        Experiment expWith = getMockBuilder().createExperimentRandom(1);
+        expWith.setShortLabel("nopub-2006-1");
+        expWith.setPublication(null);
+        expWith.getXrefs().clear();
+        expWith.getAliases().clear();
+        expWith.getAnnotations().clear();
+
+        expWith.addAnnotation( getMockBuilder().createAnnotation( "comment", "MI:xxxx", "topic" ) );
+
+        PersisterHelper.saveOrUpdate(expWith);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+
+        Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
+        Assert.assertEquals(1, reloadedExp.getAnnotations().size());
+    }
+
+    @Test
+    public void existingExperiment_aliases() throws Exception {
+        Experiment expWithout = getMockBuilder().createExperimentRandom(1);
+        expWithout.setShortLabel("nopub-2006-1");
+        expWithout.setPublication(null);
+        expWithout.getXrefs().clear();
+        expWithout.getAliases().clear();
+        expWithout.getAnnotations().clear();
+
+        PersisterHelper.saveOrUpdate(expWithout);
+
+        Experiment expWith = getMockBuilder().createExperimentRandom(1);
+        expWith.setShortLabel("nopub-2006-1");
+        expWith.setPublication(null);
+        expWith.getXrefs().clear();
+        expWith.getAliases().clear();
+        expWith.getAnnotations().clear();
+
+        expWith.addAlias( getMockBuilder().createAlias( expWith, "comment", "MI:xxxx", "topic" ) );
+
+        PersisterHelper.saveOrUpdate(expWith);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+
+        Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
+        Assert.assertEquals(1, reloadedExp.getAliases().size());
+    }
+
+    @Test
     public void differentExperiment_samePubId() throws Exception {
         final String pubId = "1234567";
         Experiment exp1 = getMockBuilder().createExperimentEmpty("exp-2007-1", pubId);
