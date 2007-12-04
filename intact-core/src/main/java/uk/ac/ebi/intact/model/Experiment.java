@@ -340,6 +340,12 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         if ( publication != null ? !publication.equals( that.publication ) : that.publication != null ) {
             return false;
         }
+        if ( cvIdentification != null ? !cvIdentification.equals( that.cvIdentification ) : that.cvIdentification != null ) {
+            return false;
+        }
+        if ( cvInteraction != null ? !cvInteraction.equals( that.cvInteraction ) : that.cvInteraction != null ) {
+            return false;
+        }
 
         return true;
     }
@@ -349,6 +355,8 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         int result = super.hashCode();
         result = 29 * result + bioSource.hashCode();
         result = 29 * result + ( publication != null ? publication.hashCode() : 0 );
+        result = 29 * result + ( cvIdentification != null ? cvIdentification.hashCode() : 0 );
+        result = 29 * result + ( cvInteraction != null ? cvInteraction.hashCode() : 0 );
         return result;
     }
 

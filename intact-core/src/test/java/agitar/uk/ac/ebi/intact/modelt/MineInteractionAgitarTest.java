@@ -248,7 +248,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -809915942, result );
+        assertEquals( "result", 820324970, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -410,7 +410,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 482502580, result );
+        assertEquals( "result", 2112743492, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -450,7 +450,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setShortLabel1( "testMineLabel1" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -2089089232, result );
+        assertEquals( "result", -458848320, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -492,7 +492,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -87350786, result );
+        assertEquals( "result", 1542890126, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -564,7 +564,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setTaxid( "testMineInteractionTaxid" );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -903464553, result );
+        assertEquals( "result", 726776359, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -585,7 +585,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -237422123, result );
+        assertEquals( "result", 1392818789, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -679,7 +679,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setWeight( 100.0 );
         mineInteraction.setExperiment( experiment );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 1571961301, result );
+        assertEquals( "result", -1092765083, result );
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -758,7 +758,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -810027330, result );
+        assertEquals( "result", 820213582, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -799,7 +799,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", 1571961301, result );
+        assertEquals( "result", -1092765083, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -819,7 +819,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -1906892228, result );
+        assertEquals( "result", -276651316, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
@@ -840,7 +840,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         mineInteraction.setExperiment( experiment );
         mineInteraction.setPk( pk );
         int result = mineInteraction.hashCode();
-        assertEquals( "result", -1337038862, result );
+        assertEquals( "result", 293202050, result );
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );

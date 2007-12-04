@@ -82,7 +82,7 @@ public class ExperimentAgitarTest extends AgitarTestCase {
         BioSource source = new BioSource( new Institution( "testExptLabel" ), "testExptLabel", "-100000" );
         Experiment shallowCopy = Experiment.getShallowCopy( Experiment.getShallowCopy( new Experiment( new Institution( "testExptLabel1" ), "testExptLabel", source ) ) );
         int result = shallowCopy.hashCode();
-        assertEquals( "result", 1448111445, result );
+        assertEquals( "result", -1908986819, result );
         assertEquals( "shallowCopy.xrefs.size()", 0, shallowCopy.xrefs.size() );
         assertEquals( "shallowCopy.shortLabel", "testExptLabel", shallowCopy.getShortLabel() );
         assertSame( "shallowCopy.getBioSource()", source, shallowCopy.getBioSource() );
