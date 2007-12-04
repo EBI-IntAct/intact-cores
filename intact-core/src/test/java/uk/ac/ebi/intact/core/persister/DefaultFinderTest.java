@@ -220,17 +220,23 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void findAcForBioSource() {
-        // TODO split this test !!
-        CvTissue brain = getMockBuilder().createCvObject( CvTissue.class, "MI:xxxx", "brain" );
-        CvTissue liver = getMockBuilder().createCvObject( CvTissue.class, "MI:yyyy", "liver" );
-
-        CvCellType typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
-        CvCellType typeB = getMockBuilder().createCvObject( CvCellType.class, "MI:bbbb", "B" );
-
+    public void findAcForBioSource_only_taxid() {
         BioSource bs1 = getMockBuilder().createBioSource( 9606, "human" );
         PersisterHelper.saveOrUpdate( bs1 );
         String queryAc1 = bs1.getAc();
+
+        String ac = finder.findAc( getMockBuilder().createBioSource( 9606, "human" ) );
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( queryAc1, ac );
+
+        Assert.assertNull( finder.findAc( getMockBuilder().createBioSource( 4932, "yeast" ) ) );
+    }
+
+    @Test
+    public void findAcForBioSource_taxid_cellType_tissue() {
+        CvTissue brain = getMockBuilder().createCvObject( CvTissue.class, "MI:xxxx", "brain" );
+
+        CvCellType typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
 
         BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
         bs2.setCvCellType( typeA );
@@ -238,74 +244,65 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate( bs2 );
         String queryAc2 = bs2.getAc();
 
+        brain = getMockBuilder().createCvObject( CvTissue.class, "MI:xxxx", "brain" );
+        typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
+
+        final BioSource qeryBs1 = getMockBuilder().createBioSource( 9606, "human" );
+        qeryBs1.setCvCellType( typeA );
+        qeryBs1.setCvTissue( brain );
+        String ac = finder.findAc( qeryBs1 );
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( queryAc2, ac );
+    }
+
+    @Test
+    public void findAcForBioSource_taxid_cellType() {
+        CvCellType typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
+
         BioSource bs3 = getMockBuilder().createBioSource( 9606, "human" );
         bs3.setCvCellType( typeA );
         PersisterHelper.saveOrUpdate( bs3 );
         String queryAc3 = bs3.getAc();
+
+        typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
+
+        final BioSource qeryBs3 = getMockBuilder().createBioSource( 9606, "human" );
+        qeryBs3.setCvCellType( typeA );
+        String ac = finder.findAc( qeryBs3 );
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( queryAc3, ac );
+
+        CvCellType typeB = getMockBuilder().createCvObject( CvCellType.class, "MI:xxxx", "B" );
+        final BioSource otherBs3 = getMockBuilder().createBioSource( 9606, "human" );
+        Assert.assertNull( finder.findAc( otherBs3 ) );
+
+        otherBs3.setCvCellType( typeB );
+        Assert.assertNull( finder.findAc( otherBs3 ) );
+    }
+
+    @Test
+    public void findAcForBioSource_taxid_tissue() {
+        CvTissue brain = getMockBuilder().createCvObject( CvTissue.class, "MI:xxxx", "brain" );
 
         BioSource bs4 = getMockBuilder().createBioSource( 9606, "human" );
         bs4.setCvTissue( brain );
         PersisterHelper.saveOrUpdate( bs4 );
         String queryAc4 = bs4.getAc();
 
-        BioSource bs5 = getMockBuilder().createBioSource( 9606, "human" );
-        bs5.setCvTissue( liver );
-        bs5.setCvCellType( typeB );
-        PersisterHelper.saveOrUpdate( bs5 );
-        String queryAc5 = bs5.getAc();
-
-        BioSource bs6 = getMockBuilder().createBioSource( 9606, "human" );
-        bs6.setCvTissue( liver );
-        PersisterHelper.saveOrUpdate( bs6 );
-
-        BioSource bs7 = getMockBuilder().createBioSource( 4932, "yeast" );
-        PersisterHelper.saveOrUpdate( bs7 );
-
-        // Now search for data
-
         brain = getMockBuilder().createCvObject( CvTissue.class, "MI:xxxx", "brain" );
-        liver = getMockBuilder().createCvObject( CvTissue.class, "MI:yyyy", "liver" );
-
-        typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
-        typeB = getMockBuilder().createCvObject( CvCellType.class, "MI:bbbb", "B" );
-
-        // plain taxid
-        String ac = finder.findAc( getMockBuilder().createBioSource( 9606, "human" ) );
-        Assert.assertNotNull( ac );
-        Assert.assertEquals( queryAc1, ac );
-
-        final BioSource qeryBs1 = getMockBuilder().createBioSource( 9606, "human" );
-        qeryBs1.setCvCellType( typeA );
-        qeryBs1.setCvTissue( brain );
-        ac = finder.findAc( qeryBs1 );
-        Assert.assertNotNull( ac );
-        Assert.assertEquals( queryAc2, ac );
-
-        final BioSource qeryBs2 = getMockBuilder().createBioSource( 9606, "human" );
-        qeryBs2.setCvCellType( typeA );
-        qeryBs2.setCvTissue( brain );
-        ac = finder.findAc( qeryBs2 );
-        Assert.assertNotNull( ac );
-        Assert.assertEquals( queryAc2, ac );
-
-        final BioSource qeryBs3 = getMockBuilder().createBioSource( 9606, "human" );
-        qeryBs3.setCvCellType( typeA );
-        ac = finder.findAc( qeryBs3 );
-        Assert.assertNotNull( ac );
-        Assert.assertEquals( queryAc3, ac );
 
         final BioSource qeryBs4 = getMockBuilder().createBioSource( 9606, "human" );
         qeryBs4.setCvTissue( brain );
-        ac = finder.findAc( qeryBs4 );
+        String ac = finder.findAc( qeryBs4 );
         Assert.assertNotNull( ac );
         Assert.assertEquals( queryAc4, ac );
 
-        final BioSource qeryBs5 = getMockBuilder().createBioSource( 9606, "human" );
-        qeryBs5.setCvCellType( typeB );
-        qeryBs5.setCvTissue( liver );
-        ac = finder.findAc( qeryBs5 );
-        Assert.assertNotNull( ac );
-        Assert.assertEquals( queryAc5, ac );
+        CvTissue liver = getMockBuilder().createCvObject( CvTissue.class, "MI:zzzz", "liver" );
+        final BioSource otherBs4 = getMockBuilder().createBioSource( 9606, "human" );
+        Assert.assertNull( finder.findAc( otherBs4 ) );
+        
+        otherBs4.setCvTissue( liver );
+        Assert.assertNull( finder.findAc( otherBs4 ) );
     }
 
     @Test
@@ -324,6 +321,9 @@ public class DefaultFinderTest extends IntactBasicTestCase {
 
     @Test
     public void findAcForComponent() {
+        final Interaction interaction = getMockBuilder().createDeterministicInteraction();
+        Component component = interaction.getComponents().iterator().next();
+        Assert.assertNull( finder.findAc( component ) );
     }
 
     @Test
@@ -342,8 +342,8 @@ public class DefaultFinderTest extends IntactBasicTestCase {
 
     @Test
     public void findAcForFeature() {
-
-
+        Feature feature = getMockBuilder().createFeatureRandom();
+        Assert.assertNull( finder.findAc( feature ) );
     }
 
     @Test
@@ -360,10 +360,19 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void findAcForCvObject() {
-    }
-
-    @Test
     public void findAcForCvObject_same_MI_different_class() {
+        CvTopic topic = getMockBuilder().createCvObject( CvTopic.class, "MI:xxxx", "topic" );
+        PersisterHelper.saveOrUpdate( topic );
+
+        CvDatabase database = getMockBuilder().createCvObject( CvDatabase.class, "MI:xxxx", "db" );
+        PersisterHelper.saveOrUpdate( database );
+
+        String ac = finder.findAc( getMockBuilder().createCvObject( CvTopic.class, "MI:xxxx", "topic" ) );
+        Assert.assertNotNull( topic.getAc() );
+        Assert.assertEquals( topic.getAc(), ac );
+
+        ac = finder.findAc( getMockBuilder().createCvObject( CvDatabase.class, "MI:xxxx", "db" ) );
+        Assert.assertNotNull( database.getAc() );
+        Assert.assertEquals( database.getAc(), ac );
     }
 }
