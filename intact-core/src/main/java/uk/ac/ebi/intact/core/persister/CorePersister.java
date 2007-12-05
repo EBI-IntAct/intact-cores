@@ -163,7 +163,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
             if ( ac == null ) {
 
-                if (log.isDebugEnabled()) log.debug("New "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: PERSIST");
+                if (log.isTraceEnabled()) log.trace("New "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: PERSIST");
 
                 // doesn't exist in the database, we will persist it
                 annotatedObjectsToPersist.put( key, ao );
@@ -171,7 +171,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 synchronizeChildren( ao );
 
             } else {
-                if (log.isDebugEnabled()) log.debug("New (but found in database: "+ ac +") "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
+                if (log.isTraceEnabled()) log.trace("New (but found in database: "+ ac +") "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
 
                 // object exists in the database, we will update it
                 final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
@@ -215,20 +215,47 @@ public class CorePersister implements Persister<AnnotatedObject> {
             final BaseDao baseDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getBaseDao();
             if ( baseDao.isTransient( ao ) ) {
 
-                if (log.isDebugEnabled()) log.debug("Transient "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: SYNCHRONIZE-REFRESH");
+                if (log.isTraceEnabled()) log.trace("Transient "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: SYNCHRONIZE-REFRESH");
 
                 // transient object: that is not attached to the session
                 //ao = transientObjectHandler.handle( ao );
 
-                // TODO: commented this - causes havoc
-                //annotatedObjectsToMerge.put(key, ao);
-
                 statistics.addTransient(ao);
 
-                synchronizeChildren( ao );
+                // object exists in the database, we will update it
+                final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+                final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( ( Class<T> ) ao.getClass() );
+                final T managedObject = dao.getByAc( ao.getAc() );
+
+                // updated the managed object based on ao's properties, but only add it to merge
+                // if something has been copied (it was not a duplicate)
+                try {
+                    boolean copied = entityStateCopier.copy( ao, managedObject );
+
+                    // this will allow to reload the AO by its AC after flushing
+                    ao.setAc(managedObject.getAc());
+
+                    // traverse annotatedObject's properties and assign AC where appropriate
+                    copyAnnotatedObjectAttributeAcs(managedObject, ao);
+
+                    // and the created info, so the merge does not fail due to missing created data
+                    ao.setCreated(managedObject.getCreated());
+                    ao.setCreator(managedObject.getCreator());
+
+                    if (copied) {
+                        statistics.addMerged(managedObject);
+                        synchronizeChildren( managedObject );
+                    }
+                } catch (PersisterException e) {
+                    log.warn("Could not copy state from annotated object to transient object. Any modifications to the transient object will be lost: "+ao);
+
+                    synchronizeChildren( ao );
+                }
+
+
 
             } else {
-                if (log.isDebugEnabled()) log.debug("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
+                if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
 
                 // managed object
                 // annotatedObjectsToMerge.put( key, ao );
@@ -399,30 +426,30 @@ public class CorePersister implements Persister<AnnotatedObject> {
     }
 
     private static void logPersistence( AnnotatedObject<?, ?> ao ) {
-        if ( log.isDebugEnabled() ) {
-            log.debug( "\t\t\tPersisted with AC: " + ao.getAc() );
+        if ( log.isTraceEnabled() ) {
+            log.trace( "\t\t\tPersisted with AC: " + ao.getAc() );
 
             if ( !ao.getXrefs().isEmpty() ) {
-                log.debug( "\t\t\tXrefs: " + ao.getXrefs().size() );
+                log.trace( "\t\t\tXrefs: " + ao.getXrefs().size() );
 
                 for ( Xref xref : ao.getXrefs() ) {
-                    log.debug( "\t\t\t\t" + xref );
+                    log.trace( "\t\t\t\t" + xref );
                 }
             }
 
             if ( !ao.getAliases().isEmpty() ) {
-                log.debug( "\t\t\tAliases: " + ao.getAliases().size() );
+                log.trace( "\t\t\tAliases: " + ao.getAliases().size() );
 
                 for ( Alias alias : ao.getAliases() ) {
-                    log.debug( "\t\t\t\t" + alias );
+                    log.trace( "\t\t\t\t" + alias );
                 }
             }
 
             if ( !ao.getAnnotations().isEmpty() ) {
-                log.debug( "\t\t\tAnnotations: " + ao.getAnnotations().size() );
+                log.trace( "\t\t\tAnnotations: " + ao.getAnnotations().size() );
 
                 for ( Annotation annot : ao.getAnnotations() ) {
-                    log.debug( "\t\t\t\t" + annot );
+                    log.trace( "\t\t\t\t" + annot );
                 }
             }
         }
