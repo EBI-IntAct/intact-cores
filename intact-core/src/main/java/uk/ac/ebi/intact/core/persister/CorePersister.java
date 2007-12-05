@@ -24,6 +24,7 @@ import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 
 import java.util.*;
 
@@ -46,6 +47,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
     private KeyBuilder keyBuilder;
     private EntityStateCopier entityStateCopier;
 
+    private PersisterStatistics statistics;
+
     public CorePersister() {
 
         annotatedObjectsToPersist = new HashMap<Key, AnnotatedObject>();
@@ -55,6 +58,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
         finder = new DefaultFinder();
         keyBuilder = new KeyBuilder();
         entityStateCopier = new DefaultEntityStateCopier();
+
+        statistics = new PersisterStatistics();
     }
 
     ////////////////////////////
@@ -136,9 +141,11 @@ public class CorePersister implements Persister<AnnotatedObject> {
             // check if the synchronized AO and the provided AO are the same instance. If not, it should be
             // considered a duplicate (the provide AO has an equivalent synchronized AO).
             if (ao != synchedAo) {
-                if (log.isDebugEnabled() && !(ao instanceof CvObject)) {
+                if (log.isDebugEnabled() && !(ao instanceof CvObject) && !(ao instanceof Institution)) {
                     log.debug("Duplicated "+ao.getClass().getSimpleName()+": [new:["+ao+"]] duplicates [synch:["+synchedAo+"]]");
                 }
+
+                statistics.addDuplicate(ao);
             }
 
             ao = synchedAo;
@@ -179,7 +186,9 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 warnIfInteractionDuplicate( ao, managedObject );
 
                 // updated the managed object based on ao's properties
+                // TODO: only copy variables when necessary (if so, consider it a merge - otherwise, it is a duplicate)
                 entityStateCopier.copy( ao, managedObject );
+                statistics.addMerged(managedObject);
 
                 // this will allow to reload the AO by its AC after flushing
                 ao.setAc( managedObject.getAc() );
@@ -207,6 +216,9 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
                 // TODO: commented this - causes havoc
                 //annotatedObjectsToMerge.put(key, ao);
+
+                statistics.addTransient(ao);
+
                 synchronizeChildren( ao );
 
             } else {
@@ -341,6 +353,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
             }
 
             daoFactory.getBaseDao().persist( ao );
+            statistics.addPersisted(ao);
             logPersistence( ao );
         }
 
@@ -359,8 +372,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
             if ( ao.getAc() == null ) {
                 throw new IllegalStateException( "Object to persist should have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
             } else {
-
                 daoFactory.getBaseDao().merge( ao );
+                statistics.addMerged(ao);
                 logPersistence( ao );
             }
         }
@@ -406,6 +419,10 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 }
             }
         }
+    }
+
+    public PersisterStatistics getStatistics() {
+        return statistics;
     }
 
     /////////////////////////////////////////////

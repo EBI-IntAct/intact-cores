@@ -15,12 +15,11 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactEntry;
 import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -47,7 +46,7 @@ public class PersisterHelper {
         }
     }
 
-    public static void saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
+    public static PersisterStatistics saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
         boolean inTransaction = IntactContext.getCurrentInstance().getDataContext().isTransactionActive();
 
         if ( !inTransaction ) IntactContext.getCurrentInstance().getDataContext().beginTransaction();
@@ -83,6 +82,8 @@ public class PersisterHelper {
         }
 
         if ( !inTransaction ) corePersister.commitTransactionAndRollbackIfNecessary();
+
+        return corePersister.getStatistics();
 
     }
 }

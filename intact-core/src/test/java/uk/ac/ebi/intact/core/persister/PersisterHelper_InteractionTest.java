@@ -15,12 +15,12 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatisticsTest;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 
@@ -404,17 +404,21 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
     public void newInteraction_clonedInteraction() throws Exception {
         Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
-        PersisterHelper.saveOrUpdate(interaction);
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, stats.getPersistedCount(Interaction.class, true));
 
         Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
         clonedInteraction.setExperiments(interaction.getExperiments());
 
-        PersisterHelper.saveOrUpdate(clonedInteraction);
+        PersisterStatistics stats2 = PersisterHelper.saveOrUpdate(clonedInteraction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals("fooprey-barbait-x", getDaoFactory().getInteractionDao().getByAc(clonedInteraction.getAc()).getShortLabel());
+
+        Assert.assertEquals(0, stats2.getPersistedCount(Interaction.class, true));
+        Assert.assertEquals(1, stats2.getMergedCount(Interaction.class, true));
     }
 
     @Test
@@ -508,9 +512,11 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         interaction.setFullName("newFullName");
 
-        PersisterHelper.saveOrUpdate(interaction);
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(interaction);
 
         Interaction int2 = reloadByAc(interaction);
+
+        Assert.assertEquals(1, stats.getTransientCount(Interaction.class, true));
 
         Assert.assertEquals("newFullName", int2.getFullName());
     }
@@ -549,9 +555,11 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Interaction clonedInteraction1 = intactCloner.clone(interaction1);
         Assert.assertNull(clonedInteraction1.getAc());
 
-        PersisterHelper.saveOrUpdate(interaction1, clonedInteraction1);
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(interaction1, clonedInteraction1);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, stats.getPersistedCount(Interaction.class, true));
+        Assert.assertEquals(1, stats.getDuplicatesCount(Interaction.class, true));
     }
 
     private Interaction reloadByAc(Interaction interaction) {

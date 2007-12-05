@@ -63,6 +63,12 @@
 
         <!-- third party deps -->
         <dependency>
+            <groupId>com.google.code</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>0.5</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
