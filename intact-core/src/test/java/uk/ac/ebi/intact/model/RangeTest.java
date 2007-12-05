@@ -11,10 +11,10 @@ import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @since 1.7.1
  */
+@Ignore
 public class RangeTest {
     
     @Test
-    @Ignore
     // TODO fix the ranges in intact that do have their first AA missing before fixing intact-core and enabling this test  
     public void prepareSequence() throws Exception {
         final Institution owner = new Institution( "ebi" );
