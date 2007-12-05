@@ -24,6 +24,7 @@ import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
 
 /**
  * TODO comment this
@@ -112,5 +113,28 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
         feature.addRange( range );
 
         PersisterHelper.saveOrUpdate( feature );
+    }
+
+    @Test
+    public void persistFeature_addingARange() throws Exception {
+        Feature feature = getMockBuilder().createFeatureRandom();
+        feature.getRanges().clear();
+        feature.addRange(getMockBuilder().createRangeRandom());
+
+        PersisterHelper.saveOrUpdate(feature);
+
+        Assert.assertEquals(1, feature.getRanges().size());
+
+        IntactCloner cloner = new IntactCloner();
+
+        Feature feature2 = cloner.clone(feature);
+        feature2.addRange(getMockBuilder().createRangeRandom());
+
+        PersisterHelper.saveOrUpdate(feature2);
+
+        Assert.assertEquals( 1, getDaoFactory().getFeatureDao().countAll() );
+
+        Feature refreshed = getDaoFactory().getFeatureDao().getByAc(feature2.getAc());
+        Assert.assertEquals(2, refreshed.getRanges().size());
     }
 }

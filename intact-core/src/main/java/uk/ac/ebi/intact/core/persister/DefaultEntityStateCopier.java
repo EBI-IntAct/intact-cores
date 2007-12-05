@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.sun.jmx.snmp.agent.SnmpIndex;
+
 /**
  * Default implementation of the entity state copier.
  *
@@ -58,11 +60,8 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         }
 
         // clone both source and target to try a perfect equals on them
-        IntactCloner cloner = new IntactCloner();
-        cloner.setExcludeACs(true);
-
         try {
-            if (cloner.clone(source).equals(cloner.clone(target))) {
+            if (clone(source).equals(clone(target))) {
                 return false;
             }
         } catch (IntactClonerException e) {
@@ -94,6 +93,13 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         copyAnotatedObjectCommons( source, target );
 
         return true;
+    }
+
+    private <T extends AnnotatedObject> T clone(T objToClone) throws IntactClonerException {
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
+
+        return cloner.clone(objToClone);
     }
 
     protected void copyInstitution( Institution source, Institution target ) {
@@ -173,6 +179,8 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         target.setComponent( source.getComponent() );
         target.setCvFeatureIdentification( source.getCvFeatureIdentification() );
         target.setCvFeatureType( source.getCvFeatureType() );
+
+        copyCollection( source.getRanges(), target.getRanges() );
     }
 
     protected void copyBioSource( BioSource source, BioSource target ) {
