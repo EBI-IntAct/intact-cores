@@ -16,7 +16,8 @@ public interface EntityStateCopier {
      *
      * @param source template from which the modification arise
      * @param target object that has to be updated from the source
+     * @return whether attributes have bean really copied or not (if not, it means that source and target where equals)
      */
-    public void copy( AnnotatedObject source, AnnotatedObject target );
+    public boolean copy( AnnotatedObject source, AnnotatedObject target );
 
 }

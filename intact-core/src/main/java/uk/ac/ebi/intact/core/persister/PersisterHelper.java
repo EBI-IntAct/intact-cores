@@ -83,7 +83,11 @@ public class PersisterHelper {
 
         if ( !inTransaction ) corePersister.commitTransactionAndRollbackIfNecessary();
 
-        return corePersister.getStatistics();
+        final PersisterStatistics stats = corePersister.getStatistics();
+
+        if (log.isDebugEnabled()) log.debug(stats);
+
+        return stats;
 
     }
 }

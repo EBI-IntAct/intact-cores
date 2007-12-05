@@ -185,23 +185,29 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 // warn if an instance for this interaction is found in the database, as it could be a duplicate
                 warnIfInteractionDuplicate( ao, managedObject );
 
-                // updated the managed object based on ao's properties
-                // TODO: only copy variables when necessary (if so, consider it a merge - otherwise, it is a duplicate)
-                entityStateCopier.copy( ao, managedObject );
-                statistics.addMerged(managedObject);
+                // updated the managed object based on ao's properties, but only add it to merge
+                // if something has been copied (it was not a duplicate)
+                boolean copied = entityStateCopier.copy( ao, managedObject );
 
                 // this will allow to reload the AO by its AC after flushing
-                ao.setAc( managedObject.getAc() );
+                    ao.setAc(managedObject.getAc());
 
-                // traverse annotatedObject's properties and assign AC where appropriate
-                copyAnnotatedObjectAttributeAcs( managedObject, ao );
+                    // traverse annotatedObject's properties and assign AC where appropriate
+                    copyAnnotatedObjectAttributeAcs(managedObject, ao);
 
-                // and the created info, so the merge does not fail due to missing created data
-                ao.setCreated( managedObject.getCreated() );
-                ao.setCreator( managedObject.getCreator() );
+                    // and the created info, so the merge does not fail due to missing created data
+                    ao.setCreated(managedObject.getCreated());
+                    ao.setCreator(managedObject.getCreator());
 
-                // synchronize the children
-                synchronizeChildren( managedObject );
+                if (copied) {
+                    statistics.addMerged(managedObject);
+
+                    // synchronize the children
+                    synchronizeChildren(managedObject);
+
+                } else {
+                    statistics.addDuplicate(managedObject);
+                }
             }
 
         } else {
@@ -348,7 +354,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
             }
 
             // this may happen if there is a cascade on this object from the parent
-            if ( ao.getAc() != null ) {
+            // exception: features are persisted by cascade from the component, so they can be ignored
+            if ( log.isWarnEnabled() && ao.getAc() != null && !(ao instanceof Feature) ) {
                 log.warn( "Object to persist should NOT have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
             }
 

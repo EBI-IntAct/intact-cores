@@ -19,6 +19,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
+import uk.ac.ebi.intact.model.clone.IntactClonerException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +38,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
     private static final Log log = LogFactory.getLog( DefaultEntityStateCopier.class );
 
-    public void copy( AnnotatedObject source, AnnotatedObject target ) {
+    public boolean copy( AnnotatedObject source, AnnotatedObject target ) {
 
         if ( source == null ) {
             throw new IllegalArgumentException( "You must give a non null source" );
@@ -53,6 +55,18 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
             throw new IllegalArgumentException( "You can only copy object of the same type [" +
                                                 source.getClass().getSimpleName() + " -> " +
                                                 target.getClass().getSimpleName() + "]" );
+        }
+
+        // clone both source and target to try a perfect equals on them
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
+
+        try {
+            if (cloner.clone(source).equals(cloner.clone(target))) {
+                return false;
+            }
+        } catch (IntactClonerException e) {
+            throw new PersisterException("Problem cloning source or target, to check if they are equals", e);
         }
 
         if ( source instanceof Institution ) {
@@ -78,6 +92,8 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         }
 
         copyAnotatedObjectCommons( source, target );
+
+        return true;
     }
 
     protected void copyInstitution( Institution source, Institution target ) {
