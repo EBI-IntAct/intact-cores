@@ -127,12 +127,7 @@ public class InteractionUtilsTest extends IntactBasicTestCase{
     public void getInteractorPrimaryIDs_duplicatedIDs() throws Exception {
         Interaction interaction = getMockBuilder().createInteraction("A1", "A1");
 
-        // remove any feature, so they are equal
-        for (Component c : interaction.getComponents()) {
-            c.getBindingDomains().clear();
-        }
-
-        Assert.assertEquals(1, InteractionUtils.getInteractorPrimaryIDs(interaction).size());
+        Assert.assertEquals(2, InteractionUtils.getInteractorPrimaryIDs(interaction).size());
     }
 
     @Test

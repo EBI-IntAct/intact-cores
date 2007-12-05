@@ -294,7 +294,7 @@ public class InteractionUtils {
     }
 
     /**
-     * Gets the Interactor Identifiers for that interactor
+     * Gets the Interactor Identifiers for that interaction
      *
      * @since 1.7.2
      */
