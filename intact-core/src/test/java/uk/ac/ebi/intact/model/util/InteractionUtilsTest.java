@@ -25,6 +25,7 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.mock.MockIntactContext;
 import uk.ac.ebi.intact.core.unit.mock.MockInteractionDao;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Component;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -125,6 +126,12 @@ public class InteractionUtilsTest extends IntactBasicTestCase{
     @Test
     public void getInteractorPrimaryIDs_duplicatedIDs() throws Exception {
         Interaction interaction = getMockBuilder().createInteraction("A1", "A1");
+
+        // remove any feature, so they are equal
+        for (Component c : interaction.getComponents()) {
+            c.getBindingDomains().clear();
+        }
+
         Assert.assertEquals(1, InteractionUtils.getInteractorPrimaryIDs(interaction).size());
     }
 

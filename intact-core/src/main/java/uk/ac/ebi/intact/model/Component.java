@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
@@ -15,8 +16,6 @@ import javax.persistence.Table;
 import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 /**
  * The specific instance of an interactor which participates in an interaction.
@@ -549,7 +548,18 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     @Override
     public boolean equals( Object o ) {
-        /* TODO: Take features into account when they are implemented. */
+        return equals(o, true);
+    }
+
+    /**
+     * Equality for Components, which allows to execute the equals excluding possible recursive entities.
+     * For instance, Components have Features, and a Feature refers to the Component in its equal. When equaling Features,
+     * we need a way to disable the recursion to avoid the infinite loop
+     * @param o Object to equal with
+     * @param includePotentialRecursiveEntities Include the features in the equal algorithm
+     * @return true if they are equal
+     */
+    public boolean equals( Object o, boolean includePotentialRecursiveEntities ) {
         if ( this == o ) {
             return true;
         }
@@ -576,6 +586,12 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
         if (interaction instanceof InteractionImpl && component.getInteraction() instanceof InteractorImpl) {
             if (interaction != null && !((InteractionImpl)interaction).equals(component.getInteraction(), false)) {
+                return false;
+            }
+        }
+
+        if (includePotentialRecursiveEntities) {
+            if (!CollectionUtils.isEqualCollection(bindingDomains, component.getBindingDomains())) {
                 return false;
             }
         }
@@ -607,6 +623,10 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         }
         if ( biologicalRole != null ) {
             code = code * 29 + biologicalRole.hashCode();
+        }
+
+        if (bindingDomains != null) {
+            code = code * 29 * bindingDomains.size();
         }
 
         return code;

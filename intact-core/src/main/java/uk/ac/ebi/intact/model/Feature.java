@@ -261,7 +261,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
 
         //NB Component should never be null, but check just in case!
         if ( component != null ) {
-            if ( !component.equals( feature.getComponent() ) ) {
+            if ( !component.equals( feature.getComponent(), false ) ) {
                 return false;
             }
         } else {
