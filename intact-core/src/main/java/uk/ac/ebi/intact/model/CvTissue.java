@@ -20,7 +20,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvTissue" )
 @EditorTopic
-public class CvTissue extends CvObject implements Editable {
+public class CvTissue extends CvDagObject implements Editable {
 
     /**
      * Cache a Vector of all shortLabels of the class, e.g. for menus.

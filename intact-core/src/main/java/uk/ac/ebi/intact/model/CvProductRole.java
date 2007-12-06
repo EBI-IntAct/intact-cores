@@ -18,7 +18,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvProductRole" )
-public class CvProductRole extends CvObject {
+public class CvProductRole extends CvDagObject {
 
     /**
      * Cache a Vector of all shortLabels of the class, e.g. for menus.

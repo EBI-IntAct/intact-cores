@@ -21,7 +21,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvAliasType" )
 @EditorTopic
-public class CvAliasType extends CvObject implements Editable {
+public class CvAliasType extends CvDagObject implements Editable {
 
     ////////////////////////////
     // Constants

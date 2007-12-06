@@ -16,7 +16,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvCellCycle" )
-public class CvCellCycle extends CvObject {
+public class CvCellCycle extends CvDagObject {
 
     /**
      * This constructor should <b>not</b> be used as it could

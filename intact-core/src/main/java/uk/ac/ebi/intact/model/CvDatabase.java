@@ -21,7 +21,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvDatabase" )
 @EditorTopic
-public class CvDatabase extends CvObject implements Editable {
+public class CvDatabase extends CvDagObject implements Editable {
     // Constants
     ////////////////////////////////
     public static final String ENTREZ_GENE = "entrez gene/locuslink";

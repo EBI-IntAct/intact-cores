@@ -77,6 +77,7 @@ public abstract class CvDagObject extends CvObject {
         return children;
     }
 
+
     //////////////////////////////////////////////////////////
     // these methods are used in the CvDagObjectUtils class
     // the setter and getter are only used for testing
@@ -175,14 +176,14 @@ public abstract class CvDagObject extends CvObject {
         }
     }
 
-    protected void setChildren( Collection<CvDagObject> children ) {
+    public void setChildren( Collection<CvDagObject> children ) {
         if ( children == null ) {
             throw new IllegalArgumentException( "Children cannot be null." );
         }
         this.children = children;
     }
 
-    protected void setParents( Collection<CvDagObject> parents ) {
+    public void setParents( Collection<CvDagObject> parents ) {
         if ( parents == null ) {
             throw new IllegalArgumentException( "Parents cannot be null." );
         }

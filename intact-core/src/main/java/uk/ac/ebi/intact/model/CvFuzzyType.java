@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvFuzzyType" )
 @EditorTopic
-public class CvFuzzyType extends CvObject implements Editable {
+public class CvFuzzyType extends CvDagObject implements Editable {
 
     /**
      * The constant name for <.

@@ -141,4 +141,26 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
     }
 
+    @Test
+    public void persist_duplicatedInHierarchy() throws Exception {
+        CvDatabase citation = getMockBuilder().createCvObject(CvDatabase.class, "MI:0444", "database citation");
+        CvDatabase psiMi = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
+        CvDatabase sourceDb = getMockBuilder().createCvObject(CvDatabase.class, "MI:0489", "source database");
+        CvDatabase interactionXref = getMockBuilder().createCvObject(CvDatabase.class, "MI:0461", "interaction xref");
+        CvDatabase bind = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.BIND_MI_REF, CvDatabase.BIND);
+        CvDatabase bind_duplicate = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.BIND_MI_REF, CvDatabase.BIND);
+
+        citation.addChild(psiMi);
+        citation.addChild(sourceDb);
+        citation.addChild(interactionXref);
+
+        sourceDb.addChild(bind);
+        interactionXref.addChild(bind_duplicate);
+        
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(citation);
+
+        Assert.assertEquals(6, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(5, stats.getPersistedCount(CvDatabase.class, false));
+    }
+
 }

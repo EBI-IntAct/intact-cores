@@ -19,7 +19,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvCellType" )
 @EditorTopic
-public class CvCellType extends CvObject implements Editable {
+public class CvCellType extends CvDagObject implements Editable {
 
     /**
      * This constructor should <b>not</b> be used as it could
