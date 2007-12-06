@@ -74,6 +74,11 @@ public class XrefUtils {
         return createIdentityXref(parent, primaryId, builder.createIdentityCvXrefQualifier(parent.getOwner()), cvDatabase);
     }
 
+    public static <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvDatabase cvDatabase) {
+        CvObjectBuilder builder = new CvObjectBuilder();
+        return createIdentityXref(parent, primaryId, builder.createIdentityCvXrefQualifier(parent.getOwner()), cvDatabase);
+    }
+
     public static <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvXrefQualifier identityQual, CvDatabase cvDatabase) {
         X xref = (X) newXrefInstanceFor(parent.getClass());
         Institution owner = parent.getOwner();
