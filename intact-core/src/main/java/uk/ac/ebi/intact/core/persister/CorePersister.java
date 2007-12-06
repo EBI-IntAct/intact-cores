@@ -355,12 +355,41 @@ public class CorePersister implements Persister<AnnotatedObject> {
         }
     }
 
+    /**
+     * The reload method has the mission to syncronize the state of the passed annotated object
+     * with the database. It is similar to the EntityManager.refresh() method but it can also
+     * synchronize the state in non-managed entities by copying the state from the corresponding
+     * entity from the database. If it has no AC (this happens if there are duplicates within the
+     * same transaction), an AC will be found from the database.
+     * @param ao The annotated object to refresh
+     */
     protected void reload( AnnotatedObject ao ) {
-        if ( ao.getAc() == null ) {
-            throw new IllegalStateException( "Annotated object without ac, cannot be reloaded: " + ao );
-        }
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
-        daoFactory.getAnnotatedObjectDao( ao.getClass() ).getByAc( ao.getAc() );
+
+        // otherwise, copy the state to the ao from the equivalent object in the db
+        if (ao.getAc() == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Trying to reload " + ao.getClass().getSimpleName() + " without AC. Probably a duplicate: " + ao);
+            }
+
+            final String ac = finder.findAc(ao);
+
+            if (ac == null) {
+                throw new PersisterException(ao.getClass().getSimpleName() + " without AC couldn't be reloaded because " +
+                        "no equivalent object was found in the database: " + ao);
+            }
+
+            if (log.isDebugEnabled()) log.debug("\tFound AC: " + ac);
+
+            ao.setAc(ac);
+        }
+
+        AnnotatedObjectDao<?> dao = daoFactory.getAnnotatedObjectDao(ao.getClass());
+
+        AnnotatedObject dbObject = dao.getByAc(ao.getAc());
+
+        // copy the state from the managed object to the ao
+        entityStateCopier.copy(dbObject, ao);
     }
 
     protected void commit() {

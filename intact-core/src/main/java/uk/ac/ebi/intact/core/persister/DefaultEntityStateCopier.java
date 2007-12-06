@@ -19,6 +19,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.clone.IntactClonerException;
 
@@ -59,13 +61,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
                                                 target.getClass().getSimpleName() + "]" );
         }
 
-        // clone both source and target to try a perfect equals on them
-        try {
-            if (clone(source).equals(clone(target))) {
-                return false;
-            }
-        } catch (IntactClonerException e) {
-            throw new PersisterException("Problem cloning source or target, to check if they are equals", e);
+        // if the objects are considered to be the same object, proceed. Otherwise, return
+        // false and don't copy anything
+        if (!areEqual(source, target)) {
+            return false;
         }
 
         if ( source instanceof Institution ) {
@@ -292,5 +291,44 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         Collection elementsToRemove = CollectionUtils.subtract( sourceCol, targetCol );
         targetCol.removeAll( elementsToRemove );
         targetCol.addAll( elementsToAdd );
+    }
+
+    /**
+     * <p>Returs true if two annotated objects are equal. The generic way to do the check
+     * is:</p>
+     * a) If they have the same AC, consider them equal<br/>
+     * b) Otherwise, clone both objects (excluding the ACs) and invoke equals() on them
+     */
+    protected boolean areEqual(AnnotatedObject source, AnnotatedObject target) {
+        if (source.getAc() != null && source.getAc().equals(target.getAc())) {
+            return true;
+        }
+
+        if (source instanceof CvObject && areCvObjectsEqual((CvObject)source, (CvObject)target)) {
+            return false;
+        } else if (source instanceof Interaction && areInteractionsEqual((Interaction)source, (Interaction)target)) {
+            return false;
+        }
+
+        // clone both source and target to try a perfect equals on them
+        try {
+            if (clone(source).equals(clone(target))) {
+                return false;
+            }
+        } catch (IntactClonerException e) {
+            throw new PersisterException("Problem cloning source or target, to check if they are equals", e);
+        }
+
+        return true;
+    }
+
+    protected boolean areCvObjectsEqual(CvObject source, CvObject target) {
+        return CvObjectUtils.areEqual(source, target);
+    }
+
+    protected boolean areInteractionsEqual(Interaction source, Interaction target) {
+        CrcCalculator calculator = new CrcCalculator();
+
+        return calculator.crc64(source).equals(calculator.crc64(target));
     }
 }

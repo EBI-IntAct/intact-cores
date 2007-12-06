@@ -61,23 +61,6 @@ public class PersisterHelper {
         // we reload the annotated objects by its AC
         // note: if an object does not have one, it is probably a duplicate
         for ( AnnotatedObject ao : annotatedObjects ) {
-            if (ao.getAc() == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Trying to reload "+ao.getClass().getSimpleName()+" without AC. Probably a duplicate: "+ao);
-                }
-                DefaultFinder defaultFinder = new DefaultFinder();
-                final String ac = defaultFinder.findAc(ao);
-
-                if (ac == null) {
-                    throw new PersisterException(ao.getClass().getSimpleName()+" without AC couldn't be reloaded because " +
-                                                 "no equivalent object was found in the database: "+ao);
-                }
-
-                if (log.isDebugEnabled()) log.debug("\tFound AC: "+ac);
-
-                ao.setAc(ac);
-            }
-
             corePersister.reload( ao );
         }
 

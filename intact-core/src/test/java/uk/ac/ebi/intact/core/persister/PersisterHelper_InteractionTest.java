@@ -22,6 +22,7 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatisticsTest;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 
 import java.util.ArrayList;
@@ -415,10 +416,11 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         PersisterStatistics stats2 = PersisterHelper.saveOrUpdate(clonedInteraction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
-        Assert.assertEquals("fooprey-barbait-x", getDaoFactory().getInteractionDao().getByAc(clonedInteraction.getAc()).getShortLabel());
+        Assert.assertEquals("fooprey-barbait", getDaoFactory().getInteractionDao().getByAc(clonedInteraction.getAc()).getShortLabel());
 
         Assert.assertEquals(0, stats2.getPersistedCount(Interaction.class, true));
-        Assert.assertEquals(1, stats2.getMergedCount(Interaction.class, true));
+        Assert.assertEquals(0, stats2.getMergedCount(Interaction.class, true));
+        Assert.assertEquals(1, stats2.getDuplicatesCount(Interaction.class, true));
     }
 
     @Test
@@ -560,6 +562,35 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(1, stats.getPersistedCount(Interaction.class, true));
         Assert.assertEquals(1, stats.getDuplicatesCount(Interaction.class, true));
+    }
+
+    @Test
+    public void persistDuplicated_differentShortLabel() throws Exception {
+        Interaction interaction1 = getMockBuilder().createInteractionRandomBinary();
+        interaction1.setShortLabel("foo-bar-1");
+
+        PersisterHelper.saveOrUpdate(interaction1);
+
+        final IntactCloner intactCloner = new IntactCloner();
+        intactCloner.setExcludeACs(true);
+
+        Interaction interactionDiffShortLabel = intactCloner.clone(interaction1);
+        interactionDiffShortLabel.setShortLabel("foo-bar-2");
+        Assert.assertNull(interactionDiffShortLabel.getAc());
+
+        CrcCalculator crcCalculator = new CrcCalculator();
+        Assert.assertEquals(crcCalculator.crc64(interaction1), crcCalculator.crc64(interactionDiffShortLabel));
+
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(interactionDiffShortLabel);
+
+        // as the second interaction is a duplicate of the first, we should get have the first
+        // shortlabel set (unless it had an AC already)
+        Assert.assertEquals("foo-bar-1", interactionDiffShortLabel.getShortLabel());
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, stats.getDuplicatesCount(Interaction.class, true));
+        Assert.assertEquals(0, stats.getPersistedCount(Interaction.class, true));
+        Assert.assertEquals(0, stats.getMergedCount(Interaction.class, true));
     }
 
     private Interaction reloadByAc(Interaction interaction) {
