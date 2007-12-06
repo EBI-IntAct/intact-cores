@@ -584,13 +584,9 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
     private void synchronizeCvObject( CvObject cvObject ) {
         if (cvObject instanceof CvDagObject) {
-            for (CvObject child : ((CvDagObject)cvObject).getChildren()) {
-                synchronize(child);
-            }
-
-            for (CvObject parent : ((CvDagObject)cvObject).getParents()) {
-                synchronize(parent);
-            }
+            CvDagObject cvDagObject = (CvDagObject)cvObject;
+            cvDagObject.setChildren(synchronizeCollection(cvDagObject.getChildren()));
+            cvDagObject.setParents(synchronizeCollection(cvDagObject.getParents()));
         }
 
         synchronizeAnnotatedObjectCommons( cvObject );
