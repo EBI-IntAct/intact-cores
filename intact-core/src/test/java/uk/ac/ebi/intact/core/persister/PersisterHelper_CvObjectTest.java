@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
@@ -99,6 +100,45 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         Assert.assertNotNull(cv.getMiIdentifier());
         Assert.assertEquals(CvDatabase.UNIPARC_MI_REF, cv.getMiIdentifier());
+    }
+
+    @Test
+    public void persist_dagObject() throws Exception {
+        CvInteractorType proteinType = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.PROTEIN_MI_REF, CvInteractorType.PROTEIN);
+        CvInteractorType megaProteinType = getMockBuilder().createCvObject(CvInteractorType.class, "MI:xxx5", "mega-protein");
+
+        proteinType.addChild(megaProteinType);
+
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(proteinType);
+
+        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
+    }
+
+    @Test
+    public void persist_dagObject_duplicatedInvokation() throws Exception {
+        CvInteractorType proteinType = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.PROTEIN_MI_REF, CvInteractorType.PROTEIN);
+        CvInteractorType megaProteinType = getMockBuilder().createCvObject(CvInteractorType.class, "MI:xxx5", "mega-protein");
+
+        proteinType.addChild(megaProteinType);
+
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(proteinType, megaProteinType);
+
+        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
+    }
+
+    @Test
+    public void persist_dagObject_saveParent() throws Exception {
+        CvInteractorType proteinType = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.PROTEIN_MI_REF, CvInteractorType.PROTEIN);
+        CvInteractorType megaProteinType = getMockBuilder().createCvObject(CvInteractorType.class, "MI:xxx5", "mega-protein");
+
+        proteinType.addChild(megaProteinType);
+
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(megaProteinType);
+
+        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
     }
 
 }
