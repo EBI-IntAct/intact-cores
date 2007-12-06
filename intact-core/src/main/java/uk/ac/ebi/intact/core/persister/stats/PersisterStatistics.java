@@ -36,31 +36,31 @@ public class PersisterStatistics implements Serializable {
 
     private static final String NEW_LINE = System.getProperty("line.separator");
 
-    private Multimap<Class, StatUnit> persistedMap;
-    private Multimap<Class, StatUnit> mergedMap;
-    private Multimap<Class, StatUnit> duplicatesMap;
-    private Multimap<Class, StatUnit> transientMap;
+    private Multimap<Class, StatsUnit> persistedMap;
+    private Multimap<Class, StatsUnit> mergedMap;
+    private Multimap<Class, StatsUnit> duplicatesMap;
+    private Multimap<Class, StatsUnit> transientMap;
 
 
     public PersisterStatistics() {
-        this.persistedMap = new ArrayListMultimap<Class, StatUnit>();
-        this.mergedMap = new ArrayListMultimap<Class, StatUnit>();
-        this.duplicatesMap = new ArrayListMultimap<Class, StatUnit>();
-        this.transientMap = new ArrayListMultimap<Class, StatUnit>();
+        this.persistedMap = new ArrayListMultimap<Class, StatsUnit>();
+        this.mergedMap = new ArrayListMultimap<Class, StatsUnit>();
+        this.duplicatesMap = new ArrayListMultimap<Class, StatsUnit>();
+        this.transientMap = new ArrayListMultimap<Class, StatsUnit>();
     }
 
     // persisted
 
     public void addPersisted(AnnotatedObject ao) {
-        StatUnit su = new StatUnit(ao);
+        StatsUnit su = StatsUnitFactory.createStatsUnit(ao);
         persistedMap.put(su.getType(), su);
     }
 
-    public Multimap<Class, StatUnit> getPersistedMap() {
+    public Multimap<Class, StatsUnit> getPersistedMap() {
         return persistedMap;
     }
 
-    public Collection<StatUnit> getPersisted(Class type, boolean includeSubclasses) {
+    public Collection<StatsUnit> getPersisted(Class type, boolean includeSubclasses) {
         return statsOfType(type, getPersistedMap(), includeSubclasses);
     }
 
@@ -71,15 +71,15 @@ public class PersisterStatistics implements Serializable {
     // merged
 
     public void addMerged(AnnotatedObject ao) {
-        StatUnit su = new StatUnit(ao);
+        StatsUnit su = StatsUnitFactory.createStatsUnit(ao);
         mergedMap.put(su.getType(), su);
     }
 
-    public Multimap<Class, StatUnit> getMergedMap() {
+    public Multimap<Class, StatsUnit> getMergedMap() {
         return mergedMap;
     }
 
-    public Collection<StatUnit> getMerged(Class type, boolean includeSubclasses) {
+    public Collection<StatsUnit> getMerged(Class type, boolean includeSubclasses) {
         return statsOfType(type, getMergedMap(), includeSubclasses);
     }
 
@@ -90,15 +90,15 @@ public class PersisterStatistics implements Serializable {
     // duplicates
 
     public void addDuplicate(AnnotatedObject ao) {
-        StatUnit su = new StatUnit(ao);
+        StatsUnit su = StatsUnitFactory.createStatsUnit(ao);
         duplicatesMap.put(su.getType(), su);
     }
 
-    public Multimap<Class, StatUnit> getDuplicatesMap() {
+    public Multimap<Class, StatsUnit> getDuplicatesMap() {
         return duplicatesMap;
     }
 
-    public Collection<StatUnit> getDuplicates(Class type, boolean includeSubclasses) {
+    public Collection<StatsUnit> getDuplicates(Class type, boolean includeSubclasses) {
         return statsOfType(type, getDuplicatesMap(), includeSubclasses);
     }
 
@@ -109,15 +109,15 @@ public class PersisterStatistics implements Serializable {
      // transient
 
     public void addTransient(AnnotatedObject ao) {
-        StatUnit su = new StatUnit(ao);
+        StatsUnit su = StatsUnitFactory.createStatsUnit(ao);
         transientMap.put(su.getType(), su);
     }
 
-    public Multimap<Class, StatUnit> getTransientMap() {
+    public Multimap<Class, StatsUnit> getTransientMap() {
         return transientMap;
     }
 
-    public Collection<StatUnit> getTransient(Class type, boolean includeSubclasses) {
+    public Collection<StatsUnit> getTransient(Class type, boolean includeSubclasses) {
         return statsOfType(type, getTransientMap(), includeSubclasses);
     }
 
@@ -128,12 +128,12 @@ public class PersisterStatistics implements Serializable {
     // Common methods
     /////////////////
 
-    protected static Collection<StatUnit> statsOfType(Class type, Multimap<Class,StatUnit> multimap, boolean includeSubclasses) {
+    protected static Collection<StatsUnit> statsOfType(Class type, Multimap<Class,StatsUnit> multimap, boolean includeSubclasses) {
         if (!includeSubclasses) {
             return multimap.get(type);
         }
 
-        Collection<StatUnit> stats = new ArrayList<StatUnit>();
+        Collection<StatsUnit> stats = new ArrayList<StatsUnit>();
 
         for (Class key : multimap.keySet()) {
             if (type.isAssignableFrom(key)) {
@@ -157,7 +157,7 @@ public class PersisterStatistics implements Serializable {
         return sb.toString();
     }
 
-    private String multimapToString(Multimap<Class,StatUnit> multimap) {
+    private String multimapToString(Multimap<Class,StatsUnit> multimap) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(multimap.size());

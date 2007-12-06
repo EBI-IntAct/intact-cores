@@ -21,6 +21,34 @@ public class CvObjectUtils {
         return XrefUtils.getPsiMiIdentityXref( cvObject );
     }
 
+    /**
+     * Gets the unique identifier of a CvObject. If it has PSI MI Identifier (miIdentifier) return it,
+     * if not, return the 'CvDatabase.intact' identifier; otherwise return the primaryId of the first identity xref found.
+     * @param cvObject The object to get the identifier from.
+     * @return The identifier. Will be null if no miIdentifier or identity xref is found.
+     *
+     * @since 1.8.0
+     */
+    public static String getIdentity( CvObject cvObject ) {
+        // try the PSI MI first
+        CvObjectXref idXref = XrefUtils.getPsiMiIdentityXref( cvObject );
+
+        // try to get the identity with CvDatabase 'intact'
+        if (idXref == null) {
+            idXref = XrefUtils.getIdentityXref(cvObject, CvDatabase.INTACT);
+
+            // get the first identity, if any
+            if (idXref == null) {
+                Collection<CvObjectXref> idXrefs = XrefUtils.getIdentityXrefs(cvObject);
+                if (!idXrefs.isEmpty()) {
+                    idXref = idXrefs.iterator().next();
+                }
+            }
+        }
+
+        return (idXref != null)? idXref.getPrimaryId() : null;
+    }
+
     // ex1 : cvObject is supposibly the CvDatabase psi-mi, psiMi is CvDatabase.PSI_MI_MI_REF
     // ex2: cvObject is supposibly the CvXrefQualifier identity , psiMi is  CvXrefQualifier.IDENTITY_MI_REF
     public static boolean hasIdentity( CvObject cvObject, String psiMi ) {

@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.core.persister.stats;
+package uk.ac.ebi.intact.core.persister.stats.impl;
 
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
-
-import java.io.Serializable;
+import uk.ac.ebi.intact.core.persister.stats.StatsUnit;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
 * @version $Id$
 */
-public class StatUnit implements Serializable {
+public class AnnotatedObjectStatsUnit implements StatsUnit {
 
     private String shortLabel;
     private String ac;
     private Class<? extends AnnotatedObject> type;
 
-    public StatUnit(AnnotatedObject ao) {
+    public AnnotatedObjectStatsUnit(AnnotatedObject ao) {
         this.shortLabel = ao.getShortLabel();
         this.ac = ao.getAc();
         this.type = CgLibUtil.removeCglibEnhanced(ao.getClass());
@@ -46,5 +45,10 @@ public class StatUnit implements Serializable {
 
     public Class<? extends AnnotatedObject> getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return getType().getSimpleName()+": "+getAc()+", "+getShortLabel();
     }
 }
