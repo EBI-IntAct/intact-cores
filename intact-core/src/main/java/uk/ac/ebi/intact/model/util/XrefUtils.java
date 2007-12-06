@@ -42,6 +42,13 @@ public class XrefUtils {
         return createIdentityXref(parent, primaryId, builder.createIdentityCvXrefQualifier(parent.getOwner()), builder.createPsiMiCvDatabase(parent.getOwner()));
     }
 
+    public static <X extends Xref> X createIdentityXrefIntact(AnnotatedObject<X,?> parent, String intactId) {
+        CvObjectBuilder builder = new CvObjectBuilder();
+        CvDatabase cvDatabase = CvObjectUtils.createCvObject(parent.getOwner(), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+
+        return createIdentityXref(parent, intactId, builder.createIdentityCvXrefQualifier(parent.getOwner()), cvDatabase);
+    }
+
     public static <X extends Xref> X createIdentityXrefChebi(AnnotatedObject<X,?> parent, String chebiId) {
         CvObjectBuilder builder = new CvObjectBuilder();
         CvDatabase cvDatabase = CvObjectUtils.createCvObject(parent.getOwner(), CvDatabase.class, CvDatabase.CHEBI_MI_REF, CvDatabase.CHEBI);
