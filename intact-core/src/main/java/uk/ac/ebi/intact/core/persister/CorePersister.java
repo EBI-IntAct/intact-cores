@@ -20,12 +20,12 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 
 import java.util.*;
 
@@ -447,9 +447,13 @@ public class CorePersister implements Persister<AnnotatedObject> {
         try {
             daoFactory.getEntityManager().flush();
         } catch ( Throwable t ) {
-            throw new PersisterException( "Exception when flushing the Persister, which contained " +
-                                          annotatedObjectsToPersist.size() + " objects to persist and " +
-                                          annotatedObjectsToMerge.size() + " objects to merge.", t );
+            StringBuilder sb = new StringBuilder();
+            sb.append("Exception when flushing the Persister, which contained: \n");
+            sb.append(statistics).append("\n");
+            sb.append("Persisted entities: ").append(statistics.getPersistedMap().values()).append("\n");
+            sb.append("Merged entities: ").append(statistics.getMergedMap().values()).append("\n");
+            sb.append("Transient entities: ").append(statistics.getTransientMap().values()).append("\n");
+            throw new PersisterException( sb.toString(), t );
         } finally {
             annotatedObjectsToMerge.clear();
             annotatedObjectsToPersist.clear();
