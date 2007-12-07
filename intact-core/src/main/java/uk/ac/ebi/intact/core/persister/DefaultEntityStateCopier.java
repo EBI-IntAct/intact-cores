@@ -15,20 +15,20 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.CrcCalculator;
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.clone.IntactClonerException;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
-import com.sun.jmx.snmp.agent.SnmpIndex;
 
 /**
  * Default implementation of the entity state copier.
@@ -42,7 +42,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
     private static final Log log = LogFactory.getLog( DefaultEntityStateCopier.class );
 
+    private boolean copiedProperty;
+
     public boolean copy( AnnotatedObject source, AnnotatedObject target ) {
+        copiedProperty = false;
 
         if ( source == null ) {
             throw new IllegalArgumentException( "You must give a non null source" );
@@ -93,9 +96,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
             throw new IllegalArgumentException( "DefaultEntityStateCopier doesn't copy " + source.getClass().getName() );
         }
 
+
         copyAnotatedObjectCommons( source, target );
 
-        return true;
+        return copiedProperty;
     }
 
     private <T extends AnnotatedObject> T clone(T objToClone) throws IntactClonerException {
@@ -106,8 +110,8 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyInstitution( Institution source, Institution target ) {
-        target.setUrl( source.getUrl() );
-        target.setPostalAddress( source.getPostalAddress() );
+        copyProperty(source, "url", target);
+        copyProperty(source, "postalAddress", target);
     }
 
     protected void copyPublication( Publication source, Publication target ) {
@@ -115,18 +119,17 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyExperiment( Experiment source, Experiment target ) {
-        target.setBioSource( source.getBioSource() );
-        target.setPublication( source.getPublication() );
-        target.setCvIdentification( source.getCvIdentification() );
-        target.setCvInteraction( source.getCvInteraction() );
+        copyProperty(source, "bioSource", target);
+        copyProperty(source, "publication", target);
+        copyProperty(source, "cvIdentification", target);
+        copyProperty(source, "cvInteraction", target);
 
         copyCollection( source.getInteractions(), target.getInteractions() );
     }
 
     protected void copyInteraction( Interaction source, Interaction target ) {
-        target.setKD( target.getKD() );
-
-        target.setCvInteractionType( source.getCvInteractionType() );
+        copyProperty(source, "KD", target);
+        copyProperty(source, "cvInteractionType", target);
 
         copyCollection( source.getComponents(), target.getComponents() );
         copyCollection( source.getExperiments(), target.getExperiments() );
@@ -160,18 +163,18 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
                                           " current biosource is  " + target.getBioSource().getShortLabel() );
         }
 
-        target.setBioSource( source.getBioSource() );
-        target.setCvInteractorType( source.getCvInteractorType() );
+        copyProperty(source, "bioSource", target);
+        copyProperty(source, "cvInteractorType", target);
     }
 
     protected void copyComponent( Component source, Component target ) {
-        target.setStoichiometry( source.getStoichiometry() );
+        copyProperty(source, "stoichiometry", target);
 
-        target.setInteraction( source.getInteraction() );
-        target.setInteractor( source.getInteractor() );
-        target.setCvBiologicalRole( source.getCvBiologicalRole() );
-        target.setCvExperimentalRole( source.getCvExperimentalRole() );
-        target.setExpressedIn( source.getExpressedIn() );
+        copyProperty(source, "interaction", target);
+        copyProperty(source, "interactor", target);
+        copyProperty(source, "cvBiologicalRole", target);
+        copyProperty(source, "cvExperimentalRole", target);
+        copyProperty(source, "expressedIn", target);
 
         copyCollection( source.getBindingDomains(), target.getBindingDomains() );
         copyCollection( source.getExperimentalPreparations(), target.getExperimentalPreparations() );
@@ -179,27 +182,27 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyFeature( Feature source, Feature target ) {
-        target.setComponent( source.getComponent() );
-        target.setCvFeatureIdentification( source.getCvFeatureIdentification() );
-        target.setCvFeatureType( source.getCvFeatureType() );
+        copyProperty(source, "component", target);
+        copyProperty(source, "cvFeatureIdentification", target);
+        copyProperty(source, "cvFeatureType", target);
 
         copyCollection( source.getRanges(), target.getRanges() );
     }
 
     protected void copyBioSource( BioSource source, BioSource target ) {
-        target.setTaxId( source.getTaxId() );
-        target.setCvTissue( source.getCvTissue() );
-        target.setCvCellType( source.getCvCellType() );
+        copyProperty(source, "taxId", target);
+        copyProperty(source, "cvTissue", target);
+        copyProperty(source, "cvCellType", target);
     }
 
     protected void copyCvObject( CvObject source, CvObject target ) {
-        target.setMiIdentifier( source.getMiIdentifier() );
+        copyProperty(source, "miIdentifier", target);
     }
 
     protected <X extends Xref, A extends Alias> void copyAnotatedObjectCommons( AnnotatedObject<X, A> source,
                                                                                 AnnotatedObject<X, A> target ) {
-        target.setShortLabel( source.getShortLabel() );
-        target.setFullName( source.getFullName() );
+        copyProperty(source, "shortLabel", target);
+        copyProperty(source, "fullName", target);
 
         copyXrefCollection( source.getXrefs(), target.getXrefs() );
         copyAliasCollection( source.getAliases(), target.getAliases() );
@@ -207,6 +210,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private void copyAnnotationCollection( Collection<Annotation> sourceCol, Collection<Annotation> targetCol ) {
+        if (!CollectionUtils.isEqualCollection(sourceCol, targetCol)) {
+            copiedProperty = true;
+        }
+        
         Collection elementsToAdd = subtractAnnotations( sourceCol, targetCol );
         Collection elementsToRemove = subtractAnnotations( sourceCol, targetCol );
         targetCol.removeAll( elementsToRemove );
@@ -235,6 +242,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private <X extends Xref> void copyXrefCollection( Collection<X> sourceCol, Collection<X> targetCol ) {
+        if (!CollectionUtils.isEqualCollection(sourceCol, targetCol)) {
+            copiedProperty = true;
+        }
+
         Collection elementsToAdd = subtractXrefs( sourceCol, targetCol );
         Collection elementsToRemove = subtractXrefs( sourceCol, targetCol );
         targetCol.removeAll( elementsToRemove );
@@ -242,6 +253,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private <A extends Alias> void copyAliasCollection( Collection<A> sourceCol, Collection<A> targetCol ) {
+        if (!CollectionUtils.isEqualCollection(sourceCol, targetCol)) {
+            copiedProperty = true;
+        }
+
         Collection elementsToAdd = subtractAliases( sourceCol, targetCol );
         Collection elementsToRemove = subtractAliases( sourceCol, targetCol );
         targetCol.removeAll( elementsToRemove );
@@ -291,6 +306,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyCollection( Collection sourceCol, Collection targetCol ) {
+        if (!CollectionUtils.isEqualCollection(sourceCol, targetCol)) {
+            copiedProperty = true;
+        }
+        
         Collection elementsToAdd = CollectionUtils.subtract( sourceCol, targetCol );
         Collection elementsToRemove = CollectionUtils.subtract( sourceCol, targetCol );
         targetCol.removeAll( elementsToRemove );
@@ -329,5 +348,40 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     protected boolean areInteractionsEqual(Interaction source, Interaction target) {
         CrcCalculator calculator = new CrcCalculator();
         return calculator.crc64(source).equals(calculator.crc64(target));
+    }
+
+    protected boolean copyProperty(Object source, String propertyName, Object target) {
+        try {
+            Object sourceProperty = PropertyUtils.getProperty(source, propertyName);
+            Object targetProperty = PropertyUtils.getProperty(target, propertyName);
+
+            if (sourceProperty == null && targetProperty == null) {
+                return false;
+            }
+
+            if (sourceProperty instanceof AnnotatedObject) {
+                if (areEqual((AnnotatedObject)sourceProperty, (AnnotatedObject)targetProperty)) {
+                    return false;
+                }
+            } else {
+                if (sourceProperty != null && sourceProperty.equals(targetProperty)) {
+                    return false;
+                }
+            }
+
+            if (log.isTraceEnabled()) log.trace("Copying "+propertyName+" from "+source.getClass().getSimpleName()+
+                                                " ["+source+"] to "+target.getClass().getSimpleName()+" ["+target+"]");
+
+            // copy the value
+            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(propertyName, target.getClass());
+            propertyDescriptor.getWriteMethod().invoke(target, sourceProperty);
+
+            copiedProperty = true;
+
+        } catch (Throwable e) {
+            throw new PersisterException("Problem copying property '"+propertyName+"' from "+source.getClass().getSimpleName(), e);
+        }
+
+        return true;
     }
 }

@@ -15,13 +15,11 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import org.junit.After;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
