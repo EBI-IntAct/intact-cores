@@ -415,6 +415,18 @@ public class IntactCloner {
             throw new IntactClonerException( "An error occured upon cloning a " + clazz.getSimpleName(), e );
         }
 
+        if (cvObject instanceof CvDagObject) {
+            CvDagObject cvDag = (CvDagObject) cvObject;
+            CvDagObject cloneDag = (CvDagObject) clone;
+
+            for (CvDagObject parent : cvDag.getParents()) {
+                cloneDag.getParents().add(clone(parent));
+            }
+            for (CvDagObject child : cvDag.getChildren()) {
+                cloneDag.getChildren().add(clone(child));
+            }
+        }
+
         return clone;
     }
 

@@ -4,10 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.model.Institution;
-import uk.ac.ebi.intact.model.IntactObject;
-import uk.ac.ebi.intact.model.Protein;
+import uk.ac.ebi.intact.model.*;
 
 /**
  * IntactCloner Tester.
@@ -104,4 +101,17 @@ public class IntactClonerTest extends IntactBasicTestCase {
     public void cloneComponent() throws Exception {
         clone( getMockBuilder().createComponentRandom() );
     }
+
+     @Test
+    public void persist_linkParentChildrenOnUpdate() throws Exception {
+         CvDatabase citation = getMockBuilder().createCvObject(CvDatabase.class, "MI:0444", "database citation");
+         CvDatabase psiMi = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
+
+         citation.addChild(psiMi);
+
+         IntactCloner cloner = new IntactCloner();
+         CvDatabase citationClone = cloner.clone(citation);
+
+         Assert.assertEquals(1, citationClone.getChildren().size());
+     }
 }
