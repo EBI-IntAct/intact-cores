@@ -84,7 +84,8 @@ public class CvTopic extends CvDagObject implements Editable {
 
     public static final String CC_NOTE = "uniprot-cc-note";
 
-    public static final String OBSOLETE = "obsolete term";
+    public static final String OBSOLETE = "obsolete";
+    @Deprecated public static final String OBSOLETE_OLD = "obsolete term";
     public static final String OBSOLETE_MI_REF = "MI:0431";
 
     public static final String NO_EXPORT = "no-export";
