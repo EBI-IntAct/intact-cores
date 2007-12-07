@@ -20,7 +20,7 @@ import javax.persistence.Entity;
  * @since 1.8.0
  */
 @Entity
-@DiscriminatorValue( "uk.ac.ebi.intact.model.ParameterType" )
+@DiscriminatorValue( "uk.ac.ebi.intact.model.CvParameterType" )
 @EditorTopic
 public class CvParameterType extends CvDagObject {
 

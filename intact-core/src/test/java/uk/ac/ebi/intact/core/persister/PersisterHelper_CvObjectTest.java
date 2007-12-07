@@ -161,4 +161,15 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertEquals(5, stats.getPersistedCount(CvDatabase.class, false));
     }
 
+    @Test
+    public void persist_parameterType_duplicated() throws Exception {
+        CvParameterType paramType1 = getMockBuilder().createCvObject(CvParameterType.class, "MI:0835", "koff");
+        PersisterHelper.saveOrUpdate(paramType1);
+
+        Assert.assertEquals(1, getDaoFactory().getCvObjectDao(CvParameterType.class).countAll());
+
+        paramType1 = getMockBuilder().createCvObject(CvParameterType.class, "MI:0835", "koff");
+        PersisterHelper.saveOrUpdate(paramType1);
+    }
+
 }

@@ -27,6 +27,7 @@ import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -314,19 +315,18 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForCvObject( CvObject cvObject ) {
-        Query query = getEntityManager().createQuery( "select cv.ac from CvObject cv where cv.miIdentifier = :mi " +
-                                                      "and cv.objClass = :objclass" );
+        Class cvClass = CgLibUtil.removeCglibEnhanced(cvObject.getClass());
+        
+        Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.miIdentifier = :mi " );
         query.setParameter( "mi", cvObject.getMiIdentifier() );
-        query.setParameter( "objclass", cvObject.getObjClass() );
 
         String value = getFirstAcForQuery( query, cvObject );
 
         if ( value == null ) {
             // TODO we should check on CvXrefQualifier(identity)
-            query = getEntityManager().createQuery( "select cv.ac from CvObject cv where cv.shortLabel = :label " +
-                                                    "and cv.objClass = :objclass" );
+            query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.shortLabel = :label " );
             query.setParameter( "label", cvObject.getShortLabel() );
-            query.setParameter( "objclass", cvObject.getObjClass() );
+            
             value = getFirstAcForQuery( query, cvObject );
         }
 
