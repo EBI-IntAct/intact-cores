@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
@@ -246,10 +247,12 @@ public class CorePersister implements Persister<AnnotatedObject> {
                         statistics.addMerged(managedObject);
                         synchronizeChildren( managedObject );
                     }
+                } catch (LazyInitializationException e) {
+                    log.warn("Could not copy state from annotated object to transient object. Any modifications to the transient object will be lost: "+ao);
+                    ao = managedObject;
                 } catch (PersisterException e) {
                     log.warn("Could not copy state from annotated object to transient object. Any modifications to the transient object will be lost: "+ao);
-
-                    synchronizeChildren( ao );
+                    ao = managedObject;
                 }
 
 

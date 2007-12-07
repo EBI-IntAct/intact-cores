@@ -31,6 +31,10 @@ public class CvObjectUtils {
      */
     public static String getIdentity( CvObject cvObject ) {
         // try the PSI MI first
+        if (cvObject.getMiIdentifier() != null) {
+            return cvObject.getMiIdentifier();
+        }
+
         CvObjectXref idXref = XrefUtils.getPsiMiIdentityXref( cvObject );
 
         // try to get the identity with CvDatabase 'intact'

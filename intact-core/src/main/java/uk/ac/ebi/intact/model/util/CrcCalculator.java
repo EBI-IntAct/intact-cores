@@ -42,7 +42,7 @@ public class CrcCalculator {
         UniquenessStringBuilder sb = createUniquenessString(interaction);
         final String uniquenessString = sb.toString().toLowerCase();
 
-        String crc64 =  Crc64.getCrc64(uniquenessString);
+        String crc64 = Crc64.getCrc64(uniquenessString);
 
         if (log.isDebugEnabled())
             log.debug("Created CRC for interaction '"+interaction.getShortLabel()+"': "+crc64+" ("+uniquenessString+")");

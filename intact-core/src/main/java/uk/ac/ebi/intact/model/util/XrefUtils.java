@@ -145,7 +145,7 @@ public class XrefUtils {
         if (annotatedObject == null) {
             throw new NullPointerException("annotatedObject should not be null");
         }
-
+        
         Collection<X> xrefs = annotatedObject.getXrefs();
         X annotatedObjectXref = null;
 

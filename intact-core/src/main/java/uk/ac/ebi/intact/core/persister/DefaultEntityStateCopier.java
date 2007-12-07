@@ -52,6 +52,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
             throw new IllegalArgumentException( "You must give a non null target" );
         }
 
+        if (source.getAc() != null && target.getAc() != null && !source.getAc().equals(target.getAc())) {
+            throw new IllegalArgumentException("Source and target do not have the same AC, so they cannot be copied");
+        }
+
         // here we use assigneable as hibernate is using CgLib proxies.
         if ( !( target.getClass().isAssignableFrom( source.getClass() ) ||
                 source.getClass().isAssignableFrom( target.getClass() ) ) ) {
@@ -63,7 +67,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
         // if the objects are considered to be the same object, proceed. Otherwise, return
         // false and don't copy anything
-        if (!areEqual(source, target)) {
+        if (source.getAc() == null && areEqual(source, target)) {
             return false;
         }
 
@@ -300,26 +304,22 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
      * b) Otherwise, clone both objects (excluding the ACs) and invoke equals() on them
      */
     protected boolean areEqual(AnnotatedObject source, AnnotatedObject target) {
-        if (source.getAc() != null && source.getAc().equals(target.getAc())) {
-            return true;
-        }
-
         if (source instanceof CvObject && areCvObjectsEqual((CvObject)source, (CvObject)target)) {
-            return false;
+            return true;
         } else if (source instanceof Interaction && areInteractionsEqual((Interaction)source, (Interaction)target)) {
-            return false;
+            return true;
         }
 
         // clone both source and target to try a perfect equals on them
         try {
             if (clone(source).equals(clone(target))) {
-                return false;
+                return true;
             }
         } catch (IntactClonerException e) {
             throw new PersisterException("Problem cloning source or target, to check if they are equals", e);
         }
 
-        return true;
+        return false;
     }
 
     protected boolean areCvObjectsEqual(CvObject source, CvObject target) {
@@ -328,7 +328,6 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
     protected boolean areInteractionsEqual(Interaction source, Interaction target) {
         CrcCalculator calculator = new CrcCalculator();
-
         return calculator.crc64(source).equals(calculator.crc64(target));
     }
 }
