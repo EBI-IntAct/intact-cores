@@ -172,4 +172,45 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(paramType1);
     }
 
+    @Test
+    public void persist_linkParentChildrenOnUpdate() throws Exception {
+        CvDatabase citation = getMockBuilder().createCvObject(CvDatabase.class, "MI:0444", "database citation");
+        CvDatabase psiMi = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
+        CvDatabase psiMiChild = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF+"_C", CvDatabase.PSI_MI+"_C");
+
+        PersisterHelper.saveOrUpdate(citation, psiMi, psiMiChild);
+
+        CvDatabase refreshedCitation = reloadByAc(citation);
+        CvDatabase refreshedPsiMi = reloadByAc(psiMi);
+
+        Assert.assertEquals(0, refreshedCitation.getParents().size());
+        Assert.assertEquals(0, refreshedCitation.getChildren().size());
+        Assert.assertEquals(0, refreshedPsiMi.getParents().size());
+        Assert.assertEquals(0, refreshedPsiMi.getChildren().size());
+
+        // re-create same objects, but linked
+        citation = getMockBuilder().createCvObject(CvDatabase.class, "MI:0444", "database citation");
+        psiMi = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
+
+        citation.addChild(psiMi);
+        //psiMi.addChild(psiMiChild);
+
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(citation);
+        
+        Assert.assertEquals(0, stats.getPersistedCount(CvDatabase.class, false));
+        Assert.assertEquals(2, stats.getMergedCount(CvDatabase.class, false));
+
+        refreshedCitation = getDaoFactory().getCvObjectDao(CvDatabase.class).getByPsiMiRef("MI:0444");
+        refreshedPsiMi = getDaoFactory().getCvObjectDao(CvDatabase.class).getByPsiMiRef(CvDatabase.PSI_MI_MI_REF);
+
+        Assert.assertEquals(0, refreshedCitation.getParents().size());
+        Assert.assertEquals(1, refreshedCitation.getChildren().size());
+        Assert.assertEquals(1, refreshedPsiMi.getParents().size());
+        Assert.assertEquals(0, refreshedPsiMi.getChildren().size());
+
+    }
+
+    private <T extends CvObject> T reloadByAc(T cv) {
+        return (T) getDaoFactory().getCvObjectDao(cv.getClass()).getByAc(cv.getAc());
+    }
 }

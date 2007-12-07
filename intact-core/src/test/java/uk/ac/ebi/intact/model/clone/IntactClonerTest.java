@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
+import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
 
 /**
  * IntactCloner Tester.
@@ -102,8 +104,8 @@ public class IntactClonerTest extends IntactBasicTestCase {
         clone( getMockBuilder().createComponentRandom() );
     }
 
-     @Test
-    public void persist_linkParentChildrenOnUpdate() throws Exception {
+    @Test
+    public void clone_linkParentChildrenOnUpdate() throws Exception {
          CvDatabase citation = getMockBuilder().createCvObject(CvDatabase.class, "MI:0444", "database citation");
          CvDatabase psiMi = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
 
@@ -114,4 +116,22 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
          Assert.assertEquals(1, citationClone.getChildren().size());
      }
+
+    @Test
+    public void clone_excludeAcs() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentRandom(2);
+
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
+
+        DefaultTraverser traverser = new DefaultTraverser();
+        traverser.traverse(exp, new BaseIntactVisitor() {
+            @Override
+            public void visitIntactObject(IntactObject intactObject) {
+                if (intactObject.getAc() != null) {
+                    Assert.fail("Found an AC in "+intactObject.getClass().getSimpleName());
+                }
+            }
+        });
+    }
 }

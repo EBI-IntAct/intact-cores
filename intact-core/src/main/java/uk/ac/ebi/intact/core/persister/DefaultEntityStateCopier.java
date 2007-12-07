@@ -69,7 +69,14 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         }
 
         // if the objects are considered to be the same object, proceed. Otherwise, return
-        // false and don't copy anything
+        // false and don't copy anything.
+        // This statement acts as a filter, so during an update (from a source with null AC),
+        // there are no undesired updates in the database. This could be the case, for instance,
+        // when an interaction is provided that is a duplicated of the existing one in the database.
+        // Supposing the case they had two different shortlabels, for instance, we do NOT want to
+        // update the shortLabel in the database.
+        // Of couse, we would do it if source and target have the same AC, as it is considered
+        // an update on purpose.
         if (source.getAc() == null && areEqual(source, target)) {
             return false;
         }
@@ -197,12 +204,24 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
     protected void copyCvObject( CvObject source, CvObject target ) {
         copyProperty(source, "miIdentifier", target);
+
+        if (source instanceof CvDagObject) {
+            CvDagObject sourceDag = (CvDagObject)source;
+            CvDagObject targetDag = (CvDagObject)target;
+
+            // TODO copying the parents/children cause an error, we should think of an algorithm to avoid that,
+            // due to overriding parents that may be already synchronized with its transient versions
+
+            //copyCollection( sourceDag.getParents(), targetDag.getParents() );
+            //copyCollection( sourceDag.getChildren(), targetDag.getChildren() );
+        }
     }
 
     protected <X extends Xref, A extends Alias> void copyAnotatedObjectCommons( AnnotatedObject<X, A> source,
                                                                                 AnnotatedObject<X, A> target ) {
         copyProperty(source, "shortLabel", target);
         copyProperty(source, "fullName", target);
+        copyProperty(source, "owner", target);
 
         copyXrefCollection( source.getXrefs(), target.getXrefs() );
         copyAliasCollection( source.getAliases(), target.getAliases() );
@@ -323,10 +342,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
      * b) Otherwise, clone both objects (excluding the ACs) and invoke equals() on them
      */
     protected boolean areEqual(AnnotatedObject source, AnnotatedObject target) {
-        if (source instanceof CvObject && areCvObjectsEqual((CvObject)source, (CvObject)target)) {
-            return true;
-        } else if (source instanceof Interaction && areInteractionsEqual((Interaction)source, (Interaction)target)) {
-            return true;
+        if (source instanceof CvObject && !areCvObjectsEqual((CvObject)source, (CvObject)target)) {
+            return false;
+        } else if (source instanceof Interaction && !areInteractionsEqual((Interaction)source, (Interaction)target)) {
+            return false;
         }
 
         // clone both source and target to try a perfect equals on them

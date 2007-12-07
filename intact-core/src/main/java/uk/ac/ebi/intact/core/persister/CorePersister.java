@@ -197,8 +197,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
                     copyAnnotatedObjectAttributeAcs(managedObject, ao);
 
                     // and the created info, so the merge does not fail due to missing created data
-                    ao.setCreated(managedObject.getCreated());
-                    ao.setCreator(managedObject.getCreator());
+                    //ao.setCreated(managedObject.getCreated());
+                    //ao.setCreator(managedObject.getCreator());
 
                 if (copied) {
                     statistics.addMerged(managedObject);
@@ -254,8 +254,6 @@ public class CorePersister implements Persister<AnnotatedObject> {
                     log.warn("Could not copy state from annotated object to transient object. Any modifications to the transient object will be lost: "+ao);
                     ao = managedObject;
                 }
-
-
 
             } else {
                 if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
@@ -650,21 +648,25 @@ public class CorePersister implements Persister<AnnotatedObject> {
     private Xref synchronizeXrefs( Xref xref ) {
         xref.setCvDatabase( synchronize( xref.getCvDatabase() ) );
         xref.setCvXrefQualifier( synchronize( xref.getCvXrefQualifier() ) );
-        xref.setOwner( synchronize( xref.getOwner() ) );
+
+        synchronizeBasicObjectCommons( xref );
+
         return xref;
     }
 
     private Alias synchronizeAlias( Alias alias ) {
-
-        alias.setOwner( synchronize( alias.getOwner() ) );
         alias.setCvAliasType( synchronize( alias.getCvAliasType() ) );
+
+        synchronizeBasicObjectCommons( alias );
+
         return alias;
     }
 
     private Annotation synchronizeAnnotation( Annotation annotation ) {
-
-        annotation.setOwner( synchronize( annotation.getOwner() ) );
         annotation.setCvTopic( synchronize( annotation.getCvTopic() ) );
+
+        synchronizeBasicObjectCommons( annotation );
+
         return annotation;
     }
 

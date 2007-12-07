@@ -5,12 +5,8 @@
  */
 package uk.ac.ebi.intact.model;
 
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotNull;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -107,7 +103,7 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL})
     public Collection<InstitutionXref> getXrefs() {
         return super.getXrefs();
     }

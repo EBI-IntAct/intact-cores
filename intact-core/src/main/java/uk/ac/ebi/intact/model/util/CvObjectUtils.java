@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.model.util;
 
+import org.apache.commons.collections.CollectionUtils;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.util.ClassUtils;
 
@@ -191,6 +192,17 @@ public class CvObjectUtils {
     public static boolean areEqual(CvObject cv1, CvObject cv2) {
         if ( cv1 == null || cv2 == null ) {
             return false;
+        }
+
+        if (cv1 instanceof CvDagObject) {
+            CvDagObject cv1Dag = (CvDagObject) cv1;
+            CvDagObject cv2Dag = (CvDagObject) cv2;
+            if (!CollectionUtils.isEqualCollection(cv1Dag.getChildren(), cv2Dag.getChildren())) {
+                return false;
+            }
+            if (!CollectionUtils.isEqualCollection(cv1Dag.getParents(), cv2Dag.getParents())) {
+                return false;
+            }
         }
         
         if (cv1.getMiIdentifier() != null && cv2.getMiIdentifier() != null) {
