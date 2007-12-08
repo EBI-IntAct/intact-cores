@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.core.persister;
+package uk.ac.ebi.intact.core.persister.finder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +28,9 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.core.persister.Finder;
+import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
+import uk.ac.ebi.intact.core.persister.FinderException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -154,22 +157,22 @@ public class DefaultFinder implements Finder {
         InteractionDao interactionDao = getDaoFactory().getInteractionDao();
 
         CrcCalculator crcCalculator = new CrcCalculator();
+        String interactionCrc = crcCalculator.crc64( interaction );
 
-        // Get the interactors where exactly the same interactors are involved
-        List<String> interactorPrimaryIDs = InteractionUtils.getInteractorPrimaryIDs( interaction );
-        List<Interaction> interactionsWithSameInteractors =
-                interactionDao.getByInteractorsPrimaryId( true, interactorPrimaryIDs.toArray( new String[interactorPrimaryIDs.size()] ) );
+        Query query = getEntityManager().createQuery("select ac from InteractionImpl where crc = :crc");
+        query.setParameter("crc", interactionCrc);
 
-        for ( Interaction interactionWithSameInteractor : interactionsWithSameInteractors ) {
-            String interactionCrc = crcCalculator.crc64( interaction );
-            String interactionWithSameInteractorCrc = crcCalculator.crc64( interactionWithSameInteractor );
+        List<String> acs = query.getResultList();
 
-            if ( interactionCrc.equals( interactionWithSameInteractorCrc ) ) {
-                return interactionWithSameInteractor.getAc();
-            }
+        if (acs.isEmpty()) {
+            return null;
         }
 
-        return null;
+        if (acs.size() > 1) {
+            log.error("More than one interaction found using the CRC ("+interactionCrc+"). Returning the first one");
+        }
+
+        return acs.get(0);
     }
 
     /**
@@ -346,11 +349,11 @@ public class DefaultFinder implements Finder {
         return ac;
     }
 
-    private EntityManager getEntityManager() {
+    protected EntityManager getEntityManager() {
         return getDaoFactory().getEntityManager();
     }
 
-    private DaoFactory getDaoFactory() {
+    protected DaoFactory getDaoFactory() {
         return IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
     }
 }

@@ -372,14 +372,14 @@ public class IntactMockBuilder {
 
         return interaction;
     }
-
+    
     public Interaction createInteraction(String ... interactorShortLabels) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
         Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
 
         Protein prot = null;
         for (String interactorShortLabel : interactorShortLabels) {
-            prot = createDeterministicProtein("uniprotId_" + interactorShortLabel, interactorShortLabel);
+            prot = createDeterministicProtein(interactorShortLabel, interactorShortLabel);
             interaction.addComponent(createComponentNeutral(interaction, prot));
         }
 

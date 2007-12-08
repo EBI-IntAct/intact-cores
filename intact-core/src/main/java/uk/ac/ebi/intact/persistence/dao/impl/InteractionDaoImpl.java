@@ -14,15 +14,16 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
+import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.InteractorXref;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
+import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
+import uk.ac.ebi.intact.business.IntactException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * TODO comment this
@@ -131,6 +132,14 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
      * @inheritDoc
      */
     public List<Interaction> getByInteractorsPrimaryId(boolean exactComponents, String... primaryIds) {
+        if (primaryIds.length > 5) {
+            if (exactComponents) {
+                return getByInteractorsPrimaryIdExactComponents(primaryIds);
+            } else {
+                throw new IntactException("Searching for more than 5 components will make this query inefficient");
+            }
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append("select i from InteractionImpl as i ");
 
@@ -163,5 +172,66 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         }
 
         return query.getResultList();
+    }
+
+    protected List<Interaction> getByInteractorsPrimaryIdExactComponents(String... primaryIds) {
+        List<Interaction> results = new ArrayList<Interaction>();
+
+        // get first all the interactions of the same size (efficient only for interactions with several components)
+        Query query = getEntityManager().createQuery("from InteractionImpl i where size(i.components) = :compSize");
+        query.setParameter("compSize", primaryIds.length);
+
+        List<Interaction> interactionsOfTheSameSize = query.getResultList();
+
+        // the following crappy algorithm checks that the interactors contained in the interactions
+        // have the provided list of primaryIds
+        for (Interaction interaction : interactionsOfTheSameSize) {
+            String[] primIdsToFind = new String[primaryIds.length];
+            System.arraycopy(primaryIds, 0, primIdsToFind, 0, primaryIds.length);
+
+            for (Component component : interaction.getComponents()) {
+                for (InteractorXref idXref : XrefUtils.getIdentityXrefs(component.getInteractor())) {
+                    for (int i=0; i<primIdsToFind.length; i++) {
+                        if (idXref.getPrimaryId().equals(primIdsToFind[i])) {
+                            primIdsToFind[i] = "";
+                        }
+                    }
+                }
+            }
+
+            boolean found = true;
+
+           for (String id : primIdsToFind) {
+               if (id.length() > 0) {
+                   found = false;
+               }
+           }
+
+            if (found) {
+                results.add(interaction);
+            }
+        }
+
+        return results;
+    }
+
+     /**
+     * @inheritDoc
+     */
+    public Interaction getByCrc(String crc) {
+        Query query = getEntityManager().createQuery("from InteractionImpl where crc = :crc");
+        query.setParameter("crc", crc);
+
+        List<Interaction> interactions = query.getResultList();
+
+        if (interactions.isEmpty()) {
+            return null;
+        }
+
+        if (interactions.size() > 1) {
+            log.error("Getting an interaction by CRC returned more than one result. Using the first one: "+crc);
+        }
+
+        return interactions.get(0);
     }
 }

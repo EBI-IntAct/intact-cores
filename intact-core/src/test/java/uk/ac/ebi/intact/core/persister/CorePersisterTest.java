@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.core.persister;
 
 import org.junit.*;
+import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 
 /**
  * CorePersister Tester.

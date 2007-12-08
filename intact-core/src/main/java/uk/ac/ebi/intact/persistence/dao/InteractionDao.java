@@ -51,4 +51,13 @@ public interface InteractionDao extends InteractorDao<InteractionImpl> {
      * @since 1.7.2
      */
     List<Interaction> getByInteractorsPrimaryId(boolean exactComponents, String... primaryIds);
+
+    /**
+     * Gets an interaction by its CRC.
+     * @param crc The Crc to use
+     * @return The interaction (if more than one are found, return the first one and log an error)
+     *
+     * @since 1.8.0
+     */
+    Interaction getByCrc(String crc);
 }

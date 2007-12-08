@@ -19,10 +19,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.persister.CorePersister;
+import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
+import uk.ac.ebi.intact.core.persister.finder.NonCrcLegacyFinder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.util.SchemaUtils;
 import uk.ac.ebi.intact.model.Interaction;
+
+import java.util.Arrays;
 
 /**
  * TODO comment this
@@ -127,5 +132,20 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
+    }
+
+    @Test
+    public void getByInteractorsPrimaryId_14Component() throws Exception {
+        String[] all = new String[]{"NP_013618", "NP_010928", "NP_015428", "NP_009512",
+                "NP_012533", "NP_011651", "NP_014604", "NP_011769", "NP_014045", "NP_015007",
+                "NP_011504", "NP_014800", "NP_011020", "NP_116708"};
+
+        for (int i = 4; i < 14; i++) {
+            String[] primaryIds = Arrays.asList(all).subList(0, i).toArray(new String[i]);
+            Interaction interaction = getMockBuilder().createInteraction(primaryIds);
+
+            PersisterHelper.saveOrUpdate(interaction);
+            Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, primaryIds).size());
+        }
     }
 }

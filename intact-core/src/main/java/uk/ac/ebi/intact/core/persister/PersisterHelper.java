@@ -47,11 +47,13 @@ public class PersisterHelper {
     }
 
     public static PersisterStatistics saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
+        return saveOrUpdate(new CorePersister(), annotatedObjects);
+    }
+
+    public static PersisterStatistics saveOrUpdate( CorePersister corePersister, AnnotatedObject... annotatedObjects ) throws PersisterException {
         boolean inTransaction = IntactContext.getCurrentInstance().getDataContext().isTransactionActive();
 
         if ( !inTransaction ) IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
-        CorePersister corePersister = new CorePersister();
 
         for ( AnnotatedObject ao : annotatedObjects ) {
             corePersister.synchronize( ao );
