@@ -342,10 +342,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
      * b) Otherwise, clone both objects (excluding the ACs) and invoke equals() on them
      */
     protected boolean areEqual(AnnotatedObject source, AnnotatedObject target) {
-        if (source instanceof CvObject && !areCvObjectsEqual((CvObject)source, (CvObject)target)) {
-            return false;
-        } else if (source instanceof Interaction && !areInteractionsEqual((Interaction)source, (Interaction)target)) {
-            return false;
+        if (source instanceof CvObject && areCvObjectsEqual((CvObject)source, (CvObject)target)) {
+            return true;
+        } else if (source instanceof Interaction && areInteractionsEqual((Interaction)source, (Interaction)target)) {
+            return true;
         }
 
         // clone both source and target to try a perfect equals on them
