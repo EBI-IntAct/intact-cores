@@ -41,7 +41,15 @@ public class IntactObjectEventListener  {
             }
             auditable.setUpdated(now);
 
-            String currentUser = IntactContext.getCurrentInstance().getUserContext().getUserId().toUpperCase();
+            // Note: in this method we cannot assume that there is an instance of IntactContext running,
+            // as it could be called during IntAct initialization (IntactConfigurator)
+
+            String currentUser = "INTACT";
+
+            if (IntactContext.currentInstanceExists()) {
+                currentUser = IntactContext.getCurrentInstance().getUserContext().getUserId().toUpperCase();
+            }
+
             if (auditable.getCreator() == null) {
                 auditable.setCreator( currentUser );
             }
