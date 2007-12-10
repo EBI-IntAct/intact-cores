@@ -46,6 +46,7 @@ public class MockDaoFactory extends DaoFactory {
     private InstitutionDao institutionDao;
     private IntactObjectDao<? extends IntactObject> intactObjectDao;
     private InteractionDao interactionDao;
+    private ConfidenceDao confidenceDao;
     private InteractorDao<? extends Interactor> interactorDao;
     private MineInteractionDao mineInteractionDao;
     private PolymerDao polymerDao;
@@ -232,6 +233,12 @@ public class MockDaoFactory extends DaoFactory {
     }
 
     @Override
+    public ConfidenceDao getConfidenceDao(){
+        checkIfDaoIsSet(confidenceDao, ConfidenceDao.class);
+        return confidenceDao;
+    }
+
+    @Override
     public SearchableDao getSearchableDao() {
         checkIfDaoIsSet(searchableDao, SearchableDao.class);
         return searchableDao;
@@ -346,6 +353,10 @@ public class MockDaoFactory extends DaoFactory {
 
     public void setMockRangeDao(RangeDao rangeDao) {
         this.rangeDao = rangeDao;
+    }
+
+    public void setMockConfidenceDao(ConfidenceDao confidenceDao) {
+        this.confidenceDao = confidenceDao;        
     }
 
     public void setMockSearchableDao(SearchableDao searchableDao) {

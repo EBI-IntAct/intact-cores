@@ -415,6 +415,8 @@ public class IntactMockBuilder {
 
         interaction.getComponents().iterator().next().addBindingDomain(feature);
 
+        interaction.addConfidence( createDeterministicConfidence());
+
         return interaction;
     }
 
@@ -608,6 +610,25 @@ public class IntactMockBuilder {
         int to = new Random().nextInt(10)+from;
 
         return createRange(from, from, to, to);
+    }
+
+     //////////////////////
+    // Confidence
+     public Confidence createDeterministicConfidence() {
+        CvConfidenceType cvConfidenceType = createCvObject( CvConfidenceType.class, "IA:9974", "intact-confidence");
+        Confidence conf = createConfidence( cvConfidenceType, "0.8");
+        return conf;
+    }
+
+    public Confidence createConfidence(CvConfidenceType type, String value) {
+        Confidence conf = new Confidence(getInstitution(), type, value);
+        return conf;
+    }
+
+     public Confidence createConfidenceRandom() {
+        CvConfidenceType cvConfidenceType = createCvObject( CvConfidenceType.class, "IA:"+ new Random().nextInt(1000), nextString( "cv"));
+        Confidence conf = createConfidence(cvConfidenceType, Double.toString( new Random().nextDouble()));
+        return conf;
     }
 
     ///////////////////

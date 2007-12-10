@@ -52,6 +52,10 @@ public abstract class BaseIntactVisitor implements IntactVisitor, HierarchyAware
         // nothing
     }
 
+     public void visitConfidence(Confidence confidence) {
+        // nothing
+    }
+
     //////////////////////////////////////////
     // AnnotatedObjects
 

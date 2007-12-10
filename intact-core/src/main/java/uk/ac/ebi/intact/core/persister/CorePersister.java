@@ -538,7 +538,16 @@ public class CorePersister implements Persister<AnnotatedObject> {
         interaction.setComponents( synchronizeCollection( interaction.getComponents() ) );
         interaction.setBioSource( synchronize( interaction.getBioSource() ) );
         interaction.setExperiments( synchronizeCollection( interaction.getExperiments() ) );
+
+        for ( Confidence confidence : interaction.getConfidences() ) {
+            synchronizeConfidence( confidence );
+        }
         synchronizeAnnotatedObjectCommons( interaction );
+    }
+
+    private void synchronizeConfidence( Confidence confidence ) {
+        confidence.setCvConfidenceType( synchronize (confidence.getCvConfidenceType()));
+        synchronizeBasicObjectCommons(confidence);
     }
 
     private void synchronizeInteractor( Interactor interactor ) {

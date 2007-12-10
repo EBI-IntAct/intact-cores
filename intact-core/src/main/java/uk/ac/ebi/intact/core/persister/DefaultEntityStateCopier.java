@@ -141,6 +141,8 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         copyCollection( source.getComponents(), target.getComponents() );
         copyCollection( source.getExperiments(), target.getExperiments() );
 
+        copyCollection( source.getConfidences(), target.getConfidences() );
+
         copyInteractorCommons( source, target );
 
         // we have ommited CRC on purpose

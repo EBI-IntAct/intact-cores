@@ -27,7 +27,7 @@ public class Playground {
 
      public static void main(String[] args) throws Exception {
         //final IntactObject intactObject = new IntactMockBuilder().createInteractionRandomBinary().getComponents().iterator().next();
-         final IntactObject intactObject = new IntactMockBuilder().createBioSourceRandom();
+         final IntactObject intactObject = new IntactMockBuilder().createInteractionRandomBinary();
 
         DebugUtil.renderIntactObjectAsTree(intactObject);
         DebugUtil.printIntactObject(intactObject, System.out);

@@ -17,18 +17,15 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatisticsTest;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * InteractionPersister tester.
@@ -125,6 +122,29 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         CvAliasType aliasType = getDaoFactory().getCvObjectDao(CvAliasType.class).getByPsiMiRef(CvAliasType.GENE_NAME_MI_REF);
         Assert.assertNotNull(aliasType);
+    }
+
+
+    @Test
+    public void confidencePersisted() throws Exception {
+        IntactMockBuilder builder = super.getMockBuilder();
+        Interaction interaction = builder.createDeterministicInteraction();
+        Confidence confidenceExpected = interaction.getConfidences().iterator().next();
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getConfidenceDao().countAll());
+
+        Iterator<Confidence> confidenceIter = getDaoFactory().getConfidenceDao().getAllIterator();
+        Confidence confidenceObserved = confidenceIter.next();
+        Assert.assertEquals( confidenceExpected.getValue(), confidenceObserved.getValue());
+
+        Iterator<InteractionImpl> interactionIter = getDaoFactory().getInteractionDao().getAllIterator();
+        Interaction interactionObserved = interactionIter.next();
+        Assert.assertEquals(1, interactionObserved.getConfidences().size());
+        Confidence confidenceObserved2 = interactionObserved.getConfidences().iterator().next();
+        Assert.assertEquals( confidenceExpected.getValue(), confidenceObserved2.getValue());
     }
 
     @Test
@@ -433,7 +453,9 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
 
-        Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
+        Interaction clonedInteraction =  (Interaction) ((InteractionImpl)interaction).clone();
+
+        clonedInteraction.setShortLabel( "fooprey-barbait-1");
         clonedInteraction.addComponent(getMockBuilder().createComponentPrey(clonedInteraction,
                                                         getMockBuilder().createProteinRandom()));
 

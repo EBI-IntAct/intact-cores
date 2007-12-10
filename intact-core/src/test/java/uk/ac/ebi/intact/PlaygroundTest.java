@@ -1,9 +1,11 @@
 package uk.ac.ebi.intact;
 
+import org.hibernate.dialect.H2Dialect;
 import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.util.SchemaUtils;
 import uk.ac.ebi.intact.model.InteractionImpl;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 
@@ -86,5 +88,12 @@ public class PlaygroundTest {
         } while (!interactionsPage.isEmpty());
 
         writer.close();
+    }
+
+    @Test
+    public void printH2Schema() {
+        for (String str : SchemaUtils.generateCreateSchemaDDL( H2Dialect.class.getName())) {
+            System.out.println(str);
+        }
     }
 }

@@ -73,7 +73,7 @@ public class IntactCloner {
                        ( intactObject instanceof AnnotatedObject ?
                          ( ( AnnotatedObject ) intactObject ).getShortLabel() : intactObject.getAc() ) );
         }
-        
+
         T clone = null;
 
         if ( clonerManager.isAlreadyCloned( intactObject ) ) {
@@ -91,6 +91,8 @@ public class IntactCloner {
             clone = (T) cloneXref( ( Xref ) intactObject );
         } else if ( intactObject instanceof Range ) {
             clone = (T) cloneRange( ( Range ) intactObject );
+        } else if ( intactObject instanceof Confidence){
+            clone = (T) cloneConfidence( (Confidence) intactObject);
         } else {
             throw new IllegalArgumentException( "Cannot clone objects of type: " + intactObject.getClass().getName() );
         }
@@ -222,6 +224,22 @@ public class IntactCloner {
         return clone;
     }
 
+     protected Confidence cloneConfidence( Confidence confidence ) throws IntactClonerException {
+        if ( confidence == null ) {
+            throw new IllegalArgumentException( "You must give a non null confidence" );
+        }
+
+        Confidence clone = new Confidence();
+
+        clonerManager.addClone( confidence, clone );
+             
+        clone.setValue( confidence.getValue());
+        clone.setInteraction( clone (confidence.getInteraction()));
+        clone.setCvConfidenceType( clone(confidence.getCvConfidenceType()));
+
+        return clone;
+    }
+
     ///////////////////////////////////////
     // AnnotatedObject cloners
 
@@ -271,7 +289,7 @@ public class IntactCloner {
         }
 
         Institution clone = new Institution();
-        
+
         clonerManager.addClone( institution, clone );
 
         clone.setUrl( institution.getUrl() );
@@ -302,6 +320,10 @@ public class IntactCloner {
 
         for ( Component component : interaction.getComponents() ) {
             clone.addComponent(clone( component ));
+        }
+
+        for ( Confidence confidence : interaction.getConfidences() ) {
+            clone.addConfidence(clone( confidence ));
         }
 
         return clone;

@@ -226,6 +226,10 @@ public class DaoFactory implements Serializable {
         return new RangeDaoImpl( getEntityManager(), intactSession );
     }
 
+    public ConfidenceDao getConfidenceDao(){
+        return new ConfidenceDaoImpl(getEntityManager(), intactSession);
+    }
+
     public SearchableDao getSearchableDao() {
         return new SearchableDaoImpl( getEntityManager(), intactSession );
     }

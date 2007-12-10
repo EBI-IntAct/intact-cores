@@ -56,4 +56,12 @@ public interface Interaction extends Interactor {
     String getCrc();
 
     void setCrc( String crc );
+
+    void setConfidences( Collection<Confidence> confidences );
+
+    void addConfidence( Confidence confidence );
+
+    void removeConfidence( Confidence confidence );
+
+    Collection<Confidence> getConfidences();
 }

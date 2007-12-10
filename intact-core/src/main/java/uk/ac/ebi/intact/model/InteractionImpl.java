@@ -82,12 +82,15 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
      */
     private String crc;
 
+    private Collection<Confidence> confidences;  // initialized via constructor
+
     public InteractionImpl() {
         //super call sets creation time data
         super();
 
         components = new ArrayList<Component>( );
         experiments =  new ArrayList<Experiment>( );
+        confidences = new ArrayList<Confidence>();
     }
 
     /**
@@ -156,7 +159,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         setExperiments( experiments );
         setComponents( components );
         setCvInteractionType( type );
-
+        confidences = new ArrayList<Confidence>();
         // the bioSource has to be set using setBioSource( BioSource bs ).
     }
 
@@ -392,6 +395,26 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         this.cvInteractionTypeAc = ac;
     }
 
+    public void setConfidences( Collection<Confidence> someConfidences ) {
+       this.confidences = someConfidences;
+    }
+
+    public void addConfidence( Confidence confidence ) {
+        if ( !this.confidences.contains( confidence ) ) {
+            this.confidences.add( confidence );
+            confidence.setInteraction( this);
+        }
+    }
+
+    public void removeConfidence( Confidence confidence ) {
+        this.confidences.remove( confidence);
+    }
+
+    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    public Collection<Confidence> getConfidences() {
+        return confidences;
+    }
+
     ///////////////////////////////////////
     // instance methods
 
@@ -502,6 +525,9 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
             if (!CollectionUtils.isEqualCollection(getComponents(), interaction.getComponents())) {
                  return false;
             }
+            if (!CollectionUtils.isEqualCollection( getConfidences(), interaction.getConfidences())){
+                return false;
+            }
         }
 
         return true;
@@ -558,6 +584,9 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
             copyComp.setInteractorForClone( interactor );
             copy.components.add( copyComp );
         }
+
+        copy.confidences = new ArrayList<Confidence>();
+
         return copy;
     }
 
