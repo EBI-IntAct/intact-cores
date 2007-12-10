@@ -341,15 +341,8 @@ public class IntactConfigurator {
 
         DaoFactory daoFactory = DaoFactory.getCurrentInstance( session, RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig() );
 
-        IntactTransaction tx = daoFactory.beginTransaction();
         Institution institution = daoFactory
                 .getInstitutionDao().getByShortLabel( institutionLabel );
-        try {
-            tx.commit();
-        } catch ( IntactTransactionException e ) {
-            log.error( "Exception commiting " + e );
-        }
-
 
         if ( institution == null ) {
             // doesn't exist, create it
