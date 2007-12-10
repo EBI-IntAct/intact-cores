@@ -171,6 +171,8 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         paramType1 = getMockBuilder().createCvObject(CvParameterType.class, "MI:0835", "koff");
         PersisterHelper.saveOrUpdate(paramType1);
+
+        Assert.assertEquals(1, getDaoFactory().getCvObjectDao(CvParameterType.class).countAll());
     }
 
     @Test
