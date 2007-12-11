@@ -6,9 +6,7 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Index;
 import org.hibernate.validator.Length;
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -149,11 +147,9 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     public int hashCode() {
         int result = super.hashCode();
 
-        Xref idXref = CvObjectUtils.getPsiMiIdentityXref( this );
-
         //need check as we still have no-arg constructor...
-        if ( idXref != null ) {
-            result = 29 * result + idXref.getPrimaryId().hashCode();
+        if ( miIdentifier != null ) {
+            result = 29 * result + miIdentifier.hashCode();
         } else {
             result = 29 * result + ( ( getShortLabel() == null ) ? 31 : getShortLabel().hashCode() );
         }
