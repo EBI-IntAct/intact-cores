@@ -169,18 +169,7 @@ public class IntactConfigurator {
         boolean preloadCommonCvs = Boolean.valueOf( getInitParamValue( session, IntactEnvironment.PRELOAD_COMMON_CVS_PARAM_NAME.getFqn(), String.valueOf( Boolean.FALSE ) ) );
         if ( preloadCommonCvs ) {
             log.info( "Preloading common CvObjects" );
-            IntactTransaction tx = DaoFactory.getCurrentInstance( session, RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig() ).beginTransaction();
             CvContext.getCurrentInstance( session ).loadCommonCvObjects();
-            try {
-                tx.commit();
-            } catch ( IntactTransactionException ie ) {
-                log.error( "Exception commiting " + ie );
-                try {
-                    tx.rollback();
-                } catch ( IntactTransactionException i ) {
-                    log.error( "Exception rolling back " + ie );
-                }
-            }
         }
 
         setInitialized( session, true );
