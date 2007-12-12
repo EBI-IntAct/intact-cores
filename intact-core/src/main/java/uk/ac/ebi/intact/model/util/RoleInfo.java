@@ -54,7 +54,7 @@ public class RoleInfo {
             return biologicalRoleMi;
         }
 
-        biologicalRoleMi = CvObjectUtils.getPsiMiIdentityXref(biologicalRole).getPrimaryId();
+        biologicalRoleMi = biologicalRole.getMiIdentifier();
 
         return biologicalRoleMi;
     }
@@ -64,7 +64,7 @@ public class RoleInfo {
             return experimentalRoleMi;
         }
 
-        experimentalRoleMi = CvObjectUtils.getPsiMiIdentityXref(experimentalRole).getPrimaryId();
+        experimentalRoleMi = experimentalRole.getMiIdentifier();
 
         return experimentalRoleMi;
     }

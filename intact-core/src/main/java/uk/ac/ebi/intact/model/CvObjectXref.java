@@ -7,7 +7,6 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
 
@@ -29,6 +28,15 @@ public class CvObjectXref extends Xref {
     public CvObjectXref() {
     }
 
+    @PostLoad
+    public void postLoad() {
+        CvObject parent = (CvObject) getParent();
+
+        if (parent != null && parent.getMiIdentifier() != null) {
+            prepareParentMi();
+        }
+    }
+
     @PrePersist
     @PreUpdate
     public void prepareParentMi() {
@@ -41,13 +49,7 @@ public class CvObjectXref extends Xref {
         if (CvDatabase.PSI_MI_MI_REF.equals(getCvDatabase().getMiIdentifier()) &&
             CvXrefQualifier.IDENTITY_MI_REF.equals(getCvXrefQualifier().getMiIdentifier())) {
             parent.setMiIdentifier(getPrimaryId());
-        } else {
-            CvObjectXref idXref = CvObjectUtils.getPsiMiIdentityXref(parent);
-
-            if (idXref != null) {
-                parent.setMiIdentifier(idXref.getPrimaryId());
-            }
-        }
+        } 
     }
 
 

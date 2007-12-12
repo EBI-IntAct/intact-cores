@@ -159,7 +159,7 @@ public class XrefUtils {
                 }
             }
         }
-
+        /*
         if (annotatedObjectXref == null) {
             log.warn("Trying to get the PSI-MI identifier using the xrefs");
 
@@ -182,7 +182,7 @@ public class XrefUtils {
                 }
             }
         }
-
+         */
         return annotatedObjectXref;
     }
 

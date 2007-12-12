@@ -17,14 +17,13 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import static org.junit.Assert.*;
-import org.junit.Test;
 import org.junit.Ignore;
+import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 /**
  * PersisterHelper tester.
@@ -67,9 +66,9 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         assertNotNull( newExpRole );
         assertFalse( newExpRole.getXrefs().isEmpty() );
 
-        CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref( newExpRole );
-        assertNotNull( cvObjectXref );
-        assertEquals( "roleMi", cvObjectXref.getPrimaryId() );
+        String miIdentifier = newExpRole.getMiIdentifier();
+        assertNotNull( miIdentifier );
+        assertEquals( "roleMi", miIdentifier );
     }
 
     @Test

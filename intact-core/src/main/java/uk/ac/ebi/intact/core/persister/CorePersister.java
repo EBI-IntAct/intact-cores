@@ -20,8 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
@@ -249,10 +249,10 @@ public class CorePersister implements Persister<AnnotatedObject> {
                         synchronizeChildren( managedObject );
                     }
                 } catch (LazyInitializationException e) {
-                    log.warn("Could not copy state from annotated object to transient object. Any modifications to the transient object will be lost: "+ao);
+                    log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
                     ao = managedObject;
                 } catch (PersisterException e) {
-                    log.warn("Could not copy state from annotated object to transient object. Any modifications to the transient object will be lost: "+ao);
+                    log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
                     ao = managedObject;
                 }
 

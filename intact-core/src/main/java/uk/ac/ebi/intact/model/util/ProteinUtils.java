@@ -66,11 +66,11 @@ public class ProteinUtils {
         for(InteractorXref xref : xrefs){
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             if(qualifier != null){
-                CvObjectXref qualifierIdentityXref = CvObjectUtils.getPsiMiIdentityXref(qualifier);
-                if(qualifierIdentityXref!= null && CvXrefQualifier.IDENTITY_MI_REF.equals(qualifierIdentityXref.getPrimaryId())){
+                String qualifierIdentity = qualifier.getMiIdentifier();
+                if(qualifierIdentity!= null && CvXrefQualifier.IDENTITY_MI_REF.equals(qualifierIdentity)){
                     CvDatabase database = xref.getCvDatabase();
-                    CvObjectXref databaseIdentityXref = CvObjectUtils.getPsiMiIdentityXref(database);
-                    if(databaseIdentityXref != null && CvDatabase.UNIPROT_MI_REF.equals(databaseIdentityXref.getPrimaryId())){
+                    String databaseIdentity = database.getMiIdentifier();
+                    if(databaseIdentity != null && CvDatabase.UNIPROT_MI_REF.equals(databaseIdentity)){
                         return xref;
                     }
                 }
@@ -96,9 +96,9 @@ public class ProteinUtils {
 
         for ( Alias alias : protein.getAliases()) {
             CvAliasType aliasType = alias.getCvAliasType();
-            CvObjectXref aliasTypeIdentityXref = CvObjectUtils.getPsiMiIdentityXref(aliasType);
+            String aliasTypeIdentity = aliasType.getMiIdentifier();
 
-            if (aliasTypeIdentityXref != null && CvAliasType.GENE_NAME_MI_REF.equals(aliasTypeIdentityXref.getPrimaryId())) {
+            if (aliasTypeIdentity != null && CvAliasType.GENE_NAME_MI_REF.equals(aliasTypeIdentity)) {
                 geneName = alias.getName();
                 break;
             }

@@ -19,18 +19,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.NonUniqueResultException;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.Finder;
+import uk.ac.ebi.intact.core.persister.FinderException;
+import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
-import uk.ac.ebi.intact.core.persister.Finder;
-import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
-import uk.ac.ebi.intact.core.persister.FinderException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -205,12 +204,7 @@ public class DefaultFinder implements Finder {
                 InteractorXref interactorXref = xrefIterator.next();
 
                 String databaseMi = interactorXref.getCvDatabase().getMiIdentifier();
-                if ( databaseMi == null ) {
-                    final CvObjectXref miXref = CvObjectUtils.getPsiMiIdentityXref( interactorXref.getCvDatabase() );
-                    if ( miXref != null ) {
-                        databaseMi = miXref.getPrimaryId();
-                    }
-                }
+    
                 if ( databaseMi != null ) {
 
                     if ( CvDatabase.INTACT_MI_REF.equals( databaseMi ) ||

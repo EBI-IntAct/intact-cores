@@ -273,10 +273,10 @@ public class CrcCalculator {
         if (cvObject == null) return sb;
 
         // psi-mi
-        CvObjectXref idXref = CvObjectUtils.getPsiMiIdentityXref(cvObject);
+        String miIdentifier = cvObject.getMiIdentifier();
 
-        if (idXref != null) {
-            sb.append(idXref.getPrimaryId());
+        if (miIdentifier != null) {
+            sb.append(miIdentifier);
         } else {
             sb.append(cvObject.getShortLabel());
         }

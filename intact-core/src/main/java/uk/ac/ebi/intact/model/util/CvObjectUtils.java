@@ -18,6 +18,10 @@ import java.util.Set;
  */
 public class CvObjectUtils {
 
+    /**
+     * @deprecated To get the PSI-MI identifier, just invoke CvObject.getMiIdentifier()
+     */
+    @Deprecated
     public static CvObjectXref getPsiMiIdentityXref( CvObject cvObject ) {
         return XrefUtils.getPsiMiIdentityXref( cvObject );
     }
@@ -36,18 +40,14 @@ public class CvObjectUtils {
             return cvObject.getMiIdentifier();
         }
 
-        CvObjectXref idXref = XrefUtils.getPsiMiIdentityXref( cvObject );
+       // try to get the identity with CvDatabase 'intact'
+       CvObjectXref idXref = XrefUtils.getIdentityXref(cvObject, CvDatabase.INTACT);
 
-        // try to get the identity with CvDatabase 'intact'
+        // get the first identity, if any
         if (idXref == null) {
-            idXref = XrefUtils.getIdentityXref(cvObject, CvDatabase.INTACT);
-
-            // get the first identity, if any
-            if (idXref == null) {
-                Collection<CvObjectXref> idXrefs = XrefUtils.getIdentityXrefs(cvObject);
-                if (!idXrefs.isEmpty()) {
-                    idXref = idXrefs.iterator().next();
-                }
+            Collection<CvObjectXref> idXrefs = XrefUtils.getIdentityXrefs(cvObject);
+            if (!idXrefs.isEmpty()) {
+                idXref = idXrefs.iterator().next();
             }
         }
 

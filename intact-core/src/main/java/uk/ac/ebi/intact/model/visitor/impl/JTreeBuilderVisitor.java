@@ -16,15 +16,12 @@
 package uk.ac.ebi.intact.model.visitor.impl;
 
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import java.util.List;
-import java.util.ArrayList;
 import java.awt.*;
 
 /**
@@ -94,7 +91,7 @@ public class JTreeBuilderVisitor extends BaseIntactVisitor{
 
     @Override
     public void visitCvObject(CvObject cvObject) {
-        currentNode.setUserObject(cvObject.getClass().getSimpleName()+": "+cvObject.getShortLabel()+" ("+ CvObjectUtils.getPsiMiIdentityXref(cvObject).getPrimaryId()+")");
+        currentNode.setUserObject(cvObject.getClass().getSimpleName()+": "+cvObject.getShortLabel()+" ("+ cvObject.getMiIdentifier()+")");
     }
 
     public TreeModel getTreeModel() {
