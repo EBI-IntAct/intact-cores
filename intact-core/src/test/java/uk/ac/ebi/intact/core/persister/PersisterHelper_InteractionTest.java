@@ -632,7 +632,11 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(0, stats.getPersistedCount(Interaction.class, true));
+        Assert.assertEquals(1, stats.getPersistedCount(Protein.class, true));
+        Assert.assertEquals(1, stats.getPersistedCount(Component.class, false));
         Assert.assertEquals(1, stats.getMergedCount(Interaction.class, true));
+
+        Assert.assertEquals(3, reloadByAc(interactionSameNewComponent).getComponents().size());
     }
 
     private Interaction reloadByAc(Interaction interaction) {
