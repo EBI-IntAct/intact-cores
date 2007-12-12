@@ -538,16 +538,27 @@ public class CorePersister implements Persister<AnnotatedObject> {
         interaction.setComponents( synchronizeCollection( interaction.getComponents() ) );
         interaction.setBioSource( synchronize( interaction.getBioSource() ) );
         interaction.setExperiments( synchronizeCollection( interaction.getExperiments() ) );
+        interaction.setConfidences( synchronizeConfidences( interaction.getConfidences() ));
 
-        for ( Confidence confidence : interaction.getConfidences() ) {
-            synchronizeConfidence( confidence );
-        }
         synchronizeAnnotatedObjectCommons( interaction );
     }
 
-    private void synchronizeConfidence( Confidence confidence ) {
-        confidence.setCvConfidenceType( synchronize (confidence.getCvConfidenceType()));
-        synchronizeBasicObjectCommons(confidence);
+    private Collection<Confidence> synchronizeConfidences( Collection<Confidence> confidencesToSynchronize ) {
+        List<Confidence> confidences = new ArrayList<Confidence>(confidencesToSynchronize.size());
+
+        for ( Confidence confidence : confidencesToSynchronize ) {
+             if (confidence.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getConfidenceDao().isTransient(confidence)) {
+                  confidence = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getConfidenceDao().getByAc(confidence.getAc());
+             }
+
+            confidence.setCvConfidenceType( synchronize (confidence.getCvConfidenceType()));
+            synchronizeBasicObjectCommons(confidence);
+
+            confidences.add(confidence);
+        }
+
+        return confidences;
+
     }
 
     private void synchronizeInteractor( Interactor interactor ) {

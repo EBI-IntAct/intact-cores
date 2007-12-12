@@ -12,8 +12,8 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
-import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.model.util.IllegalLabelFormatException;
+import uk.ac.ebi.intact.model.util.InteractionUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -410,7 +410,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         this.confidences.remove( confidence);
     }
 
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.ALL} )
     public Collection<Confidence> getConfidences() {
         return confidences;
     }

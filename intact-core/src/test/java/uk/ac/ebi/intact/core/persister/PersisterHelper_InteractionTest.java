@@ -17,15 +17,17 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.persister.stats.PersisterStatisticsTest;
-import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * InteractionPersister tester.
@@ -613,6 +615,24 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(1, stats.getDuplicatesCount(Interaction.class, true));
         Assert.assertEquals(0, stats.getPersistedCount(Interaction.class, true));
         Assert.assertEquals(0, stats.getMergedCount(Interaction.class, true));
+    }
+
+    @Test
+    public void persist_updateNewComponent() throws Exception {
+        Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
+        PersisterHelper.saveOrUpdate(interaction1);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Interaction interactionSameNewComponent = new IntactCloner().clone(interaction1);
+        Component comp = getMockBuilder().createComponentPrey(interactionSameNewComponent, getMockBuilder().createProteinRandom());
+        interactionSameNewComponent.addComponent(comp);
+
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(interactionSameNewComponent);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(0, stats.getPersistedCount(Interaction.class, true));
+        Assert.assertEquals(1, stats.getMergedCount(Interaction.class, true));
     }
 
     private Interaction reloadByAc(Interaction interaction) {
