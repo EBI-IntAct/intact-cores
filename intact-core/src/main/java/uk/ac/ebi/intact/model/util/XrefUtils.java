@@ -106,9 +106,9 @@ public class XrefUtils {
 
         for (X xref : annotatedObject.getXrefs()) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
-            CvObjectXref idXref = null;
-            if (qualifier != null && ((idXref = CvObjectUtils.getPsiMiIdentityXref(qualifier)) != null &&
-                idXref.getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF))) {
+            String qualifierMi = null;
+            if (qualifier != null && ((qualifierMi = qualifier.getMiIdentifier()) != null &&
+                qualifierMi.equals(CvXrefQualifier.IDENTITY_MI_REF))) {
                 xrefs.add(xref);
             }
         }
@@ -117,7 +117,7 @@ public class XrefUtils {
     }
 
     public static <X extends Xref> X getIdentityXref(AnnotatedObject<X,?> annotatedObject, CvDatabase cvDatabase) {
-        String dbMi = CvObjectUtils.getPsiMiIdentityXref(cvDatabase).getPrimaryId();
+        String dbMi = cvDatabase.getMiIdentifier();
 
         return getIdentityXref(annotatedObject, dbMi);
     }
@@ -126,13 +126,13 @@ public class XrefUtils {
         for (X xref : annotatedObject.getXrefs()) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             CvDatabase database = xref.getCvDatabase();
-            CvObjectXref idXrefQual;
-            CvObjectXref idXrefDb;
+            String qualMi;
+            String dbMi;
             if (qualifier != null && database != null &&
-                (idXrefQual = CvObjectUtils.getPsiMiIdentityXref(qualifier)) != null &&
-                (idXrefDb = CvObjectUtils.getPsiMiIdentityXref(database)) != null &&
-                idXrefQual.getPrimaryId().equals(CvXrefQualifier.IDENTITY_MI_REF) &&
-                idXrefDb.getPrimaryId().equals(databaseMi)) {
+                (qualMi = qualifier.getMiIdentifier()) != null &&
+                (dbMi = database.getMiIdentifier()) != null &&
+                qualMi.equals(CvXrefQualifier.IDENTITY_MI_REF) &&
+                dbMi.equals(databaseMi)) {
 
                 return xref;
             }
@@ -159,30 +159,7 @@ public class XrefUtils {
                 }
             }
         }
-        /*
-        if (annotatedObjectXref == null) {
-            log.warn("Trying to get the PSI-MI identifier using the xrefs");
-
-            for (X xref : xrefs) {
-                //Check that the cvdatabase of the xref has an psi-mi identity xref equal to CvDatabase.PSI_MI_MI_REF ( i.e:
-                //check that the database is Psi-mi)
-                if (hasIdentity(xref.getCvDatabase(), CvDatabase.PSI_MI_MI_REF)) {
-                    //Check that the cvdatabase of the xref has an psi-mi identity xref equal to CvDatabase.IDENTITY_MI_REF ( i.e:
-                    //check that the xref qualifier is identity)
-                    if (xref.getCvXrefQualifier() != null && hasIdentity(xref.getCvXrefQualifier(), CvXrefQualifier.IDENTITY_MI_REF)) {
-                        //If annotatedObjectXref is null than affect it's value, if it is not null it means that the cvObject has 2
-                        //xref identity to psi-mi which is not allowed, then send an error message.
-                        if (annotatedObjectXref == null) {
-                            annotatedObjectXref = xref;
-                        } else {
-                            String clazz = annotatedObject.getClass().getSimpleName();
-                            throw new IllegalStateException("More than one psi-mi identity in " + clazz + " :" + annotatedObject.getAc());
-                        }
-                    }
-                }
-            }
-        }
-         */
+        
         return annotatedObjectXref;
     }
 
