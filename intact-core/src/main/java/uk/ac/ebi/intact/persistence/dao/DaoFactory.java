@@ -16,6 +16,7 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.impl.*;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -116,6 +117,7 @@ public class DaoFactory implements Serializable {
     }
 
     public <T extends AnnotatedObject> AnnotatedObjectDao<T> getAnnotatedObjectDao( Class<T> entityType ) {
+        entityType = CgLibUtil.removeCglibEnhanced(entityType);
         HibernateBaseDaoImpl.validateEntity( entityType );
 
         return new AnnotatedObjectDaoImpl<T>( entityType, getEntityManager(), intactSession );
