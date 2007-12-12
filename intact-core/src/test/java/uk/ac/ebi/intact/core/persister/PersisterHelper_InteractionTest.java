@@ -639,6 +639,25 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(3, reloadByAc(interactionSameNewComponent).getComponents().size());
     }
 
+    @Test
+    public void persist_updateFullName() throws Exception {
+        Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
+        PersisterHelper.saveOrUpdate(interaction1);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Interaction interactionUpdatedFullName = new IntactCloner().clone(interaction1);
+        interactionUpdatedFullName.setFullName("fullName");
+
+        PersisterStatistics stats = PersisterHelper.saveOrUpdate(interactionUpdatedFullName);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(0, stats.getPersistedCount(Interaction.class, true));
+        Assert.assertEquals(1, stats.getMergedCount(Interaction.class, true));
+
+        Assert.assertEquals("fullName", reloadByAc(interactionUpdatedFullName).getFullName());
+    }
+
     private Interaction reloadByAc(Interaction interaction) {
         return getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
     }
