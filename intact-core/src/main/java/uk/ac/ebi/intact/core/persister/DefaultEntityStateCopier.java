@@ -186,12 +186,17 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         copyProperty(source, "expressedIn", target);
 
         copyCollection( source.getBindingDomains(), target.getBindingDomains() );
+
+        for (Feature bindingDomain : target.getBindingDomains()) {
+            bindingDomain.setComponent(target);
+        }
+
         copyCollection( source.getExperimentalPreparations(), target.getExperimentalPreparations() );
         copyCollection( source.getParticipantDetectionMethods(), target.getParticipantDetectionMethods() );
     }
 
     protected void copyFeature( Feature source, Feature target ) {
-        copyProperty(source, "component", target);
+        //copyProperty(source, "component", target);
         copyProperty(source, "cvFeatureIdentification", target);
         copyProperty(source, "cvFeatureType", target);
 

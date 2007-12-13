@@ -7,7 +7,6 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Cascade;
-import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import java.util.Collection;
  */
 @Entity
 @Table( name = "ia_feature" )
-@EditorTopic
 public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> implements Editable {
 
     //------------------- attributes -------------------------------

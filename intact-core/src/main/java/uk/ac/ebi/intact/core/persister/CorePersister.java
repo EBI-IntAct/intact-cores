@@ -261,7 +261,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
                 // managed object
                 // annotatedObjectsToMerge.put( key, ao );
-                synchronizeChildren( ao );
+                //synchronizeChildren( ao );
             }
         }
 
