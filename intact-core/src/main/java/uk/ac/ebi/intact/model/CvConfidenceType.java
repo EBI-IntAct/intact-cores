@@ -15,8 +15,10 @@
  */
 package uk.ac.ebi.intact.model;
 
-import javax.persistence.Entity;
+import uk.ac.ebi.intact.annotation.EditorTopic;
+
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 /**
  * TODO comment that class header
@@ -30,6 +32,7 @@ import javax.persistence.DiscriminatorValue;
  */
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvConfidenceType" )
+@EditorTopic
 public class CvConfidenceType extends CvObject{
      /**
      * The constant for undetermined.
