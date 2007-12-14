@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
+import uk.ac.ebi.intact.model.util.ExperimentUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
@@ -38,7 +39,9 @@ class KeyBuilder {
     public Key keyFor( AnnotatedObject ao ) {
         Key key;
 
-        if ( ao instanceof Institution ) {
+        if (ao.getAc() != null) {
+            key = new Key(ao.getAc());
+        } else if ( ao instanceof Institution ) {
             key = keyForInstitution( ( Institution ) ao );
         } else if ( ao instanceof Publication ) {
             key = keyForPublication( ( Publication ) ao );
@@ -81,7 +84,21 @@ class KeyBuilder {
     }
 
     public Key keyForExperiment( Experiment experiment ) {
-        return keyForAnnotatedObject( experiment );
+        Key key = null; // add shortlabel here?
+        if (experiment.getPublication() != null) {
+            key = new Key(experiment.getPublication().getShortLabel());
+        } else if (!experiment.getXrefs().isEmpty()) {
+            final ExperimentXref xref = ExperimentUtils.getPrimaryReferenceXref(experiment);
+            if (xref != null) {
+                key = new Key(xref.getPrimaryId());
+            }
+        }
+
+        if (key == null) {
+            key = keyForAnnotatedObject( experiment );
+        }
+
+        return key;
     }
 
     public Key keyForInteraction( Interaction interaction ) {

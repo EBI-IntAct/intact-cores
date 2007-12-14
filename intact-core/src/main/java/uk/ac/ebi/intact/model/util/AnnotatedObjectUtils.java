@@ -201,6 +201,24 @@ public class AnnotatedObjectUtils {
         return getParameterizedType(method.getGenericReturnType());
     }
 
+    /**
+     * Finds an Annotations with a topic that has an MI or label equal to the value provided
+     * @param annotatedObject The annotatedObject to find the annotation
+     * @param miOrLabel The MI (use it when possible) or the shortLabel
+     * @return The annotation with that CvTopic. Null if no annotation for that CV is found
+     *
+     * @since 1.8.0
+     */
+    public static Annotation findAnnotationByTopicMiOrLabel(AnnotatedObject<?, ?> annotatedObject, String miOrLabel) {
+        for (Annotation annotation : annotatedObject.getAnnotations()) {
+            final CvTopic topic = annotation.getCvTopic();
+            if (topic != null && (miOrLabel.equals(topic.getMiIdentifier()) || miOrLabel.equals(topic.getShortLabel()))) {
+                return annotation;
+            }
+        }
+        return null;
+    }
+
     private static Class getParameterizedType(Type type) {
         if (type instanceof ParameterizedType) {
             ParameterizedType paramType = (ParameterizedType) type;

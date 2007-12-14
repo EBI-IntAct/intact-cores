@@ -1,10 +1,8 @@
 package uk.ac.ebi.intact.core.persister;
 
-import org.junit.After;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -12,6 +10,7 @@ import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.ExperimentXref;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
 
 import java.util.List;
 
@@ -328,6 +327,33 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
         Assert.assertEquals(1, exp2.getInteractions().size());
     }
+
+    @Test
+    public void persist_sameYearDifferentPublication() throws Exception {
+        int year = 2007;
+        Experiment experiment = getMockBuilder().createExperimentEmpty("lala-2007-1", "123");
+        experiment.getXrefs().clear();
+
+        PersisterHelper.saveOrUpdate(experiment);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getPublicationDao().countAll());
+        Assert.assertEquals(0, getDaoFactory().getXrefDao(ExperimentXref.class).countAll());
+
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
+
+        Experiment expSameYearDiffPub = cloner.clone(experiment);
+        expSameYearDiffPub.setShortLabel("lala-2007");
+        expSameYearDiffPub.setPublication(getMockBuilder().createPublication("456"));
+
+        PersisterHelper.saveOrUpdate(expSameYearDiffPub);
+
+        System.out.println(getDaoFactory().getExperimentDao().getAll());
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+    }
+
+
 
     private Experiment reloadByAc(Experiment experiment) {
         return getDaoFactory().getExperimentDao().getByAc(experiment.getAc());

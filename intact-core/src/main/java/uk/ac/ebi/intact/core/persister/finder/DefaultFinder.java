@@ -25,6 +25,7 @@ import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.model.util.ExperimentUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.dao.InteractionDao;
@@ -135,13 +136,21 @@ public class DefaultFinder implements Finder {
      * @param experiment the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    protected String findAcForExperiment( Experiment experiment ) {
+    protected String findAcForExperiment(Experiment experiment) {
+        String pubId = ExperimentUtils.getPubmedId(experiment);
 
-        // TODO add primary-reference
-        Query query = getEntityManager().createQuery( "select exp.ac from Experiment exp where exp.shortLabel = :shortLabel" );
-        query.setParameter( "shortLabel", experiment.getShortLabel() );
+        Query query;
 
-        return getFirstAcForQuery( query, experiment );
+        if (pubId != null) {
+            query = getEntityManager().createQuery("select exp.ac from Experiment exp " +
+                                                   "left join exp.xrefs as xref  where exp.publication.shortLabel = :pubId or xref.primaryId = :pubId");
+            query.setParameter("pubId", pubId);
+        } else {
+            query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel");
+            query.setParameter("shortLabel", experiment.getShortLabel());
+        }
+
+        return getFirstAcForQuery(query, experiment);
     }
 
     /**
