@@ -247,7 +247,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                     if (copied) {
                         statistics.addMerged(managedObject);
                         synchronizeChildren( managedObject );
-                    }
+                    } 
                 } catch (LazyInitializationException e) {
                     log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
                     ao = managedObject;
@@ -415,11 +415,12 @@ public class CorePersister implements Persister<AnnotatedObject> {
             // exception: features are persisted by cascade from the component, so they can be ignored
             if ( log.isWarnEnabled() && ao.getAc() != null && !(ao instanceof Feature) ) {
                 log.warn( "Object to persist should NOT have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
-            }
+            } else {
 
             daoFactory.getBaseDao().persist( ao );
             statistics.addPersisted(ao);
             logPersistence( ao );
+            }
         }
 
         if ( log.isDebugEnabled() ) {
@@ -538,12 +539,12 @@ public class CorePersister implements Persister<AnnotatedObject> {
         interaction.setComponents( synchronizeCollection( interaction.getComponents() ) );
         interaction.setBioSource( synchronize( interaction.getBioSource() ) );
         interaction.setExperiments( synchronizeCollection( interaction.getExperiments() ) );
-        interaction.setConfidences( synchronizeConfidences( interaction.getConfidences() ));
+        interaction.setConfidences( synchronizeConfidences( interaction.getConfidences(), interaction ));
 
         synchronizeAnnotatedObjectCommons( interaction );
     }
 
-    private Collection<Confidence> synchronizeConfidences( Collection<Confidence> confidencesToSynchronize ) {
+    private Collection<Confidence> synchronizeConfidences( Collection<Confidence> confidencesToSynchronize, Interaction parentInteraction ) {
         List<Confidence> confidences = new ArrayList<Confidence>(confidencesToSynchronize.size());
 
         for ( Confidence confidence : confidencesToSynchronize ) {
@@ -552,6 +553,8 @@ public class CorePersister implements Persister<AnnotatedObject> {
              }
 
             confidence.setCvConfidenceType( synchronize (confidence.getCvConfidenceType()));
+            confidence.setInteraction((InteractionImpl)parentInteraction);
+
             synchronizeBasicObjectCommons(confidence);
 
             confidences.add(confidence);
@@ -595,17 +598,31 @@ public class CorePersister implements Persister<AnnotatedObject> {
         feature.setComponent( synchronize( feature.getComponent() ) );
         feature.setCvFeatureIdentification( synchronize( feature.getCvFeatureIdentification() ) );
         feature.setCvFeatureType( synchronize( feature.getCvFeatureType() ) );
-        for ( Range range : feature.getRanges() ) {
-            synchronizeRange( range );
-        }
+        feature.setRanges( synchronizeRanges( feature.getRanges(), feature ));
+
         synchronizeAnnotatedObjectCommons( feature );
     }
 
-    private void synchronizeRange( Range range ) {
-        range.setFromCvFuzzyType( synchronize( range.getFromCvFuzzyType() ) );
-        range.setToCvFuzzyType( synchronize( range.getToCvFuzzyType() ) );
-        
-        synchronizeBasicObjectCommons(range);
+    private Collection<Range> synchronizeRanges( Collection<Range> rangesToSychronize, Feature parentFeature ) {
+        List<Range> ranges = new ArrayList<Range>(rangesToSychronize.size());
+
+        for ( Range range : rangesToSychronize ) {
+             if (range.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getRangeDao().isTransient(range)) {
+                  range = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getRangeDao().getByAc(range.getAc());
+             }
+
+            range.setFromCvFuzzyType( synchronize( range.getFromCvFuzzyType() ) );
+            range.setToCvFuzzyType( synchronize( range.getToCvFuzzyType() ) );
+
+            synchronizeBasicObjectCommons(range);
+
+            range.setFeature(parentFeature);
+
+            ranges.add(range);
+        }
+
+        return ranges;
+
     }
 
     private void synchronizeCvObject( CvObject cvObject ) {
@@ -641,13 +658,13 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
         Collection synchedXrefs = new ArrayList( ao.getXrefs().size() );
         for ( Xref xref : ao.getXrefs() ) {
-            synchedXrefs.add( synchronizeXrefs( xref ) );
+            synchedXrefs.add( synchronizeXref( xref, ao ) );
         }
         ao.setXrefs( synchedXrefs );
 
         Collection synchedAliases = new ArrayList( ao.getAliases().size() );
         for ( Alias alias : ao.getAliases() ) {
-            synchedAliases.add( synchronizeAlias( alias ) );
+            synchedAliases.add( synchronizeAlia( alias, ao ) );
         }
         ao.setAliases( synchedAliases );
 
@@ -666,17 +683,19 @@ public class CorePersister implements Persister<AnnotatedObject> {
         }
     }
 
-    private Xref synchronizeXrefs( Xref xref ) {
+    private Xref synchronizeXref( Xref xref, AnnotatedObject parent ) {
         xref.setCvDatabase( synchronize( xref.getCvDatabase() ) );
         xref.setCvXrefQualifier( synchronize( xref.getCvXrefQualifier() ) );
+        xref.setParent(parent);
 
         synchronizeBasicObjectCommons( xref );
 
         return xref;
     }
 
-    private Alias synchronizeAlias( Alias alias ) {
+    private Alias synchronizeAlia( Alias alias, AnnotatedObject parent ) {
         alias.setCvAliasType( synchronize( alias.getCvAliasType() ) );
+        alias.setParent(parent);
 
         synchronizeBasicObjectCommons( alias );
 

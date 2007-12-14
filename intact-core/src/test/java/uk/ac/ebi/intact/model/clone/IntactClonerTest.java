@@ -105,13 +105,15 @@ public class IntactClonerTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void clone_linkParentChildrenOnUpdate() throws Exception {
+    public void clone_cloneCvObjectTree() throws Exception {
          CvDatabase citation = getMockBuilder().createCvObject( CvDatabase.class, "MI:0444", "database citation");
          CvDatabase psiMi = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
 
          citation.addChild(psiMi);
 
          IntactCloner cloner = new IntactCloner();
+         cloner.setCloneCvObjectTree(true);
+
          CvDatabase citationClone = cloner.clone(citation);
 
          Assert.assertEquals(1, citationClone.getChildren().size());

@@ -172,7 +172,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      *
      * @return A List of Ranges (expected to be non-empty)
      */
-    @OneToMany( mappedBy = "feature", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "feature", cascade = {CascadeType.ALL} )
     public Collection<Range> getRanges() {
         return ranges;
     }

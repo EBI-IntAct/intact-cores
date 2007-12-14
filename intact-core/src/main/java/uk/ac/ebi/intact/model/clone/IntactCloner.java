@@ -37,6 +37,7 @@ public class IntactCloner {
     private static final Log log = LogFactory.getLog( IntactCloner.class );
 
     private boolean excludeACs;
+    private boolean cloneCvObjectTree;
 
     private class ClonerManager<T extends IntactObject> {
 
@@ -355,9 +356,12 @@ public class IntactCloner {
         clone.setBioSource(clone( interactor.getBioSource() ));
         clone.setCvInteractorType(clone( interactor.getCvInteractorType() ));
 
-        for ( Component component : interactor.getActiveInstances() ) {
-            clone.addActiveInstance(clone( component ));
-        }
+        // This is commented, because it is unusuable in production environments, where
+        // one interactions may be present in many components; these components have more interactions
+        // and that can only end in a memory problem
+//        for ( Component component : interactor.getActiveInstances() ) {
+//            clone.addActiveInstance(clone( component ));
+//        }
 
         return clone;
     }
@@ -437,15 +441,17 @@ public class IntactCloner {
             throw new IntactClonerException( "An error occured upon cloning a " + clazz.getSimpleName(), e );
         }
 
-        if (cvObject instanceof CvDagObject) {
-            CvDagObject cvDag = (CvDagObject) cvObject;
-            CvDagObject cloneDag = (CvDagObject) clone;
+        if (cloneCvObjectTree) {
+            if (cvObject instanceof CvDagObject) {
+                CvDagObject cvDag = (CvDagObject) cvObject;
+                CvDagObject cloneDag = (CvDagObject) clone;
 
-            for (CvDagObject parent : cvDag.getParents()) {
-                cloneDag.getParents().add(clone(parent));
-            }
-            for (CvDagObject child : cvDag.getChildren()) {
-                cloneDag.getChildren().add(clone(child));
+                for (CvDagObject parent : cvDag.getParents()) {
+                    cloneDag.getParents().add(clone(parent));
+                }
+                for (CvDagObject child : cvDag.getChildren()) {
+                    cloneDag.getChildren().add(clone(child));
+                }
             }
         }
 
@@ -508,5 +514,13 @@ public class IntactCloner {
 
     public void setExcludeACs(boolean excludeACs) {
         this.excludeACs = excludeACs;
+    }
+
+    public boolean isCloneCvObjectTree() {
+        return cloneCvObjectTree;
+    }
+
+    public void setCloneCvObjectTree(boolean cloneCvObjectTree) {
+        this.cloneCvObjectTree = cloneCvObjectTree;
     }
 }
