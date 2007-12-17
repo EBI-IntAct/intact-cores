@@ -25,7 +25,7 @@ import java.util.Properties;
  * @version $Id$
  * @since <pre>04/08/2006</pre>
  */
-public abstract class IntactSession {
+public abstract class IntactSession implements Serializable{
 
     private static final Log log = LogFactory.getLog( IntactSession.class );
 
