@@ -4,9 +4,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
 
 /**
  * DefaultFinder Tester.
@@ -94,16 +95,14 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void findAcForExperiment() {
+    public void findAcForExperiment() throws Exception {
         final Experiment e = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" );
         PersisterHelper.saveOrUpdate( e );
 
-        String ac = finder.findAc( getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" ) );
-        Assert.assertNotNull( ac );
-        Assert.assertEquals( e.getAc(), ac );
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
 
-        // TODO don't we want to search by primary-reference ????
-        ac = finder.findAc( getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123" ) );
+        String ac = finder.findAc( cloner.clone(e) );
         Assert.assertNotNull( ac );
         Assert.assertEquals( e.getAc(), ac );
 

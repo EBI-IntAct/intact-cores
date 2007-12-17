@@ -226,9 +226,14 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
     protected <X extends Xref, A extends Alias> void copyAnotatedObjectCommons( AnnotatedObject<X, A> source,
                                                                                 AnnotatedObject<X, A> target ) {
-        copyProperty(source, "shortLabel", target);
-        copyProperty(source, "fullName", target);
-        copyProperty(source, "owner", target);
+
+        // if the source does not have an AC, we should not update the target shortLabel, fullName and owner
+        // as it does not make much sense
+        if (source.getAc() != null) {
+            copyProperty(source, "shortLabel", target);
+            copyProperty(source, "fullName", target);
+            copyProperty(source, "owner", target);
+        }
 
         copyXrefCollection( source.getXrefs(), target.getXrefs() );
         copyAliasCollection( source.getAliases(), target.getAliases() );

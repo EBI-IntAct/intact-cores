@@ -48,7 +48,7 @@ public class ExperimentDaoTest extends IntactBasicTestCase {
         Experiment exp1 = mockBuilder.createExperimentRandom( "thoden-1999-1", 1 );
         Experiment exp2 = mockBuilder.createExperimentRandom( "kerrien-2007-1", 2 );
         Experiment exp3 = mockBuilder.createExperimentRandom( "baranda-2007-1", 3 );
-        Experiment exp4 = mockBuilder.createExperimentEmpty( "lala-2014-5" );
+        Experiment exp4 = mockBuilder.createExperimentEmpty( "lala-2014-5", "1234567" );
         Experiment exp5 = mockBuilder.createExperimentEmpty( "guru-1974-1" );
         Experiment exp6 = mockBuilder.createExperimentEmpty( "lolo-2001-1" );
 
@@ -138,5 +138,11 @@ public class ExperimentDaoTest extends IntactBasicTestCase {
         final Experiment e2 = edao.getByAc( ac );
         Assert.assertNotNull( e2 );
         Assert.assertTrue( e2.getAnnotations().size() > eSize );
+    }
+
+    @Test
+    public void getByPubIdAndLabelLike() throws Exception {
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().getByPubIdAndLabelLike("1234567", "lala-2014%").size());
+        Assert.assertEquals(0, getDaoFactory().getExperimentDao().getByPubIdAndLabelLike("1234567", "lala-2014").size()); 
     }
 }

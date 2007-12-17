@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
 import uk.ac.ebi.intact.business.IntactTransactionException;
+import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
@@ -92,17 +93,27 @@ public class CorePersister implements Persister<AnnotatedObject> {
     // Implement Persister
 
     public void saveOrUpdate( AnnotatedObject ao ) {
+        final DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
 
         boolean inTransaction = IntactContext.getCurrentInstance().getDataContext().isTransactionActive();
 
         if ( !inTransaction ) IntactContext.getCurrentInstance().getDataContext().beginTransaction();
 
-        synchronize( ao );
-        commit();
+        boolean originalAutoFlush = dataContext.getDaoFactory().getDataConfig().isAutoFlush();
+        dataContext.getDaoFactory().getDataConfig().setAutoFlush(false);
+
+        try {
+            synchronize( ao );
+            commit();
+        } finally {
+           dataContext.getDaoFactory().getDataConfig().setAutoFlush(originalAutoFlush); 
+        }
 
         reload( ao );
 
         if ( !inTransaction ) commitTransactionAndRollbackIfNecessary();
+
+
     }
 
     protected void commitTransactionAndRollbackIfNecessary() throws PersisterException {
@@ -445,6 +456,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
         }
 
         try {
+            log.debug( "Invoking an EntityManager flush..." );
             daoFactory.getEntityManager().flush();
         } catch ( Throwable t ) {
             StringBuilder sb = new StringBuilder();

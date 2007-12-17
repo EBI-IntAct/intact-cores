@@ -150,7 +150,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
         final String expPrefix = "lala-2007-4";
 
         String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, null);
-        Assert.assertEquals("lala-2007-4", syncedLabel);
+        Assert.assertEquals("lala-2007-1", syncedLabel);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -168,7 +168,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
         MockIntactContext.initMockContext();
         MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
             @Override
-            public List<Experiment> getByPubIdAndLabelLike(String pubId, String labelLike) {
+            public List<Experiment> getByShortLabelLike(String labelLike) {
                 return Arrays.asList(
                      getMockBuilder().createExperimentEmpty("lala-2007-1", "0"),
                      getMockBuilder().createExperimentEmpty("lala-2007a-1", "1"),
@@ -180,7 +180,6 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
 
         String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, pubId);
 
-        System.out.println(syncedLabel);
         Assert.assertEquals("lala-2007c-1", syncedLabel);
 
         IntactContext.getCurrentInstance().close();
@@ -194,7 +193,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
         MockIntactContext.initMockContext();
         MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
             @Override
-            public List<Experiment> getByPubIdAndLabelLike(String pubId, String labelLike) {
+            public List<Experiment> getByShortLabelLike(String labelLike) {
                 return Arrays.asList(
                      getMockBuilder().createExperimentEmpty("lala-2007-1", "0"),
                      getMockBuilder().createExperimentEmpty("lala-2007a-1", "1234567")
@@ -204,7 +203,6 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
 
         String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, pubId);
 
-        System.out.println(syncedLabel);
         Assert.assertEquals("lala-2007a-2", syncedLabel);
 
         IntactContext.getCurrentInstance().close();
@@ -218,7 +216,7 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
         MockIntactContext.initMockContext();
         MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao(){
             @Override
-            public List<Experiment> getByPubIdAndLabelLike(String pubId, String labelLike) {
+            public List<Experiment> getByShortLabelLike(String labelLike) {
                 return Arrays.asList(
                      getMockBuilder().createExperimentEmpty("lala-2005-1", "0"),
                      getMockBuilder().createExperimentEmpty("lala-2005a-1", "1234567"),
@@ -229,7 +227,6 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
 
         String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, pubId);
 
-        System.out.println(syncedLabel);
         Assert.assertEquals("lala-2007-2", syncedLabel);
 
         IntactContext.getCurrentInstance().close();

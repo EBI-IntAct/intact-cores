@@ -573,13 +573,18 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void persistDuplicated() throws Exception {
-        Interaction interaction1 = getMockBuilder().createInteractionRandomBinary();
+        //IntactContext.getCurrentInstance().close();
+        //IntactContext.initContext("intact-core-pg", new StandaloneSession());
+        
+        Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
 
         final IntactCloner intactCloner = new IntactCloner();
         intactCloner.setExcludeACs(true);
 
         Interaction clonedInteraction1 = intactCloner.clone(interaction1);
         Assert.assertNull(clonedInteraction1.getAc());
+
+        Assert.assertEquals(interaction1, clonedInteraction1);
 
         PersisterStatistics stats = PersisterHelper.saveOrUpdate(interaction1, clonedInteraction1);
 

@@ -15,13 +15,14 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactEntry;
 import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
  * Helper class to reduce the code needed to save or update an Annotated object.
@@ -51,14 +52,25 @@ public class PersisterHelper {
     }
 
     public static PersisterStatistics saveOrUpdate( CorePersister corePersister, AnnotatedObject... annotatedObjects ) throws PersisterException {
-        boolean inTransaction = IntactContext.getCurrentInstance().getDataContext().isTransactionActive();
+        final DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
+        boolean inTransaction = dataContext.isTransactionActive();
 
-        if ( !inTransaction ) IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+        if ( !inTransaction ) dataContext.beginTransaction();
 
-        for ( AnnotatedObject ao : annotatedObjects ) {
-            corePersister.synchronize( ao );
+        // during synchronization-persistence there is a lot of things going on, which involve
+        // reading the database and persisting at the same time, but only flushing at the very end.
+        // If autoflush, the entity manager will attempt a flush when not everything is ready, and it will fail.
+        boolean originalAutoFlush = dataContext.getDaoFactory().getDataConfig().isAutoFlush();
+        dataContext.getDaoFactory().getDataConfig().setAutoFlush(false);
+
+        try {
+            for ( AnnotatedObject ao : annotatedObjects ) {
+                corePersister.synchronize( ao );
+            }
+            corePersister.commit();
+        } finally {
+            dataContext.getDaoFactory().getDataConfig().setAutoFlush(originalAutoFlush);
         }
-        corePersister.commit();
 
         // we reload the annotated objects by its AC
         // note: if an object does not have one, it is probably a duplicate

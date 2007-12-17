@@ -281,27 +281,30 @@ public class DaoFactory implements Serializable {
     }
 
     public EntityManager getEntityManager() {
-            if (currentEntityManager == null || !currentEntityManager.isOpen()) {
-                if (log.isDebugEnabled()) log.debug("Creating new EntityManager");
+        if (currentEntityManager == null || !currentEntityManager.isOpen()) {
+            if (log.isDebugEnabled()) log.debug("Creating new EntityManager");
 
-                if (dataConfig == null) {
-                    throw new IllegalStateException("No DataConfig found");
-                }
-
-                EntityManagerFactory entityManagerFactory = dataConfig.getEntityManagerFactory();
-
-                if (entityManagerFactory == null) {
-                    throw new IllegalStateException("Null EntityManagerFactory for DataConfig with name: "+dataConfig.getName());
-                }
-
-                currentEntityManager = entityManagerFactory.createEntityManager();
-
-                if (!dataConfig.isAutoFlush()) {
-                    if (log.isDebugEnabled()) log.debug("Data-config is not autoflush. Using flush mode: "+ FlushModeType.COMMIT);
-                    currentEntityManager.setFlushMode(FlushModeType.COMMIT);
-                }
+            if (dataConfig == null) {
+                throw new IllegalStateException("No DataConfig found");
             }
-            return currentEntityManager;
+
+            EntityManagerFactory entityManagerFactory = dataConfig.getEntityManagerFactory();
+
+            if (entityManagerFactory == null) {
+                throw new IllegalStateException("Null EntityManagerFactory for DataConfig with name: " + dataConfig.getName());
+            }
+
+            currentEntityManager = entityManagerFactory.createEntityManager();
+
+        }
+
+        if (!dataConfig.isAutoFlush()) {
+            if (log.isDebugEnabled())
+                log.debug("Data-config is not autoflush. Using flush mode: " + FlushModeType.COMMIT);
+            currentEntityManager.setFlushMode(FlushModeType.COMMIT);
+        }
+
+        return currentEntityManager;
     }
 
     public void setEntityManager(EntityManager entityManager) {
@@ -344,5 +347,9 @@ public class DaoFactory implements Serializable {
 
     public IntactTransaction getCurrentTransaction() {
         return currentTransaction;
+    }
+
+    public DataConfig getDataConfig() {
+        return dataConfig;
     }
 }

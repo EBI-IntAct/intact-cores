@@ -28,7 +28,6 @@ import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.model.util.ExperimentUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
@@ -143,9 +142,18 @@ public class DefaultFinder implements Finder {
 
         if (pubId != null) {
             query = getEntityManager().createQuery("select exp.ac from Experiment exp " +
-                                                   "left join exp.xrefs as xref  where exp.publication.shortLabel = :pubId or xref.primaryId = :pubId");
+                                                   "left join exp.xrefs as xref  where (exp.publication.shortLabel = :pubId or xref.primaryId = :pubId) and " +
+                                                   "exp.bioSource.taxId = :taxId and " +
+                                                   "exp.cvIdentification.miIdentifier = :participantDetMethodMi and " +
+                                                   "exp.cvInteraction.miIdentifier = :interactionTypeMi");
             query.setParameter("pubId", pubId);
+            query.setParameter("taxId", experiment.getBioSource().getTaxId());
+            query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getMiIdentifier());
+            query.setParameter("interactionTypeMi", experiment.getCvInteraction().getMiIdentifier());
+
         } else {
+            log.warn("Experiment without publication, getting its AC using the shortLabel: "+experiment.getShortLabel());
+            
             query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel");
             query.setParameter("shortLabel", experiment.getShortLabel());
         }
@@ -162,12 +170,10 @@ public class DefaultFinder implements Finder {
     protected String findAcForInteraction( Interaction interaction ) {
         // replace all this eventually by just using the CRC
 
-        InteractionDao interactionDao = getDaoFactory().getInteractionDao();
-
         CrcCalculator crcCalculator = new CrcCalculator();
         String interactionCrc = crcCalculator.crc64( interaction );
 
-        Query query = getEntityManager().createQuery("select ac from InteractionImpl where crc = :crc");
+        Query query = getEntityManager().createQuery("select i.ac from InteractionImpl i where i.crc = :crc");
         query.setParameter("crc", interactionCrc);
 
         List<String> acs = query.getResultList();
@@ -353,7 +359,9 @@ public class DefaultFinder implements Finder {
     }
 
     protected EntityManager getEntityManager() {
-        return getDaoFactory().getEntityManager();
+        EntityManager em = getDaoFactory().getEntityManager();
+        //em.setFlushMode(FlushModeType.COMMIT);
+        return em;
     }
 
     protected DaoFactory getDaoFactory() {

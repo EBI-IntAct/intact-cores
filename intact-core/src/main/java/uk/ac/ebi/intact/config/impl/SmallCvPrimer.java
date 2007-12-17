@@ -48,6 +48,9 @@ public class SmallCvPrimer implements CvPrimer {
     }
 
     public void createCVs() {
+        boolean initialAutoflush = getDaoFactory().getDataConfig().isAutoFlush();
+        getDaoFactory().getDataConfig().setAutoFlush(false);
+
         IntactContext intactContext = IntactContext.getCurrentInstance();
 
         // Note, these object are being created is they don't exist yet. They are part
@@ -111,6 +114,7 @@ public class SmallCvPrimer implements CvPrimer {
         getCvObject(CvTopic.class, CvTopic.OBSOLETE, CvTopic.OBSOLETE_MI_REF);
 
         //intactContext.getDataContext().flushSession();
+        getDaoFactory().getDataConfig().setAutoFlush(initialAutoflush);
     }
 
     /**

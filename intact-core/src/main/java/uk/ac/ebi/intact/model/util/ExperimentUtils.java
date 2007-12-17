@@ -130,14 +130,17 @@ public class ExperimentUtils {
     public static String syncShortLabelWithDb(String shortLabel, String pubmedId) {
         String syncedLabel = null;
 
-        if (matchesSyncedLabel(shortLabel)) {
-            syncedLabel = shortLabel;
-        } else  if (matchesMotSyncedLabel(shortLabel)) {
+        if (!(matchesMotSyncedLabel(shortLabel) || matchesSyncedLabel(shortLabel))) {
+            throw new IllegalArgumentException("Short label with wrong format: "+shortLabel);
+        }
+
+        // get only the author-YYYY part (truncate any prefix)
+        shortLabel = shortLabel.substring(0, shortLabel.indexOf("-")+5);
 
             ExperimentDao experimentDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getExperimentDao();
 
             if (pubmedId != null) {
-                List<Experiment> experiments = experimentDao.getByPubIdAndLabelLike(pubmedId, shortLabel+"%");
+                Collection<Experiment> experiments = experimentDao.getByShortLabelLike(shortLabel+"%");
 
                 ExperimentShortlabelGenerator generator = new ExperimentShortlabelGenerator();
 
@@ -198,9 +201,9 @@ public class ExperimentUtils {
                 syncedLabel = shortLabel + "-" + (maxSuffix + 1);
             }
 
-        } else {
-            throw new IllegalArgumentException("Short label with wrong format: "+shortLabel);
-        }
+        //} else {
+        //    throw new IllegalArgumentException("Short label with wrong format: "+shortLabel);
+        //}
 
         return syncedLabel;
     }

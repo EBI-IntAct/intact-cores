@@ -30,7 +30,7 @@ public abstract class DataConfig<T, C> {
 
     private IntactSession session;
 
-    private boolean autoFlush;
+    private boolean autoFlush = true;
 
     public DataConfig( IntactSession session ) {
         this.session = session;
