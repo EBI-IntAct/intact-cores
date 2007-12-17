@@ -229,12 +229,14 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     @PrePersist
     public void onPrePersist() {
+        super.onPrePersist();
 //        calculateCrc();
         synchronizeShortLabel();
     }
 
     @PreUpdate
     public void onPreUpdate() {
+        super.onPreUpdate();
 //        calculateCrc();
     }
 

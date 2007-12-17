@@ -12,9 +12,7 @@ import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -90,6 +88,25 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
         this.shortLabel = AnnotatedObjectUtils.prepareShortLabel( shortLabel );
         setOwner( owner );
     }
+
+    ////////////////////////////////////////
+    // Event listeners
+    @PrePersist
+    public void onPrePersist() {
+        prepareShortLabel();
+    }
+
+    @PreUpdate
+    public void onPreUpdate() {
+        prepareShortLabel();
+    }
+
+    protected void prepareShortLabel() {
+        if (shortLabel != null && shortLabel.length() > 0) {
+            shortLabel = shortLabel.toLowerCase();
+        }
+    }
+
     // Class methods
 
     ///////////////////////////////////////

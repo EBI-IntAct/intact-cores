@@ -1,11 +1,11 @@
 package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.BioSource;
+import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.CvTissue;
 
 /**
  * TODO comment this
@@ -53,6 +53,14 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase
         Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(7, getDaoFactory().getXrefDao().countAll());
+    }
+
+    @Test
+    public void persist_alwaysLowerCase() throws Exception {
+        BioSource bs1 = getMockBuilder().createBioSource( 9606, "HUMAN" );
+        PersisterHelper.saveOrUpdate( bs1 );
+
+        Assert.assertEquals("human", getDaoFactory().getBioSourceDao().getByTaxonIdUnique("9606").getShortLabel());
     }
 
     private Component reloadByAc(Component interaction) {

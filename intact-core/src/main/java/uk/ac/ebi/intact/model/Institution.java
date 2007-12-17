@@ -68,6 +68,14 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
     }
 
     ///////////////////////////////////////
+    // entity listeners
+
+    @Override
+    protected void prepareShortLabel() {
+        // do not modify institution short labels
+    }
+
+    ///////////////////////////////////////
     // access methods for attributes
 
 
