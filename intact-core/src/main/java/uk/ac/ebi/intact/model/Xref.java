@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.validator.Length;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
 import java.util.Iterator;
@@ -305,7 +306,7 @@ public abstract class Xref extends BasicObjectImpl {
         if ( !primaryId.equals( xref.primaryId ) ) return false;
         
         if ( cvDatabase != null && xref.getCvDatabase() != null) {
-            if ( !cvDatabase.getShortLabel().equals( xref.cvDatabase.getShortLabel() ) ) return false;
+            if ( !CvObjectUtils.getIdentity(cvDatabase).equals( CvObjectUtils.getIdentity(xref.cvDatabase)) ) return false;
         } else if (cvDatabase == null || xref.getCvDatabase() == null) {
         	return false;
         }
@@ -314,7 +315,7 @@ public abstract class Xref extends BasicObjectImpl {
         q += (cvXrefQualifier != null ? 1 : 0);
         q += (xref.getCvXrefQualifier() != null ? 1 : 0);
         if ( q == 2) {
-        	if ( !cvXrefQualifier.getShortLabel().equals( xref.cvXrefQualifier.getShortLabel() ) ) return false;
+        	if ( !CvObjectUtils.getIdentity(cvXrefQualifier).equals( CvObjectUtils.getIdentity(xref.cvXrefQualifier) ) ) return false;
         } else if ( q == 1 ) {
             return false;
         }

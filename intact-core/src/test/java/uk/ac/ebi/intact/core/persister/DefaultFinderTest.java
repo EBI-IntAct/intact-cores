@@ -152,15 +152,23 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
         PersisterHelper.saveOrUpdate( p );
 
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
         // same xref, different shorltabel -> should work
         String ac = finder.findAc( getMockBuilder().createProtein( "P12345", "abcd" ) );
         Assert.assertNotNull( ac );
         Assert.assertEquals( p.getAc(), ac );
 
-        // different xref, same label -> should work
-        ac = finder.findAc( getMockBuilder().createProtein( "Q98765", "foo" ) );
+        // no xref, same label -> should work
+        final Protein protNoXref = getMockBuilder().createProtein("removed", "foo");
+        protNoXref.getXrefs().clear();
+        ac = finder.findAc(protNoXref);
+
         Assert.assertNotNull( ac );
         Assert.assertEquals( p.getAc(), ac );
+
+        // different uniprot id and same shortlabel
+        Assert.assertNull( finder.findAc( getMockBuilder().createProtein( "Q98765", "foo" ) ) );
 
         // different uniprot id and shortlabel
         Assert.assertNull( finder.findAc( getMockBuilder().createProtein( "Q98765", "bar" ) ) );
@@ -186,24 +194,52 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         Assert.assertEquals( sm.getAc(), ac );
 
         // different xref, same shorltabel -> should work
-        ac = finder.findAc( getMockBuilder().createSmallMolecule( "CHEBI:9999", "nice molecule" ) );
-        Assert.assertNotNull( ac );
-        Assert.assertEquals( sm.getAc(), ac );
+        Assert.assertNull( finder.findAc( getMockBuilder().createSmallMolecule( "CHEBI:9999", "nice molecule" ) ));
 
         // different xref, different shorltabel -> should NOT work
         Assert.assertNull( finder.findAc( getMockBuilder().createSmallMolecule( "CHEBI:555555", " another nice molecule" ) ) );
     }
 
     @Test
-    public void findAcForInteractor_shortlabel() {
-        final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
-        PersisterHelper.saveOrUpdate( p );
+    public void findAcForInteractor_multipleIdentities() throws Exception {
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
 
-        final String ac = finder.findAc( getMockBuilder().createProtein( "Q99999", "foo" ) );
+        // p has one xref to uniprot
+        final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
+        
+        // p2 has two identity xrefs to uniprot
+        final Protein p2 = getMockBuilder().createProtein( "P12345", "foo" );
+        p2.addXref(getMockBuilder().createIdentityXrefUniprot(p2, "Q54321"));
+        PersisterHelper.saveOrUpdate( p, p2 );
+
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(3, getDaoFactory().getXrefDao(InteractorXref.class).countAll());
+
+        // one xref - P12345 - should be there
+        String ac = finder.findAc( getMockBuilder().createProtein( "P12345", "abcd" ) );
         Assert.assertNotNull( ac );
         Assert.assertEquals( p.getAc(), ac );
 
-        Assert.assertNull( finder.findAc( getMockBuilder().createProtein( "Q98765", "bla" ) ) );
+        // one xref - Q54321 - should not be found, as only P12345+Q54321 should be found
+        ac = finder.findAc( getMockBuilder().createProtein( "Q54321", "abcd" ) );
+        Assert.assertNull( ac );
+
+        // two xrefs - P12345+Q54321 should be found
+        final Protein p2Clone = cloner.clone(p2);
+        ac = finder.findAc(p2Clone);
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( p2.getAc(), ac );
+
+        // two xrefs - P12345+Q01010 does not exist
+        final Protein protNotExist = getMockBuilder().createProtein( "P12345", "guru" );
+        protNotExist.addXref(getMockBuilder().createIdentityXrefUniprot(protNotExist, "Q01010"));
+        Assert.assertNull( finder.findAc( protNotExist ) );
+
+        // two xrefs - P12345+Q01010 does not exist but shortLabel does - should not find anything
+        final Protein protNotExist2 = getMockBuilder().createProtein( "P12345", "foo" );
+        protNotExist2.addXref(getMockBuilder().createIdentityXrefUniprot(protNotExist2, "Q01010"));
+        Assert.assertNull( finder.findAc( protNotExist2 ) );
     }
 
     @Test

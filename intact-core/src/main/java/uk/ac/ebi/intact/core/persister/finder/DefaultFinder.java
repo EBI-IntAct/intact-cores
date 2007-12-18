@@ -17,25 +17,16 @@ package uk.ac.ebi.intact.core.persister.finder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.NonUniqueResultException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.Finder;
-import uk.ac.ebi.intact.core.persister.FinderException;
-import uk.ac.ebi.intact.core.persister.UndefinedCaseException;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.CrcCalculator;
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.model.util.ExperimentUtils;
-import uk.ac.ebi.intact.model.util.XrefUtils;
+import uk.ac.ebi.intact.model.util.*;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -200,66 +191,39 @@ public class DefaultFinder implements Finder {
     protected <T extends InteractorImpl> String findAcForInteractor( T interactor ) {
         String ac = null;
 
-        // BUG - if a small molecule have the same Xref as a protein is searched - protein might be returned
-        final InteractorDao<T> interactorDao = getDaoFactory().getInteractorDao( ( Class<T> ) interactor.getClass() );
+        List<InteractorXref> identities = ProteinUtils.getIdentityXrefs(interactor, true);
 
-        // 1. Try to fetch first the object using the uniprot ID
-        Collection<InteractorXref> identityXrefs = new ArrayList<InteractorXref>();
+        if (!identities.isEmpty()) {
 
-        InteractorXref uniprotXref = XrefUtils.getIdentityXref( interactor, CvDatabase.UNIPROT_MI_REF );
+            // get the first xref and retrieve all the interactors with that xref. We will filter later
+            Query query = getEntityManager().createQuery("select i from " + CgLibUtil.removeCglibEnhanced(interactor.getClass()).getName() + " i " +
+                                                         "join i.xrefs as xref " +
+                                                         "where xref.primaryId = :primaryId");
+            query.setParameter("primaryId", identities.iterator().next().getPrimaryId());
 
-        if ( uniprotXref != null ) {
-            identityXrefs.add( uniprotXref );
+            List<Interactor> interactors = query.getResultList();
+
+            for (Interactor interactorCandidate : interactors) {
+               if (ProteinUtils.containTheSameIdentities(interactor, interactorCandidate)) {
+                   ac = interactorCandidate.getAc();
+                   break;
+               }
+            }
         } else {
-            // 2. try to fetch first the object using the primary ID
-            identityXrefs = XrefUtils.getIdentityXrefs( interactor );
+            log.warn("Interactor without identity xref/s - will try to find the AC using the shortLabel: " + interactor);
 
-            // remove Xrefs to intact, mint or dip
-            for ( Iterator<InteractorXref> xrefIterator = identityXrefs.iterator(); xrefIterator.hasNext(); ) {
-                InteractorXref interactorXref = xrefIterator.next();
-
-                String databaseMi = interactorXref.getCvDatabase().getMiIdentifier();
-    
-                if ( databaseMi != null ) {
-
-                    if ( CvDatabase.INTACT_MI_REF.equals( databaseMi ) ||
-                         CvDatabase.MINT_MI_REF.equals( databaseMi ) ||
-                         CvDatabase.DIP_MI_REF.equals( databaseMi ) ) {
-                        xrefIterator.remove();
-                    }
-                }
-            }
-
-            if ( identityXrefs.size() > 1 ) {
-                throw new UndefinedCaseException( "Interactor with more than one non-uniprot identity xref: " + identityXrefs );
-            }
-        }
-
-        if ( identityXrefs.size() == 1 ) {
-            final String primaryId = identityXrefs.iterator().next().getPrimaryId();
-            Interactor existingObject = null;
-            try {
-                // db filter ?
-                existingObject = interactorDao.getByXref( primaryId );
-            } catch ( NonUniqueResultException e ) {
-                throw new FinderException( "Query for '" + primaryId + "' returned more than one xref: " + interactorDao.getByXrefLike( primaryId ) );
-            }
-
-            if ( existingObject != null ) {
-                if ( log.isDebugEnabled() ) log.debug( "Fetched existing object from the database: " + primaryId );
-                ac = existingObject.getAc();
-            }
-        }
-
-        if ( ac == null ) {
-            Interactor existingObject = interactorDao.getByShortLabel( interactor.getShortLabel() );
-            if ( existingObject != null ) {
+            // BUG - if a small molecule have the same Xref as a protein is searched - protein might be returned
+            final InteractorDao<T> interactorDao = getDaoFactory().getInteractorDao((Class<T>) interactor.getClass());
+            Interactor existingObject = interactorDao.getByShortLabel(interactor.getShortLabel());
+            if (existingObject != null) {
                 ac = existingObject.getAc();
             }
         }
 
         return ac;
     }
+
+    
 
     /**
      * Finds a biosource based on its properties.

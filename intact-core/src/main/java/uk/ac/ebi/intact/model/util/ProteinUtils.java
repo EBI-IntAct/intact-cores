@@ -17,7 +17,7 @@ package uk.ac.ebi.intact.model.util;
 
 import uk.ac.ebi.intact.model.*;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Utility methods for Proteins
@@ -116,5 +116,69 @@ public class ProteinUtils {
         }
 
         return geneName;
+    }
+
+    /**
+     * Get the Xref identities for an interactor
+     * @param interactor
+     * @return
+     */
+    public static List<InteractorXref> getIdentityXrefs(Interactor interactor) {
+        return getIdentityXrefs(interactor, false);
+    }
+
+    /**
+     * Get the Xref identities for an interactor, allowing the exclude the identities that come from the IMEx partners (intact, mint and dip)
+     * @param interactor
+     * @param excludeIdentitiesFromImexPartners
+     * @return
+     */
+    public static List<InteractorXref> getIdentityXrefs(Interactor interactor, boolean excludeIdentitiesFromImexPartners) {
+        List<InteractorXref> identities = new ArrayList<InteractorXref>();
+
+        for (InteractorXref xref : interactor.getXrefs()) {
+            if (excludeIdentitiesFromImexPartners) {
+                final String databaseMi = xref.getCvDatabase().getMiIdentifier();
+                if (!(CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
+                      CvDatabase.MINT_MI_REF.equals(databaseMi) ||
+                      CvDatabase.DIP_MI_REF.equals(databaseMi))) {
+
+                    identities.add(xref);
+                }
+            }
+        }
+        return identities;
+    }
+
+    /**
+     * Check if two interactors contain the same identity xrefs, excluding the IMEx partner identities
+     * @param interactor1
+     * @param interactor2
+     * @return
+     */
+    public static boolean containTheSameIdentities(Interactor interactor1, Interactor interactor2) {
+        List<InteractorXref> identities1 = getIdentityXrefs(interactor1, true);
+        List<InteractorXref> identities2 = getIdentityXrefs(interactor2, true);
+
+        if (identities1.size() != identities2.size()) {
+            return false;
+        }
+
+        Comparator<InteractorXref> identityXrefComparator = new Comparator<InteractorXref>() {
+            public int compare(InteractorXref o1, InteractorXref o2) {
+                return o1.getPrimaryId().compareTo(o2.getPrimaryId());
+            }
+        };
+
+        Collections.sort(identities1, identityXrefComparator);
+        Collections.sort(identities2, identityXrefComparator);
+
+        for (int i=0; i<identities1.size(); i++) {
+            if (!(identities1.get(i).equals(identities2.get(i)))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
