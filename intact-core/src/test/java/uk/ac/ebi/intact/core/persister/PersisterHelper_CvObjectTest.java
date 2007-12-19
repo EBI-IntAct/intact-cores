@@ -217,4 +217,24 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     private <T extends CvObject> T reloadByAc(T cv) {
         return (T) getDaoFactory().getCvObjectDao(cv.getClass()).getByAc(cv.getAc());
     }
+
+    @Test
+    public void persist_cvNoMi() throws Exception {
+        CvTopic postalAddress = getMockBuilder().createCvObject(CvTopic.class, "removed", "postalAddress");
+        postalAddress.setMiIdentifier(null);
+        postalAddress.getXrefs().clear();
+
+        PersisterHelper.saveOrUpdate(postalAddress);
+
+        Assert.assertEquals(1, getDaoFactory().getCvObjectDao(CvTopic.class).countAll());
+        Assert.assertEquals("postaladdress", getDaoFactory().getCvObjectDao(CvTopic.class).getAll().get(0).getShortLabel());
+
+        CvTopic repeatedPostalAddress = getMockBuilder().createCvObject(CvTopic.class, "removed", "postalAddress");
+        repeatedPostalAddress.setMiIdentifier(null);
+        repeatedPostalAddress.getXrefs().clear();
+
+        PersisterHelper.saveOrUpdate(repeatedPostalAddress);
+
+        Assert.assertEquals(1, getDaoFactory().getCvObjectDao(CvTopic.class).countAll());
+    }
 }

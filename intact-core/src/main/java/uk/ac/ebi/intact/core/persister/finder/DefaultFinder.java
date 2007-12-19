@@ -300,7 +300,7 @@ public class DefaultFinder implements Finder {
 
         if ( value == null ) {
             // TODO we should check on CvXrefQualifier(identity)
-            query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.shortLabel = :label " );
+            query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where lower(cv.shortLabel) = lower(:label) " );
             query.setParameter( "label", cvObject.getShortLabel() );
             
             value = getFirstAcForQuery( query, cvObject );

@@ -7,19 +7,18 @@
  *
  */
 
-package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.model.*;
+package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
-import com.mchange.v2.c3p0.impl.AuthMaskingProperties;
 import org.hibernate.dialect.DB2400Dialect;
 import org.hibernate.dialect.DerbyDialect;
 import org.hibernate.dialect.MckoiDialect;
-import org.hibernate.id.SequenceGenerator;
 import org.hibernate.type.ByteType;
 import org.hibernate.type.CharArrayType;
 import org.hibernate.type.TextType;
 import org.hibernate.type.Type;
 import org.hibernate.util.PropertiesHelper;
+import uk.ac.ebi.intact.model.IntactIdGenerator;
 
 import java.util.Properties;
 
@@ -62,24 +61,6 @@ public class IntactIdGeneratorAgitarTest extends AgitarTestCase {
         assertEquals( "result", "intact_ac", result );
     }
 
-    public void testConfigureThrowsNullPointerException() throws Throwable {
-        IntactIdGenerator intactIdGenerator = new IntactIdGenerator();
-        Properties properties = new AuthMaskingProperties();
-        Type type = new ByteType();
-        try {
-            intactIdGenerator.configure( type, properties, null );
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertEquals( "(AuthMaskingProperties) properties.size()", 1, properties.size() );
-            assertEquals( "(AuthMaskingProperties) properties.get(\"sequence\")", "intact_ac", properties.get( "sequence" ) );
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( SequenceGenerator.class, ex );
-            assertEquals( "intactIdGenerator.generatorKey()", "intact_ac", intactIdGenerator.generatorKey() );
-            assertNull( "intactIdGenerator.sql", getPrivateField( intactIdGenerator, "sql" ) );
-            assertNull( "intactIdGenerator.parameters", getPrivateField( intactIdGenerator, "parameters" ) );
-            assertSame( "intactIdGenerator.identifierType", type, getPrivateField( intactIdGenerator, "identifierType" ) );
-        }
-    }
 
     public void testConfigureThrowsNullPointerException1() throws Throwable {
         IntactIdGenerator intactIdGenerator = new IntactIdGenerator();
