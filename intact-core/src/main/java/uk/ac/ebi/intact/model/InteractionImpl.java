@@ -230,14 +230,14 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
     @PrePersist
     public void onPrePersist() {
         super.onPrePersist();
-//        calculateCrc();
+        calculateCrc();
         synchronizeShortLabel();
     }
 
     @PreUpdate
     public void onPreUpdate() {
         super.onPreUpdate();
-//        calculateCrc();
+        calculateCrc();
     }
 
     public void calculateCrc() {
@@ -446,7 +446,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     @Column(name="crc64", length = 16)
     public String getCrc() {
-        calculateCrc();
+        //calculateCrc();
         return crc;
     }
 

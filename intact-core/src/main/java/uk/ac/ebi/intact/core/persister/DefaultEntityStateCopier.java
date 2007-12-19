@@ -136,6 +136,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
     protected void copyInteraction( Interaction source, Interaction target ) {
         copyProperty(source, "KD", target);
+        copyProperty(source, "crc", target);
         copyProperty(source, "cvInteractionType", target);
 
         copyCollection( source.getComponents(), target.getComponents() );

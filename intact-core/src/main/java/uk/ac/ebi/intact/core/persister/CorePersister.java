@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
@@ -28,6 +30,7 @@ import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.util.DebugUtil;
 
 import java.util.*;
 
@@ -42,7 +45,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
     private static final Log log = LogFactory.getLog( CorePersister.class );
 
-    private Map<Key, AnnotatedObject> annotatedObjectsToPersist;
+    private BiMap<Key, AnnotatedObject> annotatedObjectsToPersist;
     private Map<Key, AnnotatedObject> annotatedObjectsToMerge;
     private Map<Key, AnnotatedObject> synched;
 
@@ -50,11 +53,18 @@ public class CorePersister implements Persister<AnnotatedObject> {
     private KeyBuilder keyBuilder;
     private EntityStateCopier entityStateCopier;
 
+    /**
+     * When true, if an annotated object that do not have an AC has an equivalent
+     * with AC in the database, it will try to update the one in the database.
+     * If false, it will ignore any difference and use the one from the database.     *
+     */
+    private boolean updateWithoutAcEnabled;
+
     private PersisterStatistics statistics;
 
     public CorePersister() {
 
-        annotatedObjectsToPersist = new HashMap<Key, AnnotatedObject>();
+        annotatedObjectsToPersist = new HashBiMap<Key, AnnotatedObject>();
         annotatedObjectsToMerge = new HashMap<Key, AnnotatedObject>();
         synched = new HashMap<Key, AnnotatedObject>();
 
@@ -184,49 +194,53 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 synchronizeChildren( ao );
 
             } else {
-                if (log.isTraceEnabled()) log.trace("New (but found in database: "+ ac +") "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
+                if (isUpdateWithoutAcEnabled()) {
+                    if (log.isTraceEnabled()) log.trace("New (but found in database: "+ ac +") "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: UPDATE");
 
-                // object exists in the database, we will update it
-                final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
-                final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( ( Class<T> ) ao.getClass() );
-                final T managedObject = dao.getByAc( ac );
+                    // object exists in the database, we will update it
+                    final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+                    final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( ( Class<T> ) ao.getClass() );
+                    final T managedObject = dao.getByAc( ac );
 
-                if ( managedObject == null ) {
-                    throw new IllegalStateException( "No managed object found with ac '" + ac + "' and type '" + ao.getClass() + "' and one was expected" );
-                }
+                    if ( managedObject == null ) {
+                        throw new IllegalStateException( "No managed object found with ac '" + ac + "' and type '" + ao.getClass() + "' and one was expected" );
+                    }
 
-                // warn if an instance for this interaction is found in the database, as it could be a duplicate
-                warnIfInteractionDuplicate( ao, managedObject );
+                    // warn if an instance for this interaction is found in the database, as it could be a duplicate
+                    warnIfInteractionDuplicate( ao, managedObject );
 
-                // updated the managed object based on ao's properties, but only add it to merge
-                // if something has been copied (it was not a duplicate)
-                boolean copied = entityStateCopier.copy( ao, managedObject );
+                    // updated the managed object based on ao's properties, but only add it to merge
+                    // if something has been copied (it was not a duplicate)
+                    boolean copied = entityStateCopier.copy( ao, managedObject );
 
-                // this will allow to reload the AO by its AC after flushing
+                    // this will allow to reload the AO by its AC after flushing
                     ao.setAc(managedObject.getAc());
 
                     // traverse annotatedObject's properties and assign AC where appropriate
                     copyAnnotatedObjectAttributeAcs(managedObject, ao);
 
-                    // and the created info, so the merge does not fail due to missing created data
-                    //ao.setCreated(managedObject.getCreated());
-                    //ao.setCreator(managedObject.getCreator());
+                    if (copied) {
+                        statistics.addMerged(managedObject);
 
-                if (copied) {
-                    statistics.addMerged(managedObject);
+                        // synchronize the children
+                        synchronizeChildren(managedObject);
 
-                    // synchronize the children
-                    synchronizeChildren(managedObject);
-
+                    } else {
+                       statistics.addDuplicate(ao);
+                    }
                 } else {
-                    statistics.addDuplicate(managedObject);
+                    if (log.isTraceEnabled()) log.trace("New (but found in database: "+ ac +") "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
+                    statistics.addDuplicate(ao);
+
+                    ao.setAc(ac);
                 }
+
             }
 
         } else {
 
             final BaseDao baseDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getBaseDao();
-            if ( baseDao.isTransient( ao ) ) {
+            if ( baseDao.isTransient( ao )) {
 
                 if (log.isTraceEnabled()) log.trace("Transient "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: SYNCHRONIZE-REFRESH");
 
@@ -278,6 +292,18 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
         // check if the object class after synchronization is the same as in the beginning
         verifyExpectedType( ao, aoClass );
+
+        // add the key after the synchronization to the synched map too
+        // it the object now has an AC, the key is the AC
+        Key keyAfter = keyBuilder.keyFor(ao);
+
+        if (!key.equals(keyAfter)) {
+            if (ao.getAc() == null) {
+                log.warn(ao.getClass().getSimpleName()+" without AC changed its synchronization Key: "+key+" -> "+keyAfter);
+            }
+
+            synched.put(keyAfter, ao);
+        }
 
         return ao;
     }
@@ -403,6 +429,10 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
         // copy the state from the managed object to the ao
         entityStateCopier.copy(dbObject, ao);
+
+        if (ao instanceof InteractionImpl) {
+            ((InteractionImpl)ao).calculateCrc();
+        }
     }
 
     protected void commit() {
@@ -419,18 +449,18 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
         for ( AnnotatedObject ao : thingsToPersist ) {
             if ( log.isDebugEnabled() ) {
-                log.debug( "\tAbout to persist " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+                log.debug( "\tAbout to persist " + DebugUtil.annotatedObjectToString(ao, true) +" - Key: "+annotatedObjectsToPersist.inverse().get(ao));
             }
 
             // this may happen if there is a cascade on this object from the parent
             // exception: features are persisted by cascade from the component, so they can be ignored
             if ( log.isWarnEnabled() && ao.getAc() != null && !(ao instanceof Feature) ) {
-                log.warn( "Object to persist should NOT have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+                log.warn( "Object to persist should NOT have an AC: " + DebugUtil.annotatedObjectToString(ao, true) );
             } else {
 
-            daoFactory.getBaseDao().persist( ao );
-            statistics.addPersisted(ao);
-            logPersistence( ao );
+                daoFactory.getBaseDao().persist( ao );
+                statistics.addPersisted(ao);
+                logPersistence( ao );
             }
         }
 
@@ -443,11 +473,11 @@ public class CorePersister implements Persister<AnnotatedObject> {
         Collections.sort( thingsToMerge, new PersistenceOrderComparator() );
         for ( AnnotatedObject ao : annotatedObjectsToMerge.values() ) {
             if ( log.isDebugEnabled() ) {
-                log.debug( "\tAbout to merge " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+                log.debug( "\tAbout to merge " + DebugUtil.annotatedObjectToString(ao, true) );
             }
 
             if ( ao.getAc() == null ) {
-                throw new IllegalStateException( "Object to persist should have an AC: " + ao.getClass().getSimpleName() + ": " + ao.getShortLabel() );
+                throw new IllegalStateException( "Object to persist should have an AC: " + DebugUtil.annotatedObjectToString(ao, true));
             } else {
                 daoFactory.getBaseDao().merge( ao );
                 statistics.addMerged(ao);
@@ -715,6 +745,10 @@ public class CorePersister implements Persister<AnnotatedObject> {
     }
 
     private Annotation synchronizeAnnotation( Annotation annotation ) {
+        if (annotation.getAc() != null) {
+            return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                    .getAnnotationDao().getByAc(annotation.getAc());
+        }
         annotation.setCvTopic( synchronize( annotation.getCvTopic() ) );
 
         synchronizeBasicObjectCommons( annotation );
@@ -722,4 +756,11 @@ public class CorePersister implements Persister<AnnotatedObject> {
         return annotation;
     }
 
+    public boolean isUpdateWithoutAcEnabled() {
+        return updateWithoutAcEnabled;
+    }
+
+    public void setUpdateWithoutAcEnabled(boolean updateWithoutAcEnabled) {
+        this.updateWithoutAcEnabled = updateWithoutAcEnabled;
+    }
 }

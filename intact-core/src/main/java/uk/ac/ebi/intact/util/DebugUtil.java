@@ -10,13 +10,14 @@ import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
-import uk.ac.ebi.intact.model.visitor.impl.PrintVisitor;
 import uk.ac.ebi.intact.model.visitor.impl.JTreeBuilderVisitor;
+import uk.ac.ebi.intact.model.visitor.impl.PrintVisitor;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.io.PrintStream;
 
 /**
  * Class for debugging / logging purposes
@@ -91,5 +92,25 @@ public class DebugUtil {
         } else {
             builderVisitor.renderTree( windowTitle );
         }
+    }
+
+    /**
+     * Prints the label, ac, and the counts of some attributes (xrefs, aliases and annotations) of an AnnotatedObject
+     * @param ao Annotated object to prints
+     *
+     * @since 1.8.0
+     */
+    public static String annotatedObjectToString(AnnotatedObject ao, boolean showAttributesCount) {
+        Class clazz = CgLibUtil.removeCglibEnhanced(ao.getClass());
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(clazz.getSimpleName()).append("{label=").append(ao.getShortLabel()).append(", ac=").append(ao.getAc());
+
+        if (showAttributesCount) {
+            sb.append(", xrefCount=").append(ao.getXrefs().size()).append(", aliasCount=").append(ao.getAliases().size()).append(", annotationsCount=").append(ao.getAnnotations().size());
+        }
+        sb.append("}");
+
+        return sb.toString();
     }
 }

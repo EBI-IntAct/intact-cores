@@ -399,6 +399,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         interaction2.addComponent(componentPrey);
         PersisterHelper.saveOrUpdate(interaction2);
 
+        Assert.assertEquals(interaction.getAc(),interaction2.getAc());
         Assert.assertFalse(originalCrc.equals(interaction2.getCrc()));
     }
 
@@ -432,10 +433,14 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(1, stats.getPersistedCount(Interaction.class, true));
 
+        // clone 1
         Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
         clonedInteraction.setExperiments(interaction.getExperiments());
 
-        PersisterStatistics stats2 = PersisterHelper.saveOrUpdate(clonedInteraction);
+        CorePersister corePersister = new CorePersister();
+        corePersister.setUpdateWithoutAcEnabled(true);
+
+        PersisterStatistics stats2 = PersisterHelper.saveOrUpdate(corePersister, clonedInteraction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals("fooprey-barbait", getDaoFactory().getInteractionDao().getByAc(clonedInteraction.getAc()).getShortLabel());
@@ -443,6 +448,22 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(0, stats2.getPersistedCount(Interaction.class, true));
         Assert.assertEquals(0, stats2.getMergedCount(Interaction.class, true));
         Assert.assertEquals(1, stats2.getDuplicatesCount(Interaction.class, true));
+
+        // clone 2
+        Interaction clonedInteraction2 = (Interaction) ((InteractionImpl)interaction).clone();
+        clonedInteraction2.setExperiments(interaction.getExperiments());
+
+        CorePersister corePersister2 = new CorePersister();
+        corePersister2.setUpdateWithoutAcEnabled(false);
+
+        PersisterStatistics stats3 = PersisterHelper.saveOrUpdate(corePersister2, clonedInteraction2);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals("fooprey-barbait", getDaoFactory().getInteractionDao().getByAc(clonedInteraction2.getAc()).getShortLabel());
+
+        Assert.assertEquals(0, stats3.getPersistedCount(Interaction.class, true));
+        Assert.assertEquals(0, stats3.getMergedCount(Interaction.class, true));
+        Assert.assertEquals(1, stats3.getDuplicatesCount(Interaction.class, true));
     }
 
     @Test

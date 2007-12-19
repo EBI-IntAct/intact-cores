@@ -180,7 +180,10 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
         expWith.addAnnotation( getMockBuilder().createAnnotation( "comment", "MI:xxxx", "topic" ) );
 
-        PersisterHelper.saveOrUpdate(expWith);
+        CorePersister updaterPersister = new CorePersister();
+        updaterPersister.setUpdateWithoutAcEnabled(true);
+        
+        PersisterHelper.saveOrUpdate(updaterPersister,  expWith);
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
 
@@ -208,7 +211,10 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
         expWith.addAlias( getMockBuilder().createAlias( expWith, "comment", "MI:xxxx", "topic" ) );
 
-        PersisterHelper.saveOrUpdate(expWith);
+        CorePersister updaterPersister = new CorePersister();
+        updaterPersister.setUpdateWithoutAcEnabled(true);
+
+        PersisterHelper.saveOrUpdate(updaterPersister, expWith);
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
 

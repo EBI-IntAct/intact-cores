@@ -40,6 +40,7 @@ public class PersistenceOrderComparator implements Comparator<AnnotatedObject> {
         annotatedObjectPriorities.put(BioSource.class, 110);
         annotatedObjectPriorities.put(Publication.class, 100);
         annotatedObjectPriorities.put(Experiment.class, 90);
+        annotatedObjectPriorities.put(InteractorImpl.class, 85);
         annotatedObjectPriorities.put(Interactor.class, 80);
         annotatedObjectPriorities.put(Component.class, 50);
         annotatedObjectPriorities.put(Feature.class, 40);

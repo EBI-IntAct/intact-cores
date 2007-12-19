@@ -50,4 +50,9 @@ class Key {
     public int hashCode() {
         return uniqueString.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return uniqueString;
+    }
 }

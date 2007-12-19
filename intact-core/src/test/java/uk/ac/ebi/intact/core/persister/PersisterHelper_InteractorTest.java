@@ -37,15 +37,6 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Assert.assertNotNull(aliasType);
     }
 
-    @Test (expected = UndefinedCaseException.class)
-    public void fetchFromDb_multipleIdXrefsToUniprot() throws Exception {
-        Protein prot = getMockBuilder().createProtein("Q00112", "lalaProt");
-        prot.getXrefs().clear();
-        prot.addXref(getMockBuilder().createIdentityXrefChebi(prot, "CHEBI:1"));
-        prot.addXref(getMockBuilder().createIdentityXrefChebi(prot, "CHEBI:2"));
-        PersisterHelper.saveOrUpdate(prot);
-    }
-
     @Test
     public void fetchFromDb_multipleIdXrefsMixed() throws Exception {
         Protein prot = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt1");
@@ -77,10 +68,10 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         protUpdated.addXref(secondaryXref);
         PersisterHelper.saveOrUpdate(protUpdated);
 
-        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
         Protein protAfterUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
         Assert.assertNotNull(protAfterUpdate);
-        Assert.assertEquals(2, protAfterUpdate.getXrefs().size());
+        Assert.assertEquals(1, protAfterUpdate.getXrefs().size());
     }
 
     @Test
