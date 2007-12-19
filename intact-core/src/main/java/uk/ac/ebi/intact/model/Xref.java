@@ -305,18 +305,15 @@ public abstract class Xref extends BasicObjectImpl {
 
         if ( !primaryId.equals( xref.primaryId ) ) return false;
         
-        if ( cvDatabase != null && xref.getCvDatabase() != null) {
-            if ( !CvObjectUtils.getIdentity(cvDatabase).equals( CvObjectUtils.getIdentity(xref.cvDatabase)) ) return false;
-        } else if (cvDatabase == null || xref.getCvDatabase() == null) {
-        	return false;
+        if (cvDatabase != null && CvObjectUtils.areEqual(cvDatabase, xref.getCvDatabase())) {
+            return false;
+        } else if (cvDatabase == null) {
+            return false;
         }
 
-        int q = 0;
-        q += (cvXrefQualifier != null ? 1 : 0);
-        q += (xref.getCvXrefQualifier() != null ? 1 : 0);
-        if ( q == 2) {
-        	if ( !CvObjectUtils.getIdentity(cvXrefQualifier).equals( CvObjectUtils.getIdentity(xref.cvXrefQualifier) ) ) return false;
-        } else if ( q == 1 ) {
+         if (cvXrefQualifier != null && CvObjectUtils.areEqual(cvXrefQualifier, xref.getCvXrefQualifier())) {
+            return false;
+        } else if (cvXrefQualifier == null) {
             return false;
         }
         
