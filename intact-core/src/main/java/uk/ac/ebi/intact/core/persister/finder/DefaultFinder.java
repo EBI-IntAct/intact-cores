@@ -140,6 +140,10 @@ public class DefaultFinder implements Finder {
                                                    "exp.cvInteraction.miIdentifier = :interactionTypeMi");
             query.setParameter("pubId", pubId);
             query.setParameter("taxId", experiment.getBioSource().getTaxId());
+
+            if (experiment.getCvIdentification() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without CvIdentification: "+experiment.getShortLabel());
+            if (experiment.getCvInteraction() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without CvInteraction: "+experiment.getShortLabel());
+
             query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getMiIdentifier());
             query.setParameter("interactionTypeMi", experiment.getCvInteraction().getMiIdentifier());
 

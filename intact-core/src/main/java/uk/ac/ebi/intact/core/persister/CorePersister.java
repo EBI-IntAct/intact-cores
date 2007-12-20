@@ -706,7 +706,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
         Collection synchedAliases = new ArrayList( ao.getAliases().size() );
         for ( Alias alias : ao.getAliases() ) {
-            synchedAliases.add( synchronizeAlia( alias, ao ) );
+            synchedAliases.add( synchronizeAlias( alias, ao ) );
         }
         ao.setAliases( synchedAliases );
 
@@ -726,6 +726,11 @@ public class CorePersister implements Persister<AnnotatedObject> {
     }
 
     private Xref synchronizeXref( Xref xref, AnnotatedObject parent ) {
+        if (xref.getAc() != null) {
+            return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                    .getXrefDao().getByAc(xref.getAc());
+        }
+
         xref.setCvDatabase( synchronize( xref.getCvDatabase() ) );
         xref.setCvXrefQualifier( synchronize( xref.getCvXrefQualifier() ) );
         xref.setParent(parent);
@@ -735,7 +740,12 @@ public class CorePersister implements Persister<AnnotatedObject> {
         return xref;
     }
 
-    private Alias synchronizeAlia( Alias alias, AnnotatedObject parent ) {
+    private Alias synchronizeAlias( Alias alias, AnnotatedObject parent ) {
+        if (alias.getAc() != null) {
+            return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                    .getAliasDao().getByAc(alias.getAc());
+        }
+
         alias.setCvAliasType( synchronize( alias.getCvAliasType() ) );
         alias.setParent(parent);
 
