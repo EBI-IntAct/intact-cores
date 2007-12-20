@@ -133,7 +133,8 @@ public class DefaultFinder implements Finder {
 
         if (pubId != null) {
             query = getEntityManager().createQuery("select exp.ac from Experiment exp " +
-                                                   "left join exp.xrefs as xref  where (exp.publication.shortLabel = :pubId or xref.primaryId = :pubId) and " +
+                                                   "left join exp.publication as pub " +
+                                                   "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
                                                    "exp.bioSource.taxId = :taxId and " +
                                                    "exp.cvIdentification.miIdentifier = :participantDetMethodMi and " +
                                                    "exp.cvInteraction.miIdentifier = :interactionTypeMi");

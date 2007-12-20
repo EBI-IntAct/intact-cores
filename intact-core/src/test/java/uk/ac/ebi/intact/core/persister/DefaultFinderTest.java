@@ -110,6 +110,24 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void findAcForExperiment_noPublicationObject() throws Exception {
+        final Experiment e = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "unassigned" );
+        e.setPublication(null);
+        PersisterHelper.saveOrUpdate( e );
+
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
+
+        final Experiment experimentWithoutPub = cloner.clone(e);
+        experimentWithoutPub.setPublication(null);
+
+        String ac = finder.findAc( experimentWithoutPub );
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( e.getAc(), ac );
+
+    }
+
+    @Test
     public void findAcForInteraction_byAc() throws Exception {
         final Interaction i = getMockBuilder().createDeterministicInteraction();
         PersisterHelper.saveOrUpdate( i );
