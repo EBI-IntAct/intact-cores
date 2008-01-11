@@ -118,7 +118,8 @@ class KeyBuilder {
             throw new IllegalArgumentException( "Cannot create a component key for component without interactor: " + component );
         }
 
-        String label = "Component:" + component.getInteraction().getShortLabel() + "_" + component.getInteractor().getShortLabel();
+        String label = "Component:" + component.getInteraction().getShortLabel() + "_" + component.getInteractor().getShortLabel()+"_"+component.getCvExperimentalRole().getMiIdentifier()
+                       +"_"+component.getCvBiologicalRole().getMiIdentifier();
         return new Key( label );
     }
 

@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -682,6 +683,21 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(1, stats.getMergedCount(Interaction.class, true));
 
         Assert.assertEquals("fullName", reloadByAc(interactionUpdatedFullName).getFullName());
+    }
+
+    @Test
+    @Ignore
+    public void persist_twoSameInteractorsDifferentRole() throws Exception {
+        Protein p = getMockBuilder().createProtein("P12345", "prot");
+        p.getXrefs().clear();
+        Component c1 = getMockBuilder().createComponentBait(p);
+        Component c2 = getMockBuilder().createComponentBait(p);
+
+        Interaction interaction1 = getMockBuilder().createInteraction(c1, c2);
+
+        PersisterHelper.saveOrUpdate(interaction1);
+        
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
     }
 
     private Interaction reloadByAc(Interaction interaction) {
