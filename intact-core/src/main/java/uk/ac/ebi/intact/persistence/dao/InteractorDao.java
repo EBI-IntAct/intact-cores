@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.InteractorImpl;
+import uk.ac.ebi.intact.model.Interactor;
 
 import java.util.List;
 
@@ -26,7 +27,21 @@ public interface InteractorDao<T extends InteractorImpl> extends AnnotatedObject
 
     List<T> getByBioSourceAc( String ac );
 
-    public int countInteractorInvolvedInInteraction();
+    int countInteractorInvolvedInInteraction();
 
-    public List<T> getInteractorInvolvedInInteraction( Integer firstResult, Integer maxResults );
+    List<T> getInteractorInvolvedInInteraction( Integer firstResult, Integer maxResults );
+
+    /**
+     * Counts the interactors, excluding the interactions
+     * @return the number of interactors, excluding the interactions
+     */
+    long countAllInteractors();
+
+    /**
+     * Gets the interactors, excluding the interactions
+     * @param firstResult First index to fetch
+     * @param maxResults Number of interactors to fetch
+     * @return the interactors in that page
+     */
+    List<Interactor> getInteractors(Integer firstResult, Integer maxResults);
 }

@@ -37,11 +37,6 @@ import java.util.Arrays;
  */
 public class InteractionDaoTest extends IntactBasicTestCase {
 
-    @Before
-    public void before() throws Exception {
-        SchemaUtils.createSchema();
-    }
-
     @Test
     public void getByInteractorsPrimaryId_exact() throws Exception {
         final IntactMockBuilder mockBuilder = getMockBuilder();

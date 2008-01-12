@@ -40,8 +40,6 @@ public class ImexImportDaoTest extends IntactBasicTestCase {
 
     @Before
     public void prepareTest() throws Exception {
-        new IntactUnit().createSchema();
-
         this.imexImportDao = getDaoFactory().getImexImportDao();
         this.imexImportPublicationDao = getDaoFactory().getImexImportPublicationDao();
     }

@@ -12,9 +12,12 @@ import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.InteractorImpl;
+import uk.ac.ebi.intact.model.Interactor;
+import uk.ac.ebi.intact.model.InteractionImpl;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,5 +114,32 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
 
             return crit.list();
         }
+    }
+
+    /**
+     * Counts the interactors, excluding the interactions
+     *
+     * @return the number of interactors, excluding the interactions
+     */
+    public long countAllInteractors() {
+        Query query = getEntityManager().createQuery("select count(*) from InteractorImpl  where objClass <> :interactionClass");
+        query.setParameter("interactionClass", InteractionImpl.class.getName());
+        return (Long) query.getSingleResult();
+    }
+
+    /**
+     * Gets the interactors, excluding the interactions
+     *
+     * @param firstResult First index to fetch
+     * @param maxResults  Number of interactors to fetch
+     * @return the interactors in that page
+     */
+    public List<Interactor> getInteractors(Integer firstResult, Integer maxResults) {
+        Query query = getEntityManager().createQuery("from InteractorImpl  where objClass <> :interactionClass");
+        query.setParameter("interactionClass", InteractionImpl.class.getName());
+        query.setFirstResult(firstResult);
+        query.setMaxResults(maxResults);
+
+        return query.getResultList();
     }
 }
