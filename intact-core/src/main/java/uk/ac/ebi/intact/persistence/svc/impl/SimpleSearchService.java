@@ -37,7 +37,15 @@ import java.util.Map;
  */
 public class SimpleSearchService implements SearchService {
 
+    private String sortProperty;
+    private boolean sortAsc;
+
     public SimpleSearchService() {
+    }
+
+    public SimpleSearchService(String sortProperty, boolean sortAsc) {
+        this.sortProperty = sortProperty;
+        this.sortAsc = sortAsc;
     }
 
     public int count( Class<? extends Searchable> searchable, String query ) {
@@ -90,13 +98,13 @@ public class SimpleSearchService implements SearchService {
         if ( firstResult == null ) firstResult = 0;
         if ( maxResults == null ) maxResults = Integer.MAX_VALUE;
 
-        List<? extends Searchable> results = getDao().getByQuery( searchables, query, firstResult, maxResults );
+        List<? extends Searchable> results = getDao().getByQuery( searchables, query, firstResult, maxResults, sortProperty, sortAsc );
 
         if ( results.size() > 0 ) {
             return results;
         }
 
-        return getDao().getByQuery( searchables, createSimpleQueryWithWildcards( query ), firstResult, maxResults );
+        return getDao().getByQuery( searchables, createSimpleQueryWithWildcards( query ), firstResult, maxResults, sortProperty, sortAsc );
     }
 
     private SearchableDao getDao() {
@@ -122,5 +130,21 @@ public class SimpleSearchService implements SearchService {
 
     private SearchableQuery createSimpleQueryWithWildcards( SearchableQuery query ) {
         return DaoUtils.autoAddWildcards( query );
+    }
+
+    public String getSortProperty() {
+        return sortProperty;
+    }
+
+    public void setSortProperty(String sortProperty) {
+        this.sortProperty = sortProperty;
+    }
+
+    public boolean isSortAsc() {
+        return sortAsc;
+    }
+
+    public void setSortAsc(boolean sortAsc) {
+        this.sortAsc = sortAsc;
     }
 }

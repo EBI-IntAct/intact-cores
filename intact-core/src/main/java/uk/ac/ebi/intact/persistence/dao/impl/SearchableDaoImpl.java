@@ -19,6 +19,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Order;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.AnnotatedObjectImpl;
 import uk.ac.ebi.intact.model.Searchable;
@@ -76,14 +77,17 @@ public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl>
     }
 
     public List<? extends Searchable> getByQuery( Class<? extends Searchable>[] searchableClasses, SearchableQuery query, Integer firstResult, Integer maxResults ) {
-        // iterate each searchable and get the results
+        return getByQuery(searchableClasses, query, firstResult, maxResults, null, true);
+    }
+
+    public List<? extends Searchable> getByQuery(Class<? extends Searchable>[] searchableClasses, SearchableQuery query, Integer firstResult, Integer maxResults, String sortProperty, boolean sortAsc) {
         List<Searchable> results = new ArrayList<Searchable>();
 
         for ( Class searchable : searchableClasses ) {
             int resultsFoundSoFar = results.size();
             int resultsToFetch = maxResults - resultsFoundSoFar;
 
-            results.addAll( getByQuery( searchable, query, firstResult, resultsToFetch ) );
+            results.addAll( getByQuery( searchable, query, firstResult, resultsToFetch, sortProperty, sortAsc ) );
 
             if ( results.size() == maxResults ) {
                 break;
@@ -94,11 +98,10 @@ public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl>
     }
 
     public List<? extends Searchable> getByQuery( Class<? extends Searchable> searchableClass, SearchableQuery query, Integer firstResult, Integer maxResults ) {
-        //DetachedCriteria criteria = new SearchableCriteriaBuilder(query)
-        //        .createCriteria(searchableClass);
+         return getByQuery(searchableClass, query, firstResult, maxResults, null, true);
+    }
 
-        //Criteria crit = criteria.getExecutableCriteria(getSession());
-
+    public List<? extends Searchable> getByQuery(Class<? extends Searchable> searchableClass, SearchableQuery query, Integer firstResult, Integer maxResults, String sortProperty, boolean sortAsc) {
         List<String> acs = getAcsByQuery( searchableClass, query, firstResult, maxResults );
 
         if ( acs.isEmpty() ) {
@@ -107,6 +110,14 @@ public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl>
 
         Criteria crit = getSession().createCriteria( searchableClass )
                 .add( Restrictions.in( "ac", acs ) );
+
+        if (sortProperty != null) {
+            if (sortAsc) {
+                crit.addOrder(Order.asc(sortProperty));
+            } else {
+                crit.addOrder(Order.desc(sortProperty));
+            }
+        }
 
         return crit.list();
     }

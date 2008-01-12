@@ -47,8 +47,8 @@ public class QueryTerm implements Serializable {
 
     public QueryTerm( String value, Collection<QueryModifier> modifiers ) {
         this.value = value;
-        this.modifiers = new ArrayList<QueryModifier>( modifiers );
-        modifiers.addAll( modifiers );
+        this.modifiers = new ArrayList<QueryModifier>( );
+        this.modifiers.addAll( modifiers );
     }
 
     public String getValue() {
