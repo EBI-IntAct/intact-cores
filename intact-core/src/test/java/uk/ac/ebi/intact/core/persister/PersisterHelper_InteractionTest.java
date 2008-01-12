@@ -686,12 +686,11 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
     }
 
     @Test
-    @Ignore
     public void persist_twoSameInteractorsDifferentRole() throws Exception {
         Protein p = getMockBuilder().createProtein("P12345", "prot");
-        p.getXrefs().clear();
+
         Component c1 = getMockBuilder().createComponentBait(p);
-        Component c2 = getMockBuilder().createComponentBait(p);
+        Component c2 = getMockBuilder().createComponentPrey(p);
 
         Interaction interaction1 = getMockBuilder().createInteraction(c1, c2);
 
