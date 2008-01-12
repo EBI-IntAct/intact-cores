@@ -9,6 +9,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Order;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.InteractorImpl;
@@ -20,6 +21,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * TODO comment this
@@ -141,5 +144,66 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
         query.setMaxResults(maxResults);
 
         return query.getResultList();
+    }
+
+    /**
+     * Counts the partners of the provided interactor AC
+     * @param ac The AC to search
+     * @return The number of parntners for the interactor AC
+     *
+     * @since 1.8.0
+     */
+    public Integer countPartnersByAc( String ac ) {
+        return ( Integer ) partnersByAcCriteria( ac )
+                .setProjection( Projections.countDistinct( "prot.ac" ) ).uniqueResult();
+    }
+
+    protected Criteria partnersByAcCriteria( String ac ) {
+        if ( ac == null ) {
+            throw new NullPointerException( "ac" );
+        }
+
+        return getSession().createCriteria( InteractorImpl.class )
+                .add( Restrictions.idEq( ac ) )
+                .createAlias( "activeInstances", "comp" )
+                .createAlias( "comp.interaction", "int" )
+                .createAlias( "int.components", "intcomp" )
+                .createAlias( "intcomp.interactor", "prot" )
+                .add( Restrictions.disjunction()
+                        .add( Restrictions.ne( "prot.ac", ac ) )
+                        .add( Restrictions.eq( "comp.stoichiometry", 2f ) ) );
+    }
+
+    /**
+     * Get the partners and the interaction ACs for the passes interactor AC
+     * @param ac The AC to look parntners for
+     * @return A Map containing the partner AC as key and a list of interaction ACs as value
+     *
+     * @since 1.8.0
+     */
+    public Map<String, List<String>> getPartnersWithInteractionAcsByInteractorAc( String ac ) {
+        Criteria crit = partnersByAcCriteria( ac )
+                .setProjection( Projections.projectionList()
+                        .add( Projections.distinct( Projections.property( "prot.ac" ) ) )
+                        .add( Projections.property( "int.ac" ) ) )
+                .addOrder( Order.asc( "prot.ac" ) );
+
+        Map<String, List<String>> results = new HashMap<String, List<String>>();
+
+        for ( Object[] res : ( List<Object[]> ) crit.list() ) {
+            String partnerProtAc = ( String ) res[0];
+            String interactionAc = ( String ) res[1];
+
+            if ( results.containsKey( partnerProtAc ) ) {
+                results.get( partnerProtAc ).add( interactionAc );
+            } else {
+                List<String> interactionAcList = new ArrayList<String>();
+                interactionAcList.add( interactionAc );
+
+                results.put( partnerProtAc, interactionAcList );
+            }
+        }
+
+        return results;
     }
 }

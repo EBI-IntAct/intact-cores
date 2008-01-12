@@ -107,8 +107,9 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return results;
     }
 
+    @Deprecated
     public Integer countPartnersByProteinAc( String proteinAc ) {
-        return ( Integer ) partnersByProteinAcCriteria( proteinAc )
+        return ( Integer ) partnersByAcCriteria( proteinAc )
                 .setProjection( Projections.countDistinct( "prot.ac" ) ).uniqueResult();
     }
 
@@ -167,8 +168,12 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
                 .add( Restrictions.eq( "xref.primaryId", uniprotId ) ).list();
     }
 
+    /**
+     * @deprecated use the method getPartnersWithInteractionAcsByInteractorAc() instead
+     */
+    @Deprecated
     public Map<String, List<String>> getPartnersWithInteractionAcsByProteinAc( String proteinAc ) {
-        Criteria crit = partnersByProteinAcCriteria( proteinAc )
+        Criteria crit = partnersByAcCriteria( proteinAc )
                 .setProjection( Projections.projectionList()
                         .add( Projections.distinct( Projections.property( "prot.ac" ) ) )
                         .add( Projections.property( "int.ac" ) ) )
@@ -194,7 +199,7 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
     }
 
     public List<String> getPartnersUniprotIdsByProteinAc( String proteinAc ) {
-        return partnersByProteinAcCriteria( proteinAc )
+        return partnersByAcCriteria( proteinAc )
                 .createAlias( "prot.xrefs", "xref" )
                 .createAlias( "xref.cvXrefQualifier", "qual" )
                 .createAlias( "xref.cvDatabase", "database" )
@@ -203,22 +208,6 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
                 .add( Restrictions.eq( "qualXref.primaryId", CvXrefQualifier.IDENTITY_MI_REF ) )
                 .add( Restrictions.eq( "dbXref.primaryId", CvDatabase.UNIPROT_MI_REF ) )
                 .setProjection( Projections.distinct( Property.forName( "xref.primaryId" ) ) ).list();
-    }
-
-    private Criteria partnersByProteinAcCriteria( String proteinAc ) {
-        if ( proteinAc == null ) {
-            throw new NullPointerException( "proteinAc" );
-        }
-
-        return getSession().createCriteria( InteractorImpl.class )
-                .add( Restrictions.idEq( proteinAc ) )
-                .createAlias( "activeInstances", "comp" )
-                .createAlias( "comp.interaction", "int" )
-                .createAlias( "int.components", "intcomp" )
-                .createAlias( "intcomp.interactor", "prot" )
-                .add( Restrictions.disjunction()
-                        .add( Restrictions.ne( "prot.ac", proteinAc ) )
-                        .add( Restrictions.eq( "comp.stoichiometry", 2f ) ) );
     }
 
     public List<ProteinImpl> getSpliceVariants( Protein protein ) {

@@ -26,8 +26,11 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.util.SchemaUtils;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Protein;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * TODO comment this
@@ -49,5 +52,24 @@ public class InteractorDaoTest extends IntactBasicTestCase {
         Assert.assertEquals(0, getDaoFactory().getInteractorDao().countAllInteractors());
         PersisterHelper.saveOrUpdate(getMockBuilder().createDeterministicInteraction());
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().getInteractors(0, 5).size());
+    }
+
+    @Test
+    public void getPartnersWithInteractionAcsByInteractorAc() throws Exception {
+        Protein prot1 = getMockBuilder().createProtein("A", "prot1");
+        Protein prot2 = getMockBuilder().createProtein("B", "prot2");
+        Protein prot3 = getMockBuilder().createProtein("C", "prot3");
+        Interaction interaction = getMockBuilder().createInteraction(prot1, prot2, prot3);
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        final Map<String,List<String>> partnersMap = getDaoFactory().getInteractorDao()
+                .getPartnersWithInteractionAcsByInteractorAc(prot1.getAc());
+        
+        Assert.assertEquals(2, partnersMap.size());
+        Assert.assertTrue(partnersMap.containsKey(prot2.getAc()));
+        Assert.assertEquals(interaction.getAc(), partnersMap.get(prot2.getAc()).get(0));
+        Assert.assertTrue(partnersMap.containsKey(prot3.getAc()));
+        Assert.assertEquals(interaction.getAc(), partnersMap.get(prot3.getAc()).get(0));
     }
 }

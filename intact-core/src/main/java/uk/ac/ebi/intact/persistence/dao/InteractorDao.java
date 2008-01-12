@@ -10,6 +10,7 @@ import uk.ac.ebi.intact.model.InteractorImpl;
 import uk.ac.ebi.intact.model.Interactor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -44,4 +45,22 @@ public interface InteractorDao<T extends InteractorImpl> extends AnnotatedObject
      * @return the interactors in that page
      */
     List<Interactor> getInteractors(Integer firstResult, Integer maxResults);
+
+    /**
+     * Counts the partners of the provided interactor AC
+     * @param ac The AC to search
+     * @return The number of parntners for the interactor AC
+     *
+     * @since 1.8.0
+     */
+    Integer countPartnersByAc( String ac );
+
+    /**
+     * Get the partners and the interaction ACs for the passes interactor AC
+     * @param ac The AC to look parntners for
+     * @return A Map containing the partner AC as key and a list of interaction ACs as value
+     *
+     * @since 1.8.0
+     */
+    Map<String, List<String>> getPartnersWithInteractionAcsByInteractorAc( String ac );
 }
