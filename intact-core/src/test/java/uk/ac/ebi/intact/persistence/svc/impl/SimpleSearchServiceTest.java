@@ -36,15 +36,8 @@ public class SimpleSearchServiceTest extends IntactBasicTestCase{
        Collection<ProteinImpl> results = searchService.search(ProteinImpl.class, "prot*", null, null);
 
        Assert.assertEquals(2, results.size());
+       Assert.assertEquals(results.size(), searchService.count(ProteinImpl.class, "prot*"));
 
-        int i=0;
-        for (ProteinImpl prot : results) {
-            System.out.println(prot);
-//            if (i ==0) Assert.assertEquals("pr0", prot.getShortLabel());
-//            if (i ==1) Assert.assertEquals("prot1", prot.getShortLabel());
-//            if (i ==2) Assert.assertEquals("prot2", prot.getShortLabel());
-            i++;
-        }
     }
 
     @Test
@@ -60,7 +53,8 @@ public class SimpleSearchServiceTest extends IntactBasicTestCase{
        SimpleSearchService searchService = new SimpleSearchService("xrefs", false);
        Collection<ProteinImpl> results = searchService.search(ProteinImpl.class, "pr*", null, null);
 
-       Assert.assertEquals(3, results.size());
+        Assert.assertEquals(3, results.size());
+        Assert.assertEquals(results.size(), searchService.count(ProteinImpl.class, "pr*"));
 
         int i=0;
         for (ProteinImpl prot : results) {
