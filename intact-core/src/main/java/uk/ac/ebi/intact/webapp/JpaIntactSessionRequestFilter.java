@@ -11,6 +11,7 @@ import uk.ac.ebi.intact.context.IntactConfigurator;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.context.impl.WebappSession;
+import uk.ac.ebi.intact.business.IntactTransactionException;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -35,10 +36,12 @@ public class JpaIntactSessionRequestFilter implements Filter {
     private FilterConfig myFilterConfig;
 
     private static final String FILTERED_PARAM_NAME = "uk.ac.ebi.intact.filter.EXCLUDED_EXTENSIONS";
+    private static final String MANUAL_TRANSACTION_PARAM_NAME = "uk.ac.ebi.intact.filter.MANUAL_TRANSACTION";
 
     private static final String[] DEFAULT_EXCLUDED_EXTENSIONS = new String[]{".js", "logout"};
 
     private List<String> excludedExtensions;
+    private boolean manualTransaction;
 
     public void init( FilterConfig filterConfig ) throws ServletException {
         log.debug( "Initializing filter..." );
@@ -51,10 +54,10 @@ public class JpaIntactSessionRequestFilter implements Filter {
             excludedExtensions.add( defaultNotFilterExt );
         }
 
-        String paramValue = filterConfig.getInitParameter( FILTERED_PARAM_NAME );
+        String filteredParamValue = filterConfig.getInitParameter( FILTERED_PARAM_NAME );
 
-        if ( paramValue != null ) {
-            String[] fexts = paramValue.split( "," );
+        if ( filteredParamValue != null ) {
+            String[] fexts = filteredParamValue.split( "," );
 
             for ( String fext : fexts ) {
                 fext = fext.trim();
@@ -65,6 +68,12 @@ public class JpaIntactSessionRequestFilter implements Filter {
 
                 excludedExtensions.add( fext );
             }
+        }
+
+        String manualTransactionParamValue = filterConfig.getInitParameter(MANUAL_TRANSACTION_PARAM_NAME);
+
+        if (manualTransactionParamValue != null) {
+            manualTransaction = Boolean.parseBoolean(manualTransactionParamValue);
         }
 
         log.debug( "Will not create IntactContexts for requests URL ending with: " + excludedExtensions );
@@ -103,7 +112,19 @@ public class JpaIntactSessionRequestFilter implements Filter {
 
         assert IntactContext.currentInstanceExists();
 
+        if (!manualTransaction) {
+            context.getDataContext().beginTransaction();
+        }
         chain.doFilter( request, response );
+
+        if (!manualTransaction) {
+            try {
+                context.getDataContext().commitTransaction();
+            }
+            catch (IntactTransactionException e) {
+                throw new ServletException(e);
+            }
+        }
     }
 
     public void destroy() {
