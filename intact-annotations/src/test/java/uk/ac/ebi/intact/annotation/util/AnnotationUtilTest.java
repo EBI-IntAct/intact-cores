@@ -34,9 +34,10 @@ public class AnnotationUtilTest {
     @Test
     public void getClassesWithAnnotationFromDir() throws Exception {
         File dir = new File(AnnotationUtilTest.class.getResource("/").getFile());
+        dir = new File(dir.getParentFile(), "test-classes");
         Collection<Class> classes = AnnotationUtil.getClassesWithAnnotationFromDir(EditorTopic.class, dir);
 
-        assertEquals(1, classes.size());
+        assertEquals("1 class has to be found in test dir: (dir used "+dir+")", 1, classes.size());
     }
 
     @Test
