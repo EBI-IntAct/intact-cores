@@ -24,6 +24,7 @@ import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -697,6 +698,27 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(interaction1);
         
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+    }
+
+    @Test
+    public void persist_addAdditionalComponentToManagedInteraction() throws Exception {
+        Protein p = getMockBuilder().createProtein("P12345", "prot");
+        Component c1 = getMockBuilder().createComponentBait(p);
+        Interaction interaction1 = getMockBuilder().createInteraction(c1);
+
+        PersisterHelper.saveOrUpdate(interaction1);
+
+        Interaction refreshedInteraction = reloadByAc(interaction1);
+        Component bait = refreshedInteraction.getBait();
+
+        CvExperimentalRole preyRole = CvObjectUtils.createCvObject(bait.getOwner(), CvExperimentalRole.class, CvExperimentalRole.PREY_PSI_REF, CvExperimentalRole.PREY);
+        Component prey = new Component(bait.getOwner(), bait.getInteraction(), bait.getInteractor(), preyRole, bait.getCvBiologicalRole());
+        refreshedInteraction.getComponents().add(prey);
+
+        PersisterHelper.saveOrUpdate(prey);
+        
+        Interaction finalInteraction = reloadByAc(refreshedInteraction);
+        Assert.assertEquals(2, finalInteraction.getComponents().size());
     }
 
     private Interaction reloadByAc(Interaction interaction) {

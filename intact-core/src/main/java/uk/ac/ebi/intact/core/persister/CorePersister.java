@@ -285,7 +285,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
 
                 // managed object
-                // annotatedObjectsToMerge.put( key, ao );
+                // This has been commented out, because synchronizing the children might start a synchronization of the whole database
                 //synchronizeChildren( ao );
             }
         }

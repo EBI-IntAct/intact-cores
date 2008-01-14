@@ -102,13 +102,7 @@ public class InteractionShortLabelGenerator {
                 throw new NullPointerException("Component found without experimental role: "+component.getAc());
             }
 
-            CvObjectXref identityXref = CvObjectUtils.getPsiMiIdentityXref(role);
-
-            if (identityXref == null) {
-                throw new IllegalStateException("No identity xref found for CvExperimentalRole: "+role+" - Xrefs: "+role.getXrefs());
-            }
-
-            String roleMi = identityXref.getPrimaryId();
+            String roleMi = role.getMiIdentifier();
 
             if (roleMi.equals(CvExperimentalRole.PREY_PSI_REF)) {
                 preys.add(geneName);

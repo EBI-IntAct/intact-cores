@@ -332,8 +332,12 @@ public class IntactMockBuilder {
             interaction.addComponent(component);
         }
 
-        String shortLabel = InteractionUtils.calculateShortLabel(interaction);
-        interaction.setShortLabel(shortLabel);
+        try {
+            String shortLabel = InteractionUtils.calculateShortLabel(interaction);
+            interaction.setShortLabel(shortLabel);
+        } catch (Exception e) {
+            interaction.setShortLabel("unk-unk");
+        }
 
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
         interaction.setCvInteractorType( intType );
