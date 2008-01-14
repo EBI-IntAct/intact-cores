@@ -124,13 +124,6 @@ public class InteractionUtilsTest extends IntactBasicTestCase{
     }
 
     @Test
-    public void getInteractorPrimaryIDs_duplicatedIDs() throws Exception {
-        Interaction interaction = getMockBuilder().createInteraction("A1", "A1");
-
-        Assert.assertEquals(2, InteractionUtils.getInteractorPrimaryIDs(interaction).size());
-    }
-
-    @Test
     public void getInteractorPrimaryIDs_moreThanOneIDInInteractor() throws Exception {
         Interaction interaction = getMockBuilder().createInteraction("A1", "A2");
         interaction.getComponents().iterator().next().getInteractor().getXrefs()
