@@ -290,10 +290,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
                 .createAlias( "xrefs", "xref" )
                 .createAlias( "xref.cvDatabase", "cvDatabase" )
                 .createAlias( "xref.cvXrefQualifier", "cvXrefQualifier" )
-                .add( Restrictions.eq( "cvDatabase.shortLabel",
-                                       CvDatabase.UNIPROT ) )
-                .add( Restrictions.eq( "cvXrefQualifier.shortLabel",
-                                       CvXrefQualifier.IDENTITY ) )
+                .add( Restrictions.eq( "cvDatabase.miIdentifier",
+                                       CvDatabase.UNIPROT_MI_REF ) )
+                .add( Restrictions.eq( "cvXrefQualifier.miIdentifier",
+                                       CvXrefQualifier.IDENTITY_MI_REF ) )
 
                 .add( Restrictions.not( Restrictions.like( "xref.primaryId", "A%" ) ) )
                 .add( Restrictions.not( Restrictions.like( "xref.primaryId", "B%" ) ) )
