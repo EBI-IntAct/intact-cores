@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.model.util.ExperimentUtils;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -325,9 +326,11 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         if ( this == o ) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+
+        if( !( o instanceof Experiment ) ) {
             return false;
         }
+
         if ( !super.equals( o ) ) {
             return false;
         }

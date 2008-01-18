@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
+
 /**
  * Defines a generic interacting object.
  *
@@ -106,6 +108,9 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
     //access methods for attributes
     @Column( name = "objclass", insertable = false, updatable = false )
     public String getObjClass() {
+        if( objClass == null ) {
+            objClass = getClass().getName();
+        }
         return objClass;
     }
 
@@ -247,10 +252,16 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
         if ( this == o ) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+
+        if( !( o instanceof Interactor ) ) {
             return false;
         }
-        
+
+        final Interactor other = ( Interactor ) o;
+        if (!getObjClass().equals(other.getObjClass())) {
+            return false;
+        }
+
 //        if ( !super.equals( o ) ) {
 //            return false;
 //        }

@@ -102,23 +102,27 @@ public class CvObjectUtils {
         return isChildOfType( type, CvInteractorType.DNA_MI_REF, true );
     }
 
+    public static boolean isRnaType( CvInteractorType type ) {
+        return isChildOfType( type, CvInteractorType.RNA_MI_REF, true );
+    }
+
     /**
      * Checks if the given term has the given MI identifier. If recursive is true, we also search recursively through its parents.
      *
-     * @param type      the type to check on.
+     * @param cvDagObject      the cvDagObject to check on.
      * @param mi        the MI term to look for.
      * @param recursive request recursive search amongst parents.
      * @return true of the term or one of its parents has the given MI identity.
      */
-    public static boolean isChildOfType( CvInteractorType type, final String mi, final boolean recursive ) {
-        if ( type == null ) {
-            throw new IllegalArgumentException( "You must give a non null CvInteractorType" );
+    public static boolean isChildOfType( CvDagObject cvDagObject, final String mi, final boolean recursive ) {
+        if ( cvDagObject == null ) {
+            throw new IllegalArgumentException( "You must give a non null CvDagObject" );
         }
         if ( mi == null ) {
             throw new IllegalArgumentException( "You must give a non null parent MI" );
         }
 
-        final Collection<CvObjectXref> identities = XrefUtils.getIdentityXrefs( type );
+        final Collection<CvObjectXref> identities = XrefUtils.getIdentityXrefs( cvDagObject );
         for ( CvObjectXref identity : identities ) {
             if ( mi.equals( identity.getPrimaryId() ) ) {
                 return true;
@@ -126,9 +130,9 @@ public class CvObjectUtils {
         }
 
         if ( recursive ) {
-            final Collection<CvDagObject> parents = type.getParents();
+            final Collection<CvDagObject> parents = cvDagObject.getParents();
             for ( CvDagObject parent : parents ) {
-                if ( isChildOfType( ( CvInteractorType ) parent, mi, recursive ) ) {
+                if ( isChildOfType( parent, mi, recursive ) ) {
                     return true;
                 }
             }

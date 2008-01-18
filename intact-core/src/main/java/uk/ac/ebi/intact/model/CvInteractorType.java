@@ -38,6 +38,9 @@ public class CvInteractorType extends CvDagObject {
 
     public static final String PEPTIDE_MI_REF = "MI:0327";
 
+    public static final String RNA = "ribonucleic acid";
+    public static final String RNA_MI_REF = "MI:0320";
+
     /**
      * @param mi the MI number to check
      *

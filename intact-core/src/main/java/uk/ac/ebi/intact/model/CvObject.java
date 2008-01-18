@@ -11,6 +11,8 @@ import org.hibernate.validator.Length;
 import javax.persistence.*;
 import java.util.Collection;
 
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
+
 /**
  * Represents a controlled vocabulary object. CvObject is derived from AnnotatedObject to allow to store annotation of
  * the term within the object itself, thus allowing to build an integrated dictionary.
@@ -124,11 +126,11 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
             return false;
         }
 
-        if (!getClass().equals(obj.getClass())) {
+        final CvObject other = ( CvObject ) obj;
+        if (!getObjClass().equals(other.getObjClass())) {
             return false;
         }
 
-        final CvObject other = ( CvObject ) obj;
 
         if (( miIdentifier != null && !miIdentifier.equals(other.getMiIdentifier()))) {
             return false;
@@ -136,7 +138,6 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
 
         return super.equals(other);
     }
-
 
     /**
      * This class overwrites equals. To ensure proper functioning of HashTable, hashCode must be overwritten, too.

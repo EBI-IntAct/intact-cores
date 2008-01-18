@@ -162,7 +162,7 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
         if ( this == o ) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if ( !( o instanceof Publication )) {
             return false;
         }
         if ( !super.equals( o ) ) {
