@@ -18,14 +18,11 @@ package uk.ac.ebi.intact.model;
 import javax.persistence.*;
 
 /**
- * TODO comment that class header
+ * Represents a specific confidence value of an interaction.
  *
  * @author Irina Armean (iarmean@ebi.ac.uk)
  * @version $Id$
- * @since TODO specify the maven artifact version
- *        <pre>
- *                      04-Dec-2007
- *                      </pre>
+ * @since 1.8.0
  */
 @Entity
 @Table( name = "ia_confidence" )
@@ -48,13 +45,6 @@ public class Confidence extends BasicObjectImpl {
         setCvConfidenceType( cvType );
         setValue( value );
     }
-
-//    public Confidence( Institution owner, CvConfidenceType cvType, String value ) {
-//        super( owner );
-//        setCvConfidenceType( cvType );
-//        setCvConfidenceTypeAc( cvType.ac );
-//        setValue( value );
-//    }
 
     public String getValue() {
         return value;
@@ -87,7 +77,6 @@ public class Confidence extends BasicObjectImpl {
 
     @Override
     public boolean equals( Object o ) {
-        /* The method call the interaction equals() - method, without checking for the components or the confidences of the interaction*/
         if ( this == o ) return true;
         if ( !( o instanceof Confidence ) ) return false;
 

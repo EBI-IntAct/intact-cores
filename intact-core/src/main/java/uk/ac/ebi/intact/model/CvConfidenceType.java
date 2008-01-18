@@ -21,14 +21,11 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 /**
- * TODO comment that class header
+ * CvObject to represent a confidence scoring method.
  *
  * @author Irina Armean (iarmean@ebi.ac.uk)
  * @version $Id$
- * @since TODO specify the maven artifact version
- *        <pre>
- *        04-Dec-2007
- *        </pre>
+ * @since 1.8.0
  */
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvConfidenceType" )
@@ -37,8 +34,12 @@ public class CvConfidenceType extends CvObject{
      /**
      * The constant for undetermined.
      */
-    public static final String UNDETERMINED = "undetermined";
-    public static final String UNDETERMINED_MI_REF = "MI:0339";
+//    public static final String UNDETERMINED = "undetermined";
+//    public static final String UNDETERMINED_MI_REF = "MI:0339";
+
+    public static final String INTACT_CONFIDENCE_SCORE="intact confidence";
+
+
 
      /**
      * This constructor should <b>not</b> be used as it could result in objects with invalid state. It is here for
@@ -50,12 +51,10 @@ public class CvConfidenceType extends CvObject{
     }
 
     /**
-     * Creates a valid CvDatabase instance. Requires at least a shortLabel and an owner to be specified.
+     * Creates a valid CvConfidenceType instance. Requires at least a shortLabel and an owner to be specified.
      *
-     * @param shortLabel The memorable label to identify this CvDatabase
-     * @param owner      The Institution which owns this CvDatabase
-     *
-     * @throws NullPointerException thrown if either parameters are not specified
+     * @param shortLabel The memorable label to identify this CvConfidence
+     * @param owner      The Institution which owns this CvConfidence
      */
     public CvConfidenceType( Institution owner, String shortLabel ) {
 

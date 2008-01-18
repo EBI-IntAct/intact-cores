@@ -19,14 +19,11 @@ import uk.ac.ebi.intact.model.Confidence;
 import uk.ac.ebi.intact.annotation.Mockable;
 
 /**
- * TODO comment that class header
+ * To access the confidence. 
  *
  * @author Irina Armean (iarmean@ebi.ac.uk)
  * @version $Id$
- * @since TODO specify the maven artifact version
- *        <pre>
- *        05-Dec-2007
- *        </pre>
+ * @since 1.8.0
  */
 @Mockable
 public interface ConfidenceDao  extends IntactObjectDao<Confidence>{

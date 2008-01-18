@@ -25,6 +25,9 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.context.DataContext;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,6 +152,46 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(1, interactionObserved.getConfidences().size());
         Confidence confidenceObserved2 = interactionObserved.getConfidences().iterator().next();
         Assert.assertEquals( confidenceExpected.getValue(), confidenceObserved2.getValue());
+    }
+
+    @Test
+    public void interactionConfidencePersisted() throws Exception {
+        /**
+         * Having an interaction without confidence value in the database. Tests if it can add a confidence value and
+         * persist it to database.
+         */
+        IntactMockBuilder builder = super.getMockBuilder();
+        Interaction interaction = builder.createInteractionRandomBinary();
+        Assert.assertEquals( 0, interaction.getConfidences().size() );
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Interaction reloadedInteraction = getDaoFactory().getInteractionDao().
+                getByAc( interaction.getAc() );
+        Assert.assertEquals( 0, reloadedInteraction.getConfidences().size() );
+
+        Assert.assertEquals( interaction, reloadedInteraction );        
+        Confidence confidence = builder.createDeterministicConfidence();
+
+        reloadedInteraction.addConfidence( confidence );
+        Assert.assertEquals( 1, reloadedInteraction.getConfidences().size() );
+        Assert.assertEquals( confidence, reloadedInteraction.getConfidences().iterator().next() );
+
+        getDataContext().beginTransaction();
+
+        CvConfidenceType cvConfidenceType = builder.createCvObject( CvConfidenceType.class, "IA:997", "testShortLabel" );
+        confidence.setCvConfidenceType( cvConfidenceType );
+        PersisterHelper.saveOrUpdate( cvConfidenceType );
+        getDaoFactory().getInteractionDao().update( (InteractionImpl)reloadedInteraction );
+        getDaoFactory().getConfidenceDao().persist( confidence);
+
+
+        getDataContext().commitTransaction();
+
+        Interaction reloadedInteraction2 = getDaoFactory().getInteractionDao().getByAc( interaction.getAc() );
+        Assert.assertEquals( reloadedInteraction, reloadedInteraction2 );
+        Assert.assertEquals( 1, reloadedInteraction2.getConfidences().size() );
+        Assert.assertEquals( confidence, reloadedInteraction2.getConfidences().iterator().next() );
     }
 
     @Test
