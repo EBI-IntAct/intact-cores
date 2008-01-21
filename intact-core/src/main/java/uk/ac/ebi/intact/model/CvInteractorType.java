@@ -28,7 +28,7 @@ public class CvInteractorType extends CvDagObject {
     public static final String NUCLEIC_ACID = "nucleic acid";
 
     public static final String DNA = "dna";
-    public static final String DNA_MI_REF = " MI:0319";
+    public static final String DNA_MI_REF = "MI:0319";
 
     public static final String PROTEIN = "protein";
     public static final String PROTEIN_MI_REF = "MI:0326";
