@@ -114,7 +114,7 @@ public class CvTopic extends CvDagObject implements Editable {
     public static final String JOURNAL = "journal";
     public static final String JOURNAL_MI_REF = "MI:0885";
 
-    public static final String PUBLICATION_YEAR = "publication-year";
+    public static final String PUBLICATION_YEAR = "publication year";
     public static final String PUBLICATION_YEAR_MI_REF = "MI:0886";
 
     public static final String REVIEWER = "reviewer";
