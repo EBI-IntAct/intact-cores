@@ -1,15 +1,14 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
-import static org.junit.Assert.*;
-import org.junit.*;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import org.junit.Assert;
+import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.model.ProteinImpl;
-import uk.ac.ebi.intact.model.IntactEntry;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.Protein;
+import uk.ac.ebi.intact.model.ProteinImpl;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.util.List;
 
@@ -46,5 +45,21 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
                 daoFactory.getProteinDao().getUniprotProteinsInvolvedInInteractions( 0, 10000 );
         Assert.assertNotNull( proteins );
         Assert.assertEquals(11, proteins.size());
+    }
+
+    @Test
+    public void getUniprotAcs() throws Exception {
+        Protein nonInteractingProt = getMockBuilder().createProtein("Q00000", "non");
+
+        Protein protA = getMockBuilder().createProtein("P00111", "protA");
+        Protein protB = getMockBuilder().createProtein("P00112", "protB");
+        Interaction interaction = getMockBuilder().createInteraction(protA, protB);
+
+        PersisterHelper.saveOrUpdate(nonInteractingProt, interaction);
+
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+        
+        List<String> uniprotAcs = getDaoFactory().getProteinDao().getAllUniprotAcs();
+        Assert.assertEquals(2, uniprotAcs.size());
     }
 }

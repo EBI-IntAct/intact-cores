@@ -81,4 +81,12 @@ public interface ProteinDao extends InteractorDao<ProteinImpl> {
      * @return a master protein, may return null but should be considered as a database inconsistency.
      */
     ProteinImpl getSpliceVariantMasterProtein( Protein spliceVariant );
+
+    /**
+     * Gets all the uniprot ACs from the database, which are involved in interactions
+     * @return the uniprot ACs
+     *
+     * @since 1.8.1
+     */
+    List<String> getAllUniprotAcs();
 }

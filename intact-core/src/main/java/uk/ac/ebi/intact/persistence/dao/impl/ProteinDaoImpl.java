@@ -19,6 +19,7 @@ import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.persistence.dao.ProteinDao;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.*;
 
 /**
@@ -278,6 +279,23 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
             return ( ProteinImpl ) getSession().createCriteria( ProteinImpl.class )
                     .add( Restrictions.eq( "ac", masterAc ) ).uniqueResult();
         }
+    }
+
+     /**
+     * Gets all the uniprot ACs from the database, which are involved in interactions
+     * @return the uniprot ACs
+     *
+     * @since 1.8.1
+     */
+    public List<String> getAllUniprotAcs() {
+        Query query = getEntityManager().createQuery("select xref.primaryId from InteractorXref xref " +
+                                                     "where xref.cvXrefQualifier.miIdentifier = :qualifierMi " +
+                                                     "and xref.cvDatabase.miIdentifier = :uniprotMi " +
+                                                     "and size(xref.parent.activeInstances) > 0");
+        query.setParameter("qualifierMi", CvXrefQualifier.IDENTITY_MI_REF);
+        query.setParameter("uniprotMi", CvDatabase.UNIPROT_MI_REF);
+
+        return query.getResultList();
     }
 
     /**
