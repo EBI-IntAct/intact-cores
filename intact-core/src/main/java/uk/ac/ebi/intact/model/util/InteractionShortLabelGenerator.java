@@ -468,7 +468,7 @@ public class InteractionShortLabelGenerator {
             }
             // NOTE: if we called here to getCompleteLabel().length() it would cause an StackTraceError
             int labelLength = baitLabel.length() + preyLength;
-            if (suffix != null) labelLength = String.valueOf(suffix).length() + INTERACTION_SEPARATOR.length();
+            if (suffix != null) labelLength = labelLength + String.valueOf(suffix).length() + INTERACTION_SEPARATOR.length();
             return labelLength;
         }
 

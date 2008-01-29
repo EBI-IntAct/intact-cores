@@ -30,7 +30,7 @@ public class IntactObjectEventListener  {
     public void prePersist(Object object) {
         if (object instanceof AbstractAuditable) {
             if ( log.isDebugEnabled() ) {
-                log.debug( "Running @PrePersist on " + object );
+                log.debug( "Running @PrePersist/@PreUpdate on " + object );
             }
             AbstractAuditable auditable = (AbstractAuditable)object;
 

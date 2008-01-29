@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.Ignore;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -25,9 +24,6 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.context.DataContext;
-import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -762,6 +758,32 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         
         Interaction finalInteraction = reloadByAc(refreshedInteraction);
         Assert.assertEquals(2, finalInteraction.getComponents().size());
+    }
+
+    @Test
+    public void persist_shortLabelSync() throws Exception {
+        Interactor interactorA = getMockBuilder().createProtein("Q13158", "abcdefghijklmn");
+        Interactor interactorB = getMockBuilder().createProtein("Q14790", "zxcvbnmsasdfghj");
+        Component componentA = getMockBuilder().createComponentBait(interactorA);
+        Component componentB = getMockBuilder().createComponentPrey(interactorB);
+        Interaction interaction = getMockBuilder().createInteraction(componentA, componentB);
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals("abcdefghij-zxcvbnmsa", interaction.getShortLabel());
+
+        Component component1 = getMockBuilder().createComponentBait(interactorA);
+        Component component2 = getMockBuilder().createComponentPrey(interactorB);
+        
+        Interaction interaction2 = getMockBuilder().createInteraction(component1, component2);
+
+        PersisterHelper.saveOrUpdate(interaction2);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals("abcdefghi-zxcvbnms-1", interaction2.getShortLabel());
+
+        System.out.println(getDaoFactory().getInteractionDao().getAll());
     }
 
     private Interaction reloadByAc(Interaction interaction) {

@@ -364,9 +364,11 @@ public class IntactConfigurator {
                 institution.addXref(xref);
             }
 
-            institution.setFullName( fullName );
-            institution.setPostalAddress( postalAddress );
-            institution.setUrl( url );
+            if (!institutionLabel.equals(DEFAULT_INSTITUTION_LABEL)) {
+                institution.setFullName( fullName );
+                institution.setPostalAddress( postalAddress );
+                institution.setUrl( url );
+            }
 
             log.warn( "Institution does not exist. Will be created." );
             setInstitutionToBePersisted( session );
