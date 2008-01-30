@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.model.util.ExperimentUtils;
-import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -140,7 +139,12 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
 
     @PrePersist
     public void synchronizeShortLabel() {
-        String newShortLabel = ExperimentUtils.syncShortLabelWithDb(shortLabel, ExperimentUtils.getPubmedId( this ));
+        String newShortLabel = shortLabel;
+        try {
+            newShortLabel = ExperimentUtils.syncShortLabelWithDb(shortLabel, ExperimentUtils.getPubmedId( this ));
+        } catch (Exception e) {
+            log.error("Exception synchronizing the label, probably due to an invalid format: "+newShortLabel);;
+        }
 
         if (!shortLabel.equals(newShortLabel)) {
             if (log.isDebugEnabled()) log.debug("Experiment with label '"+shortLabel+"' renamed '"+newShortLabel+"'" );
