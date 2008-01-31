@@ -773,4 +773,5 @@ public class CorePersister implements Persister<AnnotatedObject> {
     public void setUpdateWithoutAcEnabled(boolean updateWithoutAcEnabled) {
         this.updateWithoutAcEnabled = updateWithoutAcEnabled;
     }
+
 }

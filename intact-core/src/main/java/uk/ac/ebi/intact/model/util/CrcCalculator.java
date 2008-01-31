@@ -113,6 +113,14 @@ public class CrcCalculator {
         // organism
         sb.append(createUniquenessString(experiment.getBioSource()));
 
+        // annotations
+        Set<Annotation> annotations = new TreeSet<Annotation>(new AnnotationComparator());
+        annotations.addAll(experiment.getAnnotations());
+
+        for (Annotation annotation : annotations) {
+            sb.append(createUniquenessString(annotation));
+        }
+
         return sb;
     }
 
