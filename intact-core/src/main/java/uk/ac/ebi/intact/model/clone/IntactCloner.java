@@ -65,6 +65,11 @@ public class IntactCloner {
         clonerManager = new ClonerManager();
     }
 
+    public IntactCloner(boolean excludeACs) {
+        this.excludeACs = excludeACs;
+        clonerManager = new ClonerManager();
+    }
+
     public <T extends IntactObject> T clone( T intactObject ) throws IntactClonerException {
 
         if ( intactObject == null ) return null;

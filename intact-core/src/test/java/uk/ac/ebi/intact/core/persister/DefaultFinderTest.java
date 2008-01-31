@@ -97,6 +97,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForExperiment() throws Exception {
         final Experiment e = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" );
+        e.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1"));
         PersisterHelper.saveOrUpdate( e );
 
         IntactCloner cloner = new IntactCloner();
@@ -107,6 +108,43 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         Assert.assertEquals( e.getAc(), ac );
 
         Assert.assertNull( finder.findAc( getMockBuilder().createExperimentEmpty( "samuel-2007-1", "123" ) ) );
+    }
+
+    @Test
+    public void findAcForExperiment_diffAnnotations_sameNumOfAnnots() throws Exception {
+        final Experiment exp1 = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" );
+        exp1.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1"));
+
+        PersisterHelper.saveOrUpdate( exp1 );
+
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
+
+        final Experiment exp2 = cloner.clone(exp1);
+        exp2.getAnnotations().clear();
+        exp2.addAnnotation(getMockBuilder().createAnnotation("annot2", "IA:0001", "topic1"));
+
+        String ac = finder.findAc(exp2);
+        Assert.assertNull( ac );
+    }
+
+    @Test
+    public void findAcForExperiment_diffAnnotations_diffNumOfAnnots() throws Exception {
+        final Experiment exp1 = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" );
+        exp1.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1"));
+        exp1.addAnnotation(getMockBuilder().createAnnotation("annot2", "IA:0001", "topic1"));
+
+        PersisterHelper.saveOrUpdate( exp1 );
+
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
+
+        final Experiment exp2 = cloner.clone(exp1);
+        exp2.getAnnotations().clear();
+        exp2.addAnnotation(getMockBuilder().createAnnotation("annot2", "IA:0001", "topic1"));
+
+        String ac = finder.findAc(exp2);
+        Assert.assertNull( ac );
     }
 
     @Test

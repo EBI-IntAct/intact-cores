@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.core.persister.finder;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.context.IntactContext;
@@ -27,6 +29,7 @@ import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -137,7 +140,8 @@ public class DefaultFinder implements Finder {
                                                    "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
                                                    "exp.bioSource.taxId = :taxId and " +
                                                    "exp.cvIdentification.miIdentifier = :participantDetMethodMi and " +
-                                                   "exp.cvInteraction.miIdentifier = :interactionTypeMi");
+                                                   "exp.cvInteraction.miIdentifier = :interactionTypeMi and " +
+                                                   "size(exp.annotations) = :annotationsSize");
             query.setParameter("pubId", pubId);
             query.setParameter("taxId", experiment.getBioSource().getTaxId());
 
@@ -147,14 +151,43 @@ public class DefaultFinder implements Finder {
             query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getMiIdentifier());
             query.setParameter("interactionTypeMi", experiment.getCvInteraction().getMiIdentifier());
 
+            query.setParameter("annotationsSize", experiment.getAnnotations().size());
+
         } else {
             log.warn("Experiment without publication, getting its AC using the shortLabel: "+experiment.getShortLabel());
             
-            query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel");
+            query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel and " +
+                                                   "size(exp.annotations) = :annotationsSize");
             query.setParameter("shortLabel", experiment.getShortLabel());
+
+            query.setParameter("annotationsSize", experiment.getAnnotations().size());
         }
 
-        return getFirstAcForQuery(query, experiment);
+        List<String> experimentAcs = query.getResultList();
+
+        String experimentAc = null;
+
+        if (experimentAcs.size() == 1 && experiment.getAnnotations().isEmpty()) {
+             experimentAc = experimentAcs.get(0);
+        } else {
+            // check the annotations
+            Collection<String> expAnnotDescs = CollectionUtils.collect(experiment.getAnnotations(), new BeanToPropertyValueTransformer("annotationText"));
+
+            for (String candidateExperimentAc : experimentAcs) {
+                Query annotQuery = getEntityManager().createQuery("select annot.annotationText from Experiment exp " +
+                                                                  "left join exp.annotations as annot " +
+                                                                  "where exp.ac = :experimentAc");
+                annotQuery.setParameter("experimentAc", candidateExperimentAc);
+                List<String> annotDescs = annotQuery.getResultList();
+
+                if (CollectionUtils.isEqualCollection(expAnnotDescs, annotDescs)) {
+                    experimentAc = candidateExperimentAc;
+                    break;
+                }
+            }
+        }
+
+        return experimentAc;
     }
 
     /**
@@ -164,8 +197,6 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForInteraction( Interaction interaction ) {
-        // replace all this eventually by just using the CRC
-
         CrcCalculator crcCalculator = new CrcCalculator();
         String interactionCrc = crcCalculator.crc64( interaction );
 

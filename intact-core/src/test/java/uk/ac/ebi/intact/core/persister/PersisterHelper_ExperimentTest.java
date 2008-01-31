@@ -160,36 +160,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
     }
 
-    @Test
-    public void existingExperiment_annotations() throws Exception {
-        Experiment expWithout = getMockBuilder().createExperimentRandom(1);
-        expWithout.setShortLabel("nopub-2006-1");
-        expWithout.setPublication(null);
-        expWithout.getXrefs().clear();
-        expWithout.getAliases().clear();
-        expWithout.getAnnotations().clear();
-
-        PersisterHelper.saveOrUpdate(expWithout);
-
-        Experiment expWith = getMockBuilder().createExperimentRandom(1);
-        expWith.setShortLabel("nopub-2006-1");
-        expWith.setPublication(null);
-        expWith.getXrefs().clear();
-        expWith.getAliases().clear();
-        expWith.getAnnotations().clear();
-
-        expWith.addAnnotation( getMockBuilder().createAnnotation( "comment", "MI:xxxx", "topic" ) );
-
-        CorePersister updaterPersister = new CorePersister();
-        updaterPersister.setUpdateWithoutAcEnabled(true);
-        
-        PersisterHelper.saveOrUpdate(updaterPersister,  expWith);
-
-        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
-
-        Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
-        Assert.assertEquals(1, reloadedExp.getAnnotations().size());
-    }
 
     @Test
     public void existingExperiment_aliases() throws Exception {
