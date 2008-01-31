@@ -140,8 +140,7 @@ public class DefaultFinder implements Finder {
                                                    "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
                                                    "exp.bioSource.taxId = :taxId and " +
                                                    "exp.cvIdentification.miIdentifier = :participantDetMethodMi and " +
-                                                   "exp.cvInteraction.miIdentifier = :interactionTypeMi and " +
-                                                   "size(exp.annotations) = :annotationsSize");
+                                                   "exp.cvInteraction.miIdentifier = :interactionTypeMi");
             query.setParameter("pubId", pubId);
             query.setParameter("taxId", experiment.getBioSource().getTaxId());
 
@@ -151,16 +150,11 @@ public class DefaultFinder implements Finder {
             query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getMiIdentifier());
             query.setParameter("interactionTypeMi", experiment.getCvInteraction().getMiIdentifier());
 
-            query.setParameter("annotationsSize", experiment.getAnnotations().size());
-
         } else {
             log.warn("Experiment without publication, getting its AC using the shortLabel: "+experiment.getShortLabel());
             
-            query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel and " +
-                                                   "size(exp.annotations) = :annotationsSize");
+            query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel");
             query.setParameter("shortLabel", experiment.getShortLabel());
-
-            query.setParameter("annotationsSize", experiment.getAnnotations().size());
         }
 
         List<String> experimentAcs = query.getResultList();

@@ -6,12 +6,11 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Index;
 import org.hibernate.validator.Length;
 
 import javax.persistence.*;
 import java.util.Collection;
-
-import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 /**
  * Represents a controlled vocabulary object. CvObject is derived from AnnotatedObject to allow to store annotation of
@@ -99,7 +98,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      */
     @Column(name = "mi_identifier", length = 10)
     @Length(max = 10)
-    //@Index (name = "cvobject_mi_identifier_idx")
+    @Index(name = "cvobject_mi_id_idx")
     public String getMiIdentifier() {
         return miIdentifier;
     }
