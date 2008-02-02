@@ -31,6 +31,7 @@
             <plugin>
                 <groupId>org.apache.myfaces.tobago</groupId>
                 <artifactId>maven-apt-plugin</artifactId>
+				<version>1.0.11</version>
                 <configuration>
                     <target>1.5</target>
                 </configuration>

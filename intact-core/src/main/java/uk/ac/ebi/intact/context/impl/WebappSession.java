@@ -27,9 +27,9 @@ public class WebappSession extends IntactSession {
 
     private static final Log log = LogFactory.getLog( WebappSession.class );
 
-    private HttpSession session;
-    private ServletContext servletContext;
-    private HttpServletRequest request;
+    private transient HttpSession session;
+    private transient ServletContext servletContext;
+    private transient HttpServletRequest request;
     private Map<String, String> overrideInitParamMap;
 
     public WebappSession( ServletContext servletContext, HttpSession session, HttpServletRequest request ) {

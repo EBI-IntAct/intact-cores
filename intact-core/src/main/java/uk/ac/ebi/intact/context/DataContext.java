@@ -29,7 +29,7 @@ public class DataContext implements Serializable {
 
     private static final Log log = LogFactory.getLog( DataContext.class );
 
-    private IntactSession session;
+    private transient IntactSession session;
 
     public DataContext( IntactSession session ) {
         this.session = session;

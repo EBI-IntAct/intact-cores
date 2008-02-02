@@ -33,7 +33,7 @@ public final class RuntimeConfig implements Serializable {
     private static final String APPLICATION_PARAM_NAME = RuntimeConfig.class.getName() + ".CONFIG";
     private static final String DEFAULT_DATA_CONFIG_PARAM_NAME = RuntimeConfig.class.getName() + ".DEFAULT_DATA_CONFIG";
 
-    private IntactSession session;
+    private transient IntactSession session;
 
     private Institution institution;
     private String acPrefix;

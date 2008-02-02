@@ -21,10 +21,10 @@ public class IntactContext implements Serializable {
 
     private static final Log log = LogFactory.getLog( IntactContext.class );
 
-    private IntactSession session;
+    private transient IntactSession session;
 
-    //private UserContext userContext;
-    private DataContext dataContext;
+    //privRuntimeate UserContext userContext;
+    private transient DataContext dataContext;
 
 
     protected IntactContext( DataContext dataContext, IntactSession session ) {
