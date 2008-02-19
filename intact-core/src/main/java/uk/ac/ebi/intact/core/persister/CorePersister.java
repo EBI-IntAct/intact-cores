@@ -428,7 +428,9 @@ public class CorePersister implements Persister<AnnotatedObject> {
         AnnotatedObject dbObject = dao.getByAc(ao.getAc());
 
         // copy the state from the managed object to the ao
-        entityStateCopier.copy(dbObject, ao);
+        if (dbObject != null) {
+            entityStateCopier.copy(dbObject, ao);
+        }
 
         if (ao instanceof InteractionImpl) {
             ((InteractionImpl)ao).calculateCrc();
