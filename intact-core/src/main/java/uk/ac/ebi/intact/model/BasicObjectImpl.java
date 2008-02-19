@@ -1,8 +1,9 @@
 package uk.ac.ebi.intact.model;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
 /**
  * New class which factors out owner and evidences from IntactObject.
@@ -44,21 +45,14 @@ public abstract class BasicObjectImpl extends IntactObjectImpl implements BasicO
     // access methods for associations
 
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne
     @JoinColumn( name = "owner_ac", nullable = false )
     public Institution getOwner() {
         return owner;
     }
 
     public void setOwner( Institution institution ) {
-        /*
-        if( institution == null ) {
-            throw new NullPointerException( "valid " + getClass().getName() + " must have an owner (Institution) !" );
-        }
-        */
         this.owner = institution;
-        // TODO: synchron ?
-        //this.ownerAc = institution.getAc();
     }
 
     ///////////////////////////////////////

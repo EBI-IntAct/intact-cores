@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.config.DataConfig;
 import uk.ac.ebi.intact.config.SchemaVersion;
 import uk.ac.ebi.intact.config.impl.EmptyCvPrimer;
 import uk.ac.ebi.intact.context.impl.IntactContextWrapper;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.InstitutionAlias;
 import uk.ac.ebi.intact.model.InstitutionXref;
@@ -406,21 +407,21 @@ public class IntactConfigurator {
         }
 
         DaoFactory daoFactory = getDefaultDaoFactory(context);
-        daoFactory.beginTransaction();
 
         if (institution.getAc() != null)  {
             log.warn("Institution already has an AC: '"+institution.getShortLabel()+"' ("+institution.getAc()+").");
             if (daoFactory.getInstitutionDao().getByAc(institution.getAc()) == null) {
                 log.debug("\tAnd does not exist in the DB. Replicating.");
+                daoFactory.beginTransaction();
                 daoFactory.getInstitutionDao().replicate(institution);
+                context.getDataContext().commitTransaction();
             } else {
                 log.debug("\tAnd already exists in the DB. Ignored.");
             }
         } else {
             log.debug("Persisting institution: " + institution.getShortLabel());
-            daoFactory.getInstitutionDao().persist(institution);
+            PersisterHelper.saveOrUpdate(institution);
         }
-        context.getDataContext().commitTransaction();
     }
 
     private static void persistSchemaVersionIfNecessary( IntactContext context ) {

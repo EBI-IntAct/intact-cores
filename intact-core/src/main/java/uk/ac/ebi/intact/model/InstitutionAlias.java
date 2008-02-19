@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.persistence.*;
 
 /**
- * Alias for the features
+ * Alias for the institution
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -31,16 +31,16 @@ import javax.persistence.*;
 @Table( name = "ia_institution_alias" )
 public class InstitutionAlias extends Alias {
 
-    private static final Log log = LogFactory.getLog( FeatureAlias.class );
+    private static final Log log = LogFactory.getLog( InstitutionAlias.class );
 
     public InstitutionAlias() {
     }
 
-    public InstitutionAlias( Institution anOwner, Feature feature, CvAliasType cvAliasType, String name ) {
-        super( anOwner, feature, cvAliasType, name );
+    public InstitutionAlias( Institution anOwner, Institution institution, CvAliasType cvAliasType, String name ) {
+        super( anOwner, institution, cvAliasType, name );
     }
 
-    @ManyToOne( targetEntity = Feature.class )
+    @ManyToOne( targetEntity = Institution.class )
     @JoinColumn( name = "parent_ac" )
     public AnnotatedObject getParent() {
         return super.getParent();
