@@ -204,6 +204,24 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void findAcForInteractor_acAsPrimaryId() {
+        final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
+        PersisterHelper.saveOrUpdate( p );
+        final String originalAc = p.getAc();
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
+        Protein protSameAc = getMockBuilder().createProteinRandom();
+        protSameAc.getXrefs().clear();
+        CvDatabase intactDb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+        protSameAc.addXref(getMockBuilder().createIdentityXref(protSameAc, originalAc, intactDb));
+
+        String ac = finder.findAc( protSameAc );
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( p.getAc(), ac );
+    }
+
+    @Test
     public void findAcForInteractor_uniprot_identity() {
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
         PersisterHelper.saveOrUpdate( p );

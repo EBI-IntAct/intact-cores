@@ -221,10 +221,24 @@ public class DefaultFinder implements Finder {
     protected <T extends InteractorImpl> String findAcForInteractor( T interactor ) {
         String ac = null;
 
+        // first check if the identities refer to the database itself
+        for (InteractorXref idXref : interactor.getXrefs()) {
+            if (CvXrefQualifier.IDENTITY_MI_REF.equals(idXref.getCvXrefQualifier().getMiIdentifier()) &&
+                xrefPointsToOwnAc(idXref)) {
+                // check if exists in the db
+                Query acQuery = getEntityManager().createQuery("select i.ac from " + CgLibUtil.removeCglibEnhanced(interactor.getClass()).getName() + " i " +
+                                                               "where i.ac = :ac ");
+                acQuery.setParameter("ac", idXref.getPrimaryId());
+
+                if (!acQuery.getResultList().isEmpty()) {
+                    return idXref.getPrimaryId();
+                }
+            }
+        }
+
         List<InteractorXref> identities = ProteinUtils.getIdentityXrefs(interactor, true);
 
         if (!identities.isEmpty()) {
-
             // get the first xref and retrieve all the interactors with that xref. We will filter later
             Query query = getEntityManager().createQuery("select i from " + CgLibUtil.removeCglibEnhanced(interactor.getClass()).getName() + " i " +
                                                          "join i.xrefs as xref " +
@@ -253,7 +267,25 @@ public class DefaultFinder implements Finder {
         return ac;
     }
 
-    
+    /**
+     *  
+     * @param xref the xref to check
+     * @return
+     */
+    private boolean xrefPointsToOwnAc(Xref xref) {
+        if (xref.getPrimaryId().startsWith(IntactContext.getCurrentInstance().getConfig().getAcPrefix())) {
+            return true;
+        } else {
+            for (InstitutionXref institutionXref : IntactContext.getCurrentInstance().getInstitution().getXrefs()) {
+                if (institutionXref.getPrimaryId().equals(xref.getCvDatabase().getMiIdentifier())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
 
     /**
      * Finds a biosource based on its properties.
