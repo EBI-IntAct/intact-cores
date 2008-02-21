@@ -90,4 +90,23 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(protein);
 
     }
+
+    @Test
+    public void protein_exists() throws Exception {
+        Protein prot = getMockBuilder().createDeterministicProtein("P12345", "lala");
+        CvXrefQualifier secondaryAc = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.SECONDARY_AC_MI_REF, CvXrefQualifier.SECONDARY_AC);
+        CvDatabase uniprotkb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
+        prot.addXref(getMockBuilder().createXref(prot, "Q88334", secondaryAc, uniprotkb));
+        PersisterHelper.saveOrUpdate(prot);
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
+        Protein sameProt = getMockBuilder().createDeterministicProtein("P12345", "lala");
+        Protein prot2 = getMockBuilder().createDeterministicProtein("Q99999", "koko");
+        Interaction interaction = getMockBuilder().createInteraction(sameProt, prot2);
+        
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+    }
 }

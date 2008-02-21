@@ -138,8 +138,11 @@ public class ProteinUtils {
 
         for (InteractorXref xref : interactor.getXrefs()) {
             if (excludeIdentitiesFromImexPartners) {
+                final String xrefQualMi = xref.getCvXrefQualifier().getMiIdentifier();
                 final String databaseMi = xref.getCvDatabase().getMiIdentifier();
-                if (!(CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
+
+                if (CvXrefQualifier.IDENTITY_MI_REF.equals(xrefQualMi) && 
+                    !(CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
                       CvDatabase.MINT_MI_REF.equals(databaseMi) ||
                       CvDatabase.DIP_MI_REF.equals(databaseMi))) {
 
