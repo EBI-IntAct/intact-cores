@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.*;
@@ -26,7 +28,12 @@ import java.util.*;
  * @version $Id$
  */
 public class ProteinUtils {
-    
+
+    /**
+     * Sets up a logger for that class.
+     */
+    private static final Log log = LogFactory.getLog(ProteinUtils.class);
+
     /**
      * Checks if the protein has been annotated with the no-uniprot-update CvTopic, if so, return false, otherwise true.
      * That flag is added to a protein when created via the editor. As some protein may have a UniProt ID as identity we
@@ -138,7 +145,14 @@ public class ProteinUtils {
 
         for (InteractorXref xref : interactor.getXrefs()) {
             if (excludeIdentitiesFromImexPartners) {
-                final String xrefQualMi = xref.getCvXrefQualifier().getMiIdentifier();
+
+                final CvXrefQualifier xrefQualifier = xref.getCvXrefQualifier();
+
+                if (xrefQualifier == null) {
+                    continue;
+                }
+
+                final String xrefQualMi = xrefQualifier.getMiIdentifier();
                 final String databaseMi = xref.getCvDatabase().getMiIdentifier();
 
                 if (CvXrefQualifier.IDENTITY_MI_REF.equals(xrefQualMi) && 
