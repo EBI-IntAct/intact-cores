@@ -222,9 +222,8 @@ public class DefaultFinder implements Finder {
         String ac = null;
 
         // first check if the identities refer to the database itself
-        for (InteractorXref idXref : interactor.getXrefs()) {
-            if (idXref.getCvXrefQualifier() != null && CvXrefQualifier.IDENTITY_MI_REF.equals(idXref.getCvXrefQualifier().getMiIdentifier()) &&
-                xrefPointsToOwnAc(idXref)) {
+        for (InteractorXref idXref : ProteinUtils.getIdentityXrefs(interactor)) {
+            if (xrefPointsToOwnAc(idXref)) {
                 // check if exists in the db
                 Query acQuery = getEntityManager().createQuery("select i.ac from " + CgLibUtil.removeCglibEnhanced(interactor.getClass()).getName() + " i " +
                                                                "where i.ac = :ac ");

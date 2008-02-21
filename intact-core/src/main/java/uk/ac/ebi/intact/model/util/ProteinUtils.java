@@ -144,26 +144,28 @@ public class ProteinUtils {
         List<InteractorXref> identities = new ArrayList<InteractorXref>();
 
         for (InteractorXref xref : interactor.getXrefs()) {
-            if (excludeIdentitiesFromImexPartners) {
-
-                final CvXrefQualifier xrefQualifier = xref.getCvXrefQualifier();
+            final CvXrefQualifier xrefQualifier = xref.getCvXrefQualifier();
 
                 if (xrefQualifier == null) {
                     continue;
                 }
 
-                final String xrefQualMi = xrefQualifier.getMiIdentifier();
-                final String databaseMi = xref.getCvDatabase().getMiIdentifier();
+            final String xrefQualMi = xrefQualifier.getMiIdentifier();
+            final String databaseMi = xref.getCvDatabase().getMiIdentifier();
 
-                if (CvXrefQualifier.IDENTITY_MI_REF.equals(xrefQualMi) && 
-                    !(CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
-                      CvDatabase.MINT_MI_REF.equals(databaseMi) ||
-                      CvDatabase.DIP_MI_REF.equals(databaseMi))) {
-
+            if (CvXrefQualifier.IDENTITY_MI_REF.equals(xrefQualMi)) {
+                if (excludeIdentitiesFromImexPartners) {
+                    if (!(CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
+                          CvDatabase.MINT_MI_REF.equals(databaseMi) ||
+                          CvDatabase.DIP_MI_REF.equals(databaseMi))) {
+                        identities.add(xref);
+                    }
+                } else {
                     identities.add(xref);
                 }
-            }
+            }            
         }
+
         return identities;
     }
 
