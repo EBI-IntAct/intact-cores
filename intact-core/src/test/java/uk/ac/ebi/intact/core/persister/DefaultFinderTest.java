@@ -317,6 +317,54 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void findAcForInteractor_noUniprotUpdate() throws Exception {
+
+        // p has one xref to uniprot
+        final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
+        p.setSequence( "ABCDEF" );
+        PersisterHelper.saveOrUpdate( p );
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getXrefDao(InteractorXref.class).countAll());
+
+        // p2 has one identity xrefs to uniprot
+        final Protein p2 = getMockBuilder().createProtein( "P12345", "foo" );
+        CvTopic noUniprotUpdate = getMockBuilder().createCvObject( CvTopic.class, null, CvTopic.NON_UNIPROT );
+        p2.addAnnotation( getMockBuilder().createAnnotation( "", noUniprotUpdate ) );
+        
+        Assert.assertNull( finder.findAc( p2 ) );
+    }
+
+    @Test
+    public void findAcForInteractor_noUniprotUpdate2() throws Exception {
+        CvTopic noUniprotUpdate = getMockBuilder().createCvObject( CvTopic.class, null, CvTopic.NON_UNIPROT );
+
+        // p has one xref to uniprot
+        final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
+        p.addAnnotation( getMockBuilder().createAnnotation( "", noUniprotUpdate ) );
+        p.setSequence( "ABCDEF" );
+        PersisterHelper.saveOrUpdate( p );
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getXrefDao(InteractorXref.class).countAll());
+
+        // p2 has one identity xrefs to uniprot
+        final Protein p2 = getMockBuilder().createProtein( "P12345", "foo" );
+        p2.addAnnotation( getMockBuilder().createAnnotation( "", noUniprotUpdate ) );
+
+        // check that it doesn't find the proteins if they have no-uniprot-update and different sequence
+        Assert.assertNull( finder.findAc( p2 ) );
+
+        // p2 has one identity xrefs to uniprot
+        final Protein p3 = getMockBuilder().createProtein( "P12345", "foo" );
+        p3.setSequence( "ABCDEF" );
+        p3.addAnnotation( getMockBuilder().createAnnotation( "", noUniprotUpdate ) );
+
+        // both have no-uniprot-update and the same sequence
+        Assert.assertEquals( p.getAc(), finder.findAc( p3 ) );
+    }
+
+    @Test
     public void findAcForBioSource_byAc() {
         final BioSource bs = getMockBuilder().createBioSource( 9606, "human" );
         PersisterHelper.saveOrUpdate( bs );

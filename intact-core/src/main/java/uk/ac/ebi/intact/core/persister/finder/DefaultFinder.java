@@ -237,7 +237,15 @@ public class DefaultFinder implements Finder {
 
         List<InteractorXref> identities = ProteinUtils.getIdentityXrefs(interactor, true);
 
+        // Strategy to find is a protein is already in the database:
+        // 1. Same set of identities (exclusive of IMEx partners') and no no-uniprot-update annotation
+        // 2. Same set of identities (exclusive of IMEx partners') and no-uniprot-update annotation and same sequence
+        //    note sequence would be checked on if the interactors are polymers.
+
         if (!identities.isEmpty()) {
+
+            final boolean hasNoUniprotUpdate = hasNoUniprotUpdateAnnotation( interactor );
+
             // get the first xref and retrieve all the interactors with that xref. We will filter later
             Query query = getEntityManager().createQuery("select i from " + CgLibUtil.removeCglibEnhanced(interactor.getClass()).getName() + " i " +
                                                          "join i.xrefs as xref " +
@@ -248,8 +256,38 @@ public class DefaultFinder implements Finder {
 
             for (Interactor interactorCandidate : interactors) {
                if (ProteinUtils.containTheSameIdentities(interactor, interactorCandidate)) {
-                   ac = interactorCandidate.getAc();
-                   break;
+
+                   if( log.isWarnEnabled() ) {
+                       if( interactor.getBioSource() != null && interactorCandidate.getBioSource() != null ) {
+                           final String t = interactor.getBioSource().getTaxId();
+                           final String tc = interactorCandidate.getBioSource().getTaxId();
+                           if( t != tc ) {
+                               log.warn( "Interactors with the same identity xref(s) but with different BioSource: " +
+                                         "["+ interactor.getShortLabel() +" / "+ interactor.getAc() +" / taxid:"+ t +"] and " +
+                                         "["+ interactorCandidate.getShortLabel() +" / "+ interactorCandidate.getAc() +" / taxid:"+ tc +"]" );
+                           }
+                       }
+                   }
+
+                   if( hasNoUniprotUpdate ) {
+                       if( hasNoUniprotUpdateAnnotation( interactorCandidate )) {
+                           // both have Annotation( no-uniprot-update ), check on the sequence
+                           if( interactor instanceof Polymer ) {
+                               final String sequence = ((Polymer) interactor).getSequence();
+                               final String sequenceCandidate = ((Polymer) interactorCandidate).getSequence();
+                               if( sequence.equals(sequenceCandidate) ) {
+                                   ac = interactorCandidate.getAc();
+                                   break;
+                               }
+                           }
+
+                       } else {
+                           // mismatch, keep trying ...
+                       }
+                   } else {
+                       ac = interactorCandidate.getAc();
+                       break;
+                   }
                }
             }
         } else {
@@ -264,6 +302,17 @@ public class DefaultFinder implements Finder {
         }
 
         return ac;
+    }
+
+    private boolean hasNoUniprotUpdateAnnotation( AnnotatedObject ao ) {
+
+        for ( Annotation annot : ao.getAnnotations() ) {
+            if( annot.getCvTopic().getShortLabel().equals( CvTopic.NON_UNIPROT ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -284,7 +333,6 @@ public class DefaultFinder implements Finder {
             return false;
         }
     }
-
 
     /**
      * Finds a biosource based on its properties.

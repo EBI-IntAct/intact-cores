@@ -22,7 +22,7 @@ import uk.ac.ebi.intact.model.*;
 import java.util.*;
 
 /**
- * Utility methods for Proteins
+ * Utility methods for Proteins.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -64,7 +64,6 @@ public class ProteinUtils {
      * @param protein a non null Protein object.
      * @return the uniprotkb identity xref if the protein has one, null otherwise.
      */
-
     public static InteractorXref getUniprotXref(Protein protein){
         if(protein == null){
             throw new NullPointerException("Protein is null, shouldn't be null");
@@ -155,6 +154,8 @@ public class ProteinUtils {
 
             if (CvXrefQualifier.IDENTITY_MI_REF.equals(xrefQualMi)) {
                 if (excludeIdentitiesFromImexPartners) {
+                    // TODO this has to be maintained in case we get new IMEx partners
+                    // TODO a work around could be to load the list of MI identities of all institutions present in the repository
                     if (!(CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
                           CvDatabase.MINT_MI_REF.equals(databaseMi) ||
                           CvDatabase.DIP_MI_REF.equals(databaseMi))) {

@@ -60,6 +60,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Protein protBeforeUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
         Assert.assertNotNull(protBeforeUpdate);
         Assert.assertEquals(1, protBeforeUpdate.getXrefs().size());
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
 
         Protein protUpdated = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt");
         CvXrefQualifier secondaryAc = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.SECONDARY_AC_MI_REF, CvXrefQualifier.SECONDARY_AC);
