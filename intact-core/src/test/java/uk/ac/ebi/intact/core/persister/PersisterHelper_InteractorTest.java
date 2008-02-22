@@ -69,7 +69,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         protUpdated.addXref(secondaryXref);
         PersisterHelper.saveOrUpdate(protUpdated);
 
-        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
         Protein protAfterUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
         Assert.assertNotNull(protAfterUpdate);
         Assert.assertEquals(1, protAfterUpdate.getXrefs().size());
