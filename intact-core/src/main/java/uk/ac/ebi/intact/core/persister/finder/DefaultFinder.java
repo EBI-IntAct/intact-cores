@@ -261,7 +261,7 @@ public class DefaultFinder implements Finder {
                        if( interactor.getBioSource() != null && interactorCandidate.getBioSource() != null ) {
                            final String t = interactor.getBioSource().getTaxId();
                            final String tc = interactorCandidate.getBioSource().getTaxId();
-                           if( t != tc ) {
+                           if( t != null && !t.equals(tc) ) {
                                log.warn( "Interactors with the same identity xref(s) but with different BioSource: " +
                                          "["+ interactor.getShortLabel() +" / "+ interactor.getAc() +" / taxid:"+ t +"] and " +
                                          "["+ interactorCandidate.getShortLabel() +" / "+ interactorCandidate.getAc() +" / taxid:"+ tc +"]" );

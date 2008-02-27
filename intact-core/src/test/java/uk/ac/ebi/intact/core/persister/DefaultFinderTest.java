@@ -257,6 +257,20 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void findAcForInteractor_uniprot_identity_differentDbRelease() {
+        final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
+        p.getXrefs().iterator().next().setDbRelease("unique_dbrelease");
+        PersisterHelper.saveOrUpdate( p );
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
+        // same xref, different dbreleas -> should work
+        String ac = finder.findAc( getMockBuilder().createProtein( "P12345", "abcd" ) );
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( p.getAc(), ac );
+    }
+
+    @Test
     public void findAcForInteractor_other_identity() {
         // small molecule doesn't not have a uniprot identity, we then fall back onto other identity (minus intact, dip, dip)
         final SmallMolecule sm = getMockBuilder().createSmallMolecule( "CHEBI:0001", "nice molecule" );

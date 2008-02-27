@@ -321,8 +321,6 @@ public abstract class Xref extends BasicObjectImpl {
             }
         }
 
-        if ( dbRelease != null ? !dbRelease.equals( xref.dbRelease ) : xref.dbRelease != null ) return false;
-
         return true;
     }
 
@@ -332,7 +330,6 @@ public abstract class Xref extends BasicObjectImpl {
         result = primaryId.hashCode();
         result = 29 * result + cvDatabase.hashCode();
         result = 29 * result + ( cvXrefQualifier != null ? cvXrefQualifier.hashCode() : 0 );
-        result = 29 * result + ( dbRelease != null ? dbRelease.hashCode() : 0 );
         return result;
     }
 
