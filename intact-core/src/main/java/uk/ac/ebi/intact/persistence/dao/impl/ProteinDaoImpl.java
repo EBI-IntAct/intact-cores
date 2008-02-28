@@ -158,15 +158,16 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
 
 
     public List<ProteinImpl> getByUniprotId( String uniprotId ) {
-        return getSession().createCriteria( getEntityClass() )
-                .createAlias( "xrefs", "xref" )
-                .createAlias( "xref.cvXrefQualifier", "qual" )
-                .createAlias( "xref.cvDatabase", "database" )
-                .createCriteria( "qual.xrefs", "qualXref" )
-                .createCriteria( "database.xrefs", "dbXref" )
-                .add( Restrictions.eq( "qualXref.primaryId", CvXrefQualifier.IDENTITY_MI_REF ) )
-                .add( Restrictions.eq( "dbXref.primaryId", CvDatabase.UNIPROT_MI_REF ) )
-                .add( Restrictions.eq( "xref.primaryId", uniprotId ) ).list();
+        return getByXrefLike(CvDatabase.UNIPROT_MI_REF, CvXrefQualifier.IDENTITY_MI_REF, uniprotId);
+//                getSession().createCriteria( getEntityClass() )
+//                .createAlias( "xrefs", "xref" )
+//                .createAlias( "xref.cvXrefQualifier", "qual" )
+//                .createAlias( "xref.cvDatabase", "database" )
+//                .createCriteria( "qual.xrefs", "qualXref" )
+//                .createCriteria( "database.xrefs", "dbXref" )
+//                .add( Restrictions.eq( "qualXref.primaryId", CvXrefQualifier.IDENTITY_MI_REF ) )
+//                .add( Restrictions.eq( "dbXref.primaryId", CvDatabase.UNIPROT_MI_REF ) )
+//                .add( Restrictions.eq( "xref.primaryId", uniprotId ) ).list();
     }
 
     /**

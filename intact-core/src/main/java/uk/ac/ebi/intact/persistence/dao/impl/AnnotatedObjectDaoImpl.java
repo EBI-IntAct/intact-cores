@@ -113,6 +113,18 @@ public class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends IntactObj
 
     }
 
+    public List<T> getByXrefLike( String databaseMi, String qualifierMi, String primaryId ) {
+        return getSession().createCriteria( getEntityClass() )
+                .createAlias( "xrefs", "xref" )
+                .createAlias( "xref.cvXrefQualifier", "qual" )
+                .createAlias( "xref.cvDatabase", "database" )
+                .createCriteria( "qual.xrefs", "qualXref" )
+                .createCriteria( "database.xrefs", "dbXref" )
+                .add( Restrictions.eq( "qualXref.primaryId", qualifierMi ) )
+                .add( Restrictions.eq( "dbXref.primaryId", databaseMi ) )
+                .add( Restrictions.eq( "xref.primaryId", primaryId ) ).list();
+    }
+
     public String getPrimaryIdByAc( String ac, String cvDatabaseShortLabel ) {
         return ( String ) getSession().createCriteria( getEntityClass() )
                 .add( Restrictions.idEq( ac ) )

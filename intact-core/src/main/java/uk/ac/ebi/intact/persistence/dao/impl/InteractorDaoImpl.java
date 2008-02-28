@@ -67,7 +67,6 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
                 .setProjection( Projections.countDistinct( "ac" ) ).uniqueResult();
     }
 
-
     public List<String> getGeneNamesByInteractorAc( String proteinAc ) {
         //the gene names are obtained from the Aliases for the Protein
         //which are of type 'gene name'...
