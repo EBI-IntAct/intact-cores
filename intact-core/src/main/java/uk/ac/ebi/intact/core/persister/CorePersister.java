@@ -189,7 +189,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 if (log.isTraceEnabled()) log.trace("New "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: PERSIST");
 
                 // doesn't exist in the database, we will persist it
-                annotatedObjectsToPersist.put( key, ao );
+                annotatedObjectsToPersist.forcePut( key, ao );
 
                 synchronizeChildren( ao );
 
