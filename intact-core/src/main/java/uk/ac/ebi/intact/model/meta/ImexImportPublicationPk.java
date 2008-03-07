@@ -20,6 +20,7 @@ import org.hibernate.validator.NotNull;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 import java.io.Serializable;
 
 /**
@@ -42,6 +43,7 @@ public class ImexImportPublicationPk implements Serializable {
      * @return
      */
     @ManyToOne
+    @JoinColumn(insertable = false, updatable = false)
     public ImexImport getImexImport() {
         return imexImport;
     }
