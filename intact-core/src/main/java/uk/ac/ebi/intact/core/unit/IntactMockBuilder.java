@@ -619,7 +619,7 @@ public class IntactMockBuilder {
      //////////////////////
     // Confidence
      public Confidence createDeterministicConfidence() {
-        CvConfidenceType cvConfidenceType = createCvObject( CvConfidenceType.class, "IA:9974", "intact-confidence");
+        CvConfidenceType cvConfidenceType = createCvObject( CvConfidenceType.class, "IA:9974", "intact confidence");
         Confidence conf = createConfidence( cvConfidenceType, "0.8");
         return conf;
     }
