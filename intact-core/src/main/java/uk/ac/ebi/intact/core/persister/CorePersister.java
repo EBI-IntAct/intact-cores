@@ -60,6 +60,11 @@ public class CorePersister implements Persister<AnnotatedObject> {
      */
     private boolean updateWithoutAcEnabled;
 
+    /**
+     * If false, no statistics are gathered (recommended for production or massive persistences
+     */
+    private boolean statisticsEnabled = true;
+
     private PersisterStatistics statistics;
 
     public CorePersister() {
@@ -168,7 +173,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                     log.debug("Duplicated "+ao.getClass().getSimpleName()+": [new:["+ao+"]] duplicates [synch:["+synchedAo+"]]");
                 }
 
-                statistics.addDuplicate(ao);
+                if (statisticsEnabled) statistics.addDuplicate(ao);
             }
 
             ao = synchedAo;
@@ -220,17 +225,17 @@ public class CorePersister implements Persister<AnnotatedObject> {
                     copyAnnotatedObjectAttributeAcs(managedObject, ao);
 
                     if (copied) {
-                        statistics.addMerged(managedObject);
+                        if (statisticsEnabled) statistics.addMerged(managedObject);
 
                         // synchronize the children
                         synchronizeChildren(managedObject);
 
                     } else {
-                       statistics.addDuplicate(ao);
+                       if (statisticsEnabled) statistics.addDuplicate(ao);
                     }
                 } else {
                     if (log.isTraceEnabled()) log.trace("New (but found in database: "+ ac +") "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
-                    statistics.addDuplicate(ao);
+                    if (statisticsEnabled) statistics.addDuplicate(ao);
 
                     ao.setAc(ac);
                 }
@@ -247,7 +252,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 // transient object: that is not attached to the session
                 //ao = transientObjectHandler.handle( ao );
 
-                statistics.addTransient(ao);
+                if (statisticsEnabled) statistics.addTransient(ao);
 
                 // object exists in the database, we will update it
                 final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
@@ -461,7 +466,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
             } else {
 
                 daoFactory.getBaseDao().persist( ao );
-                statistics.addPersisted(ao);
+                if (statisticsEnabled) statistics.addPersisted(ao);
                 logPersistence( ao );
             }
         }
@@ -482,7 +487,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
                 throw new IllegalStateException( "Object to persist should have an AC: " + DebugUtil.annotatedObjectToString(ao, true));
             } else {
                 daoFactory.getBaseDao().merge( ao );
-                statistics.addMerged(ao);
+                if (statisticsEnabled)  statistics.addMerged(ao);
                 logPersistence( ao );
             }
         }
@@ -492,11 +497,17 @@ public class CorePersister implements Persister<AnnotatedObject> {
             daoFactory.getEntityManager().flush();
         } catch ( Throwable t ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("Exception when flushing the Persister, which contained: \n");
-            sb.append(statistics).append("\n");
-            sb.append("Persisted entities: ").append(statistics.getPersistedMap().values()).append("\n");
-            sb.append("Merged entities: ").append(statistics.getMergedMap().values()).append("\n");
-            sb.append("Transient entities: ").append(statistics.getTransientMap().values()).append("\n");
+            sb.append("Exception when flushing the Persister");
+
+            if (statisticsEnabled) {
+                sb.append(", which contained: \n");
+                sb.append(statistics).append("\n");
+                sb.append("Persisted entities: ").append(statistics.getPersistedMap().values()).append("\n");
+                sb.append("Merged entities: ").append(statistics.getMergedMap().values()).append("\n");
+                sb.append("Transient entities: ").append(statistics.getTransientMap().values()).append("\n");
+            } else {
+                sb.append(" - No data about the entities (statistics are disabled)");
+            }
             throw new PersisterException( sb.toString(), t );
         } finally {
             annotatedObjectsToMerge.clear();
@@ -776,4 +787,11 @@ public class CorePersister implements Persister<AnnotatedObject> {
         this.updateWithoutAcEnabled = updateWithoutAcEnabled;
     }
 
+    public boolean isStatisticsEnabled() {
+        return statisticsEnabled;
+    }
+
+    public void setStatisticsEnabled(boolean statisticsEnabled) {
+        this.statisticsEnabled = statisticsEnabled;
+    }
 }
