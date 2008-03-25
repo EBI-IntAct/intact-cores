@@ -119,7 +119,8 @@ public class ImexImport extends AbstractAuditable {
         this.repository = repository;
     }
 
-    @OneToMany ( targetEntity = ImexImportPublication.class,cascade = CascadeType.PERSIST )
+    @OneToMany ( targetEntity = ImexImportPublication.class, mappedBy = "pk.imexImport",
+                 cascade = CascadeType.PERSIST )
     @ForeignKey(name = "fk_ImexImport_imexImportPub", inverseName = "fk_ImexImportPub_imexImport")
     public List<ImexImportPublication> getImexImportPublications() {
         if (imexImportPublications == null) {

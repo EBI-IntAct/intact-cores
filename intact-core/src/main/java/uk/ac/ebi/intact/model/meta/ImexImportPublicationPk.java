@@ -17,10 +17,7 @@ package uk.ac.ebi.intact.model.meta;
 
 import org.hibernate.validator.NotNull;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
