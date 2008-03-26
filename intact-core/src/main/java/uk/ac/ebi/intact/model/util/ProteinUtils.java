@@ -43,7 +43,7 @@ public class ProteinUtils {
      *
      * @return true if uniprot
      */
-    public static boolean isFromUniprot( Interactor protein ) {
+    public static boolean isFromUniprot( Protein protein ) {
         boolean isFromUniprot = true;
         
         for (Annotation annotation : protein.getAnnotations()) {
