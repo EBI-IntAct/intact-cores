@@ -43,7 +43,7 @@ public class ProteinUtils {
      *
      * @return true if uniprot
      */
-    public static boolean isFromUniprot( Protein protein ) {
+    public static boolean isFromUniprot( Interactor protein ) {
         boolean isFromUniprot = true;
         
         for (Annotation annotation : protein.getAnnotations()) {
@@ -64,7 +64,7 @@ public class ProteinUtils {
      * @param protein a non null Protein object.
      * @return the uniprotkb identity xref if the protein has one, null otherwise.
      */
-    public static InteractorXref getUniprotXref(Protein protein){
+    public static InteractorXref getUniprotXref(Interactor protein){
         if(protein == null){
             throw new NullPointerException("Protein is null, shouldn't be null");
         }
