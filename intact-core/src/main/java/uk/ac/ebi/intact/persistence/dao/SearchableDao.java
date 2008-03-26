@@ -30,7 +30,7 @@ import java.util.Map;
 @Mockable
 public interface SearchableDao extends BaseDao<AnnotatedObjectImpl> {
 
-    static final Class<? extends Searchable>[] STANDARD_SEARCHABLES = new Class[]{Experiment.class, InteractionImpl.class, ProteinImpl.class, NucleicAcidImpl.class, CvObject.class};
+    static final Class<? extends Searchable>[] STANDARD_SEARCHABLES = new Class[]{Experiment.class, InteractionImpl.class, ProteinImpl.class, NucleicAcidImpl.class, CvObject.class, SmallMoleculeImpl.class};
 
     Integer countByQuery( Class<? extends Searchable> searchableClass, SearchableQuery query );
 
