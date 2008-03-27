@@ -60,7 +60,7 @@ public class ProteinUtils {
 
 
     public static InteractorXref getUniprotXref(Protein protein){
-        return getUniprotXref(protein);
+        return getUniprotXref((Interactor)protein);
     }
     
     /**
