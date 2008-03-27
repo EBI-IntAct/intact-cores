@@ -193,7 +193,7 @@ public class XrefUtils {
      * @param databaseMi the database MI to look for
      * @return list of Xrefs
      */
-    public static <X extends Xref> List<X> getXrefsFromDatabase(AnnotatedObject<X,?> annotatedObject, String databaseMi) {
+    public static <X extends Xref> List<X> getXrefsFilteredByDatabase(AnnotatedObject<X,?> annotatedObject, String databaseMi) {
         if (annotatedObject == null) throw new NullPointerException("Null annotatedObject");
         if (databaseMi == null) throw new NullPointerException("Database MI Identifier is mandatory");
 
