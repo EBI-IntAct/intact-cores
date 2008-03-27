@@ -57,6 +57,12 @@ public class ProteinUtils {
         return isFromUniprot;
     }
 
+
+
+    public static InteractorXref getUniprotXref(Protein protein){
+        return getUniprotXref(protein);
+    }
+    
     /**
      * Return the xref of the protein having as cvQualifier, the CvQualifier with psi-mi equal to
      * CvXrefQualifier.IDENTITY_MI_REF and as cvDatabase, the CvDatabase with psi-mi equal to CvDatabase.UNIPROT_MI_REF
