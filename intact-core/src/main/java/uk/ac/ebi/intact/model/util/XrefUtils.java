@@ -23,6 +23,7 @@ import uk.ac.ebi.intact.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Utils with xrefs
@@ -184,5 +185,24 @@ public class XrefUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Gets all the Xrefs for the CvDatabase with the passed mi identifier
+     * @param annotatedObject the Object with the xrefs
+     * @param databaseMi the database MI to look for
+     * @return list of Xrefs
+     */
+    public static <X extends Xref> List<X> getXrefsFromDatabase(AnnotatedObject<X,?> annotatedObject, String databaseMi) {
+        if (annotatedObject == null) throw new NullPointerException("Null annotatedObject");
+        if (databaseMi == null) throw new NullPointerException("Database MI Identifier is mandatory");
+
+        List<X> xrefs = new ArrayList<X>();
+        for (X xref : annotatedObject.getXrefs()) {
+            if (databaseMi.equals(xref.getCvDatabase().getMiIdentifier())) {
+                xrefs.add(xref);
+            }
+        }
+        return xrefs;
     }
 }
