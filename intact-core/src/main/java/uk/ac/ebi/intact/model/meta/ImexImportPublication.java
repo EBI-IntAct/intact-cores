@@ -28,7 +28,7 @@ import javax.persistence.*;
  * @version $Id$
  */
 @Entity (name = "ia_imex_import_pub")
-@org.hibernate.annotations.Table (appliesTo = "ia_imex_import_publication",
+@org.hibernate.annotations.Table (appliesTo = "ia_imex_import_pub",
                                   comment = "Table used to track the IMEx imported publications")
 public class ImexImportPublication extends AbstractAuditable {
 
