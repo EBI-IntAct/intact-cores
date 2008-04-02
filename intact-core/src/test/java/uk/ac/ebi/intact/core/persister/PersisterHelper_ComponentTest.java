@@ -34,6 +34,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         Assert.assertFalse(newComponent.getParticipantDetectionMethods().isEmpty());
         Assert.assertFalse(newComponent.getExperimentalPreparations().isEmpty());
+        Assert.assertFalse(newComponent.getParameters().isEmpty());
 
         assertFalse(newComponent.getCvExperimentalRole().getXrefs().isEmpty());
     }
@@ -45,6 +46,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(1, component.getBindingDomains().size());
+        Assert.assertEquals(1, component.getParameters().size());
 
         getDaoFactory().getEntityManager().clear();
         getDaoFactory().getEntityManager().close();

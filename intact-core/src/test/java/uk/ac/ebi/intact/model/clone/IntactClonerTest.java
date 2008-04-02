@@ -141,4 +141,14 @@ public class IntactClonerTest extends IntactBasicTestCase {
     public void cloneConfidence() throws Exception {
         clone( getMockBuilder().createConfidenceRandom());
     }
+     
+     @Test
+     public void cloneInteractionParameter() throws Exception {
+         clone( getMockBuilder().createDeterministicInteractionParameter());
+     }
+     
+     @Test
+     public void cloneComponentParameter() throws Exception {
+         clone( getMockBuilder().createDeterministicComponentParameter());
+     }
 }

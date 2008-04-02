@@ -52,7 +52,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     private float stoichiometry = STOICHIOMETRY_NOT_DEFINED;
 
     /**
-     * TODO Represents ...
+     * The species the interactor was expressed into for the purpose of this interaction.
      */
     private BioSource expressedIn;
 
@@ -60,12 +60,12 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     // associations
 
     /**
-     * TODO comments
+     * the interactor involved in this component's interaction.
      */
     private Interactor interactor;
 
     /**
-     * TODO comments
+     * the interaction this component in involved into.
      */
     private Interaction interaction;
 
@@ -74,6 +74,9 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     private Collection<Feature> bindingDomains = new ArrayList<Feature>();
 
+    /**
+     * @Deprecated was replaced by experimental and biological role.
+     */
     private CvComponentRole componentRole;
 
     /**
@@ -102,6 +105,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * Experimental preparations for this component. The allowed terms can be found in this URL http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI&termId=MI%3A0346&termName=experimental%20preparation
      */
     private Collection<CvExperimentalPreparation> experimentalPreparations;
+    
+    /**
+     * Parameters for this component. The allowed terms can be found in this URL http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI&termId=MI%3A0640&termName=parameter%20type
+     */
+    private Collection<ComponentParameter> componentParameters;
 
     ///////////////////////
     // Constructor
@@ -112,12 +120,14 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     public Component() {
         //super call sets creation time data
         super();
+        this.componentParameters = new ArrayList<ComponentParameter>();
     }
 
     public Component( Institution owner, Interaction interaction, Interactor interactor,
                       CvExperimentalRole experimentRole, CvBiologicalRole biologicalRole ) {
 
         this( owner, NON_APPLICABLE, interaction, interactor, experimentRole, biologicalRole );
+        this.componentParameters = new ArrayList<ComponentParameter>();
     }
 
     /**
@@ -167,6 +177,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
         this.experimentalRole = experimentalRole;
         this.biologicalRole = biologicalRole;
+        
+        this.componentParameters = new ArrayList<ComponentParameter>();
     }
 
     ///////////////////////////////////////
@@ -283,6 +295,39 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     public void setStoichiometry( float stoichiometry ) {
         this.stoichiometry = stoichiometry;
+    }
+    
+    /**
+     * Getter for property 'componentParameters'.
+     *
+     * @return list of items for property 'componentParameters'.
+     */
+    @OneToMany( mappedBy = "component", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    public Collection<ComponentParameter> getParameters() {
+        return this.componentParameters;
+    }
+
+    /**
+     * Setter for property 'componentParameter'.
+     *
+     * @param componentParameters collection to set for property 'componentParameters'.
+     */
+    public void setParameters( Collection<ComponentParameter> componentParameters) {
+        if( componentParameters == null ) {
+            throw new IllegalArgumentException( "You must give a non null collection of parameters." );
+        }
+        this.componentParameters = componentParameters;
+    }
+    
+    public void addParameter( ComponentParameter componentParameter ) {
+        if ( !this.componentParameters.contains( componentParameter ) ) {
+            this.componentParameters.add( componentParameter );
+            componentParameter.setComponent(this);
+        }
+    }
+
+    public void removeParameter( ComponentParameter componentParameter ) {
+        this.componentParameters.remove( componentParameter );
     }
 
     /**
@@ -606,7 +651,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     @Override
     public int hashCode() {
-        /* TODO: Take features into account when they are implemented. */
         int code = 29;
 
         //need these checks because we still have a no-arg

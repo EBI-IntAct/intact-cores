@@ -64,4 +64,12 @@ public interface Interaction extends Interactor {
     void removeConfidence( Confidence confidence );
 
     Collection<Confidence> getConfidences();
+    
+    void setParameters( Collection<InteractionParameter> interactionParameters );
+
+    void addParameter( InteractionParameter interactionParameter );
+
+    void removeParameter( InteractionParameter interactionParameter );
+
+    Collection<InteractionParameter> getParameters();
 }

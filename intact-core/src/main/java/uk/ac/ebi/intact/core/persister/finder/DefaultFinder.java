@@ -152,7 +152,7 @@ public class DefaultFinder implements Finder {
 
         } else {
             log.warn("Experiment without publication, getting its AC using the shortLabel: "+experiment.getShortLabel());
-            
+
             query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel");
             query.setParameter("shortLabel", experiment.getShortLabel());
         }
@@ -316,7 +316,7 @@ public class DefaultFinder implements Finder {
     }
 
     /**
-     *  
+     *
      * @param xref the xref to check
      * @return
      */
