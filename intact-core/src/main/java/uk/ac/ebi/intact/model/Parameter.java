@@ -18,9 +18,10 @@ package uk.ac.ebi.intact.model;
 import javax.persistence.*;
 
 /**
- * Represents a specific parameter value of an interaction.
+ * Represents a parameter value.
  *
  * @author Julie Bourbeillon (julie.bourbeillon@labri.fr)
+ * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  * @since 1.9.0
  */
@@ -28,18 +29,44 @@ import javax.persistence.*;
 @MappedSuperclass
 public abstract class Parameter extends BasicObjectImpl {
 
-    protected Integer base;
-    protected Integer exponent;
+    public static final Integer DEFAULT_BASE = 10;
+
+    public static final Integer DEFAULT_EXPONENT = 0;
+
+    /**
+     * Base of the parameter value.
+     */
+    protected Integer base = DEFAULT_BASE;
+
+    /**
+     * Exponent of the parameter value.
+     */
+    protected Integer exponent = DEFAULT_EXPONENT;
+
+    /**
+     * The "main" value of the parameter.
+     */
     protected Double factor;
+
+    /**
+     * Uncertainty of the parameter value.
+     */
     protected Double uncertainty;
-	protected CvParameterType cvParameterType;
+
+    /**
+     * The kind of parameter, e.g. "dissociation constant".
+     */
+    protected CvParameterType cvParameterType;
+
+    /**
+     * The unit of the term, e.g. "kiloDalton".
+     */
     protected CvParameterUnit cvParameterUnit;
+
     protected Experiment experiment;
 
 	public Parameter() {
 		super();
-		this.base = 10;
-		this.exponent = 0;
 	}
 
 	public Parameter( Institution owner, CvParameterType cvParameterType, Double factor ) {
@@ -64,6 +91,9 @@ public abstract class Parameter extends BasicObjectImpl {
     }
 
 	public void setFactor( Double factor ) {
+        if( factor == null ) {
+            throw new IllegalArgumentException( "You must set a non null factor." );
+        }
         this.factor = factor;
     }
 
@@ -104,6 +134,9 @@ public abstract class Parameter extends BasicObjectImpl {
     }
 
 	public void setCvParameterType( CvParameterType cvParameterType ) {
+        if( cvParameterType == null ) {
+            throw new IllegalArgumentException( "You must give a non null CvParameterType." );
+        }
         this.cvParameterType = cvParameterType;
     }
 
@@ -122,11 +155,9 @@ public abstract class Parameter extends BasicObjectImpl {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((base == null) ? 0 : base.hashCode());
-		result = prime * result
-				+ ((exponent == null) ? 0 : exponent.hashCode());
+		result = prime * result + ((exponent == null) ? 0 : exponent.hashCode());
 		result = prime * result + ((factor == null) ? 0 : factor.hashCode());
-		result = prime * result
-				+ ((uncertainty == null) ? 0 : uncertainty.hashCode());
+		result = prime * result + ((uncertainty == null) ? 0 : uncertainty.hashCode());
 		return result;
 	}
 
@@ -162,5 +193,19 @@ public abstract class Parameter extends BasicObjectImpl {
 		return true;
 	}
 
-
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "Parameter{" );
+        sb.append( ( cvParameterType != null ? cvParameterType.getShortLabel(): "" )).append( ": " );
+        sb.append( factor ).append( '.' );
+        sb.append( base );
+        sb.append("e").append( exponent );
+        if( uncertainty != null ) {
+        sb.append( " +/- " ).append( uncertainty );
+        }
+        sb.append( " " ).append( ( cvParameterUnit != null ? cvParameterUnit.getShortLabel(): "" ) );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }
