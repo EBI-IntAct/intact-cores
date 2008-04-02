@@ -70,11 +70,6 @@ public class ParameterTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void setGetExperiment() throws Exception {
-        fail( "Not yet implemented." );
-    }
-
-    @Test
     public void setGetCvParameterType() throws Exception {
         Parameter p = new InteractionParameter( );
         Assert.assertEquals( null, p.getCvParameterType() );
