@@ -49,6 +49,13 @@ public class PersisterStatistics implements Serializable {
         this.transientMap = new ArrayListMultimap<Class, StatsUnit>();
     }
 
+    public void reset() {
+        this.persistedMap.clear();
+        this.mergedMap.clear();
+        this.duplicatesMap.clear();
+        this.transientMap.clear();
+    }
+
     // persisted
 
     public void addPersisted(AnnotatedObject ao) {
