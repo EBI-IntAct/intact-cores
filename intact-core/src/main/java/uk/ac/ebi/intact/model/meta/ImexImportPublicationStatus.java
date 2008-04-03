@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.model.meta;
 
 /**
- * Status of an Imex Imported publication
+ * Status of an Imex Imported publication.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -24,17 +24,17 @@ package uk.ac.ebi.intact.model.meta;
 public enum ImexImportPublicationStatus {
 
     /**
-     * The publication was processed correctly
+     * The publication was processed correctly.
      */
     OK,
 
     /**
-     * The publication was found but couldn't be processed
+     * The publication was found but couldn't be processed.
      */
     ERROR,
 
     /**
-     * The publication was not found in the repository
+     * The publication was not found in the repository.
      */
     NOT_FOUND
 

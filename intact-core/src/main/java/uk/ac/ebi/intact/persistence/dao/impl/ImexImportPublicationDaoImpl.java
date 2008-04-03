@@ -41,10 +41,10 @@ public class ImexImportPublicationDaoImpl extends HibernateBaseDaoImpl<ImexImpor
      * @return
      */
     public List<ImexImportPublication> getFailed() {
-        Query query = getEntityManager().createQuery("from uk.ac.ebi.intact.model.meta.ImexImportPublication " +
-                                                     "where status = :failedStatus and pmid not in (" +
-                                                     "select pmid from uk.ac.ebi.intact.model.meta.ImexImportPublication " +
-                                                     "where status = :okStatus)");
+        Query query = getEntityManager().createQuery("select iip from uk.ac.ebi.intact.model.meta.ImexImportPublication iip " +
+                                                     "where iip.status = :failedStatus and iip.pk.pmid not in ( " +
+                                                     "select iip2.pk.pmid from uk.ac.ebi.intact.model.meta.ImexImportPublication iip2 " +
+                                                     "where iip2.status = :okStatus )");
         query.setParameter("failedStatus", ImexImportPublicationStatus.ERROR);
         query.setParameter("okStatus", ImexImportPublicationStatus.OK);
 
@@ -52,8 +52,8 @@ public class ImexImportPublicationDaoImpl extends HibernateBaseDaoImpl<ImexImpor
     }
 
     public List<ImexImportPublication> getByPmid(String pmid) {
-        Query query = getEntityManager().createQuery("from uk.ac.ebi.intact.model.meta.ImexImportPublication " +
-                                                     "where pmid = :pmid");
+        Query query = getEntityManager().createQuery("select iip from uk.ac.ebi.intact.model.meta.ImexImportPublication iip " +
+                                                     "where iip.pk.pmid = :pmid");
         query.setParameter("pmid", pmid);
 
         return query.getResultList();
