@@ -24,8 +24,10 @@
     <profile>
       <id>tools.jar</id>
       <activation>
-        <!-- needs maven 2.0.3 or higher under Mac OS X -->
-        <os><family>!mac</family></os>
+        <property>
+          <name>java.vendor</name>
+          <value>Sun Microsystems Inc.</value>
+       </property>
       </activation>
       <dependencies>
         <dependency>
