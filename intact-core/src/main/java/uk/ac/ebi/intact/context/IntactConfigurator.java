@@ -373,6 +373,10 @@ public class IntactConfigurator {
 
             log.warn( "Institution does not exist. Will be created." );
             setInstitutionToBePersisted( session );
+        } else {
+            // prefetch xrefs
+            institution = daoFactory
+                .getInstitutionDao().getByAc(institution.getAc(), true);
         }
 
         RuntimeConfig.getCurrentInstance( session ).setInstitution( institution );

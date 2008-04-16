@@ -23,6 +23,8 @@ import java.util.List;
 @Mockable
 public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObjectDao<T> {
 
+    T getByAc(String ac, boolean prefetchXrefs);
+
     T getByShortLabel( String value );
 
     T getByShortLabel( String value, boolean ignoreCase );

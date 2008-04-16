@@ -259,7 +259,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return getQueryByPropertyName( propertyName, value, ignoreCase ).getResultList();
     }
 
-    private Query getQueryByPropertyName(String propertyName, String value, boolean ignoreCase) {
+    protected Query getQueryByPropertyName(String propertyName, String value, boolean ignoreCase) {
         Query query;
 
         if (ignoreCase) {

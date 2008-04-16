@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.persistence.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
@@ -41,6 +42,17 @@ public class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends IntactObj
 
     public AnnotatedObjectDaoImpl( Class<T> entityClass, EntityManager entityManager, IntactSession intactSession ) {
         super( entityClass, entityManager, intactSession );
+    }
+
+    public T getByAc(String ac, boolean prefetchXrefs) {
+        Criteria criteria = getSession().createCriteria(getEntityClass())
+                .add(Restrictions.eq("ac", ac));
+
+        if (prefetchXrefs) {
+            criteria.setFetchMode("xrefs", FetchMode.JOIN);
+        }
+
+        return (T) criteria.uniqueResult();
     }
 
     public T getByShortLabel( String value ) {
