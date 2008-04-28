@@ -143,8 +143,6 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         copyCollection( source.getExperiments(), target.getExperiments() );
 
         copyCollection( source.getConfidences(), target.getConfidences() );
-        
-        copyCollection( source.getParameters(), target.getParameters() );
 
         copyInteractorCommons( source, target );
 
@@ -196,7 +194,6 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
         copyCollection( source.getExperimentalPreparations(), target.getExperimentalPreparations() );
         copyCollection( source.getParticipantDetectionMethods(), target.getParticipantDetectionMethods() );
-        copyCollection( source.getParameters(), target.getParameters() );
     }
 
     protected void copyFeature( Feature source, Feature target ) {

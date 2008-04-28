@@ -15,15 +15,14 @@
  */
 package uk.ac.ebi.intact.core.persister.stats;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.ArrayListMultimap;
-
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 
 /**

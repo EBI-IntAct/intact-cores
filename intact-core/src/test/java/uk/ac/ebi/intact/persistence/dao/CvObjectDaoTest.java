@@ -102,11 +102,4 @@ public class CvObjectDaoTest extends IntactBasicTestCase {
         Assert.assertNotNull( mis );
         Assert.assertEquals( 3, mis.size() );
     }
-
-    @Test
-    public void getAll() throws Exception {
-        DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
-        final Collection<CvObject> cvs = daoFactory.getCvObjectDao().getAll();
-        Assert.assertTrue( cvs.size() > 0 );
-    }
 }
