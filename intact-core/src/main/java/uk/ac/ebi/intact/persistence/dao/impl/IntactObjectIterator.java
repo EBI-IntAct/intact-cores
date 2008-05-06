@@ -20,13 +20,12 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
-import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.config.impl.AbstractHibernateDataConfig;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.persistence.dao.IntactObjectDao;
-import uk.ac.ebi.intact.persistence.dao.IntactTransaction;
 
+import javax.persistence.EntityTransaction;
 import java.util.Iterator;
 import java.util.List;
 
@@ -135,15 +134,15 @@ public class IntactObjectIterator<T extends IntactObject> implements Iterator<T>
         }
 
         if ( chunkIterator == null ) {
-            IntactTransaction tx = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getCurrentTransaction();
+            EntityTransaction tx = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getCurrentTransaction();
             try {
                 tx.commit();
-            } catch ( IntactTransactionException ie ) {
+            } catch ( Exception ie ) {
                 log.error( "Exception commiting " + ie );
                 try {
                     tx.rollback();
-                } catch ( IntactTransactionException i ) {
-                    log.error( "Exception rolling back " + ie );
+                } catch (Exception e) {
+                    log.error(e);
                 }
             } finally {
                 Session hibernateSession = getSession();

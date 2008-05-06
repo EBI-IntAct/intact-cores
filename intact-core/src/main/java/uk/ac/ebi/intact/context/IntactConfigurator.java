@@ -22,8 +22,8 @@ import uk.ac.ebi.intact.model.meta.DbInfo;
 import uk.ac.ebi.intact.model.util.AliasUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.persistence.dao.IntactTransaction;
 
+import javax.persistence.EntityTransaction;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -246,12 +246,12 @@ public class IntactConfigurator {
 
         DaoFactory daoFactory = DaoFactory.getCurrentInstance( session, RuntimeConfig.getCurrentInstance( session ).getDefaultDataConfig() );
 
-        IntactTransaction tx = daoFactory.beginTransaction();
+        EntityTransaction tx = daoFactory.beginTransaction();
         DbInfo dbInfoSchemaVersion = daoFactory.getDbInfoDao().get( DbInfo.SCHEMA_VERSION );
         try {
             tx.commit();
-        } catch ( IntactTransactionException e ) {
-            log.error( "Exception commiting " + e );
+        } catch ( Exception e ) {
+            log.error( "Exception committing " + e );
         }
         SchemaVersion schemaVersion;
 

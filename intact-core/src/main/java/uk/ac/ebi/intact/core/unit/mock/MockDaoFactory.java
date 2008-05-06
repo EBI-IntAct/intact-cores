@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.*;
 
+import javax.persistence.EntityTransaction;
 import java.sql.Connection;
 
 /**
@@ -65,8 +66,8 @@ public class MockDaoFactory extends DaoFactory {
     }
 
     @Override
-    public IntactTransaction beginTransaction() {
-        return new MockIntactTransaction(instactSession);
+    public EntityTransaction beginTransaction() {
+        return null;
     }
 
     @Override
@@ -128,7 +129,7 @@ public class MockDaoFactory extends DaoFactory {
     }
 
     @Override
-    public IntactTransaction getCurrentTransaction() {
+    public EntityTransaction getCurrentTransaction() {
         return super.getCurrentTransaction();
     }
 

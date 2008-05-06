@@ -139,7 +139,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
             try {
                 IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getCurrentTransaction().rollback();
             }
-            catch ( IntactTransactionException e1 ) {
+            catch ( Throwable e1 ) {
                 throw new PersisterException( e1 );
             }
         }

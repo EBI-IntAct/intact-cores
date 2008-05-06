@@ -30,13 +30,10 @@ import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 public class MockDataContext extends DataContext {
 
     private MockDaoFactory daoFactory;
-    private MockIntactTransaction intactTransaction;
 
-    public MockDataContext(IntactSession session, MockDaoFactory daoFactory, MockIntactTransaction intactTransaction) {
+    public MockDataContext(IntactSession session, MockDaoFactory daoFactory) {
         super(session);
         this.daoFactory = daoFactory;
-
-        this.intactTransaction = intactTransaction;
     }
 
     @Override
@@ -91,19 +88,15 @@ public class MockDataContext extends DataContext {
 
     @Override
     public boolean isTransactionActive() {
-        return !intactTransaction.wasCommitted();
+        return true;
     }
 
     @Override
     public boolean isTransactionActive(String dataConfigName) {
-        return !intactTransaction.wasCommitted();
+        return true;
     }
 
     public void setMockDaoFactory(MockDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
-    }
-
-    public void setMockIntactTransaction(MockIntactTransaction intactTransaction) {
-        this.intactTransaction = intactTransaction;
     }
 }

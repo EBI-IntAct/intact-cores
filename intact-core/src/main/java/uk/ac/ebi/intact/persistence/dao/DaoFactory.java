@@ -44,8 +44,6 @@ public class DaoFactory implements Serializable {
 
     private IntactSession intactSession;
 
-    private IntactTransaction currentTransaction;
-
     protected DaoFactory( DataConfig dataConfig, IntactSession intactSession ) {
         this.dataConfig = dataConfig;
         this.intactSession = intactSession;
@@ -260,16 +258,13 @@ public class DaoFactory implements Serializable {
         return getCurrentSession().connection();
     }
 
-    public IntactTransaction beginTransaction() {
+    public EntityTransaction beginTransaction() {
         log.debug("Starting transaction...");
         EntityTransaction transaction = getEntityManager().getTransaction();
         if (!transaction.isActive()) {
             transaction.begin();
         }
-
-        currentTransaction = new JpaIntactTransaction( intactSession, transaction);
-
-        return currentTransaction;
+        return transaction;
     }
 
     public void commitTransaction() {
@@ -282,7 +277,7 @@ public class DaoFactory implements Serializable {
 
             currentEntityManager.getTransaction().commit();
             currentEntityManager.close();
-            currentTransaction = null;
+            
         } else {
             if (log.isWarnEnabled()) log.warn("Attempted commit on a transaction that was not active");
         }
@@ -346,15 +341,16 @@ public class DaoFactory implements Serializable {
     }
 
     public boolean isTransactionActive() {
-        boolean active = ( currentTransaction != null && !currentTransaction.wasCommitted() );
+        EntityTransaction currentTransaction = currentEntityManager.getTransaction();
+        boolean active = currentTransaction.isActive();
         if( log.isDebugEnabled() ) {
-            log.debug( "Current transaction is " + (currentTransaction == null ? "null" : ( active ? "active" : "committed" ) ) );
+            log.debug( "Current transaction is " + ( active ? "active" : "committed" ) );
         }
         return active;
     }
 
-    public IntactTransaction getCurrentTransaction() {
-        return currentTransaction;
+    public EntityTransaction getCurrentTransaction() {
+        return currentEntityManager.getTransaction();
     }
 
     public DataConfig getDataConfig() {

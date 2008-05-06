@@ -48,8 +48,7 @@ public class MockIntactContext extends IntactContext {
         MockIntactSession intactSession = new MockIntactSession();
         MockDataConfig dataConfig = new MockDataConfig(intactSession);
         MockDaoFactory daoFactory = new MockDaoFactory(dataConfig, intactSession);
-        MockIntactTransaction intactTransaction = new MockIntactTransaction(intactSession);
-        MockDataContext dataContext = new MockDataContext(intactSession, daoFactory, intactTransaction);
+        MockDataContext dataContext = new MockDataContext(intactSession, daoFactory);
 
         // start the mock context
         new MockIntactContext(dataContext, intactSession);

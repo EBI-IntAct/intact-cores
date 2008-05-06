@@ -116,7 +116,7 @@ public class DataContext implements Serializable {
             DaoFactory daoFactory = getDaoFactory( dataConfig );
 
             if ( daoFactory.isTransactionActive() ) {
-                daoFactory.getCurrentTransaction().commit();
+                daoFactory.commitTransaction();
             }
         }
     }

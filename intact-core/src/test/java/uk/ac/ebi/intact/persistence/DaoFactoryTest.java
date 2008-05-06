@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.Interaction;
 
 import javax.persistence.EntityManager;
 import java.io.File;
