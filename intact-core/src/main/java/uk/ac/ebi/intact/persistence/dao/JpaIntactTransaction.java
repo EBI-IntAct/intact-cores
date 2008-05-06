@@ -46,6 +46,6 @@ public class JpaIntactTransaction extends IntactTransaction {
     }
 
     public boolean wasRolledBack() {
-        return wasRolledBack();
+        return wasRolledBack;
     }
 }
