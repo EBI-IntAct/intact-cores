@@ -58,4 +58,23 @@ public class ImexImportPublicationPk implements Serializable {
     public void setPmid(String pmid) {
         this.pmid = pmid;
     }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImexImportPublicationPk that = (ImexImportPublicationPk) o;
+
+        if (imexImport != null ? !imexImport.equals(that.imexImport) : that.imexImport != null) return false;
+        if (pmid != null ? !pmid.equals(that.pmid) : that.pmid != null) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (imexImport != null ? imexImport.hashCode() : 0);
+        result = 31 * result + (pmid != null ? pmid.hashCode() : 0);
+        return result;
+    }
 }
