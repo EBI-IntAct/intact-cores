@@ -238,6 +238,24 @@ public class IntactMockBuilder {
         return createProtein(uniprotId, shortLabel, createBioSourceRandom());
     }
 
+    public Protein createProteinSpliceVariant(Protein masterProt, String uniprotId, String shortLabel) {
+        Protein spliceVariant = createProtein(uniprotId, shortLabel);
+
+        Xref interactorXref = ProteinUtils.getUniprotXref(masterProt);
+
+        if (interactorXref == null) {
+            throw new IllegalArgumentException("Master protein needs a uniprot xref identifier");
+        }
+
+        CvXrefQualifier isoformParent = createCvObject(CvXrefQualifier.class, CvXrefQualifier.ISOFORM_PARENT_MI_REF, CvXrefQualifier.ISOFORM_PARENT);
+        CvDatabase uniprotKb = createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
+
+        InteractorXref isoformXref = createXref(spliceVariant, interactorXref.getPrimaryId(), isoformParent, uniprotKb);
+        spliceVariant.addXref(isoformXref);
+
+        return spliceVariant;
+    }
+
     public Protein createDeterministicProtein(String uniprotId, String shortLabel) {
         return createProtein(uniprotId, shortLabel, createDeterministicBioSource());
     }
