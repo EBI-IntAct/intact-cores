@@ -91,6 +91,8 @@ public class ProteinUtils {
         return null;
     }
 
+
+
     /**
      * Get the gene name of a protein
      *
@@ -206,5 +208,23 @@ public class ProteinUtils {
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the current protein is a splice variant
+     * @param protein the protein to check
+     * @return true if the protein is a splice variant
+     */
+    public static boolean isSpliceVariant(Protein protein) {
+        Collection<InteractorXref> xrefs = protein.getXrefs();
+        for (InteractorXref xref : xrefs) {
+            if (xref.getCvXrefQualifier() != null) {
+                String qualifierIdentity = xref.getCvXrefQualifier().getMiIdentifier();
+                if (CvXrefQualifier.ISOFORM_PARENT_MI_REF.equals(qualifierIdentity)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
