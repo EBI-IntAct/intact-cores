@@ -241,16 +241,14 @@ public class IntactMockBuilder {
     public Protein createProteinSpliceVariant(Protein masterProt, String uniprotId, String shortLabel) {
         Protein spliceVariant = createProtein(uniprotId, shortLabel);
 
-        Xref interactorXref = ProteinUtils.getUniprotXref(masterProt);
-
-        if (interactorXref == null) {
-            throw new IllegalArgumentException("Master protein needs a uniprot xref identifier");
+        if (masterProt.getAc() == null) {
+            throw new IllegalArgumentException("Cannot create an splice variant if the master protein does not have an AC: "+masterProt.getShortLabel());
         }
 
         CvXrefQualifier isoformParent = createCvObject(CvXrefQualifier.class, CvXrefQualifier.ISOFORM_PARENT_MI_REF, CvXrefQualifier.ISOFORM_PARENT);
-        CvDatabase uniprotKb = createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
+        CvDatabase uniprotKb = createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
 
-        InteractorXref isoformXref = createXref(spliceVariant, interactorXref.getPrimaryId(), isoformParent, uniprotKb);
+        InteractorXref isoformXref = createXref(spliceVariant, masterProt.getAc(), isoformParent, uniprotKb);
         spliceVariant.addXref(isoformXref);
 
         return spliceVariant;

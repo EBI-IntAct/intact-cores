@@ -62,4 +62,39 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
         List<String> uniprotAcs = getDaoFactory().getProteinDao().getAllUniprotAcs();
         Assert.assertEquals(2, uniprotAcs.size());
     }
+
+    @Test
+    public void getSpliceVariants() throws Exception {
+        Protein masterProt1 = getMockBuilder().createProtein("P12345", "master1");
+
+        // master protein needs to be persisted first
+        PersisterHelper.saveOrUpdate(masterProt1);
+        Assert.assertNotNull(masterProt1.getAc());
+
+        Protein spliceVar11 = getMockBuilder().createProteinSpliceVariant(masterProt1, "P12345-1", "sv11");
+        Protein spliceVar12 = getMockBuilder().createProteinSpliceVariant(masterProt1, "P12345-2", "sv12");
+
+        PersisterHelper.saveOrUpdate(spliceVar11, spliceVar12);
+
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().getSpliceVariants(masterProt1).size());
+    }
+
+    @Test
+    public void getSpliceVariantMasterProtein() throws Exception {
+        Protein masterProt1 = getMockBuilder().createProtein("P12345", "master1");
+
+        // master protein needs to be persisted first
+        PersisterHelper.saveOrUpdate(masterProt1);
+        Assert.assertNotNull(masterProt1.getAc());
+
+        Protein spliceVar11 = getMockBuilder().createProteinSpliceVariant(masterProt1, "P12345-1", "sv11");
+        Protein spliceVar12 = getMockBuilder().createProteinSpliceVariant(masterProt1, "P12345-2", "sv12");
+
+        PersisterHelper.saveOrUpdate(spliceVar11, spliceVar12);
+
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(masterProt1.getAc(), getDaoFactory().getProteinDao().getSpliceVariantMasterProtein(spliceVar11).getAc());
+        Assert.assertEquals(masterProt1.getAc(), getDaoFactory().getProteinDao().getSpliceVariantMasterProtein(spliceVar12).getAc());
+    }
 }
