@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvDatabase;
+import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.model.Protein;
 
@@ -44,6 +45,18 @@ public class ProteinUtilsTest extends IntactBasicTestCase {
         
         assertNotNull(geneName);
         assertEquals("carA", geneName);
+    }
+
+    @Test
+    public void isFromUniprot() throws Exception {
+        Protein uniprotProt = getMockBuilder().createProtein("P12344", "lala");
+
+        Protein nonUniprotProt = getMockBuilder().createProteinRandom();
+        nonUniprotProt.getXrefs().clear();
+        nonUniprotProt.addAnnotation(getMockBuilder().createAnnotation("nonUniprot", null, CvTopic.NON_UNIPROT));
+
+        Assert.assertTrue(ProteinUtils.isFromUniprot(uniprotProt));
+        Assert.assertFalse(ProteinUtils.isFromUniprot(nonUniprotProt));
     }
 
     @Test
