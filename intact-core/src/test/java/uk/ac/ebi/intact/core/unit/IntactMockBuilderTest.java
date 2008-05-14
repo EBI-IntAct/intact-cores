@@ -80,6 +80,7 @@ public class IntactMockBuilderTest {
     @Test
     public void createProteinSpliceVariant() throws Exception {
         Protein masterProtein = mockBuilder.createProteinRandom();
+        masterProtein.setAc("TEST-1");
         Protein spliceVariant = mockBuilder.createProteinSpliceVariant(masterProtein, "P12345-1", "aSpliceVariant");
 
         Assert.assertFalse(ProteinUtils.isSpliceVariant(masterProtein));
