@@ -669,7 +669,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
             code = code * 29 + biologicalRole.hashCode();
         }
 
-        if (bindingDomains != null) {
+        if (bindingDomains != null && false == bindingDomains.isEmpty()) {
             code = code * 29 * bindingDomains.size();
         }
 
