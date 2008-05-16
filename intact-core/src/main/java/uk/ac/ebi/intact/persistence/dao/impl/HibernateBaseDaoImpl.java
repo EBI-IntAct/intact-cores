@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
-import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.criterion.*;
 import org.hibernate.ejb.HibernateEntityManager;
 import uk.ac.ebi.intact.business.IntactException;
@@ -121,6 +120,16 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return getSession().createCriteria( getEntityClass() )
                 .setFirstResult( firstResult )
                 .setMaxResults( maxResults ).list();
+    }
+
+    public List<T> getAllSorted(int firstResult, int maxResults, String sortProperty, boolean ascendant) {
+        String strQuery = "from "+getEntityClass().getSimpleName()+" order by "+sortProperty+" "+((ascendant)? "asc" : "desc");
+        Query query = getEntityManager().createQuery(strQuery);
+
+        query.setFirstResult(firstResult);
+        query.setMaxResults(maxResults);
+
+        return query.getResultList();
     }
 
     public int countAll() {
