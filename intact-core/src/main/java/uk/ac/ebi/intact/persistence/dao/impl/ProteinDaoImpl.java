@@ -265,7 +265,7 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
      * @since 1.8.1
      */
     public List<String> getAllUniprotAcs() {
-        Query query = getEntityManager().createQuery("select xref.primaryId from InteractorXref xref " +
+        Query query = getEntityManager().createQuery("select distinct(xref.primaryId) from InteractorXref xref " +
                                                      "where xref.cvXrefQualifier.miIdentifier = :qualifierMi " +
                                                      "and xref.cvDatabase.miIdentifier = :uniprotMi " +
                                                      "and size(xref.parent.activeInstances) > 0");

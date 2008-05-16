@@ -48,7 +48,7 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void getUniprotAcs() throws Exception {
+    public void getAllUniprotAcs() throws Exception {
         Protein nonInteractingProt = getMockBuilder().createProtein("Q00000", "non");
 
         Protein protA = getMockBuilder().createProtein("P00111", "protA");
@@ -58,7 +58,7 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(nonInteractingProt, interaction);
 
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
-        
+
         List<String> uniprotAcs = getDaoFactory().getProteinDao().getAllUniprotAcs();
         Assert.assertEquals(2, uniprotAcs.size());
     }
