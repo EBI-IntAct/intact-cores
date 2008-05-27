@@ -146,22 +146,16 @@ public class XrefUtils {
         if (annotatedObject == null) {
             throw new NullPointerException("annotatedObject should not be null");
         }
-        
-        Collection<X> xrefs = annotatedObject.getXrefs();
-        X annotatedObjectXref = null;
 
-        for (X xref : xrefs) {
-            if (xref.getCvXrefQualifier() != null && xref.getCvDatabase() != null) {
-                String miQualifier = xref.getCvXrefQualifier().getMiIdentifier();
-                String miDatabase = xref.getCvDatabase().getMiIdentifier();
+        X psiMiXref = null;
 
-                if (CvXrefQualifier.IDENTITY_MI_REF.equals(miQualifier) && CvDatabase.PSI_MI_MI_REF.equals(miDatabase)) {
-                    annotatedObjectXref = xref;
-                }
-            }
+        Collection<X> identityXrefs = AnnotatedObjectUtils.searchXrefs(annotatedObject, CvDatabase.PSI_MI_MI_REF, CvXrefQualifier.IDENTITY_MI_REF);
+
+        if (!identityXrefs.isEmpty()) {
+            psiMiXref = identityXrefs.iterator().next();
         }
-        
-        return annotatedObjectXref;
+
+        return psiMiXref;
     }
 
     // ex1 : annotatedObject is supposibly the CvDatabase psi-mi, psiMi is CvDatabase.PSI_MI_MI_REF

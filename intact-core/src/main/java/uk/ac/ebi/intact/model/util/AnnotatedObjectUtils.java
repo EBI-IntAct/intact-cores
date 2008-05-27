@@ -99,6 +99,33 @@ public class AnnotatedObjectUtils {
     }
 
     /**
+     * Search for all Xrefs having Xref with the given CvDatabase MI.
+     *
+     * @param ao the non null AnnotatedObject to search on.
+     * @param dbMi the non null CvDatabase filter.
+     *
+     * @return a non null Collection of Xref, may be empty.
+     */
+    public static <X extends Xref> Collection<X> searchXrefsByDatabase( AnnotatedObject<X,?> ao, String dbMi ) {
+        if ( ao == null ) {
+            throw new NullPointerException( "AnnotatedObject must not be null." );
+        }
+        if ( dbMi == null ) {
+            throw new NullPointerException( "dbMi must not be null." );
+        }
+
+        Collection<X> xrefs = new ArrayList<X>( ao.getXrefs().size() );
+
+        for ( X xref : ao.getXrefs() ) {
+            if ( dbMi.equals( xref.getCvDatabase().getMiIdentifier() ) ) {
+                xrefs.add( xref );
+            }
+        }
+
+        return xrefs;
+    }
+
+    /**
      * Search for all Xrefs having Xref with both the given CvDatabase and CvXrefQualifier.
      *
      * @param ao the non null AnnotatedObject to search on.
@@ -132,6 +159,41 @@ public class AnnotatedObjectUtils {
     }
 
     /**
+     * Search for all Xrefs having Xref with both the given CvDatabase and CvXrefQualifier MIs.
+     *
+     * @param ao the non null AnnotatedObject to search on.
+     * @param dbMi the non null CvDatabase filter.
+     * @param qualifierMi the non null CvXrefQualifier filter.
+     *
+     * @return a non null Collection of Xref, may be empty.
+     */
+    public static <X extends Xref> Collection<X> searchXrefs( AnnotatedObject<X,?> ao, String dbMi, String qualifierMi ) {
+
+        if ( ao == null ) {
+            throw new NullPointerException( "AnnotatedObject must not be null." );
+        }
+        if ( dbMi == null ) {
+            throw new NullPointerException( "dbMi must not be null." );
+        }
+
+        Collection<X> xrefs = new ArrayList<X>( ao.getXrefs().size() );
+
+        for (X xref : ao.getXrefs()) {
+            if (dbMi.equals(xref.getCvDatabase().getMiIdentifier())) {
+                if (qualifierMi != null) {
+                    if (qualifierMi.equals(xref.getCvXrefQualifier().getMiIdentifier())) {
+                        xrefs.add(xref);
+                    }
+                } else {
+                    xrefs.add(xref);
+                }
+            }
+        }
+
+        return xrefs;
+    }
+
+    /**
      * Search for all Xrefs having Xref with the given CvXrefQualifier.
      *
      * @param ao the non null AnnotatedObject to search on.
@@ -153,6 +215,34 @@ public class AnnotatedObjectUtils {
         for ( Iterator<Xref> iterator = ao.getXrefs().iterator(); iterator.hasNext(); ) {
             Xref xref = iterator.next();
             if ( qu.equals( xref.getCvXrefQualifier() ) ) {
+                xrefs.add( xref );
+            }
+        }
+
+        return xrefs;
+    }
+
+    /**
+     * Search for all Xrefs having Xref with the given CvXrefQualifier.
+     *
+     * @param ao the non null AnnotatedObject to search on.
+     * @param qualifierMi the non null CvXrefQualifier filter.
+     *
+     * @return a non null Collection of Xref, may be empty.
+     */
+    public static <X extends Xref> Collection<X> searchXrefsByQualifier( AnnotatedObject<X,?> ao, String qualifierMi ) {
+
+        if ( ao == null ) {
+            throw new NullPointerException( "AnnotatedObject must not be null." );
+        }
+        if ( qualifierMi == null ) {
+            throw new NullPointerException( "qualifierMi must not be null." );
+        }
+
+        Collection<X> xrefs = new ArrayList<X>( ao.getXrefs().size() );
+
+        for ( X xref : ao.getXrefs() ) {
+            if ( qualifierMi.equals( xref.getCvXrefQualifier().getMiIdentifier() ) ) {
                 xrefs.add( xref );
             }
         }
