@@ -17,16 +17,15 @@ package uk.ac.ebi.intact.model.util;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvObjectXref;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
-import uk.ac.ebi.intact.model.Institution;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
+import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
+import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
 import java.util.Collection;
 
 /**
- * TODO comment that class header
- *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
@@ -66,6 +65,139 @@ public class AnnotatedObjectUtilsTest {
         Collection<CvObjectXref> cvObjectXrefCollection = AnnotatedObjectUtils.searchXrefs(cvDatabase, CvDatabase.PSI_MI_MI_REF, null);
         Assert.assertEquals(1, cvObjectXrefCollection.size());
         Assert.assertEquals(CvDatabase.INTACT_MI_REF, cvObjectXrefCollection.iterator().next().getPrimaryId());
+    }
+
+    @Test
+    public void containsTheSameIdentities_simple() throws Exception {
+        CvDatabase cv1 = CvObjectUtils.createCvObject(new Institution("testInstitution"), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+        CvDatabase cv2 = CvObjectUtils.createCvObject(new Institution("testInstitution"), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup(true, false);
+        XrefCvFilter xrefFilter = new XrefCvFilter(cvObjectFilterGroup);
+        
+        Assert.assertTrue(AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, cv1, cv2));
+    }
+
+    @Test
+    public void containsTheSameIdentities_qualIdentity() throws Exception {
+        CvXrefQualifier secondaryAc = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.SECONDARY_AC_MI_REF, CvXrefQualifier.SECONDARY_AC);
+        CvDatabase uniprotkb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
+        CvDatabase go = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.GO_MI_REF, CvDatabase.GO);
+
+        Protein prot = getMockBuilder().createDeterministicProtein("P12345", "lala");
+        prot.addXref(getMockBuilder().createXref(prot, "Q88334", secondaryAc, uniprotkb));
+        prot.addXref(getMockBuilder().createXref(prot, "GO:123456", null, go));
+
+        Protein prot2 = getMockBuilder().createDeterministicProtein("P12345", "lala");
+
+        CvObjectFilterGroup databaseGroup = new CvObjectFilterGroup(false, false);
+
+        CvObjectFilterGroup qualifierGroup = new CvObjectFilterGroup();
+        qualifierGroup.addIncludedIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
+
+        XrefCvFilter xrefFilter = new XrefCvFilter(databaseGroup, qualifierGroup);
+
+        Assert.assertTrue(AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, prot, prot2));
+    }
+
+    @Test
+    public void containsTheSameIdentities_simple_no() throws Exception {
+        CvDatabase cv1 = CvObjectUtils.createCvObject(new Institution("testInstitution"), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+        CvDatabase cv2 = CvObjectUtils.createCvObject(new Institution("testInstitution"), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+        cv2.getXrefs().iterator().next().setPrimaryId("lala");
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup(true, false);
+        XrefCvFilter xrefFilter = new XrefCvFilter(cvObjectFilterGroup);
+
+        Assert.assertFalse(AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, cv1, cv2));
+    }
+
+    @Test
+    public void containsTheSameIdentities_filtered_yes() throws Exception {
+        Protein prot = getMockBuilder().createProteinRandom();
+
+        Protein prot2 = new IntactCloner().clone(prot);
+        prot2.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
+        cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
+
+        XrefCvFilter xrefFilter = new XrefCvFilter(cvObjectFilterGroup);
+
+        Assert.assertTrue(AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, prot, prot2));
+    }
+
+    @Test
+    public void containsTheSameIdentities_filtered_yes_3() throws Exception {
+        Protein prot = getMockBuilder().createProteinRandom();
+
+        Protein prot2 = new IntactCloner().clone(prot);
+        prot2.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+
+        Protein prot3 = new IntactCloner().clone(prot2);
+        prot3.addXref(getMockBuilder().createIdentityXref(prot, "LOLO",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0002", "lolodb")));
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
+        cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
+
+        XrefCvFilter xrefFilter = new XrefCvFilter(cvObjectFilterGroup);
+
+        Assert.assertTrue(AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, prot, prot2, prot3));
+    }
+    
+    @Test
+    public void containsTheSameIdentities_filtered_no_3() throws Exception {
+        Protein prot = getMockBuilder().createProteinRandom();
+
+        Protein prot2 = new IntactCloner().clone(prot);
+        prot2.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+
+        Protein prot3 = new IntactCloner().clone(prot2);
+        prot3.addXref(getMockBuilder().createIdentityXref(prot, "LOLO",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0002", "lolodb")));
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
+        cvObjectFilterGroup.addIncludedIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
+
+        XrefCvFilter xrefFilter = new XrefCvFilter(new CvObjectFilterGroup(), cvObjectFilterGroup);
+
+        Assert.assertFalse(AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, prot, prot2, prot3));
+    }
+
+    @Test
+    public void searchXrefs_xrefFilter_noFilter() throws Exception {
+        Protein prot = getMockBuilder().createProteinRandom();
+        prot.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup(true, false);
+        XrefCvFilter xrefFilter = new XrefCvFilter(cvObjectFilterGroup);
+
+        final Collection<InteractorXref> xrefs = AnnotatedObjectUtils.searchXrefs(prot, xrefFilter);
+        Assert.assertEquals(2, xrefs.size());
+    }
+    
+    @Test
+    public void searchXrefs_xrefFilter_filter() throws Exception {
+        Protein prot = getMockBuilder().createProteinRandom();
+        prot.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
+        cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
+
+        XrefCvFilter xrefFilter = new XrefCvFilter(cvObjectFilterGroup);
+
+        final Collection<InteractorXref> xrefs = AnnotatedObjectUtils.searchXrefs(prot, xrefFilter);
+        Assert.assertEquals(1, xrefs.size());
+    }
+
+    private IntactMockBuilder getMockBuilder() {
+        return new IntactMockBuilder(new Institution("testInstitution"));
     }
 
 }

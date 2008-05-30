@@ -281,7 +281,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         Assert.assertNotNull( ac );
         Assert.assertEquals( sm.getAc(), ac );
 
-        // different xref, same shorltabel -> should work
+        // different xref, same shorltabel -> should NOT work
         Assert.assertNull( finder.findAc( getMockBuilder().createSmallMolecule( "CHEBI:9999", "nice molecule" ) ));
 
         // different xref, different shorltabel -> should NOT work

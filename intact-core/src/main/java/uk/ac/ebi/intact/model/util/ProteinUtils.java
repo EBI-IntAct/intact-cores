@@ -18,8 +18,13 @@ package uk.ac.ebi.intact.model.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
+import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Utility methods for Proteins.
@@ -148,34 +153,21 @@ public class ProteinUtils {
      * @return
      */
     public static List<InteractorXref> getIdentityXrefs(Interactor interactor, boolean excludeIdentitiesFromImexPartners) {
-        List<InteractorXref> identities = new ArrayList<InteractorXref>();
 
-        for (InteractorXref xref : interactor.getXrefs()) {
-            final CvXrefQualifier xrefQualifier = xref.getCvXrefQualifier();
+        CvObjectFilterGroup qualifierFilterGroup = new CvObjectFilterGroup();
+        qualifierFilterGroup.addIncludedIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
 
-                if (xrefQualifier == null) {
-                    continue;
-                }
+        CvObjectFilterGroup databaseFilterGroup = new CvObjectFilterGroup();
 
-            final String xrefQualMi = xrefQualifier.getMiIdentifier();
-            final String databaseMi = xref.getCvDatabase().getMiIdentifier();
-
-            if (CvXrefQualifier.IDENTITY_MI_REF.equals(xrefQualMi)) {
-                if (excludeIdentitiesFromImexPartners) {
-                    // TODO this has to be maintained in case we get new IMEx partners
-                    // TODO a work around could be to load the list of MI identities of all institutions present in the repository
-                    if (!(CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
-                          CvDatabase.MINT_MI_REF.equals(databaseMi) ||
-                          CvDatabase.DIP_MI_REF.equals(databaseMi))) {
-                        identities.add(xref);
-                    }
-                } else {
-                    identities.add(xref);
-                }
-            }            
+        if (excludeIdentitiesFromImexPartners) {            
+            // TODO this has to be maintained in case we get new IMEx partners
+            // TODO a work around could be to load the list of MI identities of all institutions present in the repository
+            databaseFilterGroup.addExcludedIdentifier(CvDatabase.INTACT_MI_REF);
+            databaseFilterGroup.addExcludedIdentifier(CvDatabase.MINT_MI_REF);
+            databaseFilterGroup.addExcludedIdentifier(CvDatabase.DIP_MI_REF);
         }
 
-        return identities;
+        return AnnotatedObjectUtils.searchXrefs(interactor, new XrefCvFilter(databaseFilterGroup, qualifierFilterGroup));
     }
 
     /**

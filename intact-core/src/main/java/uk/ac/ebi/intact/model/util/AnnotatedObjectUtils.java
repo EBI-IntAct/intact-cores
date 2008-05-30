@@ -15,7 +15,11 @@
  */
 package uk.ac.ebi.intact.model.util;
 
+import org.apache.commons.collections.CollectionUtils;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
+import uk.ac.ebi.intact.model.util.filter.IntactObjectFilterPredicate;
+import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import java.beans.IntrospectionException;
@@ -23,9 +27,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Util methods for annotatedObject.
@@ -86,16 +88,10 @@ public class AnnotatedObjectUtils {
             throw new NullPointerException( "CvDatabase must not be null." );
         }
 
-        Collection<Xref> xrefs = new ArrayList<Xref>( ao.getXrefs().size() );
+        CvObjectFilterGroup cvFilterGroup = new CvObjectFilterGroup();
+        cvFilterGroup.addIncludedCvObject(db);
 
-        for ( Iterator<Xref> iterator = ao.getXrefs().iterator(); iterator.hasNext(); ) {
-            Xref xref = iterator.next();
-            if ( db.equals( xref.getCvDatabase() ) ) {
-                xrefs.add( xref );
-            }
-        }
-
-        return xrefs;
+        return searchXrefs(ao, new XrefCvFilter(cvFilterGroup));
     }
 
     /**
@@ -114,15 +110,10 @@ public class AnnotatedObjectUtils {
             throw new NullPointerException( "dbMi must not be null." );
         }
 
-        Collection<X> xrefs = new ArrayList<X>( ao.getXrefs().size() );
+        CvObjectFilterGroup cvFilterGroup = new CvObjectFilterGroup();
+        cvFilterGroup.addIncludedIdentifier(dbMi);
 
-        for ( X xref : ao.getXrefs() ) {
-            if ( dbMi.equals( xref.getCvDatabase().getMiIdentifier() ) ) {
-                xrefs.add( xref );
-            }
-        }
-
-        return xrefs;
+        return searchXrefs(ao, new XrefCvFilter(cvFilterGroup));
     }
 
     /**
@@ -146,16 +137,13 @@ public class AnnotatedObjectUtils {
             throw new NullPointerException( "CvXrefQualifier must not be null." );
         }
 
-        Collection<Xref> xrefs = new ArrayList<Xref>( ao.getXrefs().size() );
+        CvObjectFilterGroup cvFilterGroup = new CvObjectFilterGroup();
+        cvFilterGroup.addIncludedCvObject(db);
 
-        for ( Iterator<Xref> iterator = ao.getXrefs().iterator(); iterator.hasNext(); ) {
-            Xref xref = iterator.next();
-            if ( db.equals( xref.getCvDatabase() ) && qu.equals( xref.getCvXrefQualifier() ) ) {
-                xrefs.add( xref );
-            }
-        }
+        CvObjectFilterGroup qualifierCvFilterGroup = new CvObjectFilterGroup();
+        qualifierCvFilterGroup.addIncludedCvObject(qu);
 
-        return xrefs;
+        return searchXrefs(ao, new XrefCvFilter(cvFilterGroup, qualifierCvFilterGroup));
     }
 
     /**
@@ -176,21 +164,13 @@ public class AnnotatedObjectUtils {
             throw new NullPointerException( "dbMi must not be null." );
         }
 
-        Collection<X> xrefs = new ArrayList<X>( ao.getXrefs().size() );
+        CvObjectFilterGroup databaseCvFilterGroup = new CvObjectFilterGroup();
+        databaseCvFilterGroup.addIncludedIdentifier(dbMi);
 
-        for (X xref : ao.getXrefs()) {
-            if (dbMi.equals(xref.getCvDatabase().getMiIdentifier())) {
-                if (qualifierMi != null) {
-                    if (qualifierMi.equals(xref.getCvXrefQualifier().getMiIdentifier())) {
-                        xrefs.add(xref);
-                    }
-                } else {
-                    xrefs.add(xref);
-                }
-            }
-        }
+        CvObjectFilterGroup qualifierCvFilterGroup = new CvObjectFilterGroup();
+        qualifierCvFilterGroup.addIncludedIdentifier(qualifierMi);
 
-        return xrefs;
+        return searchXrefs(ao, new XrefCvFilter(databaseCvFilterGroup, qualifierCvFilterGroup));
     }
 
     /**
@@ -210,16 +190,10 @@ public class AnnotatedObjectUtils {
             throw new NullPointerException( "CvXrefQualifier must not be null." );
         }
 
-        Collection<Xref> xrefs = new ArrayList<Xref>( ao.getXrefs().size() );
+        CvObjectFilterGroup cvFilterGroup = new CvObjectFilterGroup();
+        cvFilterGroup.addIncludedCvObject(qu);
 
-        for ( Iterator<Xref> iterator = ao.getXrefs().iterator(); iterator.hasNext(); ) {
-            Xref xref = iterator.next();
-            if ( qu.equals( xref.getCvXrefQualifier() ) ) {
-                xrefs.add( xref );
-            }
-        }
-
-        return xrefs;
+        return searchXrefs(ao, new XrefCvFilter(new CvObjectFilterGroup(), cvFilterGroup));
     }
 
     /**
@@ -239,15 +213,10 @@ public class AnnotatedObjectUtils {
             throw new NullPointerException( "qualifierMi must not be null." );
         }
 
-        Collection<X> xrefs = new ArrayList<X>( ao.getXrefs().size() );
+        CvObjectFilterGroup cvFilterGroup = new CvObjectFilterGroup();
+        cvFilterGroup.addIncludedIdentifier(qualifierMi);
 
-        for ( X xref : ao.getXrefs() ) {
-            if ( qualifierMi.equals( xref.getCvXrefQualifier().getMiIdentifier() ) ) {
-                xrefs.add( xref );
-            }
-        }
-
-        return xrefs;
+        return searchXrefs(ao, new XrefCvFilter(new CvObjectFilterGroup(), cvFilterGroup));
     }
 
     /**
@@ -316,4 +285,64 @@ public class AnnotatedObjectUtils {
         }
         return null;
     }
+
+
+
+    /**
+     * Check if the passed annotated objects contain the same set of filtered Xrefs.
+     * @return true or false
+     *
+     * @since 1.9.0
+     */
+    public static <X extends Xref> boolean containTheSameXrefs(XrefCvFilter xrefFilter, AnnotatedObject<X,?> ... aos ) {
+        List<List<X>> listOfXrefLists = new ArrayList<List<X>>(aos.length);
+
+        for (AnnotatedObject<X,?> ao : aos) {
+            listOfXrefLists.add(searchXrefs(ao, xrefFilter));
+        }
+
+        List<X> referenceList = listOfXrefLists.get(0);
+        listOfXrefLists.remove(0);
+
+        for (List<X> xrefList : listOfXrefLists) {
+            if (referenceList.size() != xrefList.size()) {
+                return false;
+            }
+        }
+
+        Comparator<X> xrefComparator = new Comparator<X>() {
+            public int compare(X o1, X o2) {
+                return o1.getPrimaryId().compareTo(o2.getPrimaryId());
+            }
+        };
+
+        Collections.sort(referenceList, xrefComparator);
+
+        for (List<X> xrefList : listOfXrefLists) {
+            Collections.sort(xrefList, xrefComparator);
+
+            for (int i=0; i<referenceList.size(); i++) {
+                if (!(referenceList.get(i).equals(xrefList.get(i)))) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Retrieve the xrefs from an annotated object that comply with the filter.
+     * @param ao The annotated object
+     * @param xrefFilter The xref filter
+     * @return The collection of filtered xrefs
+     *
+     * @since 1.9.0
+     */
+    public static <X extends Xref> List<X> searchXrefs(AnnotatedObject<X,?> ao, XrefCvFilter xrefFilter) {
+        List<X> xrefList = new ArrayList<X>();
+        CollectionUtils.select(ao.getXrefs(), new IntactObjectFilterPredicate(xrefFilter), xrefList);
+        return xrefList;
+    }
+
 }

@@ -186,17 +186,14 @@ public class XrefUtils {
      * @param annotatedObject the Object with the xrefs
      * @param databaseMi the database MI to look for
      * @return list of Xrefs
+     *
+     * @deprecated use AnnotatedObjectUtils.searchXrefsByDatabase instead
      */
+    @Deprecated
     public static <X extends Xref> List<X> getXrefsFilteredByDatabase(AnnotatedObject<X,?> annotatedObject, String databaseMi) {
         if (annotatedObject == null) throw new NullPointerException("Null annotatedObject");
         if (databaseMi == null) throw new NullPointerException("Database MI Identifier is mandatory");
 
-        List<X> xrefs = new ArrayList<X>();
-        for (X xref : annotatedObject.getXrefs()) {
-            if (databaseMi.equals(xref.getCvDatabase().getMiIdentifier())) {
-                xrefs.add(xref);
-            }
-        }
-        return xrefs;
+        return new ArrayList<X>(AnnotatedObjectUtils.searchXrefsByDatabase(annotatedObject, databaseMi));
     }
 }
