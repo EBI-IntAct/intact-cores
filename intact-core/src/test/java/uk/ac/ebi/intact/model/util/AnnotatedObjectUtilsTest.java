@@ -57,6 +57,19 @@ public class AnnotatedObjectUtilsTest {
         Assert.assertEquals(1, cvObjectXrefCollection.size());
         Assert.assertEquals(CvDatabase.INTACT_MI_REF, cvObjectXrefCollection.iterator().next().getPrimaryId());
     }
+
+    @Test
+    public void searchXrefs_usingCVs() throws Exception {
+        final CvObjectBuilder builder = new CvObjectBuilder();
+        CvXrefQualifier identity = builder.createIdentityCvXrefQualifier(getMockBuilder().getInstitution());
+        CvDatabase uniprot = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT_MI_REF);
+
+        Protein prot = getMockBuilder().createProtein("P12345", "lala");
+        
+        Collection<Xref> cvObjectXrefCollection = AnnotatedObjectUtils.searchXrefs(prot, uniprot, identity);
+        Assert.assertEquals(1, cvObjectXrefCollection.size());
+        Assert.assertEquals("P12345", cvObjectXrefCollection.iterator().next().getPrimaryId());
+    }
     
     @Test
     public void searchXrefs_nullQualifier() throws Exception {
