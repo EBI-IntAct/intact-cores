@@ -7,11 +7,12 @@ package uk.ac.ebi.intact.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.IntactObject;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
 import uk.ac.ebi.intact.model.visitor.impl.JTreeBuilderVisitor;
 import uk.ac.ebi.intact.model.visitor.impl.PrintVisitor;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import java.io.PrintStream;
@@ -112,5 +113,38 @@ public class DebugUtil {
         sb.append("}");
 
         return sb.toString();
+    }
+
+    /**
+     * Prints the most counts in the database.
+     * @param ps The printStream to use
+     *
+     * @since 1.9.0
+     */
+    public static void printDatabaseCounts(PrintStream ps) {
+        final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+
+        ps.println("Publications: "+ daoFactory.getPublicationDao().countAll());
+        ps.println("\tXrefs: "+ daoFactory.getXrefDao(PublicationXref.class).countAll());
+        ps.println("\tAliases: "+ daoFactory.getAliasDao(PublicationAlias.class).countAll());
+        ps.println("Experiments: "+ daoFactory.getExperimentDao().countAll());
+        ps.println("\tXrefs: "+ daoFactory.getXrefDao(ExperimentXref.class).countAll());
+        ps.println("\tAliases: "+ daoFactory.getAliasDao(ExperimentAlias.class).countAll());
+        ps.println("Interactors: "+ daoFactory.getInteractorDao().countAll());
+        ps.println("\tInteractions: "+ daoFactory.getInteractionDao().countAll());
+        ps.println("\tPolymers: " + daoFactory.getPolymerDao().countAll());
+        ps.println("\t\tProteins: "+ daoFactory.getProteinDao().countAll());
+        ps.println("\t\tNucleic Acids: "+ daoFactory.getInteractorDao(NucleicAcidImpl.class).countAll());
+        ps.println("\tSmall molecules" + daoFactory.getInteractorDao(SmallMoleculeImpl.class).countAll());
+        ps.println("\tInteractor Xrefs: "+ daoFactory.getXrefDao(InteractorXref.class).countAll());
+        ps.println("\tInteractor Aliases: "+ daoFactory.getAliasDao(InteractorAlias.class).countAll());
+        ps.println("Components: "+ daoFactory.getComponentDao().countAll());
+        ps.println("Features: "+ daoFactory.getFeatureDao().countAll());
+        ps.println("\tRanges: "+ daoFactory.getRangeDao().countAll());
+        ps.println("CvObjects: "+ daoFactory.getCvObjectDao().countAll());
+        ps.println("BioSources: "+ daoFactory.getBioSourceDao().countAll());
+        ps.println("Annotations: "+ daoFactory.getAnnotationDao().countAll());
+        ps.println("Institutions: "+ daoFactory.getInstitutionDao().countAll());
+
     }
 }

@@ -21,6 +21,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.Oracle9Dialect;
+import org.hibernate.dialect.Oracle9iDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
@@ -81,7 +82,7 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDLForOracle() {
-        return generateCreateSchemaDDL(Oracle9Dialect.class.getName());
+        return generateCreateSchemaDDL(Oracle9iDialect.class.getName());
     }
 
     /**
