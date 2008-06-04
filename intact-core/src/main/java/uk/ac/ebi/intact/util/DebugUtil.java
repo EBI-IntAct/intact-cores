@@ -135,7 +135,7 @@ public class DebugUtil {
         ps.println("\tPolymers: " + daoFactory.getPolymerDao().countAll());
         ps.println("\t\tProteins: "+ daoFactory.getProteinDao().countAll());
         ps.println("\t\tNucleic Acids: "+ daoFactory.getInteractorDao(NucleicAcidImpl.class).countAll());
-        ps.println("\tSmall molecules" + daoFactory.getInteractorDao(SmallMoleculeImpl.class).countAll());
+        ps.println("\tSmall molecules: " + daoFactory.getInteractorDao(SmallMoleculeImpl.class).countAll());
         ps.println("\tInteractor Xrefs: "+ daoFactory.getXrefDao(InteractorXref.class).countAll());
         ps.println("\tInteractor Aliases: "+ daoFactory.getAliasDao(InteractorAlias.class).countAll());
         ps.println("Components: "+ daoFactory.getComponentDao().countAll());
