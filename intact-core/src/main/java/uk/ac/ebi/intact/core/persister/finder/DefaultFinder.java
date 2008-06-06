@@ -23,8 +23,6 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.Finder;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.*;
-import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
-import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
@@ -154,7 +152,7 @@ public class DefaultFinder implements Finder {
 
         } else {
             log.warn("Experiment without publication, getting its AC using the shortLabel: "+experiment.getShortLabel());
-
+            
             query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel");
             query.setParameter("shortLabel", experiment.getShortLabel());
         }
@@ -224,7 +222,7 @@ public class DefaultFinder implements Finder {
         String ac = null;
 
         // first check if the identities refer to the database itself
-        for (InteractorXref idXref : ProteinUtils.getIdentityXrefs(interactor, false)) {
+        for (InteractorXref idXref : ProteinUtils.getIdentityXrefs(interactor)) {
             if (xrefPointsToOwnAc(idXref)) {
                 // check if exists in the db
                 Query acQuery = getEntityManager().createQuery("select i.ac from " + CgLibUtil.removeCglibEnhanced(interactor.getClass()).getName() + " i " +
@@ -237,20 +235,11 @@ public class DefaultFinder implements Finder {
             }
         }
 
-        CvObjectFilterGroup databaseGroup = new CvObjectFilterGroup();
-        databaseGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
-        databaseGroup.addIncludedIdentifier(CvDatabase.CHEBI_MI_REF);
-
-        CvObjectFilterGroup qualifierGroup = new CvObjectFilterGroup();
-        qualifierGroup.addIncludedIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
-
-        XrefCvFilter xrefFilter = new XrefCvFilter(databaseGroup, qualifierGroup);
-
-        List<InteractorXref> identities = AnnotatedObjectUtils.searchXrefs(interactor, xrefFilter);
+        List<InteractorXref> identities = ProteinUtils.getIdentityXrefs(interactor, true);
 
         // Strategy to find is a protein is already in the database:
-        // 1. Same set of identities (uniprotkb, chebi) and no no-uniprot-update annotation
-        // 2. Same set of identities (uniprotkb, chebi) and no-uniprot-update annotation and same sequence
+        // 1. Same set of identities (exclusive of IMEx partners') and no no-uniprot-update annotation
+        // 2. Same set of identities (exclusive of IMEx partners') and no-uniprot-update annotation and same sequence
         //    note sequence would be checked on if the interactors are polymers.
 
         if (!identities.isEmpty()) {
@@ -266,7 +255,7 @@ public class DefaultFinder implements Finder {
             List<Interactor> interactors = query.getResultList();
 
             for (Interactor interactorCandidate : interactors) {
-               if (AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, interactor, interactorCandidate)) {
+               if (ProteinUtils.containTheSameIdentities(interactor, interactorCandidate)) {
 
                    if( log.isWarnEnabled() ) {
                        if( interactor.getBioSource() != null && interactorCandidate.getBioSource() != null ) {
@@ -327,7 +316,7 @@ public class DefaultFinder implements Finder {
     }
 
     /**
-     *
+     *  
      * @param xref the xref to check
      * @return
      */

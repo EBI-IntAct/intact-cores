@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.model.util.ProteinUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
 
 /**
@@ -75,16 +74,6 @@ public class IntactMockBuilderTest {
         Assert.assertNotNull( protein.getSequence() );
         Assert.assertFalse( protein.getXrefs().isEmpty() );
         Assert.assertNotNull( protein.getCrc64() );
-    }
-
-    @Test
-    public void createProteinSpliceVariant() throws Exception {
-        Protein masterProtein = mockBuilder.createProteinRandom();
-        masterProtein.setAc("TEST-1");
-        Protein spliceVariant = mockBuilder.createProteinSpliceVariant(masterProtein, "P12345-1", "aSpliceVariant");
-
-        Assert.assertFalse(ProteinUtils.isSpliceVariant(masterProtein));
-        Assert.assertTrue(ProteinUtils.isSpliceVariant(spliceVariant));
     }
 
     @Test

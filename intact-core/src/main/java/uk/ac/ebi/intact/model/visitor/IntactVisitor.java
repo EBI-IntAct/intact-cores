@@ -39,8 +39,6 @@ public interface IntactVisitor {
     void visitRange(Range range);
 
     void visitConfidence(Confidence confidence);
-    
-    void visitParameter (Parameter parameter);
 
     /////////////////////////////////////////////////////
     // AnnotatedObjects

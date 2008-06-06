@@ -18,8 +18,6 @@ package uk.ac.ebi.intact.persistence.dao;
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.PolymerImpl;
 
-import java.util.List;
-
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -29,11 +27,4 @@ import java.util.List;
 public interface PolymerDao<T extends PolymerImpl> extends InteractorDao<T> {
 
     String getSequenceByPolymerAc( String polymerAc );
-
-    /**
-     * Gets all proteins with the passed CRC and tax id
-     *
-     * @since 1.9.0
-     */
-    List<T> getByCrcAndTaxId(String crc, String taxId);
 }

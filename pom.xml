@@ -11,16 +11,16 @@
     <groupId>uk.ac.ebi.intact.core</groupId>
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
-    <version>1.9.0-SNAPSHOT</version>
+    <version>1.8.4</version>
 
     <name>IntAct Core</name>
     <description>Core Master POM</description>
     <url>http://www.ebi.ac.uk/~intact/devsite/core</url>
 
     <scm>
-        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk</connection>
-        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk</developerConnection>
-        <url>http://svn.sourceforge.net/viewcvs.cgi/intact/repo/core/trunk</url>
+        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/tags/core-1.8.4</connection>
+        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/tags/core-1.8.4</developerConnection>
+        <url>http://svn.sourceforge.net/viewcvs.cgi/intact/repo/core/tags/core-1.8.4</url>
     </scm>
 
     <modules>
@@ -62,12 +62,6 @@
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>1.2.15</version>
-                <exclusions>
-                   <exclusion>
-                      <groupId>javax.jms</groupId>
-                      <artifactId>jms</artifactId>
-                   </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>

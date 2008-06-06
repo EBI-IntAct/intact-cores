@@ -3,14 +3,14 @@
     <parent>
         <groupId>uk.ac.ebi.intact.core</groupId>
         <artifactId>core</artifactId>
-        <version>1.9.0-SNAPSHOT</version>
+        <version>1.8.4</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>intact-apt</artifactId>
     <packaging>jar</packaging>
-    <version>1.9.0-SNAPSHOT</version>
+    <version>1.8.4</version>
 
     <name>IntAct Core :: APT</name>
     <description>Annotation Processors for IntAct</description>
@@ -24,10 +24,8 @@
     <profile>
       <id>tools.jar</id>
       <activation>
-        <property>
-          <name>java.vendor</name>
-          <value>Sun Microsystems Inc.</value>
-       </property>
+        <!-- needs maven 2.0.3 or higher under Mac OS X -->
+        <os><family>!mac</family></os>
       </activation>
       <dependencies>
         <dependency>

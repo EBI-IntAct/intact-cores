@@ -20,7 +20,7 @@ import java.util.Map;
  * @since <pre>08-May-2006</pre>
  */
 @Mockable
-public interface ProteinDao extends PolymerDao<ProteinImpl> {
+public interface ProteinDao extends InteractorDao<ProteinImpl> {
 
     /**
      * Gets the AC of the identity Xref

@@ -238,22 +238,6 @@ public class IntactMockBuilder {
         return createProtein(uniprotId, shortLabel, createBioSourceRandom());
     }
 
-    public Protein createProteinSpliceVariant(Protein masterProt, String uniprotId, String shortLabel) {
-        Protein spliceVariant = createProtein(uniprotId, shortLabel);
-
-        if (masterProt.getAc() == null) {
-            throw new IllegalArgumentException("Cannot create an splice variant if the master protein does not have an AC: "+masterProt.getShortLabel());
-        }
-
-        CvXrefQualifier isoformParent = createCvObject(CvXrefQualifier.class, CvXrefQualifier.ISOFORM_PARENT_MI_REF, CvXrefQualifier.ISOFORM_PARENT);
-        CvDatabase uniprotKb = createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
-
-        InteractorXref isoformXref = createXref(spliceVariant, masterProt.getAc(), isoformParent, uniprotKb);
-        spliceVariant.addXref(isoformXref);
-
-        return spliceVariant;
-    }
-
     public Protein createDeterministicProtein(String uniprotId, String shortLabel) {
         return createProtein(uniprotId, shortLabel, createDeterministicBioSource());
     }
@@ -269,10 +253,7 @@ public class IntactMockBuilder {
 
         CvExperimentalPreparation cvExperimentalPreparation = createCvObject(CvExperimentalPreparation.class, CvExperimentalPreparation.PURIFIED_REF, CvExperimentalPreparation.PURIFIED);
         component.getExperimentalPreparations().add(cvExperimentalPreparation);
-        
-        ComponentParameter componentParameter = createDeterministicComponentParameter();
-        component.addParameter(componentParameter);
-        
+
         interactor.addActiveInstance( component );
         interaction.addComponent( component );
 
@@ -288,7 +269,7 @@ public class IntactMockBuilder {
         for (int i=0; i<childRandom(0,2); i++) {
             component.addBindingDomain(createFeatureRandom());
         }
-        
+
         return component;
     }
 
@@ -437,10 +418,8 @@ public class IntactMockBuilder {
         feature.addRange(range);
 
         interaction.getComponents().iterator().next().addBindingDomain(feature);
- //       interaction.getComponents().iterator().next().addComponentParameter(createDeterministicComponentParameter());
- //       interaction.addXref(createPrimaryReferenceXref( interaction , "testreference"));
+
         interaction.addConfidence( createDeterministicConfidence());
-        interaction.addParameter( createDeterministicInteractionParameter() );
 
         return interaction;
     }
@@ -655,37 +634,6 @@ public class IntactMockBuilder {
         Confidence conf = createConfidence(cvConfidenceType, Double.toString( new Random().nextDouble()));
         return conf;
     }
-     
-     //////////////////////
-     // Interaction Parameter
-      public InteractionParameter createDeterministicInteractionParameter() {
-         CvParameterType cvParameterType = createCvObject( CvParameterType.class, "MI:0836", "temperature");
-         CvParameterUnit cvParameterUnit = createCvObject( CvParameterUnit.class, "MI:0838", "kelvin");
-         InteractionParameter param = createInteractionParameter( cvParameterType, cvParameterUnit, new Double(302));
-         param.setBase(10);
-         param.setExponent(0);
-         param.setUncertainty(0.8);
-         return param;
-     }
-
-     public InteractionParameter createInteractionParameter(CvParameterType type, CvParameterUnit unit, Double factor) {
-         InteractionParameter param = new InteractionParameter(getInstitution(), type, unit, factor);
-         return param;
-     }
-     
-     //////////////////////
-     // Component Parameter
-      public ComponentParameter createDeterministicComponentParameter() {
-         CvParameterType cvParameterType = createCvObject( CvParameterType.class, "MI:0836", "temperature");
-         CvParameterUnit cvParameterUnit = createCvObject( CvParameterUnit.class, "MI:0838", "kelvin");
-         ComponentParameter param = createComponentParameter( cvParameterType, cvParameterUnit, new Double(302));
-         return param;
-     }
-
-     public ComponentParameter createComponentParameter(CvParameterType type, CvParameterUnit unit, Double factor) {
-         ComponentParameter param = new ComponentParameter(getInstitution(), type, unit, factor);
-         return param;
-     }
 
     ///////////////////
     // Utilities

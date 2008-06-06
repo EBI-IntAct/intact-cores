@@ -15,14 +15,10 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.model.Protein;
 
 /**
@@ -45,35 +41,5 @@ public class ProteinUtilsTest extends IntactBasicTestCase {
         
         assertNotNull(geneName);
         assertEquals("carA", geneName);
-    }
-
-    @Test
-    public void isFromUniprot() throws Exception {
-        Protein uniprotProt = getMockBuilder().createProtein("P12344", "lala");
-
-        Protein nonUniprotProt = getMockBuilder().createProteinRandom();
-        nonUniprotProt.getXrefs().clear();
-        nonUniprotProt.addAnnotation(getMockBuilder().createAnnotation("nonUniprot", null, CvTopic.NON_UNIPROT));
-
-        Assert.assertTrue(ProteinUtils.isFromUniprot(uniprotProt));
-        Assert.assertFalse(ProteinUtils.isFromUniprot(nonUniprotProt));
-    }
-
-    @Test
-    public void isSpliceVariant_true() throws Exception {
-        Protein prot = getMockBuilder().createProteinRandom();
-
-        CvXrefQualifier isoformParent = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.ISOFORM_PARENT_MI_REF, CvXrefQualifier.ISOFORM_PARENT);
-        CvDatabase uniprotKb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
-
-        prot.addXref(getMockBuilder().createXref(prot, "parentProtUniprotId", isoformParent, uniprotKb));
-
-        Assert.assertTrue(ProteinUtils.isSpliceVariant(prot));
-    }
-    
-    @Test
-    public void isSpliceVariant_false() throws Exception {
-        Protein prot = getMockBuilder().createProteinRandom();
-        Assert.assertFalse(ProteinUtils.isSpliceVariant(prot));
     }
 }

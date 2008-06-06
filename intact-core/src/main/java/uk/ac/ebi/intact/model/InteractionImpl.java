@@ -58,40 +58,32 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
     // associations
 
     /**
-     * Participant in this interaction.
+     * TODO comments
      */
     private Collection<Component> components; // initialized via constructor
 
     /**
-     * Product of this interaction (NOTE IMPLEMENTED YET).
+     * TODO comments
      */
     private Collection<Product> released; // mapping not implemented yet
 
     /**
-     * Experiments that have detected this interactions.
+     * TODO comments
      */
     private Collection<Experiment> experiments; // initialized via constructor
 
     /**
-     * Controlled vocabulary term defining the typs of this interaction.
+     * TODO comments
      */
     private CvInteractionType cvInteractionType;
 
     /**
-     * CRC of the interaction, that makes it unique and allows to check for redundancy.
+     * CRC of the interaction, that makes it unique and allows to check for redundancy
      */
     private String crc;
 
-    /**
-     * Confidence values for this interaction.
-     */
     private Collection<Confidence> confidences;  // initialized via constructor
 
-    /**
-     * Collection of interaction's parameter (eg. dissociation constant)
-     */
-    private Collection<InteractionParameter> interactionParameters;
-    
     public InteractionImpl() {
         //super call sets creation time data
         super();
@@ -99,7 +91,6 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         components = new ArrayList<Component>( );
         experiments =  new ArrayList<Experiment>( );
         confidences = new ArrayList<Confidence>();
-        interactionParameters = new ArrayList<InteractionParameter>();
     }
 
     /**
@@ -169,7 +160,6 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         setComponents( components );
         setCvInteractionType( type );
         confidences = new ArrayList<Confidence>();
-        interactionParameters = new ArrayList<InteractionParameter>();
         // the bioSource has to be set using setBioSource( BioSource bs ).
     }
 
@@ -421,33 +411,10 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
     public void removeConfidence( Confidence confidence ) {
         this.confidences.remove( confidence);
     }
-    
-    public void setParameters( Collection<InteractionParameter> someInteractionParameters ) {
-        if( someInteractionParameters == null ) {
-            throw new IllegalArgumentException( "You must set a non null collection of parameter" );
-        }
-        this.interactionParameters = someInteractionParameters;
-     }
-
-     public void addParameter( InteractionParameter interactionParameter ) {
-         if ( !this.interactionParameters.contains( interactionParameter ) ) {
-             this.interactionParameters.add( interactionParameter );
-             interactionParameter.setInteraction( this );
-         }
-     }
-
-     public void removeParameter( InteractionParameter interactionParameter ) {
-         this.interactionParameters.remove( interactionParameter );
-     }
 
     @OneToMany( mappedBy = "interaction", cascade = {CascadeType.ALL} )
     public Collection<Confidence> getConfidences() {
         return confidences;
-    }
-    
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.ALL} )
-    public Collection<InteractionParameter> getParameters() {
-        return interactionParameters;
     }
 
     ///////////////////////////////////////
@@ -563,9 +530,6 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
             if (!CollectionUtils.isEqualCollection( getConfidences(), interaction.getConfidences())){
                 return false;
             }
-            if (!CollectionUtils.isEqualCollection( getParameters(), interaction.getParameters())){
-                return false;
-            }
         }
 
         return true;
@@ -624,8 +588,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         }
 
         copy.confidences = new ArrayList<Confidence>();
-        copy.interactionParameters = new ArrayList<InteractionParameter>();
-        
+
         return copy;
     }
 
