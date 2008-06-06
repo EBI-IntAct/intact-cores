@@ -341,6 +341,11 @@ public class DaoFactory implements Serializable {
     }
 
     public boolean isTransactionActive() {
+        if (currentEntityManager == null) {
+            if (log.isWarnEnabled()) log.warn("Cannot check if the transaction is active as the current EntityManager is null");
+            return false;
+        }
+
         EntityTransaction currentTransaction = currentEntityManager.getTransaction();
         boolean active = currentTransaction.isActive();
         if( log.isDebugEnabled() ) {
