@@ -345,4 +345,31 @@ public class AnnotatedObjectUtils {
         return xrefList;
     }
 
+    /**
+     * Find all annotations having any of the provided CvTopics.
+     *
+     * @param annotatedObject the object to serch on.
+     * @param topics          the topics we are searching.
+     * @return a non null collection of Annotation.
+     */
+    public static Collection<Annotation> findAnnotationsByCvTopic( AnnotatedObject<?, ?> annotatedObject,
+                                                                   Collection<CvTopic> topics ) {
+        if ( annotatedObject == null ) {
+            throw new NullPointerException( "You must give a non null annotatedObject" );
+        }
+
+        if ( topics == null ) {
+            throw new NullPointerException( "You must give a non null collection of CvTopic" );
+        }
+
+        Collection<Annotation> annotations = new ArrayList<Annotation>();
+        if( ! topics.isEmpty() ) {
+            for ( Annotation annotation : annotatedObject.getAnnotations() ) {
+                if( topics.contains( annotation.getCvTopic() )) {
+                    annotations.add( annotation );
+                }
+            }
+        }
+        return annotations;
+    }
 }

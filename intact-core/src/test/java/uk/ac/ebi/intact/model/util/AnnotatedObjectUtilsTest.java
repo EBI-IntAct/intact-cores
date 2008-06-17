@@ -24,6 +24,8 @@ import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
 import java.util.Collection;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -211,6 +213,42 @@ public class AnnotatedObjectUtilsTest {
 
     private IntactMockBuilder getMockBuilder() {
         return new IntactMockBuilder(new Institution("testInstitution"));
+    }
+    
+    @Test
+    public void findANnotationsByCvTopic() throws Exception {
+
+        final CvInteraction interactionType = getMockBuilder().createCvObject( CvInteraction.class, "MI:xxxx", "bla" );
+
+        final CvTopic usedInClass = getMockBuilder().createCvObject( CvTopic.class, "MI:0001", "used-in-class" );
+        final CvTopic obsolete = getMockBuilder().createCvObject( CvTopic.class, "MI:0002", "obsolete" );
+        final CvTopic comment = getMockBuilder().createCvObject( CvTopic.class, "MI:0003", "comment" );
+        final CvTopic remark = getMockBuilder().createCvObject( CvTopic.class, "MI:0004", "internal-remark" );
+
+        interactionType.addAnnotation( getMockBuilder().createAnnotation( "annot1", usedInClass ) );
+        interactionType.addAnnotation( getMockBuilder().createAnnotation( "annot1", comment ) );
+        interactionType.addAnnotation( getMockBuilder().createAnnotation( "annot1", comment ) );
+        interactionType.addAnnotation( getMockBuilder().createAnnotation( "annot1", obsolete ) );
+
+        Collection<Annotation> annotations = null;
+
+        annotations = AnnotatedObjectUtils.findAnnotationsByCvTopic( interactionType,
+                                                                     Arrays.asList( obsolete,
+                                                                                    usedInClass,
+                                                                                    remark ) );
+        Assert.assertNotNull( annotations );
+        Assert.assertEquals( 2, annotations.size() );
+
+        annotations = AnnotatedObjectUtils.findAnnotationsByCvTopic( interactionType, new ArrayList<CvTopic>() );
+        Assert.assertNotNull( annotations );
+        Assert.assertEquals( 0, annotations.size() );
+
+        try {
+            AnnotatedObjectUtils.findAnnotationsByCvTopic( null, new ArrayList<CvTopic>() );
+            Assert.fail( "AnnotatedObjectUtils.findANnotationsByCvTopic() should not allow null annotatedObject" );
+        } catch ( Exception e ) {
+            // ok
+        }
     }
 
 }
