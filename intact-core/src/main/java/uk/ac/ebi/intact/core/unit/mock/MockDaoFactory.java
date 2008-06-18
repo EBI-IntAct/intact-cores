@@ -48,8 +48,6 @@ public class MockDaoFactory extends DaoFactory {
     private IntactObjectDao<? extends IntactObject> intactObjectDao;
     private InteractionDao interactionDao;
     private ConfidenceDao confidenceDao;
-    private InteractionParameterDao interactionParameterDao;
-    private ComponentParameterDao componentParameterDao;
     private InteractorDao<? extends Interactor> interactorDao;
     private MineInteractionDao mineInteractionDao;
     private PolymerDao polymerDao;
@@ -240,18 +238,6 @@ public class MockDaoFactory extends DaoFactory {
         checkIfDaoIsSet(confidenceDao, ConfidenceDao.class);
         return confidenceDao;
     }
-    
-    @Override
-    public InteractionParameterDao getInteractionParameterDao(){
-        checkIfDaoIsSet(interactionParameterDao, InteractionParameterDao.class);
-        return interactionParameterDao;
-    }
-    
-    @Override
-    public ComponentParameterDao getComponentParameterDao(){
-        checkIfDaoIsSet(componentParameterDao, ComponentParameterDao.class);
-        return componentParameterDao;
-    }
 
     @Override
     public SearchableDao getSearchableDao() {
@@ -373,10 +359,6 @@ public class MockDaoFactory extends DaoFactory {
     public void setMockConfidenceDao(ConfidenceDao confidenceDao) {
         this.confidenceDao = confidenceDao;        
     }
-    
-    public void setMockInteractionParameterDao(InteractionParameterDao interactionParameterDao) {
-        this.interactionParameterDao = interactionParameterDao;        
-    }   
 
     public void setMockSearchableDao(SearchableDao searchableDao) {
         this.searchableDao = searchableDao;

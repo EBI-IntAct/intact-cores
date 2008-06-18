@@ -24,7 +24,6 @@ import uk.ac.ebi.intact.model.SequenceChunk;
 import uk.ac.ebi.intact.persistence.dao.PolymerDao;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.List;
 
 /**
@@ -56,18 +55,5 @@ public class PolymerDaoImpl<T extends PolymerImpl> extends InteractorDaoImpl<T> 
         }
 
         return sb.toString();
-    }
-
-    public List<T> getByCrcAndTaxId(String crc, String taxId) {
-        if (crc == null) throw new NullPointerException("crc is null");
-        if (taxId == null) throw new NullPointerException("taxId is null");
-
-        Query query = getEntityManager().createQuery("select p from PolymerImpl p " +
-                                                     "where p.crc64 = :crc64 " +
-                                                     "and p.bioSource.taxId = :taxId");
-        query.setParameter("crc64", crc);
-        query.setParameter("taxId", taxId);
-
-        return query.getResultList();
     }
 }

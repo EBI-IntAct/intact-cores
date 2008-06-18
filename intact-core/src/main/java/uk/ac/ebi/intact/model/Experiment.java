@@ -26,7 +26,7 @@ import java.util.Collection;
 @Entity
 @Table( name = "ia_experiment" )
 @EditorTopic
-public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAlias> implements  Editable, Searchable {
+public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAlias> implements Editable, Searchable {
 
     private static final Log log = LogFactory.getLog( Experiment.class );
 

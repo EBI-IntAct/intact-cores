@@ -18,13 +18,8 @@ package uk.ac.ebi.intact.model.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
-import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Utility methods for Proteins.
@@ -96,8 +91,6 @@ public class ProteinUtils {
         return null;
     }
 
-
-
     /**
      * Get the gene name of a protein
      *
@@ -153,21 +146,34 @@ public class ProteinUtils {
      * @return
      */
     public static List<InteractorXref> getIdentityXrefs(Interactor interactor, boolean excludeIdentitiesFromImexPartners) {
+        List<InteractorXref> identities = new ArrayList<InteractorXref>();
 
-        CvObjectFilterGroup qualifierFilterGroup = new CvObjectFilterGroup();
-        qualifierFilterGroup.addIncludedIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
+        for (InteractorXref xref : interactor.getXrefs()) {
+            final CvXrefQualifier xrefQualifier = xref.getCvXrefQualifier();
 
-        CvObjectFilterGroup databaseFilterGroup = new CvObjectFilterGroup();
+                if (xrefQualifier == null) {
+                    continue;
+                }
 
-        if (excludeIdentitiesFromImexPartners) {            
-            // TODO this has to be maintained in case we get new IMEx partners
-            // TODO a work around could be to load the list of MI identities of all institutions present in the repository
-            databaseFilterGroup.addExcludedIdentifier(CvDatabase.INTACT_MI_REF);
-            databaseFilterGroup.addExcludedIdentifier(CvDatabase.MINT_MI_REF);
-            databaseFilterGroup.addExcludedIdentifier(CvDatabase.DIP_MI_REF);
+            final String xrefQualMi = xrefQualifier.getMiIdentifier();
+            final String databaseMi = xref.getCvDatabase().getMiIdentifier();
+
+            if (CvXrefQualifier.IDENTITY_MI_REF.equals(xrefQualMi)) {
+                if (excludeIdentitiesFromImexPartners) {
+                    // TODO this has to be maintained in case we get new IMEx partners
+                    // TODO a work around could be to load the list of MI identities of all institutions present in the repository
+                    if (!(CvDatabase.INTACT_MI_REF.equals(databaseMi) ||
+                          CvDatabase.MINT_MI_REF.equals(databaseMi) ||
+                          CvDatabase.DIP_MI_REF.equals(databaseMi))) {
+                        identities.add(xref);
+                    }
+                } else {
+                    identities.add(xref);
+                }
+            }            
         }
 
-        return AnnotatedObjectUtils.searchXrefs(interactor, new XrefCvFilter(databaseFilterGroup, qualifierFilterGroup));
+        return identities;
     }
 
     /**
@@ -200,23 +206,5 @@ public class ProteinUtils {
         }
 
         return true;
-    }
-
-    /**
-     * Checks if the current protein is a splice variant
-     * @param protein the protein to check
-     * @return true if the protein is a splice variant
-     */
-    public static boolean isSpliceVariant(Protein protein) {
-        Collection<InteractorXref> xrefs = protein.getXrefs();
-        for (InteractorXref xref : xrefs) {
-            if (xref.getCvXrefQualifier() != null) {
-                String qualifierIdentity = xref.getCvXrefQualifier().getMiIdentifier();
-                if (CvXrefQualifier.ISOFORM_PARENT_MI_REF.equals(qualifierIdentity)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

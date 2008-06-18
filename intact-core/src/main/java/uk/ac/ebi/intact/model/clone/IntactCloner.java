@@ -99,10 +99,6 @@ public class IntactCloner {
             clone = (T) cloneRange( ( Range ) intactObject );
         } else if ( intactObject instanceof Confidence){
             clone = (T) cloneConfidence( (Confidence) intactObject);
-        } else if ( intactObject instanceof InteractionParameter){
-            clone = (T) cloneInteractionParameter( (InteractionParameter) intactObject);
-        } else if ( intactObject instanceof ComponentParameter){
-            clone = (T) cloneComponentParameter( (ComponentParameter) intactObject);
         } else {
             throw new IllegalArgumentException( "Cannot clone objects of type: " + intactObject.getClass().getName() );
         }
@@ -250,46 +246,6 @@ public class IntactCloner {
         return clone;
     }
 
-    protected InteractionParameter cloneInteractionParameter( InteractionParameter interactionParameter ) throws IntactClonerException {
-        if ( interactionParameter == null ) {
-            throw new IllegalArgumentException( "You must give a non null interaction parameter" );
-        }
-
-        InteractionParameter clone = new InteractionParameter();
-
-        clonerManager.addClone( interactionParameter, clone );
-
-        clone.setBase( interactionParameter.getBase() );
-        clone.setExponent( interactionParameter.getExponent() );
-        clone.setFactor( interactionParameter.getFactor() );
-        clone.setUncertainty( interactionParameter.getUncertainty() );
-        clone.setCvParameterType( clone( interactionParameter.getCvParameterType() ) );
-        clone.setCvParameterUnit( clone( interactionParameter.getCvParameterUnit() ) );
-        clone.setInteraction( interactionParameter.getInteraction() );
-
-        return clone;
-    }
-
-    protected ComponentParameter cloneComponentParameter( ComponentParameter componentParameter ) throws IntactClonerException {
-        if ( componentParameter == null ) {
-            throw new IllegalArgumentException( "You must give a non null component parameter" );
-        }
-
-        ComponentParameter clone = new ComponentParameter();
-
-        clonerManager.addClone( componentParameter, clone );
-
-        clone.setBase( componentParameter.getBase() );
-        clone.setExponent( componentParameter.getExponent() );
-        clone.setFactor( componentParameter.getFactor() );
-        clone.setUncertainty( componentParameter.getUncertainty() );
-        clone.setCvParameterType( clone ( componentParameter.getCvParameterType() ) );
-        clone.setCvParameterUnit( clone( componentParameter.getCvParameterUnit() ) );
-        clone.setComponent( componentParameter.getComponent() );
-
-        return clone;
-    }
-
     ///////////////////////////////////////
     // AnnotatedObject cloners
 
@@ -375,10 +331,6 @@ public class IntactCloner {
         for ( Confidence confidence : interaction.getConfidences() ) {
             clone.addConfidence(clone( confidence ));
         }
-        
-        for ( InteractionParameter interactionParameter : interaction.getParameters() ) {
-            clone.addParameter(clone( interactionParameter ));
-        }
 
         return clone;
     }
@@ -461,10 +413,6 @@ public class IntactCloner {
 
         clone.setStoichiometry( component.getStoichiometry() );
         clone.setExpressedIn(clone( component.getExpressedIn() ));
-
-        for (ComponentParameter componentParameter : component.getParameters()) {
-            clone.addParameter(clone (componentParameter));
-        }
 
         for ( Feature feature : component.getBindingDomains() ) {
             clone.addBindingDomain(clone( feature ));

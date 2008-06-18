@@ -37,16 +37,6 @@ public interface BaseDao<T> {
 
     List<T> getAll( int firstResult, int maxResults );
 
-    /**
-     * Returns all the objects, sorted by the chosen property
-     * @param firstResult The first result (index) to get
-     * @param maxResults The maximum results per page
-     * @param sortProperty The property to use when sorting
-     * @param ascendant The order of the sort. If true, the sorting is ascendant
-     * @return The objects, sorted
-     */
-    List<T> getAllSorted( int firstResult, int maxResults, String sortProperty, boolean ascendant);
-
     public int countAll();
 
     void update( T objToUpdate );

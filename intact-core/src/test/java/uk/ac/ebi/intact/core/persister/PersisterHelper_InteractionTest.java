@@ -95,7 +95,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         final Institution intact2 = getDaoFactory().getAnnotatedObjectDao().getAll().iterator().next().getOwner();
         Assert.assertEquals( intact1, intact2 );
 
-        Assert.assertEquals( 20, getDaoFactory().getCvObjectDao().getAll().size() );
+        Assert.assertEquals( 18, getDaoFactory().getCvObjectDao().getAll().size() );
         Assert.assertEquals( 4, getDaoFactory().getInteractionDao().getAll().size() );
 
         intactEntry = builder.createIntactEntryRandom(2, 2, 2);
@@ -189,80 +189,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals( 1, reloadedInteraction2.getConfidences().size() );
         Assert.assertEquals( confidence, reloadedInteraction2.getConfidences().iterator().next() );
     }
-    
-    @Test
-    public void interactionParameterPersisted() throws Exception {
-        IntactMockBuilder builder = super.getMockBuilder();
-        Interaction interaction = builder.createDeterministicInteraction();
-        InteractionParameter interactionParameterExpected = interaction.getParameters().iterator().next();
-        PersisterHelper.saveOrUpdate(interaction);
-
-        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
-        Assert.assertEquals(1, getDaoFactory().getInteractionParameterDao().countAll());
-
-        Iterator<InteractionParameter> interactionParameterIter = getDaoFactory().getInteractionParameterDao().getAllIterator();
-        InteractionParameter interactionParameterObserved = interactionParameterIter.next();
-        Assert.assertEquals( interactionParameterExpected.getFactor(), interactionParameterObserved.getFactor());
-        Assert.assertEquals( interactionParameterExpected.getCvParameterType(), interactionParameterObserved.getCvParameterType());
-        Assert.assertEquals( interactionParameterExpected.getCvParameterUnit(), interactionParameterObserved.getCvParameterUnit());
-        Assert.assertEquals( interactionParameterExpected.getBase(), interactionParameterObserved.getBase());
-        Assert.assertEquals( interactionParameterExpected.getUncertainty(), interactionParameterObserved.getUncertainty());
-        Assert.assertEquals( interactionParameterExpected.getExponent(), interactionParameterObserved.getExponent());
-
-        Iterator<InteractionImpl> interactionIter = getDaoFactory().getInteractionDao().getAllIterator();
-        Interaction interactionObserved = interactionIter.next();
-        Assert.assertEquals(1, interactionObserved.getParameters().size());
-        InteractionParameter interactionParameterObserved2 = interactionObserved.getParameters().iterator().next();
-        Assert.assertEquals( interactionParameterExpected.getFactor(), interactionParameterObserved2.getFactor());
-        Assert.assertEquals( interactionParameterExpected.getCvParameterType(), interactionParameterObserved2.getCvParameterType());
-        Assert.assertEquals( interactionParameterExpected.getCvParameterUnit(), interactionParameterObserved2.getCvParameterUnit());
-        Assert.assertEquals( interactionParameterExpected.getBase(), interactionParameterObserved2.getBase());
-        Assert.assertEquals( interactionParameterExpected.getUncertainty(), interactionParameterObserved2.getUncertainty());
-        Assert.assertEquals( interactionParameterExpected.getExponent(), interactionParameterObserved2.getExponent());
-    }
-
- //   @Test
-//    public void interactionInteractionParameterPersisted() throws Exception {
-        /**
-         * Having an interaction without parameters in the database. Tests if it can add a parameter and
-         * persist it to database. It isn't supposed yet by the persister but the test is anyway ready
-         */
-/*        IntactMockBuilder builder = super.getMockBuilder();
-        Interaction interaction = builder.createInteractionRandomBinary();
-        Assert.assertEquals( 0, interaction.getInteractionParameters().size() );
-
-        PersisterHelper.saveOrUpdate(interaction);
-
-        Interaction reloadedInteraction = getDaoFactory().getInteractionDao().
-                getByAc( interaction.getAc() );
-        Assert.assertEquals( 0, reloadedInteraction.getInteractionParameters().size() );
-
-        Assert.assertEquals( interaction, reloadedInteraction );        
-        InteractionParameter interactionParameter = builder.createDeterministicInteractionParameter();
-
-        reloadedInteraction.addInteractionParameter( interactionParameter );
-        Assert.assertEquals( 1, reloadedInteraction.getInteractionParameters().size() );
-        Assert.assertEquals( interactionParameter, reloadedInteraction.getInteractionParameters().iterator().next() );
-        PersisterHelper.saveOrUpdate( reloadedInteraction );
-        
-        
-        //getDataContext().beginTransaction();
-
-        CvParameterType cvParameterType = builder.createCvObject( CvParameterType.class, "JB:666", "testShortLabel" );
-        interactionParameter.setCvParameterType( cvParameterType );
-        PersisterHelper.saveOrUpdate( cvParameterType );
-        getDaoFactory().getInteractionDao().update( (InteractionImpl)reloadedInteraction );
-        getDaoFactory().getInteractionParameterDao().persist( interactionParameter);
-
-
-        //getDataContext().commitTransaction();
-
-        Interaction reloadedInteraction2 = getDaoFactory().getInteractionDao().getByAc( interaction.getAc() );
-        Assert.assertEquals( reloadedInteraction, reloadedInteraction2 );
-        Assert.assertEquals( 1, reloadedInteraction2.getInteractionParameters().size() );
-        Assert.assertEquals( interactionParameter, reloadedInteraction2.getInteractionParameters().iterator().next() );
-    }  */
-
 
     @Test
     public void institutionPersisted() throws Exception {

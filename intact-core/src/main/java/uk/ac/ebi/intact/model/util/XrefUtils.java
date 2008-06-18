@@ -146,16 +146,22 @@ public class XrefUtils {
         if (annotatedObject == null) {
             throw new NullPointerException("annotatedObject should not be null");
         }
+        
+        Collection<X> xrefs = annotatedObject.getXrefs();
+        X annotatedObjectXref = null;
 
-        X psiMiXref = null;
+        for (X xref : xrefs) {
+            if (xref.getCvXrefQualifier() != null && xref.getCvDatabase() != null) {
+                String miQualifier = xref.getCvXrefQualifier().getMiIdentifier();
+                String miDatabase = xref.getCvDatabase().getMiIdentifier();
 
-        Collection<X> identityXrefs = AnnotatedObjectUtils.searchXrefs(annotatedObject, CvDatabase.PSI_MI_MI_REF, CvXrefQualifier.IDENTITY_MI_REF);
-
-        if (!identityXrefs.isEmpty()) {
-            psiMiXref = identityXrefs.iterator().next();
+                if (CvXrefQualifier.IDENTITY_MI_REF.equals(miQualifier) && CvDatabase.PSI_MI_MI_REF.equals(miDatabase)) {
+                    annotatedObjectXref = xref;
+                }
+            }
         }
-
-        return psiMiXref;
+        
+        return annotatedObjectXref;
     }
 
     // ex1 : annotatedObject is supposibly the CvDatabase psi-mi, psiMi is CvDatabase.PSI_MI_MI_REF
@@ -186,14 +192,17 @@ public class XrefUtils {
      * @param annotatedObject the Object with the xrefs
      * @param databaseMi the database MI to look for
      * @return list of Xrefs
-     *
-     * @deprecated use AnnotatedObjectUtils.searchXrefsByDatabase instead
      */
-    @Deprecated
     public static <X extends Xref> List<X> getXrefsFilteredByDatabase(AnnotatedObject<X,?> annotatedObject, String databaseMi) {
         if (annotatedObject == null) throw new NullPointerException("Null annotatedObject");
         if (databaseMi == null) throw new NullPointerException("Database MI Identifier is mandatory");
 
-        return new ArrayList<X>(AnnotatedObjectUtils.searchXrefsByDatabase(annotatedObject, databaseMi));
+        List<X> xrefs = new ArrayList<X>();
+        for (X xref : annotatedObject.getXrefs()) {
+            if (databaseMi.equals(xref.getCvDatabase().getMiIdentifier())) {
+                xrefs.add(xref);
+            }
+        }
+        return xrefs;
     }
 }

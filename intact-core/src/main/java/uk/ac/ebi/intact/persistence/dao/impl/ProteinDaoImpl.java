@@ -15,6 +15,7 @@ import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.persistence.dao.ProteinDao;
 
 import javax.persistence.EntityManager;
@@ -220,20 +221,18 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
 
         if ( ac == null ) {
             // This protein doesn't have an AC, it cannot have splice variants.
-            if (log.isWarnEnabled()) log.warn("Cannot find splice variants for a protein without AC: "+protein.getShortLabel());
-            return Collections.EMPTY_LIST;
+            return new ArrayList<ProteinImpl>( 1 );
         }
 
-        Query query = getEntityManager().createQuery("select prot from ProteinImpl prot inner join " +
-                                                     "prot.xrefs as xref where " +
-                                                     "xref.cvXrefQualifier.miIdentifier = :isoformParentMi " +
-                                                     "and xref.cvDatabase.miIdentifier = :intactMi " +
-                                                     "and xref.primaryId = :masterAc");
-        query.setParameter("isoformParentMi", CvXrefQualifier.ISOFORM_PARENT_MI_REF);
-        query.setParameter("intactMi", CvDatabase.INTACT_MI_REF);
-        query.setParameter("masterAc", ac);
-        
-        return query.getResultList();
+        return getSession().createCriteria( ProteinImpl.class )
+                .createAlias( "xrefs", "xref" )
+                .createAlias( "xref.cvXrefQualifier", "qual" )
+                .createAlias( "xref.cvDatabase", "database" )
+                .createCriteria( "qual.xrefs", "qualXref" )
+                .createCriteria( "database.xrefs", "dbXref" )
+                .add( Restrictions.eq( "qualXref.primaryId", CvXrefQualifier.ISOFORM_PARENT_MI_REF ) )
+                .add( Restrictions.eq( "dbXref.primaryId", CvDatabase.INTACT_MI_REF ) )
+                .add( Restrictions.eq( "xref.primaryId", ac ) ).list();
     }
 
     public ProteinImpl getSpliceVariantMasterProtein( Protein spliceVariant ) {
@@ -242,20 +241,45 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
             throw new NullPointerException( "spliceVariant must not be null." );
         }
 
-        String masterProtAc = null;
+        CvXrefQualifier isoformParent = ( CvXrefQualifier ) getSession().createCriteria( CvXrefQualifier.class )
+                .createAlias( "xrefs", "xref" )
+                .createAlias( "xref.cvXrefQualifier", "qual" )
+                .createAlias( "xref.cvDatabase", "database" )
+                .createCriteria( "qual.xrefs", "qualXref" )
+                .createCriteria( "database.xrefs", "dbXref" )
+                .add( Restrictions.eq( "qualXref.primaryId", CvXrefQualifier.IDENTITY_MI_REF ) )
+                .add( Restrictions.eq( "dbXref.primaryId", CvDatabase.PSI_MI_MI_REF ) )
+                .add( Restrictions.eq( "xref.primaryId", CvXrefQualifier.ISOFORM_PARENT_MI_REF ) ).uniqueResult();
 
-        for (InteractorXref xref : spliceVariant.getXrefs()) {
-            if (xref.getCvXrefQualifier() != null && CvXrefQualifier.ISOFORM_PARENT_MI_REF.equals(xref.getCvXrefQualifier().getMiIdentifier())) {
-                if (masterProtAc == null) {
-                    masterProtAc = xref.getPrimaryId();
-                } else {
-                    throw new IntactException("This splice variant contains more than one \"isoform-parent\" xrefs: "+spliceVariant.getShortLabel() );
-                }
-            }
+        if ( isoformParent == null ) {
+            throw new IntactException( "Failed to find CvXrefQualifier(isoform-parent) by PSI identifier: " + CvXrefQualifier.ISOFORM_PARENT_MI_REF );
         }
 
-        // search protein by AC
-        return getByAc(masterProtAc);
+        // first off, we search the Xref having the qualifier isoform-parent and get he master protein AC
+        Collection<Xref> xrefs = AnnotatedObjectUtils.searchXrefs( spliceVariant, isoformParent );
+
+        if ( xrefs.isEmpty() ) {
+            if ( log.isDebugEnabled() ) {
+                // well, that was not a splice variant
+                log.warn( "Could not find an Xref having CvXrefQualifier(isoform-parent) in splice variant: " + spliceVariant.getAc() );
+                log.warn( "Most likely, the given protein wasn't a (valid) splice variant." );
+            }
+
+            return null;
+
+        } else {
+
+            if ( xrefs.size() > 1 ) {
+                // well, that was not a splice variant
+                throw new IntactException( "Found more than one Xref having CvXrefQualifier(isoform-parent) in splice variant: " + spliceVariant.getAc() );
+            }
+
+            String masterAc = xrefs.iterator().next().getPrimaryId();
+
+            // search protein by AC
+            return ( ProteinImpl ) getSession().createCriteria( ProteinImpl.class )
+                    .add( Restrictions.eq( "ac", masterAc ) ).uniqueResult();
+        }
     }
 
      /**
@@ -265,7 +289,7 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
      * @since 1.8.1
      */
     public List<String> getAllUniprotAcs() {
-        Query query = getEntityManager().createQuery("select distinct(xref.primaryId) from InteractorXref xref " +
+        Query query = getEntityManager().createQuery("select xref.primaryId from InteractorXref xref " +
                                                      "where xref.cvXrefQualifier.miIdentifier = :qualifierMi " +
                                                      "and xref.cvDatabase.miIdentifier = :uniprotMi " +
                                                      "and size(xref.parent.activeInstances) > 0");
