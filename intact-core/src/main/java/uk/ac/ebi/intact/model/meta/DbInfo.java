@@ -23,6 +23,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
+import org.hibernate.validator.Length;
+
 /**
  * Contains metadata about the schema
  *
@@ -35,12 +37,23 @@ import java.util.Date;
 public class DbInfo implements Auditable {
 
     public static final String SCHEMA_VERSION = "schema_version";
+    public static final String LAST_PROTEIN_UPDATE = "last_protein_update";
+    public static final String LAST_CV_UPDATE_PSIMI = "last_cv_update[PSI-MI]";
+    public static final String NAMESPACE_PSIMI = "PSI-MI";
+
+    public static final String LAST_CV_IDENTIFIER = "last_cv_identifier";
+
+
+
+
 
     @Id
-    @Column( name = "dbi_key", length = 20 )
+    @Column( name = "dbi_key", length = 50 )
+    @Length(max = 50)
     private String key;
 
-    @Column( name = "value", length = 20 )
+    @Column( name = "value", length = 512 )
+    @Length(max = 512)
     private String value;
 
     /**

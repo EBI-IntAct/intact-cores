@@ -51,4 +51,7 @@ public class DbInfoDaoImpl extends HibernateBaseDaoImpl<DbInfo> implements DbInf
     public void persist( DbInfo dbInfo ) {
         getEntityManager().persist( dbInfo );
     }
+
+
+
 }
