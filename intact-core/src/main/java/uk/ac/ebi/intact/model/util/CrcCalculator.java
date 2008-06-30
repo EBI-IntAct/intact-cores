@@ -281,7 +281,7 @@ public class CrcCalculator {
         if (cvObject == null) return sb;
 
         // psi-mi
-        String miIdentifier = cvObject.getMiIdentifier();
+        String miIdentifier = cvObject.getIdentifier();
 
         if (miIdentifier != null) {
             sb.append(miIdentifier);

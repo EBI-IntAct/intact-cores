@@ -92,7 +92,13 @@ public enum IntactEnvironment {
     /**
      * File where the temporary H2 database -when using the temporary data config- will be created
      */
-    TEMP_H2("uk.ac.ebi.intact.TEMP_H2_FILE");
+    TEMP_H2("uk.ac.ebi.intact.TEMP_H2_FILE"),
+
+    /**
+     * Prefix for the local CV Object identifier
+     * @since 1.9.0
+     */
+    LOCAL_CV_PREFIX("uk.ac.ebi.intact.LOCAL_CV_PREFIX");
 
 
     private String fqn;

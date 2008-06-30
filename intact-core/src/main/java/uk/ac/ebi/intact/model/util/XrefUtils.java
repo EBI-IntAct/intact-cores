@@ -108,7 +108,7 @@ public class XrefUtils {
         for (X xref : annotatedObject.getXrefs()) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             String qualifierMi = null;
-            if (qualifier != null && ((qualifierMi = qualifier.getMiIdentifier()) != null &&
+            if (qualifier != null && ((qualifierMi = qualifier.getIdentifier()) != null &&
                 qualifierMi.equals(CvXrefQualifier.IDENTITY_MI_REF))) {
                 xrefs.add(xref);
             }
@@ -118,7 +118,7 @@ public class XrefUtils {
     }
 
     public static <X extends Xref> X getIdentityXref(AnnotatedObject<X,?> annotatedObject, CvDatabase cvDatabase) {
-        String dbMi = cvDatabase.getMiIdentifier();
+        String dbMi = cvDatabase.getIdentifier();
 
         return getIdentityXref(annotatedObject, dbMi);
     }
@@ -130,8 +130,8 @@ public class XrefUtils {
             String qualMi;
             String dbMi;
             if (qualifier != null && database != null &&
-                (qualMi = qualifier.getMiIdentifier()) != null &&
-                (dbMi = database.getMiIdentifier()) != null &&
+                (qualMi = qualifier.getIdentifier()) != null &&
+                (dbMi = database.getIdentifier()) != null &&
                 qualMi.equals(CvXrefQualifier.IDENTITY_MI_REF) &&
                 dbMi.equals(databaseMi)) {
 

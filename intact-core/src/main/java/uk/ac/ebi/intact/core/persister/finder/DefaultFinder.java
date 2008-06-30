@@ -141,16 +141,16 @@ public class DefaultFinder implements Finder {
                                                    "left join exp.publication as pub " +
                                                    "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
                                                    "exp.bioSource.taxId = :taxId and " +
-                                                   "exp.cvIdentification.miIdentifier = :participantDetMethodMi and " +
-                                                   "exp.cvInteraction.miIdentifier = :interactionTypeMi");
+                                                   "exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                                                   "exp.cvInteraction.identifier = :interactionTypeMi");
             query.setParameter("pubId", pubId);
             query.setParameter("taxId", experiment.getBioSource().getTaxId());
 
             if (experiment.getCvIdentification() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without CvIdentification: "+experiment.getShortLabel());
             if (experiment.getCvInteraction() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without CvInteraction: "+experiment.getShortLabel());
 
-            query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getMiIdentifier());
-            query.setParameter("interactionTypeMi", experiment.getCvInteraction().getMiIdentifier());
+            query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getIdentifier());
+            query.setParameter("interactionTypeMi", experiment.getCvInteraction().getIdentifier());
 
         } else {
             log.warn("Experiment without publication, getting its AC using the shortLabel: "+experiment.getShortLabel());
@@ -336,7 +336,7 @@ public class DefaultFinder implements Finder {
             return true;
         } else {
             for (InstitutionXref institutionXref : IntactContext.getCurrentInstance().getInstitution().getXrefs()) {
-                if (institutionXref.getPrimaryId().equals(xref.getCvDatabase().getMiIdentifier())) {
+                if (institutionXref.getPrimaryId().equals(xref.getCvDatabase().getIdentifier())) {
                     return true;
                 }
             }
@@ -414,7 +414,7 @@ public class DefaultFinder implements Finder {
         Class cvClass = CgLibUtil.removeCglibEnhanced(cvObject.getClass());
         
         Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.miIdentifier = :mi " );
-        query.setParameter( "mi", cvObject.getMiIdentifier() );
+        query.setParameter( "mi", cvObject.getIdentifier() );
 
         String value = getFirstAcForQuery( query, cvObject );
 

@@ -36,8 +36,8 @@ public class CvObjectUtils {
      */
     public static String getIdentity( CvObject cvObject ) {
         // try the PSI MI first
-        if (cvObject.getMiIdentifier() != null) {
-            return cvObject.getMiIdentifier();
+        if (cvObject.getIdentifier() != null) {
+            return cvObject.getIdentifier();
         }
 
        // try to get the identity with CvDatabase 'intact'
@@ -209,8 +209,8 @@ public class CvObjectUtils {
             }
         }
         
-        if (cv1.getMiIdentifier() != null && cv2.getMiIdentifier() != null) {
-            return cv1.getMiIdentifier().equals(cv2.getMiIdentifier());
+        if (cv1.getIdentifier() != null && cv2.getIdentifier() != null) {
+            return cv1.getIdentifier().equals(cv2.getIdentifier());
         }
 
         return cv1.getShortLabel().equals(cv2.getShortLabel());

@@ -102,7 +102,7 @@ public class InteractionShortLabelGenerator {
                 throw new NullPointerException("Component found without experimental role: "+component.getAc());
             }
 
-            String roleMi = role.getMiIdentifier();
+            String roleMi = role.getIdentifier();
 
             if (roleMi.equals(CvExperimentalRole.PREY_PSI_REF)) {
                 preys.add(geneName);

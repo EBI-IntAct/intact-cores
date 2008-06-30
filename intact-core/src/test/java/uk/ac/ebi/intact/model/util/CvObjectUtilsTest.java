@@ -1,16 +1,14 @@
 package uk.ac.ebi.intact.model.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
 import org.junit.*;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.model.*;
+import static org.junit.Assert.*;
+import uk.ac.ebi.intact.config.impl.SmallCvPrimer;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.config.impl.SmallCvPrimer;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -209,7 +207,7 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
     @Test
     public void createCvObject() throws Exception {
         CvObject cv = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
-        Assert.assertNotNull(cv.getMiIdentifier());
+        Assert.assertNotNull(cv.getIdentifier());
         Assert.assertEquals(1, cv.getXrefs().size());
     }
 

@@ -29,9 +29,9 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
 
     /**
      * PSI-MI Identifier for this object, which is a de-normalization of the
-     * value contained in the 'identity' xref from the 'psimi' database 
+     * value contained in the 'identity' xref
      */
-    private String miIdentifier;
+    private String identifier;
 
     public CvObject() {
         //super call sets creation time data
@@ -90,21 +90,32 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         return super.getAliases();
     }
 
+    @Column(name = "identifier", insertable = false, updatable = false)
+    @Deprecated
+    public String getMiIdentifier() {
+        return identifier;
+    }
+
+    @Deprecated
+    public void setMiIdentifier(String mi) {
+        setIdentifier(mi);
+    }
+
     /**
      * PSI-MI Identifier for this object, which is a de-normalization of the
      * value contained in the 'identity' xref from the 'psimi' database
      * @return the MI Identifier for this CVObject
-     * @since 1.8
+     * @since 1.9.x
      */
-    @Column(name = "mi_identifier", length = 10)
-    @Length(max = 10)
-    @Index(name = "cvobject_mi_id_idx")
-    public String getMiIdentifier() {
-        return miIdentifier;
+    @Column(name = "identifier", length = 30)
+    @Length(max = 30)
+    @Index(name = "cvobject_id_idx")
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setMiIdentifier(String miIdentifier) {
-        this.miIdentifier = miIdentifier;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     /**
@@ -131,7 +142,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         }
 
 
-        if (( miIdentifier != null && !miIdentifier.equals(other.getMiIdentifier()))) {
+        if (( identifier != null && !identifier.equals(other.getIdentifier()))) {
             return false;
         }
 
@@ -148,8 +159,8 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         int result = super.hashCode();
 
         //need check as we still have no-arg constructor...
-        if ( miIdentifier != null ) {
-            result = 29 * result + miIdentifier.hashCode();
+        if ( identifier != null ) {
+            result = 29 * result + identifier.hashCode();
         } else {
             result = 29 * result + ( ( getShortLabel() == null ) ? 31 : getShortLabel().hashCode() );
         }
@@ -159,7 +170,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
 
     @Override
     public String toString() {
-        return "MI="+miIdentifier+", "+super.toString();
+        return "MI="+ identifier +", "+super.toString();
     }
 } // end CvObject
 

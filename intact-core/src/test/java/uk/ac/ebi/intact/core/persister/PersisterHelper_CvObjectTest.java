@@ -66,7 +66,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         assertNotNull( newExpRole );
         assertFalse( newExpRole.getXrefs().isEmpty() );
 
-        String miIdentifier = newExpRole.getMiIdentifier();
+        String miIdentifier = newExpRole.getIdentifier();
         assertNotNull( miIdentifier );
         assertEquals( "roleMi", miIdentifier );
     }
@@ -90,14 +90,14 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     @Test
     public void persist_prepareMi() throws Exception {
         CvObject cv = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPARC_MI_REF, CvDatabase.UNIPARC);
-        Assert.assertNotNull(cv.getMiIdentifier());
+        Assert.assertNotNull(cv.getIdentifier());
 
-        cv.setMiIdentifier(null);
+        cv.setIdentifier(null);
 
         PersisterHelper.saveOrUpdate(cv);
 
-        Assert.assertNotNull(cv.getMiIdentifier());
-        Assert.assertEquals(CvDatabase.UNIPARC_MI_REF, cv.getMiIdentifier());
+        Assert.assertNotNull(cv.getIdentifier());
+        Assert.assertEquals(CvDatabase.UNIPARC_MI_REF, cv.getIdentifier());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     @Test
     public void persist_cvNoMi() throws Exception {
         CvTopic postalAddress = getMockBuilder().createCvObject(CvTopic.class, "removed", "postalAddress");
-        postalAddress.setMiIdentifier(null);
+        postalAddress.setIdentifier(null);
         postalAddress.getXrefs().clear();
 
         PersisterHelper.saveOrUpdate(postalAddress);
@@ -230,7 +230,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertEquals("postaladdress", getDaoFactory().getCvObjectDao(CvTopic.class).getAll().get(0).getShortLabel());
 
         CvTopic repeatedPostalAddress = getMockBuilder().createCvObject(CvTopic.class, "removed", "postalAddress");
-        repeatedPostalAddress.setMiIdentifier(null);
+        repeatedPostalAddress.setIdentifier(null);
         repeatedPostalAddress.getXrefs().clear();
 
         PersisterHelper.saveOrUpdate(repeatedPostalAddress);

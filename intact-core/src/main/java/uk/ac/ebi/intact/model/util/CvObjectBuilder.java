@@ -41,7 +41,7 @@ public class CvObjectBuilder {
         }
 
         cvDatabase = new CvDatabase(institution, CvDatabase.PSI_MI);
-        cvDatabase.setMiIdentifier(CvDatabase.PSI_MI_MI_REF);
+        cvDatabase.setIdentifier(CvDatabase.PSI_MI_MI_REF);
 
         CvObjectXref xref = createPsiMiXref(CvObjectXref.class, CvDatabase.PSI_MI_MI_REF, institution);
         cvDatabase.addXref(xref);
@@ -60,7 +60,7 @@ public class CvObjectBuilder {
         }
 
         cvXrefQualifier = new CvXrefQualifier(institution, CvXrefQualifier.IDENTITY);
-        cvXrefQualifier.setMiIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
+        cvXrefQualifier.setIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
 
         CvObjectXref xref = createPsiMiXref(CvObjectXref.class, CvXrefQualifier.IDENTITY_MI_REF, institution);
         cvXrefQualifier.addXref(xref);

@@ -91,7 +91,7 @@ public class JTreeBuilderVisitor extends BaseIntactVisitor{
 
     @Override
     public void visitCvObject(CvObject cvObject) {
-        currentNode.setUserObject(cvObject.getClass().getSimpleName()+": "+cvObject.getShortLabel()+" ("+ cvObject.getMiIdentifier()+")");
+        currentNode.setUserObject(cvObject.getClass().getSimpleName()+": "+cvObject.getShortLabel()+" ("+ cvObject.getIdentifier()+")");
     }
 
     public TreeModel getTreeModel() {

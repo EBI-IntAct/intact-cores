@@ -83,10 +83,10 @@ public class ProteinUtils {
         for(InteractorXref xref : xrefs){
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             if(qualifier != null){
-                String qualifierIdentity = qualifier.getMiIdentifier();
+                String qualifierIdentity = qualifier.getIdentifier();
                 if(qualifierIdentity!= null && CvXrefQualifier.IDENTITY_MI_REF.equals(qualifierIdentity)){
                     CvDatabase database = xref.getCvDatabase();
-                    String databaseIdentity = database.getMiIdentifier();
+                    String databaseIdentity = database.getIdentifier();
                     if(databaseIdentity != null && CvDatabase.UNIPROT_MI_REF.equals(databaseIdentity)){
                         return xref;
                     }
@@ -115,7 +115,7 @@ public class ProteinUtils {
 
         for ( Alias alias : protein.getAliases()) {
             CvAliasType aliasType = alias.getCvAliasType();
-            String aliasTypeIdentity = aliasType.getMiIdentifier();
+            String aliasTypeIdentity = aliasType.getIdentifier();
 
             if (aliasTypeIdentity != null && CvAliasType.GENE_NAME_MI_REF.equals(aliasTypeIdentity)) {
                 geneName = alias.getName();
@@ -211,7 +211,7 @@ public class ProteinUtils {
         Collection<InteractorXref> xrefs = protein.getXrefs();
         for (InteractorXref xref : xrefs) {
             if (xref.getCvXrefQualifier() != null) {
-                String qualifierIdentity = xref.getCvXrefQualifier().getMiIdentifier();
+                String qualifierIdentity = xref.getCvXrefQualifier().getIdentifier();
                 if (CvXrefQualifier.ISOFORM_PARENT_MI_REF.equals(qualifierIdentity)) {
                     return true;
                 }

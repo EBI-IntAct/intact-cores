@@ -226,8 +226,8 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
 
         Query query = getEntityManager().createQuery("select prot from ProteinImpl prot inner join " +
                                                      "prot.xrefs as xref where " +
-                                                     "xref.cvXrefQualifier.miIdentifier = :isoformParentMi " +
-                                                     "and xref.cvDatabase.miIdentifier = :intactMi " +
+                                                     "xref.cvXrefQualifier.identifier = :isoformParentMi " +
+                                                     "and xref.cvDatabase.identifier = :intactMi " +
                                                      "and xref.primaryId = :masterAc");
         query.setParameter("isoformParentMi", CvXrefQualifier.ISOFORM_PARENT_MI_REF);
         query.setParameter("intactMi", CvDatabase.INTACT_MI_REF);
@@ -245,7 +245,7 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         String masterProtAc = null;
 
         for (InteractorXref xref : spliceVariant.getXrefs()) {
-            if (xref.getCvXrefQualifier() != null && CvXrefQualifier.ISOFORM_PARENT_MI_REF.equals(xref.getCvXrefQualifier().getMiIdentifier())) {
+            if (xref.getCvXrefQualifier() != null && CvXrefQualifier.ISOFORM_PARENT_MI_REF.equals(xref.getCvXrefQualifier().getIdentifier())) {
                 if (masterProtAc == null) {
                     masterProtAc = xref.getPrimaryId();
                 } else {
@@ -266,8 +266,8 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
      */
     public List<String> getAllUniprotAcs() {
         Query query = getEntityManager().createQuery("select distinct(xref.primaryId) from InteractorXref xref " +
-                                                     "where xref.cvXrefQualifier.miIdentifier = :qualifierMi " +
-                                                     "and xref.cvDatabase.miIdentifier = :uniprotMi " +
+                                                     "where xref.cvXrefQualifier.identifier = :qualifierMi " +
+                                                     "and xref.cvDatabase.identifier = :uniprotMi " +
                                                      "and size(xref.parent.activeInstances) > 0");
         query.setParameter("qualifierMi", CvXrefQualifier.IDENTITY_MI_REF);
         query.setParameter("uniprotMi", CvDatabase.UNIPROT_MI_REF);

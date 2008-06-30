@@ -111,14 +111,14 @@ public class CvObjectFilterGroup {
 
     public void addIncludedCvObject(CvObject cvObject) {
         if (cvObject != null) {
-            includedIdentifiers.add(cvObject.getMiIdentifier());
+            includedIdentifiers.add(cvObject.getIdentifier());
             includedLabels.add(cvObject.getShortLabel());
         }
     }
 
     public void addExcludedCvObject(CvObject cvObject) {
         if (cvObject != null) {
-            excludedIdentifiers.add(cvObject.getMiIdentifier());
+            excludedIdentifiers.add(cvObject.getIdentifier());
             excludedLabels.add(cvObject.getShortLabel());
         }
     }

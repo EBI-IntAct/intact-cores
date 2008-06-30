@@ -76,12 +76,12 @@ public class ExperimentUtils {
             String dbMi = null;
 
             if (xref.getCvXrefQualifier() != null) {
-                qualMi = xref.getCvXrefQualifier().getMiIdentifier();
+                qualMi = xref.getCvXrefQualifier().getIdentifier();
             } else {
                 log.warn("Experiment ("+experiment.getShortLabel()+") xref without qualifier: "+xref);
             }
             if (xref.getCvDatabase() != null) {
-                dbMi = xref.getCvDatabase().getMiIdentifier();
+                dbMi = xref.getCvDatabase().getIdentifier();
             } else {
                 log.warn("Experiment ("+experiment.getShortLabel()+") xref without database: "+xref);
             }

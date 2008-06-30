@@ -118,8 +118,8 @@ class KeyBuilder {
             throw new IllegalArgumentException( "Cannot create a component key for component without interactor: " + component );
         }
 
-        String label = "Component:" + component.getInteraction().getShortLabel() + "_" + component.getInteractor().getShortLabel()+"_"+component.getCvExperimentalRole().getMiIdentifier()
-                       +"_"+component.getCvBiologicalRole().getMiIdentifier();
+        String label = "Component:" + component.getInteraction().getShortLabel() + "_" + component.getInteractor().getShortLabel()+"_"+component.getCvExperimentalRole().getIdentifier()
+                       +"_"+component.getCvBiologicalRole().getIdentifier();
         return new Key( label );
     }
 
@@ -134,7 +134,7 @@ class KeyBuilder {
     }
 
     public Key keyForCvObject( CvObject cvObject ) {
-        String key = cvObject.getMiIdentifier();
+        String key = cvObject.getIdentifier();
         if ( key == null ) {
             // search for identity
             final Collection<CvObjectXref> xrefs = XrefUtils.getIdentityXrefs( cvObject );

@@ -492,7 +492,7 @@ public class IntactCloner {
 
             clonerManager.addClone( cvObject, clone );
 
-            clone.setMiIdentifier( cvObject.getMiIdentifier() );
+            clone.setIdentifier( cvObject.getIdentifier() );
 
         } catch ( Exception e ) {
             throw new IntactClonerException( "An error occured upon cloning a " + clazz.getSimpleName(), e );

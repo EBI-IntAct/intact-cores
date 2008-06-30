@@ -43,6 +43,7 @@ public final class RuntimeConfig implements Serializable {
     private boolean isAutoBeginTransaction;
     private boolean synchronizedSearchItems;
     private boolean debugMode;
+    private String localCvPrefix;
 
     private RuntimeConfig( IntactSession session ) {
         this.dataConfigs = new HashMap<String, DataConfig>();
@@ -163,5 +164,13 @@ public final class RuntimeConfig implements Serializable {
 
     public void setDebugMode( boolean debugMode ) {
         this.debugMode = debugMode;
+    }
+
+    public String getLocalCvPrefix() {
+        return localCvPrefix;
+    }
+
+    public void setLocalCvPrefix(String localCvPrefix) {
+        this.localCvPrefix = localCvPrefix;
     }
 }

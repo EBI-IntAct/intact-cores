@@ -91,7 +91,8 @@ public class IntactConfigurator {
             }
             String version = buildInfoProps.getProperty("version");
 
-            log.info("Initializing intact-core (" + version + ") with session of class: " + session.getClass());
+            if (log.isInfoEnabled())
+                log.info("Initializing intact-core (" + version + ") with session of class: " + session.getClass());
         }
 
         if ( isInitialized( session ) ) {

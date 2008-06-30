@@ -271,7 +271,7 @@ public class AnnotatedObjectUtils {
     public static Annotation findAnnotationByTopicMiOrLabel(AnnotatedObject<?, ?> annotatedObject, String miOrLabel) {
         for (Annotation annotation : annotatedObject.getAnnotations()) {
             final CvTopic topic = annotation.getCvTopic();
-            if (topic != null && (miOrLabel.equals(topic.getMiIdentifier()) || miOrLabel.equals(topic.getShortLabel()))) {
+            if (topic != null && (miOrLabel.equals(topic.getIdentifier()) || miOrLabel.equals(topic.getShortLabel()))) {
                 return annotation;
             }
         }

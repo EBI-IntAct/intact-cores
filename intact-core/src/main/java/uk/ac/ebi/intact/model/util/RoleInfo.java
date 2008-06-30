@@ -54,7 +54,7 @@ public class RoleInfo {
             return biologicalRoleMi;
         }
 
-        biologicalRoleMi = biologicalRole.getMiIdentifier();
+        biologicalRoleMi = biologicalRole.getIdentifier();
 
         return biologicalRoleMi;
     }
@@ -64,7 +64,7 @@ public class RoleInfo {
             return experimentalRoleMi;
         }
 
-        experimentalRoleMi = experimentalRole.getMiIdentifier();
+        experimentalRoleMi = experimentalRole.getIdentifier();
 
         return experimentalRoleMi;
     }
