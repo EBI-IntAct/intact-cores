@@ -65,6 +65,8 @@ public class IntactConfigurator {
 
     private static final String DEFAULT_DEBUG_MODE = Boolean.FALSE.toString();
 
+    private static final String DEFAULT_LOCAL_CV_PREFIX = "IA";
+
     private static final String INSTITUTION_TO_BE_PERSISTED_FLAG = "uk.ac.ebi.intact.internal.INSTITUTION_TO_BE_PERSISTED";
 
     private static final String SCHEMA_VERSION_TO_BE_PERSISTED_FLAG = "uk.ac.ebi.intact.internal.SCHEMA_VERSION_TO_BE_PERSISTED";
@@ -123,7 +125,7 @@ public class IntactConfigurator {
         String prefix = getInitParamValue( session, IntactEnvironment.AC_PREFIX_PARAM_NAME.getFqn(), DEFAULT_AC_PREFIX );
         config.setAcPrefix( prefix );
 
-        if ( prefix.equals( DEFAULT_AC_PREFIX ) ) {
+        if ( log.isWarnEnabled() && prefix.equals( DEFAULT_AC_PREFIX ) ) {
             log.warn( "The default prefix '" + DEFAULT_AC_PREFIX + "' will be used when persisting data. Usually." +
                       "this is not the desired functionality if the application is persisting data." );
         }
@@ -173,6 +175,10 @@ public class IntactConfigurator {
             log.info( "Preloading common CvObjects" );
             CvContext.getCurrentInstance( session ).loadCommonCvObjects();
         }
+
+        // local cv object prefix: used for prefixes that are not part of MI or similar
+        String localCvPrefix = getInitParamValue(session, IntactEnvironment.LOCAL_CV_PREFIX.getFqn(), DEFAULT_LOCAL_CV_PREFIX);
+        config.setLocalCvPrefix(localCvPrefix);
 
         setInitialized( session, true );
     }
