@@ -109,4 +109,9 @@ public class CvObjectDaoTest extends IntactBasicTestCase {
         final Collection<CvObject> cvs = daoFactory.getCvObjectDao().getAll();
         Assert.assertTrue( cvs.size() > 0 );
     }
+
+    @Test
+    public void getLastCvIdentifierWithPrefix() throws Exception {
+        Assert.assertEquals(612, getDaoFactory().getCvObjectDao().getLastCvIdentifierWithPrefix("MI"));
+    }
 }

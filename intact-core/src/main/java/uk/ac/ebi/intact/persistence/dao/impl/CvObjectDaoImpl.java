@@ -9,17 +9,17 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import uk.ac.ebi.intact.annotation.PotentialThreat;
+import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.context.IntactSession;
-import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvInteractorType;
 import uk.ac.ebi.intact.model.CvObject;
+import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +47,7 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
     public T getByPsiMiRef( String psiMiRef ) {
         Query query = getEntityManager().createQuery(
                 "select cv from "+getEntityClass().getName()+" cv " +
-                "where miIdentifier = '"+psiMiRef+"'");
+                "where identifier = '"+psiMiRef+"'");
 
         return uniqueResult(query);
         /* 
@@ -107,5 +107,39 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
         }
         
         return collectedMIs;
+    }
+
+    public Integer getLastCvIdentifierWithPrefix(String prefix) {
+        // query that returns all the primaryIds that contain the prefix
+        Query query = getEntityManager().createQuery("select xref.primaryId from CvObjectXref xref " +
+                                                       "where xref.cvXrefQualifier.identifier = :identityQualifier " +
+                                                       "and xref.primaryId like :primaryIdPrefix");
+        query.setParameter("identityQualifier", CvXrefQualifier.IDENTITY_MI_REF);
+        query.setParameter("primaryIdPrefix", prefix+":%");
+
+        List<String> idsWithPrefix = query.getResultList();
+
+        // if no xrefs with this prefix, return null
+        if (idsWithPrefix.isEmpty()) {
+            return null;
+        }
+
+        int max = -1;
+
+        for (String id : idsWithPrefix) {
+            String strNumber = id.split(":")[1];
+
+            int number = 0;
+            try {
+                number = Integer.parseInt(strNumber);
+            } catch (NumberFormatException e) {
+                throw new IntactException("The following id with prefix '"+prefix+"' was found, and no number could be parsed " +
+                                          "after the colon: "+strNumber, e);
+            }
+
+            max = Math.max(max, number);
+        }
+
+        return max;
     }
 }

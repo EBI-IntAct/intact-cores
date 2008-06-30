@@ -7,13 +7,9 @@ package uk.ac.ebi.intact.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.CvObject;
-import uk.ac.ebi.intact.model.CvInteractorType;
-import uk.ac.ebi.intact.model.CvDagObject;
-import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -45,4 +41,14 @@ public interface CvObjectDao<T extends CvObject> extends AnnotatedObjectDao<T> {
      * @return a non null collection of MI identifiers.
      */
     public Collection<String> getNucleicAcidMIs();
+
+    /**
+     * Gets the last number for a Cv Object identifier. For instance,
+     * if we query for "IA" and in the database exist IA:0001 and IA:0004, the Integer 4 will be returned
+     * @param prefix The prefix to query (e.g. MI, IA ...)
+     * @return The highest Integer with that prefix. It will return null if no identifiers with the prefix
+     * provided were found.
+     * @since 1.9.0
+     */
+    Integer getLastCvIdentifierWithPrefix(String prefix);
 }
