@@ -1,19 +1,14 @@
 package uk.ac.ebi.intact.persistence.svc.impl;
 
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Protein;
 import uk.ac.ebi.intact.model.ProteinImpl;
 import uk.ac.ebi.intact.model.Searchable;
 import uk.ac.ebi.intact.model.SmallMolecule;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.persistence.dao.query.impl.SearchableQuery;
-import uk.ac.ebi.intact.persistence.dao.query.QueryPhrase;
-import uk.ac.ebi.intact.persistence.dao.query.QueryTerm;
-import uk.ac.ebi.intact.persistence.dao.query.QueryModifier;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -52,7 +47,7 @@ public class SimpleSearchServiceTest extends IntactBasicTestCase{
 
         PersisterHelper.saveOrUpdate(prot1, prot2, prot3);
 
-       SimpleSearchService searchService = new SimpleSearchService("xrefs", false);
+       SimpleSearchService searchService = new SimpleSearchService("xrefs.primaryId", false);
        Collection<ProteinImpl> results = searchService.search(ProteinImpl.class, "pr*", null, null);
 
         Assert.assertEquals(3, results.size());

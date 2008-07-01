@@ -76,6 +76,7 @@ public class CvObjectUtils {
         T cv = ClassUtils.newInstance( cvClass );
         cv.setOwner( institution );
         cv.setShortLabel( shortLabel );
+        cv.setIdentifier( miIdentifier );
 
         if (miIdentifier != null) {
             CvObjectXref idXref = XrefUtils.createIdentityXrefPsiMi( cv, miIdentifier );

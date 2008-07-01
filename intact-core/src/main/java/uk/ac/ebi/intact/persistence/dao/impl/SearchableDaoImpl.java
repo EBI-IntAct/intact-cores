@@ -16,10 +16,10 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Order;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.model.AnnotatedObjectImpl;
 import uk.ac.ebi.intact.model.Searchable;
@@ -112,10 +112,26 @@ public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl>
                 .add( Restrictions.in( "ac", acs ) );
 
         if (sortProperty != null) {
+
+            // if the property contains a colon (.), use the first token to create
+            // an alias
+            String alias = "";
+            if (sortProperty.contains(".")) {
+                String[] tokens = sortProperty.split("\\.");
+                String prop = tokens[0];
+                sortProperty = tokens[1];
+
+                alias = "propalias"+System.currentTimeMillis();
+
+                crit.createAlias(prop, alias);
+                
+                alias = alias+".";
+            }
+
             if (sortAsc) {
-                crit.addOrder(Order.asc(sortProperty));
+                crit.addOrder(Order.asc(alias+sortProperty));
             } else {
-                crit.addOrder(Order.desc(sortProperty));
+                crit.addOrder(Order.desc(alias+sortProperty));
             }
         }
 
