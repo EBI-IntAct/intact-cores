@@ -20,12 +20,12 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.Oracle9Dialect;
 import org.hibernate.dialect.Oracle9iDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import uk.ac.ebi.intact.business.IntactTransactionException;
+import uk.ac.ebi.intact.config.IntactAuxiliaryConfigurator;
 import uk.ac.ebi.intact.context.DataContext;
 import uk.ac.ebi.intact.context.IntactContext;
 
@@ -72,6 +72,7 @@ public class SchemaUtils {
     private static Configuration createConfiguration(Properties props) {
         Ejb3Configuration ejbConfig = new Ejb3Configuration();
         ejbConfig.configure("intact-core-default", props);
+        IntactAuxiliaryConfigurator.configure(ejbConfig);
 
         Configuration cfg = ejbConfig.getHibernateConfiguration();
         return cfg;
@@ -115,7 +116,7 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateDropSchemaDDLForOracle() {
-        return generateDropSchemaDDL(Oracle9Dialect.class.getName());
+        return generateDropSchemaDDL(Oracle9iDialect.class.getName());
     }
 
     /**

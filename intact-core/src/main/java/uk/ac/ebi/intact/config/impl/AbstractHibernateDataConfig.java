@@ -18,6 +18,7 @@ import org.hibernate.ejb.HibernateEntityManagerFactory;
 import uk.ac.ebi.intact.business.IntactException;
 import uk.ac.ebi.intact.config.ConfigurationException;
 import uk.ac.ebi.intact.config.DataConfig;
+import uk.ac.ebi.intact.config.IntactAuxiliaryConfigurator;
 import uk.ac.ebi.intact.config.SchemaVersion;
 import uk.ac.ebi.intact.context.IntactSession;
 import uk.ac.ebi.intact.persistence.util.ImportFromClasspathEntityResolver;
@@ -142,6 +143,9 @@ public abstract class AbstractHibernateDataConfig extends DataConfig<SessionFact
 
             // Set global interceptor from configuration
             setInterceptor( configuration, null );
+
+            // auxiliary config
+            IntactAuxiliaryConfigurator.configure(configuration);
 
             log.debug( "Session is webapp: " + getSession().isWebapp() + " / SessionFactory name: " + configuration.getProperties().get( Environment.SESSION_FACTORY_NAME ) );
 

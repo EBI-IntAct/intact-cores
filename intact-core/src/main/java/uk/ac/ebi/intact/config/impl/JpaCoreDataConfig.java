@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.config.impl;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.ejb.Ejb3Configuration;
+import uk.ac.ebi.intact.config.IntactAuxiliaryConfigurator;
 import uk.ac.ebi.intact.context.IntactSession;
 
 import javax.persistence.EntityManagerFactory;
@@ -56,6 +57,7 @@ public class JpaCoreDataConfig extends AbstractJpaDataConfig {
     protected EntityManagerFactory buildEntityManagerFactory(Map props) {
         configuration = new Ejb3Configuration();
         configuration = configuration.configure(persistenceUnitName, props);
+        IntactAuxiliaryConfigurator.configure(configuration);
         return configuration.buildEntityManagerFactory();
     }
 
