@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.BioSource;
-import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.CvTissue;
 
 /**
@@ -31,7 +30,7 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(3, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(5, getDaoFactory().getXrefDao().countAll());
     }
 
@@ -42,7 +41,7 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(3, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(5, getDaoFactory().getXrefDao().countAll());
 
         BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
@@ -61,14 +60,6 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase
         PersisterHelper.saveOrUpdate( bs1 );
 
         Assert.assertEquals("human", getDaoFactory().getBioSourceDao().getByTaxonIdUnique("9606").getShortLabel());
-    }
-
-    private Component reloadByAc(Component interaction) {
-        return getDaoFactory().getComponentDao().getByAc(interaction.getAc());
-    }
-
-    private void refresh(Component interaction) {
-        getDaoFactory().getComponentDao().refresh(interaction);
     }
 
 }

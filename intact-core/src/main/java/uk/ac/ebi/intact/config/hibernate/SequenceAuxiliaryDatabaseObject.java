@@ -21,6 +21,7 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.Mapping;
 import org.hibernate.mapping.AbstractAuxiliaryDatabaseObject;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
 
 /**
@@ -42,8 +43,24 @@ public class SequenceAuxiliaryDatabaseObject extends AbstractAuxiliaryDatabaseOb
     }
 
     public String sqlCreateString(Dialect dialect, Mapping p, String defaultCatalog, String defaultSchema) throws HibernateException {
-        String[] createSqls = dialect.getCreateSequenceStrings(sequenceName, initialValue, 1);
-        return StringUtils.join(createSqls, "; ");
+        String sql;
+
+        if (dialect.supportsPooledSequences()) {
+            String[] createSqls = dialect.getCreateSequenceStrings(sequenceName, initialValue, 1);
+            sql = StringUtils.join(createSqls, "; ");
+        } else {
+            // for databases like postgres, we cannot use the above method and the method we need is protected
+            // in the Dialect class (public in the subclass)
+            String methodName = "getCreateSequenceString";
+            try {
+                final Method method = dialect.getClass().getMethod(methodName, String.class);
+                sql = (String) method.invoke(dialect, sequenceName);
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        return sql;
     }
 
     public String sqlDropString(Dialect dialect, String defaultCatalog, String defaultSchema) {
