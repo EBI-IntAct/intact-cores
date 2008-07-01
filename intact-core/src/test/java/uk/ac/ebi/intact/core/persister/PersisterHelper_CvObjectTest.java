@@ -109,7 +109,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         PersisterStatistics stats = PersisterHelper.saveOrUpdate(proteinType);
 
-        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(5, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
     }
 
@@ -122,7 +122,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         PersisterStatistics stats = PersisterHelper.saveOrUpdate(proteinType, megaProteinType);
 
-        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(5, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
     }
 
@@ -135,7 +135,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         PersisterStatistics stats = PersisterHelper.saveOrUpdate(megaProteinType);
 
-        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(5, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
     }
 
@@ -157,8 +157,8 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         
         PersisterStatistics stats = PersisterHelper.saveOrUpdate(citation);
 
-        Assert.assertEquals(6, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(5, stats.getPersistedCount(CvDatabase.class, false));
+        Assert.assertEquals(7, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(4, stats.getPersistedCount(CvDatabase.class, false));
     }
 
     @Test
@@ -236,5 +236,35 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(repeatedPostalAddress);
 
         Assert.assertEquals(1, getDaoFactory().getCvObjectDao(CvTopic.class).countAll());
+    }
+
+    @Test
+    public void prePersist_prepareIdentifier() throws Exception {
+        CvDatabase premDb = getMockBuilder().createCvObject(CvDatabase.class,  null, "prem-db");
+        CvDatabase brunoDb = getMockBuilder().createCvObject(CvDatabase.class,  null, "bruno-db");
+        premDb.getXrefs().clear();
+        brunoDb.getXrefs().clear();
+
+        Assert.assertNull(premDb.getIdentifier());
+        Assert.assertNull(brunoDb.getIdentifier());
+
+        PersisterHelper.saveOrUpdate(premDb, brunoDb);
+
+        CvDatabase refreshedPremDb = getDaoFactory().getCvObjectDao().getByShortLabel(CvDatabase.class, "prem-db");
+        CvDatabase refreshedBrunoDb = getDaoFactory().getCvObjectDao().getByShortLabel(CvDatabase.class, "bruno-db");
+
+        Assert.assertNotNull(refreshedPremDb);
+        Assert.assertNotNull(refreshedPremDb.getIdentifier());
+        Assert.assertEquals("IA:0001", refreshedPremDb.getIdentifier());
+
+        Assert.assertEquals(1, refreshedPremDb.getXrefs().size());
+
+        Assert.assertNotSame(refreshedPremDb.getIdentifier(), refreshedBrunoDb.getIdentifier());
+
+        Assert.assertNotNull(brunoDb);
+        Assert.assertNotNull(brunoDb.getIdentifier());
+        Assert.assertEquals("IA:0002", brunoDb.getIdentifier());
+        
+        Assert.assertEquals(1, brunoDb.getXrefs().size());
     }
 }

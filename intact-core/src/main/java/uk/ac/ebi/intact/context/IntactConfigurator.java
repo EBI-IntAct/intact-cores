@@ -12,7 +12,7 @@ import uk.ac.ebi.intact.business.IntactTransactionException;
 import uk.ac.ebi.intact.config.CvPrimer;
 import uk.ac.ebi.intact.config.DataConfig;
 import uk.ac.ebi.intact.config.SchemaVersion;
-import uk.ac.ebi.intact.config.impl.EmptyCvPrimer;
+import uk.ac.ebi.intact.config.impl.EssentialCvPrimer;
 import uk.ac.ebi.intact.context.impl.IntactContextWrapper;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Institution;
@@ -472,13 +472,13 @@ public class IntactConfigurator {
     }
 
     private static void persistBasicCvObjects(IntactContext context) {
-        log.debug("Persisting necessary CvObjects");
+        log.debug("Persisting necessary CvObjects (EssentialCvPrimer)");
 
         DaoFactory daoFactory = getDefaultDaoFactory(context);
 
         daoFactory.beginTransaction();
 
-        CvPrimer cvPrimer = new EmptyCvPrimer(daoFactory);
+        CvPrimer cvPrimer = new EssentialCvPrimer(daoFactory);
         cvPrimer.createCVs();
 
         try {

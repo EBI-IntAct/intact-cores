@@ -46,13 +46,16 @@ public class CvObjectXref extends Xref {
             throw new IllegalStateException("Trying to persist or update an cv xref without parent: "+this);
         }
 
-        if (CvDatabase.PSI_MI_MI_REF.equals(getCvDatabase().getIdentifier()) &&
-            CvXrefQualifier.IDENTITY_MI_REF.equals(getCvXrefQualifier().getIdentifier())) {
-            parent.setIdentifier(getPrimaryId());
-        } 
+        if (CvXrefQualifier.IDENTITY_MI_REF.equals(getCvXrefQualifier().getIdentifier())) {
+            if (CvDatabase.PSI_MI_MI_REF.equals(getCvDatabase().getIdentifier())) {
+                parent.setIdentifier(getPrimaryId());
+            } else {
+                if (parent.getIdentifier() == null) {
+                    parent.setIdentifier(getPrimaryId());
+                }
+            }
+        }
     }
-
-
 
     public CvObjectXref( Institution anOwner, CvDatabase aDatabase, String aPrimaryId, String aSecondaryId, String aDatabaseRelease, CvXrefQualifier aCvXrefQualifier ) {
         super( anOwner, aDatabase, aPrimaryId, aSecondaryId, aDatabaseRelease, aCvXrefQualifier );

@@ -45,7 +45,7 @@ public class CvObjectDaoTest extends IntactBasicTestCase {
         // add some nucleic acid CVs
         CvInteractorType nucAcid = new IntactMockBuilder().createCvObject( CvInteractorType.class, CvInteractorType.NUCLEIC_ACID_MI_REF, CvInteractorType.NUCLEIC_ACID );
         CvInteractorType dna = new IntactMockBuilder().createCvObject( CvInteractorType.class, CvInteractorType.DNA_MI_REF, CvInteractorType.DNA );
-        CvInteractorType otherNucAcid = new IntactMockBuilder().createCvObject( CvInteractorType.class, "IA:xxxx", "otherNucAcid" );
+        CvInteractorType otherNucAcid = new IntactMockBuilder().createCvObject( CvInteractorType.class, "IA:0005", "otherNucAcid" );
         nucAcid.addChild( dna );
         nucAcid.addChild( otherNucAcid );
 

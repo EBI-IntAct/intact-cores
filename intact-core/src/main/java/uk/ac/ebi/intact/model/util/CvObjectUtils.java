@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Util methods for interactions
+ * Util methods for CvObjects, which do not use the database.
  *
  * @author Bruno Aranda
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)

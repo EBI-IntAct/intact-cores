@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.validator.Length;
+import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -53,6 +54,29 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         super( shortLabel, owner );
     }
 
+    /////////////////////////////
+    // Entity callback methods
+
+    @PrePersist
+    public void preparePersist() {
+        if (identifier == null) {
+            CvObjectIdentifierGenerator idGenerator = new CvObjectIdentifierGenerator();
+            idGenerator.populateIdentifier(this, true);
+        }
+    }
+
+    @PostLoad
+    @PreUpdate
+    public void prepareUpdate() {
+        if (identifier == null) {
+            CvObjectIdentifierGenerator idGenerator = new CvObjectIdentifierGenerator();
+            idGenerator.populateIdentifier(this, false);
+        }
+    }
+
+    /////////////////////////////
+    // Entity fields
+
     @Column( name = "objclass", insertable = false, updatable = false )
     public String getObjClass() {
         if (objClass == null) {
@@ -90,7 +114,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         return super.getAliases();
     }
 
-    @Column(name = "identifier", insertable = false, updatable = false)
+    @Column(name = "cv_identifier", insertable = false, updatable = false)
     @Deprecated
     public String getMiIdentifier() {
         return identifier;
@@ -107,7 +131,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      * @return the MI Identifier for this CVObject
      * @since 1.9.x
      */
-    @Column(name = "identifier", length = 30)
+    @Column(name = "cv_identifier", length = 30)
     @Length(max = 30)
     @Index(name = "cvobject_id_idx")
     public String getIdentifier() {
