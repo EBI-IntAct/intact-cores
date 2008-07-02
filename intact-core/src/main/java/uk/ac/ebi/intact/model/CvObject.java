@@ -114,7 +114,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         return super.getAliases();
     }
 
-    @Column(name = "cv_identifier", insertable = false, updatable = false)
+    @Column(name = "identifier", insertable = false, updatable = false)
     @Deprecated
     public String getMiIdentifier() {
         return identifier;
@@ -131,7 +131,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      * @return the MI Identifier for this CVObject
      * @since 1.9.x
      */
-    @Column(name = "cv_identifier", length = 30)
+    @Column(name = "identifier", length = 30)
     @Length(max = 30)
     @Index(name = "cvobject_id_idx")
     public String getIdentifier() {
