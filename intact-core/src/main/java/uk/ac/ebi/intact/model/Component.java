@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The specific instance of an interactor which participates in an interaction.
@@ -79,10 +80,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     private CvComponentRole componentRole;
 
+
     /**
-     * Experimental role of that component (eg. bait, prey, ...).
+     * Experimental roles for this component
      */
-    private CvExperimentalRole experimentalRole;
+    private Collection<CvExperimentalRole> experimentalRoles;
 
     /**
      * Biological role of this component (eg. enzyme, target...).
@@ -105,7 +107,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * Experimental preparations for this component. The allowed terms can be found in this URL http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI&termId=MI%3A0346&termName=experimental%20preparation
      */
     private Collection<CvExperimentalPreparation> experimentalPreparations;
-    
+
     /**
      * Parameters for this component. The allowed terms can be found in this URL http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI&termId=MI%3A0640&termName=parameter%20type
      */
@@ -149,7 +151,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *                         bait/prey). This is a controlled vocabulary term (non-null)
      * @param biologicalRole   The biological role played by this Component in the Interaction experiment (eg
      *                         enzyme/target). This is a controlled vocabulary term (non-null)
-     *
      * @throws NullPointerException thrown if any of the parameters are not specified.
      */
     public Component( Institution owner, String shortLabel, Interaction interaction, Interactor interactor,
@@ -160,29 +161,51 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         this.shortLabel = NON_APPLICABLE;
 
         if ( interaction == null ) {
-            throw new NullPointerException( "valid Component must have an Interaction set!" );
+            throw new NullPointerException( "Valid Component must have an Interaction set!" );
         }
         if ( interactor == null ) {
-            throw new NullPointerException( "valid Component must have an Interactor (eg Protein) set!" );
+            throw new NullPointerException( "Valid Component must have an Interactor (eg Protein) set!" );
         }
-        if ( experimentalRole == null ) {
-            throw new NullPointerException( "valid Component must have a non null experimentalRole." );
-        }
+         if ( experimentalRole == null ) {
+             throw new NullPointerException( "Valid Component must have a non null experimentalRole." );
+         }
+
         if ( biologicalRole == null ) {
-            throw new NullPointerException( "valid Component must have a non null biologicalRole." );
+            throw new NullPointerException( "Valid Component must have a non null biologicalRole." );
         }
 
         this.interaction = interaction;
         this.interactor = interactor;
 
-        this.experimentalRole = experimentalRole;
+        this.experimentalRoles = new ArrayList<CvExperimentalRole>();
+        this.experimentalRoles.add( experimentalRole);
+
         this.biologicalRole = biologicalRole;
-        
+
         this.componentParameters = new ArrayList<ComponentParameter>();
     }
 
     ///////////////////////////////////////
     // getters and setters
+    @ManyToMany
+    @JoinTable(
+            name = "ia_component2exprole",
+            joinColumns = {@JoinColumn( name = "component_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "experimentalrole_ac" )}
+    )
+    public Collection<CvExperimentalRole> getExperimentalRoles() {
+
+         if ( experimentalRoles == null ) {
+            experimentalRoles = new ArrayList<CvExperimentalRole>();
+        }
+
+        return experimentalRoles;
+    }
+
+    public void setExperimentalRoles( Collection<CvExperimentalRole> experimentalRoles ) {
+        this.experimentalRoles = experimentalRoles;
+    }
+
 
     /**
      * Getter for property 'biologicalRole'.
@@ -209,10 +232,18 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'experimentalRole'.
      */
-    @ManyToOne
-    @JoinColumn( name = "experimentalrole_ac" )
+    @Deprecated
+    @Transient
     public CvExperimentalRole getCvExperimentalRole() {
-        return experimentalRole;
+        if ( experimentalRoles == null ) {
+            return null;
+        }
+
+        if ( experimentalRoles.isEmpty() ) {
+            return null;
+        }
+
+        return experimentalRoles.iterator().next();
     }
 
     /**
@@ -220,8 +251,10 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @param experimentalRole Value to set for property 'experimentalRole'.
      */
+    @Deprecated
     public void setCvExperimentalRole( CvExperimentalRole experimentalRole ) {
-        this.experimentalRole = experimentalRole;
+        getExperimentalRoles().clear();
+        getExperimentalRoles().add( experimentalRole );
     }
 
     /**
@@ -232,11 +265,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     @Deprecated
     @Transient
     public CvIdentification getParticipantIdentification() {
-        if (participantDetectionMethods == null) {
+        if ( participantDetectionMethods == null ) {
             return null;
         }
 
-        if (participantDetectionMethods.isEmpty()) {
+        if ( participantDetectionMethods.isEmpty() ) {
             return null;
         }
 
@@ -250,23 +283,23 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     @Deprecated
     public void setParticipantIdentification( CvIdentification particiantIdentification ) {
-        getParticipantDetectionMethods().add(particiantIdentification);
+        getParticipantDetectionMethods().add( particiantIdentification );
     }
 
-    @ManyToMany 
+    @ManyToMany
     @JoinTable(
             name = "ia_component2part_detect",
             joinColumns = {@JoinColumn( name = "component_ac" )},
             inverseJoinColumns = {@JoinColumn( name = "cvobject_ac" )}
     )
     public Collection<CvIdentification> getParticipantDetectionMethods() {
-        if (participantDetectionMethods == null) {
+        if ( participantDetectionMethods == null ) {
             participantDetectionMethods = new ArrayList<CvIdentification>();
         }
         return participantDetectionMethods;
     }
 
-    public void setParticipantDetectionMethods(Collection<CvIdentification> participantDetectionMethods) {
+    public void setParticipantDetectionMethods( Collection<CvIdentification> participantDetectionMethods ) {
         this.participantDetectionMethods = participantDetectionMethods;
     }
 
@@ -296,7 +329,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     public void setStoichiometry( float stoichiometry ) {
         this.stoichiometry = stoichiometry;
     }
-    
+
     /**
      * Getter for property 'componentParameters'.
      *
@@ -312,17 +345,17 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @param componentParameters collection to set for property 'componentParameters'.
      */
-    public void setParameters( Collection<ComponentParameter> componentParameters) {
-        if( componentParameters == null ) {
+    public void setParameters( Collection<ComponentParameter> componentParameters ) {
+        if ( componentParameters == null ) {
             throw new IllegalArgumentException( "You must give a non null collection of parameters." );
         }
         this.componentParameters = componentParameters;
     }
-    
+
     public void addParameter( ComponentParameter componentParameter ) {
         if ( !this.componentParameters.contains( componentParameter ) ) {
             this.componentParameters.add( componentParameter );
-            componentParameter.setComponent(this);
+            componentParameter.setComponent( this );
         }
     }
 
@@ -552,13 +585,13 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
             inverseJoinColumns = {@JoinColumn( name = "cvobject_ac" )}
     )
     public Collection<CvExperimentalPreparation> getExperimentalPreparations() {
-        if (experimentalPreparations == null) {
+        if ( experimentalPreparations == null ) {
             experimentalPreparations = new ArrayList<CvExperimentalPreparation>();
         }
         return experimentalPreparations;
     }
 
-    public void setExperimentalPreparations(Collection<CvExperimentalPreparation> experimentalPreparations) {
+    public void setExperimentalPreparations( Collection<CvExperimentalPreparation> experimentalPreparations ) {
         this.experimentalPreparations = experimentalPreparations;
     }
 
@@ -588,20 +621,21 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * objects) for Interactors, Interactions and CvComponentRoles.
      *
      * @param o The object to check
-     *
      * @return true if the parameter equals this object, false otherwise
      */
     @Override
     public boolean equals( Object o ) {
-        return equals(o, true);
+        return equals( o, true );
     }
 
     /**
      * Equality for Components, which allows to execute the equals excluding possible recursive entities.
      * For instance, Components have Features, and a Feature refers to the Component in its equal. When equaling Features,
      * we need a way to disable the recursion to avoid the infinite loop
+     *
      * @param o Object to equal with
-     * @param includePotentialRecursiveEntities Include the features in the equal algorithm
+     * @param includePotentialRecursiveEntities
+     *          Include the features in the equal algorithm
      * @return true if they are equal
      */
     public boolean equals( Object o, boolean includePotentialRecursiveEntities ) {
@@ -615,28 +649,28 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
         final Component component = ( Component ) o;
 
-        // check cvs and interactor first, and then check the interaction
-        if (experimentalRole != null && !experimentalRole.equals(component.getCvExperimentalRole())) {
+        /* check cvs and interactor first, and then check the interaction
+        if ( experimentalRole != null && !experimentalRole.equals( component.getCvExperimentalRole() ) ) {
             return false;
-        }
-        if (biologicalRole != null && !biologicalRole.equals(component.getCvBiologicalRole())) {
+        }*/
+        if ( biologicalRole != null && !biologicalRole.equals( component.getCvBiologicalRole() ) ) {
             return false;
         }
 
-        if (interactor instanceof InteractorImpl && component.getInteractor() instanceof InteractorImpl) {
-            if (interactor != null && !((InteractorImpl)interactor).equals(component.getInteractor(), false)) {
+        if ( interactor instanceof InteractorImpl && component.getInteractor() instanceof InteractorImpl ) {
+            if ( interactor != null && !( ( InteractorImpl ) interactor ).equals( component.getInteractor(), false ) ) {
                 return false;
             }
         }
 
-        if (interaction instanceof InteractionImpl && component.getInteraction() instanceof InteractorImpl) {
-            if (interaction != null && !((InteractionImpl)interaction).equals(component.getInteraction(), false)) {
+        if ( interaction instanceof InteractionImpl && component.getInteraction() instanceof InteractorImpl ) {
+            if ( interaction != null && !( ( InteractionImpl ) interaction ).equals( component.getInteraction(), false ) ) {
                 return false;
             }
         }
 
-        if (includePotentialRecursiveEntities) {
-            if (!CollectionUtils.isEqualCollection(bindingDomains, component.getBindingDomains())) {
+        if ( includePotentialRecursiveEntities ) {
+            if ( !CollectionUtils.isEqualCollection( bindingDomains, component.getBindingDomains() ) ) {
                 return false;
             }
         }
@@ -662,14 +696,14 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( interaction != null ) {
             code = code * 29 + interaction.hashCode();
         }
-        if ( experimentalRole != null ) {
+        /*if ( experimentalRole != null ) {
             code = code * 29 + experimentalRole.hashCode();
-        }
+        }*/
         if ( biologicalRole != null ) {
             code = code * 29 + biologicalRole.hashCode();
         }
 
-        if (bindingDomains != null && false == bindingDomains.isEmpty()) {
+        if ( bindingDomains != null && false == bindingDomains.isEmpty() ) {
             code = code * 29 * bindingDomains.size();
         }
 
@@ -681,7 +715,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return a cloned version of the current Component. References to interactor and interaction are set to null.
      *         Features are deep cloned.
-     *
      * @throws CloneNotSupportedException
      */
     @Override

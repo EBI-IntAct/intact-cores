@@ -207,66 +207,6 @@ public class DbInfoServiceImpl implements DbInfoService {
 
     }//end method
 
-    /**
-     *
-     * @return the current value stored in IA_DB_INFO for key last_cv_identifier
-     * @throws DbInfoServiceException
-     */
-    public int getCurrentIdentifier() throws DbInfoServiceException {
-        final DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
-        boolean inTransaction = dataContext.isTransactionActive();
-
-        if ( !inTransaction ) dataContext.beginTransaction();
-
-        DaoFactory daof = dataContext.getDaoFactory();
-        DbInfo dbinfo = daof.getDbInfoDao().get( DbInfo.LAST_CV_IDENTIFIER );
-
-        if ( dbinfo == null ) {
-            //create a new one and persist
-            DbInfo newDbInfo = new DbInfo( DbInfo.LAST_CV_IDENTIFIER, String.valueOf( 1 ) );
-            daof.getDbInfoDao().persist( newDbInfo );
-
-            try {
-                if ( !inTransaction ) dataContext.commitTransaction();
-            } catch ( IntactTransactionException e ) {
-                throw new DbInfoServiceException( e );
-            }
-
-            return getCurrentIdentifier();
-        } else {
-            return Integer.parseInt( dbinfo.getValue() );
-        }
-
-
-    }
-
-    /**
-     *
-     * @return  the current value after incrementing that is stored in IA_DB_INFO for key last_cv_identifier
-     * @throws DbInfoServiceException
-     */
-    public synchronized int getNextIdentifier() throws DbInfoServiceException {
-
-        final DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
-        boolean inTransaction = dataContext.isTransactionActive();
-
-        if ( !inTransaction ) dataContext.beginTransaction();
-
-        DaoFactory daof = dataContext.getDaoFactory();
-        DbInfo dbinfo = daof.getDbInfoDao().get( DbInfo.LAST_CV_IDENTIFIER );
-
-        int nextIdentifier = getCurrentIdentifier();
-        nextIdentifier++;
-        dbinfo.setValue( String.valueOf( nextIdentifier ) );
-
-        try {
-            if ( !inTransaction ) dataContext.commitTransaction();
-        } catch ( IntactTransactionException e ) {
-            throw new DbInfoServiceException( e );
-        }
-
-        return nextIdentifier;
-    } //end method
 
 
 }

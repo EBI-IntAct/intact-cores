@@ -659,7 +659,7 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
         component.setBindingDomains( synchronizeCollection( component.getBindingDomains() ) );
         component.setCvBiologicalRole( synchronize( component.getCvBiologicalRole() ) );
-        component.setCvExperimentalRole( synchronize( component.getCvExperimentalRole() ) );
+        component.setExperimentalRoles( synchronizeCollection( component.getExperimentalRoles() ) );
         component.setExpressedIn( synchronize( component.getExpressedIn() ) );
         component.setInteraction( synchronize( component.getInteraction() ) );
         component.setInteractor( synchronize( component.getInteractor() ) );

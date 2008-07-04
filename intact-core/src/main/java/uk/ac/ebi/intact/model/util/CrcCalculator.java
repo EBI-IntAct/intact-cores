@@ -153,8 +153,13 @@ public class CrcCalculator {
         // biological role
         sb.append(createUniquenessString(component.getCvBiologicalRole()));
 
-        // experimental role
-        sb.append(createUniquenessString(component.getCvExperimentalRole()));
+        // experimental roles
+        List<CvExperimentalRole> expRoles = new ArrayList<CvExperimentalRole>(component.getExperimentalRoles());
+        Collections.sort( expRoles, new CvObjectComparator() );
+
+        for( CvExperimentalRole expRole : expRoles){
+            sb.append( createUniquenessString( expRole ));
+        }
 
         // features
         List<Feature> features = new ArrayList<Feature>(component.getBindingDomains());

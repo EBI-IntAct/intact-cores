@@ -17,6 +17,8 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -24,6 +26,7 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.model.util.ComponentUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +40,8 @@ import java.util.Iterator;
  * @version $Id$
  */
 public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
+
+    private static final Log log = LogFactory.getLog( PersisterHelper_InteractionTest.class );
 
     @Test
     public void allPersisted() throws Exception {
@@ -314,6 +319,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(1, getDaoFactory().getInstitutionDao().countAll());
     }
 
+
     @Test
     public void onPersist_syncedLabel() throws Exception {
         Interaction interaction = getMockBuilder().createInteraction("lala", "lolo");
@@ -324,6 +330,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
 
         System.out.println(getDaoFactory().getInteractionDao().getAll());
+
 
         Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("lala-lolo");
         Assert.assertNotNull(reloadedInteraction);

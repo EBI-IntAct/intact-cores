@@ -17,8 +17,7 @@ public interface DbInfoService {
     Date getLastProteinUpdate() throws DbInfoServiceException;
     Date getLastCvUpdate(String namespace) throws DbInfoServiceException;
 
-    int getCurrentIdentifier() throws DbInfoServiceException;
-    int getNextIdentifier() throws DbInfoServiceException;
+  
 
 
 }

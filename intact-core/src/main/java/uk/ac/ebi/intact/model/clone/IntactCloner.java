@@ -456,7 +456,6 @@ public class IntactCloner {
 
         clone.setInteractor(clone( component.getInteractor() ));
         clone.setInteraction(clone( component.getInteraction() ));
-        clone.setCvExperimentalRole(clone( component.getCvExperimentalRole() ));
         clone.setCvBiologicalRole(clone( component.getCvBiologicalRole() ));
 
         clone.setStoichiometry( component.getStoichiometry() );
@@ -476,6 +475,11 @@ public class IntactCloner {
 
         for ( CvIdentification method : component.getParticipantDetectionMethods() ) {
             clone.getParticipantDetectionMethods().add(clone( method ));
+        }
+
+
+        for( CvExperimentalRole expRole : component.getExperimentalRoles()){
+            clone.getExperimentalRoles().add(clone(expRole) );
         }
 
         return clone;

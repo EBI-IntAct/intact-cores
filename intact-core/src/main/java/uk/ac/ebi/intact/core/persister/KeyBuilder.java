@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+
+
 /**
  * Builds string that allow to identify an intact object.
  *
@@ -83,8 +85,8 @@ class KeyBuilder {
     }
 
     public Key keyForExperiment( Experiment experiment ) {
-        Key key = new Key(new ExperimentKeyCalculator().calculateExperimentKey(experiment));
-        return key;
+
+        return new Key(new ExperimentKeyCalculator().calculateExperimentKey(experiment));
     }
 
     public Key keyForInteraction( Interaction interaction ) {
@@ -118,7 +120,15 @@ class KeyBuilder {
             throw new IllegalArgumentException( "Cannot create a component key for component without interactor: " + component );
         }
 
-        String label = "Component:" + component.getInteraction().getShortLabel() + "_" + component.getInteractor().getShortLabel()+"_"+component.getCvExperimentalRole().getIdentifier()
+
+
+        String expRole = "";
+        for( CvExperimentalRole cvexp : component.getExperimentalRoles()){
+          expRole = cvexp.getIdentifier()+",";
+        }
+        if(expRole.length()>0) {expRole = expRole.substring( 0,expRole.length()-1);}
+
+        String label = "Component:" + component.getInteraction().getShortLabel() + "_" + component.getInteractor().getShortLabel()+"_"+expRole
                        +"_"+component.getCvBiologicalRole().getIdentifier();
         return new Key( label );
     }

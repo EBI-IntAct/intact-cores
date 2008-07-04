@@ -7,10 +7,14 @@ import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.Feature;
-import uk.ac.ebi.intact.model.Xref;
+import uk.ac.ebi.intact.model.CvExperimentalRole;
+
+import java.util.Collection;
+import java.util.ArrayList;
+
 
 /**
- * TODO comment this
+ * Tests component after Persisting
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -67,12 +71,32 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
         Assert.assertEquals(2, comp2.getBindingDomains().size());
     }
 
-    private Component reloadByAc(Component interaction) {
-        return getDaoFactory().getComponentDao().getByAc(interaction.getAc());
+    private Component reloadByAc(Component component) {
+        return getDaoFactory().getComponentDao().getByAc(component.getAc());
     }
 
-    private void refresh(Component interaction) {
-        getDaoFactory().getComponentDao().refresh(interaction);
+    @Test
+    public void persistComponent_ExperimentalRoles() {
+
+        CvExperimentalRole baitExperimentalRole = getMockBuilder().createCvObject( CvExperimentalRole.class, CvExperimentalRole.BAIT_PSI_REF, CvExperimentalRole.BAIT );
+        CvExperimentalRole neutralExperimentalRole = getMockBuilder().createCvObject( CvExperimentalRole.class, CvExperimentalRole.NEUTRAL_PSI_REF, CvExperimentalRole.NEUTRAL );
+
+        Collection<CvExperimentalRole> baitNeutralExperimentalRoles = new ArrayList<CvExperimentalRole>();
+        baitNeutralExperimentalRoles.add( baitExperimentalRole );
+        baitNeutralExperimentalRoles.add( neutralExperimentalRole );
+
+        Component baitNeutralComponent = getMockBuilder().createComponentBait( getMockBuilder().createDeterministicProtein( "P1", "baaa" ) );
+        baitNeutralComponent.setExperimentalRoles(baitNeutralExperimentalRoles);
+        PersisterHelper.saveOrUpdate( baitNeutralComponent );
+
+        Component reloadedComponent = reloadByAc(baitNeutralComponent);
+        Assert.assertNotNull( reloadedComponent.getExperimentalRoles());
+        Assert.assertEquals(2, reloadedComponent.getExperimentalRoles().size());
+
     }
+
+
+
+
 
 }

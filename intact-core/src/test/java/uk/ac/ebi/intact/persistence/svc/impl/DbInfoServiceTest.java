@@ -131,18 +131,5 @@ public class DbInfoServiceTest extends IntactBasicTestCase {
 
     }//end method
 
-    @Test
-    public void identifierTest() throws Exception {
-
-        DbInfoService service = new DbInfoServiceImpl();
-
-        Assert.assertEquals(1,service.getCurrentIdentifier());
-        Assert.assertEquals(2,service.getNextIdentifier());
-        Assert.assertEquals(3,service.getNextIdentifier());
-        Assert.assertEquals(4,service.getNextIdentifier());
-        Assert.assertEquals(5,service.getNextIdentifier());
-        Assert.assertEquals(5,service.getCurrentIdentifier());
-
-    }//end method
-
+    
 }

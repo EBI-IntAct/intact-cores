@@ -465,12 +465,16 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
     @Deprecated
     public Component getBait() {
         for ( Component component : components ) {
-            CvExperimentalRole role = component.getCvExperimentalRole();
-            if ( null == role ) {
+            
+            Collection<CvExperimentalRole> roles = component.getExperimentalRoles();
+            if ( roles == null ) {
                 return null;
             }
-            if ( role.getShortLabel().equals( "bait" ) ) {
-                return component;
+
+            for ( CvExperimentalRole role : roles ) {
+                if ( role.getShortLabel().equals( "bait" ) ) {
+                    return component;
+                }
             }
         }
         return null;
@@ -634,8 +638,8 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         String result = "Interaction: " + getAc() + " Label: " + getShortLabel()
                         + " [" + NEW_LINE;
         if ( null != this.getComponents() ) {
-            for ( Iterator iter = this.getComponents().iterator(); iter.hasNext(); ) {
-                result += ( ( Component ) iter.next() ).getInteractor();
+            for ( Object o : this.getComponents() ) {
+                result += ( ( Component ) o ).getInteractor();
             }
         }
         return result + "] Interaction" + NEW_LINE;
