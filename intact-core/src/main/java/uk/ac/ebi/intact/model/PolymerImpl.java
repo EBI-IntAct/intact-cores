@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.PolymerImpl" )
-public abstract class PolymerImpl extends InteractorImpl implements Polymer {
+public class PolymerImpl extends InteractorImpl implements Polymer {
 
     //Constants
 

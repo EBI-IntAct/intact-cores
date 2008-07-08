@@ -5,24 +5,22 @@
  */
 package uk.ac.ebi.intact.persistence.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Order;
 import uk.ac.ebi.intact.context.IntactSession;
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.InteractorImpl;
-import uk.ac.ebi.intact.model.Interactor;
-import uk.ac.ebi.intact.model.InteractionImpl;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.persistence.dao.InteractorDao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * TODO comment this
@@ -33,6 +31,8 @@ import java.util.HashMap;
  */
 @SuppressWarnings( "unchecked" )
 public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObjectDaoImpl<T> implements InteractorDao<T> {
+
+    private static final Log log = LogFactory.getLog( InteractorDaoImpl.class );
 
     /**
      * Filter to provide filtering on GeneNames
@@ -205,4 +205,39 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
 
         return results;
     }
+
+    public List<T> getByInteractorType(String cvIdentifer, boolean includeChildren) {
+        return createGetByInteractorTypeQuery(cvIdentifer, includeChildren, false).getResultList();
+    }
+
+    public long countByInteractorType(String cvIdentifer, boolean includeChildren) {
+        return (Long) createGetByInteractorTypeQuery(cvIdentifer, includeChildren, true).getSingleResult();
+    }
+
+    private Query createGetByInteractorTypeQuery(String cvIdentifer, boolean includeChildren, boolean isCount) {
+        List<String> cvIdentifiers = new ArrayList<String>();
+        cvIdentifiers.add(cvIdentifer);
+
+        if (includeChildren) {
+            CvObjectDao<CvInteractorType> cvObjectDao =
+                    new CvObjectDaoImpl<CvInteractorType>(CvInteractorType.class, getEntityManager(), getIntactSession());
+            CvDagObject cvInteractorType = cvObjectDao.getByPsiMiRef(cvIdentifer);
+
+            if (cvInteractorType != null) {
+                final Set<String> childrenMIs = CvObjectUtils.getChildrenMIs(cvInteractorType);
+                cvIdentifiers.addAll(childrenMIs);
+            } else {
+                if (log.isDebugEnabled()) log.debug("CvInteractorType with this identifier was not found in the database: "+cvIdentifer);
+            }
+        }
+
+        String sqlQuery = (isCount? "select count(*) " : "") +
+                          "from " + getEntityClass().getName() + " i where " +
+                          "i.cvInteractorType.identifier in (:interactorTypeIdentifiers)";
+        Query query = getEntityManager().createQuery(sqlQuery);
+        query.setParameter("interactorTypeIdentifiers", cvIdentifiers);
+        return query;
+    }
+
+
 }

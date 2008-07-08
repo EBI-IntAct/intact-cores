@@ -107,6 +107,10 @@ public class CvObjectUtils {
         return isChildOfType( type, CvInteractorType.RNA_MI_REF, true );
     }
 
+    public static boolean isInteractionType( CvInteractorType type ) {
+        return isChildOfType( type, CvInteractorType.INTERACTION_MI_REF, false );
+    }
+
     /**
      * Checks if the given term has the given MI identifier. If recursive is true, we also search recursively through its parents.
      *

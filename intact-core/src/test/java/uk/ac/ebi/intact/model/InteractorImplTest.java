@@ -1,0 +1,72 @@
+/**
+ * Copyright 2008 The European Bioinformatics Institute, and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package uk.ac.ebi.intact.model;
+
+import org.junit.Assert;
+import org.junit.Test;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+
+/**
+ * TODO comment that class header
+ *
+ * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @version $Id$
+ */
+public class InteractorImplTest extends IntactBasicTestCase {
+
+    @Test
+    public void correctObjClass1() throws Exception {
+        InteractorImpl interactor = (InteractorImpl) getMockBuilder().createProteinRandom();
+
+        Assert.assertEquals(ProteinImpl.class.getName(), interactor.getObjClass());
+        interactor.correctObjClass();
+        Assert.assertEquals(ProteinImpl.class.getName(), interactor.getObjClass());
+    }
+    
+    @Test
+    public void correctObjClass2() throws Exception {
+        InteractorImpl interactor = (InteractorImpl) getMockBuilder().createProteinRandom();
+        interactor.setCvInteractorType(getMockBuilder().createCvObject(CvInteractorType.class, "MI:0904", "polysaccharide"));
+
+        Assert.assertEquals(ProteinImpl.class.getName(), interactor.getObjClass());
+        interactor.correctObjClass();
+        Assert.assertEquals(PolymerImpl.class.getName(), interactor.getObjClass());
+    }
+
+    @Test
+    public void correctObjClass3() throws Exception {
+        final CvInteractorType nucAcidType = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.NUCLEIC_ACID_MI_REF, CvInteractorType.NUCLEIC_ACID);
+        final CvInteractorType dnaType = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.DNA_MI_REF, CvInteractorType.DNA);
+        dnaType.addParent(nucAcidType);
+
+        InteractorImpl interactor = new InteractorImpl("interactor", new Institution("lalaInst"), dnaType);
+
+        Assert.assertEquals(InteractorImpl.class.getName(), interactor.getObjClass());
+        interactor.correctObjClass();
+        Assert.assertEquals(NucleicAcidImpl.class.getName(), interactor.getObjClass());
+    }
+
+    @Test
+    public void correctObjClass4() throws Exception {
+        final CvInteractorType interactorType = getMockBuilder().createCvObject(CvInteractorType.class, "MI:lala", "lalavirus");
+
+        InteractorImpl interactor = new InteractorImpl("interactor", new Institution("lalaInst"), interactorType);
+
+        Assert.assertEquals(InteractorImpl.class.getName(), interactor.getObjClass());
+        interactor.correctObjClass();
+        Assert.assertEquals(InteractorImpl.class.getName(), interactor.getObjClass());
+    }
+}

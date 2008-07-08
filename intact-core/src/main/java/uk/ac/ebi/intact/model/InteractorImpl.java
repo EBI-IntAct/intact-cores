@@ -6,13 +6,13 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.DiscriminatorFormula;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
-import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 /**
  * Defines a generic interacting object.
@@ -22,8 +22,10 @@ import uk.ac.ebi.intact.persistence.util.CgLibUtil;
  */
 @Entity
 @Table( name = "ia_interactor" )
-@DiscriminatorColumn( name = "objclass", length = 100 )
-public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref, InteractorAlias> implements Interactor, Searchable {
+//@DiscriminatorColumn( name = "objclass", length = 100 )
+@DiscriminatorFormula ("objclass")
+@DiscriminatorValue( "uk.ac.ebi.intact.model.InteractorImpl" )
+public class InteractorImpl extends AnnotatedObjectImpl<InteractorXref, InteractorAlias> implements Interactor, Searchable {
 
     ///////////////////////////////////////
     //attributes
@@ -99,14 +101,39 @@ public abstract class InteractorImpl extends AnnotatedObjectImpl<InteractorXref,
      *
      * @throws NullPointerException thrown if either parameters are not specified
      */
-    protected InteractorImpl( String shortLabel, Institution owner, CvInteractorType type ) {
+    public InteractorImpl( String shortLabel, Institution owner, CvInteractorType type ) {
         super( shortLabel, owner );
         setCvInteractorType( type );
     }
 
+    ////////////////////////////////////////
+    // entity callback methods
+
+    @PrePersist
+    @PreUpdate
+    protected void correctObjClass() {
+        if (interactorType == null) {
+            throw new IllegalStateException("Interactor without interactor type: " + this);
+        }
+
+        if (CvObjectUtils.isProteinType(interactorType)) {
+            setObjClass(ProteinImpl.class.getName());
+        } else if (CvObjectUtils.isInteractionType(interactorType)) {
+            setObjClass(InteractionImpl.class.getName());
+        } else if (CvObjectUtils.isSmallMoleculeType(interactorType)) {
+            setObjClass(SmallMoleculeImpl.class.getName());
+        } else if (CvObjectUtils.isNucleicAcidType(interactorType)) {
+            setObjClass(NucleicAcidImpl.class.getName());
+        } else if (this instanceof Polymer) {
+            setObjClass(PolymerImpl.class.getName());
+        } else {
+            setObjClass(InteractorImpl.class.getName());
+        }
+    }
+
     ///////////////////////////////////////
     //access methods for attributes
-    @Column( name = "objclass", insertable = false, updatable = false )
+    @Column( name = "objclass" )
     public String getObjClass() {
         if( objClass == null ) {
             objClass = getClass().getName();

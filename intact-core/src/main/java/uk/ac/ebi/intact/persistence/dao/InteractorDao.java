@@ -6,8 +6,8 @@
 package uk.ac.ebi.intact.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.model.InteractorImpl;
 import uk.ac.ebi.intact.model.Interactor;
+import uk.ac.ebi.intact.model.InteractorImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -63,4 +63,22 @@ public interface InteractorDao<T extends InteractorImpl> extends AnnotatedObject
      * @since 1.8.0
      */
     Map<String, List<String>> getPartnersWithInteractionAcsByInteractorAc( String ac );
+
+    /**
+     * Retrieves a list of interactors for a provided interactor type identifier. It is possible
+     * to automatically use any children for that specific identifier in the search.
+     * @param cvIdentifer Identifier for the interactor type (e.g. MI:XXXX)
+     * @param includeChildren Whether to use the children of the cv or not
+     * @return the non-null list of interactors
+     */
+    List<T> getByInteractorType(String cvIdentifer, boolean includeChildren);
+
+    /**
+     * Counts interactors with the provided interactor type identifier. It is possible
+     * to automatically use any children for that specific identifier in the search.
+     * @param cvIdentifer Identifier for the interactor type (e.g. MI:XXXX)
+     * @param includeChildren Whether to use the children of the cv or not
+     * @return the count of interactors
+     */
+    long countByInteractorType(String cvIdentifer, boolean includeChildren);
 }
