@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.config.SequenceManager;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactUnit;
 
 /**
  * TODO comment that class header
@@ -43,17 +44,28 @@ public class SequenceManagerTest extends IntactBasicTestCase {
 
     @Test
     public void getNextValueForSequence() throws Exception {
+
         SequenceManager seqManager = new SequenceManager(getIntactContext().getConfig().getDefaultDataConfig());
 
         beginTransaction();
         seqManager.createSequenceIfNotExists(getDaoFactory().getEntityManager(), "test2_seq", 5);
         commitTransaction();
 
-        Assert.assertEquals(5L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
+       /* Assert.assertEquals(5L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
         Assert.assertEquals(6L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
         Assert.assertEquals(7L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
         Assert.assertEquals(8L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
         Assert.assertEquals(9L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
         Assert.assertEquals(10L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
+    }*/
+
+        Assert.assertEquals(7L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
+        Assert.assertEquals(10L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
+        Assert.assertEquals(13L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
+        Assert.assertEquals(16L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
+        Assert.assertEquals(19L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
+        Assert.assertEquals(22L, seqManager.getNextValueForSequence(getDaoFactory().getEntityManager(), "test2_seq"));
     }
+
+
 }

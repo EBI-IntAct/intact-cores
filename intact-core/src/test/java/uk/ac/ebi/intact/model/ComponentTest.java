@@ -152,6 +152,7 @@ public class ComponentTest extends IntactBasicTestCase {
         Assert.assertEquals( "baaa-paaa", interaction.getShortLabel() );
 
 
+
     }
 
 

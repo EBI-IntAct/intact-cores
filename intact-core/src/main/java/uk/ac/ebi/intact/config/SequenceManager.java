@@ -23,6 +23,7 @@ import org.hibernate.dialect.Dialect;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -87,6 +88,10 @@ public class SequenceManager {
 
             try {
                 for (String sql : createSeqSqls) {
+                    if ( log.isDebugEnabled() ) {
+                        log.debug( "sql  :  "+sql );
+                    }
+
                     final Query createSeqQuery = entityManager.createNativeQuery(sql);
                     createSeqQuery.executeUpdate();
                 }
@@ -114,20 +119,40 @@ public class SequenceManager {
      * @param sequenceName The sequence name to query
      * @return The next value for that sequence; null if the sequence does not exist;
      */
-    public Long getNextValueForSequence(EntityManager entityManager, String sequenceName) {
-        if (!sequenceExists(entityManager, sequenceName)) {
-            throw new IllegalArgumentException("Sequence does not exist: "+sequenceName+
-                                               ". Sequences found in the database: "+getExistingSequenceNames(entityManager));
+    public Long getNextValueForSequence( EntityManager entityManager, String sequenceName ) {
+        if ( !sequenceExists( entityManager, sequenceName ) ) {
+            throw new IllegalArgumentException( "Sequence does not exist: " + sequenceName +
+                                                ". Sequences found in the database: " + getExistingSequenceNames( entityManager ) );
         }
 
-        Query query = entityManager.createNativeQuery(dialect.getSequenceNextValString(sequenceName));
+        Query query = entityManager.createNativeQuery( dialect.getSequenceNextValString( sequenceName ) );
 
-        final BigInteger bigInteger = (BigInteger) query.getSingleResult();
+        if ( query.getSingleResult() != null ) {
+            if ( query.getSingleResult() instanceof BigInteger ) {
+                final BigInteger bigInteger = ( BigInteger ) query.getSingleResult();
 
-        if (bigInteger != null) {
-            return bigInteger.longValue();
+                if ( bigInteger != null ) {
+                    if ( log.isDebugEnabled() ) {
+                        log.debug( "Returning sequence from bigInteger : " + bigInteger.longValue() );
+                    }
+
+                    return bigInteger.longValue();
+                }
+
+
+            } else if ( query.getSingleResult() instanceof BigDecimal ) {
+                final BigDecimal bigDecimal = ( BigDecimal ) query.getSingleResult();
+
+                if ( bigDecimal != null ) {
+                    if ( log.isDebugEnabled() ) {
+                        log.debug( "Returning sequence from bigDecimal: " + bigDecimal.longValue() );
+                    }
+
+                    return bigDecimal.longValue();
+                }
+            }
+
         }
-        
         return null;
     }
 
