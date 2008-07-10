@@ -231,6 +231,8 @@ public class IntactMockBuilder {
         protein.setSequence(sequence);
         protein.setCrc64(crc64);
 
+
+
         return protein;
     }
 
@@ -295,6 +297,8 @@ public class IntactMockBuilder {
     public Component createComponentBait(Interactor interactor) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
         Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
+        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
+        interaction.setCvInteractorType( intType );
         return createComponentBait(interaction, interactor);
     }
 
@@ -308,6 +312,8 @@ public class IntactMockBuilder {
     public Component createComponentPrey(Interactor interactor) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
         Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())), cvInteractionType, null, nextString("label"), getInstitution());
+        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
+        interaction.setCvInteractorType( intType );
         return createComponentPrey(interaction, interactor);
     }
 
@@ -368,6 +374,9 @@ public class IntactMockBuilder {
          CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
          Experiment experiment = createExperimentEmpty();
          Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(experiment)), cvInteractionType, null, "temp", getInstitution());
+         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
+         interaction.setCvInteractorType( intType );
+
 
          Component[] components = new Component[interactors.length];
 

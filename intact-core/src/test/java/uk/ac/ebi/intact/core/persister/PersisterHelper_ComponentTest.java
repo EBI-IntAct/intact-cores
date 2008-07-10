@@ -4,6 +4,8 @@ import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.Feature;
@@ -21,6 +23,9 @@ import java.util.ArrayList;
  */
 public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 {
+
+    private static final Log log = LogFactory.getLog( PersisterHelper_ComponentTest.class );
+
 
     @Test
     public void persist_default() throws Exception {
@@ -87,6 +92,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         Component baitNeutralComponent = getMockBuilder().createComponentBait( getMockBuilder().createDeterministicProtein( "P1", "baaa" ) );
         baitNeutralComponent.setExperimentalRoles(baitNeutralExperimentalRoles);
+       
         PersisterHelper.saveOrUpdate( baitNeutralComponent );
 
         Component reloadedComponent = reloadByAc(baitNeutralComponent);
