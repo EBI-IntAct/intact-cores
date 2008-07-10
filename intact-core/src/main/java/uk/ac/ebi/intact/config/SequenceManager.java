@@ -126,10 +126,11 @@ public class SequenceManager {
         }
 
         Query query = entityManager.createNativeQuery( dialect.getSequenceNextValString( sequenceName ) );
+        Object resultObject = query.getSingleResult();
 
-        if ( query.getSingleResult() != null ) {
-            if ( query.getSingleResult() instanceof BigInteger ) {
-                final BigInteger bigInteger = ( BigInteger ) query.getSingleResult();
+        if ( resultObject != null ) {
+            if ( resultObject instanceof BigInteger ) {
+                final BigInteger bigInteger = ( BigInteger ) resultObject;
 
                 if ( bigInteger != null ) {
                     if ( log.isDebugEnabled() ) {
@@ -140,8 +141,8 @@ public class SequenceManager {
                 }
 
 
-            } else if ( query.getSingleResult() instanceof BigDecimal ) {
-                final BigDecimal bigDecimal = ( BigDecimal ) query.getSingleResult();
+            } else if (resultObject instanceof BigDecimal ) {
+                final BigDecimal bigDecimal = ( BigDecimal ) resultObject;
 
                 if ( bigDecimal != null ) {
                     if ( log.isDebugEnabled() ) {
