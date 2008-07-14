@@ -88,6 +88,30 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void add_annotation_on_existing_cv() throws Exception {
+        final String expRoleLabel = "EXP_ROLE";
+
+        CvExperimentalRole expRole = getMockBuilder().createCvObject( CvExperimentalRole.class, "MI:xxxx", expRoleLabel);
+        Assert.assertEquals( 0, expRole.getAnnotations().size());
+        PersisterHelper.saveOrUpdate(expRole);
+        commitTransaction();
+
+        beginTransaction();
+        final CvExperimentalRole role = getDaoFactory().getCvObjectDao( CvExperimentalRole.class ).getByShortLabel( expRoleLabel );
+        Assert.assertNotNull( role );
+        Annotation annotation = getMockBuilder().createAnnotation( "text", null, "topic" );
+        role.addAnnotation( annotation );
+        PersisterHelper.saveOrUpdate(expRole);
+        commitTransaction();
+
+        beginTransaction();
+        final CvExperimentalRole role2 = getDaoFactory().getCvObjectDao( CvExperimentalRole.class ).getByShortLabel( expRoleLabel );
+        Assert.assertNotNull( role2 );
+        Assert.assertEquals( 1, role2.getAnnotations().size());
+        Assert.assertEquals( "topic", role2.getAnnotations().iterator().next().getCvTopic().getShortLabel() );
+    }
+
+    @Test
     public void persist_prepareMi() throws Exception {
         CvObject cv = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPARC_MI_REF, CvDatabase.UNIPARC);
         Assert.assertNotNull(cv.getIdentifier());
