@@ -22,8 +22,6 @@ import org.hibernate.dialect.Dialect;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.math.BigInteger;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -129,31 +127,10 @@ public class SequenceManager {
         Object resultObject = query.getSingleResult();
 
         if ( resultObject != null ) {
-            if ( resultObject instanceof BigInteger ) {
-                final BigInteger bigInteger = ( BigInteger ) resultObject;
-
-                if ( bigInteger != null ) {
-                    if ( log.isDebugEnabled() ) {
-                        log.debug( "Returning sequence from bigInteger : " + bigInteger.longValue() );
-                    }
-
-                    return bigInteger.longValue();
-                }
-
-
-            } else if (resultObject instanceof BigDecimal ) {
-                final BigDecimal bigDecimal = ( BigDecimal ) resultObject;
-
-                if ( bigDecimal != null ) {
-                    if ( log.isDebugEnabled() ) {
-                        log.debug( "Returning sequence from bigDecimal: " + bigDecimal.longValue() );
-                    }
-
-                    return bigDecimal.longValue();
-                }
-            }
-
+            Number nextSeq = (Number) resultObject;
+            return nextSeq.longValue();
         }
+        
         return null;
     }
 
