@@ -16,4 +16,11 @@ import uk.ac.ebi.intact.model.Publication;
 @Mockable
 public interface PublicationDao extends AnnotatedObjectDao<Publication> {
 
+    /**
+     * Retrieve a Publication using a pubmed identifier.
+     * @param pubmedId The pubmed identifier
+     * @return The publication if found, null otherwise
+     */
+    Publication getByPubmedId(String pubmedId);
+
 }

@@ -24,4 +24,8 @@ public class PublicationDaoImpl extends AnnotatedObjectDaoImpl<Publication> impl
     public PublicationDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
         super( Publication.class, entityManager, intactSession );
     }
+
+    public Publication getByPubmedId(String pubmedId) {
+        return getByShortLabel(pubmedId);
+    }
 }

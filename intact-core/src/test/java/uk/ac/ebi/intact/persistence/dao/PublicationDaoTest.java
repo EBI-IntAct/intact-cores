@@ -55,4 +55,12 @@ public class PublicationDaoTest extends IntactBasicTestCase {
         assertEquals( label, pub.getShortLabel() );
     }
 
+    @Test
+    public void getByPubmedId() {
+        final String label = "10029528";
+        Publication pub = publicationDao.getByPubmedId( label );
+        assertNotNull( pub );
+        assertEquals( label, pub.getShortLabel() );
+    }
+
 }
