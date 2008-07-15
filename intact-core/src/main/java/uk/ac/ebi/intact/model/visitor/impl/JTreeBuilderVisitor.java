@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.model.visitor.impl;
 
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
+import uk.ac.ebi.intact.util.DebugUtil;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -71,17 +72,18 @@ public class JTreeBuilderVisitor extends BaseIntactVisitor{
 
     @Override
     public void visitXref(Xref xref) {
-         currentNode.setUserObject("Xref: "+xref.getPrimaryId());
+         currentNode.setUserObject("Xref: "+xref.getPrimaryId()+" / Database="+ DebugUtil.cvObjectToSimpleString(xref.getCvDatabase())+
+                                                                ", Qualifier="+DebugUtil.cvObjectToSimpleString(xref.getCvXrefQualifier()));
     }
 
     @Override
     public void visitAlias(Alias alias) {
-        currentNode.setUserObject("Alias: "+alias.getName());
+        currentNode.setUserObject("Alias: "+alias.getName()+" / Type="+DebugUtil.cvObjectToSimpleString(alias.getCvAliasType()));
     }
 
     @Override
     public void visitAnnotation(Annotation annotation) {
-        currentNode.setUserObject("Annotation: "+annotation.getAnnotationText());
+        currentNode.setUserObject("Annotation: "+annotation.getAnnotationText()+" / Topic="+DebugUtil.cvObjectToSimpleString(annotation.getCvTopic()));
     }
 
     @Override

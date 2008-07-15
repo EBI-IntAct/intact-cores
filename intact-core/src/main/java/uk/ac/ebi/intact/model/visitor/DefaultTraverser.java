@@ -119,15 +119,9 @@ public class DefaultTraverser implements IntactObjectTraverser {
 
     protected void traverseAnnotatedObjectCommon(AnnotatedObject ao, IntactVisitor ... visitors) {
 
-        for (Annotation annotation : ao.getAnnotations()) {
-            traverse(annotation, visitors);
-        }
-        for (Alias alias : (Collection<Alias>) ao.getAliases()) {
-            traverse(alias, visitors);
-        }
-        for (Xref xref : (Collection<Xref>) ao.getXrefs()) {
-            traverse(xref, visitors);
-        }
+        traverse(ao.getAnnotations(), visitors);
+        traverse(ao.getAliases(), visitors);
+        traverse(ao.getXrefs(), visitors);
 
         // check if this element has been traversed already, to avoid cyclic recursion
         if (recursionChecker.isAlreadyTraversed(ao)) {
@@ -255,10 +249,7 @@ public class DefaultTraverser implements IntactObjectTraverser {
         traverse(experiment.getCvInteraction(), visitors);
         traverse(experiment.getBioSource(), visitors);
         traverse(experiment.getPublication(), visitors);
-
-        for (Interaction interaction : experiment.getInteractions()) {
-            traverse(interaction, visitors);
-        }
+        traverse(experiment.getInteractions(), visitors);
     }
 
     protected void traverseFeature(Feature feature, IntactVisitor ... visitors) {
@@ -302,22 +293,10 @@ public class DefaultTraverser implements IntactObjectTraverser {
         }
 
         traverse(interaction.getCvInteractionType(), visitors);
-
-        for (Experiment experiment : interaction.getExperiments()) {
-            traverse(experiment, visitors);
-        }
-
-        for (Component component : interaction.getComponents()) {
-            traverse(component, visitors);
-        }
-
-        for (Confidence confidence : interaction.getConfidences()) {
-            traverse(confidence, visitors);
-        }
-        
-        for (InteractionParameter interactionParameter : interaction.getParameters()) {
-            traverse(interactionParameter, visitors);
-        }
+        traverse(interaction.getExperiments(), visitors);
+        traverse(interaction.getComponents(), visitors);
+        traverse(interaction.getConfidences(), visitors);
+        traverse(interaction.getParameters(), visitors);
     }
 
     protected void traverseInteractor(Interactor interactor, IntactVisitor ... visitors) {
@@ -357,6 +336,8 @@ public class DefaultTraverser implements IntactObjectTraverser {
 
         for (IntactVisitor visitor : visitors) {
             visitor.visitPublication(publication);
+
+            traverse(publication.getExperiments(), visitors);
         }
     }
 
@@ -376,25 +357,11 @@ public class DefaultTraverser implements IntactObjectTraverser {
         traverse(component.getInteractor(), visitors);
         traverse(component.getCvBiologicalRole(), visitors);
         traverse(component.getExpressedIn(), visitors);
-
-        for (Parameter parameter : component.getParameters())
-            traverse(parameter, visitors);
-
-        for (CvIdentification partDetMethod : component.getParticipantDetectionMethods()) {
-            traverse(partDetMethod, visitors);
-        }
-
-        for (CvExperimentalPreparation experimentalPreparation : component.getExperimentalPreparations()) {
-            traverse(experimentalPreparation, visitors);
-        }
-
-        for (Feature feature : component.getBindingDomains()) {
-            traverse(feature, visitors);
-        }
-
-        for( CvExperimentalRole expRole : component.getExperimentalRoles()){
-            traverse(expRole, visitors);
-        }
+        traverse(component.getParameters(), visitors);
+        traverse(component.getParticipantDetectionMethods(), visitors);
+        traverse(component.getExperimentalPreparations(), visitors);
+        traverse(component.getBindingDomains(), visitors);
+        traverse(component.getExperimentalRoles(), visitors);
     }
 
     protected void traverseCvObject(CvObject cvObject, IntactVisitor ... visitors) {
@@ -403,6 +370,18 @@ public class DefaultTraverser implements IntactObjectTraverser {
         for (IntactVisitor visitor : visitors) {
             visitor.visitCvObject(cvObject);
         }
+    }
+
+    protected void traverse(Collection<? extends IntactObject> objs, IntactVisitor[] visitors) {
+        if (objs == null || objs.isEmpty()) {
+            return;
+        }
+
+        for (IntactObject obj : objs) {
+            traverse(obj, visitors);
+        }
+
+        previousHierarchyLevel();
     }
 
     protected void nextHierarchyLevel() {

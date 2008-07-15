@@ -116,6 +116,17 @@ public class DebugUtil {
     }
 
     /**
+     * Returns a String for a CvObject with this format: <code>MI:XXXX(cvLabel)</code>.
+     * @param cvObject The CvObject to convert to simple string
+     * @return The output String
+     */
+    public static String cvObjectToSimpleString(CvObject cvObject) {
+        if (cvObject == null) return null;
+        
+        return cvObject.getIdentifier()+"("+cvObject.getShortLabel()+")";
+    }
+
+    /**
      * Prints the most counts in the database.
      * @param ps The printStream to use
      *
