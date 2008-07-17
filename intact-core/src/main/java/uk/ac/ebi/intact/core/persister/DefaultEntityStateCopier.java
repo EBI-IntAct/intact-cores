@@ -104,7 +104,6 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
             throw new IllegalArgumentException( "DefaultEntityStateCopier doesn't copy " + source.getClass().getName() );
         }
 
-
         copyAnotatedObjectCommons( source, target );
 
         return copiedProperty;

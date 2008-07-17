@@ -534,12 +534,11 @@ public class IntactCloner {
         clone.setShortLabel( ao.getShortLabel() );
         clone.setFullName( ao.getFullName() );
 
-
         // as annotations, alias and xrefs could potentially be dettached, we should check if these
         // collections are accessible
         if (!AnnotatedObjectUtils.isNewOrManaged(ao)) {
             ao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
-                    .getAnnotatedObjectDao(ao.getClass()).getByAc(ao.getAc(), true);
+                    .getAnnotatedObjectDao(ao.getClass()).getByAc(ao.getAc());
         }
 
         for ( Annotation annotation : ao.getAnnotations() ) {

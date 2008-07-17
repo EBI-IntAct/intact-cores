@@ -21,9 +21,18 @@ import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
+import uk.ac.ebi.intact.context.IntactEnvironment;
+import uk.ac.ebi.intact.context.IntactSession;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.context.impl.StandaloneSession;
+import uk.ac.ebi.intact.config.DataConfig;
+import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
+
+import java.util.Properties;
 
 /**
  * PersisterHelper tester.
@@ -88,6 +97,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test
+    @Ignore
     public void add_annotation_on_existing_cv() throws Exception {
         final String expRoleLabel = "EXP_ROLE";
 
@@ -101,7 +111,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertNotNull( role );
         Annotation annotation = getMockBuilder().createAnnotation( "text", null, "topic" );
         role.addAnnotation( annotation );
-        PersisterHelper.saveOrUpdate(expRole);
+        PersisterHelper.saveOrUpdate(role);
         commitTransaction();
 
         beginTransaction();
@@ -355,5 +365,23 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         // as updating without cv is enabled, we expect the annotation text to be updated
         Assert.assertEquals("Experiment", usedInClassAnnot.getAnnotationText());
+    }
+    
+    @Test
+    public void usingInstitutionIntact() throws Exception {
+        Properties properties = new Properties();
+        properties.put(IntactEnvironment.INSTITUTION_LABEL.getFqn(), "intact");
+
+        IntactSession session = new StandaloneSession(properties);
+        DataConfig dataConfig = new InMemoryDataConfig(session);
+
+        IntactContext.initContext(dataConfig, session);
+
+        IntactMockBuilder mockBuilder = new IntactMockBuilder(IntactContext.getCurrentInstance().getConfig().getInstitution());
+
+        CvTopic mySuperHappyTopic = mockBuilder.createCvObject(CvTopic.class, "MY:super", "happyTopic");
+        PersisterHelper.saveOrUpdate(mySuperHappyTopic);
+
+        Assert.assertTrue(getDaoFactory().getCvObjectDao().getByAc(mySuperHappyTopic.getAc()) != null);
     }
 }

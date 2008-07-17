@@ -276,15 +276,18 @@ public class CorePersister implements Persister<AnnotatedObject> {
 
                     if (copied) {
                         statistics.addMerged(managedObject);
-                        synchronizeChildren( managedObject );
-                    } 
+                    }
+
+                    // synchronize aliases, xrefs, annotations...
+                    synchronizeChildren( managedObject );
+
                 } catch (LazyInitializationException e) {
                     log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
                     ao = managedObject;
                 } catch (PersisterException e) {
                     log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
                     ao = managedObject;
-                }
+                } 
 
             } else {
                 if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");

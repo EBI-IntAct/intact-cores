@@ -95,7 +95,7 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
         this.url = url;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL} )
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL})
     public Collection<InstitutionAlias> getAliases() {
         return super.getAliases();
     }
