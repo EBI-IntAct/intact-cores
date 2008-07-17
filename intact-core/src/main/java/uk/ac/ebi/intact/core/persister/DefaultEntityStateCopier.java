@@ -24,6 +24,7 @@ import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.clone.IntactClonerException;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
+import uk.ac.ebi.intact.util.DebugUtil;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -214,7 +215,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyCvObject( CvObject source, CvObject target ) {
-        copyProperty(source, "miIdentifier", target);
+        copyProperty(source, "identifier", target);
 
         if (source instanceof CvDagObject) {
             CvDagObject sourceDag = (CvDagObject)source;
@@ -250,7 +251,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         }
         
         Collection elementsToAdd = subtractAnnotations( sourceCol, targetCol );
-        Collection elementsToRemove = subtractAnnotations( sourceCol, targetCol );
+        Collection elementsToRemove = subtractAnnotations( targetCol, sourceCol );
         targetCol.removeAll( elementsToRemove );
         targetCol.addAll( elementsToAdd );
     }
@@ -282,7 +283,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         }
 
         Collection elementsToAdd = subtractXrefs( sourceCol, targetCol );
-        Collection elementsToRemove = subtractXrefs( sourceCol, targetCol );
+        Collection elementsToRemove = subtractXrefs( targetCol, sourceCol );
         targetCol.removeAll( elementsToRemove );
         targetCol.addAll( elementsToAdd );
     }
@@ -293,7 +294,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         }
 
         Collection elementsToAdd = subtractAliases( sourceCol, targetCol );
-        Collection elementsToRemove = subtractAliases( sourceCol, targetCol );
+        Collection elementsToRemove = subtractAliases( targetCol, sourceCol );
         targetCol.removeAll( elementsToRemove );
         targetCol.addAll( elementsToAdd );
     }
@@ -370,7 +371,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
                 return true;
             }
         } catch (IntactClonerException e) {
-            throw new PersisterException("Problem cloning source or target, to check if they are equals", e);
+            throw new PersisterException("Problem cloning source or target, to check if they are equal", e);
         }
 
         return false;
@@ -414,7 +415,13 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
             copiedProperty = true;
 
         } catch (Throwable e) {
-            throw new PersisterException("Problem copying property '"+propertyName+"' from "+source.getClass().getSimpleName(), e);
+            String sourceInfo = "";
+
+            if (source instanceof AnnotatedObject) {
+                sourceInfo = DebugUtil.annotatedObjectToString((AnnotatedObject) source, true);
+            }
+
+            throw new PersisterException("Problem copying property '"+propertyName+"' from "+source.getClass().getSimpleName()+" "+sourceInfo, e);
         }
 
         return true;

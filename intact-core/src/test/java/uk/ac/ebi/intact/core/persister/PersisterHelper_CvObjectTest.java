@@ -291,4 +291,69 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         
         Assert.assertEquals(1, brunoDb.getXrefs().size());
     }
+
+    @Test
+    public void updateCvObjectAnnotation_updateWithoutAcDisabled() throws Exception {
+        // setup the database
+        int initialCvCount = getDaoFactory().getCvObjectDao().countAll();
+
+        CvTopic topic = getMockBuilder().createCvObject(CvTopic.class, CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
+        topic.addAnnotation(getMockBuilder().createAnnotation("Interaction", null, CvTopic.USED_IN_CLASS));
+        PersisterHelper.saveOrUpdate(topic);
+
+        Assert.assertEquals(initialCvCount+2, getDaoFactory().getCvObjectDao().countAll());
+
+        // perform the test
+        CvTopic sameTopic = getMockBuilder().createCvObject(CvTopic.class, CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
+        sameTopic.addAnnotation(getMockBuilder().createAnnotation("Experiment", null, CvTopic.USED_IN_CLASS));
+
+        Assert.assertNull(sameTopic.getAc());
+
+        PersisterHelper.saveOrUpdate(sameTopic);  // by default, updated without ac is disabled
+
+        // final assertions
+        CvTopic reloadedTopic = getDaoFactory().getCvObjectDao(CvTopic.class).getByPsiMiRef(CvTopic.COMMENT_MI_REF);
+        Assert.assertFalse(reloadedTopic.getAnnotations().isEmpty());
+
+        Annotation usedInClassAnnot = reloadedTopic.getAnnotations().iterator().next();
+
+        Assert.assertEquals(CvTopic.USED_IN_CLASS, usedInClassAnnot.getCvTopic().getShortLabel());
+
+        // as updating without cv is disabled, we do not expect the annotation text to be updated
+        Assert.assertEquals("Interaction", usedInClassAnnot.getAnnotationText());
+    }
+
+    @Test
+    public void updateCvObjectAnnotation_updateWithoutAcEnabled() throws Exception {
+        // setup the database
+        int initialCvCount = getDaoFactory().getCvObjectDao().countAll();
+
+        CvTopic topic = getMockBuilder().createCvObject(CvTopic.class, CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
+        topic.addAnnotation(getMockBuilder().createAnnotation("Interaction", null, CvTopic.USED_IN_CLASS));
+        PersisterHelper.saveOrUpdate(topic);
+
+        Assert.assertEquals(initialCvCount+2, getDaoFactory().getCvObjectDao().countAll());
+
+        // perform the test
+        CvTopic sameTopic = getMockBuilder().createCvObject(CvTopic.class, CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
+        sameTopic.addAnnotation(getMockBuilder().createAnnotation("Experiment", null, CvTopic.USED_IN_CLASS));
+
+        Assert.assertNull(sameTopic.getAc());
+
+        CorePersister corePersister = new CorePersister();
+        corePersister.setUpdateWithoutAcEnabled(true);   // <----- update without AC enabled
+
+        PersisterHelper.saveOrUpdate(corePersister, sameTopic);
+
+        // final assertions
+        CvTopic reloadedTopic = getDaoFactory().getCvObjectDao(CvTopic.class).getByPsiMiRef(CvTopic.COMMENT_MI_REF);
+        Assert.assertFalse(reloadedTopic.getAnnotations().isEmpty());
+
+        Annotation usedInClassAnnot = reloadedTopic.getAnnotations().iterator().next();
+
+        Assert.assertEquals(CvTopic.USED_IN_CLASS, usedInClassAnnot.getCvTopic().getShortLabel());
+
+        // as updating without cv is enabled, we expect the annotation text to be updated
+        Assert.assertEquals("Experiment", usedInClassAnnot.getAnnotationText());
+    }
 }

@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.collections.CollectionUtils;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.util.ClassUtils;
 
@@ -203,21 +204,52 @@ public class CvObjectUtils {
             return false;
         }
 
+        /*
         if (cv1 instanceof CvDagObject) {
             CvDagObject cv1Dag = (CvDagObject) cv1;
             CvDagObject cv2Dag = (CvDagObject) cv2;
-            if (!CollectionUtils.isEqualCollection(cv1Dag.getChildren(), cv2Dag.getChildren())) {
-                return false;
+
+            if (isNewOrManaged(cv1Dag) && isNewOrManaged(cv2Dag)) {
+                if (!CollectionUtils.isEqualCollection(cv1Dag.getChildren(), cv2Dag.getChildren())) {
+                    return false;
+                }
+                if (!CollectionUtils.isEqualCollection(cv2Dag.getParents(), cv2Dag.getParents())) {
+                    return false;
+                }
             }
-            if (!CollectionUtils.isEqualCollection(cv1Dag.getParents(), cv2Dag.getParents())) {
+        }  */
+
+        if (isNewOrManaged(cv1) && isNewOrManaged(cv2)) {
+            boolean annotationsEqual = CollectionUtils.isEqualCollection(cv1.getAnnotations(), cv2.getAnnotations());
+
+            if (!annotationsEqual) {
                 return false;
             }
         }
-        
+
+
         if (cv1.getIdentifier() != null && cv2.getIdentifier() != null) {
             return cv1.getIdentifier().equals(cv2.getIdentifier());
         }
 
         return cv1.getShortLabel().equals(cv2.getShortLabel());
+    }
+
+    /**
+     * Check if the object state is "new" or "managed"
+     * @param cvObject The CvObject to check
+     * @return True if is new or managed
+     */
+    protected static boolean isNewOrManaged(CvObject cvObject) {
+        // is it new?
+        if (cvObject.getAc() == null) return true;
+
+        // is it transient? (as in opposition to managed)
+        if (IntactContext.currentInstanceExists() &&
+            IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getBaseDao().isTransient(cvObject)) {
+            return false;
+        }
+
+        return true;
     }
 }
