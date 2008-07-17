@@ -215,18 +215,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyCvObject( CvObject source, CvObject target ) {
-        copyProperty(source, "identifier", target);
-
-        if (source instanceof CvDagObject) {
-            CvDagObject sourceDag = (CvDagObject)source;
-            CvDagObject targetDag = (CvDagObject)target;
-
-            // TODO copying the parents/children cause an error, we should think of an algorithm to avoid that,
-            // due to overriding parents that may be already synchronized with its transient versions
-
-            //copyCollection( sourceDag.getParents(), targetDag.getParents() );
-            //copyCollection( sourceDag.getChildren(), targetDag.getChildren() );
-        }
+        // nothing copied
     }
 
     protected <X extends Xref, A extends Alias> void copyAnotatedObjectCommons( AnnotatedObject<X, A> source,

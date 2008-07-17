@@ -217,7 +217,7 @@ public class CvObjectUtils {
         }
 
         if (includeCollectionsCheck && AnnotatedObjectUtils.isNewOrManaged(cv1) && AnnotatedObjectUtils.isNewOrManaged(cv2)) {
-            return AnnotatedObjectUtils.containSameXrefs(cv1, cv2);
+            return AnnotatedObjectUtils.containSameCollections(cv1, cv2);
         }
 
         if (cv1.getIdentifier() != null && cv2.getIdentifier() != null) {
