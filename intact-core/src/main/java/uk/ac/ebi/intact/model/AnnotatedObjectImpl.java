@@ -271,7 +271,17 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
             }
         }
 
-        return CollectionUtils.isEqualCollection( getXrefs(), annotatedObject.getXrefs() );
+        if (!CollectionUtils.isEqualCollection( getXrefs(), annotatedObject.getXrefs() )) {
+            return false;
+        }
+        if (!CollectionUtils.isEqualCollection( getAnnotations(), annotatedObject.getAnnotations() )) {
+            return false;
+        }
+        if (!CollectionUtils.isEqualCollection( getAliases(), annotatedObject.getAliases() )) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -295,6 +305,14 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
 
         for ( Xref xref : xrefs ) {
             code = 29 * code + xref.getPrimaryId().hashCode();
+        }
+
+        for ( Annotation annotation : annotations ) {
+            code = 29 * code + annotation.getAnnotationText().hashCode();
+        }
+
+        for ( Alias alias : aliases ) {
+            code = 29 * code + alias.getName().hashCode();
         }
 
         if ( null != shortLabel ) {
