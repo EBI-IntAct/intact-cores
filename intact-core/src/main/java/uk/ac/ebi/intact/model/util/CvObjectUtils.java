@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.collections.CollectionUtils;
-import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.util.ClassUtils;
 
@@ -219,7 +218,7 @@ public class CvObjectUtils {
             }
         }  */
 
-        if (isNewOrManaged(cv1) && isNewOrManaged(cv2)) {
+        if (AnnotatedObjectUtils.isNewOrManaged(cv1) && AnnotatedObjectUtils.isNewOrManaged(cv2)) {
             boolean annotationsEqual = CollectionUtils.isEqualCollection(cv1.getAnnotations(), cv2.getAnnotations());
 
             if (!annotationsEqual) {
@@ -233,23 +232,5 @@ public class CvObjectUtils {
         }
 
         return cv1.getShortLabel().equals(cv2.getShortLabel());
-    }
-
-    /**
-     * Check if the object state is "new" or "managed"
-     * @param cvObject The CvObject to check
-     * @return True if is new or managed
-     */
-    protected static boolean isNewOrManaged(CvObject cvObject) {
-        // is it new?
-        if (cvObject.getAc() == null) return true;
-
-        // is it transient? (as in opposition to managed)
-        if (IntactContext.currentInstanceExists() &&
-            IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getBaseDao().isTransient(cvObject)) {
-            return false;
-        }
-
-        return true;
     }
 }

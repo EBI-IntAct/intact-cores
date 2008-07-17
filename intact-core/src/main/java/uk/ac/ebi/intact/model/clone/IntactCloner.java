@@ -17,7 +17,9 @@ package uk.ac.ebi.intact.model.clone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import java.lang.reflect.Constructor;
@@ -531,6 +533,14 @@ public class IntactCloner {
 
         clone.setShortLabel( ao.getShortLabel() );
         clone.setFullName( ao.getFullName() );
+
+
+        // as annotations, alias and xrefs could potentially be dettached, we should check if these
+        // collections are accessible
+        if (!AnnotatedObjectUtils.isNewOrManaged(ao)) {
+            ao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
+                    .getAnnotatedObjectDao(ao.getClass()).getByAc(ao.getAc(), true);
+        }
 
         for ( Annotation annotation : ao.getAnnotations() ) {
             clone.addAnnotation(clone( annotation ));

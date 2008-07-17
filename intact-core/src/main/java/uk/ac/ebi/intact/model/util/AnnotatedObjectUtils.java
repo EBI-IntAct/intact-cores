@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.collections.CollectionUtils;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.IntactObjectFilterPredicate;
@@ -371,5 +372,25 @@ public class AnnotatedObjectUtils {
             }
         }
         return annotations;
+    }
+
+    /**
+     * Check if the object state is "new" or "managed". This check is useful in those
+     * cases where we need to check if the collections (annotations, aliases and xrefs) are
+     * accessible and won't throw a LazyInitializationException if accessed.
+     * @param annotatedObject The AnnotatedObject to check
+     * @return True if is new or managed
+     */
+    public static boolean isNewOrManaged(AnnotatedObject annotatedObject) {
+        // is it new?
+        if (annotatedObject.getAc() == null) return true;
+        
+        // is it transient? (as in opposition to managed)
+        if (IntactContext.currentInstanceExists() &&
+            IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getBaseDao().isTransient(annotatedObject)) {
+            return false;
+        }
+
+        return true;
     }
 }
