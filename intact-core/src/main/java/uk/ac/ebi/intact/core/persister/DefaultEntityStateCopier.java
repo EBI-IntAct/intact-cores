@@ -378,7 +378,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected boolean areCvObjectsEqual(CvObject source, CvObject target) {
-        return CvObjectUtils.areEqual(source, target);
+        return CvObjectUtils.areEqual(source, target, true);
     }
 
     protected boolean areInteractionsEqual(Interaction source, Interaction target) {

@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.model.util;
 
-import org.apache.commons.collections.CollectionUtils;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.util.ClassUtils;
 
@@ -199,33 +198,27 @@ public class CvObjectUtils {
      * @since 1.8.0
      */
     public static boolean areEqual(CvObject cv1, CvObject cv2) {
+        return areEqual(cv1, cv2, false);
+    }
+
+    /**
+     * This method is an alternative equals to the CvObject.equals method, that basically checks
+     * on the MI identifiers and then of the short label if the first check returns false
+     * @param cv1 One of the CvObjects
+     * @param cv2 The other CvObject
+     * @param includeCollectionsCheck if true, check if the annotations/xrefs/aliases are the same
+     * @return True if (A) the MI are the same or (B) the short labels are the same in case A has failed
+     *
+     * @since 1.9.0
+     */
+    public static boolean areEqual(CvObject cv1, CvObject cv2, boolean includeCollectionsCheck) {
         if ( cv1 == null || cv2 == null ) {
             return false;
         }
 
-        /*
-        if (cv1 instanceof CvDagObject) {
-            CvDagObject cv1Dag = (CvDagObject) cv1;
-            CvDagObject cv2Dag = (CvDagObject) cv2;
-
-            if (isNewOrManaged(cv1Dag) && isNewOrManaged(cv2Dag)) {
-                if (!CollectionUtils.isEqualCollection(cv1Dag.getChildren(), cv2Dag.getChildren())) {
-                    return false;
-                }
-                if (!CollectionUtils.isEqualCollection(cv2Dag.getParents(), cv2Dag.getParents())) {
-                    return false;
-                }
-            }
-        }  */
-
-        if (AnnotatedObjectUtils.isNewOrManaged(cv1) && AnnotatedObjectUtils.isNewOrManaged(cv2)) {
-            boolean annotationsEqual = CollectionUtils.isEqualCollection(cv1.getAnnotations(), cv2.getAnnotations());
-
-            if (!annotationsEqual) {
-                return false;
-            }
+        if (includeCollectionsCheck && AnnotatedObjectUtils.isNewOrManaged(cv1) && AnnotatedObjectUtils.isNewOrManaged(cv2)) {
+            return AnnotatedObjectUtils.containSameXrefs(cv1, cv2);
         }
-
 
         if (cv1.getIdentifier() != null && cv2.getIdentifier() != null) {
             return cv1.getIdentifier().equals(cv2.getIdentifier());

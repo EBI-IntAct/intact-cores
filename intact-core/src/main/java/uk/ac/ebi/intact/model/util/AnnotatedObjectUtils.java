@@ -393,4 +393,87 @@ public class AnnotatedObjectUtils {
 
         return true;
     }
+
+    /**
+     * Checks if two given annotated objects contain the same set of annotations, xrefs and aliases
+     * @param ao1 Annotated object 1
+     * @param ao2 Annotated object 2
+     * @return if the two annotated objects contain the same set of annnotations, xrefs and aliases
+     */
+    public static boolean containSameCollections(AnnotatedObject ao1, AnnotatedObject ao2) {
+        if (!containSameXrefs(ao1, ao2)) {
+            return false;
+        }
+        if (!containSameAnnotations(ao1, ao2)) {
+            return false;
+        }
+        if (!containSameAliases(ao1, ao2)) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean containSameAnnotations(AnnotatedObject ao1, AnnotatedObject ao2) {
+        return areCollectionEqual(ao1.getAnnotations(), ao2.getAnnotations());
+    }
+
+    public static boolean containSameXrefs(AnnotatedObject ao1, AnnotatedObject ao2) {
+        return areCollectionEqual(ao1.getXrefs(), ao2.getXrefs());
+    }
+
+    public static boolean containSameAliases(AnnotatedObject ao1, AnnotatedObject ao2) {
+        return areCollectionEqual(ao1.getAliases(), ao2.getAliases());
+    }
+
+    /**
+     * Method to compare Annotation, Xref and Aliases collections
+     * @param intactObjects1 Annotations, Xrefs or Aliases
+     * @param intactObjects2 Annotations, Xrefs or Aliases
+     * @return true if the collections are equal
+     */
+    private static boolean areCollectionEqual(Collection<? extends IntactObject> intactObjects1, Collection<? extends IntactObject> intactObjects2) {
+        if (intactObjects1.size() != intactObjects2.size()) {
+            return false;
+        }
+
+        List<String> uniqueStrings1 = new ArrayList<String>();
+
+        for (IntactObject io1 : intactObjects1) {
+            uniqueStrings1.add(createUniqueString(io1));
+        }
+
+        for (IntactObject io2 : intactObjects2) {
+            String unique2 = createUniqueString(io2);
+
+            if (!uniqueStrings1.contains(unique2)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Creates unique strings for Annotations,Xrefs and aliases.
+     * @param io the object to use
+     * @return a unique string for that object
+     */
+    protected static String createUniqueString(IntactObject io) {
+        if (io == null) throw new NullPointerException("IntactObject cannot be null to create a unique String");
+
+        if (io instanceof Annotation) {
+            Annotation annot = (Annotation)io;
+            String cvId = (annot.getCvTopic() != null)? annot.getCvTopic().getIdentifier() : "";
+            return annot.getAnnotationText()+"__"+cvId;
+        } else if (io instanceof Xref) {
+            Xref xref = (Xref)io;
+            String qualId = (xref.getCvXrefQualifier() != null)? xref.getCvXrefQualifier().getIdentifier() : "";
+            return xref.getPrimaryId()+"__"+xref.getCvDatabase().getIdentifier()+"__"+qualId;
+        } else if (io instanceof Alias) {
+            Alias alias = (Alias)io;
+            String typeId = (alias.getCvAliasType() != null)? alias.getCvAliasType().getIdentifier() : "";
+            return alias.getName()+"__"+typeId;
+        }
+        return io.toString();
+    }
 }
