@@ -64,11 +64,15 @@
 
         <!-- third party deps -->
         <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.code</groupId>
             <artifactId>google-collections</artifactId>
             <version>0.5</version>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
