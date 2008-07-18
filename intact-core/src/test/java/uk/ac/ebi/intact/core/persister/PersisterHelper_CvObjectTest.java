@@ -19,18 +19,18 @@ import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
+import uk.ac.ebi.intact.config.DataConfig;
+import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.context.IntactEnvironment;
+import uk.ac.ebi.intact.context.IntactSession;
+import uk.ac.ebi.intact.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
-import uk.ac.ebi.intact.context.IntactEnvironment;
-import uk.ac.ebi.intact.context.IntactSession;
-import uk.ac.ebi.intact.context.IntactContext;
-import uk.ac.ebi.intact.context.impl.StandaloneSession;
-import uk.ac.ebi.intact.config.DataConfig;
-import uk.ac.ebi.intact.config.impl.InMemoryDataConfig;
 
 import java.util.Properties;
 
@@ -96,9 +96,23 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertEquals( expRole.getAc(), expRole2.getAc() );
     }
 
-    @Test
-    @Ignore
+    @Test (expected = PersisterException.class)
     public void add_annotation_on_existing_cv() throws Exception {
+        final String expRoleLabel = "EXP_ROLE";
+
+        CvExperimentalRole expRole = getMockBuilder().createCvObject( CvExperimentalRole.class, "MI:xxxx", expRoleLabel);
+        Assert.assertEquals( 0, expRole.getAnnotations().size());
+        PersisterHelper.saveOrUpdate(expRole);
+
+        final CvExperimentalRole role = getDaoFactory().getCvObjectDao( CvExperimentalRole.class ).getByShortLabel( expRoleLabel );
+        Assert.assertNotNull( role );
+        Annotation annotation = getMockBuilder().createAnnotation( "text", null, "topic" );
+        role.addAnnotation( annotation );
+        PersisterHelper.saveOrUpdate(role);
+    }
+
+    @Test
+    public void add_annotation_on_existing_cv_transientsPersisted() throws Exception {
         final String expRoleLabel = "EXP_ROLE";
 
         CvExperimentalRole expRole = getMockBuilder().createCvObject( CvExperimentalRole.class, "MI:xxxx", expRoleLabel);
@@ -111,10 +125,10 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertNotNull( role );
         Annotation annotation = getMockBuilder().createAnnotation( "text", null, "topic" );
         role.addAnnotation( annotation );
-        PersisterHelper.saveOrUpdate(role);
-        commitTransaction();
 
-        beginTransaction();
+        // if we pass the cvTopic to the saveOrUpdate, the PersisterException won't happen
+        PersisterHelper.saveOrUpdate(annotation.getCvTopic(), role);
+
         final CvExperimentalRole role2 = getDaoFactory().getCvObjectDao( CvExperimentalRole.class ).getByShortLabel( expRoleLabel );
         Assert.assertNotNull( role2 );
         Assert.assertEquals( 1, role2.getAnnotations().size());
