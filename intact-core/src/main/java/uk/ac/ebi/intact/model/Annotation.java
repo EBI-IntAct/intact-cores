@@ -150,7 +150,7 @@ public class Annotation extends BasicObjectImpl {
             return ac.equals( annotation.ac );
         }
 
-        if (CvObjectUtils.areEqual(cvTopic, annotation.getCvTopic()) ) {
+        if (!CvObjectUtils.areEqual(cvTopic, annotation.getCvTopic()) ) {
             return false;
         }
 
