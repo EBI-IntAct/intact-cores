@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import uk.ac.ebi.intact.util.filter.UrlFilter;
+import uk.ac.ebi.intact.commons.util.net.UrlFilter;
 
 import java.io.IOException;
 import java.net.URL;
