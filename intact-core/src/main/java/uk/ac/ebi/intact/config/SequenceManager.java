@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.dialect.Dialect;
+import uk.ac.ebi.intact.config.hibernate.SequenceAuxiliaryDatabaseObject;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -82,17 +83,11 @@ public class SequenceManager {
         if (!sequenceExists(entityManager, sequenceName)) {
             if (log.isInfoEnabled()) log.info("Sequence could not be found and it is going to be created: "+sequenceName);
 
-            String[] createSeqSqls = dialect.getCreateSequenceStrings(sequenceName, initialValue, 1);
+            String sql = new SequenceAuxiliaryDatabaseObject(sequenceName, initialValue).sqlCreateString(dialect);
 
             try {
-                for (String sql : createSeqSqls) {
-                    if ( log.isDebugEnabled() ) {
-                        log.debug( "sql  :  "+sql );
-                    }
-
-                    final Query createSeqQuery = entityManager.createNativeQuery(sql);
-                    createSeqQuery.executeUpdate();
-                }
+                final Query createSeqQuery = entityManager.createNativeQuery(sql);
+                createSeqQuery.executeUpdate();
             } catch (Exception e) {
                 throw new SequenceCreationException("Exception creating the sequence: "+sequenceName+" (initial value: "+initialValue+")");
             }

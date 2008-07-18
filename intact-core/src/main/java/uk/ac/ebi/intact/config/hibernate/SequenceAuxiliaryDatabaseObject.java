@@ -43,8 +43,11 @@ public class SequenceAuxiliaryDatabaseObject extends AbstractAuxiliaryDatabaseOb
     }
 
     public String sqlCreateString(Dialect dialect, Mapping p, String defaultCatalog, String defaultSchema) throws HibernateException {
-        String sql;
+        return sqlCreateString(dialect);
+    }
 
+    public String sqlCreateString(Dialect dialect) {
+        String sql;
         if (dialect.supportsPooledSequences()) {
             String[] createSqls = dialect.getCreateSequenceStrings(sequenceName, initialValue, 1);
             sql = StringUtils.join(createSqls, "; ");
@@ -59,7 +62,6 @@ public class SequenceAuxiliaryDatabaseObject extends AbstractAuxiliaryDatabaseOb
                 throw new IllegalStateException(e);
             }
         }
-
         return sql;
     }
 
