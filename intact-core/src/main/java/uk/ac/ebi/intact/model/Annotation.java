@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
 
@@ -145,23 +146,11 @@ public class Annotation extends BasicObjectImpl {
 
         final Annotation annotation = ( Annotation ) o;
 
-        // Issue
-        // -----
-        // Two object being annotated with different object having the same CvTopic and text,
-        // As soon as OJB has loaded one of them from the database, the other one is NOT.
-        // The reason is that if the equals method of Annotation is based only on CvTopic and text
-        // hence one of the object is loaded and cached, then when we query for the second one, OJB finds it
-        // as already loaded.
-        //
-        // Solution (HACK)
-        // --------
-        // To get around the problem of shared annotation having the same CvTopic and text, we take its ac into account.
-        // Hence, two Annotations having the same CvTopic and text can be different, hence all loaded normally by OJB.
         if ( ac != null ) {
             return ac.equals( annotation.ac );
         }
 
-        if ( cvTopic != null && !cvTopic.equals( annotation.cvTopic ) ) {
+        if (CvObjectUtils.areEqual(cvTopic, annotation.getCvTopic()) ) {
             return false;
         }
 
