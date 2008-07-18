@@ -103,7 +103,7 @@ public class IntactFtpClient {
 
     protected void checkConnected() {
         if ( !isConnected() ) {
-            throw new IllegalStateException( "FTPClient is not connected to the FTP HOST. Call FTPClient.connect() first" );
+            throw new IllegalStateException( "FtpClient is not connected to the FTP HOST. Call IntactFtpClient.connect() first" );
         }
     }
 
@@ -178,6 +178,8 @@ public class IntactFtpClient {
     // private methods
 
     private List<IntactFtpFile> listFiles( String folder, UrlFilter filter ) throws IOException {
+
+        checkConnected();
 
         FTPFile[] baseFiles = ftpClient.listFiles( folder );
 
