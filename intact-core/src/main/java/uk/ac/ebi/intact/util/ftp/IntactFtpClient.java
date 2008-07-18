@@ -189,7 +189,7 @@ public class IntactFtpClient {
             if ( file.isDirectory() ) {
                 if ( log.isDebugEnabled() )
                     log.debug( "Recursive listing of " + "ftp://" + HOST + SLASH + folder + SLASH + file.getName() );
-                allFiles.addAll( listFiles( folder + SLASH + file.getName() ) );
+                allFiles.addAll( listFiles( folder + SLASH + file.getName(), filter ) );
             } else {
                 final URL url = new URL( "ftp://" + HOST + SLASH + folder + SLASH + file.getName() );
                 if ( filter == null || filter.accept( url ) ) {
