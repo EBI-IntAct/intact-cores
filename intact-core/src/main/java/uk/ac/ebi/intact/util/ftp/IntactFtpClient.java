@@ -60,7 +60,7 @@ public class IntactFtpClient {
      */
     public static String folder;
 
-    protected IntactFtpClient() {
+    public IntactFtpClient() {
         ftpClient = new FTPClient();
     }
 
