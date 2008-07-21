@@ -1,10 +1,10 @@
 package uk.ac.ebi.intact.util.ftp;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.After;
-import uk.ac.ebi.intact.util.filter.UrlFilter;
+import uk.ac.ebi.intact.commons.util.net.UrlFilter;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,7 +31,7 @@ public class IntactFtpClientTest {
     public void disconnect() throws IOException {
         ftpClient.disconnect();
     }
-    
+
     @Test
     public void getPsimiXml25Publications() throws Exception {
         final List<IntactFtpFile> files = ftpClient.getPsimiXml25Publications();
