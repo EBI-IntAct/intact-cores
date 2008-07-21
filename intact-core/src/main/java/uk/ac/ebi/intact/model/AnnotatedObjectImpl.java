@@ -308,7 +308,10 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
         }
 
         for ( Annotation annotation : annotations ) {
+            if(annotation.getAnnotationText()!=null){
             code = 29 * code + annotation.getAnnotationText().hashCode();
+            }    
+
         }
 
         for ( Alias alias : aliases ) {
