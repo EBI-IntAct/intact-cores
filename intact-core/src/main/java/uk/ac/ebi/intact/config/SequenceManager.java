@@ -19,6 +19,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.Oracle8iDialect;
+import org.hibernate.dialect.Oracle9Dialect;
 import uk.ac.ebi.intact.config.hibernate.SequenceAuxiliaryDatabaseObject;
 
 import javax.persistence.EntityManager;
@@ -100,7 +102,14 @@ public class SequenceManager {
      * @return the names of the sequences
      */
     public List<String> getExistingSequenceNames(EntityManager entityManager) {
-        Query query = entityManager.createNativeQuery(dialect.getQuerySequencesString());
+        Query query ;
+
+        if ((dialect instanceof Oracle8iDialect) || (dialect instanceof Oracle9Dialect)) {
+            query = entityManager.createNativeQuery(getQuerySequencesString());
+        } else {
+            query = entityManager.createNativeQuery(dialect.getQuerySequencesString());
+        }
+
 
         List<String> existingSequences = query.getResultList();
         return existingSequences;
@@ -128,5 +137,14 @@ public class SequenceManager {
         
         return null;
     }
+
+    /**
+   * Returns the query sequence for oracle as 'select sequence_name  from user_sequences'
+   * doesn't return any sequences unless logged as root user
+   * @return the query
+   */
+  private String getQuerySequencesString() {
+      return "select sequence_name from all_sequences";
+  }
 
 }
