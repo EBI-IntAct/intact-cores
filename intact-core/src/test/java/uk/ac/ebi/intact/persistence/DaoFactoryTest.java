@@ -116,4 +116,15 @@ public class DaoFactoryTest extends IntactBasicTestCase {
         Assert.assertNotSame(s1, s3);
     }
 
+    @Test
+    public void isTransactionActive() throws Exception {
+        commitTransaction();
+        Assert.assertFalse( getDaoFactory().isTransactionActive() );
+        
+        beginTransaction();
+        Assert.assertTrue( getDaoFactory().isTransactionActive() );
+        commitTransaction();
+
+        Assert.assertFalse( getDaoFactory().isTransactionActive() );
+    }
 }
