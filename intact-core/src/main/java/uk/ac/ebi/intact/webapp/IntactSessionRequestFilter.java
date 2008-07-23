@@ -74,23 +74,23 @@ public class IntactSessionRequestFilter implements Filter {
         // in our case to open and close an hibernate session if the url end in logout, as it means that the user
         // is just asking to logout the application.
         String requestUrl = req.getRequestURL().toString();
-        log.debug( "Request send is : " + requestUrl );
+        if ( log.isDebugEnabled() ) log.debug( "Request send is : " + requestUrl );
         // if the the url end matches with a filtered extensions do not start IntactContext
         for ( String ext : excludedExtensions ) {
             if ( requestUrl.toLowerCase().endsWith( ext.toLowerCase() ) ) {
-                log.debug( "Context not created for (excluded): " + requestUrl );
+                if ( log.isDebugEnabled() ) log.debug( "Context not created for (excluded): " + requestUrl );
                 chain.doFilter( request, response );
                 return;
             }
         }
 
-        if (log.isDebugEnabled())
-        {
+        if (log.isDebugEnabled()) {
             log.debug( "Creating IntactContext, for request url: " + requestUrl + " ; session id: "+session.getId() +" ; thread: "+Thread.currentThread().getName());
         }
+
         IntactSession intactSession = new WebappSession( session.getServletContext(), session, req );
         IntactContext context = IntactConfigurator.createIntactContext( intactSession );
-        log.debug("Beginning the transaction");
+        if ( log.isDebugEnabled() ) log.debug("Beginning the transaction");
         IntactContext.getCurrentInstance().getDataContext().beginTransaction();
 
         // We need to write the httpResponse firt in the responseWrapper. Other wise when we get back the response and
@@ -123,7 +123,7 @@ public class IntactSessionRequestFilter implements Filter {
             log.error( "intact session: ", e );
         }
         finally {
-            log.debug( "Committing active transactions" );
+            if ( log.isDebugEnabled() ) log.debug( "Committing active transactions" );
             try {
                 context.getDataContext().commitTransaction();
                 out.write( responseWrapper.toString() );
@@ -145,17 +145,13 @@ public class IntactSessionRequestFilter implements Filter {
                         throw new ServletException( getCommitErrorMessage(req) + e );
                     }
                 }
-                else
-                {
-                   log.error("Exception commiting, rollback sucessfull" + e ); 
-                   throw new ServletException( "Exception commiting, rollback sucessfull" + e );
+                else {
+                    log.error("Exception commiting, rollback sucessfull" + e );
+                    throw new ServletException( "Exception commiting, rollback sucessfull" + e );
                 }
-
             }
-
         }
         out.close();
-
     }
 
     public void init( FilterConfig filterConfig ) throws ServletException {
