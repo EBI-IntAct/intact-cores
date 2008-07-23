@@ -224,6 +224,10 @@ public class CvObjectUtils {
             return cv1.getIdentifier().equals(cv2.getIdentifier());
         }
 
+        if (cv1.getShortLabel() == null || cv2.getShortLabel() == null) {
+            return false;
+        }
+
         return cv1.getShortLabel().equals(cv2.getShortLabel());
     }
 }
