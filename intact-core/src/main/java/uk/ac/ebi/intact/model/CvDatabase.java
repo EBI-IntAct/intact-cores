@@ -119,6 +119,10 @@ public class CvDatabase extends CvDagObject implements Editable {
     public static final String WWPDB = "wwpdb";
     public static final String WWPDB_MI_REF = "MI:0805";
 
+    public static final String PSI_MOD = "psi-mod";
+    public static final String PSI_MOD_MI_REF = "MI:0897";
+
+
     /**
      * This constructor should <b>not</b> be used as it could result in objects with invalid state. It is here for
      * object mapping purposes only and if possible will be made private.
