@@ -9,6 +9,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.validator.Length;
 import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -80,7 +81,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     @Column( name = "objclass", insertable = false, updatable = false )
     public String getObjClass() {
         if (objClass == null) {
-            objClass = getClass().getName();
+            objClass = CgLibUtil.removeCglibEnhanced( getClass() ).getName();
         }
         return objClass;
     }
