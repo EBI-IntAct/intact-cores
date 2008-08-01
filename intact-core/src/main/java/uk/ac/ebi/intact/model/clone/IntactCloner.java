@@ -499,9 +499,10 @@ public class IntactCloner {
             clonerManager.addClone( cvObject, clone );
 
             clone.setIdentifier( cvObject.getIdentifier() );
+            clone.setObjClass( cvObject.getObjClass() );
 
         } catch ( Exception e ) {
-            throw new IntactClonerException( "An error occured upon cloning a " + clazz.getSimpleName(), e );
+            throw new IntactClonerException( "An error occured upon cloning a " + clazz.getSimpleName() + ": " + cvObject.getShortLabel(), e );
         }
 
         if (cloneCvObjectTree) {
