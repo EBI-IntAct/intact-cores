@@ -81,10 +81,6 @@ public abstract class Alias extends BasicObjectImpl {
     public void setName( String name ) {
 
         if ( name != null ) {
-
-            // delete leading and trailing spaces.
-            name = name.trim();
-
             if ( name.length() >= MAX_ALIAS_NAME_LEN ) {
                 name = name.substring( 0, MAX_ALIAS_NAME_LEN );
             }
