@@ -15,15 +15,13 @@
  */
 package uk.ac.ebi.intact.model.meta;
 
-import uk.ac.ebi.intact.model.Auditable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.util.Date;
-
 import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
+import uk.ac.ebi.intact.model.Auditable;
+import uk.ac.ebi.intact.model.event.IntactObjectEventListener;
+
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Contains metadata about the schema
@@ -34,6 +32,7 @@ import org.hibernate.validator.Length;
  */
 @Entity
 @Table( name = "ia_db_info" )
+@EntityListeners(value = {IntactObjectEventListener.class})
 public class DbInfo implements Auditable {
 
     public static final String SCHEMA_VERSION = "schema_version";
@@ -42,10 +41,6 @@ public class DbInfo implements Auditable {
     public static final String NAMESPACE_PSIMI = "PSI-MI";
 
     public static final String LAST_CV_IDENTIFIER = "last_cv_identifier";
-
-
-
-
 
     @Id
     @Column( name = "dbi_key", length = 50 )
@@ -59,25 +54,29 @@ public class DbInfo implements Auditable {
     /**
      * The curator who has last edited the object.
      */
-    @Column( name = "updated_user", length = 30 )
+    @Column( name = "updated_user", length = 30, nullable = false)
+    @NotNull
     private String updator;
 
     /**
      * The curator who has created the edited object
      */
-    @Column( name = "created_user", length = 30 )
+    @Column( name = "created_user", length = 30, nullable = false)
+    @NotNull
     private String creator;
 
     /**
      * Creation date of an object. The type is java.sql.Date, not java.util.Data, for database compatibility.
      */
-    @Column( name = "created_date" )
+    @Column( name = "created_date", nullable = false)
+    @NotNull
     private Date created;
 
     /**
      * The last update of the object. The type is java.sql.Date, not java.util.Data, for database compatibility.
      */
-    @Column( name = "updated_date" )
+    @Column( name = "updated_date", nullable = false)
+    @NotNull
     private Date updated;
 
     public DbInfo() {
