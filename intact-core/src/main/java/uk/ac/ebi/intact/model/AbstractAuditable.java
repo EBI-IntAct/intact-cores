@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.validator.NotNull;
-import uk.ac.ebi.intact.model.event.IntactObjectEventListener;
+import uk.ac.ebi.intact.model.event.AuditableEventListener;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,7 +28,7 @@ import java.util.Date;
  * @version $Id$
  */
 @MappedSuperclass
-@EntityListeners(value = {IntactObjectEventListener.class})
+@EntityListeners(value = {AuditableEventListener.class})
 public abstract class AbstractAuditable implements Auditable {
 
     ///////////////////////////////////////

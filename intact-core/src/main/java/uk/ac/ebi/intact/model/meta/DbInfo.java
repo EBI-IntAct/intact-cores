@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.model.meta;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import uk.ac.ebi.intact.model.Auditable;
-import uk.ac.ebi.intact.model.event.IntactObjectEventListener;
+import uk.ac.ebi.intact.model.event.AuditableEventListener;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -32,7 +32,7 @@ import java.util.Date;
  */
 @Entity
 @Table( name = "ia_db_info" )
-@EntityListeners(value = {IntactObjectEventListener.class})
+@EntityListeners(value = {AuditableEventListener.class})
 public class DbInfo implements Auditable {
 
     public static final String SCHEMA_VERSION = "schema_version";
