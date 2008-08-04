@@ -216,6 +216,9 @@ public class IntactConfigurator {
 
         initializeDatabaseIfNecessary(context);
 
+        // clear the entity manager
+        dataContext.getDaoFactory().getEntityManager().clear();
+
         return context;
     }
 
