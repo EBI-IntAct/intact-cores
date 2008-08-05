@@ -17,7 +17,9 @@ public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicO
     /**
      * This matches with the column size for short label
      */
-    static final int MAX_SHORT_LABEL_LEN = 20;
+    static final int RECOMMENDED_SHORT_LABEL_LEN = 20;
+
+    static final int MAX_SHORT_LABEL_LEN = 256;
 
     String getShortLabel();
 

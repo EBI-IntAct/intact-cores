@@ -345,8 +345,7 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
             copy.shortLabel += "-x";
         } else {
             log.error( "Could not append '-x' to this " + this.getClass().getSimpleName() + " shorltabel("+
-                       copy.shortLabel +") as it would make it longer than the maximum supported ("+
-                       MAX_SHORT_LABEL_LEN+" chars).");
+                       copy.shortLabel +") as it would make it longer than the maximum supported ("+ MAX_SHORT_LABEL_LEN + " chars)." );
         }
 
         // Clone annotations; can't use annotations.clone here as annoatations
