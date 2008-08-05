@@ -10,6 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.model.util.ExperimentUtils;
+import uk.ac.ebi.intact.context.RuntimeConfig;
+import uk.ac.ebi.intact.context.IntactContext;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -139,16 +141,22 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
 
     @PrePersist
     public void synchronizeShortLabel() {
-        String newShortLabel = shortLabel;
-        try {
-            newShortLabel = ExperimentUtils.syncShortLabelWithDb(shortLabel, ExperimentUtils.getPubmedId( this ));
-        } catch (Exception e) {
-            log.error("Exception synchronizing the label, probably due to an invalid format: "+newShortLabel);;
-        }
+        if( IntactContext.currentInstanceExists() ) {
+            if( IntactContext.getCurrentInstance().getConfig().isAutoUpdateExperimentShortlabel() ) {
+                String newShortLabel = shortLabel;
+                try {
+                    newShortLabel = ExperimentUtils.syncShortLabelWithDb(shortLabel, ExperimentUtils.getPubmedId( this ));
+                } catch (Exception e) {
+                    log.error("Exception synchronizing the label, probably due to an invalid format: "+newShortLabel);
+                }
 
-        if (!shortLabel.equals(newShortLabel)) {
-            if (log.isDebugEnabled()) log.debug("Experiment with label '"+shortLabel+"' renamed '"+newShortLabel+"'" );
-            setShortLabel(newShortLabel);
+                if (!shortLabel.equals(newShortLabel)) {
+                    if (log.isDebugEnabled()) log.debug("Experiment with label '"+shortLabel+"' renamed '"+newShortLabel+"'" );
+                    setShortLabel(newShortLabel);
+                }
+            }
+        } else {
+            log.warn( "There is no IntAct Context initialized, skipping experiment shortlabel synchronization." );
         }
     }
 

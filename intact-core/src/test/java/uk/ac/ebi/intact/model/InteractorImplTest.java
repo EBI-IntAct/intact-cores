@@ -18,6 +18,9 @@ package uk.ac.ebi.intact.model;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
+
+import java.util.List;
 
 /**
  * TODO comment that class header
@@ -68,5 +71,62 @@ public class InteractorImplTest extends IntactBasicTestCase {
         Assert.assertEquals(InteractorImpl.class.getName(), interactor.getObjClass());
         interactor.correctObjClass();
         Assert.assertEquals(InteractorImpl.class.getName(), interactor.getObjClass());
+    }
+
+    @Test
+    public void synchShortlabelEnabled() throws Exception {
+
+        final Protein baitProtein = getMockBuilder().createProtein( "P12345", "bait" );
+        final Component bait = getMockBuilder().createComponentBait( baitProtein );
+
+        final Protein preyProtein = getMockBuilder().createProtein( "P12345", "prey" );
+        final Component prey = getMockBuilder().createComponentBait( preyProtein );
+
+        getIntactContext().getConfig().setAutoUpdateInteractionShortlabel( true );
+        
+        final Interaction interaction1 = getMockBuilder().createInteraction( bait, prey );
+        interaction1.setShortLabel( "bait-prey" );
+        PersisterHelper.saveOrUpdate( interaction1 );
+
+        final Interaction interaction2 = getMockBuilder().createInteraction( bait, prey );
+        interaction2.setShortLabel( "bait-prey" );
+        PersisterHelper.saveOrUpdate( interaction2 );
+
+        Assert.assertEquals( 2, getDaoFactory().getInteractionDao().countAll() );
+
+        final InteractionImpl i1 = getDaoFactory().getInteractionDao().getByShortLabel( "bait-prey" );
+        Assert.assertNotNull( i1 );
+
+        final InteractionImpl i2 = getDaoFactory().getInteractionDao().getByShortLabel( "bait-prey-1" );
+        Assert.assertNotNull( i2 );
+    }
+
+    @Test
+    public void synchShortlabelDisabled() throws Exception {
+
+        final Protein baitProtein = getMockBuilder().createProtein( "P12345", "bait" );
+        final Component bait = getMockBuilder().createComponentBait( baitProtein );
+
+        final Protein preyProtein = getMockBuilder().createProtein( "P12345", "prey" );
+        final Component prey = getMockBuilder().createComponentBait( preyProtein );
+
+        getIntactContext().getConfig().setAutoUpdateInteractionShortlabel( false );
+
+        final String label = "bait-prey";
+        
+        final Interaction interaction1 = getMockBuilder().createInteraction( bait, prey );
+        interaction1.setShortLabel( label );
+        PersisterHelper.saveOrUpdate( interaction1 );
+
+        final Interaction interaction2 = getMockBuilder().createInteraction( bait, prey );
+        interaction2.setShortLabel( label );
+        PersisterHelper.saveOrUpdate( interaction2 );
+
+        Assert.assertEquals( 2, getDaoFactory().getInteractionDao().countAll() );
+
+        final List<InteractionImpl> list = getDaoFactory().getInteractionDao().getAll();
+        for ( InteractionImpl interaction : list ) {
+            Assert.assertEquals( label, interaction.getShortLabel() );
+        }
     }
 }

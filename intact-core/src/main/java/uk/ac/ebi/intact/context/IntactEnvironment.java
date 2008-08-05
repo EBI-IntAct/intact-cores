@@ -84,6 +84,16 @@ public enum IntactEnvironment {
     AUTO_BEGIN_TRANSACTION( "uk.ac.ebi.intact.AUTO_BEGIN_TRANSACTION" ),
 
     /**
+     * If true, do update experiment shortlabels according to IntAct curation manual. Default: true.
+     */
+    AUTO_UPDATE_EXPERIMENT_SHORTLABEL( "uk.ac.ebi.intact.AUTO_UPDATE_EXPERIMENT_SHORTLABEL" ),
+
+    /**
+     * If true, do update interaction shortlabels according to IntAct curation manual. Default: true.
+     */
+    AUTO_UPDATE_INTERACTION_SHORTLABEL( "uk.ac.ebi.intact.AUTO_UPDATE_INTERACTION_SHORTLABEL" ),
+
+    /**
      * If true, debug mode such as memorizing who begin a transaction, ... Should not be true in production environment.
      * Default is false.
      */

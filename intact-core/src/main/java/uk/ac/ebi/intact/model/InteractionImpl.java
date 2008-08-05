@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.IllegalLabelFormatException;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
+import uk.ac.ebi.intact.context.IntactContext;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -265,21 +266,25 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     /**
      * Update the shortlabel based on the data available in the database.
-     * <p/>
-     * Note: this will initialise an IntactContext even if there was none available before calling.
      */
     public void synchronizeShortLabel() {
-        String newShortLabel = null;
-        try {
-            newShortLabel = InteractionUtils.syncShortLabelWithDb(shortLabel);
-        } catch ( IllegalLabelFormatException e) {
-            if (log.isErrorEnabled()) log.error("Interaction with unexpected label, but will be persisted as is: "+this);
-            newShortLabel = shortLabel;
-        }
+        if( IntactContext.currentInstanceExists() ) {
+            if( IntactContext.getCurrentInstance().getConfig().isAutoUpdateInteractionShortlabel() ) {
+                String newShortLabel = null;
+                try {
+                    newShortLabel = InteractionUtils.syncShortLabelWithDb(shortLabel);
+                } catch ( IllegalLabelFormatException e) {
+                    if (log.isErrorEnabled()) log.error("Interaction with unexpected label, but will be persisted as is: "+this);
+                    newShortLabel = shortLabel;
+                }
 
-        if (!shortLabel.equals(newShortLabel)) {
-            if (log.isDebugEnabled()) log.debug("Interaction with label '"+shortLabel+"' renamed '"+newShortLabel+"'" );
-            setShortLabel(newShortLabel);
+                if (!shortLabel.equals(newShortLabel)) {
+                    if (log.isDebugEnabled()) log.debug("Interaction with label '"+shortLabel+"' renamed '"+newShortLabel+"'" );
+                    setShortLabel(newShortLabel);
+                }
+            }
+        } else {
+            log.warn( "There is no IntAct Context initialized, skipping interaction shortlabel synchronization." );
         }
     }
 

@@ -73,6 +73,10 @@ public class IntactConfigurator {
 
     private static final String INITIALIZED_APP_ATT_NAME = IntactConfigurator.class + "_INITIALIZED";
 
+    private static final String DEFAULT_AUTO_UPDATE_EXPERIMENT_SHORTLABEL = Boolean.TRUE.toString();
+
+    private static final String DEFAULT_AUTO_UPDATE_INTERACTION_SHORTLABEL = Boolean.TRUE.toString();
+    
     /**
      * Initializes the fundamental intact parameters, such as data configs, the default prefix,  and default data
      * from the database. Note that it only performs only database read-only, as to write to the database
@@ -109,7 +113,7 @@ public class IntactConfigurator {
                 initParams.add( initParam + "=" + session.getInitParam( initParam ) );
             }
 
-            log.info( "Init Params: " + initParams );
+            if (log.isInfoEnabled()) log.info( "Init Params: " + initParams );
         }
 
         RuntimeConfig config = RuntimeConfig.getCurrentInstance( session );
@@ -158,6 +162,20 @@ public class IntactConfigurator {
         boolean autoBeginTransaction = Boolean.parseBoolean( strAutoBeginTransaction );
         config.setAutoBeginTransaction( autoBeginTransaction );
         log.debug( "Application will auto begin transaction: " + autoBeginTransaction );
+
+        // auto update experiment shortlabel
+        String strAutoUpdateExperimentShortlabel = getInitParamValue( session, IntactEnvironment.AUTO_UPDATE_EXPERIMENT_SHORTLABEL.getFqn(),
+                                                                      DEFAULT_AUTO_UPDATE_EXPERIMENT_SHORTLABEL );
+        boolean autoUpdateExperimentShortlabel = Boolean.parseBoolean( strAutoUpdateExperimentShortlabel );
+        config.setAutoUpdateExperimentShortlabel( autoUpdateExperimentShortlabel );
+        log.debug( "Application will auto update experiment shortlabel: " + autoUpdateExperimentShortlabel );
+
+        // auto update interaction shortlabel
+        String strAutoUpdateInteractionShortlabel = getInitParamValue( session, IntactEnvironment.AUTO_UPDATE_INTERACTION_SHORTLABEL.getFqn(),
+                                                                      DEFAULT_AUTO_UPDATE_INTERACTION_SHORTLABEL );
+        boolean autoUpdateInteractionShortlabel = Boolean.parseBoolean( strAutoUpdateInteractionShortlabel );
+        config.setAutoUpdateInteractionShortlabel( autoUpdateInteractionShortlabel );
+        log.debug( "Application will auto update interaction shortlabel: " + autoUpdateInteractionShortlabel );
 
         // debug mode
         String strDebugMode = getInitParamValue( session, IntactEnvironment.DEBUG_MODE.getFqn(),
@@ -385,8 +403,7 @@ public class IntactConfigurator {
             setInstitutionToBePersisted( session );
         } else {
             // prefetch xrefs
-            institution = daoFactory
-                .getInstitutionDao().getByAc(institution.getAc(), true);
+            institution = daoFactory.getInstitutionDao().getByAc(institution.getAc(), true);
         }
 
         RuntimeConfig.getCurrentInstance( session ).setInstitution( institution );

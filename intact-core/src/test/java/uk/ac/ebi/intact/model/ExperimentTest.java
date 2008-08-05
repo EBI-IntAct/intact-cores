@@ -16,9 +16,13 @@
 package uk.ac.ebi.intact.model;
 
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import org.junit.Test;
 import org.junit.Assert;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -38,4 +42,61 @@ public class ExperimentTest extends IntactBasicTestCase{
         Assert.assertFalse(exp1.equals(exp2));
     }
 
+    @Test
+    public void synchShortlabelDisabled2() throws Exception {
+        final Experiment e1 = getMockBuilder().createExperimentRandom( 1 );
+        e1.setShortLabel( "lala-2008" );
+        Assert.assertEquals( 1, e1.getXrefs().size() );
+        String pmid = e1.getXrefs().iterator().next().getPrimaryId();
+        e1.getPublication().setShortLabel( pmid );
+
+        final Experiment e2 = getMockBuilder().createExperimentRandom( 2 );
+        e2.setShortLabel( "lala-2008" );
+        Assert.assertEquals( 1, e2.getXrefs().size() );
+        e2.getXrefs().iterator().next().setPrimaryId( pmid );
+        e2.getPublication().setShortLabel( pmid );
+
+        getIntactContext().getConfig().setAutoUpdateExperimentShortlabel( false );
+
+        // Careful here, we have to persist the experiment one after the other to ensure that label WOULD are synchronized.
+        PersisterHelper.saveOrUpdate( e1 );
+        PersisterHelper.saveOrUpdate( e2 );
+
+        Assert.assertEquals( 2, getDaoFactory().getExperimentDao().countAll() );
+
+        final Collection<Experiment> exps = getDaoFactory().getExperimentDao().getByShortLabelLike( "lala-2008%" );
+        Assert.assertEquals( 2, exps.size() );
+        for ( Experiment exp : exps ) {
+            Assert.assertEquals("lala-2008", exp.getShortLabel());
+        }
+    }
+
+    @Test
+    public void synchShortlabelEnabled() throws Exception {
+        final Experiment e1 = getMockBuilder().createExperimentRandom( 1 );
+        e1.setShortLabel( "lala-2008" );
+        Assert.assertEquals( 1, e1.getXrefs().size() );
+        String pmid = e1.getXrefs().iterator().next().getPrimaryId();
+        e1.getPublication().setShortLabel( pmid );
+
+        final Experiment e2 = getMockBuilder().createExperimentRandom( 2 );
+        e2.setShortLabel( "lala-2008" );
+        Assert.assertEquals( 1, e2.getXrefs().size() );
+        e2.getXrefs().iterator().next().setPrimaryId( pmid );
+        e2.getPublication().setShortLabel( pmid );
+
+        getIntactContext().getConfig().setAutoUpdateExperimentShortlabel( true );
+
+        // Careful here, we have to persist the experiment one after the other to ensure that label are synchronized.
+        PersisterHelper.saveOrUpdate( e1 );
+        PersisterHelper.saveOrUpdate( e2 );
+
+        Assert.assertEquals( 2, getDaoFactory().getExperimentDao().countAll() );
+
+        final Experiment exp1 = getDaoFactory().getExperimentDao().getByShortLabel( "lala-2008-1" );
+        Assert.assertNotNull( exp1 );
+
+        final Experiment exp2 = getDaoFactory().getExperimentDao().getByShortLabel( "lala-2008-2" );
+        Assert.assertNotNull( exp2 );
+    }
 }

@@ -45,6 +45,16 @@ public final class RuntimeConfig implements Serializable {
     private boolean debugMode;
     private String localCvPrefix;
 
+    /**
+     * Should the intact core take care of updating experiment shortlabels ?
+     */
+    private boolean autoUpdateExperimentShortlabel;
+
+    /**
+     * Should the intact core take care of updating interaction shortlabels ?
+     */
+    private boolean autoUpdateInteractionShortlabel;
+
     private RuntimeConfig( IntactSession session ) {
         this.dataConfigs = new HashMap<String, DataConfig>();
         this.session = session;
@@ -172,5 +182,21 @@ public final class RuntimeConfig implements Serializable {
 
     public void setLocalCvPrefix(String localCvPrefix) {
         this.localCvPrefix = localCvPrefix;
+    }
+
+    public boolean isAutoUpdateExperimentShortlabel() {
+        return autoUpdateExperimentShortlabel;
+    }
+
+    public void setAutoUpdateExperimentShortlabel( boolean autoUpdateExperimentShortlabel ) {
+        this.autoUpdateExperimentShortlabel = autoUpdateExperimentShortlabel;
+    }
+
+    public boolean isAutoUpdateInteractionShortlabel() {
+        return autoUpdateInteractionShortlabel;
+    }
+
+    public void setAutoUpdateInteractionShortlabel( boolean autoUpdateInteractionShortlabel ) {
+        this.autoUpdateInteractionShortlabel = autoUpdateInteractionShortlabel;
     }
 }
