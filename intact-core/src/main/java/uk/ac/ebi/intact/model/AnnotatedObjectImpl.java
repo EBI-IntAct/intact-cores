@@ -126,7 +126,8 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
         this.shortLabel = shortLabel;
     }
 
-    @Column( length = 250 )
+    @Column( length = MAX_FULL_NAME_LEN )
+    @Length( max = MAX_FULL_NAME_LEN )
     public String getFullName() {
         return fullName;
     }

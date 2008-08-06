@@ -20,6 +20,7 @@ public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicO
     static final int RECOMMENDED_SHORT_LABEL_LEN = 20;
 
     static final int MAX_SHORT_LABEL_LEN = 256;
+    static final int MAX_FULL_NAME_LEN = 1000;
 
     String getShortLabel();
 
