@@ -5,6 +5,9 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.persistence.*;
 
 /**
@@ -14,7 +17,8 @@ import javax.persistence.*;
  * Currently, the name of the Alias is set to lowercase.
  * </p>
  *
- * @author hhe, Samuel Kerrien (skerrien@ebi.ac.uk)
+ * @author hhe
+ * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  * @see uk.ac.ebi.intact.model.CvAliasType
  */
@@ -22,7 +26,9 @@ import javax.persistence.*;
 @Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
 public abstract class Alias extends BasicObjectImpl {
 
-    protected static final int MAX_ALIAS_NAME_LEN = 30;
+    private static final Log log = LogFactory.getLog( Alias.class );
+
+    protected static final int MAX_ALIAS_NAME_LEN = 256;
 
     ///////////////////////////////////////
     //attributes
@@ -73,7 +79,7 @@ public abstract class Alias extends BasicObjectImpl {
 
     ///////////////////////////////////////
     //access methods for attributes
-    @Column( length = 30 )
+    @Column( length = MAX_ALIAS_NAME_LEN )
     public String getName() {
         return name;
     }
@@ -82,6 +88,9 @@ public abstract class Alias extends BasicObjectImpl {
 
         if ( name != null ) {
             if ( name.length() >= MAX_ALIAS_NAME_LEN ) {
+                if ( log.isWarnEnabled() ) {
+                    log.warn( "Truncating Alias.name to " + MAX_ALIAS_NAME_LEN + " chars, was "+ name.length() +":" + name );
+                }
                 name = name.substring( 0, MAX_ALIAS_NAME_LEN );
             }
         }
