@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.validator.Length;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
@@ -23,6 +24,8 @@ import javax.persistence.*;
 public class Annotation extends BasicObjectImpl {
 
     private static final Log log = LogFactory.getLog( Annotation.class );
+
+    public static final int MAX_DESCRIPTION_LEN = 4000;
 
     ///////////////////////////////////////
     //attributes
@@ -99,7 +102,8 @@ public class Annotation extends BasicObjectImpl {
 
     ///////////////////////////////////////
     //access methods for attributes
-    @Column( name = "description", length = 4000 )
+    @Column( name = "description", length = MAX_DESCRIPTION_LEN )
+    @Length( max = MAX_DESCRIPTION_LEN )
     public String getAnnotationText() {
         return annotationText;
     }
@@ -192,8 +196,7 @@ public class Annotation extends BasicObjectImpl {
         return "Annotation[type: " + ( cvTopic != null ? cvTopic.getShortLabel() : "" ) +
                ", text: " + annotationText + "]";
     }
-
-} // end Annotation
+}
 
 
 
