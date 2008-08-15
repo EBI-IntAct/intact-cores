@@ -335,7 +335,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         }
         
         Collection elementsToAdd = CollectionUtils.subtract( sourceCol, targetCol );
-        Collection elementsToRemove = CollectionUtils.subtract( sourceCol, targetCol );
+        Collection elementsToRemove = CollectionUtils.subtract( targetCol, sourceCol );
         targetCol.removeAll( elementsToRemove );
         targetCol.addAll( elementsToAdd );
     }
