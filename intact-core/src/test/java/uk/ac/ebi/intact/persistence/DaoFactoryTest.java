@@ -42,7 +42,7 @@ public class DaoFactoryTest extends IntactBasicTestCase {
      */
     @Test
     public void connection_creation() throws Exception {
-        Server server = Server.createTcpServer(new String[0]).start();
+        Server server = Server.createTcpServer(new String[]{"-tcpPort", "9694"}).start();
 
         File hibernateConfigFile = new File(DaoFactoryTest.class.getResource("/META-INF/h2server-hibernate.cfg.xml").getFile());
         IntactContext.initStandaloneContext(hibernateConfigFile);
