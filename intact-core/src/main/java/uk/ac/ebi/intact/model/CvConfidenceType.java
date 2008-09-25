@@ -30,7 +30,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.CvConfidenceType" )
 @EditorTopic
-public class CvConfidenceType extends CvObject{
+public class CvConfidenceType extends CvDagObject{
      /**
      * The constant for undetermined.
      */
