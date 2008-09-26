@@ -11,16 +11,16 @@
     <groupId>uk.ac.ebi.intact.core</groupId>
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
-    <version>1.9.3-SNAPSHOT</version>
+    <version>1.9.3</version>
 
     <name>IntAct Core</name>
     <description>Core Master POM</description>
     <url>http://www.ebi.ac.uk/~intact/devsite/core</url>
 
     <scm>
-        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk</connection>
-        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk</developerConnection>
-        <url>http://svn.sourceforge.net/viewcvs.cgi/intact/repo/core/trunk</url>
+        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/tags/core-1.9.3</connection>
+        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/tags/core-1.9.3</developerConnection>
+        <url>http://svn.sourceforge.net/viewcvs.cgi/intact/repo/core/tags/core-1.9.3</url>
     </scm>
 
     <modules>
