@@ -17,13 +17,15 @@ package uk.ac.ebi.intact.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.Oracle8iDialect;
 import org.hibernate.dialect.Oracle9Dialect;
+import org.hibernate.ejb.HibernateEntityManagerFactory;
+import org.hibernate.engine.SessionFactoryImplementor;
 import uk.ac.ebi.intact.config.hibernate.SequenceAuxiliaryDatabaseObject;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -41,8 +43,9 @@ public class SequenceManager {
     private Dialect dialect;
 
     public SequenceManager(DataConfig dataConfig) {
-        Configuration config = (Configuration) dataConfig.getConfiguration();
-        this.dialect = Dialect.getDialect(config.getProperties());
+        final EntityManagerFactory entityManagerFactory = dataConfig.getEntityManagerFactory();
+        HibernateEntityManagerFactory hemf = (HibernateEntityManagerFactory) entityManagerFactory;
+        this.dialect = ((SessionFactoryImplementor) hemf.getSessionFactory()).getDialect();
     }
 
     /**
