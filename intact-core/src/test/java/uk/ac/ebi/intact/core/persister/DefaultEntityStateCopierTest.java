@@ -16,6 +16,11 @@
 package uk.ac.ebi.intact.core.persister;
 
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.BioSource;
+import uk.ac.ebi.intact.model.InteractionImpl;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
 import org.junit.Test;
 import org.junit.Assert;
 import org.apache.commons.collections.CollectionUtils;
@@ -100,4 +105,71 @@ public class DefaultEntityStateCopierTest extends IntactBasicTestCase {
 
         Assert.assertTrue( CollectionUtils.isEqualCollection(source, target));
     }
+
+
+    @Test
+    public void editBioSource() throws Exception {
+        Assert.assertEquals( 0, getDaoFactory().getBioSourceDao().countAll() );
+
+        Interaction source = getMockBuilder().createInteractionRandomBinary();
+        source.setShortLabel( "binaryTest" );
+        BioSource mouse = getMockBuilder().createBioSource( 10090, "mouse" );
+        source.setBioSource( mouse );
+        Assert.assertNotNull( source.getBioSource() );
+        Assert.assertEquals( "mouse", source.getBioSource().getShortLabel() );
+
+        PersisterHelper.saveOrUpdate( source );
+        Assert.assertEquals( 4, getDaoFactory().getBioSourceDao().countAll() );
+
+        IntactCloner cloner = new IntactCloner();
+        Interaction target = cloner.cloneInteraction( source );
+        Assert.assertNull( target.getAc() );
+        BioSource clonedMouse = cloner.cloneBioSource( mouse );
+        Assert.assertNull( clonedMouse.getAc() );
+        Assert.assertEquals( 4, getDaoFactory().getBioSourceDao().countAll() );
+
+        //same taxid different shortlabel
+        Assert.assertEquals( mouse.getTaxId(), clonedMouse.getTaxId() );
+        clonedMouse.setShortLabel( "mouseUpdated" );
+        Assert.assertNotSame( mouse.getShortLabel(), clonedMouse.getShortLabel() );
+
+        target.setBioSource( clonedMouse );
+
+        //before copying
+        Assert.assertEquals( "mouse", source.getBioSource().getShortLabel() );
+        Assert.assertEquals( "mouseUpdated", target.getBioSource().getShortLabel() );
+
+        DefaultEntityStateCopier copier = new DefaultEntityStateCopier();
+        copier.copyInteractorCommons( source, target );
+
+        //after copying
+        Assert.assertEquals( "mouse", source.getBioSource().getShortLabel() );
+        Assert.assertEquals( "mouse", target.getBioSource().getShortLabel() );
+
+        //copying from source to target successfull as taxid was different and
+
+        //changing the taxid and shortlabel
+
+        mouse.setTaxId( "10091" );
+        mouse.setShortLabel( "mouseUpdatedAgain" );
+        source.setBioSource( mouse );
+        copier.copyInteractorCommons( source, target );
+
+        //After copying again
+        Assert.assertEquals( "mouseUpdatedAgain", source.getBioSource().getShortLabel() );
+        Assert.assertEquals( "mouseUpdatedAgain", target.getBioSource().getShortLabel() );
+
+
+        PersisterHelper.saveOrUpdate( source );
+
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
+        Assert.assertEquals( 4, getDaoFactory().getBioSourceDao().countAll() );
+
+        InteractionImpl interaction = getDaoFactory().getInteractionDao().getAll().iterator().next();
+        Assert.assertEquals( "binarytest", interaction.getShortLabel() );
+        Assert.assertEquals( "mouseupdatedagain", interaction.getBioSource().getShortLabel() );
+
+
+    }
+
 }
