@@ -274,7 +274,8 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
                 try {
                     newShortLabel = InteractionUtils.syncShortLabelWithDb(shortLabel);
                 } catch ( IllegalLabelFormatException e) {
-                    if (log.isErrorEnabled()) log.error("Interaction with unexpected label, but will be persisted as is: "+this);
+                    if (log.isErrorEnabled())
+                        log.error("Interaction with unexpected label, but will be persisted as is: "+this, e);
                     newShortLabel = shortLabel;
                 }
 
