@@ -27,6 +27,7 @@ import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import uk.ac.ebi.intact.model.util.ComponentUtils;
+import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -818,6 +819,70 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(interaction1);
         
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+    }
+
+    @Test
+    public void persist_proteinSmallMoleculeInteraction() throws Exception {
+        Protein p = getMockBuilder().createProtein("P12345", "lala");
+        final SmallMolecule sm = getMockBuilder().createSmallMolecule( "CHEBI:00001", "2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid" );
+
+        Component c1 = getMockBuilder().createComponentBait(sm);
+        Component c2 = getMockBuilder().createComponentPrey(p);
+
+        Interaction interaction1 = getMockBuilder().createInteraction(c1, c2);
+
+        PersisterHelper.saveOrUpdate(interaction1);
+
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        final InteractionImpl interaction = getDaoFactory().getInteractionDao().getAll().get( 0 );
+        Assert.assertEquals("2_{1_[2_(2_amin-lala", interaction.getShortLabel());
+    }
+
+    @Test
+    public void persist_longInteractionShortlabel() throws Exception {
+
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionShortlabel(false);
+
+        Protein p = getMockBuilder().createProtein("P12345", "lala");
+        final SmallMolecule sm = getMockBuilder().createSmallMolecule( "CHEBI:00001", "2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid" );
+
+        Component c1 = getMockBuilder().createComponentBait(sm);
+        Component c2 = getMockBuilder().createComponentPrey(p);
+
+        Interaction interaction1 = getMockBuilder().createInteraction(c1, c2);
+        interaction1.setShortLabel( "2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid-lala" );
+
+        PersisterHelper.saveOrUpdate(interaction1);
+
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        final InteractionImpl interaction = getDaoFactory().getInteractionDao().getAll().get( 0 );
+        Assert.assertEquals("2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid-lala", interaction.getShortLabel());
+
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionShortlabel(false);
+    }
+
+    @Test
+    public void persist_longInteractionShortlabel_autoUpdateShortlabel() throws Exception {
+
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionShortlabel(true);
+
+        Protein p = getMockBuilder().createProtein("P12345", "lala");
+        final SmallMolecule sm = getMockBuilder().createSmallMolecule( "CHEBI:00001", "2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid" );
+
+        Component c1 = getMockBuilder().createComponentBait(sm);
+        Component c2 = getMockBuilder().createComponentPrey(p);
+
+        Interaction interaction1 = getMockBuilder().createInteraction(c1, c2);
+        interaction1.setShortLabel( "2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid-lala" );
+
+        PersisterHelper.saveOrUpdate(interaction1);
+
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        final InteractionImpl interaction = getDaoFactory().getInteractionDao().getAll().get( 0 );
+        Assert.assertEquals("2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid-lala", interaction.getShortLabel());
     }
 
     @Test
