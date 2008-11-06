@@ -6,10 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.ExperimentXref;
-import uk.ac.ebi.intact.model.Institution;
-import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 
 import java.util.List;
@@ -380,7 +377,52 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
     }
 
+    @Test
+    public void addingInteractionsWithSlightlyTheSameExperiment() throws Exception {
+        // this tests that if we add interactions that have the same experiment (different instances),
+        // and have one additional annotation (the new experiments all have the same annotations, but they
+        // have one more than the existing one), they should be the same.
 
+        // this is based in a real case, don't try this at home!
+
+        BioSource organism = getMockBuilder().createBioSourceRandom();
+
+        Experiment tarassov1 = getMockBuilder().createExperimentEmpty("tarassov-2008-1", "12345");
+        tarassov1.setBioSource(organism);
+        tarassov1.setPublication(null);
+        tarassov1.addAnnotation(getMockBuilder().createAnnotation("annot1", CvTopic.AUTHOR_LIST_MI_REF, CvTopic.AUTHOR_LIST));
+
+        Experiment tarassov2 = getMockBuilder().createExperimentEmpty("tarassov-2008-1", "12345");
+        tarassov2.setBioSource(organism);
+        tarassov2.addAnnotation(getMockBuilder().createAnnotation("annot1", CvTopic.AUTHOR_LIST_MI_REF, CvTopic.AUTHOR_LIST));
+        tarassov2.addAnnotation(getMockBuilder().createAnnotation("annot2", CvTopic.AUTHOR_LIST_MI_REF, CvTopic.AUTHOR_LIST));
+
+        Experiment tarassov3 = getMockBuilder().createExperimentEmpty("tarassov-2008-1", "12345");
+        tarassov3.setBioSource(organism);
+        tarassov3.addAnnotation(getMockBuilder().createAnnotation("annot1", CvTopic.AUTHOR_LIST_MI_REF, CvTopic.AUTHOR_LIST));
+        tarassov3.addAnnotation(getMockBuilder().createAnnotation("annot2", CvTopic.AUTHOR_LIST_MI_REF, CvTopic.AUTHOR_LIST));
+
+        PersisterHelper.saveOrUpdate(tarassov1);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(0, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertNotNull(getDaoFactory().getExperimentDao().getByShortLabel("tarassov-2008-1"));
+
+        Interaction interaction1 = getMockBuilder().createInteractionRandomBinary();
+        interaction1.getExperiments().clear();
+        interaction1.addExperiment(tarassov2);
+
+        Interaction interaction2 = getMockBuilder().createInteractionRandomBinary();
+        interaction2.getExperiments().clear();
+        interaction2.addExperiment(tarassov3);
+        
+        PersisterHelper.saveOrUpdate(interaction1, interaction2);
+
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertNotNull(getDaoFactory().getExperimentDao().getByShortLabel("tarassov-2008-1"));
+        Assert.assertNotNull(getDaoFactory().getExperimentDao().getByShortLabel("tarassov-2008-2"));
+    }
 
     private Experiment reloadByAc(Experiment experiment) {
         return getDaoFactory().getExperimentDao().getByAc(experiment.getAc());
