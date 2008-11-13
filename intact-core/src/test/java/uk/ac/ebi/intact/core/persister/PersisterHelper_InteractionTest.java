@@ -15,10 +15,11 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
+import org.junit.Test;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -26,8 +27,6 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.model.util.ComponentUtils;
-import uk.ac.ebi.intact.context.IntactContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -930,6 +929,22 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals("abcdefghi-zxcvbnms-1", interaction2.getShortLabel());
 
         System.out.println(getDaoFactory().getInteractionDao().getAll());
+    }
+
+    @Test
+    public void persist_sameInteractorBaitAndPrey() throws Exception {
+        Interactor interactor = getMockBuilder().createProteinRandom();
+
+        Component bait = getMockBuilder().createComponentBait(interactor);
+        Component prey = getMockBuilder().createComponentPrey(interactor);
+
+        Interaction interaction = getMockBuilder().createInteraction(bait, prey);
+
+        PersisterHelper.saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
     }
 
     private Interaction reloadByAc(Interaction interaction) {
