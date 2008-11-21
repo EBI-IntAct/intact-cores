@@ -22,8 +22,7 @@ import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.persistence.dao.ExperimentDao;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -142,11 +141,22 @@ public class ExperimentUtils {
             if (pubmedId != null) {
                 Collection<Experiment> experiments = experimentDao.getByShortLabelLike(shortLabel+"%");
 
+                //sort the experiments based on shortlabel, otherwise is not giving expected results
+                List<Experiment> sortedExperiments = new ArrayList<Experiment>();
+                sortedExperiments.addAll(experiments);
+
+                Collections.sort(sortedExperiments,new Comparator<Experiment>(){
+                    public int compare(Experiment exp1, Experiment exp2){
+                      return exp1.getShortLabel().compareTo(exp2.getShortLabel());
+                    }
+
+                });
+
                 ExperimentShortlabelGenerator generator = new ExperimentShortlabelGenerator();
 
                 Pattern pattern = Pattern.compile(SYNCED_LABEL_PATTERN);
 
-                for (Experiment exp : experiments) {
+                for (Experiment exp : sortedExperiments) {
                     final String label = exp.getShortLabel();
                     final String expPubId = getPubmedId(exp);
 
