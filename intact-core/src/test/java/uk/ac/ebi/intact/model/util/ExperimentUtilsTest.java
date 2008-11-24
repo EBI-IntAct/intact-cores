@@ -354,43 +354,5 @@ public class ExperimentUtilsTest extends IntactBasicTestCase {
 
     }
 
-    /**
-     * Without sorting gives different result.....similar to the editor shortlabel issue
-     */
-
-    @Test
-    public void shortLabelSynTestWithoutSorting() {
-
-        final String pubId = "18428753";
-        final String expPrefix = "baxevanis-2006";
-
-        MockIntactContext.initMockContext();
-        MockIntactContext.configureMockDaoFactory().setMockExperimentDao(new MockExperimentDao() {
-            @Override
-            public List<Experiment> getByShortLabelLike(String labelLike) {
-                List<Experiment> experiments = Arrays.asList(
-                        getMockBuilder().createExperimentEmpty("baxevanis-2006a-1", "18428394"),
-                        getMockBuilder().createExperimentEmpty("baxevanis-2006-1",  "18428753"),
-                        getMockBuilder().createExperimentEmpty("baxevanis-2006b-1", "18428756"),
-                        getMockBuilder().createExperimentEmpty("baxevanis-2006b-2", "18428756")
-
-                );
-
-                 /*   Collections.sort(experiments,new Comparator<Experiment>(){
-                    public int compare(Experiment exp1, Experiment exp2){
-                      return exp1.getShortLabel().compareTo(exp2.getShortLabel());
-                    }
-
-                });*/
-                return experiments;
-            }
-        });
-
-        String syncedLabel = ExperimentUtils.syncShortLabelWithDb(expPrefix, pubId);
-        Assert.assertEquals("baxevanis-2006a-2", syncedLabel);
-        IntactContext.getCurrentInstance().close();
-
-    }
-
-
+   
 }
