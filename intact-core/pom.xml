@@ -3,14 +3,14 @@
     <parent>
         <groupId>uk.ac.ebi.intact.core</groupId>
         <artifactId>core</artifactId>
-        <version>1.9.5</version>
+        <version>1.9.6-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>intact-core</artifactId>
     <packaging>jar</packaging>
-    <version>1.9.5</version>
+    <version>1.9.6-SNAPSHOT</version>
 
     <name>IntAct Core :: Core</name>
     <url>http://www.ebi.ac.uk/~intact/devsite/${artifactId}</url>
