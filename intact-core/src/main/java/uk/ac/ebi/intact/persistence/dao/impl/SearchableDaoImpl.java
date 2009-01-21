@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.persistence.dao.impl;
 
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
@@ -25,6 +26,7 @@ import uk.ac.ebi.intact.model.AnnotatedObjectImpl;
 import uk.ac.ebi.intact.model.Searchable;
 import uk.ac.ebi.intact.persistence.dao.SearchableDao;
 import uk.ac.ebi.intact.persistence.dao.query.impl.SearchableQuery;
+import uk.ac.ebi.intact.business.IntactException;
 
 import javax.persistence.EntityManager;
 import java.util.*;
@@ -47,12 +49,16 @@ public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl>
                 .createCriteria( searchableClass, getSession() );
         criteria.setProjection( Projections.countDistinct( "ac" ) );
 
-        List<Integer> list = criteria.list();
-
         int count = 0;
 
-        for ( Integer entityCount : list ) {
-            count += entityCount;
+        try {
+            List<Integer> list = criteria.list();
+
+            for ( Integer entityCount : list ) {
+                count += entityCount;
+            }
+        } catch (HibernateException e) {
+            throw new IntactException("Problem counting by query using class "+searchableClass.getName()+" and query: "+query, e);
         }
 
         return count;
