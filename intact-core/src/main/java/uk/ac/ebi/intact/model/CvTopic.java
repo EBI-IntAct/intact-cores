@@ -128,6 +128,10 @@ public class CvTopic extends CvDagObject implements Editable {
     public static final String DATASET = "dataset";
     public static final String DATASET_MI_REF = "MI:0875";
 
+    public static final String INCHI_ID = "inchi id";
+    public static final String INCHI_ID_MI_REF = "MI:2010";
+
+
     /**
      * Cache a Vector of all shortLabels of the class, e.g. for menus. This should not be here as it has no model
      * functionality but is related to eg user interfaces.
