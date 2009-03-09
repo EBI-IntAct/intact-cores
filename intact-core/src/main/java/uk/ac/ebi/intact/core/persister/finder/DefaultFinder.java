@@ -137,14 +137,27 @@ public class DefaultFinder implements Finder {
         Query query;
 
         if (pubId != null) {
-            query = getEntityManager().createQuery("select exp.ac from Experiment exp " +
-                                                   "left join exp.publication as pub " +
-                                                   "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
-                                                   "exp.bioSource.taxId = :taxId and " +
-                                                   "exp.cvIdentification.identifier = :participantDetMethodMi and " +
-                                                   "exp.cvInteraction.identifier = :interactionTypeMi");
+
+            if( experiment.getBioSource() != null ) {
+                query = getEntityManager().createQuery("select exp.ac from Experiment exp " +
+                                                       "left join exp.publication as pub " +
+                                                       "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
+                                                       "exp.bioSource.taxId = :taxId and " +
+                                                       "exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                                                       "exp.cvInteraction.identifier = :interactionTypeMi");
+
+                query.setParameter("taxId", experiment.getBioSource().getTaxId());
+
+            } else {
+
+                query = getEntityManager().createQuery("select exp.ac from Experiment exp " +
+                                                       "left join exp.publication as pub " +
+                                                       "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
+                                                       "exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                                                       "exp.cvInteraction.identifier = :interactionTypeMi");
+            }
+
             query.setParameter("pubId", pubId);
-            query.setParameter("taxId", experiment.getBioSource().getTaxId());
 
             if (experiment.getCvIdentification() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without CvIdentification: "+experiment.getShortLabel());
             if (experiment.getCvInteraction() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without CvInteraction: "+experiment.getShortLabel());
