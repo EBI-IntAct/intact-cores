@@ -286,66 +286,6 @@ public class ExperimentAgitarTest extends AgitarTestCase {
         }
     }
 
-//    public void testEqualsThrowsNullPointerException() throws Throwable {
-//        Experiment experiment = new Experiment( ( Institution ) Mockingbird.getProxyObject( Institution.class ), "testString", null );
-//        Experiment o = ( Experiment ) Mockingbird.getProxyObject( Experiment.class );
-//        Mockingbird.enterRecordingMode();
-//        Mockingbird.setReturnValue( o.getAc(), null );
-//        Mockingbird.setReturnValue( o.getShortLabel(), "testString" );
-//        Mockingbird.setReturnValue( o.getFullName(), null );
-//        Collection arrayList = ( Collection ) Mockingbird.getProxyObject( Collection.class );
-//        Mockingbird.setReturnValue( o.getXrefs(), arrayList );
-//        Mockingbird.setReturnValue( true, CollectionUtils.isEqualCollection( null, arrayList ), true );
-//        Mockingbird.enterTestMode();
-//        try {
-//            experiment.equals( o );
-//            fail( "Expected NullPointerException to be thrown" );
-//        } catch ( NullPointerException ex ) {
-//            assertNull( "ex.getMessage()", ex.getMessage() );
-//            assertThrownBy( Experiment.class, ex );
-//            assertInvoked( o, "getClass" );
-//            assertInvoked( o, "getAc" );
-//            assertInvoked( o, "getShortLabel" );
-//            assertInvoked( o, "getFullName" );
-//            assertInvoked( o, "getXrefs" );
-//        }
-//    }
-
-//    public void testGetShallowCopyThrowsNullPointerException() throws Throwable {
-//        Experiment experiment = ( Experiment ) Mockingbird.getProxyObject( Experiment.class );
-//        Mockingbird.enterRecordingMode();
-//        Mockingbird.setReturnValue( experiment.getOwner(), Mockingbird.getProxyObject( Institution.class ) );
-//        Mockingbird.setReturnValue( experiment.getShortLabel(), null );
-//        Mockingbird.setReturnValue( experiment.getBioSource(), Mockingbird.getProxyObject( BioSource.class ) );
-//        Mockingbird.setConstructorForException( Experiment.class, "uk.ac.ebi.intact.model.Experiment.<init>(uk.ac.ebi.intact.model.Institution,java.lang.String,uk.ac.ebi.intact.model.BioSource)", ( Throwable ) Mockingbird.getProxyObject( NullPointerException.class ) );
-//        Mockingbird.enterTestMode();
-//        try {
-//            Experiment.getShallowCopy( experiment );
-//            fail( "Expected NullPointerException to be thrown" );
-//        } catch ( NullPointerException ex ) {
-//            assertInvoked( experiment, "getOwner" );
-//            assertInvoked( experiment, "getShortLabel" );
-//            assertInvoked( experiment, "getBioSource" );
-//        }
-//    }
-
-    public void testHashCodeThrowsNullPointerException() throws Throwable {
-        Experiment shallowCopy = Experiment.getShallowCopy( new Experiment( null, "testExptLabel", null ) );
-        try {
-            shallowCopy.hashCode();
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( Experiment.class, ex );
-            assertEquals( "shallowCopy.xrefs.size()", 0, shallowCopy.xrefs.size() );
-            assertEquals( "shallowCopy.shortLabel", "testExptLabel", shallowCopy.getShortLabel() );
-            assertNull( "shallowCopy.getBioSource()", shallowCopy.getBioSource() );
-            assertNull( "shallowCopy.ac", shallowCopy.getAc());
-            assertNull( "shallowCopy.fullName", shallowCopy.getFullName());
-            assertNull( "shallowCopy.getPublication()", shallowCopy.getPublication() );
-        }
-    }
-
     public void testSetInteractionsThrowsIllegalArgumentException() throws Throwable {
         Experiment experiment = new Experiment( new Institution( "testExptLabel" ), "testExptLabel", new BioSource( null, "testExptLabel", "-100000" ) );
         try {
