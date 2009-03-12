@@ -349,7 +349,10 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
 
         final Experiment that = ( Experiment ) o;
 
-        if ( !bioSource.equals( that.bioSource ) ) {
+//        if ( !bioSource.equals( that.bioSource ) ) {
+//            return false;
+//        }
+        if ( bioSource!= null ? !bioSource.equals( that.bioSource) : that.bioSource != null ) {
             return false;
         }
         if ( publication != null ? !publication.equals( that.publication ) : that.publication != null ) {
@@ -368,7 +371,8 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 29 * result + bioSource.hashCode();
+//        result = 29 * result + bioSource.hashCode();
+        result = 29 * result + ( bioSource != null ? bioSource.hashCode() : 0 );
         result = 29 * result + ( publication != null ? publication.hashCode() : 0 );
         result = 29 * result + ( cvIdentification != null ? cvIdentification.hashCode() : 0 );
         result = 29 * result + ( cvInteraction != null ? cvInteraction.hashCode() : 0 );
