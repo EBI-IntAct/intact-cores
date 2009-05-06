@@ -649,10 +649,10 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
         final Component component = ( Component ) o;
 
-        /* check cvs and interactor first, and then check the interaction
-        if ( experimentalRole != null && !experimentalRole.equals( component.getCvExperimentalRole() ) ) {
+        // check cvs and interactor first, and then check the interaction
+        if ( !CollectionUtils.isEqualCollection(experimentalRoles, component.getExperimentalRoles()) ) {
             return false;
-        }*/
+        }
         if ( biologicalRole != null && !biologicalRole.equals( component.getCvBiologicalRole() ) ) {
             return false;
         }
@@ -696,9 +696,9 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( interaction != null ) {
             code = code * 29 + interaction.hashCode();
         }
-        /*if ( experimentalRole != null ) {
-            code = code * 29 + experimentalRole.hashCode();
-        }*/
+        for (CvExperimentalRole expRole : experimentalRoles) {
+            code = code * 31 + expRole.hashCode();
+        }
         if ( biologicalRole != null ) {
             code = code * 29 + biologicalRole.hashCode();
         }
