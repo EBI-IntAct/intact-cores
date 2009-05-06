@@ -18,9 +18,9 @@
     <url>http://www.ebi.ac.uk/~intact/devsite/core</url>
 
     <scm>
-        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/tags/core-1.9.3</connection>
-        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/tags/core-1.9.3</developerConnection>
-        <url>http://svn.sourceforge.net/viewcvs.cgi/intact/repo/core/tags/core-1.9.3</url>
+        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk</connection>
+        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/core/trunk</developerConnection>
+        <url>http://svn.sourceforge.net/viewcvs.cgi/intact/repo/core/trunk</url>
     </scm>
 
     <modules>
