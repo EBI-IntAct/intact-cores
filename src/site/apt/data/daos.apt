@@ -1,0 +1,41 @@
+ -----
+ Data Access
+ -----
+
+Hibernate
+
+ Intact Core uses {{{http://www.hibernate.org}Hibernate}} as the persistence engine for the intact model objects.
+
+DaoFactory
+
+ Data Access in IntAct is organized in DAOs (Data Access Objects) which contains the methods
+ to get and persist the objects in the database.
+
+ There is a DAO for every model entity, so we find a DAO for BioSources, another for Experiments
+ and so on. To get the corresponding DAO we use the uk.ac.ebi.intact.persistence.dao.DaoFactory
+ class, which acts as a factory for the DAOs.
+
+ For instance, if we need the ExperimentDao, because we need to get some Experiments from the database,
+ we would do:
+
++-----+
+
+ExperimentDao experimentDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getExperimentDao();
+Experiment myExperiment = experimentDao.getByAc("EBI-141");
+
++-----+
+
+Transactions
+
+ DAO methods need execute within the scope of an IntactTransaction. It is started automatically when instantiating the Dao,
+ but the transaction must be committed in order to update the database.
+
++-----+
+
+ExperimentDao experimentDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getExperimentDao();
+Experiment myExperiment = experimentDao.getByAc("EBI-141");
+...
+
+IntactContext.getCurrentInstance().getDataContext().commitTransaction(); // will throw an IntactException if there are problems
+
++-----+
