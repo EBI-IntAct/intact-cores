@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.UserContext;
 import uk.ac.ebi.intact.core.persistence.dao.ImexExportDao;
@@ -34,7 +34,7 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Component
+@Repository
 @Transactional(readOnly = true)
 public class ImexExportDaoImpl extends HibernateBaseDaoImpl implements ImexExportDao {
 
