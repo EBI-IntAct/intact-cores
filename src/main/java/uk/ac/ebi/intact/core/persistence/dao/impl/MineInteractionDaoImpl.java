@@ -21,8 +21,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.MineInteraction;
 import uk.ac.ebi.intact.core.persistence.dao.MineInteractionDao;
+import uk.ac.ebi.intact.model.MineInteraction;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.List;
  * @since 1.5
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @SuppressWarnings( "unchecked" )
 public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction>
         implements MineInteractionDao {
@@ -48,10 +48,12 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
         super( MineInteraction.class, entityManager, intactSession );
     }
 
+    @Transactional
     public void persist( MineInteraction mineInteraction ) {
         getSession().persist( mineInteraction );
     }
 
+    @Transactional
     public int deleteAll() {
         return getEntityManager().createQuery( "DELETE from MineInteraction" ).executeUpdate();
     }

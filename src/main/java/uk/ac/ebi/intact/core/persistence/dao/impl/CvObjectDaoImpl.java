@@ -35,7 +35,7 @@ import java.util.List;
  * @since <pre>02-May-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @Scope(org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE)
 @SuppressWarnings( "unchecked" )
 public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<T> implements CvObjectDao<T> {

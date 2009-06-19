@@ -14,6 +14,7 @@ import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
@@ -35,6 +36,7 @@ import java.util.*;
 @Repository
 @Qualifier("interactorDao")
 @SuppressWarnings( "unchecked" )
+@Transactional(readOnly = true)
 public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObjectDaoImpl<T> implements InteractorDao<T> {
 
     private static final Log log = LogFactory.getLog( InteractorDaoImpl.class );

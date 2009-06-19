@@ -30,6 +30,7 @@ public class IntactConfiguration {
     private String localCvPrefix;
     private boolean autoUpdateExperimentLabel;
     private boolean autoUpdateInteractionLabel;
+    private boolean skipSchemaCheck;
 
     public IntactConfiguration() {
         // TODO make acPrefix mandatory
@@ -75,5 +76,13 @@ public class IntactConfiguration {
 
     public void setAutoUpdateInteractionLabel(boolean autoUpdateInteractionLabel) {
         this.autoUpdateInteractionLabel = autoUpdateInteractionLabel;
+    }
+
+    public boolean isSkipSchemaCheck() {
+        return skipSchemaCheck;
+    }
+
+    public void setSkipSchemaCheck(boolean skipSchemaCheck) {
+        this.skipSchemaCheck = skipSchemaCheck;
     }
 }

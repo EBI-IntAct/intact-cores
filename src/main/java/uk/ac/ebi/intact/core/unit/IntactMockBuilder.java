@@ -384,6 +384,10 @@ public class IntactMockBuilder {
     }
 
     public Interaction createInteractionRandomBinary() {
+        return createInteractionRandomBinary(null);
+    }
+
+    public Interaction createInteractionRandomBinary(String imexId) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
@@ -395,6 +399,13 @@ public class IntactMockBuilder {
 
         String shortLabel = InteractionUtils.calculateShortLabel(interaction);
         interaction.setShortLabel(shortLabel);
+
+        if (imexId != null) {
+            CvObjectBuilder cvBuilder = new CvObjectBuilder();
+            CvXrefQualifier idQual = cvBuilder.createIdentityCvXrefQualifier(getInstitution());
+            CvDatabase imexDb = createCvObject(CvDatabase.class, CvDatabase.IMEX_MI_REF, CvDatabase.IMEX);
+            interaction.addXref(new InteractorXref(getInstitution(), imexDb, imexId, idQual));
+        }
 
         return interaction;
     }

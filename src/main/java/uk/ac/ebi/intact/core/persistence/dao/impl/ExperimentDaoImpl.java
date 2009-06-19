@@ -12,11 +12,11 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.dao.DaoUtils;
+import uk.ac.ebi.intact.core.persistence.dao.ExperimentDao;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
-import uk.ac.ebi.intact.core.persistence.dao.DaoUtils;
-import uk.ac.ebi.intact.core.persistence.dao.ExperimentDao;
 
 import javax.persistence.EntityManager;
 import java.util.Iterator;
@@ -30,7 +30,7 @@ import java.util.List;
  * @since <pre>26-Apr-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @SuppressWarnings( {"unchecked"} )
 public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implements ExperimentDao {
 

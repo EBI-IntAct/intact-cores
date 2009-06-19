@@ -4,8 +4,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.core.persistence.dao.ComponentDao;
+import uk.ac.ebi.intact.model.Component;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
  * @since <pre>07-jul-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @SuppressWarnings( {"unchecked"} )
 public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implements ComponentDao {
 

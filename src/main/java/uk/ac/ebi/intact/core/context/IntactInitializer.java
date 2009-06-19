@@ -90,7 +90,10 @@ public class IntactInitializer implements ApplicationContextAware{
             log.info("\tSchema version: " + requiredSchemaVersion);
         }
 
-        checkSchemaCompatibility();
+        if (!configuration.isSkipSchemaCheck()) {
+            checkSchemaCompatibility();
+        }
+        
         persistInstitution(defaultInstitution, true);
 
         // persist all institutions

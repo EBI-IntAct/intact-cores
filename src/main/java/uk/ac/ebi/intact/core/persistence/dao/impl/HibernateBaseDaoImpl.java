@@ -13,13 +13,13 @@ import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.model.NotAnEntityException;
-import uk.ac.ebi.intact.core.persistence.dao.BaseDao;
 
 import javax.persistence.*;
 import java.sql.SQLException;
@@ -34,7 +34,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>24-Apr-2006</pre>
  */
-@Transactional
+@Transactional(readOnly = true)
 public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
 
     public static final Log log = LogFactory.getLog( HibernateBaseDaoImpl.class );

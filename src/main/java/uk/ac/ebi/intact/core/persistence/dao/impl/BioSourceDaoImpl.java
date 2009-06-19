@@ -11,8 +11,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.core.persistence.dao.BioSourceDao;
+import uk.ac.ebi.intact.model.BioSource;
 
 import javax.persistence.EntityManager;
 import java.util.Collection;
@@ -23,7 +23,7 @@ import java.util.Collection;
  * @since <pre>09-Jun-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class BioSourceDaoImpl extends AnnotatedObjectDaoImpl<BioSource> implements BioSourceDao {
 
     private static final Log log = LogFactory.getLog( BioSourceDaoImpl.class );

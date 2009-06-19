@@ -214,8 +214,7 @@ public class InteractionUtils {
         }
 
         for ( InteractorXref xref : interaction.getXrefs() ) {
-            CvObjectXref idCvDatabase = CvObjectUtils.getPsiMiIdentityXref( xref.getCvDatabase() );
-            if ( idCvDatabase.getPrimaryId().equals( CvDatabase.IMEX_MI_REF ) ) {
+            if ( CvDatabase.IMEX_MI_REF.equals( xref.getCvDatabase().getIdentifier() ) ) {
                 return xref.getPrimaryId();
             }
         }

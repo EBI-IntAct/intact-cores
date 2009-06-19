@@ -5,16 +5,15 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.Alias;
 import uk.ac.ebi.intact.core.persistence.dao.AliasDao;
+import uk.ac.ebi.intact.model.Alias;
 
 import javax.persistence.EntityManager;
 import java.util.Collection;
-
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.annotation.Scope;
 
 /**
  * TODO comment this
@@ -24,7 +23,7 @@ import org.springframework.context.annotation.Scope;
  * @since <pre>24-Apr-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @Scope(org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE)
 public class AliasDaoImpl<T extends Alias> extends IntactObjectDaoImpl<T> implements AliasDao<T> {
 

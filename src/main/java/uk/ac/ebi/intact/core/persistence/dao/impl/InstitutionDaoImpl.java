@@ -1,13 +1,12 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
-import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.Institution;
-import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
-
-import javax.persistence.EntityManager;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
+import uk.ac.ebi.intact.model.Institution;
+
+import javax.persistence.EntityManager;
 
 /**
  * DAO for institutions
@@ -17,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since <pre>07-jul-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @SuppressWarnings( {"unchecked"} )
 public class InstitutionDaoImpl extends AnnotatedObjectDaoImpl<Institution> implements InstitutionDao {
 

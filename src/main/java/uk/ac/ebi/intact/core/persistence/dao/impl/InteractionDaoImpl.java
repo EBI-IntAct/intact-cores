@@ -12,15 +12,15 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
+import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
-import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.InteractorXref;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
-import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
-import uk.ac.ebi.intact.core.IntactException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -34,7 +34,7 @@ import java.util.*;
  * @since <pre>03-May-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @SuppressWarnings( {"unchecked"} )
 public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> implements InteractionDao {
 

@@ -46,6 +46,7 @@ public class DaoFactory implements Serializable {
     @Autowired FeatureDao featureDao;
     @Autowired ImexImportDao imexImportDao;
     @Autowired ImexImportPublicationDao imexImportPublicationDao;
+    @Autowired ImexExportDao imexExportDao;
     @Autowired InstitutionDao institutionDao;
     @Autowired InteractionDao interactionDao;
     @Autowired InteractionParameterDao interactionParameterDao;
@@ -149,6 +150,10 @@ public class DaoFactory implements Serializable {
      */
     public ImexImportPublicationDao getImexImportPublicationDao() {
         return imexImportPublicationDao;
+    }
+
+    public ImexExportDao getImexExportDao() {
+        return imexExportDao;
     }
 
     public InstitutionDao getInstitutionDao() {

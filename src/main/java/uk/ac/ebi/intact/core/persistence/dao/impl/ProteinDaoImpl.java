@@ -16,8 +16,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.core.persistence.dao.ProteinDao;
+import uk.ac.ebi.intact.model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -31,7 +31,7 @@ import java.util.*;
  * @since <pre>03-May-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @SuppressWarnings( {"unchecked"} )
 public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements ProteinDao {
 

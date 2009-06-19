@@ -19,9 +19,9 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.dao.ImexImportDao;
 import uk.ac.ebi.intact.model.meta.ImexImport;
 import uk.ac.ebi.intact.model.meta.ImexImportActivationType;
-import uk.ac.ebi.intact.core.persistence.dao.ImexImportDao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -34,7 +34,7 @@ import java.util.List;
  * @version $Id$
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class ImexImportDaoImpl extends HibernateBaseDaoImpl<ImexImport> implements ImexImportDao {
 
     public ImexImportDaoImpl() {

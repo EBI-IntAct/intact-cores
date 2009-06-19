@@ -157,6 +157,15 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
         return sb.toString();
     }
 
+    @Column(name="shortLabel", insertable = false, updatable = false)
+    public String getPublicationId() {
+        return shortLabel;
+    }
+
+    public void setPublicationId(String publicationId) {
+        this.shortLabel = publicationId;
+    }
+
     @Override
     public boolean equals( Object o ) {
         if ( this == o ) {

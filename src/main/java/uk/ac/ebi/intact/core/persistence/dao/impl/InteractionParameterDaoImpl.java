@@ -15,14 +15,13 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
-import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.InteractionParameter;
-import uk.ac.ebi.intact.core.persistence.dao.InteractionParameterDao;
-
-import javax.persistence.EntityManager;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.dao.InteractionParameterDao;
+import uk.ac.ebi.intact.model.InteractionParameter;
+
+import javax.persistence.EntityManager;
 
 /**
  * Data Access Object for Interaction parameter.
@@ -32,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.9.0
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class InteractionParameterDaoImpl extends IntactObjectDaoImpl<InteractionParameter> implements InteractionParameterDao {
 
     public InteractionParameterDaoImpl() {

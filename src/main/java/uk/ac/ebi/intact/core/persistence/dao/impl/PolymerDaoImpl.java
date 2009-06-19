@@ -39,7 +39,7 @@ import java.util.List;
  */
 @Repository
 @Scope(org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE)
-@Transactional
+@Transactional(readOnly = true)
 @SuppressWarnings( {"unchecked"} )
 public class PolymerDaoImpl<T extends PolymerImpl> extends InteractorDaoImpl<T> implements PolymerDao<T> {
 

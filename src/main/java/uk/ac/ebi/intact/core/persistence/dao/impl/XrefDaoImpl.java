@@ -5,16 +5,15 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.Xref;
 import uk.ac.ebi.intact.core.persistence.dao.XrefDao;
+import uk.ac.ebi.intact.model.Xref;
 
 import javax.persistence.EntityManager;
 import java.util.Collection;
-
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.annotation.Scope;
 
 /**
  * TODO comment this
@@ -24,7 +23,7 @@ import org.springframework.context.annotation.Scope;
  * @since <pre>03-May-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @Scope(org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE)
 public class XrefDaoImpl<T extends Xref> extends IntactObjectDaoImpl<T> implements XrefDao<T> {
 

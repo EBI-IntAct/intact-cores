@@ -1,13 +1,12 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
-import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.Range;
-import uk.ac.ebi.intact.core.persistence.dao.RangeDao;
-
-import javax.persistence.EntityManager;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.dao.RangeDao;
+import uk.ac.ebi.intact.model.Range;
+
+import javax.persistence.EntityManager;
 
 /**
  * DAO for ranges
@@ -17,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since <pre>07-jul-2006</pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class RangeDaoImpl extends IntactObjectDaoImpl<Range> implements RangeDao {
 
     public RangeDaoImpl() {

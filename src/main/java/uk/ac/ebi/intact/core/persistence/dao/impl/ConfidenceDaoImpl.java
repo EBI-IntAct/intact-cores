@@ -15,14 +15,13 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
-import uk.ac.ebi.intact.model.Confidence;
-import uk.ac.ebi.intact.core.persistence.dao.ConfidenceDao;
-import uk.ac.ebi.intact.core.context.IntactSession;
-
-import javax.persistence.EntityManager;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.dao.ConfidenceDao;
+import uk.ac.ebi.intact.model.Confidence;
+
+import javax.persistence.EntityManager;
 
 /**
  * TODO comment that class header
@@ -35,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  *        </pre>
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class ConfidenceDaoImpl  extends IntactObjectDaoImpl<Confidence> implements ConfidenceDao {
 
     public ConfidenceDaoImpl() {

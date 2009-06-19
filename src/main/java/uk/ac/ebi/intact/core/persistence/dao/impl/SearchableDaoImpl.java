@@ -23,12 +23,12 @@ import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.AnnotatedObjectImpl;
-import uk.ac.ebi.intact.model.Searchable;
 import uk.ac.ebi.intact.core.persistence.dao.SearchableDao;
 import uk.ac.ebi.intact.core.persistence.dao.query.impl.SearchableQuery;
-import uk.ac.ebi.intact.core.IntactException;
+import uk.ac.ebi.intact.model.AnnotatedObjectImpl;
+import uk.ac.ebi.intact.model.Searchable;
 
 import javax.persistence.EntityManager;
 import java.util.*;
@@ -41,7 +41,7 @@ import java.util.*;
  * @since 1.5
  */
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl> implements SearchableDao {
 
     public SearchableDaoImpl( ) {
