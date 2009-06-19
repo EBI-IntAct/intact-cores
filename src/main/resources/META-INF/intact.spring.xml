@@ -19,7 +19,7 @@
     <!--<context:load-time-weaver />-->
 
     <!--- IntAct -->
-    <bean class="uk.ac.ebi.intact.core.config.SchemaVersion">
+    <bean id="schemaVersion" class="uk.ac.ebi.intact.core.config.SchemaVersion">
         <constructor-arg value="2"/>
         <constructor-arg value="0"/>
         <constructor-arg value="0"/>
