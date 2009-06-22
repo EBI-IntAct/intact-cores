@@ -212,9 +212,9 @@ public class IntactContext implements DisposableBean, Serializable {
     public Institution getInstitution() throws IntactException {
         Institution institution = config.getDefaultInstitution();
 
-//        if (institution.getAc() != null && getDataContext().getDaoFactory().getInstitutionDao().isTransient(institution)) {
-//            institution = getDataContext().getDaoFactory().getInstitutionDao().getByAc(institution.getAc());
-//        }
+        if (institution.getAc() != null && getDataContext().getDaoFactory().getInstitutionDao().isTransient(institution)) {
+            institution = getDataContext().getDaoFactory().getInstitutionDao().getByAc(institution.getAc());
+        }
 
         return institution;
     }
