@@ -557,8 +557,6 @@ public class IntactCloner {
             ao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
                     .getAnnotatedObjectDao(clazz).getByAc(ac);
 
-            System.out.println(ao.getAnnotations());
-
             if (ao == null) {
                 throw new IllegalStateException("Annotated object was expected to be found: "+clazz.getSimpleName()+" "+ac);
             }
