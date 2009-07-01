@@ -59,6 +59,11 @@ public class InteractorImpl extends AnnotatedObjectImpl<InteractorXref, Interact
      */
     private Collection<Component> activeInstances = new ArrayList<Component>();
 
+    /**
+     * TODO comments
+     */
+    private Collection<Product> products; // not implemented yet.
+
 
     /**
      * no-arg constructor provided for compatibility with subclasses that have no-arg constructors.
@@ -181,6 +186,35 @@ public class InteractorImpl extends AnnotatedObjectImpl<InteractorXref, Interact
         if ( removed ) {
             component.setInteractor( null );
         }
+    }
+
+    public void setProducts( Collection<Product> someProduct ) {
+        this.products = someProduct;
+        throw new UnsupportedOperationException();
+    }
+
+    @Transient
+    public Collection<Product> getProducts() {
+        // return products;
+        throw new UnsupportedOperationException();
+    }
+
+    public void addProduct( Product product ) {
+        if ( !this.products.contains( product ) ) {
+            this.products.add( product );
+            product.setInteractor( this );
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    public void removeProduct( Product product ) {
+        boolean removed = this.products.remove( product );
+        if ( removed ) {
+            product.setInteractor( null );
+        }
+
+        throw new UnsupportedOperationException();
     }
 
     public void setCvInteractorType( CvInteractorType type ) {

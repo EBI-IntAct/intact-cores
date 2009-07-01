@@ -19,22 +19,15 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.annotation.Scope;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.Finder;
-import uk.ac.ebi.intact.core.persister.FinderException;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.util.*;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
-import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.persistence.dao.InteractorDao;
-import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
-import uk.ac.ebi.intact.core.config.IntactConfiguration;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.persistence.dao.InteractorDao;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -48,19 +41,13 @@ import java.util.List;
  * @version $Id$
  * @since 1.8.0
  */
-@org.springframework.stereotype.Component
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DefaultFinder implements Finder {
-
-    @Autowired
-    private IntactConfiguration config;
 
     /**
      * Sets up a logger for that class.
      */
     private static final Log log = LogFactory.getLog( DefaultFinder.class );
 
-    @Transactional
     public String findAc( AnnotatedObject annotatedObject ) {
         String ac;
 
@@ -68,30 +55,26 @@ public class DefaultFinder implements Finder {
             return annotatedObject.getAc();
         }
 
-        try {
-            if ( annotatedObject instanceof Institution ) {
-                ac = findAcForInstitution( ( Institution ) annotatedObject );
-            } else if ( annotatedObject instanceof Publication ) {
-                ac = findAcForPublication( ( Publication ) annotatedObject );
-            } else if ( annotatedObject instanceof CvObject ) {
-                ac = findAcForCvObject( ( CvObject ) annotatedObject );
-            } else if ( annotatedObject instanceof Experiment ) {
-                ac = findAcForExperiment( ( Experiment ) annotatedObject );
-            } else if ( annotatedObject instanceof Interaction ) {
-                ac = findAcForInteraction( ( Interaction ) annotatedObject );
-            } else if ( annotatedObject instanceof Interactor ) {
-                ac = findAcForInteractor( ( InteractorImpl ) annotatedObject );
-            } else if ( annotatedObject instanceof BioSource ) {
-                ac = findAcForBioSource( ( BioSource ) annotatedObject );
-            } else if ( annotatedObject instanceof Component ) {
-                ac = findAcForComponent( ( Component ) annotatedObject );
-            } else if ( annotatedObject instanceof Feature ) {
-                ac = findAcForFeature( ( Feature ) annotatedObject );
-            } else {
-                throw new IllegalArgumentException( "Cannot find Ac for type: " + annotatedObject.getClass().getName() );
-            }
-        } catch (Throwable t) {
-            throw new FinderException("Unable to find AC for "+annotatedObject.getClass().getSimpleName()+": "+annotatedObject, t); 
+        if ( annotatedObject instanceof Institution ) {
+            ac = findAcForInstitution( ( Institution ) annotatedObject );
+        } else if ( annotatedObject instanceof Publication ) {
+            ac = findAcForPublication( ( Publication ) annotatedObject );
+        } else if ( annotatedObject instanceof CvObject ) {
+            ac = findAcForCvObject( ( CvObject ) annotatedObject );
+        } else if ( annotatedObject instanceof Experiment ) {
+            ac = findAcForExperiment( ( Experiment ) annotatedObject );
+        } else if ( annotatedObject instanceof Interaction ) {
+            ac = findAcForInteraction( ( Interaction ) annotatedObject );
+        } else if ( annotatedObject instanceof Interactor ) {
+            ac = findAcForInteractor( ( InteractorImpl ) annotatedObject );
+        } else if ( annotatedObject instanceof BioSource ) {
+            ac = findAcForBioSource( ( BioSource ) annotatedObject );
+        } else if ( annotatedObject instanceof Component ) {
+            ac = findAcForComponent( ( Component ) annotatedObject );
+        } else if ( annotatedObject instanceof Feature ) {
+            ac = findAcForFeature( ( Feature ) annotatedObject );
+        } else {
+            throw new IllegalArgumentException( "Cannot find Ac for type: " + annotatedObject.getClass().getName() );
         }
 
         return ac;
@@ -362,7 +345,7 @@ public class DefaultFinder implements Finder {
      * @return
      */
     private boolean xrefPointsToOwnAc(Xref xref) {
-        if (xref.getPrimaryId().startsWith(config.getAcPrefix())) {
+        if (xref.getPrimaryId().startsWith(IntactContext.getCurrentInstance().getConfig().getAcPrefix())) {
             return true;
         } else {
             for (InstitutionXref institutionXref : IntactContext.getCurrentInstance().getInstitution().getXrefs()) {
@@ -459,7 +442,6 @@ public class DefaultFinder implements Finder {
         return value;
     }
 
-    @Transactional
     private String getFirstAcForQuery( Query query, AnnotatedObject ao ) {
         List<String> results = query.getResultList();
         String ac = null;

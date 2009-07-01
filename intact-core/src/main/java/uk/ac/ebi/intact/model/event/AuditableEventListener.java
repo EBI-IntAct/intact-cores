@@ -7,11 +7,7 @@ package uk.ac.ebi.intact.model.event;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ConfigurableApplicationContext;
-import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.context.UserContext;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.Auditable;
 
 import javax.persistence.PrePersist;
@@ -45,6 +41,9 @@ public class AuditableEventListener {
                 auditable.setCreated(now);
             }
             auditable.setUpdated(now);
+
+            // Note: in this method we cannot assume that there is an instance of IntactContext running,
+            // as it could be called during IntAct initialization (IntactConfigurator)
 
             String currentUser = "INTACT";
 

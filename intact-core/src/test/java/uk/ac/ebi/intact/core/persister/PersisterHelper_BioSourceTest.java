@@ -21,17 +21,17 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase
         PersisterHelper.saveOrUpdate( bs1 );
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
-        Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(7, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(14, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(6, getDaoFactory().getXrefDao().countAll());
 
         BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
         PersisterHelper.saveOrUpdate( bs2 );
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
-        Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(7, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(14, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(6, getDaoFactory().getXrefDao().countAll());
     }
 
     @Test
@@ -40,20 +40,18 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase
         PersisterHelper.saveOrUpdate( bs1 );
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
-        Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(7, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(14, getDaoFactory().getXrefDao().countAll());
-
-        getEntityManager().clear();
+        Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(6, getDaoFactory().getXrefDao().countAll());
 
         BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
         bs2.setCvTissue(getMockBuilder().createCvObject(CvTissue.class, "IA:xxxx", "blood"));
         PersisterHelper.saveOrUpdate( bs2 );
 
         Assert.assertEquals(2, getDaoFactory().getBioSourceDao().countAll());
-        Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(8, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(16, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
+        Assert.assertEquals(5, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(8, getDaoFactory().getXrefDao().countAll());
     }
 
     @Test

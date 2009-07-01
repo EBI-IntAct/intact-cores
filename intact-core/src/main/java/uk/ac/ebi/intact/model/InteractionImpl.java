@@ -14,11 +14,12 @@ import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.IllegalLabelFormatException;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.context.IntactContext;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Represents an interaction.
@@ -61,6 +62,11 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
      * Participant in this interaction.
      */
     private Collection<Component> components; // initialized via constructor
+
+    /**
+     * Product of this interaction (NOTE IMPLEMENTED YET).
+     */
+    private Collection<Product> released; // mapping not implemented yet
 
     /**
      * Experiments that have detected this interactions.
@@ -263,7 +269,7 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
      */
     public void synchronizeShortLabel() {
         if( IntactContext.currentInstanceExists() ) {
-            if( IntactContext.getCurrentInstance().getConfig().isAutoUpdateInteractionLabel() ) {
+            if( IntactContext.getCurrentInstance().getConfig().isAutoUpdateInteractionShortlabel() ) {
                 String newShortLabel = null;
                 try {
                     newShortLabel = InteractionUtils.syncShortLabelWithDb(shortLabel);
@@ -324,6 +330,29 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
         boolean removed = this.components.remove( component );
         if ( removed ) {
             component.setInteraction( null );
+        }
+    }
+
+    public void setReleased( Collection<Product> someReleased ) {
+        this.released = someReleased;
+    }
+
+    @Transient
+    public Collection<Product> getReleased() {
+        return released;
+    }
+
+    public void addReleased( Product product ) {
+        if ( !this.released.contains( product ) ) {
+            this.released.add( product );
+            product.setInteraction( this );
+        }
+    }
+
+    public void removeReleased( Product product ) {
+        boolean removed = this.released.remove( product );
+        if ( removed ) {
+            product.setInteraction( null );
         }
     }
 

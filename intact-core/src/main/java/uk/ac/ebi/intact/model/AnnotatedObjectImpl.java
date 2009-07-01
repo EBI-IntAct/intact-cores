@@ -379,7 +379,7 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName()+"{"+this.getAc() + "; owner=" +  (this.getOwner() == null? null : this.getOwner().getAc())
-               + "; name=" + this.shortLabel + "; fullname=" + fullName+"}";
+        return this.getAc() + "; owner=" + this.getOwner().getAc()
+               + "; name=" + this.shortLabel + "; fullname=" + fullName;
     }
 }

@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.model;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 
@@ -75,7 +74,6 @@ public class InteractorImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    @DirtiesContext
     public void synchShortlabelEnabled() throws Exception {
 
         final Protein baitProtein = getMockBuilder().createProtein( "P12345", "bait" );
@@ -84,7 +82,7 @@ public class InteractorImplTest extends IntactBasicTestCase {
         final Protein preyProtein = getMockBuilder().createProtein( "P12345", "prey" );
         final Component prey = getMockBuilder().createComponentBait( preyProtein );
 
-        getIntactContext().getConfig().setAutoUpdateInteractionLabel( true );
+        getIntactContext().getConfig().setAutoUpdateInteractionShortlabel( true );
         
         final Interaction interaction1 = getMockBuilder().createInteraction( bait, prey );
         interaction1.setShortLabel( "bait-prey" );
@@ -104,7 +102,6 @@ public class InteractorImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    @DirtiesContext
     public void synchShortlabelDisabled() throws Exception {
 
         final Protein baitProtein = getMockBuilder().createProtein( "P12345", "bait" );
@@ -113,7 +110,7 @@ public class InteractorImplTest extends IntactBasicTestCase {
         final Protein preyProtein = getMockBuilder().createProtein( "P12345", "prey" );
         final Component prey = getMockBuilder().createComponentBait( preyProtein );
 
-        getIntactContext().getConfig().setAutoUpdateInteractionLabel( false );
+        getIntactContext().getConfig().setAutoUpdateInteractionShortlabel( false );
 
         final String label = "bait-prey";
         

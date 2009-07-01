@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+    <title>uk.ac.ebi.intact.business package</title>
+
+</head>
+<body bgcolor="white">
+
+This package contains the helper class which allows clients to access the business tier
+for intact. Specifically the {@link uk.ac.ebi.intact.business.IntactHelper} class provides the core functionality
+of creation and search, and this class in turn access the business layer via the use of a
+Data Access Object (DAO) interface for obtaining connections, managing transactions and so
+on.
+<p>
+    The <code>IntactHelper</code> class also provides a method to obtain the nearest neighbour
+    objects of a given object, thereby avoiding the overhead of a database connection when it
+    is known that only the nearest neighbours are required. As mentioned elsewhere, these are
+    automatically loaded into memory for each individual object search in order to optimise
+    castor lazy loading. The searching itself is managed with the help of a map of simple intact
+    classnames to full java classnames, which allows other objects (such as the {@link uk.ac.ebi.intact.persistence.DAO}
+    object) to build approrpriate object queries. The map itself is provided to the <code>ItactHelper</code>
+    class upon instance creation.
+
+<p>
+
+
+<h2>Package Specification</h2>
+
+(none)
+
+
+<h2>Related Documentation </h2>
+
+The following classes are used by the <code>IntactHelper</code> class:
+<ul>
+    <li>{@link uk.ac.ebi.intact.persistence.DAO}
+    <li>{@link uk.ac.ebi.intact.persistence.DAOSource}
+</ul>
+
+
+@since JDK1.1
+
+
+</body>
+</html>

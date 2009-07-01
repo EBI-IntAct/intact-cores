@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactUnit;
 import uk.ac.ebi.intact.core.util.SchemaUtils;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 

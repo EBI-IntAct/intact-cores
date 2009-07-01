@@ -14,7 +14,7 @@ import org.hibernate.engine.SessionImplementor;
 import org.hibernate.id.SequenceGenerator;
 import org.hibernate.type.Type;
 import org.hibernate.util.PropertiesHelper;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.context.IntactContext;
 
 import java.io.Serializable;
 import java.util.Properties;

@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -74,7 +74,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
     public void allPersistedWithFeature() throws Exception {
         IntactMockBuilder builder = getMockBuilder();
         IntactEntry intactEntry = builder.createIntactEntryRandom(2, 2, 2);
-        Assert.assertEquals( "unknown", builder.getInstitution().getShortLabel() );
+        Assert.assertEquals( "intact", builder.getInstitution().getShortLabel() );
         getIntactContext().getConfig().setAcPrefix( "IA" );
 
         // add extra features/ranges on components
@@ -95,12 +95,12 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         // having already persisted an entry in the database, we will persist an other one.
         // That involves reusing CV terms, Institution...
-        Assert.assertEquals( 4, getDaoFactory().getInstitutionDao().getAll().size() );
-        final Institution intact1 = getDaoFactory().getInstitutionDao().getByShortLabel( "unknown" );
-        final Institution intact2 = getDaoFactory().getInteractionDao().getAll().iterator().next().getOwner();
+        Assert.assertEquals( 2, getDaoFactory().getInstitutionDao().getAll().size() );
+        final Institution intact1 = getDaoFactory().getInstitutionDao().getByShortLabel( "intact" );
+        final Institution intact2 = getDaoFactory().getAnnotatedObjectDao().getAll().iterator().next().getOwner();
         Assert.assertEquals( intact1, intact2 );
 
-        Assert.assertEquals( 23, getDaoFactory().getCvObjectDao().getAll().size() );
+        Assert.assertEquals( 21, getDaoFactory().getCvObjectDao().getAll().size() );
         Assert.assertEquals( 4, getDaoFactory().getInteractionDao().getAll().size() );
 
         intactEntry = builder.createIntactEntryRandom(2, 2, 2);
@@ -178,7 +178,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals( 1, reloadedInteraction.getConfidences().size() );
         Assert.assertEquals( confidence, reloadedInteraction.getConfidences().iterator().next() );
 
-
+        getDataContext().beginTransaction();
 
         CvConfidenceType cvConfidenceType = builder.createCvObject( CvConfidenceType.class, "IA:997", "testShortLabel" );
         confidence.setCvConfidenceType( cvConfidenceType );
@@ -187,7 +187,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         getDaoFactory().getConfidenceDao().persist( confidence);
 
 
-
+        getDataContext().commitTransaction();
 
         Interaction reloadedInteraction2 = getDaoFactory().getInteractionDao().getByAc( interaction.getAc() );
         Assert.assertEquals( reloadedInteraction, reloadedInteraction2 );
@@ -251,7 +251,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate( reloadedInteraction );
         
         
-        //
+        //getDataContext().beginTransaction();
 
         CvParameterType cvParameterType = builder.createCvObject( CvParameterType.class, "JB:666", "testShortLabel" );
         interactionParameter.setCvParameterType( cvParameterType );
@@ -260,7 +260,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         getDaoFactory().getInteractionParameterDao().persist( interactionParameter);
 
 
-        //
+        //getDataContext().commitTransaction();
 
         Interaction reloadedInteraction2 = getDaoFactory().getInteractionDao().getByAc( interaction.getAc() );
         Assert.assertEquals( reloadedInteraction, reloadedInteraction2 );
@@ -286,7 +286,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Interaction reloadedInteraction = getDaoFactory().getInteractionDao()
                 .getByShortLabel(interaction.getShortLabel());
 
-        Assert.assertEquals(5, getDaoFactory().getInstitutionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInstitutionDao().countAll());
         Assert.assertEquals(ownerName, reloadedInstitution.getShortLabel());
         Assert.assertEquals(ownerName, reloadedInteraction.getOwner().getShortLabel());
     }
@@ -302,7 +302,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         PersisterHelper.saveOrUpdate(interaction);
 
-        Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInstitutionDao().countAll());
     }
 
     @Test
@@ -316,7 +316,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         PersisterHelper.saveOrUpdate(interaction);
 
-        Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInstitutionDao().countAll());
     }
 
 
@@ -559,8 +559,10 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
         clonedInteraction.setExperiments(interaction.getExperiments());
 
-        getPersisterHelper().getCorePersister().setUpdateWithoutAcEnabled(true);
-        PersisterStatistics stats2 = getPersisterHelper().save(clonedInteraction);
+        CorePersister corePersister = new CorePersister();
+        corePersister.setUpdateWithoutAcEnabled(true);
+
+        PersisterStatistics stats2 = PersisterHelper.saveOrUpdate(corePersister, clonedInteraction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals("fooprey-barbait", getDaoFactory().getInteractionDao().getByAc(clonedInteraction.getAc()).getShortLabel());
@@ -573,8 +575,10 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Interaction clonedInteraction2 = (Interaction) ((InteractionImpl)interaction).clone();
         clonedInteraction2.setExperiments(interaction.getExperiments());
 
-        getPersisterHelper().getCorePersister().setUpdateWithoutAcEnabled(false);
-        PersisterStatistics stats3 = getPersisterHelper().save(clonedInteraction2);
+        CorePersister corePersister2 = new CorePersister();
+        corePersister2.setUpdateWithoutAcEnabled(false);
+
+        PersisterStatistics stats3 = PersisterHelper.saveOrUpdate(corePersister2, clonedInteraction2);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals("fooprey-barbait", getDaoFactory().getInteractionDao().getByAc(clonedInteraction2.getAc()).getShortLabel());
@@ -693,6 +697,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(interaction1);
 
         getDaoFactory().getEntityManager().clear();
+        getDaoFactory().getEntityManager().close();
 
         final IntactCloner intactCloner = new IntactCloner();
         intactCloner.setExcludeACs(true);
@@ -836,7 +841,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
     @Test
     public void persist_longInteractionShortlabel() throws Exception {
 
-        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionLabel(false);
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionShortlabel(false);
 
         Protein p = getMockBuilder().createProtein("P12345", "lala");
         final SmallMolecule sm = getMockBuilder().createSmallMolecule( "CHEBI:00001", "2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid" );
@@ -854,13 +859,13 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         final InteractionImpl interaction = getDaoFactory().getInteractionDao().getAll().get( 0 );
         Assert.assertEquals("2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid-lala", interaction.getShortLabel());
 
-        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionLabel(false);
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionShortlabel(false);
     }
 
     @Test
     public void persist_longInteractionShortlabel_autoUpdateShortlabel() throws Exception {
 
-        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionLabel(true);
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateInteractionShortlabel(true);
 
         Protein p = getMockBuilder().createProtein("P12345", "lala");
         final SmallMolecule sm = getMockBuilder().createSmallMolecule( "CHEBI:00001", "2-{1-[2-(2-amino-thiazol-4-yl)-2-methoxyimino-acetylamino]-2-oxo-ethyl}-5,5-dimethyl-thiazolidine-4-carboxylic acid" );

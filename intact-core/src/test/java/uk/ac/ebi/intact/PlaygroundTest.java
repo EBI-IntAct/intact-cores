@@ -3,11 +3,23 @@ package uk.ac.ebi.intact;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hibernate.dialect.H2Dialect;
+import org.junit.Ignore;
 import org.junit.Test;
+import uk.ac.ebi.intact.context.DataContext;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.util.SchemaUtils;
 import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.model.InteractionImpl;
 import uk.ac.ebi.intact.model.Protein;
+import uk.ac.ebi.intact.model.util.CrcCalculator;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * TODO comment this

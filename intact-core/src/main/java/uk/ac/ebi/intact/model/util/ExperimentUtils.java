@@ -17,10 +17,10 @@ package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.core.IntactException;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.business.IntactException;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.core.persistence.dao.ExperimentDao;
+import uk.ac.ebi.intact.persistence.dao.ExperimentDao;
 
 import java.util.*;
 import java.util.regex.Matcher;

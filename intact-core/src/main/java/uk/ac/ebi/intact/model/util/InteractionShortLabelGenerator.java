@@ -17,8 +17,8 @@ package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.core.IntactException;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.business.IntactException;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.util.SearchReplace;
 
@@ -73,7 +73,7 @@ public class InteractionShortLabelGenerator {
      * 4. bait(), prey(paaa), neutral(naaa) should gives us: paaa-naaa-1
      *
      * @param interaction
-     * @throws uk.ac.ebi.intact.core.IntactException
+     * @throws uk.ac.ebi.intact.business.IntactException
      *
      * @since 1.6
      */
@@ -204,7 +204,7 @@ public class InteractionShortLabelGenerator {
      * @param failOnError if <code>true</code> throw an IntactException when no gene name is found, if
      *                    <code>false</code> sends back <code>null</code>.
      * @return either a String or null according to the failOnError parameter.
-     * @throws uk.ac.ebi.intact.core.IntactException
+     * @throws uk.ac.ebi.intact.business.IntactException
      *          thrown when the failOnError parameter is true and no string can be returned.
      */
     private static String getLabelFromCollection( Collection<String> geneNames, boolean failOnError ) throws IntactException {

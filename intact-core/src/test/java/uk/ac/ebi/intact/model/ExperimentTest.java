@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -55,7 +56,7 @@ public class ExperimentTest extends IntactBasicTestCase{
         e2.getXrefs().iterator().next().setPrimaryId( pmid );
         e2.getPublication().setShortLabel( pmid );
 
-        getIntactContext().getConfig().setAutoUpdateExperimentLabel( false );
+        getIntactContext().getConfig().setAutoUpdateExperimentShortlabel( false );
 
         // Careful here, we have to persist the experiment one after the other to ensure that label WOULD are synchronized.
         PersisterHelper.saveOrUpdate( e1 );
@@ -84,7 +85,7 @@ public class ExperimentTest extends IntactBasicTestCase{
         e2.getXrefs().iterator().next().setPrimaryId( pmid );
         e2.getPublication().setShortLabel( pmid );
 
-        getIntactContext().getConfig().setAutoUpdateExperimentLabel( true );
+        getIntactContext().getConfig().setAutoUpdateExperimentShortlabel( true );
 
         // Careful here, we have to persist the experiment one after the other to ensure that label are synchronized.
         PersisterHelper.saveOrUpdate( e1 );

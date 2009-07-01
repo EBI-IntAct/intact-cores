@@ -26,6 +26,14 @@ public interface Interaction extends Interactor {
 
     void removeComponent( Component component );
 
+    void setReleased( Collection<Product> someReleased );
+
+    Collection<Product> getReleased();
+
+    void addReleased( Product product );
+
+    void removeReleased( Product product );
+
     void setExperiments( Collection<Experiment> someExperiment );
 
     Collection<Experiment> getExperiments();
