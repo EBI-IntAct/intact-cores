@@ -183,6 +183,13 @@ public class IntactContext implements DisposableBean, Serializable {
 
         configurationResourcePaths = (String[]) ArrayUtils.add(configurationResourcePaths, "classpath*:/META-INF/intact.spring.xml");
 
+        if ( log.isDebugEnabled() ) {
+            log.debug( "Loading Spring XML config:" );
+            for ( String configurationResourcePath : configurationResourcePaths ) {
+                log.debug( " - " + configurationResourcePath );
+            }
+        }
+
         // init Spring
         ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(configurationResourcePaths, parent);
         springContext.registerShutdownHook();
