@@ -234,62 +234,31 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         return super.getAnnotations();
     }
 
-    /**
-     * Equality for Features is currently based on owner, shortLabel, Component
-     * and any non-null Ranges. NOTE: we cannot check equality for a related
-     * Feature binding because this would be recursive!!
-     *
-     * @param o The object to check
-     *
-     * @return true if the parameter equals this object, false otherwise
-     */
     @Override
     public boolean equals( Object o ) {
-        if ( this == o ) {
-            return true;
-        }
-        if ( !( o instanceof Feature ) ) {
+        if ( this == o ) return true;
+        if ( !( o instanceof Feature ) ) return false;
+        if ( !super.equals( o ) ) return false;
+
+        Feature feature = ( Feature ) o;
+
+        if ( cvFeatureIdentification != null ? !cvFeatureIdentification.equals( feature.cvFeatureIdentification ) : feature.cvFeatureIdentification != null )
             return false;
-        }
-        if ( !super.equals( o ) ) {
+        if ( cvFeatureType != null ? !cvFeatureType.equals( feature.cvFeatureType ) : feature.cvFeatureType != null )
             return false;
-        }
-
-        final Feature feature = ( Feature ) o;
-
-        //NB Component should never be null, but check just in case!
-        if ( component != null ) {
-            if ( !component.equals( feature.getComponent(), false ) ) {
-                return false;
-            }
-        } else {
-            if ( feature.getComponent() != null ) {
-                return false;
-            }
-        }
-
-        //Now check the Ranges...
-        return CollectionUtils.isEqualCollection( ranges, feature.getRanges() );
+        if ( !CollectionUtils.isEqualCollection( ranges, feature.ranges ) )
+            return false;
+        
+        return true;
     }
 
-    /**
-     * Remember that hashCode and equals methods has to be develop in parallel
-     * since : if a.equals(b) then a.hoshCode() == b.hashCode(). Currently the Feature
-     * hashcode is based on its Component.
-     * The other way round is NOT true.
-     * Unless it could break consistancy when storing object in a hash-based
-     * collection such as HashMap...
-     */
     @Override
     public int hashCode() {
-
-        int code = super.hashCode();
-        if ( component != null ) {
-            code = code * 29 + component.hashCode();
-        }
-        //Q: should we use any Ranges also in computing the hashcode?
-
-        return code;
+        int result = super.hashCode();
+        result = 31 * result + ( ranges != null ? ranges.hashCode() : 0 );
+        result = 31 * result + ( cvFeatureIdentification != null ? cvFeatureIdentification.hashCode() : 0 );
+        result = 31 * result + ( cvFeatureType != null ? cvFeatureType.hashCode() : 0 );
+        return result;
     }
 
     /**

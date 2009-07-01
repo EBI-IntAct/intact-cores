@@ -91,7 +91,7 @@ public class Range extends BasicObjectImpl {
      * <p/>
      * False otherwise. </p>
      * <p/>
-     * This is really a boolena but we need to use a character for it because Oracle does not support boolean types NB
+     * This is really a boolean but we need to use a character for it because Oracle does not support boolean types NB
      * JDBC spec has no JDBC type for char, only Strings!
      */
     private boolean linked = true;
@@ -389,97 +389,45 @@ public boolean isUndetermined() {
         return this.sequence;
     }
 
-    /**
-     * Equality for Ranges is currently based on equality for <code>Modification</code>, position from and position to
-     * (ints).
-     *
-     * @param o The object to check
-     *
-     * @return true if the parameter equlas this object, false otherwise
-     */
     @Override
     public boolean equals( Object o ) {
-        if ( this == o ) {
-            return true;
-        }
-        if ( !( o instanceof Range ) ) {
-            return false;
-        }
+        if ( this == o ) return true;
+        if ( !( o instanceof Range ) ) return false;
 
-        final Range range = ( Range ) o;
+        Range range = ( Range ) o;
 
-        //check the intervals are the same
-        if ( fromIntervalStart != range.fromIntervalStart ) {
-            return false;
-        }
-        if ( fromIntervalEnd != range.fromIntervalEnd ) {
-            return false;
-        }
-        if ( toIntervalStart != range.toIntervalStart ) {
-            return false;
-        }
-        if ( toIntervalEnd != range.toIntervalEnd ) {
-            return false;
-        }
+        if ( fromIntervalEnd != range.fromIntervalEnd ) return false;
+        if ( fromIntervalStart != range.fromIntervalStart ) return false;
+        if ( toIntervalEnd != range.toIntervalEnd ) return false;
+        if ( toIntervalStart != range.toIntervalStart ) return false;
 
-        //check the booleans
-        if ( linked != range.isLinked() ) {
+        if ( linked != range.linked ) return false;
+        if ( undetermined != range.undetermined ) return false;
+
+        if ( fromCvFuzzyType != null ? !fromCvFuzzyType.equals( range.fromCvFuzzyType ) : range.fromCvFuzzyType != null )
             return false;
-        }
-        if ( undetermined != range.undetermined ) {
+        if ( toCvFuzzyType != null ? !toCvFuzzyType.equals( range.toCvFuzzyType ) : range.toCvFuzzyType != null )
             return false;
-        }
 
-        //check the from fuzzy types
-        if ( fromCvFuzzyType != null ) {
-            if ( !fromCvFuzzyType.equals( range.fromCvFuzzyType ) ) {
-                return false;
-            }
-        } else {
-            if ( range.fromCvFuzzyType != null ) {
-                return false;
-            }
-        }
-
-        //check the to fuzzy types
-        if ( toCvFuzzyType != null ) {
-            if ( !toCvFuzzyType.equals( range.toCvFuzzyType ) ) {
-                return false;
-            }
-        } else {
-            if ( range.toCvFuzzyType != null ) {
-                return false;
-            }
-        }
-
-        //check the sequence
-        if ( sequence != null ) {
-            if ( !sequence.equals( range.sequence ) ) {
-                return false;
-            }
-        } else {
-            if ( range.sequence != null ) {
-                return false;
-            }
-        }
+        if ( sequence != null ? !sequence.equals( range.sequence ) : range.sequence != null ) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result;
-        result = fromIntervalStart;
+        int result = fromIntervalStart;
+        result = 31 * result + fromIntervalEnd;
+        result = 31 * result + toIntervalStart;
+        result = 31 * result + toIntervalEnd;
 
-        result = 29 * result + fromIntervalEnd;
-        result = 29 * result + toIntervalStart;
-        result = 29 * result + toIntervalEnd;
+        result = 31 * result + ( undetermined ? 1 : 0 );
+        result = 31 * result + ( linked ? 1 : 0 );
 
-        //add in the sequence hashcode
-        if ( sequence != null ) {
-            result = 29 * result + sequence.hashCode();
-        }
-
+        result = 31 * result + ( fromCvFuzzyType != null ? fromCvFuzzyType.hashCode() : 0 );
+        result = 31 * result + ( toCvFuzzyType != null ? toCvFuzzyType.hashCode() : 0 );
+        
+        result = 31 * result + ( sequence != null ? sequence.hashCode() : 0 );
         return result;
     }
 
@@ -507,7 +455,6 @@ public boolean isUndetermined() {
         sb.append( getRange( toType, toIntervalStart, toIntervalEnd ) );
         return sb.toString();
     }
-
 
     /**
      * Returns a cloned version of the current object.
