@@ -411,6 +411,10 @@ public boolean isUndetermined() {
 
         if ( sequence != null ? !sequence.equals( range.sequence ) : range.sequence != null ) return false;
 
+        // Check that they are attached to the same feature, otherwise these ranges should be considered different
+        // We do a feature identity check to avoid triggering an infinite loop as feature includes ranges too.
+        if ( feature != null ? !feature.equals( range.feature, true, false ) : range.feature != null ) return false;
+
         return true;
     }
 
@@ -428,6 +432,10 @@ public boolean isUndetermined() {
         result = 31 * result + ( toCvFuzzyType != null ? toCvFuzzyType.hashCode() : 0 );
         
         result = 31 * result + ( sequence != null ? sequence.hashCode() : 0 );
+
+        // Include the feature this range is linked to.
+        result = 31 * result + ( feature != null ? feature.hashCode( true, false ) : 0 );
+
         return result;
     }
 

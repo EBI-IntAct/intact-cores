@@ -12,6 +12,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import uk.ac.ebi.intact.core.util.HashCodeUtils;
+
 /**
  * <p/>
  * Represents a feature, a region with specific properties, on a sequence.
@@ -93,8 +95,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      * @param type       the CvfeatureType of the Feature. Manadatory.
      */
     public Feature( Institution owner, String shortLabel,
-                    Component component, CvFeatureType type
-    ) {
+                    Component component, CvFeatureType type ) {
 
         //super call sets up a valid AnnotatedObject
         super( shortLabel, owner );
@@ -236,28 +237,66 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
 
     @Override
     public boolean equals( Object o ) {
+        return equals( o, true, true );
+    }
+
+    public boolean equals( Object o, boolean includeLinkedFeature, boolean includeRanges ) {
         if ( this == o ) return true;
         if ( !( o instanceof Feature ) ) return false;
         if ( !super.equals( o ) ) return false;
 
         Feature feature = ( Feature ) o;
 
-        if ( cvFeatureIdentification != null ? !cvFeatureIdentification.equals( feature.cvFeatureIdentification ) : feature.cvFeatureIdentification != null )
+        if( includeRanges ) {
+            if ( !CollectionUtils.isEqualCollection( ranges, feature.ranges ) )
+                return false;
+        }
+
+        if ( cvFeatureIdentification != null ? !cvFeatureIdentification.equals( feature.cvFeatureIdentification ) : feature.cvFeatureIdentification != null ) {
             return false;
-        if ( cvFeatureType != null ? !cvFeatureType.equals( feature.cvFeatureType ) : feature.cvFeatureType != null )
+        }
+
+        if ( cvFeatureType != null ? !cvFeatureType.equals( feature.cvFeatureType ) : feature.cvFeatureType != null ) {
             return false;
-        if ( !CollectionUtils.isEqualCollection( ranges, feature.ranges ) )
+        }
+
+        // Check on component without including features, hence avoiding infinite loop
+        if ( component != null ? !component.equals( feature.component, false ) : feature.component != null ) {
             return false;
-        
+        }
+
+        // Make sure we don't end up in an infinite loop checking on linked features
+        if( includeLinkedFeature ) {
+            if ( binds != null ? !binds.equals( feature.binds, false, false ) : feature.binds != null )
+                return false;
+        }
+
         return true;
     }
 
     @Override
     public int hashCode() {
+        return hashCode( true, true );
+    }
+
+    public int hashCode( boolean includeBinds, boolean includeRanges ) {
         int result = super.hashCode();
-        result = 31 * result + ( ranges != null ? ranges.hashCode() : 0 );
+
+        if( includeRanges ) {
+            result = 31 * result + HashCodeUtils.collectionHashCode( ranges );
+        }
+
         result = 31 * result + ( cvFeatureIdentification != null ? cvFeatureIdentification.hashCode() : 0 );
         result = 31 * result + ( cvFeatureType != null ? cvFeatureType.hashCode() : 0 );
+
+        // hashcode component without including features
+        result = 31 * result + ( component != null ? component.hashCode( false ) : 0 );
+
+        // make sure we don't end up in an infinite loop checking on linked features
+        if( includeBinds ) {
+            result = 31 * result + ( binds != null ? binds.hashCode( false, false ) : 0 );
+        }
+
         return result;
     }
 

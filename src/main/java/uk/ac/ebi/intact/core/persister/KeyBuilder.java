@@ -134,13 +134,16 @@ class KeyBuilder {
     }
 
     public Key keyForFeature( Feature feature ) {
+
+
         if ( feature.getComponent() == null ) {
             throw new IllegalArgumentException( "Cannot create a feature key for feature without component: " + feature );
         }
 
         Key componentKey = keyFor( feature.getComponent() );
+        return new Key( new FeatureKeyCalculator().calculateFeatureKey(feature) + "___" + componentKey.getUniqueString() );
 
-        return new Key( keyForAnnotatedObject( feature ).getUniqueString() + "___" + componentKey.getUniqueString() );
+//        return new Key( keyForAnnotatedObject( feature ).getUniqueString() + "___" + componentKey.getUniqueString() );
     }
 
     public Key keyForCvObject( CvObject cvObject ) {
@@ -188,9 +191,14 @@ class KeyBuilder {
     }
 
     private class ExperimentKeyCalculator extends CrcCalculator {
-
         public String calculateExperimentKey(Experiment exp) {
             return super.createUniquenessString(exp).toString();
+        }
+    }
+
+    private class FeatureKeyCalculator extends CrcCalculator {
+        public String calculateFeatureKey(Feature feature) {
+            return super.createUniquenessString(feature).toString();
         }
     }
 }

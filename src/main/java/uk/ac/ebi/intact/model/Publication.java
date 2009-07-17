@@ -49,7 +49,8 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
             throw new NullPointerException( "experiment must not be null." );
         }
         if ( !experiments.contains( experiment ) ) {
-            if ( experiment.getPublication() != this ) {
+            final Publication pub = experiment.getPublication();
+            if ( pub != null && pub != this ) {
                 throw new IllegalStateException( "You cannot overwrite an Experiment's publication (experiment:"+ experiment.getAc() +"). " +
                                                  "You must first unlink the underlying experiments from their publication" );
             } else {

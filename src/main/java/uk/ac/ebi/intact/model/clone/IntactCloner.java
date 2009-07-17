@@ -452,7 +452,7 @@ public class IntactCloner {
         clonerManager.addClone( publication, clone );
 
         for ( Experiment e : publication.getExperiments() ) {
-            clone.addExperiment( cloneExperiment( e ) );
+            clone.addExperiment( clone( e ) );
         }
 
         return clone;

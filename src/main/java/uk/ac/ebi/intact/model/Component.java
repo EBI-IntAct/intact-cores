@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import uk.ac.ebi.intact.core.util.HashCodeUtils;
+
 /**
  * The specific instance of an interactor which participates in an interaction.
  * <p/>
@@ -634,11 +636,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * we need a way to disable the recursion to avoid the infinite loop
      *
      * @param o Object to equal with
-     * @param includePotentialRecursiveEntities
+     * @param includeFeatures
      *          Include the features in the equal algorithm
      * @return true if they are equal
      */
-    public boolean equals( Object o, boolean includePotentialRecursiveEntities ) {
+    public boolean equals( Object o, boolean includeFeatures ) {
         if ( this == o ) {
             return true;
         }
@@ -669,7 +671,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
             }
         }
 
-        if ( includePotentialRecursiveEntities ) {
+        if ( includeFeatures ) {
             if ( !CollectionUtils.isEqualCollection( bindingDomains, component.getBindingDomains() ) ) {
                 return false;
             }
@@ -685,29 +687,35 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     @Override
     public int hashCode() {
-        int code = 29;
+        return hashCode( true );
+    }
+
+    public int hashCode( boolean includeFeatures ) {
+        int result = super.hashCode();
 
         //need these checks because we still have a no-arg
         //constructor at the moment.....
 
         if ( interactor != null ) {
-            code = code * 29 + interactor.hashCode();
+            result = result * 31 + interactor.hashCode();
         }
         if ( interaction != null ) {
-            code = code * 29 + interaction.hashCode();
+            result = result * 31 + interaction.hashCode();
         }
-        for (CvExperimentalRole expRole : experimentalRoles) {
-            code = code * 31 + expRole.hashCode();
+
+        if( experimentalRoles != null ) {
+            result = result * 31 + HashCodeUtils.collectionHashCode( experimentalRoles );
         }
+        
         if ( biologicalRole != null ) {
-            code = code * 29 + biologicalRole.hashCode();
+            result = result * 31 + biologicalRole.hashCode();
         }
 
-        if ( bindingDomains != null && false == bindingDomains.isEmpty() ) {
-            code = code * 29 * bindingDomains.size();
+        if( includeFeatures ) {
+            result = result * 31 + HashCodeUtils.collectionHashCode( bindingDomains );
         }
 
-        return code;
+        return result;
     }
 
     /**
