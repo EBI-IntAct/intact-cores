@@ -38,7 +38,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ImexExportDaoImpl extends HibernateBaseDaoImpl implements ImexExportDao {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
 
     @Autowired

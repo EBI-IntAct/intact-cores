@@ -23,15 +23,11 @@ import org.hibernate.dialect.Oracle9Dialect;
 import org.hibernate.ejb.HibernateEntityManagerFactory;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.config.hibernate.SequenceAuxiliaryDatabaseObject;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.PersistenceContext;
 import javax.annotation.PostConstruct;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -51,10 +47,10 @@ public class SequenceManager {
 
     private Dialect dialect;
 
-    @Autowired
+    @PersistenceUnit(unitName = "intact-core-default")
     private EntityManagerFactory entityManagerFactory;
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
 
     public SequenceManager() {

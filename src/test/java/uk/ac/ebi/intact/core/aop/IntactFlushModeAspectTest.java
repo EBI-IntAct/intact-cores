@@ -30,7 +30,7 @@ import javax.persistence.PersistenceContext;
  */
 public class IntactFlushModeAspectTest extends IntactBasicTestCase {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
 
     @Autowired

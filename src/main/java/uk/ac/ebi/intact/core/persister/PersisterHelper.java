@@ -42,7 +42,7 @@ import javax.persistence.PersistenceContext;
 @Component
 public class PersisterHelper {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
 
     @Autowired

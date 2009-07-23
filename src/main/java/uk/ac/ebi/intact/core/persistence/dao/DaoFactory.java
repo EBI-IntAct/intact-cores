@@ -30,7 +30,7 @@ public class DaoFactory implements Serializable {
 
     private static final Log log = LogFactory.getLog( DaoFactory.class );
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager currentEntityManager;
 
     @Autowired

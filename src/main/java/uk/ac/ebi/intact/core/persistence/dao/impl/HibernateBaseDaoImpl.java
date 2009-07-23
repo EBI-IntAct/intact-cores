@@ -12,7 +12,6 @@ import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.ejb.HibernateEntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
@@ -42,10 +41,10 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     private Class<T> entityClass;
     private IntactSession intactSession;
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
 
-    @Autowired
+    @PersistenceUnit(unitName = "intact-core-default")
     private EntityManagerFactory entityManagerFactory;
 
     public HibernateBaseDaoImpl() {}

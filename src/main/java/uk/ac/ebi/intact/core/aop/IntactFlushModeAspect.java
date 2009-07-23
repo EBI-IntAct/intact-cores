@@ -37,7 +37,7 @@ public class IntactFlushModeAspect {
 
     private static final Log log = LogFactory.getLog( IntactFlushModeAspect.class );
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
 
     @Around("@annotation(intactFlushMode)")

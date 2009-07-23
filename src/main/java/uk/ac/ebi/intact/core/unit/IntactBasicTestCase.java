@@ -33,6 +33,7 @@ import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 
 /**
  * Base for all intact-tests.
@@ -55,10 +56,10 @@ public abstract class IntactBasicTestCase {
     @Autowired
     private PersisterHelper persisterHelper;
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
 
-    @Autowired
+    @PersistenceUnit(unitName = "intact-core-default")
     private EntityManagerFactory entityManagerFactory;
 
     private IntactMockBuilder mockBuilder;
