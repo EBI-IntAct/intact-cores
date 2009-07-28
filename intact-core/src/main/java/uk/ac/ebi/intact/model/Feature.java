@@ -12,7 +12,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import uk.ac.ebi.intact.core.util.HashCodeUtils;
+import uk.ac.ebi.intact.util.HashCodeUtils;
 
 /**
  * <p/>

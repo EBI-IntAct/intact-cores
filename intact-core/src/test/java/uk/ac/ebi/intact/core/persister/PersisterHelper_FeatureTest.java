@@ -15,11 +15,14 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 
@@ -30,6 +33,16 @@ import uk.ac.ebi.intact.model.clone.IntactCloner;
  * @version $Id$
  */
 public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
+
+    @Before
+    public void before() throws Exception {
+        beginTransaction();
+    }
+
+    @After
+    public void after() throws Exception {
+        commitTransaction();
+    }
 
     @Test
     public void persistFeature() throws Exception {

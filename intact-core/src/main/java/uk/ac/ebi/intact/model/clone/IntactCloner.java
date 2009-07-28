@@ -17,12 +17,10 @@ package uk.ac.ebi.intact.model.clone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.transaction.TransactionStatus;
-import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import java.lang.reflect.Constructor;
 import java.util.Date;
@@ -36,8 +34,6 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@org.springframework.stereotype.Component
-@Scope(org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE)
 public class IntactCloner {
 
     private static final Log log = LogFactory.getLog( IntactCloner.class );
@@ -93,32 +89,27 @@ public class IntactCloner {
             return (T) clonerManager.getClonedObject( intactObject );
         }
 
-        try {
-            if ( intactObject instanceof AnnotatedObject ) {
-                clone = (T) cloneAnnotatedObject( (AnnotatedObject<Xref, Alias>) intactObject );
-            } else if ( intactObject instanceof Annotation ) {
-                clone = (T) cloneAnnotation( ( Annotation ) intactObject );
-            } else if ( intactObject instanceof Alias ) {
-                clone = (T) cloneAlias( ( Alias ) intactObject );
-            } else if ( intactObject instanceof Xref ) {
-                clone = (T) cloneXref( ( Xref ) intactObject );
-            } else if ( intactObject instanceof Range ) {
-                clone = (T) cloneRange( ( Range ) intactObject );
-            } else if ( intactObject instanceof Confidence){
-                clone = (T) cloneConfidence( (Confidence) intactObject);
-            } else if ( intactObject instanceof InteractionParameter){
-                clone = (T) cloneInteractionParameter( (InteractionParameter) intactObject);
-            } else if ( intactObject instanceof ComponentParameter){
-                clone = (T) cloneComponentParameter( (ComponentParameter) intactObject);
-            } else {
-                throw new IllegalArgumentException( "Cannot clone objects of type: " + intactObject.getClass().getName() );
-            }
-
-            cloneIntactObjectCommon( intactObject, clone );
-
-        } catch (Throwable e) {
-           throw new IntactClonerException("Problem cloning "+intactObject.getClass().getSimpleName()+": "+intactObject, e);
+        if ( intactObject instanceof AnnotatedObject ) {
+            clone = (T) cloneAnnotatedObject( (AnnotatedObject<Xref, Alias>) intactObject );
+        } else if ( intactObject instanceof Annotation ) {
+            clone = (T) cloneAnnotation( ( Annotation ) intactObject );
+        } else if ( intactObject instanceof Alias ) {
+            clone = (T) cloneAlias( ( Alias ) intactObject );
+        } else if ( intactObject instanceof Xref ) {
+            clone = (T) cloneXref( ( Xref ) intactObject );
+        } else if ( intactObject instanceof Range ) {
+            clone = (T) cloneRange( ( Range ) intactObject );
+        } else if ( intactObject instanceof Confidence){
+            clone = (T) cloneConfidence( (Confidence) intactObject);
+        } else if ( intactObject instanceof InteractionParameter){
+            clone = (T) cloneInteractionParameter( (InteractionParameter) intactObject);
+        } else if ( intactObject instanceof ComponentParameter){
+            clone = (T) cloneComponentParameter( (ComponentParameter) intactObject);
+        } else {
+            throw new IllegalArgumentException( "Cannot clone objects of type: " + intactObject.getClass().getName() );
         }
+
+        cloneIntactObjectCommon( intactObject, clone );
 
         return clone;
     }
@@ -544,22 +535,11 @@ public class IntactCloner {
         clone.setShortLabel( ao.getShortLabel() );
         clone.setFullName( ao.getFullName() );
 
-        TransactionStatus transactionStatus = null;
-
         // as annotations, alias and xrefs could potentially be dettached, we should check if these
         // collections are accessible
         if (!AnnotatedObjectUtils.isNewOrManaged(ao)) {
-            Class<? extends AnnotatedObject> clazz = ao.getClass();
-            String ac = ao.getAc();
-
-            transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
             ao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
-                    .getAnnotatedObjectDao(clazz).getByAc(ac);
-
-            if (ao == null) {
-                throw new IllegalStateException("Annotated object was expected to be found: "+clazz.getSimpleName()+" "+ac);
-            }
+                    .getAnnotatedObjectDao(ao.getClass()).getByAc(ao.getAc());
         }
 
         for ( Annotation annotation : ao.getAnnotations() ) {
@@ -571,11 +551,6 @@ public class IntactCloner {
         for ( Xref xref : ao.getXrefs()) {
             clone.addXref(clone( xref ));
         }
-
-        if (transactionStatus != null) {
-            IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
-        }
-
         return clone;
     }
 

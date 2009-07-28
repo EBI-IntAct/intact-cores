@@ -16,12 +16,12 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.collections.CollectionUtils;
-import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.IntactObjectFilterPredicate;
 import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

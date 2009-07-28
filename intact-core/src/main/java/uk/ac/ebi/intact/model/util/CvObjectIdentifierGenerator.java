@@ -18,17 +18,18 @@ package uk.ac.ebi.intact.model.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.core.IntactException;
-import uk.ac.ebi.intact.core.config.IntactAuxiliaryConfigurator;
-import uk.ac.ebi.intact.core.config.SequenceCreationException;
-import uk.ac.ebi.intact.core.config.SequenceManager;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.business.IntactException;
+import uk.ac.ebi.intact.config.IntactAuxiliaryConfigurator;
+import uk.ac.ebi.intact.config.SequenceCreationException;
+import uk.ac.ebi.intact.config.SequenceManager;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.model.CvObjectXref;
 import uk.ac.ebi.intact.model.CvXrefQualifier;
-import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
+import javax.persistence.EntityManager;
 import java.util.Collection;
 
 /**
@@ -122,12 +123,12 @@ public class CvObjectIdentifierGenerator {
                 .getCvObjectDao().getLastCvIdentifierWithPrefix(prefix);
 
         if (max == null) max = 0;
+        SequenceManager seqManager = new SequenceManager(context.getConfig().getDefaultDataConfig());
+        final EntityManager entityManager = context.getDataContext().getDaoFactory().getEntityManager();
 
-        SequenceManager seqManager = (SequenceManager) context.getSpringContext().getBean("sequenceManager");
+        seqManager.createSequenceIfNotExists(entityManager, IntactAuxiliaryConfigurator.CV_LOCAL_SEQ, max+1);
 
-        seqManager.createSequenceIfNotExists(IntactAuxiliaryConfigurator.CV_LOCAL_SEQ, max+1);
-
-        String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(IntactAuxiliaryConfigurator.CV_LOCAL_SEQ));
+        String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(entityManager, IntactAuxiliaryConfigurator.CV_LOCAL_SEQ));
         return prefix+":" + StringUtils.leftPad(nextIntegerAsString, 4, "0");
     }
 

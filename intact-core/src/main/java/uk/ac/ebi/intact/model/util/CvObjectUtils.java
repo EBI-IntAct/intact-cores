@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.model.util;
 
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.core.util.ClassUtils;
+import uk.ac.ebi.intact.util.ClassUtils;
 
 import java.util.Collection;
 import java.util.HashSet;

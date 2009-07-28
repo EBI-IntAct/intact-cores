@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.core.persister;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.XrefUtils;
-import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

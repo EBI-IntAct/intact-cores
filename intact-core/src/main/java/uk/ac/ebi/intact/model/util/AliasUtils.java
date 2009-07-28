@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.model.util;
 import uk.ac.ebi.intact.model.Alias;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.CvAliasType;
-import uk.ac.ebi.intact.core.util.ClassUtils;
+import uk.ac.ebi.intact.util.ClassUtils;
 
 /**
  * Utils with xrefs

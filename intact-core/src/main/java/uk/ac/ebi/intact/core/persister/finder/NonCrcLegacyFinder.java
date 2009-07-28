@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.core.persister.finder;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
-import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
+import uk.ac.ebi.intact.persistence.dao.InteractionDao;
 
 import java.util.List;
 

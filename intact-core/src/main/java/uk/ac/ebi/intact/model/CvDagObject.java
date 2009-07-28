@@ -79,6 +79,7 @@ public abstract class CvDagObject extends CvObject {
 
 
     //////////////////////////////////////////////////////////
+    // these methods are used in the CvDagObjectUtils class
     // the setter and getter are only used for testing
 
 
@@ -96,6 +97,44 @@ public abstract class CvDagObject extends CvObject {
         return result;
     }
 
+
+    /**
+     * This method returns the left bound of this instance, or '-1' if the bounds have not been calculated.
+     *
+     * @return int with the left bound, or '-1' if the bounds have not yet been calculated.
+     */
+    @Transient
+    public long getLeftBound() {
+        return leftBound;
+    }
+
+    /**
+     * This method set the left bound of this instance
+     *
+     * @param leftBound left bound of this instance
+     */
+    public void setLeftBound( long leftBound ) {
+        this.leftBound = leftBound;
+    }
+
+    /**
+     * This method returns the right bound of this instance, or '-1' if the bounds have not been calculated.
+     *
+     * @return int with the right bound, or '-1' if the bounds have not yet been calculated.
+     */
+    @Transient
+    public long getRightBound() {
+        return rightBound;
+    }
+
+    /**
+     * This method sets the right bound of this instance
+     *
+     * @param rightBound right bound of this instance
+     */
+    public void setRightBound( long rightBound ) {
+        this.rightBound = rightBound;
+    }
 
     // end modification (afrie)
     /////////////////////////////

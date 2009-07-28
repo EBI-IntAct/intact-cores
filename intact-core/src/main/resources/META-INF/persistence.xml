@@ -5,8 +5,53 @@
     <persistence-unit name="intact-core-default" >
       <properties>
          <property name="hibernate.max_fetch_depth" value="3"/>
+         <property name="hibernate.current_session_context_class" value="thread"/>
       </properties>
    </persistence-unit>
 
+   <persistence-unit name="intact-core-mem" transaction-type="RESOURCE_LOCAL">
+      <properties>
+         <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+         <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>
+         <property name="hibernate.connection.username" value="sa"/>
+         <property name="hibernate.connection.password" value=""/>
+         <property name="hibernate.connection.url" value="jdbc:h2:mem:intact_core_mem"/>
+         <property name="hibernate.max_fetch_depth" value="3"/>
+
+         <property name="hibernate.current_session_context_class" value="thread"/>
+
+         <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      </properties>
+   </persistence-unit>
+
+    <persistence-unit name="intact-core-temp" transaction-type="RESOURCE_LOCAL">
+      <properties>
+         <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+         <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>
+         <property name="hibernate.connection.username" value="sa"/>
+         <property name="hibernate.connection.password" value=""/>
+         <property name="hibernate.connection.url" value="jdbc:h2:/tmp/intact-core"/>
+         <property name="hibernate.max_fetch_depth" value="3"/>
+
+         <property name="hibernate.current_session_context_class" value="thread"/>
+
+         <property name="hibernate.hbm2ddl.auto" value="update"/>
+      </properties>
+   </persistence-unit>
+
+    <persistence-unit name="intact-core-pg" transaction-type="RESOURCE_LOCAL">
+      <properties>
+         <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+         <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+         <property name="hibernate.connection.username" value="intact"/>
+         <property name="hibernate.connection.password" value="change-me"/>
+         <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/intact-core"/>
+         <property name="hibernate.max_fetch_depth" value="3"/>
+
+         <property name="hibernate.current_session_context_class" value="thread"/>
+
+         <property name="hibernate.hbm2ddl.auto" value="create"/>
+      </properties>
+   </persistence-unit>
 
 </persistence>

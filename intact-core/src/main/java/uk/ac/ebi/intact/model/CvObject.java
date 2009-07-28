@@ -9,7 +9,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.validator.Length;
 import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
-import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
 
 import javax.persistence.*;
 import java.util.Collection;

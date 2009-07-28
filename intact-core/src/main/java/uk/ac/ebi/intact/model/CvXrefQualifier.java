@@ -60,9 +60,6 @@ public class CvXrefQualifier extends CvDagObject implements Editable {
     public static final String IMEX_PRIMARY = "imex-primary";
     public static final String IMEX_PRIMARY_MI_REF = "MI:0662";
 
-    public static final String IMEX_EVIDENCE = "imex evidence";
-    public static final String IMEX_EVIDENCE_MI_REF = "MI:0922";
-
     public static final String SOURCE_REFERENCE = "source reference";
     public static final String SOURCE_REFERENCE_MI_REF = "MI:0685";
 

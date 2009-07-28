@@ -1,18 +1,20 @@
 package uk.ac.ebi.intact.model.clone;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.persister.CorePersister;
+import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
 import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
+import uk.ac.ebi.intact.context.IntactContext;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,8 +27,12 @@ import java.util.List;
  */
 public class IntactClonerTest extends IntactBasicTestCase {
 
-    @Autowired
-    private IntactCloner cloner;
+    IntactCloner cloner;
+
+    @Before
+    public void init() {
+        cloner = new IntactCloner();
+    }
 
     private void clone( IntactObject io ) throws IntactClonerException {
         final IntactObject clone = cloner.clone( io );
@@ -39,7 +45,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
         clone( getMockBuilder().createDeterministicInteraction() );
     }
 
-        @Test
+    @Test
     public void cloneInteractionWithMultipleFeature() throws Exception {
         final Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
@@ -100,6 +106,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
         addFeature( c2, CvFeatureType.MUTATION_DISRUPTING, CvFeatureType.MUTATION_DISRUPTING_MI_REF, 0, 0, undetermined, "region" );
 
         final Interaction clone = cloner.clone( interaction );
+//        final Interaction clone = new InteractionIntactCloner().clone( interaction );
 
         for ( Component component : clone.getComponents() ) {
             if( component.getShortLabel().equals( "c1" ) ) {
@@ -212,7 +219,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
         clone.setShortLabel( "Cloned version of ptp61f-dock-1" );
 
-        IntactContext.getCurrentInstance().getConfig().setAutoUpdateExperimentLabel(false);
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateExperimentShortlabel(false);
 
 
 //        CorePersister corePersister = new CorePersister();
@@ -220,6 +227,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
 //        PersisterHelper.saveOrUpdate( corePersister, clone );
         
         PersisterHelper.saveOrUpdate( clone );
+        getDataContext().commitAllActiveTransactions();
 
         final List<InteractionImpl> all = getDaoFactory().getInteractionDao().getAll();
         Assert.assertEquals( 1, all.size() );
@@ -303,9 +311,10 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
         clone.setShortLabel( "Cloned version of ptp61f-dock-1" );
 
-        IntactContext.getCurrentInstance().getConfig().setAutoUpdateExperimentLabel(false);
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateExperimentShortlabel(false);
 
         PersisterHelper.saveOrUpdate( clone );
+        getDataContext().commitAllActiveTransactions();
 
         final List<InteractionImpl> all = getDaoFactory().getInteractionDao().getAll();
         Assert.assertEquals( 1, all.size() );
@@ -469,6 +478,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
         citation.addChild( psiMi );
 
+        IntactCloner cloner = new IntactCloner();
         cloner.setCloneCvObjectTree( true );
 
         CvDatabase citationClone = cloner.clone( citation );
@@ -480,12 +490,11 @@ public class IntactClonerTest extends IntactBasicTestCase {
     public void clone_excludeAcs() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom( 2 );
 
+        IntactCloner cloner = new IntactCloner();
         cloner.setExcludeACs( true );
 
-        Experiment clonedExp = cloner.cloneExperiment(exp);
-
         DefaultTraverser traverser = new DefaultTraverser();
-        traverser.traverse( clonedExp, new BaseIntactVisitor() {
+        traverser.traverse( exp, new BaseIntactVisitor() {
             @Override
             public void visitIntactObject( IntactObject intactObject ) {
                 if ( intactObject.getAc() != null ) {

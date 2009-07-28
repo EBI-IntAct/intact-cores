@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -26,11 +28,11 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
         PersisterHelper.saveOrUpdate(exp);
 
         Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("lala-2005-1");
-        Assert.assertNotNull(refreshedExperiment);
+        assertNotNull(refreshedExperiment);
 
-        Assert.assertNotNull(refreshedExperiment.getPublication());
-        Assert.assertEquals("1234567", refreshedExperiment.getPublication().getShortLabel());
-        Assert.assertEquals(1, refreshedExperiment.getInteractions().size());
+        assertNotNull(refreshedExperiment.getPublication());
+        assertEquals("1234567", refreshedExperiment.getPublication().getShortLabel());
+        assertEquals(1, refreshedExperiment.getInteractions().size());
     }
 
     @Test
@@ -43,8 +45,8 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
         System.out.println(getDaoFactory().getExperimentDao().getAll());
 
         Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("lala-2005-1");
-        Assert.assertNotNull(refreshedExperiment);
-        Assert.assertEquals(1, refreshedExperiment.getInteractions().size());
+        assertNotNull(refreshedExperiment);
+        assertEquals(1, refreshedExperiment.getInteractions().size());
     }
 
     @Test
@@ -58,7 +60,7 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
         PersisterHelper.saveOrUpdate(exp);
 
         Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByAc(exp.getAc());
-        Assert.assertNotNull(refreshedExperiment);
+        assertNotNull(refreshedExperiment);
         Assert.assertEquals(anotherInstitution.getShortLabel(), refreshedExperiment.getOwner().getShortLabel());
     }
 
@@ -74,10 +76,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
         PersisterHelper.saveOrUpdate(exp);
 
-        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
-
-        getEntityManager().clear();
-
         Experiment exp2 = getMockBuilder().createExperimentRandom(1);
         exp2.setShortLabel("tata-2005");
         xref.setAc(null);
@@ -85,12 +83,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
         exp2.addXref(xref);
 
         PersisterHelper.saveOrUpdate(exp2);
-        
-        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
-        
-        for (Experiment expr : getDaoFactory().getExperimentDao().getAll()) {
-            System.out.println(expr);
-        }
 
         Experiment reloadedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("tata-2005-1");
 
@@ -100,7 +92,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void updateExperiment_avoidDuplications() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom(1);
         exp.setShortLabel("nopub-2006-1");
@@ -128,8 +119,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getPublicationDao().countAll());
 
-        getEntityManager().clear();
-
         Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertNotNull(reloadedExp.getPublication());
         Assert.assertEquals(1, reloadedExp.getXrefs().size());
@@ -137,7 +126,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void existingExperimentWithoutPubInfo() throws Exception {
 
         // create an experiment without publication or xrefs
@@ -171,7 +159,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
 
     @Test
-
     public void existingExperiment_aliases() throws Exception {
         Experiment expWithout = getMockBuilder().createExperimentRandom(1);
         expWithout.setShortLabel("nopub-2006-1");
@@ -182,8 +169,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
         PersisterHelper.saveOrUpdate(expWithout);
 
-        getEntityManager().clear();
-
         Experiment expWith = getMockBuilder().createExperimentRandom(1);
         expWith.setShortLabel("nopub-2006-1");
         expWith.setPublication(null);
@@ -193,9 +178,10 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
 
         expWith.addAlias( getMockBuilder().createAlias( expWith, "comment", "MI:xxxx", "topic" ) );
 
-        CorePersister persister = getPersisterHelper().getCorePersister();
-        persister.setUpdateWithoutAcEnabled(true);
-        persister.saveOrUpdate(expWith);
+        CorePersister updaterPersister = new CorePersister();
+        updaterPersister.setUpdateWithoutAcEnabled(true);
+
+        PersisterHelper.saveOrUpdate(updaterPersister, expWith);
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
 
@@ -204,7 +190,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void differentExperiment_samePubId() throws Exception {
         final String pubId = "1234567";
         Experiment exp1 = getMockBuilder().createExperimentEmpty("exp-2007-1", pubId);
@@ -220,7 +205,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void newExperiment_existingInteraction() throws Exception {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
@@ -248,7 +232,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void existingExperiment_existingInteraction() throws Exception {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
         Experiment experiment = getMockBuilder().createExperimentEmpty();
@@ -277,7 +260,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void interactionInExpPersistedCorrectly() throws Exception {
 
         Experiment experiment = getMockBuilder().createExperimentEmpty();
@@ -297,7 +279,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void removingExperiments() throws Exception {
 
         Experiment experiment = getMockBuilder().createExperimentRandom(1);
@@ -328,7 +309,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void persist_sameYearDifferentPublication() throws Exception {
         int year = 2007;
         Experiment experiment = getMockBuilder().createExperimentEmpty("lala-2007-1", "123");
@@ -354,7 +334,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void persist_correctLabeling() throws Exception {
         final Experiment exp1 = getMockBuilder().createExperimentEmpty("lala-2007", "17560331");
         exp1.getBioSource().setTaxId("1");
@@ -399,7 +378,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase
     }
 
     @Test
-
     public void addingInteractionsWithSlightlyTheSameExperiment() throws Exception {
         // this tests that if we add interactions that have the same experiment (different instances),
         // and have one additional annotation (the new experiments all have the same annotations, but they

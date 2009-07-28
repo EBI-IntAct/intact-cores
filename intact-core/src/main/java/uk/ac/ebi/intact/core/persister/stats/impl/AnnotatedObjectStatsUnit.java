@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.intact.core.persister.stats.impl;
 
-import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
-import uk.ac.ebi.intact.core.persister.stats.StatsUnit;
 import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.core.persister.stats.StatsUnit;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -50,22 +50,5 @@ public class AnnotatedObjectStatsUnit implements StatsUnit {
     @Override
     public String toString() {
         return getType().getSimpleName()+": "+getAc()+", "+getShortLabel();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AnnotatedObjectStatsUnit that = (AnnotatedObjectStatsUnit) o;
-
-        if (ac != null ? !ac.equals(that.ac) : that.ac != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return ac != null ? ac.hashCode() : 0;
     }
 }

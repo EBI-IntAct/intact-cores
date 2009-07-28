@@ -20,21 +20,22 @@ public class IntactObjectEventListenerTest extends IntactBasicTestCase {
         Assert.assertNotNull(institution.getCreated());
         Assert.assertNotNull(institution.getUpdated());
         Assert.assertEquals(institution.getCreated(), institution.getUpdated());
-        Assert.assertEquals("TEST_USER", institution.getCreator());
-        Assert.assertEquals("TEST_USER", institution.getUpdator());
+        Assert.assertEquals("SA", institution.getCreator());
+        Assert.assertEquals("SA", institution.getUpdator());
 
         getIntactContext().getUserContext().setUserId("Sam");
         
+        beginTransaction();
         institution.setFullName("Different full name");
         getDaoFactory().getInstitutionDao().merge(institution);
-        getEntityManager().flush();
+        commitTransaction();
 
         Assert.assertNotNull(institution.getCreated());
         Assert.assertNotNull(institution.getUpdated());
 
         Assert.assertTrue( "updated={"+institution.getUpdated()+"} created={"+institution.getCreated()+"}",
                            institution.getUpdated().compareTo( institution.getCreated() ) >= 0);
-        Assert.assertEquals("TEST_USER", institution.getCreator());
+        Assert.assertEquals("SA", institution.getCreator());
         Assert.assertEquals("SAM", institution.getUpdator());
     }
 }

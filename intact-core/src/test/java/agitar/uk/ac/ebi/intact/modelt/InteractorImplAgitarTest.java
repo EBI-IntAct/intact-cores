@@ -179,6 +179,28 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
         }
     }
 
+    public void testAddProductThrowsNullPointerException() throws Throwable {
+        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", new Institution( "testIntLabel1" ), new CvInteractorType( new Institution( "testIntLabel" ), "testIntLabel" ) );
+        try {
+            smallMoleculeImpl.addProduct( null );
+            fail( "Expected NullPointerException to be thrown" );
+        } catch ( NullPointerException ex ) {
+            assertNull( "ex.getMessage()", ex.getMessage() );
+            assertThrownBy( InteractorImpl.class, ex );
+            assertNull( "(SmallMoleculeImpl) smallMoleculeImpl.products", getPrivateField( smallMoleculeImpl, "products" ) );
+        }
+    }
+
+    public void testGetProductsThrowsUnsupportedOperationException() throws Throwable {
+        try {
+            new SmallMoleculeImpl( "testIntLabel", null, null ).getProducts();
+            fail( "Expected UnsupportedOperationException to be thrown" );
+        } catch ( UnsupportedOperationException ex ) {
+            assertNull( "ex.getMessage()", ex.getMessage() );
+            assertThrownBy( InteractorImpl.class, ex );
+        }
+    }
+
     public void testRemoveActiveInstanceThrowsNullPointerException() throws Throwable {
         InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", new Institution( "testIntLabel1" ), new CvInteractorType( new Institution( "testIntLabel" ), "testIntLabel" ) );
         Collection someActiveInstance = new ArrayList( 100 );
@@ -194,6 +216,19 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
         }
     }
 
+    public void testRemoveProductThrowsNullPointerException() throws Throwable {
+        InteractorImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testIntLabel" );
+        Mockingbird.enterTestMode();
+        try {
+            proteinImpl.removeProduct( null );
+            fail( "Expected NullPointerException to be thrown" );
+        } catch ( NullPointerException ex ) {
+            assertNull( "ex.getMessage()", ex.getMessage() );
+            assertThrownBy( InteractorImpl.class, ex );
+            assertNull( "(ProteinImpl) proteinImpl.products", getPrivateField( proteinImpl, "products" ) );
+        }
+    }
+
     public void testSetActiveInstancesThrowsIllegalArgumentException() throws Throwable {
         InteractorImpl complex = new Complex();
         try {
@@ -205,7 +240,20 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
             assertEquals( "(Complex) complex.getActiveInstances().size()", 0, complex.getActiveInstances().size() );
         }
     }
-    
+
+    public void testSetProductsThrowsUnsupportedOperationException() throws Throwable {
+        InteractorImpl complex = new Complex();
+        Collection someProduct = new ArrayList( 100 );
+        try {
+            complex.setProducts( someProduct );
+            fail( "Expected UnsupportedOperationException to be thrown" );
+        } catch ( UnsupportedOperationException ex ) {
+            assertNull( "ex.getMessage()", ex.getMessage() );
+            assertThrownBy( InteractorImpl.class, ex );
+            assertSame( "(Complex) complex.products", someProduct, getPrivateField( complex, "products" ) );
+        }
+    }
+
     public void testToStringThrowsNullPointerException() throws Throwable {
         try {
             new Complex().toString();

@@ -19,5 +19,29 @@ public class IntactObjectImplAgitarTest extends AgitarTestCase {
         Institution result = ( Institution ) new Institution( "testIntactLabel" ).clone();
         assertNull( "result.getFullName()", result.getFullName() );
     }
+
+    public void testGetAc() throws Throwable {
+        String result = new CvGoNode().getAc();
+        assertNull( "result", result );
+    }
+
+    public void testGetAc1() throws Throwable {
+        IntactObjectImpl cvGoNode = new CvGoNode();
+        cvGoNode.setAc( "testIntactObjectImplAc" );
+        String result = cvGoNode.getAc();
+        assertEquals( "result", "testIntactObjectImplAc", result );
+    }
+
+    public void testSetAc() throws Throwable {
+        IntactObjectImpl cvGoNode = new CvGoNode();
+        cvGoNode.setAc( "testIntactObjectImplAc" );
+        assertEquals( "(CvGoNode) cvGoNode.ac", "testIntactObjectImplAc", ( ( CvGoNode ) cvGoNode ).getAc());
+    }
+
+    public void testSetDeprecated() throws Throwable {
+        IntactObjectImpl cvGoNode = new CvGoNode();
+        cvGoNode.setDeprecated( true );
+        assertTrue( "(CvGoNode) cvGoNode.isDeprecated()", cvGoNode.isDeprecated() );
+    }
 }
 

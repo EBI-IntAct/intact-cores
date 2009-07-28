@@ -3,14 +3,14 @@
     <parent>
         <groupId>uk.ac.ebi.intact.core</groupId>
         <artifactId>core</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.9.9-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>intact-core</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.9.9-SNAPSHOT</version>
 
     <name>IntAct Core :: Core</name>
     <url>http://www.ebi.ac.uk/~intact/devsite/${artifactId}</url>
@@ -28,19 +28,19 @@
             </resource>
         </resources>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.myfaces.tobago</groupId>-->
-                <!--<artifactId>maven-apt-plugin</artifactId>-->
-                <!--<version>1.0.11</version>-->
-                <!--<configuration>-->
-                    <!--<target>1.5</target>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>generate-sources</phase>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.myfaces.tobago</groupId>
+                <artifactId>maven-apt-plugin</artifactId>
+                <version>1.0.11</version>
+                <configuration>
+                    <target>1.5</target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -63,11 +63,6 @@
 
         <!-- third party deps -->
         <dependency>
-    <groupId>cglib</groupId>
-    <artifactId>cglib-nodep</artifactId>
-    <version>2.2</version>
-</dependency> 
-        <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
             <version>1.4.1</version>
@@ -80,8 +75,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.4</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.agitar</groupId>
@@ -116,21 +109,12 @@
             <artifactId>commons-beanutils</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-
-        <!-- Database -->
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>1.8.0.7</version>
+            <groupId>org.dbunit</groupId>
+            <artifactId>dbunit</artifactId>
         </dependency>
 
         <!-- JODA Time Utils -->
@@ -162,34 +146,13 @@
             <version>1.3.0</version>
         </dependency>
 
-        <!-- Spring  -->
+        <!-- Spring 2.0 - Optional support -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
-            <version>2.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>2.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aspects</artifactId>
-            <version>2.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-agent</artifactId>
-            <version>2.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>2.5.6</version>
+            <version>2.5</version>
             <optional>true</optional>
         </dependency>
-
 
         <!-- server -->
         <dependency>
@@ -207,23 +170,6 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>JDK5</id>
-            <activation>
-                <jdk>1.5</jdk>
-            </activation>
-            <dependencies>
-                <!-- @PostConstruct -->
-                <dependency>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-annotation_1.0_spec</artifactId>
-                    <version>1.1.1</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
     <!-- EBI repositories -->
     <repositories>

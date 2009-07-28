@@ -7,11 +7,10 @@
  *
  */
 
-package agitar.uk.ac.ebi.intact.modelt;
+package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.model.*;
 
 import com.agitar.lib.junit.AgitarTestCase;
 import com.agitar.lib.mockingbird.Mockingbird;
-import uk.ac.ebi.intact.model.*;
 
 import java.util.ArrayList;
 
@@ -153,7 +152,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -168,7 +167,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -184,7 +183,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -199,7 +198,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -213,7 +212,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -232,7 +231,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -253,7 +252,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -271,7 +270,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -286,7 +285,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -305,7 +304,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -321,7 +320,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -337,7 +336,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -354,7 +353,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -374,7 +373,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -391,7 +390,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -415,7 +414,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -431,7 +430,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -455,7 +454,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -474,7 +473,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -497,7 +496,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -510,7 +509,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -529,7 +528,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -544,7 +543,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -569,7 +568,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -590,7 +589,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -607,7 +606,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -626,7 +625,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -646,7 +645,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -664,7 +663,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -684,7 +683,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertNull( "mineInteraction.getPk()", mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -703,7 +702,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -722,7 +721,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertEquals( "mineInteraction.getShortLabel1()", "testMineLabel1", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -742,7 +741,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -763,7 +762,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertNull( "mineInteraction.getPublicationId()", mineInteraction.getPubmedId() );
+        assertNull( "mineInteraction.getPubmedId()", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -782,7 +781,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertEquals( "mineInteraction.getTaxid()", "testMineInteractionTaxid", mineInteraction.getTaxid() );
         assertNull( "mineInteraction.getExperiment()", mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -804,7 +803,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -824,7 +823,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertEquals( "mineInteraction.getShortLabel2()", "testMineLabel2", mineInteraction.getShortLabel2() );
         assertNull( "mineInteraction.getDetectionMethod()", mineInteraction.getDetectionMethod() );
@@ -845,7 +844,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getPk()", pk, mineInteraction.getPk() );
         assertNull( "mineInteraction.getTaxid()", mineInteraction.getTaxid() );
         assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
         assertNull( "mineInteraction.getShortLabel1()", mineInteraction.getShortLabel1() );
         assertNull( "mineInteraction.getShortLabel2()", mineInteraction.getShortLabel2() );
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
@@ -900,7 +899,7 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
     public void testSetPubmedId() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
         mineInteraction.setPubmedId( "testMineInteractionPubmedId" );
-        assertEquals( "mineInteraction.getPublicationId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
+        assertEquals( "mineInteraction.getPubmedId()", "testMineInteractionPubmedId", mineInteraction.getPubmedId() );
     }
 
     public void testSetShortLabel1() throws Throwable {

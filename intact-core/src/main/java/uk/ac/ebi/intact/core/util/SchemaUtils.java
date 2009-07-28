@@ -23,19 +23,12 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.Oracle9iDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.ejb.Ejb3Configuration;
-import org.hibernate.mapping.PersistentClass;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
-import uk.ac.ebi.intact.core.IntactException;
-import uk.ac.ebi.intact.core.IntactTransactionException;
-import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistence;
-import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.context.IntactInitializer;
+import uk.ac.ebi.intact.business.IntactTransactionException;
+import uk.ac.ebi.intact.config.IntactAuxiliaryConfigurator;
+import uk.ac.ebi.intact.context.DataContext;
+import uk.ac.ebi.intact.context.IntactContext;
 
-import javax.persistence.spi.PersistenceUnitInfo;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -77,11 +70,12 @@ public class SchemaUtils {
     }
 
     private static Configuration createConfiguration(Properties props) {
-        Ejb3Configuration ejbConfig = new IntactHibernatePersistence().getBasicConfiguration();
+        Ejb3Configuration ejbConfig = new Ejb3Configuration();
+        ejbConfig.configure("intact-core-default", props);
+        IntactAuxiliaryConfigurator.configure(ejbConfig);
 
-        ejbConfig.addProperties(props);
-
-        return ejbConfig.getHibernateConfiguration();
+        Configuration cfg = ejbConfig.getHibernateConfiguration();
+        return cfg;
     }
 
     /**
@@ -117,21 +111,6 @@ public class SchemaUtils {
         return sqls;
     }
 
-    public static String[] getTableNames() {
-        List<String> tableNames = new ArrayList<String>();
-
-        Configuration cfg = createConfiguration(new Properties());
-
-        Iterator<PersistentClass> classMappings = cfg.getClassMappings();
-
-        while (classMappings.hasNext()) {
-            PersistentClass o =  classMappings.next();
-            tableNames.add(o.getTable().getName());
-        }
-
-        return tableNames.toArray(new String[tableNames.size()]);
-    }
-
     /**
      * Generates the DDL schema for Oracle
      * @return an array containing the SQL statements
@@ -151,7 +130,7 @@ public class SchemaUtils {
     /**
      * Creates a schema and initialize the database
      */
-    public static void createSchema() {
+    public static void createSchema() throws IntactTransactionException {
         createSchema(true);
     }
 
@@ -159,7 +138,7 @@ public class SchemaUtils {
      * Creates a schema
      * @param initializeDatabase If false, do not initialize the database (e.g. don't create Institution)
      */
-    public static void createSchema(boolean initializeDatabase) {
+    public static void createSchema(boolean initializeDatabase) throws IntactTransactionException {
         if (log.isDebugEnabled()) log.debug("Creating schema");
 
         SchemaExport se = newSchemaExport();
@@ -167,22 +146,13 @@ public class SchemaUtils {
 
         if (initializeDatabase) {
             if (log.isDebugEnabled()) log.debug("Initializing database");
-            IntactInitializer initializer = (IntactInitializer) IntactContext.getCurrentInstance()
-                    .getSpringContext().getBean("intactInitializer");
-            try {
-                initializer.init();
-            } catch (Exception e) {
-                throw new IntactException("Problem re-initializing core", e);
-            }
+            IntactContext.getCurrentInstance().close();
+            IntactContext.getCurrentInstance(); // Used to force re-initialization of the framework
         } 
     }
 
     protected static SchemaExport newSchemaExport() {
-        LocalEntityManagerFactoryBean factoryBean = (LocalEntityManagerFactoryBean) IntactContext.getCurrentInstance().getSpringContext()
-                .getBean("&entityFactoryManager");
-
-        PersistenceUnitInfo persistenceUnitInfo = factoryBean.getPersistenceUnitInfo();
-        Configuration config = new Ejb3Configuration().configure(persistenceUnitInfo, null).getHibernateConfiguration();
+        Configuration config = (Configuration) IntactContext.getCurrentInstance().getConfig().getDefaultDataConfig().getConfiguration();
         
         SchemaExport se =  new SchemaExport(config);
         return se;
@@ -191,11 +161,21 @@ public class SchemaUtils {
     /**
      * Drops the current schema, emptying the database
      */
-    public static void dropSchema() {
+    public static void dropSchema() throws IntactTransactionException {
         if (log.isDebugEnabled()) log.debug("Droping schema");
+
+        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
+
+        if (dataContext.isTransactionActive()) {
+            throw new IllegalStateException("To drop the schema, the transaction must NOT be active");
+        }
+
+        dataContext.beginTransaction();
 
         SchemaExport se = newSchemaExport();
         se.drop(false, true);
+
+        dataContext.commitTransaction();
     }
 
     /**
@@ -211,6 +191,12 @@ public class SchemaUtils {
      */
     public static void resetSchema(boolean initializeDatabase) throws IntactTransactionException {
         if (log.isDebugEnabled()) log.debug("Resetting schema");
+
+        DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
+
+        if (dataContext.isTransactionActive()) {
+            throw new IllegalStateException("To reset the schema, the transaction must NOT be active: "+dataContext.getDaoFactory().getCurrentTransaction());
+        }
 
         dropSchema();
         createSchema(initializeDatabase);

@@ -51,6 +51,11 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     /**
      * TODO comments
      */
+    private CvDevelopmentalStage cvDevelopmentalStage;
+
+    /**
+     * TODO comments
+     */
     private CvTissue cvTissue;
 
     /**

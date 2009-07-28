@@ -24,7 +24,7 @@ import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.clone.IntactClonerException;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.core.util.DebugUtil;
+import uk.ac.ebi.intact.util.DebugUtil;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;

@@ -1,15 +1,13 @@
 package uk.ac.ebi.intact.core.persister;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
+import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
-
-import javax.persistence.FlushModeType;
 
 /**
  * DefaultFinder Tester.
@@ -20,17 +18,16 @@ import javax.persistence.FlushModeType;
  */
 public class DefaultFinderTest extends IntactBasicTestCase {
 
-    @Autowired
     private Finder finder;
 
-    @BeforeTransaction
-    public void beforeTransaction() {
-        getEntityManager().setFlushMode(FlushModeType.COMMIT);
+    @Before
+    public void initFinder() {
+        finder = new DefaultFinder();
     }
 
-    @AfterTransaction
-    public void afterTransaction() {
-        getEntityManager().setFlushMode(FlushModeType.AUTO);
+    @After
+    public void cleanUp() {
+        finder = null;
     }
 
     @Test
@@ -56,7 +53,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         Assert.assertEquals( i.getAc(), ac );
 
         // cannot be found
-        Assert.assertNull( finder.findAc( getMockBuilder().createInstitution( "MI:zzzz", "lala" ) ) );
+        Assert.assertNull( finder.findAc( getMockBuilder().createInstitution( "MI:zzzz", "mint" ) ) );
     }
 
     @Test
@@ -249,8 +246,6 @@ public class DefaultFinderTest extends IntactBasicTestCase {
 
         // different uniprot id and shortlabel
         Assert.assertNull( finder.findAc( getMockBuilder().createProtein( "Q98765", "bar" ) ) );
-
-        getEntityManager().clear();
 
         // same xrefs but different type, should not work
         final SmallMolecule sm = getMockBuilder().createSmallMoleculeRandom();

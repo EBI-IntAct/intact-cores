@@ -16,24 +16,12 @@
 package uk.ac.ebi.intact.core.unit;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.context.DataContext;
-import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
+import uk.ac.ebi.intact.business.IntactTransactionException;
+import uk.ac.ebi.intact.context.DataContext;
+import uk.ac.ebi.intact.context.IntactContext;
+import uk.ac.ebi.intact.persistence.dao.DaoFactory;
 
 /**
  * Base for all intact-tests.
@@ -41,46 +29,42 @@ import javax.persistence.PersistenceUnit;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact.spring.xml",
-        "classpath*:/META-INF/standalone/*-standalone.spring.xml"})
-@TransactionConfiguration
-@Transactional
-public abstract class IntactBasicTestCase {
-    @Autowired
-    private IntactContext intactContext;
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
-    private PersisterHelper persisterHelper;
-
-    @PersistenceContext(unitName = "intact-core-default")
-    private EntityManager entityManager;
-
-    @PersistenceUnit(unitName = "intact-core-default")
-    private EntityManagerFactory entityManagerFactory;
+public abstract class IntactBasicTestCase
+{
 
     private IntactMockBuilder mockBuilder;
 
     @Before
-    public void prepareBasicTest() throws Exception {
-        mockBuilder = new IntactMockBuilder(intactContext.getConfig().getDefaultInstitution());
+    public final void prepareBasicTest() throws Exception {
+        mockBuilder = new IntactMockBuilder();
     }
 
     @After
-    public void afterBasicTest() throws Exception {
+    public final void afterBasicTest() throws Exception {
         mockBuilder = null;
     }
 
     @After
     public void end() throws Exception {
-       //((ConfigurableApplicationContext)applicationContext).close();
+        IntactContext.closeCurrentInstance();
+    }
+
+    protected void beginTransaction() {
+        getDataContext().beginTransaction();
+    }
+
+    protected void commitTransaction() throws IntactTestException {
+        if (getDataContext().isTransactionActive()) {
+            try {
+                getDataContext().commitTransaction();
+            } catch (IntactTransactionException e) {
+                throw new IntactTestException(e);
+            }
+        }
     }
 
     protected IntactContext getIntactContext() {
-        return intactContext;
+        return IntactContext.getCurrentInstance();
     }
 
     protected DataContext getDataContext() {
@@ -93,17 +77,5 @@ public abstract class IntactBasicTestCase {
 
     protected IntactMockBuilder getMockBuilder() {
         return mockBuilder;
-    }
-
-    public ConfigurableApplicationContext getSpringContext() {
-        return (ConfigurableApplicationContext) applicationContext;
-    }
-
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
-
-    public PersisterHelper getPersisterHelper() {
-        return persisterHelper;
     }
 }

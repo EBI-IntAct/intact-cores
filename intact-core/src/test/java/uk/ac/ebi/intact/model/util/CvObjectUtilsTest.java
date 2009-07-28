@@ -1,11 +1,10 @@
 package uk.ac.ebi.intact.model.util;
 
-import org.junit.Assert;
+import org.junit.*;
 import static org.junit.Assert.*;
-import org.junit.Test;
-import uk.ac.ebi.intact.core.config.impl.SmallCvPrimer;
-import uk.ac.ebi.intact.core.context.DataContext;
-import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.config.impl.SmallCvPrimer;
+import uk.ac.ebi.intact.context.DataContext;
+import uk.ac.ebi.intact.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -16,11 +15,19 @@ import java.util.Collection;
 
 public class CvObjectUtilsTest extends IntactBasicTestCase {
 
-    private void createSomeCVs() throws Exception {
+    @After
+    public void end() throws Exception {
+        // override default behaviour of closing IntactContext after each test
+    }
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
         final DataContext dataContext = IntactContext.getCurrentInstance().getDataContext();
         SmallCvPrimer primer = new SmallCvPrimer(dataContext.getDaoFactory());
 
+        dataContext.beginTransaction();
         primer.createCVs();
+        dataContext.commitTransaction();
 
         // add some nucleic acid CVs
         CvDatabase uniprot = new IntactMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
@@ -32,9 +39,13 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
         PersisterHelper.saveOrUpdate(uniprot, expRoleUnsp, expRoleBait, bioRoleEnzyme, bioRoleUnsp);
     }
 
+    @AfterClass
+    public static void afterClass() throws Exception {
+        IntactContext.closeCurrentInstance();
+    }
+
     @Test
     public void isNucleicAcidType() throws Exception {
-        createSomeCVs();
 
         IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
@@ -79,7 +90,6 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void isChildOfType() throws Exception {
-        createSomeCVs();
 
         IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
@@ -119,7 +129,6 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void getChildrenMIs() throws Exception {
-        createSomeCVs();
 
         IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
@@ -153,7 +162,6 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void getChildrenMIs_collection() throws Exception {
-        createSomeCVs();
 
         IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
@@ -198,7 +206,6 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void createCvObject() throws Exception {
-        createSomeCVs();
         CvObject cv = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
         Assert.assertNotNull(cv.getIdentifier());
         Assert.assertEquals(1, cv.getXrefs().size());
@@ -206,17 +213,15 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void getPsiMiXref() throws Exception {
-        createSomeCVs();
         CvObject cv = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
         Assert.assertEquals(CvDatabase.UNIPROT_MI_REF, CvObjectUtils.getPsiMiIdentityXref(cv).getPrimaryId());
     }
 
     @Test
     public void testGetPsiMiIdentityXref() throws Exception {
-        createSomeCVs();
         assertFalse( 0 == getDaoFactory().getCvObjectDao().countAll() );
 
-        CvDatabase uniprotKb = getDaoFactory().getCvObjectDao(CvDatabase.class).getByPsiMiRef( CvDatabase.UNIPROT_MI_REF );
+        CvDatabase uniprotKb = getIntactContext().getCvContext().getByMiRef( CvDatabase.class, CvDatabase.UNIPROT_MI_REF );
 
         CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref( uniprotKb );
 
@@ -226,10 +231,9 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void testGetPsiMiIdentityXref_psiMiRef() throws Exception {
-        createSomeCVs();
         assertFalse( 0 == getDaoFactory().getCvObjectDao().countAll() );
 
-        CvXrefQualifier identityQual = getDaoFactory().getCvObjectDao(CvXrefQualifier.class).getByPsiMiRef( CvXrefQualifier.IDENTITY_MI_REF );
+        CvXrefQualifier identityQual = getIntactContext().getCvContext().getByMiRef( CvXrefQualifier.class, CvXrefQualifier.IDENTITY_MI_REF );
 
         CvObjectXref cvObjectXref = CvObjectUtils.getPsiMiIdentityXref( identityQual );
 
@@ -247,7 +251,6 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void createRoleInfo_relevant() throws Exception {
-        createSomeCVs();
 
         String labelUnspecified = CvExperimentalRole.UNSPECIFIED;
         String miUnspecified = CvExperimentalRole.UNSPECIFIED_PSI_REF;
@@ -256,10 +259,10 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
         String labelBioDefined = CvBiologicalRole.ENZYME;
         String miBioDefined = CvBiologicalRole.ENZYME_PSI_REF;
 
-        CvExperimentalRole expUnspecified = getDaoFactory().getCvObjectDao(CvExperimentalRole.class).getByPsiMiRef( miUnspecified );
-        CvExperimentalRole expDefined = getDaoFactory().getCvObjectDao(CvExperimentalRole.class).getByPsiMiRef( miExpDefined );
-        CvBiologicalRole bioUnspecified = getDaoFactory().getCvObjectDao(CvBiologicalRole.class).getByPsiMiRef( miUnspecified );
-        CvBiologicalRole bioDefined = getDaoFactory().getCvObjectDao(CvBiologicalRole.class).getByPsiMiRef( miBioDefined );
+        CvExperimentalRole expUnspecified = getIntactContext().getCvContext().getByMiRef( CvExperimentalRole.class, miUnspecified );
+        CvExperimentalRole expDefined = getIntactContext().getCvContext().getByMiRef( CvExperimentalRole.class, miExpDefined );
+        CvBiologicalRole bioUnspecified = getIntactContext().getCvContext().getByMiRef( CvBiologicalRole.class, miUnspecified );
+        CvBiologicalRole bioDefined = getIntactContext().getCvContext().getByMiRef( CvBiologicalRole.class, miBioDefined );
 
         assertNotNull( expUnspecified );
         assertNotNull( expDefined );
