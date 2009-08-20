@@ -17,12 +17,17 @@ package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.model.CvDatabase;
+import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Protein;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * TODO comment this
@@ -32,6 +37,9 @@ import java.util.Arrays;
  */
 public class InteractionDaoTest extends IntactBasicTestCase {
 
+    @Autowired
+    private PersisterHelper persisterHelper;
+    
     @Test
     public void getByInteractorsPrimaryId_exact() throws Exception {
         final IntactMockBuilder mockBuilder = getMockBuilder();
@@ -43,7 +51,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         mockInteraction.getComponents().add( mockBuilder
                 .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A2", "prot2" ) ) );
 
-        PersisterHelper.saveOrUpdate( mockInteraction );
+        persisterHelper.save( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
@@ -65,7 +73,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         mockInteraction.getComponents().add( mockBuilder
                 .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A3", "prot3" ) ) );
 
-        PersisterHelper.saveOrUpdate( mockInteraction );
+        persisterHelper.save( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
@@ -87,7 +95,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         mockInteraction.getComponents().add( mockBuilder
                 .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A3", "prot3" ) ) );
 
-        PersisterHelper.saveOrUpdate( mockInteraction );
+        persisterHelper.save( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
@@ -105,7 +113,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         mockInteraction.getComponents().add( mockBuilder
                 .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A1", "prot1" ) ) );
 
-        PersisterHelper.saveOrUpdate( mockInteraction );
+        persisterHelper.save( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
@@ -119,7 +127,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         Interaction mockInteraction = mockBuilder.createInteractionRandomBinary();
         mockInteraction.getComponents().clear();
 
-        PersisterHelper.saveOrUpdate( mockInteraction );
+        persisterHelper.save( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
     }
@@ -134,8 +142,51 @@ public class InteractionDaoTest extends IntactBasicTestCase {
             String[] primaryIds = Arrays.asList(all).subList(0, i).toArray(new String[i]);
             Interaction interaction = getMockBuilder().createInteraction(primaryIds);
 
-            PersisterHelper.saveOrUpdate(interaction);
+            persisterHelper.save(interaction);
             Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, primaryIds).size());
         }
+    }
+
+    @Test
+    public void getInteractionsForProtPairAc() throws Exception {
+        Protein p1 = getMockBuilder().createProteinRandom();
+        Protein p2 = getMockBuilder().createProteinRandom();
+
+        Interaction interaction = getMockBuilder().createInteraction(p1, p2);
+
+        persisterHelper.save(p1, p2, interaction);
+
+        getEntityManager().flush();
+        getEntityManager().clear();
+
+        final List<Interaction> interactions = getDaoFactory().getInteractionDao().getInteractionsForProtPairAc(p1.getAc(), p2.getAc());
+        Assert.assertEquals(1, interactions.size());
+
+        final List<Interaction> interactions2 = getDaoFactory().getInteractionDao().getInteractionsForProtPairAc(p1.getAc(), "lalalaAC");
+        Assert.assertEquals(0, interactions2.size());
+    }
+
+    @Test
+    public void getInteractionsForProtPairAc_oneSecondary() throws Exception {
+        Protein p1 = getMockBuilder().createProteinRandom();
+        Protein p2 = getMockBuilder().createProteinRandom();
+
+        CvDatabase intact = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+        CvXrefQualifier secondaryId = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.SECONDARY_AC_MI_REF, CvXrefQualifier.SECONDARY_AC);
+
+        p2.getXrefs().add(getMockBuilder().createXref(p2, "TEST-0000", secondaryId, intact));
+
+        Interaction interaction = getMockBuilder().createInteraction(p1, p2);
+
+        persisterHelper.save(p1, p2, interaction);
+
+        getEntityManager().flush();
+        getEntityManager().clear();
+
+        final List<Interaction> interactions = getDaoFactory().getInteractionDao().getInteractionsForProtPairAc(p1.getAc(), p2.getAc());
+        Assert.assertEquals(1, interactions.size());
+
+        final List<Interaction> interactions2 = getDaoFactory().getInteractionDao().getInteractionsForProtPairAc(p1.getAc(), "TEST-0000");
+        Assert.assertEquals(1, interactions2.size());
     }
 }

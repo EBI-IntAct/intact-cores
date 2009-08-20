@@ -109,6 +109,15 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
     }
 
     public List<Interaction> getInteractionsForProtPairAc( String protAc1, String protAc2 ) {
+        // check first if the ACs exist (in the main table or as secondary ACs.
+        protAc1 = getAcByPrimaryOrSecondary(protAc1);
+
+        if (protAc1 == null) return Collections.EMPTY_LIST;
+
+        protAc2 = getAcByPrimaryOrSecondary(protAc2);
+
+        if (protAc2 == null) return Collections.EMPTY_LIST;
+
         Query query = getEntityManager().createQuery( "SELECT i FROM InteractionImpl AS i, Component AS c1, Component AS c2 " +
                                                 "WHERE i.ac = c1.interactionAc AND i.ac = c2.interactionAc AND " +
                                                 "c1.interactorAc = :protAc1 AND c2.interactorAc = :protAc2" );
@@ -117,6 +126,26 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         query.setParameter( "protAc2", protAc2 );
 
         return query.getResultList();
+    }
+
+    private String getAcByPrimaryOrSecondary(String protAc) {
+        Query interactorQuery = getEntityManager().createQuery("SELECT COUNT (i) FROM InteractorImpl i WHERE i.ac = :interactorAc");
+        interactorQuery.setParameter("interactorAc", protAc);
+
+        if ((Long)interactorQuery.getSingleResult() == 0) {
+            Query secondaryQuery = getEntityManager().createQuery("SELECT xref.parent.ac FROM InteractorXref xref WHERE xref.primaryId = :primaryId");
+            secondaryQuery.setParameter("primaryId", protAc);
+
+            List<String> results = secondaryQuery.getResultList();
+
+            if (results.size() > 0) {
+                return results.iterator().next();
+            } else {
+                return null;
+            }
+        }
+
+        return protAc;
     }
 
     public Collection<Interaction> getSelfBinaryInteractionsByProtAc( String protAc ) {
