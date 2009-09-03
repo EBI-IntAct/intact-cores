@@ -15,16 +15,13 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import org.apache.commons.collections.map.LRUMap;
+import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.XrefUtils;
-import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.*;
 
 
 /**
@@ -35,13 +32,19 @@ import java.util.List;
  * @version $Id$
  * @since 1.8.0
  */
-class KeyBuilder {
+public class KeyBuilder {
+
+    private Map<String,Key> keyCache = new LRUMap(10000);
 
     public Key keyFor( AnnotatedObject ao ) {
         Key key;
 
+        String cacheKey = ao.getClass().getSimpleName()+":"+System.identityHashCode(ao);
+
         if (ao.getAc() != null) {
             key = new Key(ao.getAc());
+        } else if (keyCache.containsKey(cacheKey)) {
+            return keyCache.get(cacheKey);
         } else if ( ao instanceof Institution ) {
             key = keyForInstitution( ( Institution ) ao );
         } else if ( ao instanceof Publication ) {
@@ -63,10 +66,13 @@ class KeyBuilder {
         } else {
             throw new IllegalArgumentException( "KeyBuilder doesn't build key for: " + ao.getClass().getName() );
         }
+
+        keyCache.put(cacheKey, key);
+
         return key;
     }
 
-    public Key keyForInstitution( Institution institution ) {
+    protected Key keyForInstitution( Institution institution ) {
         final Collection<InstitutionXref> institutionXrefs = XrefUtils.getIdentityXrefs( institution );
 
         Key key;
@@ -80,20 +86,31 @@ class KeyBuilder {
         return key;
     }
 
-    public Key keyForPublication( Publication publication ) {
+    protected Key keyForPublication( Publication publication ) {
         return keyForAnnotatedObject( publication );
     }
 
-    public Key keyForExperiment( Experiment experiment ) {
+    protected Key keyForExperiment( Experiment experiment ) {
 
         return new Key(new ExperimentKeyCalculator().calculateExperimentKey(experiment));
     }
 
-    public Key keyForInteraction( Interaction interaction ) {
-        return new Key( new CrcCalculator().crc64( interaction ) );
+    protected Key keyForInteraction( Interaction interaction ) {
+        final Key key = new Key(new CrcCalculator().crc64(interaction));
+
+        // pre-calculate the keys for the components here and put them in a map
+        int n = 0;
+
+        for (Component component : interaction.getComponents()) {
+            Key compKey = new Key(key.getUniqueString()+":"+component.getShortLabel()+"["+n+"]");
+            keyCache.put(Component.class.getSimpleName()+":"+System.identityHashCode(component), compKey);
+            n++;
+        }
+
+        return key;
     }
 
-    public Key keyForInteractor( Interactor interactor ) {
+    protected Key keyForInteractor( Interactor interactor ) {
         final Collection<InteractorXref> interactorXrefs = XrefUtils.getIdentityXrefs( interactor );
 
         Key key;
@@ -108,32 +125,25 @@ class KeyBuilder {
         return key;
     }
 
-    public Key keyForBioSource( BioSource bioSource ) {
+    protected Key keyForBioSource( BioSource bioSource ) {
         return new Key( "BioSource:" + bioSource.getTaxId() );
     }
 
-    public Key keyForComponent( Component component ) {
-        if ( component.getInteraction() == null ) {
-            throw new IllegalArgumentException( "Cannot create a component key for component without interaction: " + component );
+    protected Key keyForComponent( Component component ) {
+        final String cacheKey = Component.class.getSimpleName()+":"+System.identityHashCode(component);
+
+        if (!keyCache.containsKey(cacheKey)) {
+            keyForInteraction(component.getInteraction());
         }
-        if ( component.getInteractor() == null ) {
-            throw new IllegalArgumentException( "Cannot create a component key for component without interactor: " + component );
+
+        if (keyCache.containsKey(cacheKey)) {
+            return keyCache.get(cacheKey);
         }
 
-
-
-        String expRole = "";
-        for( CvExperimentalRole cvexp : component.getExperimentalRoles()){
-          expRole = cvexp.getIdentifier()+",";
-        }
-        if(expRole.length()>0) {expRole = expRole.substring( 0,expRole.length()-1);}
-
-        String label = "Component:" + component.getInteraction().getShortLabel() + "_" + component.getInteractor().getShortLabel()+"_"+expRole
-                       +"_"+component.getCvBiologicalRole().getIdentifier();
-        return new Key( label );
+        throw new IllegalStateException("This component should already have already a key, generated when the interaction key is generated: "+component);
     }
 
-    public Key keyForFeature( Feature feature ) {
+    protected Key keyForFeature( Feature feature ) {
 
 
         if ( feature.getComponent() == null ) {
@@ -146,7 +156,7 @@ class KeyBuilder {
 //        return new Key( keyForAnnotatedObject( feature ).getUniqueString() + "___" + componentKey.getUniqueString() );
     }
 
-    public Key keyForCvObject( CvObject cvObject ) {
+    protected Key keyForCvObject( CvObject cvObject ) {
         String key = cvObject.getIdentifier();
         if ( key == null ) {
             // search for identity

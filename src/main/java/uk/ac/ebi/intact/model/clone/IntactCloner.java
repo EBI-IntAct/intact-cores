@@ -366,7 +366,9 @@ public class IntactCloner {
         clonerManager.addClone( interaction, clone );
 
         for ( Component component : interaction.getComponents() ) {
-            clone.addComponent(clone( component ));
+            final Component clonedComp = clone(component);
+            clonedComp.setInteraction(clone);
+            clone.getComponents().add(clonedComp);
         }
 
         clone.setCvInteractionType(clone( interaction.getCvInteractionType() ));
@@ -378,10 +380,6 @@ public class IntactCloner {
 
         clone.setKD( interaction.getKD() );
         clone.setCrc( interaction.getCrc() );
-
-        for ( Component component : interaction.getComponents() ) {
-            clone.addComponent(clone( component ));
-        }
 
         for ( Confidence confidence : interaction.getConfidences() ) {
             clone.addConfidence(clone( confidence ));

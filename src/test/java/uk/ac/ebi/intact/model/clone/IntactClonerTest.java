@@ -3,10 +3,10 @@ package uk.ac.ebi.intact.model.clone;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
 import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
@@ -28,15 +28,36 @@ public class IntactClonerTest extends IntactBasicTestCase {
     @Autowired
     private IntactCloner cloner;
 
-    private void clone( IntactObject io ) throws IntactClonerException {
-        final IntactObject clone = cloner.clone( io );
+    private <T extends IntactObject> T clone( T io ) throws IntactClonerException {
+        final T clone = cloner.clone( io );
         Assert.assertNotSame( io, clone );
         Assert.assertEquals( io, clone );
+
+        return clone;
     }
 
     @Test
     public void cloneInteraction() throws Exception {
         clone( getMockBuilder().createDeterministicInteraction() );
+    }
+
+    @Test
+    public void cloneInteraction_identicalComponents() throws Exception {
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
+        interaction.getComponents().clear();
+
+        Assert.assertEquals(0, interaction.getComponents().size());
+
+        final Protein prot = getMockBuilder().createProtein("P12345", "lala");
+        Component a = getMockBuilder().createComponentNeutral(interaction, prot);
+
+        interaction.getComponents().add(a);
+
+        Assert.assertEquals(2, interaction.getComponents().size());
+
+        Interaction clone = clone(interaction);
+
+        Assert.assertEquals(2, clone.getComponents().size());
     }
 
         @Test

@@ -157,8 +157,11 @@ public class CorePersisterImpl implements CorePersister {
 
             // check if the synchronized AO and the provided AO are the same instance. If not, it should be
             // considered a duplicate (the provide AO has an equivalent synchronized AO).
-            if (ao != synchedAo) {
-                if (log.isDebugEnabled() && !(ao instanceof CvObject) && !(ao instanceof Institution)) {
+            if (ao != synchedAo &&
+                    !(ao instanceof Component) &&
+                    !(ao instanceof CvObject) &&
+                    !(ao instanceof Institution)) {
+                if (log.isDebugEnabled()) {
                     log.debug("Duplicated "+ao.getClass().getSimpleName()+": [new:["+ao+"]] duplicates [synch:["+synchedAo+"]]");
                 }
 
