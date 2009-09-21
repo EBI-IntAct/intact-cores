@@ -237,58 +237,66 @@ public class CorePersisterImpl implements CorePersister {
         } else {
 
             final BaseDao baseDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getBaseDao();
+
             if ( baseDao.isTransient( ao )) {
 
-                if (log.isTraceEnabled()) log.trace("Transient "+ao.getClass().getSimpleName()+": "+ao.getAc()+" "+ao.getShortLabel()+" - Decision: SYNCHRONIZE-REFRESH");
+                if (!(ao instanceof Institution)) {  // ignore transient insititutions
 
-                // transient object: that is not attached to the session
-                //ao = transientObjectHandler.handle( ao );
+                    if (log.isTraceEnabled()) log.trace("Transient "+ao.getClass().getSimpleName()+": "+ao.getAc()+" "+ao.getShortLabel()+" - Decision: SYNCHRONIZE-REFRESH");
 
+                    if (statisticsEnabled) statistics.addTransient(ao);
 
-                if (statisticsEnabled) statistics.addTransient(ao);
+                    // object exists in the database, we will update it
+                    final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+                    final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( ( Class<T> ) ao.getClass() );
 
-                // object exists in the database, we will update it
-                final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
-                final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( ( Class<T> ) ao.getClass() );
+                    String ac = ao.getAc();
 
-                String ac = ao.getAc();
+                    final T managedObject = dao.getByAc(ac);
 
-                final T managedObject = dao.getByAc(ac);
-                
-                // updated the managed object based on ao's properties, but only add it to merge
-                // if something has been copied (it was not a duplicate)
-                try {
-                    boolean copied = false;
+                    if (managedObject == null) {
+                        throw new IllegalStateException(ao.getClass().getSimpleName()+" is transient, but no object with the same AC could be found in database: "+ao.getAc()+" ("+ao.getShortLabel()+")");
+                    }
+
+                    // updated the managed object based on ao's properties, but only add it to merge
+                    // if something has been copied (it was not a duplicate)
                     try {
-                        copied = entityStateCopier.copy( ao, managedObject );
-                    } catch (Exception e) {
-                        throw new PersisterException("Problem copying state to managed object of type "+ao.getClass().getSimpleName()+" and AC "+ao.getAc()+", from object: "+ao, e);
+                        boolean copied = false;
+                        try {
+                            copied = entityStateCopier.copy( ao, managedObject );
+                        } catch (Exception e) {
+                            throw new PersisterException("Problem copying state to managed object of type "+ao.getClass().getSimpleName()+" and AC "+ao.getAc()+", from object: "+ao, e);
+                        }
+
+                        // this will allow to reload the AO by its AC after flushing
+                        ao.setAc(ac);
+
+                        // traverse annotatedObject's properties and assign AC where appropriate
+                        try {
+                            copyAnnotatedObjectAttributeAcs(managedObject, ao);
+                        } catch (Exception e) {
+                            throw new PersisterException("Problem copying ACs from managed object of type "+ao.getClass().getSimpleName()+" and AC "+ao.getAc()+", to object: "+ao, e);
+                        }
+
+                        // and the created info, so the merge does not fail due to missing created data
+                        ao.setCreated(managedObject.getCreated());
+                        ao.setCreator(managedObject.getCreator());
+
+                        if (copied) {
+                            statistics.addMerged(managedObject);
+                        }
+
+                        // synchronize aliases, xrefs, annotations...
+                        synchronizeChildren( managedObject );
+
+                    } catch (LazyInitializationException e) {
+                        log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
+                        ao = managedObject;
+                    } catch (Throwable e) {
+                        log.error("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+").", e);
+                        ao = managedObject;
                     }
-
-                    // this will allow to reload the AO by its AC after flushing
-                    ao.setAc(ac);
-
-                    // traverse annotatedObject's properties and assign AC where appropriate
-                    copyAnnotatedObjectAttributeAcs(managedObject, ao);
-
-                    // and the created info, so the merge does not fail due to missing created data
-                    ao.setCreated(managedObject.getCreated());
-                    ao.setCreator(managedObject.getCreator());
-
-                    if (copied) {
-                        statistics.addMerged(managedObject);
-                    }
-
-                    // synchronize aliases, xrefs, annotations...
-                    synchronizeChildren( managedObject );
-
-                } catch (LazyInitializationException e) {
-                    log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
-                    ao = managedObject;
-                } catch (PersisterException e) {
-                    log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
-                    ao = managedObject;
-                } 
+                }
 
             } else {
                 if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
@@ -297,6 +305,10 @@ public class CorePersisterImpl implements CorePersister {
                 // This has been commented out, because synchronizing the children might start a synchronization of the whole database
                 //synchronizeChildren( ao );
             }
+        }
+
+        if (ao == null) {
+            throw new IllegalStateException("Annotated object is null");
         }
 
         // check if the object class after synchronization is the same as in the beginning

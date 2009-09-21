@@ -1,18 +1,18 @@
 package uk.ac.ebi.intact.core.persister;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.Feature;
 import uk.ac.ebi.intact.model.CvExperimentalRole;
+import uk.ac.ebi.intact.model.Feature;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 
 /**
