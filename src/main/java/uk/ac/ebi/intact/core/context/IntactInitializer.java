@@ -73,7 +73,6 @@ public class IntactInitializer implements ApplicationContextAware{
     private static final Log log = LogFactory.getLog(IntactInitializer.class);
 
     public IntactInitializer() {
-        
     }
 
     public void init() {

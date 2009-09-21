@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.dialect.Oracle9iDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.ejb.Ejb3Configuration;
@@ -77,7 +78,7 @@ public class SchemaUtils {
     }
 
     private static Configuration createConfiguration(Properties props) {
-        Ejb3Configuration ejbConfig = new IntactHibernatePersistence().getBasicConfiguration();
+        Ejb3Configuration ejbConfig = new IntactHibernatePersistence().getBasicConfiguration(props);
 
         ejbConfig.addProperties(props);
 
@@ -85,7 +86,7 @@ public class SchemaUtils {
     }
 
     /**
-     * Generates the DDL schema for Oracle 9i
+     * Generates the DDL schema for Oracle 9i.
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDLForOracle() {
@@ -93,11 +94,19 @@ public class SchemaUtils {
     }
 
     /**
-     * Generates the DDL schema for PostgreSQL
+     * Generates the DDL schema for PostgreSQL.
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDLForPostgreSQL() {
         return generateCreateSchemaDDL(PostgreSQLDialect.class.getName());
+    }
+
+    /**
+     * Generates the DDL schema for HSQL DB.
+     * @return an array containing the SQL statements
+     */
+    public static String[] generateCreateSchemaDDLForHSQL() {
+        return generateCreateSchemaDDL(HSQLDialect.class.getName());
     }
 
     /**

@@ -15,14 +15,16 @@
  */
 package uk.ac.ebi.intact.core.config.hibernate;
 
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.dialect.Dialect;
 import org.hibernate.ejb.Ejb3Configuration;
+import org.hibernate.ejb.HibernatePersistence;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitInfo;
+import java.util.HashMap;
 import java.util.Map;
-
-import uk.ac.ebi.intact.core.config.hibernate.SequenceAuxiliaryDatabaseObject;
+import java.util.Properties;
 
 /**
  * Overrides the HibernatePersistence class only to add the intact auxiliary objects at start time.
@@ -77,9 +79,21 @@ public class IntactHibernatePersistence extends HibernatePersistence {
         return cfg.createEntityManagerFactory(properties);
     }
 
-    public Ejb3Configuration getBasicConfiguration() {
+    public Ejb3Configuration getBasicConfiguration(Properties props) {
+        final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+        factoryBean.setPersistenceUnitName("intact-core-default");
+
+        final IntactHibernateJpaVendorAdapter jpaVendorAdapter = new IntactHibernateJpaVendorAdapter();
+        jpaVendorAdapter.setDatabasePlatform(Dialect.getDialect(props).getClass().getName());
+        factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
+        factoryBean.afterPropertiesSet();
+
         Ejb3Configuration cfg = new Ejb3Configuration();
-        configure(cfg);
+        Ejb3Configuration configured = cfg.configure(factoryBean.getPersistenceUnitInfo(), new HashMap());
+
+        if (configured != null) {
+            configure(configured);
+        }
         return cfg;
     }
 
