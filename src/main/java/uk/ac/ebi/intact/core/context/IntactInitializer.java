@@ -119,10 +119,13 @@ public class IntactInitializer implements ApplicationContextAware{
     public void persistInstitution(Institution candidateInstitution, boolean isDefault) {
         Institution institution = institutionDao.getByShortLabel(candidateInstitution.getShortLabel());
 
-        if (institution == null && isAutoPersist()) {
+        if (institution == null) {
+            institution = candidateInstitution;
+        }
+
+        if (isAutoPersist()) {
             if (log.isDebugEnabled()) log.debug("Persisting institution: "+candidateInstitution);
             persisterHelper.save(candidateInstitution);
-
         } else if (isDefault) {
             configuration.setDefaultInstitution(institution);
         }
