@@ -94,6 +94,9 @@ public class IntactHibernatePersistence extends HibernatePersistence {
         if (configured != null) {
             configure(configured);
         }
+
+        factoryBean.getNativeEntityManagerFactory().close();
+
         return cfg;
     }
 
