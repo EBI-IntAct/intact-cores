@@ -20,8 +20,8 @@ public class IntactObjectEventListenerTest extends IntactBasicTestCase {
         Assert.assertNotNull(institution.getCreated());
         Assert.assertNotNull(institution.getUpdated());
         Assert.assertEquals(institution.getCreated(), institution.getUpdated());
-        Assert.assertEquals("TEST_USER", institution.getCreator());
-        Assert.assertEquals("TEST_USER", institution.getUpdator());
+        Assert.assertEquals("UNDEFINED_USER", institution.getCreator());
+        Assert.assertEquals("UNDEFINED_USER", institution.getUpdator());
 
         getIntactContext().getUserContext().setUserId("Sam");
         
@@ -34,7 +34,7 @@ public class IntactObjectEventListenerTest extends IntactBasicTestCase {
 
         Assert.assertTrue( "updated={"+institution.getUpdated()+"} created={"+institution.getCreated()+"}",
                            institution.getUpdated().compareTo( institution.getCreated() ) >= 0);
-        Assert.assertEquals("TEST_USER", institution.getCreator());
+        Assert.assertEquals("UNDEFINED_USER", institution.getCreator());
         Assert.assertEquals("SAM", institution.getUpdator());
     }
 }

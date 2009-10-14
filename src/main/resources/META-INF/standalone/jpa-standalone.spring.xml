@@ -41,7 +41,6 @@
                 <property name="generateDdl" value="false"/>
             </bean>
         </property>
-
     </bean>
 
     <bean id="intactCoreDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">

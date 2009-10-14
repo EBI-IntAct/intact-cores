@@ -19,13 +19,26 @@
     <!--<context:load-time-weaver />-->
 
     <!--- IntAct -->
+    <bean id="intactInitializer" class="uk.ac.ebi.intact.core.context.IntactInitializer" init-method="init"/>
+
+    <bean id="userContext" class="uk.ac.ebi.intact.core.context.UserContext">
+        <property name="userId" value="UNDEFINED_USER"/>
+    </bean>
+
+    <bean id="intactConfig" class="uk.ac.ebi.intact.core.config.IntactConfiguration">
+        <property name="acPrefix" value="TEST"/>
+        <property name="defaultInstitution" ref="institutionUndefined"/>
+        <property name="autoUpdateExperimentLabel" value="true"/>
+        <property name="autoUpdateInteractionLabel" value="true"/>
+    </bean>
+
     <bean id="schemaVersion" class="uk.ac.ebi.intact.core.config.SchemaVersion">
         <constructor-arg value="2"/>
         <constructor-arg value="0"/>
         <constructor-arg value="0"/>
     </bean>
 
-    <bean name="corePersister" class="uk.ac.ebi.intact.core.persister.CorePersisterImpl" scope="prototype">
+    <bean id="corePersister" class="uk.ac.ebi.intact.core.persister.CorePersisterImpl" scope="prototype">
         <constructor-arg ref="intactContext"/>
         <constructor-arg>
             <bean class="uk.ac.ebi.intact.core.persister.finder.DefaultFinder"/>
@@ -33,7 +46,7 @@
     </bean>
 
     <!-- Default institutions -->
-    <bean name="institutionIntact" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
+    <bean id="institutionIntact" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
         <property name="name" value="intact"/>
         <property name="description" value="European Bioinformatics Institute"/>
         <property name="miAc" value="MI:0469"/>
@@ -46,14 +59,16 @@
             </list>
         </property>
     </bean>
-    <bean name="institutionMint" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
+
+    <bean id="institutionMint" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
         <property name="name" value="mint"/>
         <property name="description" value="MINT, Dpt of Biology, University of Rome Tor Vergata"/>
         <property name="miAc" value="MI:0471"/>
         <property name="pubmed" value="14681455"/>
         <property name="url" value="http://mint.bio.uniroma2.it/mint"/>
     </bean>
-    <bean name="institutionDip" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
+
+    <bean id="institutionDip" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
         <property name="name" value="dip"/>
         <property name="description" value="Database of Interacting Proteins"/>
         <property name="miAc" value="MI:0465"/>
@@ -67,7 +82,8 @@
             </list>
         </property>
     </bean>
-    <bean name="institutionUndefined" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
+
+    <bean id="institutionUndefined" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
         <property name="name" value="unknown"/>
         <property name="description" value="Undefined institution"/>
     </bean>

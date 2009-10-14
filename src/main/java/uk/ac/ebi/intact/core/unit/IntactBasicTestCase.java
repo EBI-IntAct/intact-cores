@@ -43,7 +43,7 @@ import javax.persistence.PersistenceUnit;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/intact.spring.xml",
-        "classpath*:/META-INF/standalone/*-standalone.spring.xml"})
+                                   "classpath*:/META-INF/standalone/*-standalone.spring.xml"})
 @TransactionConfiguration
 @Transactional
 public abstract class IntactBasicTestCase {

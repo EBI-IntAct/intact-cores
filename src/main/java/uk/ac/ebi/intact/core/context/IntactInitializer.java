@@ -38,7 +38,7 @@ import uk.ac.ebi.intact.model.util.CvObjectUtils;
 import java.util.Map;
 
 /**
- * TODO write description of the class.
+ * Intact database initializer.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -134,27 +134,34 @@ public class IntactInitializer implements ApplicationContextAware{
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void checkSchemaCompatibility() {
 
-        DbInfo dbInfoSchemaVersion = dbInfoDao.get(DbInfo.SCHEMA_VERSION);
+        if( ! configuration.isSkipSchemaCheck() ) {
 
-        SchemaVersion schemaVersion;
+            DbInfo dbInfoSchemaVersion = dbInfoDao.get(DbInfo.SCHEMA_VERSION);
 
-        if (dbInfoSchemaVersion == null && isAutoPersist()) {
-            log.info("Schema version does not exist. Will be created: " + requiredSchemaVersion);
-            DbInfo dbInfo = new DbInfo(DbInfo.SCHEMA_VERSION, requiredSchemaVersion.toString());
-            dbInfoDao.persist(dbInfo);
-            return;
-        } else {
+            SchemaVersion schemaVersion;
 
-            try {
-                schemaVersion = SchemaVersion.parse(dbInfoSchemaVersion.getValue());
-            }
-            catch (Exception e) {
-                throw new IntactInitializationError("Error parsing schema version", e);
-            }
+            if (dbInfoSchemaVersion == null ) {
 
-            if (!schemaVersion.isCompatibleWith(requiredSchemaVersion)) {
-                throw new IntactInitializationError("Database schema version " + requiredSchemaVersion + " is required" +
-                        " to use this version of intact-core. Schema version found: " + schemaVersion);
+                if( ! autoPersist  ) {
+                    throw new IntactInitializationError( "Could not find key "+ DbInfo.SCHEMA_VERSION +" in table IA_DB_INFO, please set IntactInitializer.autoPersist to true so it can be initialized at startup." );
+                }
+
+                if ( log.isInfoEnabled() ) log.info( "Schema version does not exist. Will be created: " + requiredSchemaVersion);
+                DbInfo dbInfo = new DbInfo(DbInfo.SCHEMA_VERSION, requiredSchemaVersion.toString());
+                dbInfoDao.persist(dbInfo);
+
+            } else {
+
+                try {
+                    schemaVersion = SchemaVersion.parse(dbInfoSchemaVersion.getValue());
+                } catch ( Exception e) {
+                    throw new IntactInitializationError("Error parsing schema version", e);
+                }
+
+                if (!schemaVersion.isCompatibleWith(requiredSchemaVersion)) {
+                    throw new IntactInitializationError("Database schema version " + requiredSchemaVersion + " is required" +
+                                                        " to use this version of intact-core. Schema version found: " + schemaVersion);
+                }
             }
         }
     }
