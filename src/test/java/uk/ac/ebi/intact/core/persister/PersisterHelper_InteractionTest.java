@@ -20,6 +20,9 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
@@ -815,6 +818,32 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         persisterHelper.save(interaction1);
         
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+    }
+
+    @Test
+    @Transactional( propagation = Propagation.NEVER )
+    public void persist_sameComponents() throws Exception {
+        TransactionStatus status = getDataContext().beginTransaction();
+        Protein p = getMockBuilder().createProtein("P12345", "GOT2");
+
+        Component c1 = getMockBuilder().createComponentNeutral( p );
+        c1.getBindingDomains().clear();
+        c1.getParameters().clear();
+
+        Component c2 = getMockBuilder().createComponentNeutral( p );
+        c2.getBindingDomains().clear();
+        c2.getParameters().clear();
+
+        Interaction interaction = getMockBuilder().createInteraction(c1, c2);
+
+        persisterHelper.save(interaction);
+        getDataContext().commitTransaction( status );
+
+        status = getDataContext().beginTransaction();
+        Assert.assertEquals( 1, getDaoFactory().getInteractionDao().getAll().size() );
+        Assert.assertEquals( 2, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals( 2, getDaoFactory().getInteractionDao().getByAc( interaction.getAc() ).getComponents().size() );
+        getDataContext().commitTransaction( status );
     }
 
     @Test
