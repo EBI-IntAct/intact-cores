@@ -294,6 +294,24 @@ public class IntactMockBuilder {
         return component;
     }
 
+    public Component createComponentNeutral( Interactor interactor ) {
+        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
+        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
+        CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.NEUTRAL_PSI_REF, CvExperimentalRole.NEUTRAL);
+        CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
+
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())),
+                                                      cvInteractionType, intType, nextString("label"), getInstitution());
+
+        Component component = createComponent(interaction, interactor, expRole, bioRole);
+
+        for (int i=0; i<childRandom(0,2); i++) {
+            component.addBindingDomain(createFeatureRandom());
+        }
+
+        return component;
+    }
+
     public Component createComponentBait(Interactor interactor) {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
