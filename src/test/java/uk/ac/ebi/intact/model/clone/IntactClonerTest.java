@@ -282,6 +282,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
         final Interaction interaction = getMockBuilder().createDeterministicInteraction();
         interaction.setShortLabel( "ptp61f-dock-1" );
 
+        Assert.assertEquals( 2, interaction.getComponents().size() );
         final Iterator<Component> iterator = interaction.getComponents().iterator();
 
         Component c1 = iterator.next();
@@ -301,6 +302,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
         f2.setBoundDomain( f1 );
         
         final Interaction clone = cloner.clone( interaction );
+        Assert.assertEquals( 2, clone.getComponents().size() );
 
         for ( Component component : clone.getComponents() ) {
             if( component.getShortLabel().equals( "c1" ) ) {
@@ -318,7 +320,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
                         hasFeature( component, "lys235thr-ser283thr", CvFeatureType.MUTATION, 235, 235 ));
 
             } else {
-                Assert.fail();
+                Assert.fail( "Expected to find a component with label c1 or c2, instead found: " + component.getShortLabel() );
             }
         }
 

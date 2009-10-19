@@ -354,9 +354,8 @@ public class IntactMockBuilder {
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
         Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(experiment)),
                                                       cvInteractionType, intType, shortLabel, getInstitution());
-
-        interaction.addComponent(createComponentBait(interaction, bait));
-        interaction.addComponent(createComponentPrey(interaction, prey));
+        createComponentBait(interaction, bait);
+        createComponentPrey(interaction, prey);
 
         return interaction;
     }
@@ -412,8 +411,8 @@ public class IntactMockBuilder {
         Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())),
                                                       cvInteractionType, intType, nextString("label"), getInstitution());
 
-        interaction.addComponent(createComponentBait(interaction, createProteinRandom()));
-        interaction.addComponent(createComponentPrey(interaction, createProteinRandom()));
+        createComponentBait(interaction, createProteinRandom());
+        createComponentPrey(interaction, createProteinRandom());
 
         String shortLabel = InteractionUtils.calculateShortLabel(interaction);
         interaction.setShortLabel(shortLabel);
@@ -437,11 +436,11 @@ public class IntactMockBuilder {
         Protein prot = null;
         for (String interactorShortLabel : interactorShortLabels) {
             prot = createDeterministicProtein(interactorShortLabel, interactorShortLabel);
-            interaction.addComponent(createComponentNeutral(interaction, prot));
+            createComponentNeutral(interaction, prot);
         }
 
         if (interactorShortLabels.length == 1) {
-            interaction.addComponent(createComponentNeutral(interaction, prot));
+            createComponentNeutral(interaction, prot);
         }
 
         String shortLabel = InteractionUtils.calculateShortLabel(interaction);

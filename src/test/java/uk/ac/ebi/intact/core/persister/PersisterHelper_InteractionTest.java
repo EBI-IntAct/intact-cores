@@ -18,8 +18,10 @@ package uk.ac.ebi.intact.core.persister;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -822,6 +824,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     @Transactional( propagation = Propagation.NEVER )
+    @DirtiesContext
     public void persist_sameComponents() throws Exception {
         TransactionStatus status = getDataContext().beginTransaction();
         Protein p = getMockBuilder().createProtein("P12345", "GOT2");
@@ -829,10 +832,12 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Component c1 = getMockBuilder().createComponentNeutral( p );
         c1.getBindingDomains().clear();
         c1.getParameters().clear();
+        c1.setInteraction( null );
 
         Component c2 = getMockBuilder().createComponentNeutral( p );
         c2.getBindingDomains().clear();
         c2.getParameters().clear();
+        c2.setInteraction( null );
 
         Interaction interaction = getMockBuilder().createInteraction(c1, c2);
 

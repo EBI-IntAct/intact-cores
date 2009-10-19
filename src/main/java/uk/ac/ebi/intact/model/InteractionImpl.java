@@ -314,10 +314,15 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
     }
 
     public void addComponent( Component component ) {
-        if ( !this.components.contains( component ) ) {
-            this.components.add( component );
-            component.setInteraction( this );
+        // make sure we don't add twice the same instance, but still allow multiple components with same data attached.
+        for ( Component c : components ) {
+            if( c == component ){
+                return;
+            }
         }
+
+        this.components.add( component );
+        component.setInteraction( this );
     }
 
     public void removeComponent( Component component ) {
