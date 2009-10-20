@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
@@ -54,7 +55,7 @@ public class CorePersisterImpl implements CorePersister {
     private DataContext dataContext;
     private Finder finder;
 
-    private BiMap<Key, AnnotatedObject> annotatedObjectsToPersist;
+    private Map<Key, AnnotatedObject> annotatedObjectsToPersist;
     private Map<Key, AnnotatedObject> annotatedObjectsToMerge;
     private Map<Key, AnnotatedObject> synched;
 
@@ -80,9 +81,9 @@ public class CorePersisterImpl implements CorePersister {
         this.dataContext = intactContext.getDataContext();
         this.finder = finder;
 
-        annotatedObjectsToPersist = new HashBiMap<Key, AnnotatedObject>();
-        annotatedObjectsToMerge = new HashMap<Key, AnnotatedObject>();
-        synched = new HashMap<Key, AnnotatedObject>();
+        annotatedObjectsToPersist = Maps.newHashMap();
+        annotatedObjectsToMerge = Maps.newHashMap();
+        synched = Maps.newHashMap();
 
         finder = new DefaultFinder();
 
@@ -186,7 +187,7 @@ public class CorePersisterImpl implements CorePersister {
                 if (log.isTraceEnabled()) log.trace("New "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: PERSIST");
 
                 // doesn't exist in the database, we will persist it
-                annotatedObjectsToPersist.forcePut( key, ao );
+                annotatedObjectsToPersist.put( key, ao );
 
                 synchronizeChildren( ao );
 
@@ -197,7 +198,7 @@ public class CorePersisterImpl implements CorePersister {
                     // object exists in the database, we will update it
                     final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
                     final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( ( Class<T> ) ao.getClass() );
-                    final T managedObject = dao.getByAc( ac );
+                    final   T managedObject = dao.getByAc( ac );
 
                     if ( managedObject == null ) {
                         throw new IllegalStateException( "No managed object found with ac '" + ac + "' and type '" + ao.getClass() + "' and one was expected" );
@@ -472,7 +473,7 @@ public class CorePersisterImpl implements CorePersister {
 
         for ( AnnotatedObject ao : thingsToPersist ) {
             if ( log.isDebugEnabled() ) {
-                log.debug( "\tAbout to persist " + DebugUtil.annotatedObjectToString(ao, true) +" - Key: "+annotatedObjectsToPersist.inverse().get(ao));
+                log.debug( "\tAbout to persist " + DebugUtil.annotatedObjectToString(ao, true) +" - Key: "+ getKeyForValue( annotatedObjectsToPersist, ao ));
             }
 
             // this may happen if there is a cascade on this object from the parent
@@ -555,6 +556,16 @@ public class CorePersisterImpl implements CorePersister {
             annotatedObjectsToPersist.clear();
             synched.clear();
         }
+    }
+
+    private Object getKeyForValue( Map map, Object value ) {
+        for ( Object x : map.entrySet() ) {
+            Map.Entry entry = ( Map.Entry ) x;
+            if( entry.getValue() == value ) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     private static void logPersistence( AnnotatedObject<?, ?> ao ) {
