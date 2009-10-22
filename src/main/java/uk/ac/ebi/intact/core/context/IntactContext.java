@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.core.context;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -22,6 +21,9 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * The {@code IntactContext} class is the central point of access to the IntAct Core API.  *
@@ -181,7 +183,13 @@ public class IntactContext implements DisposableBean, Serializable {
             }
         }
 
-        configurationResourcePaths = (String[]) ArrayUtils.add(configurationResourcePaths, "classpath*:/META-INF/intact.spring.xml");
+        // the order of the resources matters when overriding beans, so we add the intact first,
+        // so the user can override the default beans.
+        List<String> resourcesList = new LinkedList<String>();
+        resourcesList.add("classpath*:/META-INF/intact.spring.xml");
+        resourcesList.addAll(Arrays.asList(configurationResourcePaths));
+
+        configurationResourcePaths = resourcesList.toArray(new String[resourcesList.size()]);
 
         if ( log.isDebugEnabled() ) {
             log.debug( "Loading Spring XML config:" );
