@@ -30,7 +30,7 @@ public class IntactContextTest {
 
         Assert.assertEquals("lalaInstitution", IntactContext.getCurrentInstance().getInstitution().getShortLabel());
 
-        IntactContext.getCurrentInstance().destroy();
+        IntactContext.getCurrentInstance().getSpringContext().close();
     }
 
 }
