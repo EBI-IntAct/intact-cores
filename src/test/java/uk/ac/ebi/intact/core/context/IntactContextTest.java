@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.context;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -26,11 +27,21 @@ public class IntactContextTest {
 
     @Test
     public void initContext() throws Exception {
+        Assert.assertFalse(IntactContext.currentInstanceExists());
+
         IntactContext.initContext(new String[] {"/META-INF/config1.spring.xml", "META-INF/standalone/jpa-standalone.spring.xml"});
+
+        Assert.assertTrue(IntactContext.currentInstanceExists());
 
         Assert.assertEquals("lalaInstitution", IntactContext.getCurrentInstance().getInstitution().getShortLabel());
 
-        IntactContext.getCurrentInstance().getSpringContext().close();
+        final ConfigurableApplicationContext springContext = IntactContext.getCurrentInstance().getSpringContext();
+        
+        springContext.close();
+
+        Assert.assertFalse(springContext.isActive());
+
+        Assert.assertFalse(IntactContext.currentInstanceExists());
     }
 
 }

@@ -284,7 +284,13 @@ public class IntactContext implements DisposableBean, Serializable {
         if (log.isDebugEnabled()) log.debug( "Releasing LogFactory" );
         LogFactory.release( Thread.currentThread().getContextClassLoader() );
 
-        if (log.isDebugEnabled()) log.debug( "Destroying IntacContext" );
+        EntityManagerFactory emf = (EntityManagerFactory) springContext.getBean("entityManagerFactory");
+
+        if (emf.isOpen()) {
+            emf.close();
+        }
+
+        if (log.isInfoEnabled()) log.debug( "Destroying IntacContext" );
         instance = null;
     }
 }
