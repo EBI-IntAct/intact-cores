@@ -27,7 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class IntactContextTest {
 
     @Test
-    @Ignore("It is messing with the Spring context, making other tests to fail");
+    @Ignore("It is messing with the Spring context, making other tests to fail")
     public void initContext() throws Exception {
         Assert.assertFalse(IntactContext.currentInstanceExists());
 
