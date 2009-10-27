@@ -39,6 +39,9 @@ import java.util.*;
  */
 public class AnnotatedObjectUtils {
 
+    public static final java.lang.String TEMP_LABEL_PREFIX = "not-defined-";
+    private static final java.lang.String TEMP_LABEL_PATTERN = "not-defined-\\d*";
+
     private AnnotatedObjectUtils() {
     }
 
@@ -287,8 +290,6 @@ public class AnnotatedObjectUtils {
         return null;
     }
 
-
-
     /**
      * Check if the passed annotated objects contain the same set of filtered Xrefs.
      * @return true or false
@@ -475,5 +476,16 @@ public class AnnotatedObjectUtils {
             return alias.getName()+"__"+typeId;
         }
         return io.toString();
+    }
+
+    /**
+     * Returns true if the label for the interaction is temporary
+     * @param label
+     * @return
+     *
+     * @since 2.1.0
+     */
+    public static boolean isTemporaryLabel(String label) {
+        return label.matches( TEMP_LABEL_PATTERN );
     }
 }
