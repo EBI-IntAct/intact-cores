@@ -17,14 +17,13 @@ package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.persistence.dao.query.QueryModifier;
+import uk.ac.ebi.intact.core.persistence.dao.query.QueryPhrase;
+import uk.ac.ebi.intact.core.persistence.dao.query.QueryTerm;
+import uk.ac.ebi.intact.core.persistence.dao.query.impl.SearchableQuery;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Protein;
 import uk.ac.ebi.intact.model.ProteinImpl;
-import uk.ac.ebi.intact.core.persistence.dao.query.impl.SearchableQuery;
-import uk.ac.ebi.intact.core.persistence.dao.query.QueryPhrase;
-import uk.ac.ebi.intact.core.persistence.dao.query.QueryTerm;
-import uk.ac.ebi.intact.core.persistence.dao.query.QueryModifier;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +44,7 @@ public class SearchableDaoTest extends IntactBasicTestCase {
         Protein prot2 = getMockBuilder().createProtein("M", "pr0");
         Protein prot3 = getMockBuilder().createProtein("Z", "prot2");
 
-        PersisterHelper.saveOrUpdate(prot1, prot2, prot3);
+        getPersisterHelper().save(prot1, prot2, prot3);
 
         SearchableQuery query = new SearchableQuery();
         query.setShortLabel(new QueryPhrase(Arrays.asList(new QueryTerm("prot", QueryModifier.WILDCARD_END))));
@@ -62,7 +61,7 @@ public class SearchableDaoTest extends IntactBasicTestCase {
         Protein prot2 = getMockBuilder().createProtein("M", "pr0");
         Protein prot3 = getMockBuilder().createProtein("Z", "prot2");
 
-        PersisterHelper.saveOrUpdate(prot1, prot2, prot3);
+        getPersisterHelper().save(prot1, prot2, prot3);
 
         SearchableQuery query = new SearchableQuery();
         query.setShortLabel(new QueryPhrase(Arrays.asList(new QueryTerm("pr", QueryModifier.WILDCARD_END))));
@@ -81,7 +80,7 @@ public class SearchableDaoTest extends IntactBasicTestCase {
     @Test
     public void getInteractors() throws Exception {
         Assert.assertEquals(0, getDaoFactory().getInteractorDao().countAllInteractors());
-        PersisterHelper.saveOrUpdate(getMockBuilder().createDeterministicInteraction());
+        getPersisterHelper().save(getMockBuilder().createDeterministicInteraction());
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().getInteractors(0, 5).size());
     }
 }

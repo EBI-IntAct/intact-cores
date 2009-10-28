@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.core.persistence.svc.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Protein;
 import uk.ac.ebi.intact.model.ProteinImpl;
@@ -19,10 +18,10 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class SimpleSearchServiceTest extends IntactBasicTestCase{
+public class SimpleSearchServiceTest extends IntactBasicTestCase {
 
-   @Test
-   @Rollback(true)
+    @Test
+    @Rollback(true)
     public void getByQuery_default() throws Exception {
         Assert.assertEquals(0, getDaoFactory().getProteinDao().countAll());
 
@@ -30,10 +29,10 @@ public class SimpleSearchServiceTest extends IntactBasicTestCase{
         Protein prot2 = getMockBuilder().createProtein("M", "pr0");
         Protein prot3 = getMockBuilder().createProtein("Z", "prot2");
 
-        PersisterHelper.saveOrUpdate(prot1, prot2, prot3);
+        getPersisterHelper().save(prot1, prot2, prot3);
 
-       SimpleSearchService searchService = new SimpleSearchService();
-       Collection<ProteinImpl> results = searchService.search(ProteinImpl.class, "prot*", null, null);
+        SimpleSearchService searchService = new SimpleSearchService();
+        Collection<ProteinImpl> results = searchService.search(ProteinImpl.class, "prot*", null, null);
 
        Assert.assertEquals(2, results.size());
        Assert.assertEquals(results.size(), searchService.count(ProteinImpl.class, "prot*"));
@@ -48,10 +47,10 @@ public class SimpleSearchServiceTest extends IntactBasicTestCase{
         Protein prot2 = getMockBuilder().createProtein("M", "pr0");
         Protein prot3 = getMockBuilder().createProtein("Z", "prot2");
 
-        PersisterHelper.saveOrUpdate(prot1, prot2, prot3);
+        getPersisterHelper().save(prot1, prot2, prot3);
 
-       SimpleSearchService searchService = new SimpleSearchService("xrefs.primaryId", false);
-       Collection<ProteinImpl> results = searchService.search(ProteinImpl.class, "pr*", null, null);
+        SimpleSearchService searchService = new SimpleSearchService("xrefs.primaryId", false);
+        Collection<ProteinImpl> results = searchService.search(ProteinImpl.class, "pr*", null, null);
 
         Assert.assertEquals(3, results.size());
         Assert.assertEquals(results.size(), searchService.count(ProteinImpl.class, "pr*"));
@@ -74,7 +73,7 @@ public class SimpleSearchServiceTest extends IntactBasicTestCase{
         Protein prot2 = getMockBuilder().createProtein("M", "pr0");
         Protein prot3 = getMockBuilder().createProtein("Z", "prot2");
 
-        PersisterHelper.saveOrUpdate(prot1, prot2, prot3);
+        getPersisterHelper().save(prot1, prot2, prot3);
 
         SimpleSearchService searchService = new SimpleSearchService();
         Map<Class<? extends Searchable>,Integer> map = searchService.count(new Class[] {ProteinImpl.class, SmallMolecule.class}, "prot*");

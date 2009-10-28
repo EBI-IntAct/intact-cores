@@ -19,7 +19,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 
 import java.util.List;
 
@@ -88,11 +87,11 @@ public class InteractorImplTest extends IntactBasicTestCase {
         
         final Interaction interaction1 = getMockBuilder().createInteraction( bait, prey );
         interaction1.setShortLabel( "bait-prey" );
-        PersisterHelper.saveOrUpdate( interaction1 );
+        getPersisterHelper().save( interaction1 );
 
         final Interaction interaction2 = getMockBuilder().createInteraction( bait, prey );
         interaction2.setShortLabel( "bait-prey" );
-        PersisterHelper.saveOrUpdate( interaction2 );
+        getPersisterHelper().save( interaction2 );
 
         Assert.assertEquals( 2, getDaoFactory().getInteractionDao().countAll() );
 
@@ -119,11 +118,11 @@ public class InteractorImplTest extends IntactBasicTestCase {
         
         final Interaction interaction1 = getMockBuilder().createInteraction( bait, prey );
         interaction1.setShortLabel( label );
-        PersisterHelper.saveOrUpdate( interaction1 );
+        getPersisterHelper().save( interaction1 );
 
         final Interaction interaction2 = getMockBuilder().createInteraction( bait, prey );
         interaction2.setShortLabel( label );
-        PersisterHelper.saveOrUpdate( interaction2 );
+        getPersisterHelper().save( interaction2 );
 
         Assert.assertEquals( 2, getDaoFactory().getInteractionDao().countAll() );
 

@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Protein;
@@ -17,6 +18,9 @@ import java.util.List;
  * @since 1.7.2
  */
 public class HibernateBaseDaoImplTest extends IntactBasicTestCase {
+
+    @Autowired
+    private PersisterHelper persisterHelper;
 
     @Test
     public void getDbName() throws Exception {
@@ -40,7 +44,7 @@ public class HibernateBaseDaoImplTest extends IntactBasicTestCase {
         protMiddle.setCreated(new Date());
         protNewest.setCreated(new Date(System.currentTimeMillis()*2));
 
-        PersisterHelper.saveOrUpdate(protMiddle, protNewest, protOldest);
+        getPersisterHelper().save(protMiddle, protNewest, protOldest);
 
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
 

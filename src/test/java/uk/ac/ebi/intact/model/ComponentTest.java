@@ -15,16 +15,14 @@
  */
 package uk.ac.ebi.intact.model;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
+import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.util.SchemaUtils;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Component Tester
@@ -91,28 +89,28 @@ public class ComponentTest extends IntactBasicTestCase {
 
         // eg. 1. bait(baaa), prey(paaa, pbbb, pccc) should give us: baaa-paaa and baaa-paaa-1 the second time
         Interaction interaction = getMockBuilder().createInteraction( baitComponent, preyComponent1, preyComponent2, preyComponent3 );
-        PersisterHelper.saveOrUpdate( interaction );
+        getPersisterHelper().save( interaction );
         Assert.assertEquals( "baaa-paaa", interaction.getShortLabel() );
 
         Interaction interactionDuplicated = getMockBuilder().createInteraction( baitComponent, preyComponent1, preyComponent2, preyComponent3 );
-        PersisterHelper.saveOrUpdate( interactionDuplicated );
+        getPersisterHelper().save( interactionDuplicated );
         Assert.assertEquals( "baaa-paaa-1", interactionDuplicated.getShortLabel() );
 
 
         Component neutraulComponent = getMockBuilder().createComponentNeutral( interaction, getMockBuilder().createDeterministicProtein( "P5", "naaa" ) );
         Interaction interaction2 = getMockBuilder().createInteraction( neutraulComponent );
-        PersisterHelper.saveOrUpdate( interaction2 );
+        getPersisterHelper().save( interaction2 );
         Assert.assertEquals( "naaa", interaction2.getShortLabel() );
 
         //bait(baaa), prey(), neutral(naaa) should gives us: baaa-naaa
         Interaction interaction3 = getMockBuilder().createInteraction( baitComponent, neutraulComponent );
-        PersisterHelper.saveOrUpdate( interaction3 );
+        getPersisterHelper().save( interaction3 );
         Assert.assertEquals( "baaa-naaa", interaction3.getShortLabel() );
 
         //bait(), prey(paaa, pbbb, pccc), neutral(naaa)
         //since bait is empty it throws an exception and it creates a predefined short label unk-unk in the catchblock of IntactMockBuilder..createInteraction(Component ... components)
         Interaction interaction4 = getMockBuilder().createInteraction( preyComponent1, preyComponent2, preyComponent3, neutraulComponent );
-        PersisterHelper.saveOrUpdate( interaction4 );
+        getPersisterHelper().save( interaction4 );
         Assert.assertEquals( "unk-unk", interaction4.getShortLabel() );
 
 
@@ -147,7 +145,7 @@ public class ComponentTest extends IntactBasicTestCase {
 
         // eg. 1. bait(baaa)&neutral(naaa), prey(paaa)&neutral(naaa), prey(pbbb), prey(pccc) should gives us: baaa-paaa
         Interaction interaction = getMockBuilder().createInteraction( baitComponent, preyComponent1, preyComponent2, preyComponent3 );
-        PersisterHelper.saveOrUpdate( interaction );
+        getPersisterHelper().save( interaction );
         Assert.assertEquals( "baaa-paaa", interaction.getShortLabel() );
 
 

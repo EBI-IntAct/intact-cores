@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.Protein;
@@ -23,11 +22,11 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
 
     @Test
     public void getUniprotProteinsInvolvedInInteractions() throws Exception {
-        PersisterHelper.saveOrUpdate( getMockBuilder().createInteractionRandomBinary() );
-        PersisterHelper.saveOrUpdate( getMockBuilder().createInteractionRandomBinary() );
-        PersisterHelper.saveOrUpdate( getMockBuilder().createInteractionRandomBinary() );
-        PersisterHelper.saveOrUpdate( getMockBuilder().createInteractionRandomBinary() );
-        PersisterHelper.saveOrUpdate( getMockBuilder().createInteractionRandomBinary() );
+        getPersisterHelper().save( getMockBuilder().createInteractionRandomBinary() );
+        getPersisterHelper().save( getMockBuilder().createInteractionRandomBinary() );
+        getPersisterHelper().save( getMockBuilder().createInteractionRandomBinary() );
+        getPersisterHelper().save( getMockBuilder().createInteractionRandomBinary() );
+        getPersisterHelper().save( getMockBuilder().createInteractionRandomBinary() );
 
         // now build an interaction that involve 2 non uniprot protein
         Protein p1 = getMockBuilder().createProtein( "Q98876", "Q98876" );
@@ -38,7 +37,7 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
         Protein p3 = getMockBuilder().createProtein( "bar", "label3" );
         p3.getXrefs().clear();
         Interaction interaction = getMockBuilder().createInteraction( p1, p2, p3 );
-        PersisterHelper.saveOrUpdate( interaction );
+        getPersisterHelper().save( interaction );
 
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
         final List<ProteinImpl> proteins =
@@ -56,7 +55,7 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
         Protein protB = getMockBuilder().createProtein("P00112", "protB");
         Interaction interaction = getMockBuilder().createInteraction(protA, protB);
 
-        PersisterHelper.saveOrUpdate(nonInteractingProt, interaction);
+        getPersisterHelper().save(nonInteractingProt, interaction);
 
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
 
@@ -70,13 +69,13 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
         Protein masterProt1 = getMockBuilder().createProtein("P12345", "master1");
 
         // master protein needs to be persisted first
-        PersisterHelper.saveOrUpdate(masterProt1);
+        getPersisterHelper().save(masterProt1);
         Assert.assertNotNull(masterProt1.getAc());
 
         Protein spliceVar11 = getMockBuilder().createProteinSpliceVariant(masterProt1, "P12345-1", "sv11");
         Protein spliceVar12 = getMockBuilder().createProteinSpliceVariant(masterProt1, "P12345-2", "sv12");
 
-        PersisterHelper.saveOrUpdate(spliceVar11, spliceVar12);
+        getPersisterHelper().save(spliceVar11, spliceVar12);
 
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getProteinDao().getSpliceVariants(masterProt1).size());
@@ -88,13 +87,13 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
         Protein masterProt1 = getMockBuilder().createProtein("P12345", "master1");
 
         // master protein needs to be persisted first
-        PersisterHelper.saveOrUpdate(masterProt1);
+        getPersisterHelper().save(masterProt1);
         Assert.assertNotNull(masterProt1.getAc());
 
         Protein spliceVar11 = getMockBuilder().createProteinSpliceVariant(masterProt1, "P12345-1", "sv11");
         Protein spliceVar12 = getMockBuilder().createProteinSpliceVariant(masterProt1, "P12345-2", "sv12");
 
-        PersisterHelper.saveOrUpdate(spliceVar11, spliceVar12);
+        getPersisterHelper().save(spliceVar11, spliceVar12);
 
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(masterProt1.getAc(), getDaoFactory().getProteinDao().getSpliceVariantMasterProtein(spliceVar11).getAc());

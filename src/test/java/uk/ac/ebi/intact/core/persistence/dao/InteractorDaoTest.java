@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 
@@ -35,14 +34,14 @@ public class InteractorDaoTest extends IntactBasicTestCase {
     @Test
     public void countAllInteractors() throws Exception {
         Assert.assertEquals(0, getDaoFactory().getInteractorDao().countAllInteractors());
-        PersisterHelper.saveOrUpdate(getMockBuilder().createDeterministicInteraction());
+        getPersisterHelper().save(getMockBuilder().createDeterministicInteraction());
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().countAllInteractors());
     }
 
     @Test
     public void getInteractors() throws Exception {
         Assert.assertEquals(0, getDaoFactory().getInteractorDao().countAllInteractors());
-        PersisterHelper.saveOrUpdate(getMockBuilder().createDeterministicInteraction());
+        getPersisterHelper().save(getMockBuilder().createDeterministicInteraction());
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().getInteractors(0, 5).size());
     }
 
@@ -53,7 +52,7 @@ public class InteractorDaoTest extends IntactBasicTestCase {
         Protein prot3 = getMockBuilder().createProtein("C", "prot3");
         Interaction interaction = getMockBuilder().createInteraction(prot1, prot2, prot3);
 
-        PersisterHelper.saveOrUpdate(interaction);
+        getPersisterHelper().save(interaction);
 
         final Map<String,List<String>> partnersMap = getDaoFactory().getInteractorDao()
                 .getPartnersWithInteractionAcsByInteractorAc(prot1.getAc());
@@ -70,7 +69,7 @@ public class InteractorDaoTest extends IntactBasicTestCase {
         Protein prot = getMockBuilder().createProteinRandom();
         SmallMolecule sm = getMockBuilder().createSmallMoleculeRandom();
 
-        PersisterHelper.saveOrUpdate(prot, sm);
+        getPersisterHelper().save(prot, sm);
 
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractorDao().countByInteractorType(CvInteractorType.PROTEIN_MI_REF, false));
@@ -87,7 +86,7 @@ public class InteractorDaoTest extends IntactBasicTestCase {
 
         InteractorImpl interactor = new InteractorImpl("interactor", new Institution("lalaInst"), dnaType);
 
-        PersisterHelper.saveOrUpdate(prot, interactor);
+        getPersisterHelper().save(prot, interactor);
 
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractorDao().countByInteractorType(CvInteractorType.NUCLEIC_ACID_MI_REF, true));
@@ -99,7 +98,7 @@ public class InteractorDaoTest extends IntactBasicTestCase {
         Protein prot = getMockBuilder().createProteinRandom();
         SmallMolecule sm = getMockBuilder().createSmallMoleculeRandom();
 
-        PersisterHelper.saveOrUpdate(prot, sm);
+        getPersisterHelper().save(prot, sm);
 
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractorDao().getByInteractorType(CvInteractorType.PROTEIN_MI_REF, false).size());
@@ -116,7 +115,7 @@ public class InteractorDaoTest extends IntactBasicTestCase {
 
         InteractorImpl interactor = new InteractorImpl("interactor", new Institution("lalaInst"), dnaType);
 
-        PersisterHelper.saveOrUpdate(prot, interactor);
+        getPersisterHelper().save(prot, interactor);
 
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractorDao().getByInteractorType(CvInteractorType.NUCLEIC_ACID_MI_REF, true).size());

@@ -6,13 +6,10 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.config.impl.SmallCvPrimer;
 import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
@@ -20,6 +17,9 @@ import uk.ac.ebi.intact.model.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * TODO comment it.
@@ -42,7 +42,7 @@ public class CvObjectDaoTest extends IntactBasicTestCase {
         nucAcid.addChild( dna );
         nucAcid.addChild( otherNucAcid );
 
-        PersisterHelper.saveOrUpdate( nucAcid, dna, otherNucAcid );
+        getPersisterHelper().save( nucAcid, dna, otherNucAcid );
     }
 
     @Test

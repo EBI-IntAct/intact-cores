@@ -16,16 +16,16 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.Iterator;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * ExperimentDao Tester.
@@ -45,7 +45,7 @@ public class ExperimentDaoTest extends IntactBasicTestCase {
         Experiment exp5 = mockBuilder.createExperimentEmpty( "guru-1974-1" );
         Experiment exp6 = mockBuilder.createExperimentEmpty( "lolo-2001-1" );
 
-        PersisterHelper.saveOrUpdate( exp1, exp2, exp3, exp4, exp5, exp6 );
+        getPersisterHelper().save( exp1, exp2, exp3, exp4, exp5, exp6 );
     }
 
     @Test

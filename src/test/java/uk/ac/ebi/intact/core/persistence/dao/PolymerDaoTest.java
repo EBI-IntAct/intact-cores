@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Polymer;
@@ -30,6 +31,10 @@ import uk.ac.ebi.intact.model.Protein;
  * @since <pre>08-Aug-2006</pre>
  */
 public class PolymerDaoTest extends IntactBasicTestCase {
+
+    @Autowired
+    private PersisterHelper persisterHelper;
+    
     @Test
     public void testGetSequenceByPolymerAc() throws Exception {
         String originalSeq = "MNSYFEQASGFYGHPHQATGMAMGSGGHHDQTASAAAAAYRGFPLSLGMSPYANHHLQRTTQDSPYDASITAACNKIYGDGAGAYKQDCLNIKADAVNGYKDIWNTGGSNGGGGGGGGGGGGGAGGTGGAGNANGGNAANANGQNNPAGGMPVRPSACTPDSRVGGYLDTSGGSPVSHRGGSAGGNVSVSGGNGNAGGVQSGVGVAGAGTAWNANCTISGAAAQTAAASSLHQASNHTFYPWMAIAGECPEDPTKSKIRSDLTQYGGISTDMGKRYSESLAGSLLPDWLGTNGLRRRGRQTYTRYQTLELEKEFHTNHYLTRRRRIEMAHALCLTERQIKIWFQNRRMKLKKEIQAIKELNEQEKQAQAQKAAAAAAAAAAVQGGHLDQ";
@@ -37,7 +42,7 @@ public class PolymerDaoTest extends IntactBasicTestCase {
         Protein protein = getMockBuilder().createDeterministicProtein( "P83949-1", "P83949-1" );
         protein.setSequence( originalSeq );
 
-        PersisterHelper.saveOrUpdate( protein );
+        getPersisterHelper().save( protein );
 
         Polymer polymer = getDaoFactory().getPolymerDao().getByShortLabel( "p83949-1" );
 

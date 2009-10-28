@@ -15,23 +15,9 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.annotations.IntactFlushMode;
-import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactEntry;
-import uk.ac.ebi.intact.model.Interaction;
-
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
 
 /**
  * Helper class to reduce the code needed to save or update an Annotated object.
@@ -39,74 +25,13 @@ import javax.persistence.PersistenceContext;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Component
-public class PersisterHelper {
+public interface PersisterHelper {
 
-    @PersistenceContext(unitName = "intact-core-default")
-    private EntityManager entityManager;
+    void save( IntactEntry... intactEntries ) throws PersisterException;
 
-    @Autowired
-    private ApplicationContext springContext;
+    PersisterStatistics save( AnnotatedObject... annotatedObjects ) throws PersisterException;
 
-    /**
-     * Sets up a logger for that class.
-     */
-    private static final Log log = LogFactory.getLog(PersisterHelper.class);
+    PersisterStatistics saveInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException;
 
-    public PersisterHelper() {}
-
-    @Deprecated
-    public static void saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException {
-        IntactContext.getCurrentInstance().getPersisterHelper().save(intactEntries);
-    }
-
-    @Deprecated
-    public static PersisterStatistics saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
-        return IntactContext.getCurrentInstance().getPersisterHelper().save(annotatedObjects);
-    }
-
-    public void save( IntactEntry... intactEntries ) throws PersisterException {
-        for ( IntactEntry intactEntry : intactEntries ) {
-            for ( Interaction interaction : intactEntry.getInteractions() ) {
-                save( interaction );
-            }
-        }
-    }
-
-
-    @Transactional
-    @IntactFlushMode(FlushModeType.COMMIT)
-    public PersisterStatistics save( AnnotatedObject... annotatedObjects ) throws PersisterException {
-
-        CorePersister corePersister = getCorePersister();
-
-        corePersister.getStatistics().reset();
-
-            for (AnnotatedObject ao : annotatedObjects) {
-                corePersister.synchronize(ao);
-            }
-        corePersister.commit();
-
-        // we reload the annotated objects by its AC
-        // note: if an object does not have one, it is probably a duplicate
-        for ( AnnotatedObject ao : annotatedObjects ) {
-            corePersister.reload( ao );
-        }
-        
-        final PersisterStatistics stats = corePersister.getStatistics();
-
-        if (log.isDebugEnabled()) log.debug(stats);
-
-        return stats;
-
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public PersisterStatistics saveInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException {
-        return save(annotatedObjects);
-    }
-
-    public CorePersister getCorePersister() {
-        return (CorePersister) springContext.getBean("corePersister");
-    }
+    CorePersister getCorePersister();
 }

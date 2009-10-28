@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
@@ -238,9 +237,9 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
 //        CorePersister corePersister = new CorePersister();
 //        corePersister.setFinder( new EditorFinder() );
-//        PersisterHelper.saveOrUpdate( corePersister, clone );
+//        getPersisterHelper().save( corePersister, clone );
         
-        PersisterHelper.saveOrUpdate( clone );
+        getPersisterHelper().save( clone );
 
         final List<InteractionImpl> all = getDaoFactory().getInteractionDao().getAll();
         Assert.assertEquals( 1, all.size() );
@@ -328,7 +327,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
         IntactContext.getCurrentInstance().getConfig().setAutoUpdateExperimentLabel(false);
 
-        PersisterHelper.saveOrUpdate( clone );
+        getPersisterHelper().save( clone );
 
         final List<InteractionImpl> all = getDaoFactory().getInteractionDao().getAll();
         Assert.assertEquals( 1, all.size() );
@@ -478,7 +477,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
         Component baitNeutralComponent = getMockBuilder().createComponentBait( getMockBuilder().createDeterministicProtein( "P1", "baaa" ) );
         baitNeutralComponent.setExperimentalRoles( baitNeutralExperimentalRoles );
-        PersisterHelper.saveOrUpdate( baitNeutralComponent );
+        getPersisterHelper().save( baitNeutralComponent );
 
         final Component clonedComponent = new IntactCloner().clone( baitNeutralComponent );
         Assert.assertNotNull( clonedComponent.getExperimentalRoles() );

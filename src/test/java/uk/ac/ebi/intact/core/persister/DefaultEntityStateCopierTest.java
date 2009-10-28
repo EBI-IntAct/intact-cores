@@ -15,18 +15,17 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.junit.Assert;
+import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.BioSource;
+import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
-import org.junit.Test;
-import org.junit.Assert;
-import org.apache.commons.collections.CollectionUtils;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * TODO comment that class header
@@ -118,7 +117,7 @@ public class DefaultEntityStateCopierTest extends IntactBasicTestCase {
         Assert.assertNotNull( source.getBioSource() );
         Assert.assertEquals( "mouse", source.getBioSource().getShortLabel() );
 
-        PersisterHelper.saveOrUpdate( source );
+        getPersisterHelper().save( source );
         Assert.assertEquals( 4, getDaoFactory().getBioSourceDao().countAll() );
 
         IntactCloner cloner = new IntactCloner();
@@ -160,7 +159,7 @@ public class DefaultEntityStateCopierTest extends IntactBasicTestCase {
         Assert.assertEquals( "mouseUpdatedAgain", target.getBioSource().getShortLabel() );
 
 
-        PersisterHelper.saveOrUpdate( source );
+        getPersisterHelper().save( source );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
         Assert.assertEquals( 4, getDaoFactory().getBioSourceDao().countAll() );

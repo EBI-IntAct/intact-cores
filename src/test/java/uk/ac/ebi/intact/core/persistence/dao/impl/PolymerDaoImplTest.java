@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.PolymerImpl;
 import uk.ac.ebi.intact.model.Protein;
@@ -41,7 +40,7 @@ public class PolymerDaoImplTest extends IntactBasicTestCase {
         Assert.assertNotNull(crc);
         Assert.assertNotNull(taxId);
 
-        PersisterHelper.saveOrUpdate(prot);
+        getPersisterHelper().save(prot);
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
 

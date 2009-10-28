@@ -34,7 +34,7 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
     @Test
     public void persistFeature() throws Exception {
         Feature feature = getMockBuilder().createFeatureRandom();
-        PersisterHelper.saveOrUpdate( feature );
+        getPersisterHelper().save( feature );
 
         Assert.assertNotNull( feature.getCvFeatureType() );
     }
@@ -74,7 +74,7 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
             }
         }
 
-        PersisterHelper.saveOrUpdate(interaction);
+        getPersisterHelper().save(interaction);
 
         Assert.assertEquals( 1, bait.getActiveInstances().size() );
     }
@@ -85,7 +85,7 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
         Feature feature2 = getMockBuilder().createFeatureRandom();
         feature2.setShortLabel( feature1.getShortLabel() );
 
-        PersisterHelper.saveOrUpdate(feature1, feature2);
+        getPersisterHelper().save(feature1, feature2);
 
         Assert.assertEquals( 2, getDaoFactory().getFeatureDao().countAll() );
     }
@@ -99,7 +99,7 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
         range.setToCvFuzzyType( null );
         feature.addRange( range );
 
-        PersisterHelper.saveOrUpdate( feature );
+        getPersisterHelper().save( feature );
     }
 
     @Test
@@ -108,7 +108,7 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
         feature.getRanges().clear();
         feature.addRange(getMockBuilder().createRangeRandom());
 
-        PersisterHelper.saveOrUpdate(feature);
+        getPersisterHelper().save(feature);
 
         Assert.assertEquals(1, feature.getRanges().size());
 
@@ -117,7 +117,7 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
         Feature feature2 = cloner.clone(feature);
         feature2.addRange(getMockBuilder().createRangeRandom());
 
-        PersisterHelper.saveOrUpdate(feature2);
+        getPersisterHelper().save(feature2);
 
         Assert.assertEquals( 1, getDaoFactory().getFeatureDao().countAll() );
 

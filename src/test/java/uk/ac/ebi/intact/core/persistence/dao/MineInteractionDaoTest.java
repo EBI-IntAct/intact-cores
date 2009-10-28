@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 
@@ -38,8 +37,8 @@ public class MineInteractionDaoTest extends IntactBasicTestCase {
 
         CvInteraction detMethod = getMockBuilder().createCvObject( CvInteraction.class, CvInteraction.COSEDIMENTATION_MI_REF, CvInteraction.COSEDIMENTATION );
 
-        PersisterHelper.saveOrUpdate( interaction );
-        PersisterHelper.saveOrUpdate( detMethod );
+        getPersisterHelper().save( interaction );
+        getPersisterHelper().save( detMethod );
 
         MineInteraction newMi = new MineInteraction( ( ProteinImpl ) prot1, ( ProteinImpl ) prot2, ( InteractionImpl ) interaction );
         newMi.setDetectionMethod( detMethod );

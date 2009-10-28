@@ -15,11 +15,10 @@
  */
 package uk.ac.ebi.intact.model;
 
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.model.clone.IntactCloner;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.clone.IntactCloner;
 
 import java.util.Collection;
 
@@ -58,8 +57,8 @@ public class ExperimentTest extends IntactBasicTestCase{
         getIntactContext().getConfig().setAutoUpdateExperimentLabel( false );
 
         // Careful here, we have to persist the experiment one after the other to ensure that label WOULD are synchronized.
-        PersisterHelper.saveOrUpdate( e1 );
-        PersisterHelper.saveOrUpdate( e2 );
+        getPersisterHelper().save( e1 );
+        getPersisterHelper().save( e2 );
 
         Assert.assertEquals( 2, getDaoFactory().getExperimentDao().countAll() );
 
@@ -87,8 +86,8 @@ public class ExperimentTest extends IntactBasicTestCase{
         getIntactContext().getConfig().setAutoUpdateExperimentLabel( true );
 
         // Careful here, we have to persist the experiment one after the other to ensure that label are synchronized.
-        PersisterHelper.saveOrUpdate( e1 );
-        PersisterHelper.saveOrUpdate( e2 );
+        getPersisterHelper().save( e1 );
+        getPersisterHelper().save( e2 );
 
         Assert.assertEquals( 2, getDaoFactory().getExperimentDao().countAll() );
 

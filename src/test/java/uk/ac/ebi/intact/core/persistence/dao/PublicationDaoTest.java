@@ -6,8 +6,6 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,9 @@ import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.Publication;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * TODO comment this!
@@ -27,6 +28,9 @@ import uk.ac.ebi.intact.model.Publication;
 public class PublicationDaoTest extends IntactBasicTestCase {
 
     @Autowired
+    private PersisterHelper persisterHelper;
+
+    @Autowired
     private PublicationDao publicationDao;
 
     @Before
@@ -34,7 +38,7 @@ public class PublicationDaoTest extends IntactBasicTestCase {
         IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
         Publication pub1 = mockBuilder.createPublication( "10029528" );
-        PersisterHelper.saveOrUpdate( pub1 );
+        getPersisterHelper().save( pub1 );
     }
 
     @Test

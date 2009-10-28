@@ -3,8 +3,6 @@ package uk.ac.ebi.intact.core.persister;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Component;
@@ -13,6 +11,9 @@ import uk.ac.ebi.intact.model.Feature;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 
 /**
@@ -30,7 +31,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
     @Test
     public void persist_default() throws Exception {
         Component component = getMockBuilder().createComponentRandom();
-        PersisterHelper.saveOrUpdate(component);
+        getPersisterHelper().save(component);
 
         String newComponentAc = component.getAc();
         assertNotNull(newComponentAc);
@@ -51,7 +52,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
     @Test
     public void persistComponent_detached() throws Exception {
         Component component = getMockBuilder().createDeterministicInteraction().getComponents().iterator().next();
-        PersisterHelper.saveOrUpdate(component);
+        getPersisterHelper().save(component);
 
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(1, component.getBindingDomains().size());
@@ -67,7 +68,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         Assert.assertTrue(getDaoFactory().getBaseDao().isTransient(component));
 
-        PersisterHelper.saveOrUpdate(component);
+        getPersisterHelper().save(component);
 
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
@@ -93,7 +94,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
         Component baitNeutralComponent = getMockBuilder().createComponentBait( getMockBuilder().createDeterministicProtein( "P1", "baaa" ) );
         baitNeutralComponent.setExperimentalRoles(baitNeutralExperimentalRoles);
        
-        PersisterHelper.saveOrUpdate( baitNeutralComponent );
+        getPersisterHelper().save( baitNeutralComponent );
 
         Component reloadedComponent = reloadByAc(baitNeutralComponent);
         Assert.assertNotNull( reloadedComponent.getExperimentalRoles());

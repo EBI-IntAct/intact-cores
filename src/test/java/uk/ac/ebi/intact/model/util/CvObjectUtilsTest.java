@@ -1,18 +1,18 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.config.impl.SmallCvPrimer;
 import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static org.junit.Assert.*;
 
 public class CvObjectUtilsTest extends IntactBasicTestCase {
 
@@ -29,7 +29,7 @@ public class CvObjectUtilsTest extends IntactBasicTestCase {
         CvBiologicalRole bioRoleEnzyme = new IntactMockBuilder().createCvObject(CvBiologicalRole.class, CvBiologicalRole.ENZYME_PSI_REF, CvBiologicalRole.ENZYME);
         CvBiologicalRole bioRoleUnsp = new IntactMockBuilder().createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
 
-        PersisterHelper.saveOrUpdate(uniprot, expRoleUnsp, expRoleBait, bioRoleEnzyme, bioRoleUnsp);
+        getPersisterHelper().save(uniprot, expRoleUnsp, expRoleBait, bioRoleEnzyme, bioRoleUnsp);
     }
 
     @Test
