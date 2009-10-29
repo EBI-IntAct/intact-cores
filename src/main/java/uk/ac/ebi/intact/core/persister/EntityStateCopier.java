@@ -18,6 +18,6 @@ public interface EntityStateCopier {
      * @param target object that has to be updated from the source
      * @return whether attributes have bean really copied or not (if not, it means that source and target where equals)
      */
-    public boolean copy( AnnotatedObject source, AnnotatedObject target );
+     boolean copy( AnnotatedObject source, AnnotatedObject target );
 
 }

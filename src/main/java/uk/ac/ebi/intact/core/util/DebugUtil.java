@@ -8,12 +8,12 @@ package uk.ac.ebi.intact.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
 import uk.ac.ebi.intact.model.visitor.impl.JTreeBuilderVisitor;
 import uk.ac.ebi.intact.model.visitor.impl.PrintVisitor;
-import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -157,5 +157,18 @@ public class DebugUtil {
         ps.println("Annotations: "+ daoFactory.getAnnotationDao().countAll());
         ps.println("Institutions: "+ daoFactory.getInstitutionDao().countAll());
 
+    }
+
+    public static String intactObjectToString(IntactObject io, boolean showAttributesCount) {
+        if (io instanceof AnnotatedObject) {
+            return annotatedObjectToString((AnnotatedObject) io, showAttributesCount);
+        }
+
+        Class clazz = CgLibUtil.removeCglibEnhanced(io.getClass());
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(clazz.getSimpleName()).append(", ac=").append(io.getAc()).append("}");
+
+        return sb.toString();
     }
 }

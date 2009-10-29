@@ -26,30 +26,25 @@ import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactEntry;
 import uk.ac.ebi.intact.model.Interaction;
 
-import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
 
 /**
  * Helper class to reduce the code needed to save or update an Annotated object.
  *
+ * @deprecated Use the CorePersister instead
+ *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@Deprecated
 public class PersisterHelperImpl implements PersisterHelper {
-
-    @PersistenceContext(unitName = "intact-core-default")
-    private EntityManager entityManager;
-
-    private CorePersister corePersister;
 
     /**
      * Sets up a logger for that class.
      */
     private static final Log log = LogFactory.getLog(PersisterHelperImpl.class);
 
-    public PersisterHelperImpl(CorePersister corePersister) {
-        this.corePersister = corePersister;
+    public PersisterHelperImpl() {
     }
 
     @Deprecated
@@ -62,6 +57,7 @@ public class PersisterHelperImpl implements PersisterHelper {
         return IntactContext.getCurrentInstance().getPersisterHelper().save(annotatedObjects);
     }
 
+    @Deprecated
     public void save( IntactEntry... intactEntries ) throws PersisterException {
         for ( IntactEntry intactEntry : intactEntries ) {
             for ( Interaction interaction : intactEntry.getInteractions() ) {
@@ -73,38 +69,24 @@ public class PersisterHelperImpl implements PersisterHelper {
 
     @Transactional
     @IntactFlushMode(FlushModeType.COMMIT)
+    @Deprecated
     public PersisterStatistics save( AnnotatedObject... annotatedObjects ) throws PersisterException {
-
         CorePersister corePersister = getCorePersister();
-
         corePersister.getStatistics().reset();
+        corePersister.saveOrUpdate(annotatedObjects);
 
-        for (AnnotatedObject ao : annotatedObjects) {
-            corePersister.synchronize(ao);
-        }
-
-        corePersister.commit();
-
-        // we reload the annotated objects by its AC
-        // note: if an object does not have one, it is probably a duplicate
-        for ( AnnotatedObject ao : annotatedObjects ) {
-            corePersister.reload( ao );
-        }
-
-        final PersisterStatistics stats = corePersister.getStatistics();
-
-        if (log.isDebugEnabled()) log.debug(stats);
-
-        return stats;
+        return corePersister.getStatistics();
 
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Deprecated
     public PersisterStatistics saveInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException {
         return save(annotatedObjects);
     }
 
+    @Deprecated
     public CorePersister getCorePersister() {
-        return corePersister;
+        return IntactContext.getCurrentInstance().getCorePersister();
     }
 }

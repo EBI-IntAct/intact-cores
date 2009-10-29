@@ -173,6 +173,18 @@ public class KeyBuilder {
         return new Key( key );
     }
 
+    public Key keyForXref(Xref xref) {
+        return new Key(keyFor(xref.getParent()).getUniqueString()+"::"+xref.getPrimaryId());
+    }
+
+     public Key keyForAlias(Alias alias) {
+        return new Key(keyFor(alias.getParent()).getUniqueString()+"::"+alias.getName());
+    }
+
+    public Key keyForAnnotation(Annotation annotation, AnnotatedObject parent) {
+        return new Key(keyFor(parent).getUniqueString()+"::"+annotation.getCvTopic()+"_"+annotation.getAnnotationText());
+    }
+
     protected Key keyForAnnotatedObject( AnnotatedObject annotatedObject ) {
         Class normalizedClass = CgLibUtil.removeCglibEnhanced( annotatedObject.getClass() );
         return new Key( normalizedClass.getSimpleName() + ":" + annotatedObject.getShortLabel() );

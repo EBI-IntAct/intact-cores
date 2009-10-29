@@ -18,7 +18,6 @@ package uk.ac.ebi.intact.core.persister;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.config.IntactAuxiliaryConfigurator;
 import uk.ac.ebi.intact.core.config.SequenceManager;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -35,9 +34,6 @@ import uk.ac.ebi.intact.model.util.CvObjectBuilder;
  * @version $Id$
  */
 public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
-
-    @Autowired
-    private PersisterHelper persisterHelper;
     
     @Test
     public void persist_recursive_object() throws Exception {
@@ -355,7 +351,6 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void updateCvObjectAnnotation_updateWithoutAcEnabled() throws Exception {
         // setup the database
         int initialCvCount = getDaoFactory().getCvObjectDao().countAll();
@@ -387,5 +382,59 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         // as updating without cv is enabled, we expect the annotation text to be updated
         Assert.assertEquals("Experiment", usedInClassAnnot.getAnnotationText());
     }
+
+    @Test
+    public void updateCvObjectMissingAnnotation_updateWithoutAcEnabled() throws Exception {
+
+        // setup the database
+        int initialCvCount = getDaoFactory().getCvObjectDao().countAll();
+
+        CvTopic simple = getMockBuilder().createCvObject(CvTopic.class, CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
+
+        getPersisterHelper().save(simple);
+
+        Assert.assertEquals(initialCvCount+1, getDaoFactory().getCvObjectDao().countAll());
+
+        // perform the test
+        CvTopic simpleWithMoreInfo = getMockBuilder().createCvObject(CvTopic.class, CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
+        simpleWithMoreInfo.addAnnotation(getMockBuilder().createAnnotation("Interaction", null, CvTopic.USED_IN_CLASS));
+        simpleWithMoreInfo.addAlias(getMockBuilder().createAlias(simpleWithMoreInfo, "lalalias", CvAliasType.GO_SYNONYM_MI_REF, CvAliasType.GO_SYNONYM));
+
+        Assert.assertNull(simpleWithMoreInfo.getAc());
+
+        CorePersister persister = getPersisterHelper().getCorePersister();
+        persister.setUpdateWithoutAcEnabled(true); // <----- update without AC enabled
+        persister.saveOrUpdate( simpleWithMoreInfo);
+
+        // final assertions
+        CvTopic reloadedTopic = getDaoFactory().getCvObjectDao(CvTopic.class).getByPsiMiRef(CvTopic.COMMENT_MI_REF);
+        Assert.assertFalse(reloadedTopic.getAnnotations().isEmpty());
+
+        Annotation usedInClassAnnot = reloadedTopic.getAnnotations().iterator().next();
+        Assert.assertEquals(CvTopic.USED_IN_CLASS, usedInClassAnnot.getCvTopic().getShortLabel());
+        Assert.assertEquals("Interaction", usedInClassAnnot.getAnnotationText());
+
+        Alias alias = reloadedTopic.getAliases().iterator().next();
+        Assert.assertEquals("lalalias", alias.getName());
+    }
+
+    @Test
+    public void updateCvObject_changeLabel_updateWithoutAcEnabled() throws Exception {
+        CvTopic original = getMockBuilder().createCvObject(CvTopic.class, "LALA:007", "lala");
+
+        getCorePersister().saveOrUpdate(original);
+
+        // perform the test
+        CvTopic updated = getMockBuilder().createCvObject(CvTopic.class, "LALA:007", "nana");
+
+        CorePersister persister = getCorePersister();
+        persister.setUpdateWithoutAcEnabled(true); // <----- update without AC enabled
+        persister.saveOrUpdate( updated );
+
+        // final assertions
+        CvTopic reloadedTopic = getDaoFactory().getCvObjectDao(CvTopic.class).getByPsiMiRef("LALA:007");
+        Assert.assertEquals("nana", reloadedTopic.getShortLabel());
+    }
+
 
 }

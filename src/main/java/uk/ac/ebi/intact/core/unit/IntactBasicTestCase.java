@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persister.CorePersister;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 
 import javax.persistence.EntityManager;
@@ -52,9 +53,6 @@ public abstract class IntactBasicTestCase {
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @Autowired
-    private PersisterHelper persisterHelper;
 
     @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
@@ -103,7 +101,12 @@ public abstract class IntactBasicTestCase {
         return entityManager;
     }
 
+    @Deprecated
     public PersisterHelper getPersisterHelper() {
-        return persisterHelper;
+        return intactContext.getPersisterHelper();
+    }
+
+    public CorePersister getCorePersister() {
+        return intactContext.getCorePersister();
     }
 }

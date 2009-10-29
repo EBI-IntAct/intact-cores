@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.core.util.ClassUtils;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -217,11 +217,15 @@ public class CvObjectUtils {
         }
 
         if (includeCollectionsCheck && AnnotatedObjectUtils.isNewOrManaged(cv1) && AnnotatedObjectUtils.isNewOrManaged(cv2)) {
-            return AnnotatedObjectUtils.containSameCollections(cv1, cv2);
+            if (!AnnotatedObjectUtils.containSameCollections(cv1, cv2)) {
+                return false;
+            }
         }
 
         if (cv1.getIdentifier() != null && cv2.getIdentifier() != null) {
-            return cv1.getIdentifier().equals(cv2.getIdentifier());
+            if (!cv1.getIdentifier().equals(cv2.getIdentifier())) {
+                return false;
+            }
         }
 
         if (cv1.getShortLabel() == null || cv2.getShortLabel() == null) {

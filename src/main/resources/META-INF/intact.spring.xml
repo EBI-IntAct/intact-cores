@@ -38,9 +38,7 @@
         <constructor-arg value="0"/>
     </bean>
 
-    <bean id="persisterHelper" class="uk.ac.ebi.intact.core.persister.PersisterHelperImpl" scope="prototype">
-        <constructor-arg ref="corePersister"/>
-    </bean>
+    <bean id="persisterHelper" class="uk.ac.ebi.intact.core.persister.PersisterHelperImpl" />
 
     <bean id="corePersister" class="uk.ac.ebi.intact.core.persister.CorePersisterImpl" scope="prototype">
         <constructor-arg ref="intactContext"/>

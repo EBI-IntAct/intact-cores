@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.core.config.ConfigurationException;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persister.CorePersister;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Institution;
 
@@ -261,8 +262,17 @@ public class IntactContext implements DisposableBean, Serializable {
 //        }
 //    }
 
+    /**
+     * @deprecated Use getCorePersister() instead.
+     * @return
+     */
+    @Deprecated
     public PersisterHelper getPersisterHelper() {
         return persisterHelper;
+    }
+
+    public CorePersister getCorePersister() {
+        return (CorePersister) IntactContext.getCurrentInstance().getSpringContext().getBean("corePersister");
     }
 
     public ConfigurableApplicationContext getSpringContext() {

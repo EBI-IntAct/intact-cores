@@ -15,8 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,7 +24,9 @@ import org.hibernate.ejb.HibernateEntityManager;
 import org.hibernate.engine.EntityEntry;
 import org.hibernate.engine.Status;
 import org.hibernate.impl.SessionImpl;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.annotations.IntactFlushMode;
 import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
@@ -55,7 +55,7 @@ public class CorePersisterImpl implements CorePersister {
     private DataContext dataContext;
     private Finder finder;
 
-    private Map<Key, AnnotatedObject> annotatedObjectsToPersist;
+    private Map<Key, IntactObject> annotatedObjectsToPersist;
     private Map<Key, AnnotatedObject> annotatedObjectsToMerge;
     private Map<Key, AnnotatedObject> synched;
 
@@ -120,6 +120,24 @@ public class CorePersisterImpl implements CorePersister {
     ////////////////////////
     // Implement Persister
     @Transactional
+    @IntactFlushMode(FlushModeType.COMMIT)
+    public void saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
+        for (AnnotatedObject ao : annotatedObjects) {
+            synchronize(ao);
+        }
+
+        commit();
+
+        // we reload the annotated objects by its AC
+        // note: if an object does not have one, it is probably a duplicate
+        for ( AnnotatedObject ao : annotatedObjects ) {
+            reload( ao );
+        }
+
+        if (log.isDebugEnabled()) log.debug(statistics);
+    }
+
+    @Transactional
     public void saveOrUpdate( AnnotatedObject ao ) {
 
         dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.COMMIT);
@@ -133,6 +151,19 @@ public class CorePersisterImpl implements CorePersister {
         }
 
         reload( ao );
+    }
+
+    public void saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException {
+        for ( IntactEntry intactEntry : intactEntries ) {
+            for ( Interaction interaction : intactEntry.getInteractions() ) {
+                saveOrUpdate( interaction );
+            }
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveOrUpdateInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException {
+        saveOrUpdate(annotatedObjects);
     }
 
     public <T extends AnnotatedObject> T synchronize( T ao ) {
@@ -219,6 +250,8 @@ public class CorePersisterImpl implements CorePersister {
 
                     if (copied) {
                         if (statisticsEnabled) statistics.addMerged(managedObject);
+                        
+                        annotatedObjectsToMerge.put(key, managedObject);
 
                         // synchronize the children
                         synchronizeChildren(managedObject);
@@ -468,18 +501,18 @@ public class CorePersisterImpl implements CorePersister {
         }
 
         // Order the collection of objects to persist: institution, cvs, others
-        List<AnnotatedObject> thingsToPersist = new ArrayList<AnnotatedObject>( annotatedObjectsToPersist.values() );
+        List<IntactObject> thingsToPersist = new ArrayList<IntactObject>( annotatedObjectsToPersist.values() );
         Collections.sort( thingsToPersist, new PersistenceOrderComparator() );
 
-        for ( AnnotatedObject ao : thingsToPersist ) {
+        for ( IntactObject ao : thingsToPersist ) {
             if ( log.isDebugEnabled() ) {
-                log.debug( "\tAbout to persist " + DebugUtil.annotatedObjectToString(ao, true) +" - Key: "+ getKeyForValue( annotatedObjectsToPersist, ao ));
+                log.debug( "\tAbout to persist " + DebugUtil.intactObjectToString(ao, true) +" - Key: "+ getKeyForValue( annotatedObjectsToPersist, ao ));
             }
 
             // this may happen if there is a cascade on this object from the parent
             // exception: features are persisted by cascade from the component, so they can be ignored
             if ( log.isWarnEnabled() && ao.getAc() != null && !(ao instanceof Feature) ) {
-                log.warn( "Object to persist should NOT have an AC: " + DebugUtil.annotatedObjectToString(ao, true) );
+                log.warn( "Object to persist should NOT have an AC: " + DebugUtil.intactObjectToString(ao, true) );
             } else {
 
                 try {
@@ -487,8 +520,10 @@ public class CorePersisterImpl implements CorePersister {
                 } catch (Exception e) {
                     throw new PersisterException("Problem persisting: "+ao, e);
                 }
-                if (statisticsEnabled) statistics.addPersisted(ao);
-                logPersistence( ao );
+
+                if (ao instanceof AnnotatedObject) {
+                    if (statisticsEnabled) statistics.addPersisted((AnnotatedObject) ao);
+                }
             }
         }
 
@@ -509,7 +544,6 @@ public class CorePersisterImpl implements CorePersister {
             } else {
                 daoFactory.getBaseDao().merge( ao );
                 if (statisticsEnabled)  statistics.addMerged(ao);
-                logPersistence( ao );
             }
         }
 
@@ -566,36 +600,6 @@ public class CorePersisterImpl implements CorePersister {
             }
         }
         return null;
-    }
-
-    private static void logPersistence( AnnotatedObject<?, ?> ao ) {
-        if ( log.isTraceEnabled() ) {
-            log.trace( "\t\t\tPersisted with AC: " + ao.getAc() );
-
-            if ( !ao.getXrefs().isEmpty() ) {
-                log.trace( "\t\t\tXrefs: " + ao.getXrefs().size() );
-
-                for ( Xref xref : ao.getXrefs() ) {
-                    log.trace( "\t\t\t\t" + xref );
-                }
-            }
-
-            if ( !ao.getAliases().isEmpty() ) {
-                log.trace( "\t\t\tAliases: " + ao.getAliases().size() );
-
-                for ( Alias alias : ao.getAliases() ) {
-                    log.trace( "\t\t\t\t" + alias );
-                }
-            }
-
-            if ( !ao.getAnnotations().isEmpty() ) {
-                log.trace( "\t\t\tAnnotations: " + ao.getAnnotations().size() );
-
-                for ( Annotation annot : ao.getAnnotations() ) {
-                    log.trace( "\t\t\t\t" + annot );
-                }
-            }
-        }
     }
 
     public PersisterStatistics getStatistics() {
@@ -820,7 +824,7 @@ public class CorePersisterImpl implements CorePersister {
 
         Collection synchedAnnotations = new ArrayList( ao.getAnnotations().size() );
         for ( Annotation annotation : ao.getAnnotations() ) {
-            synchedAnnotations.add( synchronizeAnnotation( annotation ) );
+            synchedAnnotations.add( synchronizeAnnotation( annotation, ao ) );
         }
         ao.setAnnotations( synchedAnnotations );
 
@@ -845,6 +849,10 @@ public class CorePersisterImpl implements CorePersister {
 
         synchronizeBasicObjectCommons( xref );
 
+        if (xref.getAc() == null && xref.getAc() != null) {
+            annotatedObjectsToPersist.put(keyBuilder.keyForXref(xref), xref);
+        }
+
         return xref;
     }
 
@@ -859,10 +867,14 @@ public class CorePersisterImpl implements CorePersister {
 
         synchronizeBasicObjectCommons( alias );
 
+        if (alias.getAc() == null && parent.getAc() != null) {
+            annotatedObjectsToPersist.put(keyBuilder.keyForAlias(alias), alias);
+        }
+
         return alias;
     }
 
-    private Annotation synchronizeAnnotation( Annotation annotation ) {
+    private Annotation synchronizeAnnotation( Annotation annotation, AnnotatedObject parent ) {
         if (annotation.getAc() != null) {
             return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
                     .getAnnotationDao().getByAc(annotation.getAc());
@@ -870,6 +882,10 @@ public class CorePersisterImpl implements CorePersister {
         annotation.setCvTopic( synchronize( annotation.getCvTopic() ) );
 
         synchronizeBasicObjectCommons( annotation );
+
+        if (annotation.getAc() == null && parent.getAc() != null) {
+            annotatedObjectsToPersist.put(keyBuilder.keyForAnnotation(annotation, parent), annotation);
+        }
 
         return annotation;
     }

@@ -213,11 +213,11 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
         // if the source does not have an AC, we should not update the target shortLabel, fullName and owner
         // as it does not make much sense
-        if (source.getAc() != null) {
+        //if (source.getAc() != null) {
             copyProperty(source, "shortLabel", target);
             copyProperty(source, "fullName", target);
             copyProperty(source, "owner", target);
-        }
+        //}
 
         copyXrefCollection( source.getXrefs(), target.getXrefs() );
         copyAliasCollection( source.getAliases(), target.getAliases() );
@@ -383,7 +383,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
                     return false;
                 }
             }
-
+            
             if (log.isTraceEnabled()) log.trace("Copying "+propertyName+" from "+source.getClass().getSimpleName()+
                                                 " ["+source+"] to "+target.getClass().getSimpleName()+" ["+target+"]");
 

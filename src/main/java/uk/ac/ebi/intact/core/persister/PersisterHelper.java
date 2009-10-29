@@ -25,6 +25,7 @@ import uk.ac.ebi.intact.model.IntactEntry;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@Deprecated
 public interface PersisterHelper {
 
     void save( IntactEntry... intactEntries ) throws PersisterException;

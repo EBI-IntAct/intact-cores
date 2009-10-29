@@ -27,12 +27,12 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PersistenceOrderComparator implements Comparator<AnnotatedObject> {
+public class PersistenceOrderComparator implements Comparator<IntactObject> {
 
-    private Map<Class<? extends AnnotatedObject>,Integer> annotatedObjectPriorities;
+    private Map<Class<? extends IntactObject>,Integer> annotatedObjectPriorities;
 
     public PersistenceOrderComparator() {
-        annotatedObjectPriorities = new HashMap<Class<? extends AnnotatedObject>,Integer>();
+        annotatedObjectPriorities = new HashMap<Class<? extends IntactObject>,Integer>();
 
         // the higher priority (int), the earlier it will be saved
         annotatedObjectPriorities.put(Institution.class, 200);
@@ -47,15 +47,15 @@ public class PersistenceOrderComparator implements Comparator<AnnotatedObject> {
 
     }
 
-    public int compare(AnnotatedObject o1, AnnotatedObject o2) {
+    public int compare(IntactObject o1, IntactObject o2) {
         int o1Priority = getPriorityForClass(o1.getClass());
         int o2Priority = getPriorityForClass(o2.getClass());
 
         return o2Priority - o1Priority;
     }
 
-    protected int getPriorityForClass(Class<? extends AnnotatedObject> clazz) {
-        for (Class<? extends AnnotatedObject> aoClass : annotatedObjectPriorities.keySet()) {
+    protected int getPriorityForClass(Class<? extends IntactObject> clazz) {
+        for (Class<? extends IntactObject> aoClass : annotatedObjectPriorities.keySet()) {
              if (aoClass.isAssignableFrom(clazz)) {
                  return annotatedObjectPriorities.get(aoClass);
              }
