@@ -421,9 +421,6 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         getPersisterHelper().save( bs2 );
         String queryAc2 = bs2.getAc();
 
-        brain = getMockBuilder().createCvObject( CvTissue.class, "MI:xxxx", "brain" );
-        typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
-
         final BioSource qeryBs1 = getMockBuilder().createBioSource( 9606, "human" );
         qeryBs1.setCvCellType( typeA );
         qeryBs1.setCvTissue( brain );
@@ -440,8 +437,6 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         bs3.setCvCellType( typeA );
         getPersisterHelper().save( bs3 );
         String queryAc3 = bs3.getAc();
-
-        typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
 
         final BioSource qeryBs3 = getMockBuilder().createBioSource( 9606, "human" );
         qeryBs3.setCvCellType( typeA );
