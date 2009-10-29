@@ -42,7 +42,7 @@ public class CvObjectDaoTest extends IntactBasicTestCase {
         nucAcid.addChild( dna );
         nucAcid.addChild( otherNucAcid );
 
-        getPersisterHelper().save( nucAcid, dna, otherNucAcid );
+        getCorePersister().saveOrUpdate( nucAcid, dna, otherNucAcid );
     }
 
     @Test

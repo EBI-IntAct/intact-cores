@@ -23,7 +23,7 @@ public class XrefTest extends IntactBasicTestCase {
 
         Assert.assertTrue( xref1.equals( xref2 ) );
 
-        xref1.setAc( "lala" );
+        xref1.setAc( "nana" );
         Assert.assertTrue( xref1.equals( xref2 ) );
 
         CvXrefQualifier qu = getMockBuilder().getIdentityQualifier();

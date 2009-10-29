@@ -45,7 +45,7 @@ public class ExperimentDaoTest extends IntactBasicTestCase {
         Experiment exp5 = mockBuilder.createExperimentEmpty( "guru-1974-1" );
         Experiment exp6 = mockBuilder.createExperimentEmpty( "lolo-2001-1" );
 
-        getPersisterHelper().save( exp1, exp2, exp3, exp4, exp5, exp6 );
+        getCorePersister().saveOrUpdate( exp1, exp2, exp3, exp4, exp5, exp6 );
     }
 
     @Test
@@ -132,6 +132,6 @@ public class ExperimentDaoTest extends IntactBasicTestCase {
     public void getByPubIdAndLabelLike() throws Exception {
         createSomeExps();
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().getByPubIdAndLabelLike("1234567", "lala-2014%").size());
-        Assert.assertEquals(0, getDaoFactory().getExperimentDao().getByPubIdAndLabelLike("1234567", "lala-2014").size()); 
+        Assert.assertEquals(0, getDaoFactory().getExperimentDao().getByPubIdAndLabelLike("1234567", "lala-2014").size());
     }
 }

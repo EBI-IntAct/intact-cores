@@ -44,7 +44,7 @@ public class HibernateBaseDaoImplTest extends IntactBasicTestCase {
         protMiddle.setCreated(new Date());
         protNewest.setCreated(new Date(System.currentTimeMillis()*2));
 
-        getPersisterHelper().save(protMiddle, protNewest, protOldest);
+        getCorePersister().saveOrUpdate(protMiddle, protNewest, protOldest);
 
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
 

@@ -42,7 +42,7 @@ public class PolymerDaoTest extends IntactBasicTestCase {
         Protein protein = getMockBuilder().createDeterministicProtein( "P83949-1", "P83949-1" );
         protein.setSequence( originalSeq );
 
-        getPersisterHelper().save( protein );
+        getCorePersister().saveOrUpdate( protein );
 
         Polymer polymer = getDaoFactory().getPolymerDao().getByShortLabel( "p83949-1" );
 

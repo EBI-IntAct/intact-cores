@@ -9,17 +9,17 @@
            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
     <bean name="userContext" class="uk.ac.ebi.intact.core.context.UserContext">
-        <property name="userId" value="LALA_USER"/>
+        <property name="userId" value="nana_USER"/>
     </bean>
 
     <bean name="intactConfig" class="uk.ac.ebi.intact.core.config.IntactConfiguration">
-        <property name="acPrefix" value="LALA"/>
-        <property name="defaultInstitution" ref="lalaInstitution"/>
+        <property name="acPrefix" value="nana"/>
+        <property name="defaultInstitution" ref="nanaInstitution"/>
     </bean>
 
     <!-- Default institutions -->
-    <bean name="lalaInstitution" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
-        <property name="name" value="lalaInstitution"/>
+    <bean name="nanaInstitution" class="uk.ac.ebi.intact.model.util.InstitutionFactoryBean">
+        <property name="name" value="nanaInstitution"/>
         <property name="description" value="A dummy institution"/>
         <property name="url" value="http://www.irbbarcelona.org"/>
     </bean>

@@ -16,14 +16,15 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.model.Protein;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * TODO comment this
@@ -49,7 +50,7 @@ public class ProteinUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void isFromUniprot() throws Exception {
-        Protein uniprotProt = getMockBuilder().createProtein("P12344", "lala");
+        Protein uniprotProt = getMockBuilder().createProtein("P12344", "nana");
 
         Protein nonUniprotProt = getMockBuilder().createProteinRandom();
         nonUniprotProt.getXrefs().clear();

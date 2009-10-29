@@ -17,7 +17,7 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
     @Test
     public void persist_sameBioSource() throws Exception {
         BioSource bs1 = getMockBuilder().createBioSource( 9606, "human" );
-        getPersisterHelper().save( bs1 );
+        getCorePersister().saveOrUpdate( bs1 );
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
@@ -25,7 +25,7 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
         Assert.assertEquals(14, getDaoFactory().getXrefDao().countAll());
 
         BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
-        getPersisterHelper().save( bs2 );
+        getCorePersister().saveOrUpdate( bs2 );
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
@@ -36,7 +36,7 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
     @Test
     public void persist_bioSource_differentTissues() throws Exception {
         BioSource bs1 = getMockBuilder().createBioSource( 9606, "human" );
-        getPersisterHelper().save( bs1 );
+        getCorePersister().saveOrUpdate( bs1 );
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
@@ -47,7 +47,7 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
 
         BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
         bs2.setCvTissue(getMockBuilder().createCvObject(CvTissue.class, "IA:xxxx", "blood"));
-        getPersisterHelper().save( bs2 );
+        getCorePersister().saveOrUpdate( bs2 );
 
         Assert.assertEquals(2, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
@@ -58,7 +58,7 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
     @Test
     public void persist_alwaysLowerCase() throws Exception {
         BioSource bs1 = getMockBuilder().createBioSource( 9606, "HUMAN" );
-        getPersisterHelper().save( bs1 );
+        getCorePersister().saveOrUpdate( bs1 );
 
         Assert.assertEquals("human", getDaoFactory().getBioSourceDao().getByTaxonIdUnique("9606").getShortLabel());
     }

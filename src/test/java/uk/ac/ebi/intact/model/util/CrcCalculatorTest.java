@@ -15,15 +15,14 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
+import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.Interaction;
-
 
 import java.util.Arrays;
 
@@ -65,7 +64,7 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
     public void crc_different_exp() throws Exception {
         Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
         Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
-        interaction2.getExperiments().add( getMockBuilder().createExperimentEmpty( "lala-1714" ) );
+        interaction2.getExperiments().add( getMockBuilder().createExperimentEmpty( "nana-1714" ) );
 
         CrcCalculator crcCalculator = new CrcCalculator();
 
@@ -76,7 +75,7 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
     public void crc_different_sameExpDifferentShortLabel() throws Exception {
         Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
         Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
-        interaction2.getExperiments().iterator().next().setShortLabel( "lala-1320-2" );
+        interaction2.getExperiments().iterator().next().setShortLabel( "nana-1320-2" );
 
         CrcCalculator crcCalculator = new CrcCalculator();
 

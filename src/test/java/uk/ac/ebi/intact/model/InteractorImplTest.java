@@ -55,7 +55,7 @@ public class InteractorImplTest extends IntactBasicTestCase {
         final CvInteractorType dnaType = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.DNA_MI_REF, CvInteractorType.DNA);
         dnaType.addParent(nucAcidType);
 
-        InteractorImpl interactor = new InteractorImpl("interactor", new Institution("lalaInst"), dnaType);
+        InteractorImpl interactor = new InteractorImpl("interactor", new Institution("nanaInst"), dnaType);
 
         Assert.assertEquals(InteractorImpl.class.getName(), interactor.getObjClass());
         interactor.correctObjClass();
@@ -64,9 +64,9 @@ public class InteractorImplTest extends IntactBasicTestCase {
 
     @Test
     public void correctObjClass4() throws Exception {
-        final CvInteractorType interactorType = getMockBuilder().createCvObject(CvInteractorType.class, "MI:lala", "lalavirus");
+        final CvInteractorType interactorType = getMockBuilder().createCvObject(CvInteractorType.class, "MI:nana", "nanavirus");
 
-        InteractorImpl interactor = new InteractorImpl("interactor", new Institution("lalaInst"), interactorType);
+        InteractorImpl interactor = new InteractorImpl("interactor", new Institution("nanaInst"), interactorType);
 
         Assert.assertEquals(InteractorImpl.class.getName(), interactor.getObjClass());
         interactor.correctObjClass();

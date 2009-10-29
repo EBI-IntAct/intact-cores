@@ -121,7 +121,7 @@ public class CorePersisterImpl implements CorePersister {
     // Implement Persister
     @Transactional
     @IntactFlushMode(FlushModeType.COMMIT)
-    public void saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
+    public PersisterStatistics saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
         for (AnnotatedObject ao : annotatedObjects) {
             synchronize(ao);
         }
@@ -135,10 +135,12 @@ public class CorePersisterImpl implements CorePersister {
         }
 
         if (log.isDebugEnabled()) log.debug(statistics);
+
+        return statistics;
     }
 
     @Transactional
-    public void saveOrUpdate( AnnotatedObject ao ) {
+    public PersisterStatistics saveOrUpdate( AnnotatedObject ao ) {
 
         dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.COMMIT);
         //dataContext.getDaoFactory().getDataConfig().setAutoFlush(false);
@@ -151,19 +153,23 @@ public class CorePersisterImpl implements CorePersister {
         }
 
         reload( ao );
+
+        return statistics;
     }
 
-    public void saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException {
+    public PersisterStatistics saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException {
         for ( IntactEntry intactEntry : intactEntries ) {
             for ( Interaction interaction : intactEntry.getInteractions() ) {
                 saveOrUpdate( interaction );
             }
         }
+
+        return statistics;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveOrUpdateInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException {
-        saveOrUpdate(annotatedObjects);
+    public PersisterStatistics saveOrUpdateInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException {
+        return saveOrUpdate(annotatedObjects);
     }
 
     public <T extends AnnotatedObject> T synchronize( T ao ) {

@@ -40,7 +40,7 @@ public class PolymerDaoImplTest extends IntactBasicTestCase {
         Assert.assertNotNull(crc);
         Assert.assertNotNull(taxId);
 
-        getPersisterHelper().save(prot);
+        getCorePersister().saveOrUpdate(prot);
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
 

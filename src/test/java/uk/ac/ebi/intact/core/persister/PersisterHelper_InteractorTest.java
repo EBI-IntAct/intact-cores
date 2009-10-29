@@ -34,7 +34,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
     @Test
     public void aliasPersisted() throws Exception {
         Interactor interactor = getMockBuilder().createProteinRandom();
-        getPersisterHelper().save(interactor);
+        getCorePersister().saveOrUpdate(interactor);
 
         CvAliasType aliasType = getDaoFactory().getCvObjectDao(CvAliasType.class).getByPsiMiRef(CvAliasType.GENE_NAME_MI_REF);
         Assert.assertNotNull(aliasType);
@@ -43,14 +43,14 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
     @Test
     public void fetchFromDb_multipleIdXrefsMixed() throws Exception {
         Protein prot = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt1");
-        getPersisterHelper().save(prot);
+        getCorePersister().saveOrUpdate(prot);
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
 
         Protein prot2 = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt1");
         CvDatabase intact = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
         prot2.addXref(getMockBuilder().createIdentityXref(prot2, "EBI-12345", intact));
-        getPersisterHelper().save(prot2);
+        getCorePersister().saveOrUpdate(prot2);
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
     }
@@ -58,7 +58,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
     @Test
     public void update_containsMoreXrefs() throws Exception {
         Protein prot = getMockBuilder().createDeterministicProtein("Q00112", "lalaProt");
-        getPersisterHelper().save(prot);
+        getCorePersister().saveOrUpdate(prot);
 
         Protein protBeforeUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
         Assert.assertNotNull(protBeforeUpdate);
@@ -70,7 +70,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         InteractorXref secondaryXref = getMockBuilder().createIdentityXrefUniprot(protUpdated, "A12345");
         secondaryXref.setCvXrefQualifier(secondaryAc);
         protUpdated.addXref(secondaryXref);
-        getPersisterHelper().save(protUpdated);
+        getCorePersister().saveOrUpdate(protUpdated);
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
         Protein protAfterUpdate = getDaoFactory().getProteinDao().getByUniprotId("Q00112").iterator().next();
@@ -86,12 +86,12 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         protein.setCvInteractorType( null );
 
         Assert.assertNull( type.getAc() );
-        getPersisterHelper().save(type);
+        getCorePersister().saveOrUpdate(type);
         Assert.assertNotNull( type.getAc() );
 
         type = getDaoFactory().getCvObjectDao( CvInteractorType.class ).getByAc( type.getAc() );
         protein.setCvInteractorType( type );
-        getPersisterHelper().save(protein);
+        getCorePersister().saveOrUpdate(protein);
 
     }
 
@@ -104,7 +104,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Protein prot = getMockBuilder().createDeterministicProtein("P12345", "lala");
         prot.addXref(getMockBuilder().createXref(prot, "Q88334", secondaryAc, uniprotkb));
         prot.addXref(getMockBuilder().createXref(prot, "GO:123456", null, go));
-        getPersisterHelper().save(prot);
+        getCorePersister().saveOrUpdate(prot);
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
 
@@ -112,7 +112,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Protein prot2 = getMockBuilder().createDeterministicProtein("Q99999", "koko");
         Interaction interaction = getMockBuilder().createInteraction(sameProt, prot2);
         
-        getPersisterHelper().save(interaction);
+        getCorePersister().saveOrUpdate(interaction);
 
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
     }
@@ -123,7 +123,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
 
         final SmallMolecule smallMolecule = getMockBuilder().createSmallMolecule("CHEBI:18348", "noname");
-        getPersisterHelper().save(smallMolecule);
+        getCorePersister().saveOrUpdate(smallMolecule);
 
         getEntityManager().clear();
 
@@ -141,7 +141,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
                 smallMolecule.getAnnotations().add(annotation);
             }
         }
-        getPersisterHelper().save(smallMolecule);
+        getCorePersister().saveOrUpdate(smallMolecule);
 
         byShortLabel = daoFactory.getInteractorDao(SmallMoleculeImpl.class).getByShortLabel("noname");
         Assert.assertNull(byShortLabel);

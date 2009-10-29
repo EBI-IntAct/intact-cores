@@ -10,13 +10,13 @@ import uk.ac.ebi.intact.model.IntactEntry;
  */
 public interface CorePersister {
 
-    void saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException;
+    PersisterStatistics saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException;
 
-    void saveOrUpdate( AnnotatedObject ao );
+    PersisterStatistics saveOrUpdate( AnnotatedObject ao );
 
-    void saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException;
+    PersisterStatistics saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException;
 
-    void saveOrUpdateInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException;
+    PersisterStatistics saveOrUpdateInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException;
 
     PersisterStatistics getStatistics();
 

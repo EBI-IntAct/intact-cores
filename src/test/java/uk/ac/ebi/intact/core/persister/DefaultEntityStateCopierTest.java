@@ -117,7 +117,7 @@ public class DefaultEntityStateCopierTest extends IntactBasicTestCase {
         Assert.assertNotNull( source.getBioSource() );
         Assert.assertEquals( "mouse", source.getBioSource().getShortLabel() );
 
-        getPersisterHelper().save( source );
+        getCorePersister().saveOrUpdate( source );
         Assert.assertEquals( 4, getDaoFactory().getBioSourceDao().countAll() );
 
         IntactCloner cloner = new IntactCloner();
@@ -159,7 +159,7 @@ public class DefaultEntityStateCopierTest extends IntactBasicTestCase {
         Assert.assertEquals( "mouseUpdatedAgain", target.getBioSource().getShortLabel() );
 
 
-        getPersisterHelper().save( source );
+        getCorePersister().saveOrUpdate( source );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
         Assert.assertEquals( 4, getDaoFactory().getBioSourceDao().countAll() );

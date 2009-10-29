@@ -23,9 +23,9 @@ import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
-import java.util.Collection;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -66,7 +66,7 @@ public class AnnotatedObjectUtilsTest {
         CvXrefQualifier identity = builder.createIdentityCvXrefQualifier(getMockBuilder().getInstitution());
         CvDatabase uniprot = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT_MI_REF);
 
-        Protein prot = getMockBuilder().createProtein("P12345", "lala");
+        Protein prot = getMockBuilder().createProtein("P12345", "nana");
         
         Collection<Xref> cvObjectXrefCollection = AnnotatedObjectUtils.searchXrefs(prot, uniprot, identity);
         Assert.assertEquals(1, cvObjectXrefCollection.size());
@@ -99,11 +99,11 @@ public class AnnotatedObjectUtilsTest {
         CvDatabase uniprotkb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
         CvDatabase go = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.GO_MI_REF, CvDatabase.GO);
 
-        Protein prot = getMockBuilder().createDeterministicProtein("P12345", "lala");
+        Protein prot = getMockBuilder().createDeterministicProtein("P12345", "nana");
         prot.addXref(getMockBuilder().createXref(prot, "Q88334", secondaryAc, uniprotkb));
         prot.addXref(getMockBuilder().createXref(prot, "GO:123456", null, go));
 
-        Protein prot2 = getMockBuilder().createDeterministicProtein("P12345", "lala");
+        Protein prot2 = getMockBuilder().createDeterministicProtein("P12345", "nana");
 
         CvObjectFilterGroup databaseGroup = new CvObjectFilterGroup(false, false);
 
@@ -119,7 +119,7 @@ public class AnnotatedObjectUtilsTest {
     public void containsTheSameIdentities_simple_no() throws Exception {
         CvDatabase cv1 = CvObjectUtils.createCvObject(new Institution("testInstitution"), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
         CvDatabase cv2 = CvObjectUtils.createCvObject(new Institution("testInstitution"), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
-        cv2.getXrefs().iterator().next().setPrimaryId("lala");
+        cv2.getXrefs().iterator().next().setPrimaryId("nana");
 
         CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup(true, false);
         XrefCvFilter xrefFilter = new XrefCvFilter(cvObjectFilterGroup);
@@ -132,8 +132,8 @@ public class AnnotatedObjectUtilsTest {
         Protein prot = getMockBuilder().createProteinRandom();
 
         Protein prot2 = new IntactCloner().clone(prot);
-        prot2.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
-                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+        prot2.addXref(getMockBuilder().createIdentityXref(prot, "nanaPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "nanadb")));
 
         CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
         cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
@@ -148,8 +148,8 @@ public class AnnotatedObjectUtilsTest {
         Protein prot = getMockBuilder().createProteinRandom();
 
         Protein prot2 = new IntactCloner().clone(prot);
-        prot2.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
-                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+        prot2.addXref(getMockBuilder().createIdentityXref(prot, "nanaPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "nanadb")));
 
         Protein prot3 = new IntactCloner().clone(prot2);
         prot3.addXref(getMockBuilder().createIdentityXref(prot, "LOLO",
@@ -168,8 +168,8 @@ public class AnnotatedObjectUtilsTest {
         Protein prot = getMockBuilder().createProteinRandom();
 
         Protein prot2 = new IntactCloner().clone(prot);
-        prot2.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
-                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+        prot2.addXref(getMockBuilder().createIdentityXref(prot, "nanaPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "nanadb")));
 
         Protein prot3 = new IntactCloner().clone(prot2);
         prot3.addXref(getMockBuilder().createIdentityXref(prot, "LOLO",
@@ -186,8 +186,8 @@ public class AnnotatedObjectUtilsTest {
     @Test
     public void searchXrefs_xrefFilter_noFilter() throws Exception {
         Protein prot = getMockBuilder().createProteinRandom();
-        prot.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
-                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+        prot.addXref(getMockBuilder().createIdentityXref(prot, "nanaPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "nanadb")));
 
         CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup(true, false);
         XrefCvFilter xrefFilter = new XrefCvFilter(cvObjectFilterGroup);
@@ -199,8 +199,8 @@ public class AnnotatedObjectUtilsTest {
     @Test
     public void searchXrefs_xrefFilter_filter() throws Exception {
         Protein prot = getMockBuilder().createProteinRandom();
-        prot.addXref(getMockBuilder().createIdentityXref(prot, "LALAPRIMARY",
-                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "laladb")));
+        prot.addXref(getMockBuilder().createIdentityXref(prot, "nanaPRIMARY",
+                                                 getMockBuilder().createCvObject(CvDatabase.class, "db:0001", "nanadb")));
 
         CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
         cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);

@@ -43,13 +43,13 @@ public class ExperimentTest extends IntactBasicTestCase{
     @Test
     public void synchShortlabelDisabled2() throws Exception {
         final Experiment e1 = getMockBuilder().createExperimentRandom( 1 );
-        e1.setShortLabel( "lala-2008" );
+        e1.setShortLabel( "nana-2008" );
         Assert.assertEquals( 1, e1.getXrefs().size() );
         String pmid = e1.getXrefs().iterator().next().getPrimaryId();
         e1.getPublication().setShortLabel( pmid );
 
         final Experiment e2 = getMockBuilder().createExperimentRandom( 2 );
-        e2.setShortLabel( "lala-2008" );
+        e2.setShortLabel( "nana-2008" );
         Assert.assertEquals( 1, e2.getXrefs().size() );
         e2.getXrefs().iterator().next().setPrimaryId( pmid );
         e2.getPublication().setShortLabel( pmid );
@@ -62,23 +62,23 @@ public class ExperimentTest extends IntactBasicTestCase{
 
         Assert.assertEquals( 2, getDaoFactory().getExperimentDao().countAll() );
 
-        final Collection<Experiment> exps = getDaoFactory().getExperimentDao().getByShortLabelLike( "lala-2008%" );
+        final Collection<Experiment> exps = getDaoFactory().getExperimentDao().getByShortLabelLike( "nana-2008%" );
         Assert.assertEquals( 2, exps.size() );
         for ( Experiment exp : exps ) {
-            Assert.assertEquals("lala-2008", exp.getShortLabel());
+            Assert.assertEquals("nana-2008", exp.getShortLabel());
         }
     }
 
     @Test
     public void synchShortlabelEnabled() throws Exception {
         final Experiment e1 = getMockBuilder().createExperimentRandom( 1 );
-        e1.setShortLabel( "lala-2008" );
+        e1.setShortLabel( "nana-2008" );
         Assert.assertEquals( 1, e1.getXrefs().size() );
         String pmid = e1.getXrefs().iterator().next().getPrimaryId();
         e1.getPublication().setShortLabel( pmid );
 
         final Experiment e2 = getMockBuilder().createExperimentRandom( 2 );
-        e2.setShortLabel( "lala-2008" );
+        e2.setShortLabel( "nana-2008" );
         Assert.assertEquals( 1, e2.getXrefs().size() );
         e2.getXrefs().iterator().next().setPrimaryId( pmid );
         e2.getPublication().setShortLabel( pmid );
@@ -91,10 +91,10 @@ public class ExperimentTest extends IntactBasicTestCase{
 
         Assert.assertEquals( 2, getDaoFactory().getExperimentDao().countAll() );
 
-        final Experiment exp1 = getDaoFactory().getExperimentDao().getByShortLabel( "lala-2008-1" );
+        final Experiment exp1 = getDaoFactory().getExperimentDao().getByShortLabel( "nana-2008-1" );
         Assert.assertNotNull( exp1 );
 
-        final Experiment exp2 = getDaoFactory().getExperimentDao().getByShortLabel( "lala-2008-2" );
+        final Experiment exp2 = getDaoFactory().getExperimentDao().getByShortLabel( "nana-2008-2" );
         Assert.assertNotNull( exp2 );
     }
 }

@@ -51,7 +51,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         mockInteraction.getComponents().add( mockBuilder
                 .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A2", "prot2" ) ) );
 
-        getPersisterHelper().save( mockInteraction );
+        getCorePersister().saveOrUpdate( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
@@ -73,7 +73,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         mockInteraction.getComponents().add( mockBuilder
                 .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A3", "prot3" ) ) );
 
-        getPersisterHelper().save( mockInteraction );
+        getCorePersister().saveOrUpdate( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
@@ -95,7 +95,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         mockInteraction.getComponents().add( mockBuilder
                 .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A3", "prot3" ) ) );
 
-        getPersisterHelper().save( mockInteraction );
+        getCorePersister().saveOrUpdate( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
@@ -113,7 +113,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         mockInteraction.getComponents().add( mockBuilder
                 .createComponentNeutral( mockInteraction, mockBuilder.createProtein( "A1", "prot1" ) ) );
 
-        getPersisterHelper().save( mockInteraction );
+        getCorePersister().saveOrUpdate( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
 
@@ -127,7 +127,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         Interaction mockInteraction = mockBuilder.createInteractionRandomBinary();
         mockInteraction.getComponents().clear();
 
-        getPersisterHelper().save( mockInteraction );
+        getCorePersister().saveOrUpdate( mockInteraction );
 
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().countAll() );
     }
@@ -142,7 +142,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
             String[] primaryIds = Arrays.asList(all).subList(0, i).toArray(new String[i]);
             Interaction interaction = getMockBuilder().createInteraction(primaryIds);
 
-            getPersisterHelper().save(interaction);
+            getCorePersister().saveOrUpdate(interaction);
             Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByInteractorsPrimaryId(true, primaryIds).size());
         }
     }
@@ -154,7 +154,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
 
         Interaction interaction = getMockBuilder().createInteraction(p1, p2);
 
-        getPersisterHelper().save(p1, p2, interaction);
+        getCorePersister().saveOrUpdate(p1, p2, interaction);
 
         getEntityManager().flush();
         getEntityManager().clear();
@@ -178,7 +178,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
 
         Interaction interaction = getMockBuilder().createInteraction(p1, p2);
 
-        getPersisterHelper().save(p1, p2, interaction);
+        getCorePersister().saveOrUpdate(p1, p2, interaction);
 
         getEntityManager().flush();
         getEntityManager().clear();

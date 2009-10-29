@@ -17,7 +17,7 @@ public class PersisterHelper_InstitutionTest extends IntactBasicTestCase {
     @Test
     public void persistInstitution_default_withHelper() throws Exception {
         Institution institution = getMockBuilder().createInstitution("institutionref", "institution");
-        getPersisterHelper().save(institution);
+        getCorePersister().saveOrUpdate(institution);
 
         Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref("institutionref");
 
@@ -30,7 +30,7 @@ public class PersisterHelper_InstitutionTest extends IntactBasicTestCase {
     public void persistInstitution_default() throws Exception {
 
         Institution institution = getMockBuilder().createInstitution("institutionref", "institution");
-        getPersisterHelper().save(institution);
+        getCorePersister().saveOrUpdate(institution);
 
         Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref("institutionref");
 
@@ -47,7 +47,7 @@ public class PersisterHelper_InstitutionTest extends IntactBasicTestCase {
         Institution institution = getMockBuilder().createInstitution("institutionref", "institution");
         institution.getAnnotations().add(getMockBuilder().createAnnotation("nowhere", CvTopic.CONTACT_EMAIL_MI_REF, CvTopic.CONTACT_EMAIL));
 
-        getPersisterHelper().save(institution);
+        getCorePersister().saveOrUpdate(institution);
 
         Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref("institutionref");
 
@@ -61,7 +61,7 @@ public class PersisterHelper_InstitutionTest extends IntactBasicTestCase {
     public void persistInstitution_syncWithDatabase() throws Exception {
 
         Institution institution = getMockBuilder().createInstitution("institutionref", "institution");
-        getPersisterHelper().save(institution);
+        getCorePersister().saveOrUpdate(institution);
 
         Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref("institutionref");
         Assert.assertNotNull(reloadedInstitution);
@@ -69,7 +69,7 @@ public class PersisterHelper_InstitutionTest extends IntactBasicTestCase {
         Assert.assertEquals(0, reloadedInstitution.getAliases().size());
 
         institution = getMockBuilder().createInstitution("institutionref", "mint2");
-        getPersisterHelper().save(institution);
+        getCorePersister().saveOrUpdate(institution);
 
         reloadedInstitution = getDaoFactory().getInstitutionDao().getByXref("institutionref");
         Assert.assertNotNull(reloadedInstitution);

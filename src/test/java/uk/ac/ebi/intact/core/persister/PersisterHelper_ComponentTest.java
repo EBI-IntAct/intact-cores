@@ -31,7 +31,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
     @Test
     public void persist_default() throws Exception {
         Component component = getMockBuilder().createComponentRandom();
-        getPersisterHelper().save(component);
+        getCorePersister().saveOrUpdate(component);
 
         String newComponentAc = component.getAc();
         assertNotNull(newComponentAc);
@@ -52,7 +52,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
     @Test
     public void persistComponent_detached() throws Exception {
         Component component = getMockBuilder().createDeterministicInteraction().getComponents().iterator().next();
-        getPersisterHelper().save(component);
+        getCorePersister().saveOrUpdate(component);
 
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(1, component.getBindingDomains().size());
@@ -68,7 +68,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         Assert.assertTrue(getDaoFactory().getBaseDao().isTransient(component));
 
-        getPersisterHelper().save(component);
+        getCorePersister().saveOrUpdate(component);
 
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
@@ -94,7 +94,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
         Component baitNeutralComponent = getMockBuilder().createComponentBait( getMockBuilder().createDeterministicProtein( "P1", "baaa" ) );
         baitNeutralComponent.setExperimentalRoles(baitNeutralExperimentalRoles);
        
-        getPersisterHelper().save( baitNeutralComponent );
+        getCorePersister().saveOrUpdate( baitNeutralComponent );
 
         Component reloadedComponent = reloadByAc(baitNeutralComponent);
         Assert.assertNotNull( reloadedComponent.getExperimentalRoles());

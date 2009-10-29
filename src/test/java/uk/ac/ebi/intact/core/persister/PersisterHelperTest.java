@@ -16,7 +16,7 @@ public class PersisterHelperTest extends IntactBasicTestCase {
     @Test
     public void saveOrUpdate_default() throws Exception {
         Experiment experiment = getMockBuilder().createExperimentRandom(1);
-        getPersisterHelper().save(experiment);
+        getCorePersister().saveOrUpdate(experiment);
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
@@ -26,7 +26,7 @@ public class PersisterHelperTest extends IntactBasicTestCase {
     @Test
     public void saveOrUpdate_transactionAlreadyOpened() throws Exception {
         Experiment experiment = getMockBuilder().createExperimentRandom(1);
-        getPersisterHelper().save(experiment);
+        getCorePersister().saveOrUpdate(experiment);
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());

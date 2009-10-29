@@ -33,7 +33,7 @@ public class ImexExportDaoTest extends IntactBasicTestCase {
     public void getDeletedAfter() throws Exception {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary("IM-1");
 
-        getPersisterHelper().save(interaction);
+        getCorePersister().saveOrUpdate(interaction);
 
         imexExportDao.markAsDeleted(interaction);
 

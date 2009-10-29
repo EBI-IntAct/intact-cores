@@ -16,8 +16,6 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Component;
@@ -25,6 +23,9 @@ import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.Interactor;
 
 import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * TODO comment this
@@ -58,13 +59,13 @@ public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
 
     @Test
     public void createCandidateShortLabel_labelWithHyphen() throws Exception {
-        String baitLabel = "lala";
+        String baitLabel = "nana";
         String preyLabel ="EBI-12345";
 
         String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(baitLabel, preyLabel);
 
         assertNotNull(candLabel);
-        assertEquals("lala-ebi_12345", candLabel);
+        assertEquals("nana-ebi_12345", candLabel);
     }
 
     @Test
@@ -86,7 +87,7 @@ public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         Interactor interactor = getMockBuilder().createProteinRandom();
-        final String geneName = "lala";
+        final String geneName = "nana";
         interactor.getAliases().iterator().next().setName(geneName);
 
         Component comp = getMockBuilder().createComponentNeutral(interaction, interactor);

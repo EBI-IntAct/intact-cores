@@ -44,7 +44,7 @@ public class SearchableDaoTest extends IntactBasicTestCase {
         Protein prot2 = getMockBuilder().createProtein("M", "pr0");
         Protein prot3 = getMockBuilder().createProtein("Z", "prot2");
 
-        getPersisterHelper().save(prot1, prot2, prot3);
+        getCorePersister().saveOrUpdate(prot1, prot2, prot3);
 
         SearchableQuery query = new SearchableQuery();
         query.setShortLabel(new QueryPhrase(Arrays.asList(new QueryTerm("prot", QueryModifier.WILDCARD_END))));
@@ -61,7 +61,7 @@ public class SearchableDaoTest extends IntactBasicTestCase {
         Protein prot2 = getMockBuilder().createProtein("M", "pr0");
         Protein prot3 = getMockBuilder().createProtein("Z", "prot2");
 
-        getPersisterHelper().save(prot1, prot2, prot3);
+        getCorePersister().saveOrUpdate(prot1, prot2, prot3);
 
         SearchableQuery query = new SearchableQuery();
         query.setShortLabel(new QueryPhrase(Arrays.asList(new QueryTerm("pr", QueryModifier.WILDCARD_END))));
@@ -80,7 +80,7 @@ public class SearchableDaoTest extends IntactBasicTestCase {
     @Test
     public void getInteractors() throws Exception {
         Assert.assertEquals(0, getDaoFactory().getInteractorDao().countAllInteractors());
-        getPersisterHelper().save(getMockBuilder().createDeterministicInteraction());
+        getCorePersister().saveOrUpdate(getMockBuilder().createDeterministicInteraction());
         Assert.assertEquals(2, getDaoFactory().getInteractorDao().getInteractors(0, 5).size());
     }
 }

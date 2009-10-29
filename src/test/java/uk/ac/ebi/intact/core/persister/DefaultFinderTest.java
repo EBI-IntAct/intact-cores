@@ -36,7 +36,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForInstitution_byAc() throws Exception {
         final Institution i = getMockBuilder().createInstitution( "MI:xxxx", "ebi" );
-        getPersisterHelper().save( i );
+        getCorePersister().saveOrUpdate( i );
         final String originalAc = i.getAc();
 
         Institution empty = new Institution( "bla" );
@@ -49,7 +49,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForInstitution() throws Exception {
         final Institution i = getMockBuilder().createInstitution( "MI:xxxx", "ebi" );
-        getPersisterHelper().save( i );
+        getCorePersister().saveOrUpdate( i );
 
         String ac = finder.findAc( getMockBuilder().createInstitution( "MI:xxxx", "ebi" ) );
         Assert.assertNotNull( ac );
@@ -62,7 +62,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForPublication_byAc() {
         final Publication p = getMockBuilder().createPublication( "123456789" );
-        getPersisterHelper().save( p );
+        getCorePersister().saveOrUpdate( p );
         final String originalAc = p.getAc();
 
         Publication empty = getMockBuilder().createPublication( "123456789" );
@@ -75,7 +75,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForPublication() {
         final Publication p = getMockBuilder().createPublication( "123456789" );
-        getPersisterHelper().save( p );
+        getCorePersister().saveOrUpdate( p );
 
         final String ac = finder.findAc( getMockBuilder().createPublication( "123456789" ) );
         Assert.assertNotNull( ac );
@@ -87,7 +87,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForExperiment_byAc() {
         final Experiment i = getMockBuilder().createDeterministicExperiment();
-        getPersisterHelper().save( i );
+        getCorePersister().saveOrUpdate( i );
         final String originalAc = i.getAc();
 
         Institution empty = new Institution( "bla" );
@@ -101,7 +101,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     public void findAcForExperiment() throws Exception {
         final Experiment e = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" );
         e.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1"));
-        getPersisterHelper().save( e );
+        getCorePersister().saveOrUpdate( e );
 
         IntactCloner cloner = new IntactCloner();
         cloner.setExcludeACs(true);
@@ -118,7 +118,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         final Experiment exp1 = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" );
         exp1.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1"));
 
-        getPersisterHelper().save( exp1 );
+        getCorePersister().saveOrUpdate( exp1 );
 
         IntactCloner cloner = new IntactCloner();
         cloner.setExcludeACs(true);
@@ -137,7 +137,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         exp1.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1"));
         exp1.addAnnotation(getMockBuilder().createAnnotation("annot2", "IA:0001", "topic1"));
 
-        getPersisterHelper().save( exp1 );
+        getCorePersister().saveOrUpdate( exp1 );
 
         IntactCloner cloner = new IntactCloner();
         cloner.setExcludeACs(true);
@@ -154,7 +154,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     public void findAcForExperiment_noPublicationObject() throws Exception {
         final Experiment e = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "unassigned" );
         e.setPublication(null);
-        getPersisterHelper().save( e );
+        getCorePersister().saveOrUpdate( e );
 
         IntactCloner cloner = new IntactCloner();
         cloner.setExcludeACs(true);
@@ -171,7 +171,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForInteraction_byAc() throws Exception {
         final Interaction i = getMockBuilder().createDeterministicInteraction();
-        getPersisterHelper().save( i );
+        getCorePersister().saveOrUpdate( i );
         final String originalAc = i.getAc();
 
         Interaction empty = getMockBuilder().createDeterministicInteraction();
@@ -184,7 +184,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForInteraction() throws Exception {
         final Interaction i = getMockBuilder().createDeterministicInteraction();
-        getPersisterHelper().save( i );
+        getCorePersister().saveOrUpdate( i );
 
         final String ac = finder.findAc( getMockBuilder().createDeterministicInteraction() );
         Assert.assertNotNull( ac );
@@ -196,7 +196,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForInteractor_byAc() {
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
-        getPersisterHelper().save( p );
+        getCorePersister().saveOrUpdate( p );
         final String originalAc = p.getAc();
 
         Protein empty = getMockBuilder().createProtein( "P12345", "foo" );
@@ -209,7 +209,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForInteractor_acAsPrimaryId() {
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
-        getPersisterHelper().save( p );
+        getCorePersister().saveOrUpdate( p );
         final String originalAc = p.getAc();
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
@@ -227,7 +227,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForInteractor_uniprot_identity() {
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
-        getPersisterHelper().save( p );
+        getCorePersister().saveOrUpdate( p );
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
 
@@ -265,7 +265,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     public void findAcForInteractor_uniprot_identity_differentDbRelease() {
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
         p.getXrefs().iterator().next().setDbRelease("unique_dbrelease");
-        getPersisterHelper().save( p );
+        getCorePersister().saveOrUpdate( p );
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
 
@@ -279,7 +279,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     public void findAcForInteractor_other_identity() {
         // small molecule doesn't not have a uniprot identity, we then fall back onto other identity (minus intact, dip, dip)
         final SmallMolecule sm = getMockBuilder().createSmallMolecule( "CHEBI:0001", "nice molecule" );
-        getPersisterHelper().save( sm );
+        getCorePersister().saveOrUpdate( sm );
 
         // same xref, different shorltabel -> should work
         String ac = finder.findAc( getMockBuilder().createSmallMolecule( "CHEBI:0001", "nice molecule" ) );
@@ -304,7 +304,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         // p2 has two identity xrefs to uniprot
         final Protein p2 = getMockBuilder().createProtein( "P12345", "foo" );
         p2.addXref(getMockBuilder().createIdentityXrefUniprot(p2, "Q54321"));
-        getPersisterHelper().save( p, p2 );
+        getCorePersister().saveOrUpdate( p, p2 );
 
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(3, getDaoFactory().getXrefDao(InteractorXref.class).countAll());
@@ -341,7 +341,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         // p has one xref to uniprot
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
         p.setSequence( "ABCDEF" );
-        getPersisterHelper().save( p );
+        getCorePersister().saveOrUpdate( p );
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getXrefDao(InteractorXref.class).countAll());
@@ -362,7 +362,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
         p.addAnnotation( getMockBuilder().createAnnotation( "", noUniprotUpdate ) );
         p.setSequence( "ABCDEF" );
-        getPersisterHelper().save( p );
+        getCorePersister().saveOrUpdate( p );
 
         Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getXrefDao(InteractorXref.class).countAll());
@@ -386,7 +386,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForBioSource_byAc() {
         final BioSource bs = getMockBuilder().createBioSource( 9606, "human" );
-        getPersisterHelper().save( bs );
+        getCorePersister().saveOrUpdate( bs );
         final String originalAc = bs.getAc();
 
         BioSource empty = getMockBuilder().createBioSource( 9606, "human" );
@@ -399,7 +399,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForBioSource_only_taxid() {
         BioSource bs1 = getMockBuilder().createBioSource( 9606, "human" );
-        getPersisterHelper().save( bs1 );
+        getCorePersister().saveOrUpdate( bs1 );
         String queryAc1 = bs1.getAc();
 
         String ac = finder.findAc( getMockBuilder().createBioSource( 9606, "human" ) );
@@ -418,7 +418,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
         bs2.setCvCellType( typeA );
         bs2.setCvTissue( brain );
-        getPersisterHelper().save( bs2 );
+        getCorePersister().saveOrUpdate( bs2 );
         String queryAc2 = bs2.getAc();
 
         final BioSource qeryBs1 = getMockBuilder().createBioSource( 9606, "human" );
@@ -435,7 +435,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
 
         BioSource bs3 = getMockBuilder().createBioSource( 9606, "human" );
         bs3.setCvCellType( typeA );
-        getPersisterHelper().save( bs3 );
+        getCorePersister().saveOrUpdate( bs3 );
         String queryAc3 = bs3.getAc();
 
         final BioSource qeryBs3 = getMockBuilder().createBioSource( 9606, "human" );
@@ -458,7 +458,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
 
         BioSource bs4 = getMockBuilder().createBioSource( 9606, "human" );
         bs4.setCvTissue( brain );
-        getPersisterHelper().save( bs4 );
+        getCorePersister().saveOrUpdate( bs4 );
         String queryAc4 = bs4.getAc();
 
         brain = getMockBuilder().createCvObject( CvTissue.class, "MI:xxxx", "brain" );
@@ -481,7 +481,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     public void findAcForComponent_byAc() {
         final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
         final Component component = getMockBuilder().createComponentBait( p );
-        getPersisterHelper().save( component );
+        getCorePersister().saveOrUpdate( component );
         final String originalAc = component.getAc();
 
         Component empty = getMockBuilder().createComponentBait( p );
@@ -502,7 +502,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     public void findAcForFeature_byAc() {
         CvFeatureType type = getMockBuilder().createCvObject( CvFeatureType.class, "MI:xxxx", "type" );
         final Feature feature = getMockBuilder().createFeature( "region", type );
-        getPersisterHelper().save( feature );
+        getCorePersister().saveOrUpdate( feature );
         final String originalAc = feature.getAc();
 
         Feature empty = getMockBuilder().createFeature( "region", type );
@@ -521,7 +521,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForCvObject_byAc() {
         final Interaction i = getMockBuilder().createDeterministicInteraction();
-        getPersisterHelper().save( i );
+        getCorePersister().saveOrUpdate( i );
         final String originalAc = i.getAc();
 
         Interaction empty = getMockBuilder().createDeterministicInteraction();
@@ -534,10 +534,10 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForCvObject_same_MI_different_class() {
         CvTopic topic = getMockBuilder().createCvObject( CvTopic.class, "MI:xxxx", "topic" );
-        getPersisterHelper().save( topic );
+        getCorePersister().saveOrUpdate( topic );
 
         CvDatabase database = getMockBuilder().createCvObject( CvDatabase.class, "MI:xxxx", "db" );
-        getPersisterHelper().save( database );
+        getCorePersister().saveOrUpdate( database );
 
         String ac = finder.findAc( getMockBuilder().createCvObject( CvTopic.class, "MI:xxxx", "topic" ) );
         Assert.assertNotNull( topic.getAc() );

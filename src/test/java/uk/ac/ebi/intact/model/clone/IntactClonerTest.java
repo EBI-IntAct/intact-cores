@@ -47,7 +47,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
         Assert.assertEquals(0, interaction.getComponents().size());
 
-        final Protein prot = getMockBuilder().createProtein("P12345", "lala");
+        final Protein prot = getMockBuilder().createProtein("P12345", "nana");
         Component a = getMockBuilder().createComponentNeutral(interaction, prot);
 
         interaction.getComponents().add(a);
@@ -442,7 +442,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
     @Test
     public void cloneCvObject() throws Exception {
-        clone( getMockBuilder().createCvObject( CvTopic.class, "MI:0001", "lala" ) );
+        clone( getMockBuilder().createCvObject( CvTopic.class, "MI:0001", "nana" ) );
     }
 
     @Test

@@ -38,7 +38,7 @@ public class PublicationDaoTest extends IntactBasicTestCase {
         IntactMockBuilder mockBuilder = new IntactMockBuilder();
 
         Publication pub1 = mockBuilder.createPublication( "10029528" );
-        getPersisterHelper().save( pub1 );
+        getCorePersister().saveOrUpdate( pub1 );
     }
 
     @Test

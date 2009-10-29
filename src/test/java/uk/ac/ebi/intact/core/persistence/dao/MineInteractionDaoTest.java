@@ -37,8 +37,8 @@ public class MineInteractionDaoTest extends IntactBasicTestCase {
 
         CvInteraction detMethod = getMockBuilder().createCvObject( CvInteraction.class, CvInteraction.COSEDIMENTATION_MI_REF, CvInteraction.COSEDIMENTATION );
 
-        getPersisterHelper().save( interaction );
-        getPersisterHelper().save( detMethod );
+        getCorePersister().saveOrUpdate( interaction );
+        getCorePersister().saveOrUpdate( detMethod );
 
         MineInteraction newMi = new MineInteraction( ( ProteinImpl ) prot1, ( ProteinImpl ) prot2, ( InteractionImpl ) interaction );
         newMi.setDetectionMethod( detMethod );
