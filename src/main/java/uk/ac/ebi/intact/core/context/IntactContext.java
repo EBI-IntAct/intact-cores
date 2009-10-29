@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * The {@code IntactContext} class is the central point of access to the IntAct Core API.  *
+ * The {@code IntactContext} class is the central point of access to the IntAct Core API.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -37,11 +37,6 @@ public class IntactContext implements DisposableBean, Serializable {
     private static final Log log = LogFactory.getLog( IntactContext.class );
 
     private static IntactContext instance;
-
-    /**
-     * Contains scoped data and variables
-     */
-    private transient IntactSession session;
 
     @Autowired
     private DataContext dataContext;
@@ -205,7 +200,6 @@ public class IntactContext implements DisposableBean, Serializable {
         instance = (IntactContext) springContext.getBean("intactContext");
     }
 
-
     /**
      * The {@UserContext contains user-specific information, such as the current user name}
      * @return The UserContext instance
@@ -236,11 +230,6 @@ public class IntactContext implements DisposableBean, Serializable {
 
     public IntactConfiguration getConfig() {
         return config;
-    }
-
-
-    public IntactSession getSession() {
-        return session;
     }
 
     public DataContext getDataContext() {
