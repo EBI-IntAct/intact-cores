@@ -115,11 +115,13 @@ public class ProteinUtils {
 
         for ( Alias alias : protein.getAliases()) {
             CvAliasType aliasType = alias.getCvAliasType();
-            String aliasTypeIdentity = aliasType.getIdentifier();
+            if( aliasType != null ) {
+                String aliasTypeIdentity = aliasType.getIdentifier();
 
-            if (aliasTypeIdentity != null && CvAliasType.GENE_NAME_MI_REF.equals(aliasTypeIdentity)) {
-                geneName = alias.getName();
-                break;
+                if (aliasTypeIdentity != null && CvAliasType.GENE_NAME_MI_REF.equals(aliasTypeIdentity)) {
+                    geneName = alias.getName();
+                    break;
+                }
             }
         }
 
