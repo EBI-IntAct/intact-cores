@@ -199,14 +199,19 @@ public class CrcCalculator {
         return sb;
     }
 
-
     protected UniquenessStringBuilder createUniquenessString(Interactor interactor) {
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
 
         if (interactor == null) return sb;
 
         // IDs
-        Collection<InteractorXref> idXrefs = XrefUtils.getIdentityXrefs(interactor);
+        List<InteractorXref> idXrefs = new ArrayList( XrefUtils.getIdentityXrefs(interactor) );
+        // sort identities in case there are more than one
+        Collections.sort( idXrefs, new Comparator<InteractorXref>() {
+            public int compare( InteractorXref o1, InteractorXref o2 ) {
+                return o1.getPrimaryId().toLowerCase().compareTo( o2.getPrimaryId().toLowerCase() );
+            }
+        } );
 
         for (InteractorXref idXref : idXrefs) {
             sb.append(idXref.getPrimaryId().toLowerCase());
@@ -310,6 +315,7 @@ public class CrcCalculator {
 
     /////////////////////////////////
     // StringBuilder decorator
+    
     protected class UniquenessStringBuilder {
 
         private static final char SEPARATOR = '|';
