@@ -43,7 +43,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
     private String publicationAc;
 
     /**
-     * TODO comments TODO would be easier/meaningful to have plural
+     * Interactions detected in the context of this experiement.
      */
     private Collection<Interaction> interactions = new ArrayList<Interaction>();
 
@@ -54,21 +54,20 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
      * <p/>
      * This might be extended into an association class which could state the type of relationship.
      */
-    // TODO not clear, why only one Experiment ?
     private Experiment relatedExperiment;
 
     /**
-     * TODO comments
+     * Participant detection method.
      */
     private CvIdentification cvIdentification;
 
     /**
-     * TODO comments
+     * Interaction detection method.
      */
     private CvInteraction cvInteraction;
 
     /**
-     * TODO comments
+     * Host organism.
      */
     private BioSource bioSource;
 
@@ -163,7 +162,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
     // access methods for associations
 
     // TODO could wipe all existing interaction ... maybe dangerous.
-    // TODO shold also allow to have no interaction if the collection is null or empty.
+    // TODO should also allow to have no interaction if the collection is empty.
 
     public void setInteractions( Collection<Interaction> someInteraction ) {
         if ( someInteraction == null ) {
@@ -235,7 +234,6 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
 
     /**
      * Set Interaction Detection Method.
-     *
      * @param cvInteraction the method.
      */
     public void setCvInteraction( CvInteraction cvInteraction ) {
@@ -243,7 +241,6 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
     }
 
     @ManyToOne
-    
     @JoinColumn( name = "biosource_ac" )
     public BioSource getBioSource() {
         return bioSource;
@@ -251,16 +248,9 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
 
     /**
      * Set the Biosource. Cannot be null.
-     *
      * @param bioSource the biosource.
      */
     public void setBioSource( BioSource bioSource ) {
-
-// We shouldn't not forbiden bioSource to be set to null as it is not mandatory in psi-mi
-//        if ( bioSource == null ) {
-//            throw new NullPointerException( "valid Experiment must have a BioSource!" );
-//        }
-
         this.bioSource = bioSource;
     }
 
@@ -402,7 +392,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer( 128 );
+        StringBuffer result = new StringBuffer( 512 );
 
         result.append( "Experiment [AC: " + this.getAc() + " Shortlabel: " + getShortLabel() );
         result.append( " BioSource: " + ( getBioSource() == null ? "-" : getBioSource().getShortLabel() ) );
@@ -411,24 +401,8 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
         result.append( NEW_LINE );
         result.append( "CvInteraction: " + ( cvInteraction == null ? "NOT SPECIFIED" : cvInteraction.getShortLabel() ) );
         result.append( NEW_LINE );
-
-        // TODO in experiments with many interactions this can throw OutOfMemoryErrors
-//        result.append( "Interactions (" );
-//        if( null != getInteractions() ) {
-//            for( Iterator iterator = interactions.iterator(); iterator.hasNext(); ) {
-//                Interaction interaction = (Interaction) iterator.next();
-//                result.append( interaction.getShortLabel() ).append( ", " );
-//            }
-//        }
-//        result.append( ')' );
-//        result.append( NEW_LINE );
         result.append( ']' );
 
         return result.toString();
     }
-
-} // end Experiment
-
-
-
-
+}
