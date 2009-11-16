@@ -38,8 +38,7 @@ import uk.ac.ebi.intact.core.config.IntactConfiguration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Default implementation of the intact finder.
@@ -153,41 +152,50 @@ public class DefaultFinder implements Finder {
 
         Query query;
 
+        if (experiment.getCvIdentification() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without Participant identification method: "+experiment.getShortLabel());
+        if (experiment.getCvInteraction() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without Interaction detection method: "+experiment.getShortLabel());
+
         if (pubId != null) {
 
             if( experiment.getBioSource() != null ) {
-                query = getEntityManager().createQuery("select exp.ac from Experiment exp " +
-                                                       "left join exp.publication as pub " +
-                                                       "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
-                                                       "exp.bioSource.taxId = :taxId and " +
-                                                       "exp.cvIdentification.identifier = :participantDetMethodMi and " +
-                                                       "exp.cvInteraction.identifier = :interactionTypeMi");
+                query = getEntityManager().createQuery("select exp.ac " +
+                                                       "from Experiment exp " +
+                                                       "     left join exp.publication as pub " +
+                                                       "     join exp.xrefs as xref  " +
+                                                       "where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
+                                                       "      exp.bioSource.taxId = :taxId and " +
+                                                       "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                                                       "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
 
                 query.setParameter("taxId", experiment.getBioSource().getTaxId());
 
             } else {
 
-                query = getEntityManager().createQuery("select exp.ac from Experiment exp " +
-                                                       "left join exp.publication as pub " +
-                                                       "join exp.xrefs as xref  where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
-                                                       "exp.cvIdentification.identifier = :participantDetMethodMi and " +
-                                                       "exp.cvInteraction.identifier = :interactionTypeMi");
+                query = getEntityManager().createQuery("select exp.ac " +
+                                                       "from Experiment exp " +
+                                                       "     left join exp.publication as pub " +
+                                                       "     join exp.xrefs as xref  " +
+                                                       "where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
+                                                       "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                                                       "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
             }
 
             query.setParameter("pubId", pubId);
 
-            if (experiment.getCvIdentification() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without CvIdentification: "+experiment.getShortLabel());
-            if (experiment.getCvInteraction() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without CvInteraction: "+experiment.getShortLabel());
-
-            query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getIdentifier());
-            query.setParameter("interactionTypeMi", experiment.getCvInteraction().getIdentifier());
-
         } else {
             log.warn("Experiment without publication, getting its AC using the shortLabel: "+experiment.getShortLabel());
+            
+            query = getEntityManager().createQuery("select exp.ac " +
+                                                   "from Experiment exp " +
+                                                   "where exp.shortLabel = :shortLabel and" +
+                                                   "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                                                   "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
 
-            query = getEntityManager().createQuery("select exp.ac from Experiment exp where exp.shortLabel = :shortLabel");
             query.setParameter("shortLabel", experiment.getShortLabel());
         }
+
+        query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getIdentifier());
+        query.setParameter("interactionDetectionMethodMi", experiment.getCvInteraction().getIdentifier());
 
         List<String> experimentAcs = query.getResultList();
 
@@ -210,6 +218,12 @@ public class DefaultFinder implements Finder {
                     experimentAc = candidateExperimentAc;
                     break;
                 }
+            }
+
+            if( experimentAc == null ) {
+                log.warn( "There were " + experimentAcs.size() +" experiments matching " + experiment.getShortLabel() +
+                          "["+ experiment.getAc() +"]: "+ experimentAcs +
+                          " However, none of them had the same annotation set. Consequently, none was selected." );
             }
         }
 
