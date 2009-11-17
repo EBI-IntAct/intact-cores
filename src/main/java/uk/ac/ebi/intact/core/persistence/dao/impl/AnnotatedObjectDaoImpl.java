@@ -197,7 +197,7 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
             crit.add( Restrictions.and(Restrictions.eq("topicXrefQual.shortLabel", CvXrefQualifier.IDENTITY),
                                        Restrictions.eq("topicXref.primaryId",CvTopic.OBSOLETE_MI_REF )) );
             subList = crit.list();
-            System.out.println("subList.size() = " + subList.size());
+            
         } else if ( !excludeObsolete && excludeHidden ) {
             crit.add( Restrictions.eq( "annotTopic.shortLabel", CvTopic.HIDDEN ) );
             subList = crit.list();
