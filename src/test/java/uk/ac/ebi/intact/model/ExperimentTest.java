@@ -57,8 +57,8 @@ public class ExperimentTest extends IntactBasicTestCase{
         getIntactContext().getConfig().setAutoUpdateExperimentLabel( false );
 
         // Careful here, we have to persist the experiment one after the other to ensure that label WOULD are synchronized.
-        getPersisterHelper().save( e1 );
-        getPersisterHelper().save( e2 );
+        getCorePersister().saveOrUpdate( e1 );
+        getCorePersister().saveOrUpdate( e2 );
 
         Assert.assertEquals( 2, getDaoFactory().getExperimentDao().countAll() );
 
@@ -67,6 +67,9 @@ public class ExperimentTest extends IntactBasicTestCase{
         for ( Experiment exp : exps ) {
             Assert.assertEquals("nana-2008", exp.getShortLabel());
         }
+
+        getIntactContext().getConfig().setAutoUpdateExperimentLabel( true );
+
     }
 
     @Test
@@ -86,8 +89,8 @@ public class ExperimentTest extends IntactBasicTestCase{
         getIntactContext().getConfig().setAutoUpdateExperimentLabel( true );
 
         // Careful here, we have to persist the experiment one after the other to ensure that label are synchronized.
-        getPersisterHelper().save( e1 );
-        getPersisterHelper().save( e2 );
+        getCorePersister().saveOrUpdate( e1 );
+        getCorePersister().saveOrUpdate( e2 );
 
         Assert.assertEquals( 2, getDaoFactory().getExperimentDao().countAll() );
 

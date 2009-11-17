@@ -15,22 +15,19 @@
  */
 package uk.ac.ebi.intact.core.persistence.svc.impl;
 
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.core.util.SchemaUtils;
-import uk.ac.ebi.intact.core.persistence.svc.DbInfoService;
-import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.context.DataContext;
-import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.model.meta.DbInfo;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.Date;
+import org.junit.Assert;
+import org.junit.Test;
+import uk.ac.ebi.intact.core.context.DataContext;
+import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persistence.svc.DbInfoService;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.meta.DbInfo;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Test cases to check DbInfoService methods
@@ -42,12 +39,6 @@ import java.text.SimpleDateFormat;
 public class DbInfoServiceTest extends IntactBasicTestCase {
 
     private static final Log log = LogFactory.getLog( DbInfoServiceTest.class );
-
-    @Before
-    public void before() throws Exception {
-        SchemaUtils.createSchema();
-    }
-
 
     @Test
     public void saveLastProteinUpdateTest() throws Exception {

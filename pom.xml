@@ -13,7 +13,7 @@
     <version>2.2.0-SNAPSHOT</version>
 
     <name>IntAct Core :: Core</name>
-    <url>http://www.ebi.ac.uk/~intact/devsite/${artifactId}</url>
+    <url>http://intact.googlecode.com</url>
     <description>Intact Core, which contains the base classes for all intact artifacts</description>
 
     <properties>
@@ -50,10 +50,10 @@
 
         <!-- third party deps -->
         <dependency>
-    <groupId>cglib</groupId>
-    <artifactId>cglib-nodep</artifactId>
-    <version>2.2</version>
-</dependency> 
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>2.2</version>
+        </dependency>
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
@@ -112,13 +112,13 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <optional>true</optional>
+            <version>1.2.121</version>
         </dependency>
-        <dependency>
-            <groupId>hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>1.8.0.7</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>hsqldb</groupId>-->
+            <!--<artifactId>hsqldb</artifactId>-->
+            <!--<version>1.8.0.7</version>-->
+        <!--</dependency>-->
 
         <!-- JODA Time Utils -->
         <dependency>

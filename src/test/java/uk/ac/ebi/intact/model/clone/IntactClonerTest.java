@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.model.clone;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,11 @@ public class IntactClonerTest extends IntactBasicTestCase {
         Assert.assertEquals( io, clone );
 
         return clone;
+    }
+
+    @After
+    public void after() {
+        IntactContext.getCurrentInstance().getConfig().setAutoUpdateExperimentLabel(true);
     }
 
     @Test
