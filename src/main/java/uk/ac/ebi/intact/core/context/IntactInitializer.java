@@ -86,7 +86,8 @@ public class IntactInitializer implements ApplicationContextAware{
         if (log.isInfoEnabled()) {
             log.info("Starting IntAct Core module");
             log.info("\tDefault institution: " + defaultInstitution);
-            log.info("\tSchema version: " + requiredSchemaVersion);
+            log.info("\tSchema version:      " + requiredSchemaVersion);
+            log.info("\tAutopersist:         " + autoPersist);
         }
 
         if (!configuration.isSkipSchemaCheck()) {
