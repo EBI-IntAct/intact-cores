@@ -85,4 +85,18 @@ public class IntactConfiguration {
     public void setSkipSchemaCheck(boolean skipSchemaCheck) {
         this.skipSchemaCheck = skipSchemaCheck;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder( 256 );
+        sb.append( "IntactConfiguration" );
+        sb.append( "{acPrefix='" ).append( acPrefix ).append( '\'' );
+        sb.append( ", defaultInstitution=" ).append( defaultInstitution );
+        sb.append( ", localCvPrefix='" ).append( localCvPrefix ).append( '\'' );
+        sb.append( ", autoUpdateExperimentLabel=" ).append( autoUpdateExperimentLabel );
+        sb.append( ", autoUpdateInteractionLabel=" ).append( autoUpdateInteractionLabel );
+        sb.append( ", skipSchemaCheck=" ).append( skipSchemaCheck );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }
