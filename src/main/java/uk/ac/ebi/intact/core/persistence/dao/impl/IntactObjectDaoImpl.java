@@ -10,6 +10,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
+import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.core.persistence.dao.IntactObjectDao;
 
@@ -49,7 +50,7 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
      * @return the object
      */
     public T getByAc( String ac ) {
-        return ( T ) getSession().get( getEntityClass(), ac );
+        return ( T ) getSession().get( CgLibUtil.removeCglibEnhanced( getEntityClass() ), ac );
     }
 
     public Collection<T> getByAcLike( String ac ) {
@@ -59,7 +60,6 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
     public Collection<T> getByAcLike( String ac, boolean ignoreCase ) {
         return getByPropertyNameLike( "ac", ac, ignoreCase );
     }
-
 
     /**
      * Performs a unique query for an array of ACs. Beware that depending on the database used this query has limitation
@@ -83,7 +83,6 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
         return getByAc( acs.toArray( new String[acs.size()] ) );
     }
 
-
     /**
      * @deprecated use getAllIterator() instead. Method might be removed in version 1.6
      */
@@ -100,7 +99,7 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
         return getAllIterator();
     }
 
-        public int deleteByAc( String ac ) {
+    public int deleteByAc( String ac ) {
 
         T o = getByAc( ac );
         if ( o == null ) {
@@ -120,5 +119,4 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
     public boolean exists( T obj ) {
         return ( getSession().get( getEntityClass(), obj.getAc() ) != null );
     }
-
 }
