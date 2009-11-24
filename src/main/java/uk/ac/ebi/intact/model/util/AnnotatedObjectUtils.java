@@ -375,6 +375,29 @@ public class AnnotatedObjectUtils {
         return annotations;
     }
 
+    public static Collection<Annotation> getPublicAnnotations( final AnnotatedObject<?, ?> annotatedObject ) {
+
+        final Collection<Annotation> publicAnnotations = new ArrayList<Annotation>( annotatedObject.getAnnotations().size() );
+        final Iterator<Annotation> i = annotatedObject.getAnnotations().iterator();
+        while ( i.hasNext() ) {
+            Annotation annotation = i.next();
+            if( isCvTopicPublic( annotation.getCvTopic() ) ) {
+                publicAnnotations.add( annotation );
+            }
+        }
+
+        return publicAnnotations;
+    }
+
+    public static boolean isCvTopicPublic( CvTopic cvTopic ){
+        for ( Annotation annotation : cvTopic.getAnnotations() ) {
+            if( annotation.getCvTopic().getShortLabel().equals( CvTopic.HIDDEN ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Check if the object state is "new" or "managed". This check is useful in those
      * cases where we need to check if the collections (annotations, aliases and xrefs) are

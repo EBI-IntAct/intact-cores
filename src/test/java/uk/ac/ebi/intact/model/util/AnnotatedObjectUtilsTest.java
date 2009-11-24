@@ -216,7 +216,7 @@ public class AnnotatedObjectUtilsTest {
     }
     
     @Test
-    public void findANnotationsByCvTopic() throws Exception {
+    public void findAnnotationsByCvTopic() throws Exception {
 
         final CvInteraction interactionType = getMockBuilder().createCvObject( CvInteraction.class, "MI:xxxx", "bla" );
 
@@ -249,6 +249,29 @@ public class AnnotatedObjectUtilsTest {
         } catch ( Exception e ) {
             // ok
         }
+    }
+
+    @Test
+    public void getPublicAnnotations() throws Exception {
+        CvTopic hidden = getMockBuilder().createCvObject( CvTopic.class, "MI:xxxx", CvTopic.HIDDEN );
+
+        CvTopic comment = getMockBuilder().createCvObject( CvTopic.class, "MI:zzzz", "comment" );
+        CvTopic internalRemark = getMockBuilder().createCvObject( CvTopic.class, "MI:yyyy", "internal-remark" );
+        internalRemark.getAnnotations().clear();
+        internalRemark.addAnnotation( new Annotation(internalRemark.getOwner(), hidden, "" ) );
+
+        // note: the term hidden is not hidden, hence no reason for that annotation to be filtered out.
+        Collection<Annotation> publicAnnotations = AnnotatedObjectUtils.getPublicAnnotations( internalRemark );
+        Assert.assertEquals( 1 , publicAnnotations.size() );
+
+        Experiment exp = getMockBuilder().createExperimentRandom(3);
+        exp.getAnnotations().clear();
+        exp.addAnnotation( new Annotation(exp.getOwner(), comment, "a public comment" ) );
+        exp.addAnnotation( new Annotation(exp.getOwner(), internalRemark, "some internal information" ) );
+
+        publicAnnotations = AnnotatedObjectUtils.getPublicAnnotations( exp );
+        Assert.assertEquals( 1 , publicAnnotations.size() );
+        Assert.assertEquals( "comment", publicAnnotations.iterator().next().getCvTopic().getShortLabel() );
     }
 
 }
