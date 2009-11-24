@@ -119,11 +119,10 @@ public class IntactInitializer implements ApplicationContextAware{
     }
 
     private String printDataSource( DataSource ds ) {
-        StringBuilder sb = new StringBuilder( 128 );
+        StringBuilder sb = new StringBuilder( 256 );
         try {
-            sb.append( "url: " ).append( BeanUtils.getSimpleProperty( ds, "url" ) ).append(", ");
-            sb.append( "username: " ).append( BeanUtils.getSimpleProperty( ds, "username" ) ).append(", ");
-            sb.append( "password: " ).append( BeanUtils.getSimpleProperty( ds, "password" ) );
+            sb.append( "url: '" ).append( BeanUtils.getSimpleProperty( ds, "url" ) ).append("', ");
+            sb.append( "username: '" ).append( BeanUtils.getSimpleProperty( ds, "username" ) ).append("'");
         } catch ( Exception e ) {
             log.warn( "Exception while trying to print " + ds.getClass().getSimpleName(), e );
         }
