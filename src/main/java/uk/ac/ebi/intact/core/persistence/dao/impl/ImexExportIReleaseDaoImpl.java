@@ -19,9 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.UserContext;
-import uk.ac.ebi.intact.core.persistence.dao.ImexExportDao;
-import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.meta.ImexExport;
+import uk.ac.ebi.intact.core.persistence.dao.ImexExportReleaseDao;
+import uk.ac.ebi.intact.model.meta.ImexExportInteraction;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,7 +35,7 @@ import java.util.List;
  */
 @Repository
 @Transactional(readOnly = true)
-public class ImexExportDaoImpl extends HibernateBaseDaoImpl implements ImexExportDao {
+public class ImexExportIReleaseDaoImpl extends HibernateBaseDaoImpl implements ImexExportReleaseDao {
 
     @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
@@ -44,48 +43,21 @@ public class ImexExportDaoImpl extends HibernateBaseDaoImpl implements ImexExpor
     @Autowired
     private UserContext userContext;
 
-    public ImexExportDaoImpl() {
-        super(ImexExport.class);
+    public ImexExportIReleaseDaoImpl() {
+        super(ImexExportInteraction.class);
     }
 
-    public List<ImexExport> getDeletedAfter(Date date) {
-        Query query = entityManager.createQuery("select ie from uk.ac.ebi.intact.model.meta.ImexExport ie " +
-                "where ie.deleted > :date");
-        query.setParameter("date", date, TemporalType.TIMESTAMP);
-        return query.getResultList();
-    }
-
-    public List<ImexExport> getUpdatedAfter(Date date) {
-        Query query = entityManager.createQuery("select ie from uk.ac.ebi.intact.model.meta.ImexExport ie " +
+    public List<ImexExportInteraction> getUpdatedAfter(Date date) {
+        Query query = entityManager.createQuery("select ie from uk.ac.ebi.intact.model.meta.ImexExportRelease ie " +
                 "where ie.updated > :date and ie.created <= :date");
         query.setParameter("date", date, TemporalType.TIMESTAMP);
         return query.getResultList();
     }
 
-    public List<ImexExport> getCreatedAfter(Date date) {
-        Query query = entityManager.createQuery("select ie from uk.ac.ebi.intact.model.meta.ImexExport ie " +
+    public List<ImexExportInteraction> getCreatedAfter(Date date) {
+        Query query = entityManager.createQuery("select ie from uk.ac.ebi.intact.model.meta.ImexExportRelease ie " +
                 "where ie.created > :date");
         query.setParameter("date", date, TemporalType.TIMESTAMP);
         return query.getResultList();
-    }
-
-    @Transactional(readOnly = false)
-    public void markAsCreated(Interaction interaction) {
-        ImexExport imexExport = new ImexExport(interaction);
-        entityManager.merge(imexExport);
-    }
-
-    @Transactional(readOnly = false)
-    public void markAsUpdated(Interaction interaction) {
-        ImexExport imexExport = new ImexExport(interaction);
-        entityManager.merge(imexExport);
-    }
-
-    @Transactional(readOnly = false)
-    public void markAsDeleted(Interaction interaction) {
-        ImexExport imexExport = new ImexExport(interaction);
-        imexExport.setDeleted(new Date());
-        imexExport.setDeletor(userContext.getUserId());
-        entityManager.merge(imexExport);
     }
 }

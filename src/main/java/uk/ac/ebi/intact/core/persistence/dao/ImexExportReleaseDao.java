@@ -1,36 +1,36 @@
-/*
- * Copyright 2001-2007 The European Bioinformatics Institute.
+/**
+ * Copyright 2006 The European Bioinformatics Institute, and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  limitations under the License.
  */
-package uk.ac.ebi.intact.model.meta;
+package uk.ac.ebi.intact.core.persistence.dao;
+
+import uk.ac.ebi.intact.model.meta.ImexExportInteraction;
+
+import java.util.Date;
+import java.util.List;
 
 /**
- * Type of activation of an import
+ * TODO comment this!
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
+ * @since <pre>01-Sep-2006</pre>
  */
-public enum ImexImportActivationType {
+public interface ImexExportReleaseDao extends BaseDao {
+    
+    List<ImexExportInteraction> getUpdatedAfter(Date date);
 
-    /**
-     * An import of failed PMIDs was attempted
-     */
-    ONLY_FAILED,
-
-    /**
-     * Imported all the new PMIDs, since the latest DATE_BASED import
-     */
-    DATE_BASED
+    List<ImexExportInteraction> getCreatedAfter(Date date);
 
 }

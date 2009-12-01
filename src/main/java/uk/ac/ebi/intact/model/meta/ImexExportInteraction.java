@@ -20,6 +20,7 @@ import org.hibernate.validator.NotNull;
 import uk.ac.ebi.intact.model.AbstractAuditable;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
+import uk.ac.ebi.intact.model.Publication;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 
 import javax.persistence.*;
@@ -29,24 +30,24 @@ import java.util.Date;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Entity(name="ia_imex_export")
-@org.hibernate.annotations.Table (appliesTo = "ia_imex_export",
+@Entity(name="ia_imex_exp_interaction")
+@org.hibernate.annotations.Table (appliesTo = "ia_imex_exp_interaction",
                                   comment = "Represents an IMEx exported interaction.")
-public class ImexExport extends AbstractAuditable{
+public class ImexExportInteraction extends AbstractAuditable{
 
     private Long id;
     private Interaction interaction;
     private String imexId;
-    private String publicationId;
+    private Publication publication;
 
     private Date deleted;
     private String deletor;
 
-    public ImexExport() {
+    public ImexExportInteraction() {
 
     }
 
-    public ImexExport(Interaction interaction) {
+    public ImexExportInteraction(Interaction interaction) {
         this.interaction = interaction;
         populateInteractionFields(interaction);
     }
@@ -65,11 +66,11 @@ public class ImexExport extends AbstractAuditable{
         this.imexId = InteractionUtils.getImexIdentifier(interaction);
 
         if (imexId == null) {
-            throw new IllegalArgumentException("An interaction must have an IMEX ID to be tracked through the ImexExport table: "+interaction);
+            throw new IllegalArgumentException("An interaction must have an IMEX ID to be tracked through the ImexExportInteraction table: "+interaction);
         }
 
         if (!interaction.getExperiments().isEmpty()) {
-            this.publicationId = interaction.getExperiments().iterator().next().getPublication().getPublicationId();
+            this.publication = interaction.getExperiments().iterator().next().getPublication();
         }
     }
 
@@ -105,14 +106,14 @@ public class ImexExport extends AbstractAuditable{
         this.imexId = imexId;
     }
 
-    @Length(max = 16)
-    @NotNull
-    public String getPublicationId() {
-        return publicationId;
+    @ManyToOne
+    @JoinColumn(name = "publication_ac")
+    public Publication getPublication() {
+        return publication;
     }
 
-    public void setPublicationId(String publicationId) {
-        this.publicationId = publicationId;
+    public void setPublication(Publication publication) {
+        this.publication = publication;
     }
 
     @Temporal( value = TemporalType.TIMESTAMP )
@@ -140,7 +141,7 @@ public class ImexExport extends AbstractAuditable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ImexExport that = (ImexExport) o;
+        ImexExportInteraction that = (ImexExportInteraction) o;
 
         if (!imexId.equals(that.imexId)) return false;
         if (!interaction.equals(that.interaction)) return false;
@@ -158,10 +159,10 @@ public class ImexExport extends AbstractAuditable{
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("ImexExport");
+        sb.append("ImexExportInteraction");
         sb.append("{interaction=").append(interaction);
         sb.append(", imexId='").append(imexId).append('\'');
-        sb.append(", publicationId='").append(publicationId).append('\'');
+        sb.append(", publication'").append(publication).append('\'');
         sb.append(", deleted=").append(deleted);
         sb.append(", deletor='").append(deletor).append('\'');
         sb.append('}');

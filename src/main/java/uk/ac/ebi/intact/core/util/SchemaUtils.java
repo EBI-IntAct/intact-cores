@@ -19,10 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.HSQLDialect;
-import org.hibernate.dialect.Oracle9iDialect;
-import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.dialect.*;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
@@ -107,6 +104,14 @@ public class SchemaUtils {
      */
     public static String[] generateCreateSchemaDDLForHSQL() {
         return generateCreateSchemaDDL(HSQLDialect.class.getName());
+    }
+
+    /**
+     * Generates the DDL schema for HSQL DB.
+     * @return an array containing the SQL statements
+     */
+    public static String[] generateCreateSchemaDDLForH2() {
+        return generateCreateSchemaDDL(H2Dialect.class.getName());
     }
 
     /**

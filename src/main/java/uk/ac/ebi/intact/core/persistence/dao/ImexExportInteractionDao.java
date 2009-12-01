@@ -15,18 +15,31 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao;
 
-import org.joda.time.DateTime;
-import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.model.meta.ImexImport;
-import uk.ac.ebi.intact.model.meta.ImexImportActivationType;
+import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.meta.ImexExportInteraction;
+
+import java.util.Date;
+import java.util.List;
 
 /**
+ * TODO comment this!
+ *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
- * @since 1.5
+ * @since <pre>01-Sep-2006</pre>
  */
-@Mockable
-public interface ImexImportDao extends BaseDao<ImexImport> {
+public interface ImexExportInteractionDao extends BaseDao {
 
-    DateTime getLatestUpdate(ImexImportActivationType activationType);
+    List<ImexExportInteraction> getDeletedAfter(Date date);
+
+    List<ImexExportInteraction> getUpdatedAfter(Date date);
+
+    List<ImexExportInteraction> getCreatedAfter(Date date);
+
+    void markAsCreated(Interaction interaction);
+
+    void markAsUpdated(Interaction interaction);
+
+    void markAsDeleted(Interaction interaction);
+
 }
