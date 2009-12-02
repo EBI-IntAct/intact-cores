@@ -69,20 +69,39 @@ public class ImexExportInteractionDaoImpl extends HibernateBaseDaoImpl implement
         return query.getResultList();
     }
 
+    public ImexExportInteraction getNonReleasedByInteractionAc(String interactionAc) {
+        Query query = entityManager.createQuery("select ie from uk.ac.ebi.intact.model.meta.ImexExportInteraction ie " +
+                "where ie.interactionAc = :interactionAc and ie.imexExportRelease is null");
+        query.setParameter("interactionAc", interactionAc);
+
+        List<ImexExportInteraction> imexExportInteractions = query.getResultList();
+
+        if (imexExportInteractions.size() > 1) {
+            throw new IllegalStateException("Maximum one ImexExportInteraction is expected for a specific interaction that " +
+                    "has not been part of an ImexExportRelease");
+        }
+
+        if (imexExportInteractions.size() == 1) {
+            return imexExportInteractions.get(0);
+        }
+        
+        return null;
+    }
+
     @Transactional(readOnly = false)
-    public void markAsCreated(Interaction interaction) {
+    public void saveAsCreated(Interaction interaction) {
         ImexExportInteraction imexExportInteraction = new ImexExportInteraction(interaction);
         entityManager.merge(imexExportInteraction);
     }
 
     @Transactional(readOnly = false)
-    public void markAsUpdated(Interaction interaction) {
+    public void saveAsUpdated(Interaction interaction) {
         ImexExportInteraction imexExportInteraction = new ImexExportInteraction(interaction);
         entityManager.merge(imexExportInteraction);
     }
 
     @Transactional(readOnly = false)
-    public void markAsDeleted(Interaction interaction) {
+    public void saveAsDeleted(Interaction interaction) {
         ImexExportInteraction imexExportInteraction = new ImexExportInteraction(interaction);
         imexExportInteraction.setDeleted(new Date());
         imexExportInteraction.setDeletor(userContext.getUserId());

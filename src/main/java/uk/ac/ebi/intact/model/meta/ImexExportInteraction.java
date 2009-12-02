@@ -30,15 +30,20 @@ import java.util.Date;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Entity(name="ia_imex_exp_interaction")
+@Entity
 @org.hibernate.annotations.Table (appliesTo = "ia_imex_exp_interaction",
                                   comment = "Represents an IMEx exported interaction.")
+@Table( name = "ia_imex_exp_interaction",
+        uniqueConstraints = {@UniqueConstraint(columnNames={"imex_id", "imex_exp_release_id"})})
 public class ImexExportInteraction extends AbstractAuditable{
 
     private Long id;
+    private ImexExportRelease imexExportRelease;
     private Interaction interaction;
+    private String interactionAc;
     private String imexId;
     private Publication publication;
+    private String publicationId;
 
     private Date deleted;
     private String deletor;
@@ -71,6 +76,7 @@ public class ImexExportInteraction extends AbstractAuditable{
 
         if (!interaction.getExperiments().isEmpty()) {
             this.publication = interaction.getExperiments().iterator().next().getPublication();
+            this.publicationId = publication.getShortLabel();
         }
     }
 
@@ -85,14 +91,37 @@ public class ImexExportInteraction extends AbstractAuditable{
         this.id = id;
     }
 
-    @OneToOne (targetEntity = InteractionImpl.class)
-    @JoinColumn(name = "ac")
+    @ManyToOne
+    @JoinColumn(name = "imex_exp_release_id")
+    public ImexExportRelease getImexExportRelease() {
+        return imexExportRelease;
+    }
+
+    public void setImexExportRelease(ImexExportRelease imexExportRelease) {
+        this.imexExportRelease = imexExportRelease;
+    }
+
+    @ManyToOne (targetEntity = InteractionImpl.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "interaction_ac", nullable = true)
     public Interaction getInteraction() {
         return interaction;
     }
 
     public void setInteraction(Interaction interaction) {
         this.interaction = interaction;
+
+        if (interaction != null) {
+            this.interactionAc = interaction.getAc();
+        }
+    }
+
+    @Column(name = "interaction_ac", insertable = false, updatable = false)
+    public String interactionAc() {
+        return interactionAc;
+    }
+
+    public void setInteractionAc(String interactionAc) {
+        this.interactionAc = interactionAc;
     }
 
     @Column(name = "imex_id", unique = true)
@@ -106,7 +135,7 @@ public class ImexExportInteraction extends AbstractAuditable{
         this.imexId = imexId;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publication_ac")
     public Publication getPublication() {
         return publication;
@@ -114,6 +143,14 @@ public class ImexExportInteraction extends AbstractAuditable{
 
     public void setPublication(Publication publication) {
         this.publication = publication;
+    }
+
+    public String getPublicationId() {
+        return publicationId;
+    }
+
+    public void setPublicationId(String publicationId) {
+        this.publicationId = publicationId;
     }
 
     @Temporal( value = TemporalType.TIMESTAMP )

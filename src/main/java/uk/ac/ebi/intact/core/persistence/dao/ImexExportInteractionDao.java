@@ -36,10 +36,12 @@ public interface ImexExportInteractionDao extends BaseDao {
 
     List<ImexExportInteraction> getCreatedAfter(Date date);
 
-    void markAsCreated(Interaction interaction);
+    ImexExportInteraction getNonReleasedByInteractionAc(String interactionAc);
 
-    void markAsUpdated(Interaction interaction);
+    void saveAsCreated(Interaction interaction);
 
-    void markAsDeleted(Interaction interaction);
+    void saveAsUpdated(Interaction interaction);
+
+    void saveAsDeleted(Interaction interaction);
 
 }

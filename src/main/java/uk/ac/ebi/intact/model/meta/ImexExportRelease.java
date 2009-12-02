@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.model.meta;
 import uk.ac.ebi.intact.model.AbstractAuditable;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -35,6 +36,7 @@ public class ImexExportRelease extends AbstractAuditable{
     private int createdPubCount;
     private int updatedPubCount;
     private int deletedPubCount;
+    private List<ImexExportInteraction> imexExportInteractions;
 
     public ImexExportRelease() {
 
@@ -104,5 +106,14 @@ public class ImexExportRelease extends AbstractAuditable{
 
     public void setDeletedPubCount(int deletedPubCount) {
         this.deletedPubCount = deletedPubCount;
+    }
+
+    @OneToMany(mappedBy = "imexExportRelease", cascade = {CascadeType.ALL})
+    public List<ImexExportInteraction> getImexExportInteractions() {
+        return imexExportInteractions;
+    }
+
+    public void setImexExportInteractions(List<ImexExportInteraction> imexExportInteractions) {
+        this.imexExportInteractions = imexExportInteractions;
     }
 }

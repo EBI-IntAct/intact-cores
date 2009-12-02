@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.core.util;
+package uk.ac.ebi.intact.core.imex;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.joda.time.DateTime;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class SchemaUtilsTest {
+public class ImexExportManager {
 
-    @Test
-    public void testGenerateCreateSchemaDDLForOracle() throws Exception {
-        Assert.assertEquals(201, SchemaUtils.generateCreateSchemaDDLForOracle().length);
-        Assert.assertEquals(201, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length);
-        Assert.assertEquals(196, SchemaUtils.generateCreateSchemaDDLForHSQL().length);
-        Assert.assertEquals(196, SchemaUtils.generateCreateSchemaDDLForH2().length);
+    public ImexExportManager() {
+    }
+
+    public void prepareRelease() {
+        DateTime fromDate = null; // TODO get last ImexExportRelease date
+        prepareRelease(fromDate, new DateTime());
+    }
+
+    public void prepareRelease(DateTime fromDate, DateTime toDate) {
+        // do this process in an iteration to avoid memory problems
     }
 }
