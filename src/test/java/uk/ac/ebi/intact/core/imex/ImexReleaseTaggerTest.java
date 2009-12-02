@@ -19,10 +19,7 @@ import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.Annotation;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 /**
@@ -40,10 +37,29 @@ public class ImexReleaseTaggerTest extends IntactBasicTestCase {
         ImexReleaseTagger tagger = new ImexReleaseTagger(getIntactContext());
         tagger.tag(publication, date);
 
-        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(publication, "last-imex-update");
+        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(publication, CvTopic.LAST_IMEX_UPDATE);
 
         Assert.assertNotNull(annotation);
         Assert.assertEquals("1970/01/15", annotation.getAnnotationText());
+
+    }
+
+    @Test
+    public void tag_publication_existing() throws Exception {
+        Publication publication = getMockBuilder().createPublication("1234567");
+        publication.getAnnotations().clear();
+        publication.addAnnotation(getMockBuilder().createAnnotation("1915/11/01", null, CvTopic.LAST_IMEX_UPDATE));
+
+        DateTime date = new DateTime(1234567890);
+
+        ImexReleaseTagger tagger = new ImexReleaseTagger(getIntactContext());
+        tagger.tag(publication, date);
+
+        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(publication, CvTopic.LAST_IMEX_UPDATE);
+
+        Assert.assertNotNull(annotation);
+        Assert.assertEquals("1970/01/15", annotation.getAnnotationText());
+        Assert.assertEquals(1, publication.getAnnotations().size());
 
     }
 
@@ -56,7 +72,7 @@ public class ImexReleaseTaggerTest extends IntactBasicTestCase {
         ImexReleaseTagger tagger = new ImexReleaseTagger(getIntactContext());
         tagger.tag(experiment, date);
 
-        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(experiment, "last-imex-update");
+        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(experiment, CvTopic.LAST_IMEX_UPDATE);
 
         Assert.assertNotNull(annotation);
         Assert.assertEquals("1970/01/15", annotation.getAnnotationText());
@@ -71,7 +87,7 @@ public class ImexReleaseTaggerTest extends IntactBasicTestCase {
         ImexReleaseTagger tagger = new ImexReleaseTagger(getIntactContext());
         tagger.tag(interaction, date);
 
-        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(interaction, "last-imex-update");
+        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(interaction, CvTopic.LAST_IMEX_UPDATE);
 
         Assert.assertNotNull(annotation);
         Assert.assertEquals("1970/01/15", annotation.getAnnotationText());

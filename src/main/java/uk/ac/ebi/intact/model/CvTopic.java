@@ -130,6 +130,8 @@ public class CvTopic extends CvDagObject implements Editable {
 
     public static final String INCHI_ID = "inchi id";
     public static final String INCHI_ID_MI_REF = "MI:2010";
+    
+    public static final String LAST_IMEX_UPDATE = "last-imex-update";
 
 
     /**

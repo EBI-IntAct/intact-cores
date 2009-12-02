@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.imex;
 import org.joda.time.DateTime;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 /**
@@ -58,14 +59,20 @@ public class ImexReleaseTagger {
     }
 
     protected void tag(AnnotatedObject annotatedObject, DateTime dateTime) {
-        Annotation imexUpdateAnnotation = createLastImexUpdateAnnotation(dateTime);
-        annotatedObject.addAnnotation(imexUpdateAnnotation);
+        Annotation imexUpdateAnnotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(annotatedObject, CvTopic.LAST_IMEX_UPDATE);
+
+        if (imexUpdateAnnotation == null) {
+            imexUpdateAnnotation = createLastImexUpdateAnnotation(dateTime);
+            annotatedObject.addAnnotation(imexUpdateAnnotation);
+        } else {
+            imexUpdateAnnotation.setAnnotationText(dateTime.toString("yyyy/MM/dd"));
+        }
     }
 
     protected Annotation createLastImexUpdateAnnotation(DateTime dateTime) {
         String dateStr = dateTime.toString("yyyy/MM/dd");
         
-        CvTopic lastImexUpdateTopic = CvObjectUtils.createCvObject(intactContext.getInstitution(), CvTopic.class, null, "last-imex-update");
+        CvTopic lastImexUpdateTopic = CvObjectUtils.createCvObject(intactContext.getInstitution(), CvTopic.class, null, CvTopic.LAST_IMEX_UPDATE);
         return new Annotation(intactContext.getInstitution(), lastImexUpdateTopic, dateStr);
     }
 }
