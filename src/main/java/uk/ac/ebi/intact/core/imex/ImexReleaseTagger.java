@@ -64,8 +64,8 @@ public class ImexReleaseTagger {
 
     protected Annotation createLastImexUpdateAnnotation(DateTime dateTime) {
         String dateStr = dateTime.toString("yyyy/MM/dd");
-        // TODO define identifier
-        CvTopic lastImexUpdateTopic = CvObjectUtils.createCvObject(intactContext.getInstitution(), CvTopic.class, "IAX:0100", "last-imex-update");
+        
+        CvTopic lastImexUpdateTopic = CvObjectUtils.createCvObject(intactContext.getInstitution(), CvTopic.class, null, "last-imex-update");
         return new Annotation(intactContext.getInstitution(), lastImexUpdateTopic, dateStr);
     }
 }
