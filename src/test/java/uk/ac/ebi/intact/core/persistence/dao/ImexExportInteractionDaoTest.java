@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -73,6 +74,7 @@ public class ImexExportInteractionDaoTest extends IntactBasicTestCase {
     }
 
     @Test
+    @Ignore
     @Transactional(propagation = Propagation.NEVER)
     public void getNonReleasedByInteractionAc() throws Exception {
         final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
