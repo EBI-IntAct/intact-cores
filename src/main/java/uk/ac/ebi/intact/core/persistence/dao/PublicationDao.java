@@ -22,5 +22,4 @@ public interface PublicationDao extends AnnotatedObjectDao<Publication> {
      * @return The publication if found, null otherwise
      */
     Publication getByPubmedId(String pubmedId);
-
 }

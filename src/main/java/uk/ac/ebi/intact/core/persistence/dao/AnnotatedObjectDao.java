@@ -6,12 +6,10 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -96,4 +94,12 @@ public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObj
      * @since 1.6
      */
     List<String> getShortLabelsLike( String labelLike );
+
+    /**
+     * Finds annotated objects that contain the annotation "last-imex-update", using a range of dates.
+     * @param fromDate The from date
+     * @param toDate The to date
+     * @return The annotated obejcts with the "last-imex-update" annotation between the two dates.
+     */
+    List<Publication> getByLastImexUpdate(Date fromDate, Date toDate);
 }

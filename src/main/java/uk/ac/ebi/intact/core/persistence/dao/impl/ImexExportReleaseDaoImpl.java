@@ -61,4 +61,14 @@ public class ImexExportReleaseDaoImpl extends HibernateBaseDaoImpl implements Im
         query.setParameter("date", date, TemporalType.TIMESTAMP);
         return query.getResultList();
     }
+
+    public ImexExportRelease getLastRelease() {
+        Query query = entityManager.createQuery("select ie from uk.ac.ebi.intact.model.meta.ImexExportRelease ie " +
+                "where ie.created = (select max(ie2.created) from uk.ac.ebi.intact.model.meta.ImexExportRelease ie2)");
+        List<ImexExportRelease> resultList = query.getResultList();
+
+        if (resultList.isEmpty()) return null;
+
+        return resultList.iterator().next();
+    }
 }

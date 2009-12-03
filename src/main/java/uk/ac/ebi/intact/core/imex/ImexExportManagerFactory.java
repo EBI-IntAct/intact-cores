@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.core.util;
+package uk.ac.ebi.intact.core.imex;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.springframework.beans.factory.FactoryBean;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class SchemaUtilsTest {
+public class ImexExportManagerFactory implements FactoryBean {
 
-    @Test
-    public void testGenerateCreateSchemaDDLForOracle() throws Exception {
-        Assert.assertEquals(193, SchemaUtils.generateCreateSchemaDDLForOracle().length);
-        Assert.assertEquals(193, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length);
-        Assert.assertEquals(191, SchemaUtils.generateCreateSchemaDDLForHSQL().length);
-        Assert.assertEquals(191, SchemaUtils.generateCreateSchemaDDLForH2().length);
+
+    public Object getObject() throws Exception {
+        return new ImexExportManager();
+    }
+
+    public Class getObjectType() {
+        return ImexExportManager.class;
+    }
+
+    public boolean isSingleton() {
+        return true;
     }
 }

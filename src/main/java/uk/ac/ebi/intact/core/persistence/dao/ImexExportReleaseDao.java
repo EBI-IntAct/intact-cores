@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import uk.ac.ebi.intact.model.meta.ImexExportInteraction;
+import uk.ac.ebi.intact.model.meta.ImexExportRelease;
 
 import java.util.Date;
 import java.util.List;
@@ -32,5 +33,7 @@ public interface ImexExportReleaseDao extends BaseDao {
     List<ImexExportInteraction> getUpdatedAfter(Date date);
 
     List<ImexExportInteraction> getCreatedAfter(Date date);
+
+    ImexExportRelease getLastRelease();
 
 }

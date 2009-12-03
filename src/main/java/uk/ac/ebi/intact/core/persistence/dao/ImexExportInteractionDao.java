@@ -38,10 +38,11 @@ public interface ImexExportInteractionDao extends BaseDao {
 
     ImexExportInteraction getNonReleasedByInteractionAc(String interactionAc);
 
+    List<ImexExportInteraction> getByImexId(String imexId);
+
     void saveAsCreated(Interaction interaction);
 
     void saveAsUpdated(Interaction interaction);
 
     void saveAsDeleted(Interaction interaction);
-
 }

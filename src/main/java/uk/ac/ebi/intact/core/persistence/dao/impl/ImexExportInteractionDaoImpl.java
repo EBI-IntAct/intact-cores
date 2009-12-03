@@ -88,6 +88,13 @@ public class ImexExportInteractionDaoImpl extends HibernateBaseDaoImpl implement
         return null;
     }
 
+    public List<ImexExportInteraction> getByImexId(String imexId) {
+        Query query = entityManager.createQuery("select iei from ImexExportInteraction iei where iei.imexId = :imexId");
+        query.setParameter("imexId", imexId);
+
+        return query.getResultList();
+    }
+
     @Transactional(readOnly = false)
     public void saveAsCreated(Interaction interaction) {
         ImexExportInteraction imexExportInteraction = new ImexExportInteraction(interaction);

@@ -14,18 +14,15 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.ejb.HibernateQuery;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
+import uk.ac.ebi.intact.model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * TODO comment this
@@ -224,5 +221,18 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return getSession().createCriteria(getEntityClass())
                 .add(Restrictions.like("shortLabel", labelLike))
                 .setProjection(Projections.property("shortLabel")).list();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public List<Publication> getByLastImexUpdate(Date fromDate, Date toDate) {
+        Query query = getEntityManager().createQuery("select p from Publication p join p.annotations as annotation " +
+                "where annotation.cvTopic.shortLabel = :lastImexUpdateLabel and annotation.updated >= :fromDate and annotation.updated <= :toDate");
+        query.setParameter("lastImexUpdateLabel", CvTopic.LAST_IMEX_UPDATE);
+        query.setParameter("fromDate", fromDate);
+        query.setParameter("toDate", toDate);
+
+        return query.getResultList();
     }
 }

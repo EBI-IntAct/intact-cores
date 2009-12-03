@@ -17,10 +17,7 @@ package uk.ac.ebi.intact.model.meta;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
-import uk.ac.ebi.intact.model.AbstractAuditable;
-import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.InteractionImpl;
-import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 
 import javax.persistence.*;
@@ -41,6 +38,8 @@ public class ImexExportInteraction extends AbstractAuditable{
     private ImexExportRelease imexExportRelease;
     private Interaction interaction;
     private String interactionAc;
+    private Experiment experiment;
+    private String experimentAc;
     private String imexId;
     private Publication publication;
     private String publicationId;
@@ -75,7 +74,10 @@ public class ImexExportInteraction extends AbstractAuditable{
         }
 
         if (!interaction.getExperiments().isEmpty()) {
-            this.publication = interaction.getExperiments().iterator().next().getPublication();
+            this.experiment = interaction.getExperiments().iterator().next();
+            this.experimentAc = experiment.getAc();
+
+            this.publication = experiment.getPublication();
             this.publicationId = publication.getShortLabel();
         }
     }
@@ -102,7 +104,7 @@ public class ImexExportInteraction extends AbstractAuditable{
     }
 
     @ManyToOne (targetEntity = InteractionImpl.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "interaction_ac", nullable = true)
+    @JoinColumn(name = "interaction_ac", nullable = true, insertable = false, updatable = false)
     public Interaction getInteraction() {
         return interaction;
     }
@@ -115,13 +117,36 @@ public class ImexExportInteraction extends AbstractAuditable{
         }
     }
 
-    @Column(name = "interaction_ac", insertable = false, updatable = false)
+    @Column(name = "interaction_ac")
     public String interactionAc() {
         return interactionAc;
     }
 
     public void setInteractionAc(String interactionAc) {
         this.interactionAc = interactionAc;
+    }
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "experiment_ac", nullable = true, insertable = false, updatable = false)
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+
+        if (experiment != null) {
+            this.experimentAc = experiment.getAc();
+        }
+    }
+
+    @Column(name = "experiment_ac")
+    public String getExperimentAc() {
+        return experimentAc;
+    }
+
+    public void setExperimentAc(String experimentAc) {
+        this.experimentAc = experimentAc;
     }
 
     @Column(name = "imex_id")
