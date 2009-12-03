@@ -34,7 +34,7 @@ import java.util.Date;
 @org.hibernate.annotations.Table (appliesTo = "ia_imex_exp_interaction",
                                   comment = "Represents an IMEx exported interaction.")
 @Table( name = "ia_imex_exp_interaction",
-        uniqueConstraints = {@UniqueConstraint(columnNames={"imex_id", "imex_exp_release_id"})})
+        uniqueConstraints = {@UniqueConstraint(columnNames={"imex_exp_release_id", "imex_id"})})
 public class ImexExportInteraction extends AbstractAuditable{
 
     private Long id;
@@ -124,7 +124,7 @@ public class ImexExportInteraction extends AbstractAuditable{
         this.interactionAc = interactionAc;
     }
 
-    @Column(name = "imex_id", unique = true)
+    @Column(name = "imex_id")
     @Length(max = 16)
     @NotNull
     public String getImexId() {
@@ -196,10 +196,13 @@ public class ImexExportInteraction extends AbstractAuditable{
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("ImexExportInteraction");
-        sb.append("{interaction=").append(interaction);
+        sb.append("ImexExportInteraction{");
+        if (interaction != null) {
+            sb.append("interaction=").append(interaction.getAc());
+        }
         sb.append(", imexId='").append(imexId).append('\'');
         sb.append(", publication'").append(publication).append('\'');
+        sb.append(", imexExportRelease'").append(imexExportRelease).append('\'');
         sb.append(", deleted=").append(deleted);
         sb.append(", deletor='").append(deletor).append('\'');
         sb.append('}');

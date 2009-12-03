@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.UserContext;
 import uk.ac.ebi.intact.core.persistence.dao.ImexExportReleaseDao;
 import uk.ac.ebi.intact.model.meta.ImexExportInteraction;
+import uk.ac.ebi.intact.model.meta.ImexExportRelease;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 @Repository
 @Transactional(readOnly = true)
-public class ImexExportIReleaseDaoImpl extends HibernateBaseDaoImpl implements ImexExportReleaseDao {
+public class ImexExportReleaseDaoImpl extends HibernateBaseDaoImpl implements ImexExportReleaseDao {
 
     @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
@@ -43,8 +44,8 @@ public class ImexExportIReleaseDaoImpl extends HibernateBaseDaoImpl implements I
     @Autowired
     private UserContext userContext;
 
-    public ImexExportIReleaseDaoImpl() {
-        super(ImexExportInteraction.class);
+    public ImexExportReleaseDaoImpl() {
+        super(ImexExportRelease.class);
     }
 
     public List<ImexExportInteraction> getUpdatedAfter(Date date) {
