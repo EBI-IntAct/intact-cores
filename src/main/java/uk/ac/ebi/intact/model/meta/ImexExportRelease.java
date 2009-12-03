@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.model.meta;
 import uk.ac.ebi.intact.model.AbstractAuditable;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class ImexExportRelease extends AbstractAuditable{
     private List<ImexExportInteraction> imexExportInteractions;
 
     public ImexExportRelease() {
-
+        imexExportInteractions = new ArrayList<ImexExportInteraction>();
     }
 
 
@@ -115,5 +116,16 @@ public class ImexExportRelease extends AbstractAuditable{
 
     public void setImexExportInteractions(List<ImexExportInteraction> imexExportInteractions) {
         this.imexExportInteractions = imexExportInteractions;
+    }
+
+    public void addImexExportInteraction(ImexExportInteraction imexExportInteraction) {
+        if (imexExportInteraction.getImexExportRelease() != null && imexExportInteraction.getImexExportRelease() != this) {
+            throw new IllegalArgumentException("This ImexExportInteraction was already assigned to another " +
+                    "ImexExportRelease: "+imexExportInteraction+". An attempt to add it to this release was done: "+this);
+        }
+
+        getImexExportInteractions().add(imexExportInteraction);
+        imexExportInteraction.setImexExportRelease(this);
+
     }
 }
