@@ -15,11 +15,13 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.Publication;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * TODO comment this!
+ * PublicationDao Tester
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -35,9 +37,7 @@ public class PublicationDaoTest extends IntactBasicTestCase {
 
     @Before
     public void beforeClass() throws Exception {
-        IntactMockBuilder mockBuilder = new IntactMockBuilder();
-
-        Publication pub1 = mockBuilder.createPublication( "10029528" );
+        Publication pub1 = getMockBuilder().createPublication( "10029528" );
         getCorePersister().saveOrUpdate( pub1 );
     }
 
@@ -60,4 +60,24 @@ public class PublicationDaoTest extends IntactBasicTestCase {
         assertEquals( label, pub.getShortLabel() );
     }
 
+    @Test
+    public void getByLastImexUpdate() throws Exception {
+        Publication pub = getMockBuilder().createPublication( "10099999" );
+        pub.setLastImexUpdate( null );
+        getCorePersister().saveOrUpdate( pub );
+
+        final PublicationDao pubDao = getIntactContext().getDataContext().getDaoFactory().getPublicationDao();
+        Publication myPub = pubDao.getByPubmedId( "10099999" );
+        Assert.assertNotNull( myPub );
+        Assert.assertNull( myPub.getLastImexUpdate() );
+
+        final Date now = new Date();
+        myPub.setLastImexUpdate( now );
+        getCorePersister().saveOrUpdate( pub );
+
+        myPub = pubDao.getByPubmedId( "10099999" );
+        Assert.assertNotNull( myPub );
+        Assert.assertNotNull( myPub.getLastImexUpdate() );
+        Assert.assertEquals( now, myPub.getLastImexUpdate());
+    }
 }

@@ -6,10 +6,12 @@
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.validator.NotNull;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -22,6 +24,11 @@ import java.util.Iterator;
 @Entity
 @Table( name = "ia_publication" )
 public class Publication extends AnnotatedObjectImpl<PublicationXref, PublicationAlias> implements Editable {
+
+    /**
+     * Last relevant change in this object that requires an export to IMEx.
+     */
+    private Date lastImexUpdate;
 
     /**
      * List of experiments related to that publication.
@@ -39,6 +46,15 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
 
     public Publication( Institution owner, String name ) {
         super( name, owner );
+    }
+
+    @Temporal( value = TemporalType.TIMESTAMP )
+    public Date getLastImexUpdate() {
+        return lastImexUpdate;
+    }
+
+    public void setLastImexUpdate( Date lastImexUpdate ) {
+        this.lastImexUpdate = lastImexUpdate;
     }
 
     //////////////////////////////

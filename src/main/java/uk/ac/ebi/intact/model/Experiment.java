@@ -15,6 +15,7 @@ import uk.ac.ebi.intact.core.context.IntactContext;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Represents one experiment. Describes the conditions in which the experiment has been performed. The information
@@ -41,6 +42,11 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
     private String cvInteractionAc;
     private String bioSourceAc;
     private String publicationAc;
+
+    /**
+     * Last relevant change in this object that requires an export to IMEx.
+     */
+    private Date lastImexUpdate;
 
     /**
      * Interactions detected in the context of this experiement.
@@ -160,6 +166,15 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
 
     ///////////////////////////////////////
     // access methods for associations
+
+    @Temporal( value = TemporalType.TIMESTAMP )
+    public Date getLastImexUpdate() {
+        return lastImexUpdate;
+    }
+
+    public void setLastImexUpdate( Date lastImexUpdate ) {
+        this.lastImexUpdate = lastImexUpdate;
+    }
 
     // TODO could wipe all existing interaction ... maybe dangerous.
     // TODO should also allow to have no interaction if the collection is empty.

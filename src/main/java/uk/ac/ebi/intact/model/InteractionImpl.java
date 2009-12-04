@@ -19,6 +19,7 @@ import uk.ac.ebi.intact.core.context.IntactContext;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Represents an interaction.
@@ -44,6 +45,11 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     ///////////////////////////////////////
     //attributes
+
+    /**
+     * Last relevant change in this object that requires an export to IMEx.
+     */
+    private Date lastImexUpdate;
 
     //attributes used for mapping BasicObjects - project synchron
     // TODO: should be move out of the model.
@@ -285,6 +291,15 @@ public class InteractionImpl extends InteractorImpl implements Editable, Interac
 
     ///////////////////////////////////////
     //access methods for attributes
+
+    @Temporal( value = TemporalType.TIMESTAMP )
+    public Date getLastImexUpdate() {
+        return lastImexUpdate;
+    }
+
+    public void setLastImexUpdate( Date lastImexUpdate ) {
+        this.lastImexUpdate = lastImexUpdate;
+    }
 
     public Float getKD() {
         return kD;
