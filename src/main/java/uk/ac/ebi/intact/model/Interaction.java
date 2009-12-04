@@ -6,13 +6,18 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  * @see uk.ac.ebi.intact.model.InteractionImpl
  */
-public interface Interaction extends Interactor {
+public interface Interaction extends Interactor, ImexRelevant {
+
+    Date getLastImexUpdate();
+
+    void setLastImexUpdate( Date lastImexUpdate );
 
     Float getKD();
 

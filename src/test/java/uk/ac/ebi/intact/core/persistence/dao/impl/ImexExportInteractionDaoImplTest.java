@@ -5,13 +5,17 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import uk.ac.ebi.intact.core.persistence.dao.ImexExportInteractionDao;
+import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
+import uk.ac.ebi.intact.core.persistence.dao.PublicationDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Publication;
 import uk.ac.ebi.intact.model.meta.ImexExportInteraction;
 import uk.ac.ebi.intact.model.meta.ImexExportRelease;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -103,6 +107,4 @@ public class ImexExportInteractionDaoImplTest extends IntactBasicTestCase {
 
 
     }
-
-
 }

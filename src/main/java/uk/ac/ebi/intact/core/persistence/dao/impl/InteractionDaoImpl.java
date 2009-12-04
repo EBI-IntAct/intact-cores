@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.InteractionImpl;
-import uk.ac.ebi.intact.model.InteractorXref;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
 
@@ -27,7 +24,7 @@ import javax.persistence.Query;
 import java.util.*;
 
 /**
- * TODO comment this
+ * Default implementation of the InteractionDao.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -268,5 +265,29 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         }
 
         return interactions.get(0);
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public List<Interaction> getByLastImexUpdate( Date fromDate, Date toDate) {
+        if ( fromDate == null ) {
+            throw new IllegalArgumentException( "You must give a non null fromDate" );
+        }
+        if ( toDate == null ) {
+            throw new IllegalArgumentException( "You must give a non null toDate" );
+        }
+        if( toDate.before(fromDate ) ) {
+            throw new IllegalArgumentException( "Invalid date range, toDate is before fromDate." );
+        }
+
+        Query query = getEntityManager().createQuery("select i " +
+                                                     "from InteractionImpl i " +
+                                                     "where     i.lastImexUpdate >= :fromDate " +
+                                                     "      and i.lastImexUpdate <= :toDate");
+        query.setParameter("fromDate", fromDate);
+        query.setParameter("toDate", toDate);
+
+        return query.getResultList();
     }
 }

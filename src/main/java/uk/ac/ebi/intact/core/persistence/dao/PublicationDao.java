@@ -8,6 +8,9 @@ package uk.ac.ebi.intact.core.persistence.dao;
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Publication;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -22,4 +25,14 @@ public interface PublicationDao extends AnnotatedObjectDao<Publication> {
      * @return The publication if found, null otherwise
      */
     Publication getByPubmedId(String pubmedId);
+
+    /**
+     * Finds publications that have a matching "lastImexUpdate", using a range of dates.
+     * <p/>
+     * i.e. fromDate <= d <= toDate
+     * @param fromDate The from date (inclusive)
+     * @param toDate The to date (inclusive)
+     * @return The publications with the "lastImexUpdate" between the two dates.
+     */
+    List<Publication> getByLastImexUpdate( Date fromDate, Date toDate);
 }

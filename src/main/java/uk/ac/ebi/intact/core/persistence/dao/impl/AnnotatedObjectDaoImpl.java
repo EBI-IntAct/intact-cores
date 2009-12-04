@@ -222,17 +222,4 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
                 .add(Restrictions.like("shortLabel", labelLike))
                 .setProjection(Projections.property("shortLabel")).list();
     }
-
-    /**
-     * @inheritDoc
-     */
-    public List<Publication> getByLastImexUpdate(Date fromDate, Date toDate) {
-        Query query = getEntityManager().createQuery("select p from Publication p join p.annotations as annotation " +
-                "where annotation.cvTopic.shortLabel = :lastImexUpdateLabel and annotation.updated >= :fromDate and annotation.updated <= :toDate");
-        query.setParameter("lastImexUpdateLabel", CvTopic.LAST_IMEX_UPDATE);
-        query.setParameter("fromDate", fromDate);
-        query.setParameter("toDate", toDate);
-
-        return query.getResultList();
-    }
 }

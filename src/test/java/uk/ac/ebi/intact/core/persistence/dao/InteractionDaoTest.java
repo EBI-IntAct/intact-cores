@@ -21,12 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
-import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.Protein;
+import uk.ac.ebi.intact.model.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -188,5 +188,45 @@ public class InteractionDaoTest extends IntactBasicTestCase {
 
         final List<Interaction> interactions2 = getDaoFactory().getInteractionDao().getInteractionsForProtPairAc(p1.getAc(), "TEST-0000");
         Assert.assertEquals(1, interactions2.size());
+    }
+
+    @Test
+    public void getByLastImexUpdate() throws Exception {
+        final Interaction i1 = getMockBuilder().createInteractionRandomBinary();
+        i1.setLastImexUpdate( parseDate( "2009-11-01" ) );
+
+        final Interaction i2 = getMockBuilder().createInteractionRandomBinary();
+        i2.setLastImexUpdate( parseDate( "2009-11-05" ) );
+
+        final Interaction i3 = getMockBuilder().createInteractionRandomBinary();
+        i3.setLastImexUpdate( parseDate( "2009-11-09" ) );
+
+        final Interaction i4 = getMockBuilder().createInteractionRandomBinary();
+        i4.setLastImexUpdate( null );
+
+        final Interaction i5 = getMockBuilder().createInteractionRandomBinary();
+
+        getCorePersister().saveOrUpdate( i1, i2, i3, i4, i5 );
+
+        assertInteractionCountByLastImexUpdate( 0, "2009-08-01", "2009-09-01" );
+        assertInteractionCountByLastImexUpdate( 3, "2009-08-01", "2010-09-01" );
+        assertInteractionCountByLastImexUpdate( 0, "2009-08-01", "2009-09-01" );
+        assertInteractionCountByLastImexUpdate( 1, "2009-08-01", "2009-09-02" );
+    }
+
+    private void assertInteractionCountByLastImexUpdate( int expectedInteractionCount,
+                                                         String fromDate, String toDate ) throws ParseException {
+        final InteractionDao interactionDao = getDaoFactory().getInteractionDao();
+        List<Interaction> interactions = interactionDao.getByLastImexUpdate( parseDate(fromDate),
+                                                                             parseDate(toDate) );
+        junit.framework.Assert.assertNotNull( interactions );
+        junit.framework.Assert.assertEquals( "Expected to find " + expectedInteractionCount +
+                             " interaction(s) having lastImexUpdate between " + fromDate + " and " +
+                             toDate + ", instead found " + interactions.size() ,
+                             expectedInteractionCount, interactions.size() );
+    }
+
+    private Date parseDate( String dateStr ) throws ParseException {
+        return new SimpleDateFormat( "yyyy-mm-dd" ).parse( dateStr );
     }
 }

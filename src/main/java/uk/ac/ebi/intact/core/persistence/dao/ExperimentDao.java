@@ -8,7 +8,9 @@ package uk.ac.ebi.intact.core.persistence.dao;
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Publication;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,4 +46,14 @@ public interface ExperimentDao extends AnnotatedObjectDao<Experiment> {
      * @return experiments for that publication
      */
     List<Experiment> getByPubIdAndLabelLike( String pubId, String labelLike );
+
+    /**
+     * Finds experiments that have a matching "lastImexUpdate", using a range of dates.
+     * <p/>
+     * i.e. fromDate <= d <= toDate
+     * @param fromDate The from date (inclusive)
+     * @param toDate The to date (inclusive)
+     * @return The experiments with the "lastImexUpdate" between the two dates.
+     */
+    List<Experiment> getByLastImexUpdate( Date fromDate, Date toDate);
 }

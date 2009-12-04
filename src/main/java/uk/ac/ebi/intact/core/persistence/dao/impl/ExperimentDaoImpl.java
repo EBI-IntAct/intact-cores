@@ -17,13 +17,15 @@ import uk.ac.ebi.intact.core.persistence.dao.ExperimentDao;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
+import uk.ac.ebi.intact.model.Publication;
 
 import javax.persistence.EntityManager;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * TODO comment this
+ * Default implementation of the ExperimentDao.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -123,4 +125,27 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         return query.list();
     }
 
+    /**
+     * @inheritDoc
+     */
+    public List<Experiment> getByLastImexUpdate( Date fromDate, Date toDate) {
+        if ( fromDate == null ) {
+            throw new IllegalArgumentException( "You must give a non null fromDate" );
+        }
+        if ( toDate == null ) {
+            throw new IllegalArgumentException( "You must give a non null toDate" );
+        }
+        if( toDate.before(fromDate ) ) {
+            throw new IllegalArgumentException( "Invalid date range, toDate is before fromDate." );
+        }
+
+        javax.persistence.Query query = getEntityManager().createQuery("select e " +
+                                                                       "from Experiment e " +
+                                                                       "where     e.lastImexUpdate >= :fromDate " +
+                                                                       "      and e.lastImexUpdate <= :toDate");
+        query.setParameter("fromDate", fromDate);
+        query.setParameter("toDate", toDate);
+
+        return query.getResultList();
+    }
 }

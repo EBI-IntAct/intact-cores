@@ -40,8 +40,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(exp);
 
-        System.out.println(getDaoFactory().getExperimentDao().getAll());
-
         Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("lala-2005-1");
         Assert.assertNotNull(refreshedExperiment);
         Assert.assertEquals(1, refreshedExperiment.getInteractions().size());
@@ -88,10 +86,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
         
         Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
         
-        for (Experiment expr : getDaoFactory().getExperimentDao().getAll()) {
-            System.out.println(expr);
-        }
-
         Experiment reloadedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("tata-2005-1");
 
         Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
@@ -349,7 +343,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(expSameYearDiffPub);
 
-        System.out.println(getDaoFactory().getExperimentDao().getAll());
         Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
     }
 

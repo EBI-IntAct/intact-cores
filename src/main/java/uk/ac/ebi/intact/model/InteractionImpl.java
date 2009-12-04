@@ -36,7 +36,8 @@ import java.util.Date;
 @Entity
 @DiscriminatorValue( "uk.ac.ebi.intact.model.InteractionImpl" )
 @EditorTopic( name = "Interaction" )
-public class InteractionImpl extends InteractorImpl implements Editable, Interaction {
+public class InteractionImpl extends InteractorImpl
+                             implements Editable, Interaction {
 
     /**
      * Sets up a logger for that class.

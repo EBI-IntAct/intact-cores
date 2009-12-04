@@ -94,12 +94,4 @@ public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObj
      * @since 1.6
      */
     List<String> getShortLabelsLike( String labelLike );
-
-    /**
-     * Finds annotated objects that contain the annotation "last-imex-update", using a range of dates.
-     * @param fromDate The from date
-     * @param toDate The to date
-     * @return The annotated obejcts with the "last-imex-update" annotation between the two dates.
-     */
-    List<Publication> getByLastImexUpdate(Date fromDate, Date toDate);
 }

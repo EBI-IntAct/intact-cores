@@ -23,7 +23,8 @@ import java.util.Iterator;
  */
 @Entity
 @Table( name = "ia_publication" )
-public class Publication extends AnnotatedObjectImpl<PublicationXref, PublicationAlias> implements Editable {
+public class Publication extends AnnotatedObjectImpl<PublicationXref, PublicationAlias>
+                         implements Editable, ImexRelevant {
 
     /**
      * Last relevant change in this object that requires an export to IMEx.

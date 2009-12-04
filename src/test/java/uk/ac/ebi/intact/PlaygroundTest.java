@@ -3,6 +3,7 @@ package uk.ac.ebi.intact;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hibernate.dialect.H2Dialect;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.util.SchemaUtils;
@@ -18,6 +19,7 @@ import uk.ac.ebi.intact.model.Protein;
 public class PlaygroundTest {
 
     @Test
+    @Ignore
     public void printH2Schema() {
         for (String str : SchemaUtils.generateCreateSchemaDDL( H2Dialect.class.getName())) {
             System.out.println(str);
@@ -25,6 +27,7 @@ public class PlaygroundTest {
     }
 
     @Test
+    @Ignore
     public void printPostgres2Schema() {
         for (String str : SchemaUtils.generateCreateSchemaDDLForPostgreSQL()) {
             System.out.println(str);
@@ -32,6 +35,7 @@ public class PlaygroundTest {
     }
 
     @Test
+    @Ignore
     public void biMap() {
         BiMap<String,AnnotatedObject> biMap = new HashBiMap<String, AnnotatedObject>();
         final Protein p1 = new IntactMockBuilder().createProteinRandom();

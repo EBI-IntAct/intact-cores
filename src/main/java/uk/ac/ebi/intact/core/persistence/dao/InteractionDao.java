@@ -6,10 +6,12 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
+import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,4 +62,14 @@ public interface InteractionDao extends InteractorDao<InteractionImpl> {
      * @since 1.8.0
      */
     Interaction getByCrc(String crc);
+
+    /**
+     * Finds interactions that have a matching "lastImexUpdate", using a range of dates.
+     * <p/>
+     * i.e. fromDate <= d <= toDate
+     * @param fromDate The from date (inclusive)
+     * @param toDate The to date (inclusive)
+     * @return The interaction with the "lastImexUpdate" between the two dates.
+     */
+    List<Interaction> getByLastImexUpdate( Date fromDate, Date toDate);
 }
