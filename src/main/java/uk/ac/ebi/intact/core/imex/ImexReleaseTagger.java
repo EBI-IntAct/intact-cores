@@ -18,8 +18,6 @@ package uk.ac.ebi.intact.core.imex;
 import org.joda.time.DateTime;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
-import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -31,7 +29,6 @@ public class ImexReleaseTagger {
 
     public ImexReleaseTagger(IntactContext intactContext) {
         this.intactContext = intactContext;
-
     }
 
     public void tag(Publication publication) {
@@ -39,7 +36,7 @@ public class ImexReleaseTagger {
     }
 
     public void tag(Publication publication, DateTime dateTime) {
-        tag((AnnotatedObject)publication, dateTime);
+        tag((ImexRelevant)publication, dateTime);
     }
 
     public void tag(Experiment experiment) {
@@ -47,7 +44,7 @@ public class ImexReleaseTagger {
     }
 
     public void tag(Experiment experiment, DateTime dateTime) {
-        tag((AnnotatedObject)experiment, dateTime);
+        tag((ImexRelevant)experiment, dateTime);
     }
 
     public void tag(Interaction interaction) {
@@ -55,24 +52,10 @@ public class ImexReleaseTagger {
     }
 
     public void tag(Interaction interaction, DateTime dateTime) {
-        tag((AnnotatedObject)interaction, dateTime);
+        tag((ImexRelevant)interaction, dateTime);
     }
 
-    protected void tag(AnnotatedObject annotatedObject, DateTime dateTime) {
-        Annotation imexUpdateAnnotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(annotatedObject, CvTopic.LAST_IMEX_UPDATE);
-
-        if (imexUpdateAnnotation == null) {
-            imexUpdateAnnotation = createLastImexUpdateAnnotation(dateTime);
-            annotatedObject.addAnnotation(imexUpdateAnnotation);
-        } else {
-            imexUpdateAnnotation.setAnnotationText(dateTime.toString("yyyy/MM/dd"));
-        }
-    }
-
-    protected Annotation createLastImexUpdateAnnotation(DateTime dateTime) {
-        String dateStr = dateTime.toString("yyyy/MM/dd");
-        
-        CvTopic lastImexUpdateTopic = CvObjectUtils.createCvObject(intactContext.getInstitution(), CvTopic.class, null, CvTopic.LAST_IMEX_UPDATE);
-        return new Annotation(intactContext.getInstitution(), lastImexUpdateTopic, dateStr);
+    protected void tag(ImexRelevant imexRelevantObject, DateTime dateTime) {
+        imexRelevantObject.setLastImexUpdate( dateTime.toDate() );
     }
 }
