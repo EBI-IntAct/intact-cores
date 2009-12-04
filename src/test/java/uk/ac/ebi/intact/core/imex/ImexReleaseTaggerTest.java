@@ -22,7 +22,11 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
+import java.util.Date;
+
 /**
+ * ImexReleaseTagger Tester.
+ *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
@@ -32,64 +36,48 @@ public class ImexReleaseTaggerTest extends IntactBasicTestCase {
     public void tag_publication() throws Exception {
         Publication publication = getMockBuilder().createPublication("1234567");
 
-        DateTime date = new DateTime(1234567890);
+        DateTime date = new DateTime(1970, 11, 1, 0, 0, 0, 0);
 
         ImexReleaseTagger tagger = new ImexReleaseTagger(getIntactContext());
         tagger.tag(publication, date);
 
-        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(publication, CvTopic.LAST_IMEX_UPDATE);
-
-        Assert.assertNotNull(annotation);
-        Assert.assertEquals("1970/01/15", annotation.getAnnotationText());
-
+        Assert.assertEquals( date.toDate(), publication.getLastImexUpdate() );
     }
 
     @Test
     public void tag_publication_existing() throws Exception {
         Publication publication = getMockBuilder().createPublication("1234567");
-        publication.getAnnotations().clear();
-        publication.addAnnotation(getMockBuilder().createAnnotation("1915/11/01", null, CvTopic.LAST_IMEX_UPDATE));
+        publication.setLastImexUpdate( new DateTime(1970, 11, 1, 0, 0, 0, 0).toDate() );
 
-        DateTime date = new DateTime(1234567890);
+        DateTime date = new DateTime(1970, 11, 15, 0, 0, 0, 0);
 
         ImexReleaseTagger tagger = new ImexReleaseTagger(getIntactContext());
         tagger.tag(publication, date);
 
-        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(publication, CvTopic.LAST_IMEX_UPDATE);
-
-        Assert.assertNotNull(annotation);
-        Assert.assertEquals("1970/01/15", annotation.getAnnotationText());
-        Assert.assertEquals(1, publication.getAnnotations().size());
-
+        Assert.assertEquals( date.toDate(), publication.getLastImexUpdate() );
     }
 
     @Test
     public void tag_experiment() throws Exception {
         Experiment experiment = getMockBuilder().createExperimentEmpty();
 
-        DateTime date = new DateTime(1234567890);
+        DateTime date = new DateTime(1970, 11, 15, 0, 0, 0, 0);
 
         ImexReleaseTagger tagger = new ImexReleaseTagger(getIntactContext());
         tagger.tag(experiment, date);
 
-        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(experiment, CvTopic.LAST_IMEX_UPDATE);
-
-        Assert.assertNotNull(annotation);
-        Assert.assertEquals("1970/01/15", annotation.getAnnotationText());
+        Assert.assertEquals( date.toDate(), experiment.getLastImexUpdate() );
     }
 
     @Test
     public void tag_interaction() throws Exception {
-         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
-        DateTime date = new DateTime(1234567890);
+        DateTime date = new DateTime(1970, 11, 15, 0, 0, 0, 0);
 
         ImexReleaseTagger tagger = new ImexReleaseTagger(getIntactContext());
         tagger.tag(interaction, date);
 
-        Annotation annotation = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(interaction, CvTopic.LAST_IMEX_UPDATE);
-
-        Assert.assertNotNull(annotation);
-        Assert.assertEquals("1970/01/15", annotation.getAnnotationText());
+        Assert.assertEquals( date.toDate(), interaction.getLastImexUpdate() );
     }
 }
