@@ -229,4 +229,22 @@ public class InteractionDaoTest extends IntactBasicTestCase {
     private Date parseDate( String dateStr ) throws ParseException {
         return new SimpleDateFormat( "yyyy-mm-dd" ).parse( dateStr );
     }
+
+    @Test
+    public void getByExperimentAc() throws Exception {
+        final Experiment e = getMockBuilder().createExperimentRandom( 23 );
+        getCorePersister().saveOrUpdate( e );
+
+        List<Interaction> interactions = getDaoFactory().getInteractionDao().getByExperimentAc( e.getAc(), 0, 5 );
+        Assert.assertNotNull( interactions );
+        Assert.assertEquals( 5, interactions.size() ); // 0, 1, 2, 3, 4
+
+        interactions = getDaoFactory().getInteractionDao().getByExperimentAc( e.getAc(), 5, 5 );
+        Assert.assertNotNull( interactions );
+        Assert.assertEquals( 5, interactions.size() ); // 5, 6, 7, 8, 9
+
+        interactions = getDaoFactory().getInteractionDao().getByExperimentAc( e.getAc(), 20, 5 );
+        Assert.assertNotNull( interactions );
+        Assert.assertEquals( 3, interactions.size() ); // 20, 21, 22
+    }
 }

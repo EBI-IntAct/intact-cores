@@ -72,4 +72,15 @@ public interface InteractionDao extends InteractorDao<InteractionImpl> {
      * @return The interaction with the "lastImexUpdate" between the two dates.
      */
     List<Interaction> getByLastImexUpdate( Date fromDate, Date toDate);
+
+    /**
+     * Fetches all interaction belonging to a given experiment. Results are returned in pages, the size of which is
+     * defined by the parameters firstResult and maxResult. Results are ordered by creation date.
+     *
+     * @param experimentAc the experiment of which we want the interactions.
+     * @param firstResult the first result
+     * @param maxResult the maximum size of the page to be read
+     * @return a non null list of interactions
+     */
+    List<Interaction> getByExperimentAc( String experimentAc, int firstResult, int maxResult );
 }

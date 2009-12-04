@@ -290,4 +290,19 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
 
         return query.getResultList();
     }
+
+    /**
+     * @InheritDoc
+     */
+    public List<Interaction> getByExperimentAc( String experimentAc, int firstResult, int maxResults ) {
+        Query query = getEntityManager().createQuery("select i " +
+                                                     "from InteractionImpl i join i.experiments e " +
+                                                     "where e.ac = :experimentAc " +
+                                                     "order by i.created");
+        query.setParameter("experimentAc", experimentAc);
+        query.setFirstResult(firstResult);
+        query.setMaxResults(maxResults);
+
+        return query.getResultList();
+    }
 }
