@@ -148,13 +148,13 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForExperiment(Experiment experiment) {
-        String pubId = ExperimentUtils.getPubmedId(experiment);
-
-        Query query;
+        final ExperimentXref xref = ExperimentUtils.getPrimaryReferenceXref( experiment );
+        String pubId = (xref != null ? xref.getPrimaryId() : null );
 
         if (experiment.getCvIdentification() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without Participant identification method: "+experiment.getShortLabel());
         if (experiment.getCvInteraction() == null) throw new IllegalArgumentException("Cannot get the AC from an Experiment without Interaction detection method: "+experiment.getShortLabel());
 
+        Query query;
         if (pubId != null) {
 
             if( experiment.getBioSource() != null ) {
@@ -191,7 +191,7 @@ public class DefaultFinder implements Finder {
                                                    "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
                                                    "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
 
-            query.setParameter("shortLabel", experiment.getShortLabel());
+            query.setParameter("shortLabel", experiment.getShortLabel().toLowerCase());
         }
 
         query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getIdentifier());

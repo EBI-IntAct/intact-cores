@@ -54,7 +54,7 @@ public class ExperimentUtils {
         }
 
         if (pubmedId == null) {
-            ExperimentXref xref = getPrimaryReferenceXref(experiment);
+            ExperimentXref xref = getPubmedPrimaryReferenceXref(experiment);
 
             if (xref != null) {
                 pubmedId = xref.getPrimaryId();
@@ -65,11 +65,32 @@ public class ExperimentUtils {
     }
 
     /**
-     * Gets the primary reference of an existing experiment without connecting with the database
+     * Gets the first primary reference of an existing experiment without connecting with the database
      * @param experiment the experiment
      * @return the primary reference xref
      */
     public static ExperimentXref getPrimaryReferenceXref(Experiment experiment) {
+        for (ExperimentXref xref : experiment.getXrefs()) {
+            String qualMi = null;
+
+            if (xref.getCvXrefQualifier() != null) {
+                qualMi = xref.getCvXrefQualifier().getIdentifier();
+            }
+
+            if (CvXrefQualifier.PRIMARY_REFERENCE_MI_REF.equals(qualMi)) {
+                return xref;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the first pubmed primary reference of an existing experiment without connecting with the database
+     * @param experiment the experiment
+     * @return the primary reference xref
+     */
+    public static ExperimentXref getPubmedPrimaryReferenceXref(Experiment experiment) {
         for (ExperimentXref xref : experiment.getXrefs()) {
             String qualMi = null;
             String dbMi = null;
