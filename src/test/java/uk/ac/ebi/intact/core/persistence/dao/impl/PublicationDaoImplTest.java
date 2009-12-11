@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persistence.dao.PublicationDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
@@ -21,6 +22,7 @@ import java.util.List;
 public class PublicationDaoImplTest extends IntactBasicTestCase {
 
     @Test
+    @Ignore
     public void getByLastImexUpdate() throws Exception {
         final Publication pub1 = getMockBuilder().createPublication( "1" );
         pub1.setLastImexUpdate( parseDate( "2009-11-01" ) );

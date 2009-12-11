@@ -293,7 +293,8 @@ public class InteractionImpl extends InteractorImpl
     ///////////////////////////////////////
     //access methods for attributes
 
-    @Temporal( value = TemporalType.TIMESTAMP )
+    @Transient
+//    @Temporal( value = TemporalType.TIMESTAMP )
     public Date getLastImexUpdate() {
         return lastImexUpdate;
     }

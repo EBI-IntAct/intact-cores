@@ -49,7 +49,8 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
         super( name, owner );
     }
 
-    @Temporal( value = TemporalType.TIMESTAMP )
+    @Transient
+//    @Temporal( value = TemporalType.TIMESTAMP )
     public Date getLastImexUpdate() {
         return lastImexUpdate;
     }

@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
@@ -191,6 +192,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
     }
 
     @Test
+    @Ignore
     public void getByLastImexUpdate() throws Exception {
         final Interaction i1 = getMockBuilder().createInteractionRandomBinary();
         i1.setLastImexUpdate( parseDate( "2009-11-01" ) );

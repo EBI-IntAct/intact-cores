@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persistence.dao.ExperimentDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ExperimentDaoImplTest extends IntactBasicTestCase {
         
     @Test
+    @Ignore
     public void getByLastImexUpdate() throws Exception {
         final Experiment e1 = getMockBuilder().createExperimentRandom(1);
         e1.setLastImexUpdate( parseDate( "2009-11-01" ) );

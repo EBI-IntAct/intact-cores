@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.core.persistence.dao;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -61,6 +62,7 @@ public class PublicationDaoTest extends IntactBasicTestCase {
     }
 
     @Test
+    @Ignore
     public void getByLastImexUpdate() throws Exception {
         Publication pub = getMockBuilder().createPublication( "10099999" );
         pub.setLastImexUpdate( null );

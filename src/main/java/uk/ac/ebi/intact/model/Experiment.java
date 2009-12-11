@@ -168,7 +168,8 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
     ///////////////////////////////////////
     // access methods for associations
 
-    @Temporal( value = TemporalType.TIMESTAMP )
+    @Transient
+//    @Temporal( value = TemporalType.TIMESTAMP )
     public Date getLastImexUpdate() {
         return lastImexUpdate;
     }
