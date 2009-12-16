@@ -211,6 +211,44 @@ public class AnnotatedObjectUtilsTest {
         Assert.assertEquals(1, xrefs.size());
     }
 
+    @Test
+    public void searchXrefs_xrefFilter_qualifierOnly() throws Exception {
+        Experiment e = getMockBuilder().createExperimentRandom( 1 );
+        e.getXrefs().clear();
+        final ExperimentXref xref = getMockBuilder().createPrimaryReferenceXref( e, "123456789" );
+        e.addXref( xref );
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
+        cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
+
+        Collection<ExperimentXref> xrefs;
+
+        xrefs = AnnotatedObjectUtils.searchXrefsByQualifier(e, CvXrefQualifier.PRIMARY_REFERENCE_MI_REF);
+        Assert.assertEquals(1, xrefs.size());
+
+        xrefs = AnnotatedObjectUtils.searchXrefsByQualifier(e, CvXrefQualifier.SEE_ALSO_MI_REF);
+        Assert.assertEquals(0, xrefs.size());
+    }
+
+    @Test
+    public void searchXrefs_xrefFilter_databaseOnly() throws Exception {
+        Experiment e = getMockBuilder().createExperimentRandom( 1 );
+        e.getXrefs().clear();
+        final ExperimentXref xref = getMockBuilder().createPrimaryReferenceXref( e, "123456789" );
+        e.addXref( xref );
+
+        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
+        cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
+
+        Collection<ExperimentXref> xrefs;
+
+        xrefs = AnnotatedObjectUtils.searchXrefsByDatabase(e, CvDatabase.PUBMED_MI_REF);
+        Assert.assertEquals(1, xrefs.size());
+
+        xrefs = AnnotatedObjectUtils.searchXrefsByDatabase(e, CvDatabase.UNIPROT_MI_REF);
+        Assert.assertEquals(0, xrefs.size());
+    }
+
     private IntactMockBuilder getMockBuilder() {
         return new IntactMockBuilder(new Institution("testInstitution"));
     }
