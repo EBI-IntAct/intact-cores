@@ -21,9 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represent a set of inclusion/exclusions of CvObjects, by identifier or label
+ * Represent a set of inclusion/exclusions of CvObjects, by identifier or label.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  */
 public class CvObjectFilterGroup {
@@ -121,6 +122,22 @@ public class CvObjectFilterGroup {
             excludedIdentifiers.add(cvObject.getIdentifier());
             excludedLabels.add(cvObject.getShortLabel());
         }
+    }
+
+    public boolean hasIncludedIdentifiers() {
+        return !includedIdentifiers.isEmpty();
+    }
+
+    public boolean hasExcludedIdentifiers() {
+        return !excludedIdentifiers.isEmpty();
+    }
+
+    public boolean hasIncludedLabels() {
+        return !includedLabels.isEmpty();
+    }
+
+    public boolean hasExcludedLabels() {
+        return !excludedLabels.isEmpty();
     }
 
     public boolean isIncludeByDefault() {

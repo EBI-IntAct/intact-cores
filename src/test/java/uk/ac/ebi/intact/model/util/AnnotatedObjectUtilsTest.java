@@ -218,15 +218,17 @@ public class AnnotatedObjectUtilsTest {
         final ExperimentXref xref = getMockBuilder().createPrimaryReferenceXref( e, "123456789" );
         e.addXref( xref );
 
-        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
-        cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
-
         Collection<ExperimentXref> xrefs;
 
         xrefs = AnnotatedObjectUtils.searchXrefsByQualifier(e, CvXrefQualifier.PRIMARY_REFERENCE_MI_REF);
         Assert.assertEquals(1, xrefs.size());
 
         xrefs = AnnotatedObjectUtils.searchXrefsByQualifier(e, CvXrefQualifier.SEE_ALSO_MI_REF);
+        Assert.assertEquals(0, xrefs.size());
+
+        e.getXrefs().iterator().next().setCvXrefQualifier( null );
+
+        xrefs = AnnotatedObjectUtils.searchXrefsByQualifier(e, CvXrefQualifier.PRIMARY_REFERENCE_MI_REF);
         Assert.assertEquals(0, xrefs.size());
     }
 
@@ -236,9 +238,6 @@ public class AnnotatedObjectUtilsTest {
         e.getXrefs().clear();
         final ExperimentXref xref = getMockBuilder().createPrimaryReferenceXref( e, "123456789" );
         e.addXref( xref );
-
-        CvObjectFilterGroup cvObjectFilterGroup = new CvObjectFilterGroup();
-        cvObjectFilterGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
 
         Collection<ExperimentXref> xrefs;
 

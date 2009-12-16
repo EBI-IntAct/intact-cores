@@ -44,20 +44,27 @@ public class XrefCvFilter implements IntactObjectFilter<Xref>{
 
         if (databaseFilterGroup.isAccepted(dbId)) {
 
-            if (xref.getCvXrefQualifier() != null && qualifierFilterGroup != null) {
-                String qualId = CvObjectUtils.getIdentity(xref.getCvXrefQualifier());
-                if (qualId == null) xref.getCvXrefQualifier().getShortLabel();
-
-                if (qualifierFilterGroup.isAccepted(qualId)) {
+            if (xref.getCvXrefQualifier() == null ) {
+                if (qualifierFilterGroup != null && !qualifierFilterGroup.isIncludeByDefault() ) {
+                    // if we don't have a qualifier on our xref and there is a qualifier filter, we should not accept this xref
+                    return false;
+                } else {
                     return true;
                 }
             } else {
-                return true;
-            }
+                if (qualifierFilterGroup != null) {
+                    String qualId = CvObjectUtils.getIdentity(xref.getCvXrefQualifier());
+                    if (qualId == null) xref.getCvXrefQualifier().getShortLabel();
 
+                    if (qualifierFilterGroup.isAccepted(qualId)) {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
         }
 
         return false;
     }
-
 }
