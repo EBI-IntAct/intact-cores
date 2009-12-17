@@ -90,7 +90,4 @@
         <property name="description" value="Undefined institution"/>
     </bean>
 
-    <!-- IMEx related beans -->
-    <bean id="imexExportManager" class="uk.ac.ebi.intact.core.imex.ImexExportManagerFactory"/>
-
 </beans>
