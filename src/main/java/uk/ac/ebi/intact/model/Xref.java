@@ -30,7 +30,7 @@ public abstract class Xref extends BasicObjectImpl {
     ///////////////////////////////////////
     // Constamt
 
-    public static final int MAX_ID_LEN = 30;
+    public static final int MAX_ID_LEN = 50;
     public static final int MAX_DB_RELEASE_LEN = 10;
 
     ///////////////////////////////////////
