@@ -7,8 +7,6 @@ package uk.ac.ebi.intact.model;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,6 +39,15 @@ public class CvInteractorType extends CvDagObject {
     public static final String RNA = "ribonucleic acid";
     public static final String RNA_MI_REF = "MI:0320";
 
+    public static final String POLYSACCHARIDE = "polysaccharide";
+    public static final String POLYSACCHARIDE_MI_REF = "MI:0904";
+
+    public static final String BIOPOLYMER = "biopolymer";
+    public static final String BIOPOLYMER_MI_REF = "MI:0383";
+
+    public static final String UNKNOWN_PARTICIPANT = "unknown participant";
+    public static final String UNKNOWN_PARTICIPANT_MI_REF = "MI:0329";
+    
     /**
      * @param mi the MI number to check
      *
