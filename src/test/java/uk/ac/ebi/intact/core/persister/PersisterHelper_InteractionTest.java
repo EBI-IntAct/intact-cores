@@ -861,7 +861,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         final InteractionImpl interaction = getDaoFactory().getInteractionDao().getAll().get( 0 );
-        Assert.assertEquals("2_[_1__2__]2_amin-lala", interaction.getShortLabel());
+        Assert.assertEquals("2__1__2__2_amin-lala", interaction.getShortLabel());
     }
 
     @Test
