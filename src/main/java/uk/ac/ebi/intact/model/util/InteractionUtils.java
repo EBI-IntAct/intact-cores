@@ -136,7 +136,10 @@ public class InteractionUtils {
     public static boolean containsNonProteinInteractors( Interaction interaction ) {
         for ( Component component : interaction.getComponents() ) {
             Interactor interactor = component.getInteractor();
-            if ( !( interactor instanceof ProteinImpl ) ) {
+
+            final CvInteractorType type = interactor.getCvInteractorType();
+
+            if (!CvObjectUtils.isProteinType(type)) {
                 return true;
             }
         }
