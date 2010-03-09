@@ -121,4 +121,67 @@ public class InteractorDaoTest extends IntactBasicTestCase {
         Assert.assertEquals(1, getDaoFactory().getInteractorDao().getByInteractorType(CvInteractorType.NUCLEIC_ACID_MI_REF, true).size());
         Assert.assertEquals(0, getDaoFactory().getInteractorDao().getByInteractorType("MI:lalala", false).size());
     }
+
+    @Test
+    public void getProtein_usingInteractorType_protein() throws Exception {
+        CvInteractorType protType = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.PROTEIN_MI_REF, CvInteractorType.PROTEIN);
+        Interactor interactor = new InteractorImpl("protA", getIntactContext().getInstitution(), protType);
+
+        getCorePersister().saveOrUpdate(interactor);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractorDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(0, getDaoFactory().getInteractionDao().countAll());
+
+        final InteractorImpl returnedInteractor = getDaoFactory().getInteractorDao().getAll().get(0);
+        Assert.assertEquals("uk.ac.ebi.intact.model.ProteinImpl", returnedInteractor.getObjClass());
+    }
+
+    @Test
+    public void getProtein_usingInteractorType_smallMol() throws Exception {
+        CvInteractorType type = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.SMALL_MOLECULE_MI_REF, CvInteractorType.SMALL_MOLECULE);
+        Interactor interactor = new InteractorImpl("sm1", getIntactContext().getInstitution(), type);
+
+        getCorePersister().saveOrUpdate(interactor);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractorDao().countAll());
+        Assert.assertEquals(0, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractorDao().getByInteractorType(CvInteractorType.SMALL_MOLECULE_MI_REF, false).size());
+        Assert.assertEquals(0, getDaoFactory().getInteractionDao().countAll());
+
+        final InteractorImpl returnedInteractor = getDaoFactory().getInteractorDao().getAll().get(0);
+        Assert.assertEquals("uk.ac.ebi.intact.model.SmallMoleculeImpl", returnedInteractor.getObjClass());
+    }
+
+    @Test
+    public void getProtein_usingInteractorType_new() throws Exception {
+        CvInteractorType type = getMockBuilder().createCvObject(CvInteractorType.class, "IAX:24314", "super interactor");
+        Interactor interactor = new InteractorImpl("si50", getIntactContext().getInstitution(), type);
+
+        getCorePersister().saveOrUpdate(interactor);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractorDao().countAll());
+        Assert.assertEquals(0, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractorDao().getByInteractorType("IAX:24314", false).size());
+        Assert.assertEquals(0, getDaoFactory().getInteractionDao().countAll());
+
+        final InteractorImpl returnedInteractor = getDaoFactory().getInteractorDao().getAll().get(0);
+        Assert.assertEquals("uk.ac.ebi.intact.model.InteractorImpl", returnedInteractor.getObjClass());
+    }
+
+     @Test
+    public void getProtein_usingInteractorType_interaction() throws Exception {
+        CvInteractorType type = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION);
+        Interactor interactor = new InteractorImpl("interaction1", getIntactContext().getInstitution(), type);
+
+        getCorePersister().saveOrUpdate(interactor);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractorDao().countAll());
+        Assert.assertEquals(0, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractorDao().getByInteractorType(CvInteractorType.INTERACTION_MI_REF, false).size());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        final InteractorImpl returnedInteractor = getDaoFactory().getInteractorDao().getAll().get(0);
+        Assert.assertEquals("uk.ac.ebi.intact.model.InteractionImpl", returnedInteractor.getObjClass());
+    }
 }
