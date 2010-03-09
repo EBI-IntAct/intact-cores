@@ -15,7 +15,12 @@
  */
 package uk.ac.ebi.intact.model;
 
-import javax.persistence.*;
+import org.hibernate.validator.Length;
+
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Represents a specific confidence value of an interaction.
@@ -46,6 +51,7 @@ public class Confidence extends BasicObjectImpl {
         setValue( value );
     }
 
+    @Length(max = 4000)
     public String getValue() {
         return value;
     }
