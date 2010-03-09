@@ -126,7 +126,18 @@ public class KeyBuilder {
     }
 
     protected Key keyForBioSource( BioSource bioSource ) {
-        return new Key( "BioSource:" + bioSource.getTaxId() );
+        StringBuilder sb = new StringBuilder(256);
+        sb.append("BioSource:").append(bioSource.getTaxId());
+
+        if (bioSource.getCvCellType() != null) {
+            sb.append("|").append(bioSource.getCvCellType().getIdentifier());
+        }
+
+        if (bioSource.getCvTissue() != null) {
+            sb.append("|").append(bioSource.getCvTissue().getIdentifier());
+        }
+
+        return new Key( sb.toString() );
     }
 
     protected Key keyForComponent( Component component ) {
