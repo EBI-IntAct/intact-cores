@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.util.SearchReplace;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -472,9 +471,8 @@ public class InteractionShortLabelGenerator {
 
             // convert bad characters ('-', ' ', '.') to '_'
             label = label.toLowerCase();
-            label = SearchReplace.replace( label, INTERACTION_SEPARATOR, "_" );
-            label = SearchReplace.replace( label, " ", "_" );
-            label = SearchReplace.replace( label, ".", "_" );
+            label = label.replaceAll( INTERACTION_SEPARATOR, "_" );
+            label = label.replaceAll("\\W", "_");
 
             return label;
         }

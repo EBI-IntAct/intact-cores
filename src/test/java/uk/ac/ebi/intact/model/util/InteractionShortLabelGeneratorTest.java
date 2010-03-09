@@ -69,6 +69,17 @@ public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void createCandidateShortLabel_labelUncommonChars() throws Exception {
+        String baitLabel = "nana";
+        String preyLabel ="BRC/ABL fusion";
+
+        String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(baitLabel, preyLabel);
+
+        assertNotNull(candLabel);
+        assertEquals("nana-brc_abl_fusion", candLabel);
+    }
+
+    @Test
     public void createCandidateShortLabel_fromInteraction() throws Exception {
         Interactor interactorA = getMockBuilder().createProtein("P0A6F1", "cara");
         Interactor interactorB = getMockBuilder().createProtein("P00968", "carb");
