@@ -451,6 +451,31 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         otherBs3.setCvCellType( typeB );
         Assert.assertNull( finder.findAc( otherBs3 ) );
     }
+    
+    @Test
+    public void findAcForBioSource_taxid_cellType_2humans() {
+        CvCellType typeA = getMockBuilder().createCvObject( CvCellType.class, "MI:aaaa", "A" );
+
+        BioSource human = getMockBuilder().createBioSource( 9606, "human" );
+        getCorePersister().saveOrUpdate(human);
+        String humanAc = human.getAc();
+        
+        BioSource humanWithCellType = getMockBuilder().createBioSource( 9606, "human" );
+        humanWithCellType.setCvCellType( typeA );
+        getCorePersister().saveOrUpdate( humanWithCellType );
+        
+        String humanWithCellTypeAc = humanWithCellType.getAc();
+
+        Assert.assertNotSame(humanAc, humanWithCellTypeAc);
+
+        final BioSource humanWithCellType2 = getMockBuilder().createBioSource( 9606, "human" );
+        humanWithCellType2.setCvCellType( typeA );
+
+        String ac = finder.findAc( humanWithCellType2 );
+
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( humanWithCellTypeAc, ac );
+    }
 
     @Test
     public void findAcForBioSource_taxid_tissue() {
