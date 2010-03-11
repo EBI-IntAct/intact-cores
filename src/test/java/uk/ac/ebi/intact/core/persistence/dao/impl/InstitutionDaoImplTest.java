@@ -16,7 +16,9 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.hibernate.LazyInitializationException;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
@@ -31,11 +33,21 @@ import uk.ac.ebi.intact.model.Institution;
  */
 public class InstitutionDaoImplTest extends IntactBasicTestCase {
 
+    private String ac;
+
+    @Before
+    public void init() {
+        ac = createMockupInstitution();
+    }
+
+    @After
+    public void cleanup() {
+        getDaoFactory().getInstitutionDao().deleteByAc(ac);
+    }
+
     @Test
     @Transactional(propagation = Propagation.NEVER)
     public void testGetByAc_xrefsFetchedEagerly() throws Exception {
-        String ac = createMockupInstitution();
-
         final Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByAc(ac);
 
         Assert.assertEquals(1, reloadedInstitution.getXrefs().size());
@@ -44,8 +56,6 @@ public class InstitutionDaoImplTest extends IntactBasicTestCase {
     @Test (expected = LazyInitializationException.class)
     @Transactional(propagation = Propagation.NEVER)
     public void testGetByAc_aliases() throws Exception {
-        String ac = createMockupInstitution();
-
         final Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByAc(ac);
 
         System.out.println(reloadedInstitution.getAliases());
@@ -54,8 +64,6 @@ public class InstitutionDaoImplTest extends IntactBasicTestCase {
     @Test (expected = LazyInitializationException.class)
     @Transactional(propagation = Propagation.NEVER)
     public void testGetByAc_annotations() throws Exception {
-        String ac = createMockupInstitution();
-
         final Institution reloadedInstitution = getDaoFactory().getInstitutionDao().getByAc(ac);
 
         System.out.println(reloadedInstitution.getAnnotations());
