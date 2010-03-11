@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.BioSource;
+import uk.ac.ebi.intact.model.CvCellType;
+import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvTissue;
 
 /**
@@ -83,6 +85,45 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
         Assert.assertEquals(8, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(15, getDaoFactory().getXrefDao().countAll());
+    }
+
+     @Test
+    public void persist_bioSource_withTissues_same2() throws Exception {
+         BioSource existingOrganism = getMockBuilder().createBioSource( 9606, "human" );
+
+         CvDatabase cabriDb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.CABRI_MI_REF, CvDatabase.CABRI);
+         CvDatabase intactDb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+         CvDatabase newtDb = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.NEWT_MI_REF, CvDatabase.NEWT);
+
+         final CvCellType cellType = getMockBuilder().createCvObject(CvCellType.class, "deleted", "deleted");
+         cellType.getXrefs().clear();
+         cellType.addXref(getMockBuilder().createIdentityXref(cellType, "ACC_10", cabriDb));
+         cellType.addXref(getMockBuilder().createIdentityXref(cellType, "IA:0062", intactDb));
+
+         existingOrganism.setCvCellType(cellType);
+
+         getCorePersister().saveOrUpdate(existingOrganism);
+
+         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
+         Assert.assertEquals(9, getDaoFactory().getCvObjectDao().countAll());
+         Assert.assertEquals(17, getDaoFactory().getXrefDao().countAll());
+
+         // candidate organism
+         BioSource candidateOrganism = getMockBuilder().createBioSource( 9606, "human" );
+         candidateOrganism.getXrefs().clear();
+
+         final CvCellType cellType2 = getMockBuilder().createCvObject(CvCellType.class, "deleted", "deleted");
+         cellType2.getXrefs().clear();
+         cellType2.addXref(getMockBuilder().createIdentityXref(cellType2, "ACC_10", cabriDb));
+         cellType2.addXref(getMockBuilder().createIdentityXref(cellType2, "9606", newtDb));
+
+         candidateOrganism.setCvCellType(cellType2);
+
+         getCorePersister().saveOrUpdate(candidateOrganism);
+
+         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
+         Assert.assertEquals(9, getDaoFactory().getCvObjectDao().countAll());
+         Assert.assertEquals(17, getDaoFactory().getXrefDao().countAll());
     }
 
 

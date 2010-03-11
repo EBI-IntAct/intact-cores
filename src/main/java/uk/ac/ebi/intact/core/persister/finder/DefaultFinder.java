@@ -19,26 +19,26 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.annotation.Scope;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persister.Finder;
-import uk.ac.ebi.intact.core.persister.FinderException;
-import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.util.*;
-import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
-import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persistence.dao.InteractorDao;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
-import uk.ac.ebi.intact.core.config.IntactConfiguration;
+import uk.ac.ebi.intact.core.persister.Finder;
+import uk.ac.ebi.intact.core.persister.FinderException;
+import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.util.*;
+import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
+import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Default implementation of the intact finder.
@@ -459,8 +459,8 @@ public class DefaultFinder implements Finder {
     protected String findAcForCvObject( CvObject cvObject ) {
         Class cvClass = CgLibUtil.removeCglibEnhanced(cvObject.getClass());
         
-        Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.miIdentifier = :mi " );
-        query.setParameter( "mi", cvObject.getIdentifier() );
+        Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.identifier = :id " );
+        query.setParameter( "id", cvObject.getIdentifier() );
 
         String value = getFirstAcForQuery( query, cvObject );
 
