@@ -37,12 +37,17 @@ public class InstitutionDaoImplTest extends IntactBasicTestCase {
 
     @Before
     public void init() {
+        Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
         ac = createMockupInstitution();
     }
 
     @After
     public void cleanup() {
+        final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
         getDaoFactory().getInstitutionDao().deleteByAc(ac);
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
+        
+        Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
     }
 
     @Test
