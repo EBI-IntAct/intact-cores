@@ -7,6 +7,8 @@ import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
 import uk.ac.ebi.intact.model.Institution;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.List;
 
 /**
  * DAO for institutions
@@ -26,5 +28,19 @@ public class InstitutionDaoImpl extends AnnotatedObjectDaoImpl<Institution> impl
 
     public InstitutionDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
         super( Institution.class, entityManager, intactSession );
+    }
+
+    public Institution getByAc( String ac ) {
+        Query query = getEntityManager().createQuery("select i from Institution i left join fetch i.xrefs " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+
+        List<Institution> results = query.getResultList();
+
+        if (results.size() > 0) {
+            return results.iterator().next();
+        }
+
+        return null;
     }
 }
