@@ -37,6 +37,7 @@ import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -427,7 +428,28 @@ public class DefaultFinder implements Finder {
             return true;
         }
 
-        return CvObjectUtils.areEqual(cv1, cv2);
+        if (cv1 == null || cv2 == null) {
+            return false;
+        }
+
+        // if any of the identities is the same, we consider them to be the same
+        final Collection<CvObjectXref> xrefs1 = XrefUtils.getIdentityXrefs(cv1);
+        final Collection<CvObjectXref> xrefs2 = XrefUtils.getIdentityXrefs(cv2);
+
+        Collection<String> ids1 = getIds(xrefs1);
+        Collection<String> ids2 = getIds(xrefs2);
+
+        return !(CollectionUtils.intersection(ids1, ids2).isEmpty());
+    }
+
+    private Collection<String> getIds(Collection<CvObjectXref> xrefs) {
+        List<String> ids = new ArrayList<String>(xrefs.size());
+
+        for (Xref xref : xrefs) {
+            ids.add(xref.getPrimaryId());
+        }
+
+        return ids;
     }
 
     /**
