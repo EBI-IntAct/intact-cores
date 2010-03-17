@@ -90,6 +90,10 @@ public class CvObjectUtils {
         return isChildOfType( type, CvInteractorType.PROTEIN_MI_REF, true );
     }
 
+    public static boolean isPeptideType( CvInteractorType type ) {
+        return isChildOfType( type, CvInteractorType.PEPTIDE_MI_REF, true );
+    }
+
     public static boolean isNucleicAcidType( CvInteractorType type ) {
         return isChildOfType( type, CvInteractorType.NUCLEIC_ACID_MI_REF, true );
     }

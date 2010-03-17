@@ -113,6 +113,8 @@ public class InteractorImpl extends AnnotatedObjectImpl<InteractorXref, Interact
 
         if (CvObjectUtils.isProteinType(interactorType)) {
             setObjClass(ProteinImpl.class.getName());
+        } else if (CvObjectUtils.isPeptideType(interactorType)) {
+            setObjClass(ProteinImpl.class.getName());
         } else if (CvObjectUtils.isInteractionType(interactorType)) {
             setObjClass(InteractionImpl.class.getName());
         } else if (CvObjectUtils.isSmallMoleculeType(interactorType)) {

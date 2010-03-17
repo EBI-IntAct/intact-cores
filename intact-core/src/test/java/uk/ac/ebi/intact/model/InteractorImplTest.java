@@ -38,6 +38,15 @@ public class InteractorImplTest extends IntactBasicTestCase {
         interactor.correctObjClass();
         Assert.assertEquals(ProteinImpl.class.getName(), interactor.getObjClass());
     }
+
+    @Test
+    public void correctObjClass1_peptide() throws Exception {
+        InteractorImpl interactor = (InteractorImpl) getMockBuilder().createPeptideRandom();
+
+        Assert.assertEquals(ProteinImpl.class.getName(), interactor.getObjClass());
+        interactor.correctObjClass();
+        Assert.assertEquals(ProteinImpl.class.getName(), interactor.getObjClass());
+    }
     
     @Test
     public void correctObjClass2() throws Exception {
