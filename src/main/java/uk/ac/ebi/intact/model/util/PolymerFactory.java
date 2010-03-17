@@ -38,10 +38,12 @@ public class PolymerFactory {
 
         if ( CvObjectUtils.isProteinType( type ) ) {
             polymer = new ProteinImpl( owner, source, shortLabel, type );
+        } else if ( CvObjectUtils.isPeptideType( type ) ) {
+            polymer = new ProteinImpl( owner, source, shortLabel, type );
         } else if ( CvObjectUtils.isNucleicAcidType( type ) ) {
             polymer = new NucleicAcidImpl( owner, source, shortLabel, type );
         } else {
-            throw new IllegalArgumentException( "The given MI is neither a Protein or a NUcleicAcid MI: " + type );
+            throw new IllegalArgumentException( "The given MI is neither a Protein, a Peptide or a NUcleicAcid MI: " + type );
         }
 
         return polymer;
