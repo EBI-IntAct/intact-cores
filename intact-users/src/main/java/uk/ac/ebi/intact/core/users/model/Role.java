@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.core.users.model;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
 import javax.persistence.*;
@@ -15,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_role" )
 @javax.persistence.SequenceGenerator( name="SEQ_USER", sequenceName="users_seq", initialValue = 1 )
-public class Role {
+public class Role implements HasIdentity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="SEQ_USER")
@@ -27,7 +26,15 @@ public class Role {
 
     //////////////////
     // Constructors
-    
+
+    public Long getPk() {
+        return pk;
+    }
+
+    public void setPk( Long pk ) {
+        this.pk = pk;
+    }
+
     protected Role() {
     }
 

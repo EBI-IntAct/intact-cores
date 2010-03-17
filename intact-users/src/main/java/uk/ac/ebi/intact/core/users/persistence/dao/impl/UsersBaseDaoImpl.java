@@ -4,10 +4,12 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.users.model.HasIdentity;
 import uk.ac.ebi.intact.core.users.persistence.dao.UsersBaseDao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 
 /**
@@ -17,7 +19,8 @@ import java.util.List;
  * @version $Id$
  * @since 2.2.1
  */
-public class UsersBaseDaoImpl<T> implements UsersBaseDao<T> {
+@Transactional( "users" )
+public class UsersBaseDaoImpl<T extends HasIdentity> implements UsersBaseDao<T> {
 
     @PersistenceContext( unitName = "intact-users-default" )
     private EntityManager entityManager;
@@ -28,17 +31,23 @@ public class UsersBaseDaoImpl<T> implements UsersBaseDao<T> {
         this.entityClass = entityClass;
     }
 
-    @Transactional( readOnly = true )
+    @Transactional( value="users", readOnly = true )
     public int countAll() {
-        return ( Integer ) getSession()
-                .createCriteria( entityClass )
-                .setProjection( Projections.rowCount() )
-                .uniqueResult();
+        final Query query = entityManager.createQuery( "select count(*) from " + entityClass.getSimpleName() + " e" );
+        return ((Long) query.getSingleResult()).intValue();
     }
 
-    @Transactional( readOnly = true )
+    @Transactional( value="users", readOnly = true )
     public List<T> getAll() {
-        return entityManager.createQuery( "select u from User As u" ).getResultList();
+        return entityManager.createQuery( "select e from " + entityClass.getSimpleName() + " e" ).getResultList();
+    }
+
+    public boolean isManaged( T entity ) {
+        return entityManager.contains( entity );
+    }
+
+    public boolean isDetached( T entity ) {
+        return ( entity.getPk() != null && ! entityManager.contains( entity ) );
     }
 
     public void persist( T entity ) {

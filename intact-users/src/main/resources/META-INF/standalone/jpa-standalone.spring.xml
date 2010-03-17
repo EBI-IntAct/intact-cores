@@ -5,22 +5,21 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
-                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
 
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-        <property name="dataSource" ref="intactUsersDataSource"/>
-    </bean>
+    <!--<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">-->
+        <!--<property name="entityManagerFactory" ref="usersEntityManagerFactory"/>-->
+        <!--<property name="dataSource" ref="intactUsersDataSource"/>-->
+    <!--</bean>-->
 
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <tx:annotation-driven />
 
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <bean id="usersEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="intact-users-default"/>
         <property name="dataSource" ref="intactUsersDataSource"/>
 
@@ -46,6 +45,13 @@
         <property name="url" value="jdbc:h2:mem:intactusers;DB_CLOSE_DELAY=-1;LOCK_MODE=0"/>
         <property name="username" value="sa"/>
         <property name="password" value=""/>
+    </bean>
+
+    <bean id="usersTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="usersEntityManagerFactory"/>
+        <property name="dataSource" ref="intactUsersDataSource"/>
+
+        <qualifier value="users"/>
     </bean>
 
 </beans>

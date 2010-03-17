@@ -1,12 +1,13 @@
 package uk.ac.ebi.intact.core.users.persistence.dao;
 
 import org.hibernate.Session;
+import uk.ac.ebi.intact.core.users.model.HasIdentity;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 /**
- * TODO document this !
+ * Basic method a DAO should be able to perform.
  *
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
@@ -17,6 +18,10 @@ public interface UsersBaseDao<T> {
     int countAll();
 
     List<T> getAll();
+
+    boolean isManaged( T entity );
+
+    boolean isDetached( T entity );
 
     void persist( T entity );
 

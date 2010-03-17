@@ -5,7 +5,7 @@ import uk.ac.ebi.intact.core.users.model.Role;
 import java.io.Serializable;
 
 /**
- * Role data access object.
+ * Role DAO.
  *
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$

@@ -5,7 +5,7 @@ import uk.ac.ebi.intact.core.users.model.User;
 import java.io.Serializable;
 
 /**
- * TODO document this !
+ * User DAO.
  *
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$

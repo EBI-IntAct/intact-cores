@@ -27,9 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.users.persistence.dao.UsersDaoFactory;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 
 /**
  * Base for all intact-users tests.
@@ -38,11 +36,11 @@ import javax.persistence.PersistenceUnit;
  * @version $Id$
  * @since 2.2.1
  */
-@RunWith( SpringJUnit4ClassRunner.class)
+@RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration(locations = {"classpath*:/META-INF/intact-users.spring.xml",
                                    "classpath*:/META-INF/standalone/*-standalone.spring.xml"})
-@TransactionConfiguration
-@Transactional
+@TransactionConfiguration( transactionManager = "usersTransactionManager" )
+@Transactional( "users" )
 public abstract class UsersBasicTestCase {
 
     @Autowired

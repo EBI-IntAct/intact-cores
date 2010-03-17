@@ -2,9 +2,6 @@ package uk.ac.ebi.intact.core.users.model;
 
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 /**
  * A user favourite.
  *
@@ -12,8 +9,9 @@ import javax.persistence.Table;
  * @version $Id$
  * @since 2.2.1
  */
-public class Favourite {
+public class Favourite implements HasIdentity {
 
+    private Long pk;
     private String type;
     private String ac;
     private String label;
@@ -42,6 +40,15 @@ public class Favourite {
 
     ///////////////////////////
     // Getters and Setters
+
+
+    public Long getPk() {
+        return pk;
+    }
+
+    public void setPk( Long pk ) {
+        this.pk = pk;
+    }
 
     public String getType() {
         return type;

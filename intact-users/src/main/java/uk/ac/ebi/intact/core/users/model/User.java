@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.core.users.model;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
@@ -18,11 +17,11 @@ import java.util.*;
 @Entity
 @Table( name = "ia_user" )
 @javax.persistence.SequenceGenerator( name = "SEQ_USER", sequenceName = "users_seq", initialValue = 1 )
-public class User {
+public class User implements HasIdentity {
 
     @Id
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "SEQ_USER" )
-    private long pk;
+    private Long pk;
 
     @Column( nullable = false, unique = true )
     @Index( name = "idx_user_login" )
@@ -41,6 +40,11 @@ public class User {
     private String email;
 
     private String openIdUrl;
+
+    /**
+     * If set to true, the user should not be able to login into the system.
+     */
+    private boolean disabled;
 
     @Temporal( TemporalType.TIMESTAMP )
     private Date lastLogin;
@@ -64,8 +68,9 @@ public class User {
     //////////////////
     // Constructors
 
-    protected User() {
-        roles = new HashSet<Role>();
+    public User() {
+        this.roles = new HashSet<Role>();
+        this.disabled = false;
     }
 
     public User( String login, String firstName, String lastName, String email ) {
@@ -79,11 +84,11 @@ public class User {
     ///////////////////////////
     // Getters and Setters
 
-    public long getPk() {
+    public Long getPk() {
         return pk;
     }
 
-    public void setPk( long pk ) {
+    public void setPk( Long pk ) {
         this.pk = pk;
     }
 
@@ -111,9 +116,6 @@ public class User {
     }
 
     public void setFirstName( String firstName ) {
-        if ( firstName == null || firstName.trim().length() == 0 ) {
-            throw new IllegalArgumentException( "You must give a non null firstName" );
-        }
         this.firstName = firstName;
     }
 
@@ -122,9 +124,6 @@ public class User {
     }
 
     public void setLastName( String lastName ) {
-        if ( lastName == null || lastName.trim().length() == 0 ) {
-            throw new IllegalArgumentException( "You must give a non null lastName" );
-        }
         this.lastName = lastName;
     }
 
@@ -177,6 +176,27 @@ public class User {
         roles.remove( role );
     }
 
+    public boolean hasRole( String roleName ) {
+        if( roleName != null ) {
+            roleName = roleName.trim();
+
+            for ( Role role : roles ) {
+                if( role.getName().equalsIgnoreCase( roleName ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled( boolean disabled ) {
+        this.disabled = disabled;
+    }
+
     public Collection<Preference> getPreferences() {
         return preferences;
     }
@@ -215,6 +235,7 @@ public class User {
         sb.append( ", lastLogin=" ).append( lastLogin );
         sb.append( ", email='" ).append( email ).append( '\'' );
         sb.append( ", openIdUrl='" ).append( openIdUrl ).append( '\'' );
+        sb.append( ", disabled='" ).append( disabled ).append( '\'' );
         sb.append( ", roles=" ).append( roles );
         sb.append( ", preferences=" ).append( preferences );
         sb.append( '}' );

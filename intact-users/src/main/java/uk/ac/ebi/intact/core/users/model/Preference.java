@@ -16,11 +16,11 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_preference" )
 @javax.persistence.SequenceGenerator( name="SEQ_USER", sequenceName="users_seq", initialValue = 1 )
-public class Preference {
+public class Preference implements HasIdentity {
 
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_USER")
-    private long pk;
+    private Long pk;
 
     @Index( name = "idx_preference_key" )
     private String key;
@@ -48,6 +48,14 @@ public class Preference {
 
     ///////////////////////////
     // Getters and Setters
+
+    public Long getPk() {
+        return pk;
+    }
+
+    public void setPk( Long pk ) {
+        this.pk = pk;
+    }
 
     public String getKey() {
         return key;
