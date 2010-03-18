@@ -113,7 +113,7 @@ public class BatchDatasourceInitializer implements InitializingBean, DisposableB
 
     private void doExecuteScript(final Resource scriptResource) {
         if (scriptResource == null || !scriptResource.exists())
-            return;
+            throw new IllegalStateException("Script is null or resource does not exist: "+scriptResource );
 
         TransactionTemplate transactionTemplate = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
         transactionTemplate.execute(new TransactionCallback() {

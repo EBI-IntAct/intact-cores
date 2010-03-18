@@ -39,9 +39,6 @@ public class ReaderTests extends IntactBasicTestCase {
     private JobLauncher jobLauncher;
 
     @Autowired
-    private PersisterHelper persisterHelper;
-
-    @Autowired
     private ApplicationContext applicationContext;
 
     @Before
@@ -53,7 +50,7 @@ public class ReaderTests extends IntactBasicTestCase {
     @Test
     public void readInteractions() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom(5);
-        persisterHelper.save(exp);
+        getCorePersister().saveOrUpdate(exp);
 
         Assert.assertEquals(5, getDaoFactory().getInteractionDao().countAll());
 
@@ -68,7 +65,7 @@ public class ReaderTests extends IntactBasicTestCase {
     @Test
     public void readExperiments() throws Exception {
         for (int i=0; i<4; i++) {
-            persisterHelper.save(getMockBuilder().createExperimentEmpty());
+            getCorePersister().saveOrUpdate(getMockBuilder().createExperimentEmpty());
         }
 
         Assert.assertEquals(4, getDaoFactory().getExperimentDao().countAll());
