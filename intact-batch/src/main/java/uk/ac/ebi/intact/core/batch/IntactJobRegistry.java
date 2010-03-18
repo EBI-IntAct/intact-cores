@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.core.batch;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.JobFactory;
 import org.springframework.batch.core.configuration.DuplicateJobException;
-import org.springframework.batch.core.configuration.ListableJobRegistry;
+import org.springframework.batch.core.configuration.ListableJobLocator;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,7 +33,7 @@ import java.util.Arrays;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class IntactJobRegistry implements ListableJobRegistry {
+public class IntactJobRegistry implements ListableJobLocator {
 
     @Autowired
     private ApplicationContext applicationContext;
