@@ -42,9 +42,11 @@
 
     <bean id="corePersister" class="uk.ac.ebi.intact.core.persister.CorePersisterImpl" scope="prototype">
         <constructor-arg ref="intactContext"/>
-        <constructor-arg>
-            <bean class="uk.ac.ebi.intact.core.persister.finder.DefaultFinder"/>
-        </constructor-arg>
+        <constructor-arg ref="finder"/>
+    </bean>
+
+     <bean id="finder" class="uk.ac.ebi.intact.core.persister.finder.DefaultFinder" scope="prototype">
+        <constructor-arg ref="intactContext"/>
     </bean>
 
     <!-- Default institutions -->

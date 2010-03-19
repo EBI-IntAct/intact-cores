@@ -19,9 +19,6 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -48,12 +45,13 @@ import java.util.List;
  * @version $Id$
  * @since 1.8.0
  */
-@org.springframework.stereotype.Component
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class DefaultFinder implements Finder {
 
-    @Autowired
     private IntactConfiguration config;
+
+    public DefaultFinder(IntactContext intactContext) {
+        config = intactContext.getConfig();
+    }
 
     /**
      * Sets up a logger for that class.
