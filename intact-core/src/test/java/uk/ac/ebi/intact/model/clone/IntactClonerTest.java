@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
@@ -144,42 +143,6 @@ public class IntactClonerTest extends IntactBasicTestCase {
             } else {
                 Assert.fail();
             }
-        }
-    }
-
-    private class EditorFinder extends DefaultFinder {
-
-        public String findAc( AnnotatedObject annotatedObject ) {
-
-            String ac;
-
-            if ( annotatedObject.getAc() != null ) {
-                return annotatedObject.getAc();
-            }
-
-            if ( annotatedObject instanceof Institution ) {
-                ac = findAcForInstitution( ( Institution ) annotatedObject );
-            } else if ( annotatedObject instanceof Publication ) {
-                ac = findAcForPublication( ( Publication ) annotatedObject );
-            } else if ( annotatedObject instanceof CvObject ) {
-                ac = findAcForCvObject( ( CvObject ) annotatedObject );
-            } else if ( annotatedObject instanceof Experiment ) {
-                ac = null;
-            } else if ( annotatedObject instanceof Interaction ) {
-                ac = null;
-            } else if ( annotatedObject instanceof Interactor ) {
-                ac = findAcForInteractor( ( InteractorImpl ) annotatedObject );
-            } else if ( annotatedObject instanceof BioSource ) {
-                ac = findAcForBioSource( ( BioSource ) annotatedObject );
-            } else if ( annotatedObject instanceof Component ) {
-                ac = findAcForComponent( ( Component ) annotatedObject );
-            } else if ( annotatedObject instanceof Feature ) {
-                ac = findAcForFeature( ( Feature ) annotatedObject );
-            } else {
-                throw new IllegalArgumentException( "Cannot find Ac for type: " + annotatedObject.getClass().getName() );
-            }
-
-            return ac;
         }
     }
 
