@@ -1,9 +1,10 @@
 package uk.ac.ebi.intact.core.persister.finder;
 
+import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
-import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
 
 import java.util.List;
 
@@ -14,6 +15,10 @@ import java.util.List;
  * @version $Id$
  */
 public class NonCrcLegacyFinder extends DefaultFinder {
+
+    public NonCrcLegacyFinder(IntactContext intactContext) {
+        super(intactContext);
+    }
 
     @Override
     protected String findAcForInteraction( Interaction interaction ) {
