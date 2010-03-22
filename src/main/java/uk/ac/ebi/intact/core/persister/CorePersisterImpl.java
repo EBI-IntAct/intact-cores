@@ -32,7 +32,6 @@ import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.core.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.persister.finder.DefaultFinder;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
@@ -84,8 +83,6 @@ public class CorePersisterImpl implements CorePersister {
         annotatedObjectsToPersist = Maps.newHashMap();
         annotatedObjectsToMerge = Maps.newHashMap();
         synched = Maps.newHashMap();
-
-        finder = new DefaultFinder();
 
         keyBuilder = new KeyBuilder();
         entityStateCopier = new DefaultEntityStateCopier();
