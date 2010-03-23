@@ -76,6 +76,11 @@ public class CorePersisterImpl implements CorePersister {
 
     private PersisterStatistics statistics;
 
+    public CorePersisterImpl() {
+        this(IntactContext.getCurrentInstance(), (Finder)
+                IntactContext.getCurrentInstance().getSpringContext().getBean("finder"));
+    }
+
     public CorePersisterImpl(IntactContext intactContext, Finder finder) {
         this.dataContext = intactContext.getDataContext();
         this.finder = finder;
