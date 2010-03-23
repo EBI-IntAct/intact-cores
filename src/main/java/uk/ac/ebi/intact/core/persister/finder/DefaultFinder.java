@@ -49,6 +49,10 @@ public class DefaultFinder implements Finder {
 
     private IntactConfiguration config;
 
+    public DefaultFinder() {
+        config = IntactContext.getCurrentInstance().getConfig();
+    }
+
     public DefaultFinder(IntactContext intactContext) {
         config = intactContext.getConfig();
     }
