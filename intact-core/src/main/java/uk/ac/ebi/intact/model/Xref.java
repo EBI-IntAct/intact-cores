@@ -5,6 +5,7 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.validator.Length;
@@ -303,7 +304,7 @@ public abstract class Xref extends BasicObjectImpl {
 
         if (!getClass().equals(xref.getClass())) return false;
 
-        if ( !primaryId.equals( xref.primaryId ) ) return false;
+        if ( !StringUtils.equals(getPrimaryId(), xref.getPrimaryId() )) return false;
 
         if (!(cvDatabase == null && xref.getCvDatabase() == null)) {
             if (cvDatabase != null && !CvObjectUtils.areEqual(cvDatabase, xref.getCvDatabase())) {
