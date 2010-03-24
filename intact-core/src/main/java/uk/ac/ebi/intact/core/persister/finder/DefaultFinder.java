@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister.finder;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -335,7 +336,7 @@ public class DefaultFinder implements Finder {
                            if( interactor instanceof Polymer ) {
                                final String sequence = ((Polymer) interactor).getSequence();
                                final String sequenceCandidate = ((Polymer) interactorCandidate).getSequence();
-                               if( sequence.equals(sequenceCandidate) ) {
+                               if( StringUtils.equals( sequence, sequenceCandidate) ) {
                                    ac = interactorCandidate.getAc();
                                    break;
                                }
