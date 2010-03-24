@@ -73,6 +73,13 @@ public class Annotation extends BasicObjectImpl {
 
         //super call sets creation time data
         super( owner );
+
+
+        if ( topic == null ) {
+            throw new NullPointerException( "valid Annotation must have an associated topic!" );
+        }
+
+
         setCvTopic( topic );
     }
 
@@ -121,11 +128,6 @@ public class Annotation extends BasicObjectImpl {
     }
 
     public void setCvTopic( CvTopic cvTopic ) {
-
-        if ( cvTopic == null ) {
-            throw new NullPointerException( "valid Annotation must have an associated topic!" );
-        }
-
         this.cvTopic = cvTopic;
     }
 
