@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_role" )
 @javax.persistence.SequenceGenerator( name="SEQ_USER", sequenceName="users_seq", initialValue = 1 )
-public class Role implements HasIdentity {
+public class Role implements Identifiable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="SEQ_USER")

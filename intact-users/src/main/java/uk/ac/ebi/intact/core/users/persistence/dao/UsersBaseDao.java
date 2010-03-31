@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.core.users.persistence.dao;
 
 import org.hibernate.Session;
-import uk.ac.ebi.intact.core.users.model.HasIdentity;
 
 import javax.persistence.EntityManager;
 import java.util.List;

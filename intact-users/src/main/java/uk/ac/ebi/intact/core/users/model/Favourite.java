@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
  * @version $Id$
  * @since 2.2.1
  */
-public class Favourite implements HasIdentity {
+public class Favourite implements Identifiable {
 
     private Long pk;
     private String type;

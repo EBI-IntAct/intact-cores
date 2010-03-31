@@ -1,10 +1,9 @@
 package uk.ac.ebi.intact.core.users.persistence.dao.impl;
 
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.users.model.HasIdentity;
+import uk.ac.ebi.intact.core.users.model.Identifiable;
 import uk.ac.ebi.intact.core.users.persistence.dao.UsersBaseDao;
 
 import javax.persistence.EntityManager;
@@ -20,7 +19,7 @@ import java.util.List;
  * @since 2.2.1
  */
 @Transactional( "users" )
-public class UsersBaseDaoImpl<T extends HasIdentity> implements UsersBaseDao<T> {
+public class UsersBaseDaoImpl<T extends Identifiable> implements UsersBaseDao<T> {
 
     @PersistenceContext( unitName = "intact-users-default" )
     private EntityManager entityManager;

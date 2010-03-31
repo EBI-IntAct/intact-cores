@@ -7,7 +7,7 @@ package uk.ac.ebi.intact.core.users.model;
  * @version $Id$
  * @since 2.2.1
  */
-public interface HasIdentity {
+public interface Identifiable {
 
     Long getPk();
 
