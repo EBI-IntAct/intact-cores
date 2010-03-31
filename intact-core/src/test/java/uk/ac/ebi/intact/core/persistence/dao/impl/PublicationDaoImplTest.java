@@ -5,6 +5,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persistence.dao.PublicationDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Publication;
 
 import java.text.ParseException;
@@ -60,5 +61,18 @@ public class PublicationDaoImplTest extends IntactBasicTestCase {
 
     private Date parseDate( String dateStr ) throws ParseException {
         return new SimpleDateFormat( "yyyy-mm-dd" ).parse( dateStr );
+    }
+
+    @Test
+    public void countExperimentsForPublicationAc() throws Exception {
+        final Experiment e1 = getMockBuilder().createExperimentRandom( 9 );
+        getCorePersister().saveOrUpdate( e1 );
+
+        final List<Publication> allPublications = getDaoFactory().getPublicationDao().getAll();
+        Assert.assertEquals( 1, allPublications.size() );
+        Publication p = allPublications.iterator().next();
+
+        Assert.assertEquals( 1, getDaoFactory().getPublicationDao().countExperimentsForPublicationAc( p.getAc() ) );
+        Assert.assertEquals( 9, getDaoFactory().getPublicationDao().countInteractionsForPublicationAc( p.getAc() ) );
     }
 }

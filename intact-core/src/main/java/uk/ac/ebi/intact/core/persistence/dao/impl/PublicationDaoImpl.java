@@ -63,4 +63,26 @@ public class PublicationDaoImpl extends AnnotatedObjectDaoImpl<Publication> impl
 
         return query.getResultList();
     }
+
+    public int countExperimentsForPublicationAc( String ac ) {
+
+        Query query = getEntityManager().createQuery("select count( e ) " +
+                                                     "from Publication p inner join p.experiments as e " +
+                                                     "where p.ac = :ac");
+        query.setParameter("ac", ac);
+
+        return ((Long) query.getSingleResult()).intValue();
+    }
+
+    public int countInteractionsForPublicationAc( String ac ) {
+
+        Query query = getEntityManager().createQuery("select count( i ) " +
+                                                     "from Publication p " +
+                                                     "     inner join p.experiments as e " +
+                                                     "     inner join e.interactions as i " +
+                                                     "where p.ac = :ac");
+        query.setParameter("ac", ac);
+
+        return ((Long) query.getSingleResult()).intValue();
+    }
 }

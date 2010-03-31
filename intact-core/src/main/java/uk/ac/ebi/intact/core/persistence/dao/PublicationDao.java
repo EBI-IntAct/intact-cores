@@ -35,4 +35,18 @@ public interface PublicationDao extends AnnotatedObjectDao<Publication> {
      * @return The publications with the "lastImexUpdate" between the two dates.
      */
     List<Publication> getByLastImexUpdate( Date fromDate, Date toDate);
+
+    /**
+     * Count the number of experiments attached to this publication.
+     * @param ac AC of the publication.
+     * @return the count of experiment.
+     */
+    int countExperimentsForPublicationAc( String ac );
+
+    /**
+     * Count the number of interactions attached to this publication.
+     * @param ac AC of the publication.
+     * @return the count of interactions.
+     */
+    int countInteractionsForPublicationAc( String ac );
 }
