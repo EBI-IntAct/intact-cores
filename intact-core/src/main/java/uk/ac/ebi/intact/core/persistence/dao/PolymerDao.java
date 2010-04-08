@@ -36,4 +36,12 @@ public interface PolymerDao<T extends PolymerImpl> extends InteractorDao<T> {
      * @since 1.9.0
      */
     List<T> getByCrcAndTaxId(String crc, String taxId);
+
+    /**
+     * Gets all proteins with the passed CRC
+     *
+     * @since 1.9.0
+     */
+    List<T> getByCrc(String crc);
+
 }

@@ -84,4 +84,14 @@ public class PolymerDaoImpl<T extends PolymerImpl> extends InteractorDaoImpl<T> 
 
         return query.getResultList();
     }
+
+    public List<T> getByCrc(String crc) {
+        if (crc == null) throw new NullPointerException("crc is null");
+
+        Query query = getEntityManager().createQuery("select p from PolymerImpl p " +
+                                                     "where p.crc64 = :crc64 ");
+        query.setParameter("crc64", crc);
+
+        return query.getResultList();
+    }
 }

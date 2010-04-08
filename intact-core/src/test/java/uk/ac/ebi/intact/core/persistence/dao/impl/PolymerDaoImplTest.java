@@ -50,4 +50,22 @@ public class PolymerDaoImplTest extends IntactBasicTestCase {
 
         Assert.assertTrue(getDaoFactory().getPolymerDao().getByCrcAndTaxId("crcrcrc", "taxtaxtax").isEmpty());
     }
+
+    @Test
+    public void getByCrc_prot() throws Exception {
+        Protein prot = getMockBuilder().createProteinRandom();
+        String crc = prot.getCrc64();
+
+        Assert.assertNotNull(crc);
+
+        getCorePersister().saveOrUpdate(prot);
+
+        Assert.assertEquals(1, getDaoFactory().getProteinDao().countAll());
+
+        List<PolymerImpl> retrievedProts = getDaoFactory().getPolymerDao().getByCrc(crc);
+        Assert.assertEquals(1, retrievedProts.size());
+        Assert.assertEquals(prot.getAc(), retrievedProts.get(0).getAc());
+
+        Assert.assertTrue(getDaoFactory().getPolymerDao().getByCrc("crcrcrc").isEmpty());
+    }
 }
