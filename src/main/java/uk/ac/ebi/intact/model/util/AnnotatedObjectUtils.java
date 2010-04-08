@@ -264,6 +264,21 @@ public class AnnotatedObjectUtils {
         return getParameterizedType(method.getGenericReturnType());
     }
 
+    public static Collection<Alias> getAliasByType( AnnotatedObject<?, ?> annotatedObject, String miOrLabel ) {
+        Collection<Alias> matchingAliases = new ArrayList<Alias>();
+        for ( Alias alias : annotatedObject.getAliases() ) {
+            if( alias.getCvAliasType() != null
+                && (
+                    alias.getCvAliasType().getIdentifier().equals( miOrLabel )
+                    ||
+                    alias.getCvAliasType().getShortLabel().equals( miOrLabel ) )
+                    ) {
+                matchingAliases.add( alias );
+            }
+        }
+        return matchingAliases;
+    }
+
     /**
      * Finds an Annotations with a topic that has an MI or label equal to the value provided
      * @param annotatedObject The annotatedObject to find the annotation
