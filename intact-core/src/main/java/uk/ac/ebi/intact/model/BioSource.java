@@ -138,7 +138,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
 
     ///////////////////////////////////////
     // access methods for associations
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne
     @JoinColumn( name = "tissue_ac" )
     public CvTissue getCvTissue() {
         return cvTissue;
@@ -148,7 +148,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
         this.cvTissue = cvTissue;
     }
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne
     @JoinColumn( name = "celltype_ac" )
     public CvCellType getCvCellType() {
         return cvCellType;
