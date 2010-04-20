@@ -501,14 +501,21 @@ public class DefaultFinder implements Finder {
         if (qualifier == null){
             return false;
         }
-        if (qualifier.getAc() != null){
-            if (qualifier.getIdentifier().equals("MI:0356")){
+        if (qualifier.getIdentifier() != null){
+            if (qualifier.getIdentifier().equals(CvXrefQualifier.IDENTITY_MI_REF)){
                 return true;
             }
         }
         else {
-            if (qualifier.getShortLabel().equals("identity") || qualifier.getFullName().equals("identical object")){
-                return true;
+            if (qualifier.getShortLabel() != null){
+                if (qualifier.getShortLabel().equals(CvXrefQualifier.IDENTITY)){
+                    return true;
+                }
+            }
+            if (qualifier.getFullName() != null){
+                if (qualifier.getFullName().equals("identical object")){
+                    return true;
+                }
             }
         }
         return false;
