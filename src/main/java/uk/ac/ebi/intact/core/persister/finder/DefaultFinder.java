@@ -37,6 +37,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -94,7 +95,7 @@ public class DefaultFinder implements Finder {
                 throw new IllegalArgumentException( "Cannot find Ac for type: " + annotatedObject.getClass().getName() );
             }
         } catch (Throwable t) {
-            throw new FinderException("Unable to find AC for "+annotatedObject.getClass().getSimpleName()+": "+annotatedObject, t); 
+            throw new FinderException("Unable to find AC for "+annotatedObject.getClass().getSimpleName()+": "+annotatedObject, t);
         }
 
         return ac;
@@ -114,8 +115,8 @@ public class DefaultFinder implements Finder {
 
         if ( institutionXref != null ) {
             Query query = getEntityManager().createQuery( "select distinct institution.ac from Institution institution " +
-                                                          "left join institution.xrefs as xref " +
-                                                          "where xref.primaryId = :primaryId" );
+                    "left join institution.xrefs as xref " +
+                    "where xref.primaryId = :primaryId" );
             query.setParameter( "primaryId", institutionXref.getPrimaryId() );
             ac = getFirstAcForQuery( query, institution );
         }
@@ -163,37 +164,37 @@ public class DefaultFinder implements Finder {
 
             if( experiment.getBioSource() != null ) {
                 query = getEntityManager().createQuery("select exp.ac " +
-                                                       "from Experiment exp " +
-                                                       "     left join exp.publication as pub " +
-                                                       "     join exp.xrefs as xref  " +
-                                                       "where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
-                                                       "      exp.bioSource.taxId = :taxId and " +
-                                                       "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
-                                                       "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
+                        "from Experiment exp " +
+                        "     left join exp.publication as pub " +
+                        "     join exp.xrefs as xref  " +
+                        "where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
+                        "      exp.bioSource.taxId = :taxId and " +
+                        "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                        "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
 
                 query.setParameter("taxId", experiment.getBioSource().getTaxId());
 
             } else {
 
                 query = getEntityManager().createQuery("select exp.ac " +
-                                                       "from Experiment exp " +
-                                                       "     left join exp.publication as pub " +
-                                                       "     join exp.xrefs as xref  " +
-                                                       "where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
-                                                       "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
-                                                       "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
+                        "from Experiment exp " +
+                        "     left join exp.publication as pub " +
+                        "     join exp.xrefs as xref  " +
+                        "where (pub.shortLabel = :pubId or xref.primaryId = :pubId) and " +
+                        "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                        "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
             }
 
             query.setParameter("pubId", pubId);
 
         } else {
             log.warn("Experiment without publication, getting its AC using the shortLabel: "+experiment.getShortLabel());
-            
+
             query = getEntityManager().createQuery("select exp.ac " +
-                                                   "from Experiment exp " +
-                                                   "where exp.shortLabel = :shortLabel and" +
-                                                   "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
-                                                   "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
+                    "from Experiment exp " +
+                    "where exp.shortLabel = :shortLabel and" +
+                    "      exp.cvIdentification.identifier = :participantDetMethodMi and " +
+                    "      exp.cvInteraction.identifier = :interactionDetectionMethodMi");
 
             query.setParameter("shortLabel", experiment.getShortLabel().toLowerCase());
         }
@@ -215,8 +216,8 @@ public class DefaultFinder implements Finder {
 
             for (String candidateExperimentAc : experimentAcs) {
                 Query annotQuery = getEntityManager().createQuery("select annot.annotationText from Experiment exp " +
-                                                                  "left join exp.annotations as annot " +
-                                                                  "where exp.ac = :experimentAc");
+                        "left join exp.annotations as annot " +
+                        "where exp.ac = :experimentAc");
                 annotQuery.setParameter("experimentAc", candidateExperimentAc);
                 List<String> annotDescs = annotQuery.getResultList();
 
@@ -228,8 +229,8 @@ public class DefaultFinder implements Finder {
 
             if( experimentAc == null ) {
                 log.warn( "There were " + experimentAcs.size() +" experiments matching " + experiment.getShortLabel() +
-                          "["+ experiment.getAc() +"]: "+ experimentAcs +
-                          " However, none of them had the same annotation set. Consequently, none was selected." );
+                        "["+ experiment.getAc() +"]: "+ experimentAcs +
+                        " However, none of them had the same annotation set. Consequently, none was selected." );
             }
         }
 
@@ -278,7 +279,7 @@ public class DefaultFinder implements Finder {
             if (xrefPointsToOwnAc(idXref)) {
                 // check if exists in the db
                 Query acQuery = getEntityManager().createQuery("select i.ac from " + CgLibUtil.removeCglibEnhanced(interactor.getClass()).getName() + " i " +
-                                                               "where i.ac = :ac ");
+                        "where i.ac = :ac ");
                 acQuery.setParameter("ac", idXref.getPrimaryId());
 
                 if (!acQuery.getResultList().isEmpty()) {
@@ -309,47 +310,47 @@ public class DefaultFinder implements Finder {
 
             // get the first xref and retrieve all the interactors with that xref. We will filter later
             Query query = getEntityManager().createQuery("select i from " + CgLibUtil.removeCglibEnhanced(interactor.getClass()).getName() + " i " +
-                                                         "join i.xrefs as xref " +
-                                                         "where xref.primaryId = :primaryId");
+                    "join i.xrefs as xref " +
+                    "where xref.primaryId = :primaryId");
             query.setParameter("primaryId", identities.iterator().next().getPrimaryId());
 
             List<Interactor> interactors = query.getResultList();
 
             for (Interactor interactorCandidate : interactors) {
-               if (AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, interactor, interactorCandidate)) {
+                if (AnnotatedObjectUtils.containTheSameXrefs(xrefFilter, interactor, interactorCandidate)) {
 
-                   if( log.isWarnEnabled() ) {
-                       if( interactor.getBioSource() != null && interactorCandidate.getBioSource() != null ) {
-                           final String t = interactor.getBioSource().getTaxId();
-                           final String tc = interactorCandidate.getBioSource().getTaxId();
-                           if( t != null && !t.equals(tc) ) {
-                               log.warn( "Interactors with the same identity xref(s) but with different BioSource: " +
-                                         "["+ interactor.getShortLabel() +" / "+ interactor.getAc() +" / taxid:"+ t +"] and " +
-                                         "["+ interactorCandidate.getShortLabel() +" / "+ interactorCandidate.getAc() +" / taxid:"+ tc +"]" );
-                           }
-                       }
-                   }
+                    if( log.isWarnEnabled() ) {
+                        if( interactor.getBioSource() != null && interactorCandidate.getBioSource() != null ) {
+                            final String t = interactor.getBioSource().getTaxId();
+                            final String tc = interactorCandidate.getBioSource().getTaxId();
+                            if( t != null && !t.equals(tc) ) {
+                                log.warn( "Interactors with the same identity xref(s) but with different BioSource: " +
+                                        "["+ interactor.getShortLabel() +" / "+ interactor.getAc() +" / taxid:"+ t +"] and " +
+                                        "["+ interactorCandidate.getShortLabel() +" / "+ interactorCandidate.getAc() +" / taxid:"+ tc +"]" );
+                            }
+                        }
+                    }
 
-                   if( hasNoUniprotUpdate ) {
-                       if( hasNoUniprotUpdateAnnotation( interactorCandidate )) {
-                           // both have Annotation( no-uniprot-update ), check on the sequence
-                           if( interactor instanceof Polymer ) {
-                               final String sequence = ((Polymer) interactor).getSequence();
-                               final String sequenceCandidate = ((Polymer) interactorCandidate).getSequence();
-                               if( StringUtils.equals( sequence, sequenceCandidate) ) {
-                                   ac = interactorCandidate.getAc();
-                                   break;
-                               }
-                           }
+                    if( hasNoUniprotUpdate ) {
+                        if( hasNoUniprotUpdateAnnotation( interactorCandidate )) {
+                            // both have Annotation( no-uniprot-update ), check on the sequence
+                            if( interactor instanceof Polymer ) {
+                                final String sequence = ((Polymer) interactor).getSequence();
+                                final String sequenceCandidate = ((Polymer) interactorCandidate).getSequence();
+                                if( StringUtils.equals( sequence, sequenceCandidate) ) {
+                                    ac = interactorCandidate.getAc();
+                                    break;
+                                }
+                            }
 
-                       } else {
-                           // mismatch, keep trying ...
-                       }
-                   } else {
-                       ac = interactorCandidate.getAc();
-                       break;
-                   }
-               }
+                        } else {
+                            // mismatch, keep trying ...
+                        }
+                    } else {
+                        ac = interactorCandidate.getAc();
+                        break;
+                    }
+                }
             }
         } else {
             log.warn("Interactor without identity xref/s - will try to find the AC using the shortLabel: " + interactor);
@@ -404,10 +405,10 @@ public class DefaultFinder implements Finder {
     protected String findAcForBioSource( BioSource bioSource ) {
 
         Query query = getEntityManager().createQuery( "select bio.ac, cellType, tissue " +
-                                                      "from BioSource bio " +
-                                                      "left join bio.cvCellType as cellType " +
-                                                      "left join bio.cvTissue as tissue " +
-                                                      "where bio.taxId = :taxId" );
+                "from BioSource bio " +
+                "left join bio.cvCellType as cellType " +
+                "left join bio.cvTissue as tissue " +
+                "where bio.taxId = :taxId" );
         query.setParameter( "taxId", bioSource.getTaxId() );
 
         final List<Object[]> biosources = query.getResultList();
@@ -418,7 +419,7 @@ public class DefaultFinder implements Finder {
             CvTissue tissue = ( CvTissue ) bs[2];
 
             if ( same( tissue, bioSource.getCvTissue() ) &&
-                 same( cellType, bioSource.getCvCellType() ) ) {
+                    same( cellType, bioSource.getCvCellType() ) ) {
                 return ac;
             }
         }
@@ -475,6 +476,55 @@ public class DefaultFinder implements Finder {
         return null;
     }
 
+    private boolean hasAnIdentityCrossReference(CvObject cvObject){
+        if (cvObject.getXrefs() != null){
+            if (!cvObject.getXrefs().isEmpty()){
+                for (Xref ref : cvObject.getXrefs()){
+                    CvXrefQualifier qualifier = ref.getCvXrefQualifier();
+                    if (qualifier.getAc() != null){
+                        if (qualifier.getAc().equals("MI:0356")){
+                            return true;
+                        }
+                    }
+                    else {
+                        if (qualifier.getShortLabel().equals("identity") || qualifier.getFullName().equals("identical object")){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isAnIdentityCrossReference(CvXrefQualifier qualifier){
+        if (qualifier == null){
+            return false;
+        }
+        if (qualifier.getAc() != null){
+            if (qualifier.getIdentifier().equals("MI:0356")){
+                return true;
+            }
+        }
+        else {
+            if (qualifier.getShortLabel().equals("identity") || qualifier.getFullName().equals("identical object")){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isSearchByLabelEnabled(CvObject cvObject){
+        if (cvObject.getIdentifier() != null){
+            return false;
+        }
+
+        if (hasAnIdentityCrossReference(cvObject)){
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Finds a cvObject based on its properties.
      *
@@ -482,21 +532,65 @@ public class DefaultFinder implements Finder {
      * @return an AC or null if it couldn't be found.
      */
     protected String findAcForCvObject( CvObject cvObject ) {
+        /* Class cvClass = CgLibUtil.removeCglibEnhanced(cvObject.getClass());
+
+       Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.identifier = :id " );
+       query.setParameter( "id", cvObject.getIdentifier() );
+
+       String value = getFirstAcForQuery( query, cvObject );
+
+       if ( value == null ) {
+           // TODO we should check on CvXrefQualifier(identity)
+           query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where lower(cv.shortLabel) = lower(:label) " );
+           query.setParameter( "label", cvObject.getShortLabel() );
+
+           value = getFirstAcForQuery( query, cvObject );
+       }
+
+       return value;*/
         Class cvClass = CgLibUtil.removeCglibEnhanced(cvObject.getClass());
-        
-        Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.identifier = :id " );
-        query.setParameter( "id", cvObject.getIdentifier() );
+        String value = null;
 
-        String value = getFirstAcForQuery( query, cvObject );
+        boolean isSearchByLabelEnabled = isSearchByLabelEnabled(cvObject);
 
-        if ( value == null ) {
-            // TODO we should check on CvXrefQualifier(identity)
-            query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where lower(cv.shortLabel) = lower(:label) " );
+        if (!isSearchByLabelEnabled){
+            HashSet<String> identifiersToTest = new HashSet<String>();
+            if (cvObject.getIdentifier() != null){
+                identifiersToTest.add(cvObject.getIdentifier());
+            }
+
+            if (cvObject.getXrefs() != null && !cvObject.getXrefs().isEmpty()){
+                Collection<CvObjectXref> ref = cvObject.getXrefs();
+
+                for (CvObjectXref cr : ref){
+                    if (cr.getCvXrefQualifier() != null){
+                        CvXrefQualifier qualifier = cr.getCvXrefQualifier();
+                        if (isAnIdentityCrossReference(qualifier)){
+                            identifiersToTest.add(cr.getPrimaryId());
+                        }
+                    }
+                }
+            }
+
+            for (String id : identifiersToTest){
+                Query query = getEntityManager().createQuery( "select r.ac from "+ cvClass.getName() +" r join r.xrefs as xref where r.identifier = :primaryId or (xref.primaryId = :primaryId and xref.cvXrefQualifier.shortLabel = :identity)" );
+                query.setParameter( "primaryId", id );
+                query.setParameter( "identity", "identity" );
+
+                value = getFirstAcForQuery( query, cvObject );
+                if (value != null){
+                    return value;
+                }
+            }
+        }
+        else{
+
+            Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where lower(cv.shortLabel) = lower(:label) ");
             query.setParameter( "label", cvObject.getShortLabel() );
-            
+
             value = getFirstAcForQuery( query, cvObject );
         }
-
+        // TODO what happens if we have several matching entries (short label for instance)
         return value;
     }
 

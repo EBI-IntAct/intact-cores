@@ -572,4 +572,38 @@ public class DefaultFinderTest extends IntactBasicTestCase {
         Assert.assertNotNull( database.getAc() );
         Assert.assertEquals( database.getAc(), ac );
     }
+
+    @Test
+    public void findAcForCvObject_same_MI_different_class_usingMI() {
+        CvTopic topic = getMockBuilder().createCvObject( CvTopic.class, "MI:xxxx", "topic" );
+        getCorePersister().saveOrUpdate( topic );
+
+        CvDatabase database = getMockBuilder().createCvObject( CvDatabase.class, "MI:xxxx", "db" );
+        getCorePersister().saveOrUpdate( database );
+
+        String ac = finder.findAc( getMockBuilder().createCvObject( CvTopic.class, "MI:xxxx", null ) );
+        Assert.assertNotNull( topic.getAc() );
+        Assert.assertEquals( topic.getAc(), ac );
+
+        ac = finder.findAc( getMockBuilder().createCvObject( CvDatabase.class, "MI:xxxx", null) );
+        Assert.assertNotNull( database.getAc() );
+        Assert.assertEquals( database.getAc(), ac );
+    }
+
+    @Test
+    public void findAcForCvObject_same_MI_different_class_usingShortLabel() {
+        CvTopic topic = getMockBuilder().createCvObject( CvTopic.class, "MI:xxxx", "topic" );
+        getCorePersister().saveOrUpdate( topic );
+
+        CvDatabase database = getMockBuilder().createCvObject( CvDatabase.class, "MI:xxxx", "db" );
+        getCorePersister().saveOrUpdate( database );
+
+        String ac = finder.findAc( getMockBuilder().createCvObject( CvTopic.class, null, "topic" ) );
+        Assert.assertNotNull( topic.getAc() );
+        Assert.assertEquals( topic.getAc(), ac );
+
+        ac = finder.findAc( getMockBuilder().createCvObject( CvDatabase.class, null, "db") );
+        Assert.assertNotNull( database.getAc() );
+        Assert.assertEquals( database.getAc(), ac );
+    }
 }
