@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.intact.core.context;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -37,7 +37,6 @@ import uk.ac.ebi.intact.model.meta.DbInfo;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -120,9 +119,15 @@ public class IntactInitializer implements ApplicationContextAware{
 
     private String printDataSource( DataSource ds ) {
         StringBuilder sb = new StringBuilder( 256 );
+
         try {
-            sb.append( "url: '" ).append( BeanUtils.getSimpleProperty( ds, "url" ) ).append("', ");
-            sb.append( "username: '" ).append( BeanUtils.getSimpleProperty( ds, "username" ) ).append("'");
+            if (PropertyUtils.isReadable(ds, "url")) {
+                sb.append( "url: '" ).append( PropertyUtils.getSimpleProperty( ds, "url" ) ).append("', ");
+                sb.append( "username: '" ).append( PropertyUtils.getSimpleProperty( ds, "username" ) ).append("'");
+            } else if (PropertyUtils.isReadable( ds, "dataSource" )) {
+                return printDataSource( (DataSource) PropertyUtils.getProperty(ds, "dataSource") );
+            }
+
         } catch ( Exception e ) {
             log.warn( "Exception while trying to print " + ds.getClass().getSimpleName(), e );
         }
