@@ -532,6 +532,13 @@ public class DefaultFinder implements Finder {
         return true;
     }
 
+    private String findAcForCvObjectUsingShortLabel( CvObject cvObject, Class cvClass ){
+        Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where lower(cv.shortLabel) = lower(:label) ");
+        query.setParameter( "label", cvObject.getShortLabel() );
+
+        return getFirstAcForQuery( query, cvObject );
+    }
+
     /**
      * Finds a cvObject based on its properties.
      *
@@ -589,13 +596,17 @@ public class DefaultFinder implements Finder {
                     return value;
                 }
             }
+
+            String valueForShortLabel = findAcForCvObjectUsingShortLabel( cvObject, cvClass );
+
+            if (valueForShortLabel != null){
+                 throw new FinderException(" The CV object " + cvObject.getIdentifier() + ":" + cvObject.getShortLabel() + " has an identifier" +
+                         " which can't match any CV object identifiers of type " + cvClass +" but the shortlabel is matching one CVObject in the database : "+
+                 valueForShortLabel + ". The CV object can't be duplicated with a different identifier, you should change the identifier.");
+            }
         }
         else{
-
-            Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where lower(cv.shortLabel) = lower(:label) ");
-            query.setParameter( "label", cvObject.getShortLabel() );
-
-            value = getFirstAcForQuery( query, cvObject );
+            value = findAcForCvObjectUsingShortLabel( cvObject, cvClass );
         }
         // TODO what happens if we have several matching entries (short label for instance)
         return value;
