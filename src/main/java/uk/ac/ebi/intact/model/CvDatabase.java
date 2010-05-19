@@ -122,6 +122,14 @@ public class CvDatabase extends CvDagObject implements Editable {
     public static final String PSI_MOD = "psi-mod";
     public static final String PSI_MOD_MI_REF = "MI:0897";
 
+    public static final String UNIMOD = "unimod";
+    public static final String UNIMOD_MI_REF = "MI:1015";
+
+    public static final String DELTAMASS = "deltamass";
+    public static final String DELTAMASS_MI_REF = "MI:1014";
+
+
+
 
     /**
      * This constructor should <b>not</b> be used as it could result in objects with invalid state. It is here for
