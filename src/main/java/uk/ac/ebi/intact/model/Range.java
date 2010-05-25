@@ -707,8 +707,9 @@ public boolean isUndetermined() {
         return !st.equals( "N" );
     }
 
-    @Lob
-    @Column(name = "full_sequence")
+    //@Lob
+    //@Column(name = "full_sequence")
+    @Transient
     public String getFullSequence() {
         return fullSequence;
     }
