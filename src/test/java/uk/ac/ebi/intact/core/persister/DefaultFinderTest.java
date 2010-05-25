@@ -600,6 +600,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
 
         String ac = finder.findAc( getMockBuilder().createCvObject( CvTopic.class, null, "topic" ) );
         Assert.assertNotNull( topic.getAc() );
+        System.out.println(topic.getIdentifier());
         Assert.assertEquals( topic.getAc(), ac );
 
         ac = finder.findAc( getMockBuilder().createCvObject( CvDatabase.class, null, "db") );

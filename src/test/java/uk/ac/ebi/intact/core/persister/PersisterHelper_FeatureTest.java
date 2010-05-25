@@ -68,8 +68,8 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
                 range.setToCvFuzzyType( null );
                 feature.addRange( range );
                 range.prepareSequence( bait.getSequence() );
-                Assert.assertEquals( 100, range.getSequence().length() );
-                Assert.assertEquals( seq.substring( 4, 104 ), range.getSequence() );
+                Assert.assertEquals( 17, range.getFullSequence().length() );
+                Assert.assertEquals( seq.substring( 3, 20 ), range.getFullSequence() );
                 component.addBindingDomain( feature );
             }
         }
