@@ -26,9 +26,9 @@ public class SchemaUtilsTest {
 
     @Test
     public void testGenerateCreateSchemaDDLForOracle() throws Exception {
-        Assert.assertEquals(193, SchemaUtils.generateCreateSchemaDDLForOracle().length);
-        Assert.assertEquals(193, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length);
-        Assert.assertEquals(191, SchemaUtils.generateCreateSchemaDDLForHSQL().length);
-        Assert.assertEquals(191, SchemaUtils.generateCreateSchemaDDLForH2().length);
+        Assert.assertEquals(193, SchemaUtils.generateCreateSchemaDDLForOracle().length); //193
+        Assert.assertEquals(193, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length); //193
+        Assert.assertEquals(191, SchemaUtils.generateCreateSchemaDDLForHSQL().length); //191
+        Assert.assertEquals(191, SchemaUtils.generateCreateSchemaDDLForH2().length); //191
     }
 }

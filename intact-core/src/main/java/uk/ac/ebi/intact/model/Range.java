@@ -5,6 +5,8 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -43,6 +45,11 @@ import javax.persistence.*;
 @Table( name = "ia_range" )
 public class Range extends BasicObjectImpl {
 
+    /**
+     * Sets up a logger for that class.
+     */
+    public static final Log log = LogFactory.getLog( Range.class );
+
     //------------ attributes ------------------------------------
 
     /**
@@ -77,6 +84,11 @@ public class Range extends BasicObjectImpl {
      */
     //NOTE: We will assume a maximum size of 100 characters for this
     private String sequence;
+
+    /**
+     * Contains the full feature sequence
+     */
+    private String fullSequence;
 
     /**
      * TODO Comments This is really a boolean but we need to use a character for it because Oracle does not support
@@ -220,7 +232,8 @@ public class Range extends BasicObjectImpl {
         this.toIntervalStart = toStart;
         this.toIntervalEnd = toEnd;
 
-        this.sequence = prepareSequence( seq );
+        //this.sequence = prepareSequence( seq );
+        prepareSequence( seq );
     }
 
     //------------------------- public methods --------------------------------------
@@ -367,25 +380,39 @@ public boolean isUndetermined() {
         this.sequence = sequence;
     }
 
-    public String prepareSequence( String sequence ) {
-        // Get the sequence from start if there is no fuzzy type.
-        if ( fromCvFuzzyType == null ) {
-            setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-            return this.sequence;
-        }
-        // Truncate according to type.
-        if ( fromCvFuzzyType.isCTerminal() ) {
-            setSequenceIntern( getLastSequence( sequence ) );
-        } else if ( fromCvFuzzyType.isNTerminal() || fromCvFuzzyType.isUndetermined() ) {
-            setSequenceIntern( getFirstSequence( sequence ) );
-        } else {
-            setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-        }
+    public void prepareSequence( String sequence ) {
 
-        return this.sequence;
+        if (sequence != null){
+            // Get the sequence from start if there is no fuzzy type.
+            if ( fromCvFuzzyType == null ) {
+                setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
+                setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalStart));
+            }
+            else{
+                // Truncate according to type.
+                if ( fromCvFuzzyType.isCTerminal() ) {
+                    setSequenceIntern( getLastSequence( sequence ) );
+                    setFullSequence( getLastFullSequence( sequence ));
+                } else if ( fromCvFuzzyType.isNTerminal() || fromCvFuzzyType.isUndetermined() ) {
+                    setSequenceIntern( getFirstSequence( sequence ) );
+                    setFullSequence( getFirstFullSequence( sequence ));
+                } else {
+                    setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
+                    setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalStart));
+                }
+            }
+        }
+        else {
+            this.sequence = null;
+            this.fullSequence = null;
+        }
     }
 
     public String getSequence() {
+
+        if (this.fullSequence != null){
+            return this.fullSequence;
+        }
         return this.sequence;
     }
 
@@ -411,6 +438,8 @@ public boolean isUndetermined() {
 
         if ( sequence != null ? !sequence.equals( range.sequence ) : range.sequence != null ) return false;
 
+        if ( fullSequence != null ? !fullSequence.equals( range.fullSequence ) : range.fullSequence != null ) return false;
+
         // Check that they are attached to the same feature, otherwise these ranges should be considered different
         // We do a feature identity check to avoid triggering an infinite loop as feature includes ranges too.
         if ( feature != null ? !feature.equals( range.feature, true, false ) : range.feature != null ) return false;
@@ -430,8 +459,9 @@ public boolean isUndetermined() {
 
         result = 31 * result + ( fromCvFuzzyType != null ? fromCvFuzzyType.hashCode() : 0 );
         result = 31 * result + ( toCvFuzzyType != null ? toCvFuzzyType.hashCode() : 0 );
-        
+
         result = 31 * result + ( sequence != null ? sequence.hashCode() : 0 );
+        result = 31 * result + ( fullSequence != null ? fullSequence.hashCode() : 0 );
 
         // Include the feature this range is linked to.
         result = 31 * result + ( feature != null ? feature.hashCode( true, false ) : 0 );
@@ -506,6 +536,40 @@ public boolean isUndetermined() {
     }
 
     /**
+     * A helper method to return the last sequence.
+     *
+     * @param sequence the full sequence
+     *
+     * @return the last {@link #getMaxSequenceSize()} characters of the sequence; could be null if <code>sequence</code>
+     *         is empty or null.
+     */
+    private static String getLastFullSequence( String sequence ) {
+        int start = sequence.length() - ourMaxSeqSize + 1;
+
+        if (start < 0){
+            start = 1;
+        }
+        return getSequence( sequence, start, sequence.length() );
+    }
+
+    /**
+     * A helper method to return the first sequence.
+     *
+     * @param sequence the full sequence
+     *
+     * @return the first {@link #getMaxSequenceSize()} characters of the sequence; could be null if
+     *         <code>sequence</code> is empty or null.
+     */
+    private static String getFirstFullSequence( String sequence ) {
+        int end = ourMaxSeqSize;
+
+        if (end > sequence.length()){
+            end = sequence.length();
+        }
+        return getSequence( sequence, 1, end );
+    }
+
+    /**
      * A helper method to return the sequence starting at given index.
      *
      * @param sequence the full sequence
@@ -571,6 +635,42 @@ public boolean isUndetermined() {
         return seq;
     }
 
+    /**
+     * Constructs a sequence.
+     *
+     * @param sequence the full sequence
+     * @param start    the starting number for the sequence to return.
+     * @param end    the ending number for the sequence to return.
+     *
+     * @return the sequence constructed using given parameters. 
+     */
+    private static String getSequence( String sequence, int start, int end) {
+        String seq = null;
+
+        if (start < 0){
+            log.warn("The start position " + start + " is not valid. It can't be a negative value, so we will consider the start position as the first amino acid in the sequence.");
+            start = 1;
+        }
+        if (end > sequence.length()){
+            log.warn("The end position " + end + " is not valid. It can't be superior to the length of the full sequence, so we will consider the end position as the last amino acid in the sequence");
+            end = sequence.length();
+        }
+        if (start > end){
+            throw new IllegalArgumentException("The feature range start position " + start + " is superior to the feature range end position " + end + ".");
+        }
+
+        if ( ( sequence == null ) || sequence.length() == 0 || ( sequence.length() < start ) ) {
+            return seq;
+        }
+
+        if ( start == 0 ) {
+            seq = sequence.substring(start, end);
+        } else {
+            seq = sequence.substring( Math.max( 0, start - 1 ), end ); // we make sure that we don't request index < 0.
+        }
+        return seq;
+    }
+
     private void setSequenceIntern( String seq ) {
         //don't allow default empty String to be replaced by null. Check size also
         //to avoid unnecessary DB call for a seq that is too big...
@@ -605,6 +705,21 @@ public boolean isUndetermined() {
      */
     private boolean charToBoolean( String st ) {
         return !st.equals( "N" );
+    }
+
+    @Lob
+    @Column(name = "full_sequence")
+    public String getFullSequence() {
+        return fullSequence;
+    }
+
+    public void setFullSequence(String fullSequence) {
+        this.fullSequence = fullSequence;
+    }
+
+    @Transient
+    public String getTruncatedSequence(){
+        return this.sequence;
     }
 }
 
