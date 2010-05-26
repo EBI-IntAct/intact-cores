@@ -22,6 +22,7 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.*;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.mapping.PersistentClass;
+import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import uk.ac.ebi.intact.core.IntactException;
@@ -31,6 +32,8 @@ import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.context.IntactInitializer;
 
 import javax.persistence.spi.PersistenceUnitInfo;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -68,6 +71,20 @@ public class SchemaUtils {
         return sqls;
     }
 
+    public static String[] generateUpdateSchemaDDL(String dialect, Connection connection) throws SQLException {
+        Properties props = new Properties();
+        props.put(Environment.DIALECT, dialect);
+
+        Configuration cfg = createConfiguration(props);
+
+        final Dialect dialectObj = Dialect.getDialect(props);
+
+        String[] sqls = cfg.generateSchemaUpdateScript(dialectObj, new DatabaseMetadata(connection, dialectObj) );
+        addDelimiters(sqls);
+
+        return sqls;
+    }
+
     private static void addDelimiters(String[] sqls) {
         for (int i=0; i<sqls.length; i++) {
             sqls[i] = sqls[i]+";";
@@ -91,11 +108,27 @@ public class SchemaUtils {
     }
 
     /**
+     * Generates the UPDATE DDL schema for Oracle .
+     * @return an array containing the SQL statements
+     */
+    public static String[] generateUpdateSchemaDDLForOracle(Connection connection) throws SQLException {
+        return generateUpdateSchemaDDL(Oracle10gDialect.class.getName(), connection);
+    }
+
+    /**
      * Generates the DDL schema for PostgreSQL.
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDLForPostgreSQL() {
         return generateCreateSchemaDDL(PostgreSQLDialect.class.getName());
+    }
+
+    /**
+     * Generates the UPDATE DDL schema for PostgreSQL .
+     * @return an array containing the SQL statements
+     */
+    public static String[] generateUpdateSchemaDDLForPostgreSQL(Connection connection) throws SQLException {
+        return generateUpdateSchemaDDL(PostgreSQLDialect.class.getName(), connection);
     }
 
     /**
@@ -107,11 +140,28 @@ public class SchemaUtils {
     }
 
     /**
+     * Generates the UPDATE DDL schema for HSQL .
+     * @return an array containing the SQL statements
+     */
+    public static String[] generateUpdateSchemaDDLForHSQL(Connection connection) throws SQLException {
+        return generateUpdateSchemaDDL(HSQLDialect.class.getName(), connection);
+    }
+
+
+    /**
      * Generates the DDL schema for HSQL DB.
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDLForH2() {
         return generateCreateSchemaDDL(H2Dialect.class.getName());
+    }
+
+    /**
+     * Generates the UPDATE DDL schema for H2.
+     * @return an array containing the SQL statements
+     */
+    public static String[] generateUpdateSchemaDDLForH2(Connection connection) throws SQLException {
+        return generateUpdateSchemaDDL(H2Dialect.class.getName(), connection);
     }
 
     /**

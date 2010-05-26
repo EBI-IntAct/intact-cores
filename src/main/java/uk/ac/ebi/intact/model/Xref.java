@@ -127,7 +127,6 @@ public abstract class Xref extends BasicObjectImpl {
      * Creates a valid Xref instance. Items which must be defined are: <ul> <li>an owner (Institution)</li> <li>database
      * details (controlled vocabulary instance)</li> <li>a Primary ID</li>
      *
-     * @param anOwner          Owner of the cross-reference (non-null)
      * @param aDatabase        Controlled vocabulary instance defining the database details (non-null)
      * @param aPrimaryId       primary identifier for the cross-reference (non-null), this should be 30 characters
      *                         maximum if it's more it will be truncated. if not done, Oracle would throw an error.
@@ -135,14 +134,13 @@ public abstract class Xref extends BasicObjectImpl {
      *
      * @throws NullPointerException thrown if any mandatory parameters are not specified
      */
-    public Xref( Institution anOwner,
-                 CvDatabase aDatabase,
+    public Xref( CvDatabase aDatabase,
                  String aPrimaryId,
                  CvXrefQualifier aCvXrefQualifier
     ) {
 
         //super call sets creation time data
-        super( anOwner );
+        super();
 
         if ( aPrimaryId == null ) {
             throw new NullPointerException( "valid Xref must have a primary ID!" );
@@ -157,6 +155,15 @@ public abstract class Xref extends BasicObjectImpl {
         this.primaryId = aPrimaryId;
         this.cvDatabase = aDatabase;
         this.cvXrefQualifier = aCvXrefQualifier;
+    }
+
+    @Deprecated
+    public Xref( Institution anOwner, CvDatabase aDatabase,
+                 String aPrimaryId,
+                 CvXrefQualifier aCvXrefQualifier
+    ) {
+
+        this(aDatabase, aPrimaryId, aCvXrefQualifier);
     }
 
     ///////////////////////////////////////

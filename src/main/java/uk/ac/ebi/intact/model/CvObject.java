@@ -8,8 +8,8 @@ package uk.ac.ebi.intact.model;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.validator.Length;
-import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -45,13 +45,15 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      * owner specified.
      *
      * @param shortLabel The memorable label to identify this CvObject
-     * @param owner      The Institution which owns this CvObject
      *
      * @throws NullPointerException thrown if either parameters are not specified
      */
+    protected CvObject( String shortLabel ) {
+        super( shortLabel );
+    }
+
+    @Deprecated
     protected CvObject( Institution owner, String shortLabel ) {
-        //super call sets up a valid AnnotatedObject (and also CvObject, as there is
-        //nothing more to add)
         super( shortLabel, owner );
     }
 

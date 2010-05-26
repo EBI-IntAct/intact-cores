@@ -5,20 +5,15 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
+import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
-import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 /**
  * The specific instance of an interactor which participates in an interaction.
@@ -144,7 +139,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * A side-effect of this constructor is to set the <code>created</code> and <code>updated</code> fields of the
      * instance to the current time.
      *
-     * @param owner            The Institution owner of this Component (non-null)
      * @param shortLabel       Label for this component
      * @param interaction      The Interaction this Component is a part of (non-null)
      * @param interactor       The 'wrapped active entity' (eg a Protein) that this Component represents in the Interaction
@@ -155,12 +149,12 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *                         enzyme/target). This is a controlled vocabulary term (non-null)
      * @throws NullPointerException thrown if any of the parameters are not specified.
      */
-    public Component( Institution owner, String shortLabel, Interaction interaction, Interactor interactor,
+    public Component( String shortLabel, Interaction interaction, Interactor interactor,
                       CvExperimentalRole experimentalRole, CvBiologicalRole biologicalRole ) {
         //super call sets creation time data
-        super( shortLabel, owner );
+        super( shortLabel );
 
-        this.shortLabel = NON_APPLICABLE;
+        setShortLabel(NON_APPLICABLE);
 
         if ( interaction == null ) {
             throw new NullPointerException( "Valid Component must have an Interaction set!" );
@@ -185,6 +179,12 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         this.biologicalRole = biologicalRole;
 
         this.componentParameters = new ArrayList<ComponentParameter>();
+    }
+
+    @Deprecated
+    public Component( Institution owner, String shortLabel, Interaction interaction, Interactor interactor,
+                      CvExperimentalRole experimentalRole, CvBiologicalRole biologicalRole ) {
+        this(shortLabel, interaction, interactor, experimentalRole, biologicalRole);
     }
 
     ///////////////////////////////////////
@@ -647,7 +647,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( !( o instanceof Component ) ) {
             return false;
         }
-        // don't call super because that's a BasicObject !
+        // don't call super because that's a OwnedObject !
 
         final Component component = ( Component ) o;
 
@@ -729,7 +729,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     public Object clone() throws CloneNotSupportedException {
         Component copy = ( Component ) super.clone();
 
-        this.shortLabel = NON_APPLICABLE;
+        setShortLabel(NON_APPLICABLE);
 
         // Reset interactor and interaction.
         copy.interaction = null;

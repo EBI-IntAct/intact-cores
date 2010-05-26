@@ -29,19 +29,16 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
     /////////////////////////////////
     //attributes
 
-    //attributes used for mapping BasicObjects - project synchron
-    protected String curatorAc;
-
     /**
      * Short name for the object, not necessarily unique. To be used for example
      * in minimised displays of the object.
      */
-    protected String shortLabel;
+    private String shortLabel;
 
     /**
      * The full name or a minimal description of the object.
      */
-    protected String fullName;
+    private String fullName;
 
     ///////////////////////////////////////
     // associations
@@ -76,17 +73,21 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
      * created without at least a shortLabel and an owner specified.
      *
      * @param shortLabel The memorable label to identify this AnnotatedObject
-     * @param owner      The Institution which owns this AnnotatedObject
      *
      * @throws NullPointerException thrown if either parameters are not specified
      */
-    protected AnnotatedObjectImpl( String shortLabel, Institution owner ) {
+    protected AnnotatedObjectImpl( String shortLabel ) {
 
         //super call sets creation time data
         super();
 
         this.shortLabel = AnnotatedObjectUtils.prepareShortLabel( shortLabel );
-        setOwner( owner );
+    }
+
+    @Deprecated
+    protected AnnotatedObjectImpl( String shortLabel, Institution owner ) {
+        this(shortLabel);
+        setOwner(owner);
     }
 
     ////////////////////////////////////////
@@ -379,7 +380,6 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName()+"{"+this.getAc() + "; owner=" +  (this.getOwner() == null? null : this.getOwner().getAc())
-               + "; name=" + this.shortLabel + "; fullname=" + fullName+"}";
+        return this.getClass().getSimpleName()+"{"+this.getAc() + "; name=" + this.shortLabel + "; fullname=" + fullName+"}";
     }
 }

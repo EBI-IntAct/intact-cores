@@ -62,7 +62,6 @@ public abstract class Alias extends BasicObjectImpl {
     /**
      * Create a new Alias for the given Annotated object
      *
-     * @param anOwner         The institution owning this Alias
      * @param annotatedObject the object to which we'll add a new Alias
      * @param cvAliasType     the CvAliasType (may be null)
      * @param name            the name of the alias (namy be null)
@@ -70,11 +69,16 @@ public abstract class Alias extends BasicObjectImpl {
      * @see uk.ac.ebi.intact.model.CvAliasType
      * @see uk.ac.ebi.intact.model.AnnotatedObject
      */
-    public Alias( Institution anOwner, AnnotatedObject annotatedObject, CvAliasType cvAliasType, String name ) {
-        setOwner( anOwner );
+    public Alias( AnnotatedObject annotatedObject, CvAliasType cvAliasType, String name ) {
+        super();
         setParentAc( annotatedObject.getAc() );
         setCvAliasType( cvAliasType );
         setName( name );
+    }
+
+    public Alias( Institution anOwner, AnnotatedObject annotatedObject, CvAliasType cvAliasType, String name ) {
+        this(annotatedObject, cvAliasType, name);
+        setOwner(anOwner);
     }
 
     ///////////////////////////////////////
@@ -147,7 +151,7 @@ public abstract class Alias extends BasicObjectImpl {
         if ( this == o ) return true;
         if ( !( o instanceof Alias ) ) return false;
 
-        //NO! BasicObject's equals is the Java Object one!!
+        //NO! OwnedObject's equals is the Java Object one!!
         //if ( !super.equals ( o ) ) return false;
 
         final Alias alias = ( Alias ) o;

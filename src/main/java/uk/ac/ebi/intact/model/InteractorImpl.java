@@ -25,7 +25,7 @@ import java.util.Iterator;
 //@DiscriminatorColumn( name = "objclass", length = 100 )
 @DiscriminatorFormula ("objclass")
 @DiscriminatorValue( "uk.ac.ebi.intact.model.InteractorImpl" )
-public class InteractorImpl extends AnnotatedObjectImpl<InteractorXref, InteractorAlias> implements Interactor, Searchable {
+public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, InteractorAlias> implements Interactor, Searchable {
 
     ///////////////////////////////////////
     //attributes

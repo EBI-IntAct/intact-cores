@@ -594,9 +594,9 @@ public class IntactCloner {
 
 
         if ( !( ao instanceof Institution ) ) {
-            if( ao instanceof BasicObject ) {
-                final BasicObject boc = ( BasicObject ) clone;
-                final BasicObject bo = ( BasicObject ) ao;
+            if( ao instanceof OwnedObject) {
+                final OwnedObject boc = (OwnedObject) clone;
+                final OwnedObject bo = (OwnedObject) ao;
                 boc.setOwner(clone( bo.getOwner() ));
             }
         }

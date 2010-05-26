@@ -675,8 +675,6 @@ public class CorePersisterImpl implements CorePersister {
             confidence.setCvConfidenceType( synchronize (confidence.getCvConfidenceType()));
             confidence.setInteraction((InteractionImpl)parentInteraction);
 
-            synchronizeBasicObjectCommons(confidence);
-
             confidences.add(confidence);
         }
 
@@ -694,8 +692,6 @@ public class CorePersisterImpl implements CorePersister {
             interactionParameter.setCvParameterType( synchronize (interactionParameter.getCvParameterType()));
             interactionParameter.setCvParameterUnit( synchronize (interactionParameter.getCvParameterUnit()));
             interactionParameter.setInteraction((InteractionImpl)parentInteraction);
-
-            synchronizeBasicObjectCommons(interactionParameter);
 
             interactionParameters.add(interactionParameter);
         }
@@ -743,9 +739,7 @@ public class CorePersisterImpl implements CorePersister {
 
             componentParameter.setCvParameterType( synchronize (componentParameter.getCvParameterType()));
             componentParameter.setCvParameterUnit( synchronize (componentParameter.getCvParameterUnit()));
-            componentParameter.setComponent((Component)parentComponent);
-
-            synchronizeBasicObjectCommons(componentParameter);
+            componentParameter.setComponent(parentComponent);
 
             componentParameters.add(componentParameter);
         }
@@ -775,8 +769,6 @@ public class CorePersisterImpl implements CorePersister {
 
             range.setFromCvFuzzyType( synchronize( range.getFromCvFuzzyType() ) );
             range.setToCvFuzzyType( synchronize( range.getToCvFuzzyType() ) );
-
-            synchronizeBasicObjectCommons(range);
 
             range.setFeature(parentFeature);
 
@@ -836,10 +828,13 @@ public class CorePersisterImpl implements CorePersister {
         }
         ao.setAnnotations( synchedAnnotations );
 
-        synchronizeBasicObjectCommons(ao);
+        if (ao instanceof OwnedObject) {
+            OwnedObject ownedObject = (OwnedObject) ao;
+            synchronizeOwnedObjectCommons(ownedObject);
+        }
     }
 
-    private void synchronizeBasicObjectCommons (BasicObject bo) {
+    private void synchronizeOwnedObjectCommons (OwnedObject bo) {
         if ( !( bo instanceof Institution ) ) {
             bo.setOwner( synchronize( bo.getOwner() ) );
         }
@@ -854,8 +849,6 @@ public class CorePersisterImpl implements CorePersister {
         xref.setCvDatabase( synchronize( xref.getCvDatabase() ) );
         xref.setCvXrefQualifier( synchronize( xref.getCvXrefQualifier() ) );
         xref.setParent(parent);
-
-        synchronizeBasicObjectCommons( xref );
 
         if (xref.getAc() == null && xref.getAc() != null) {
             annotatedObjectsToPersist.put(keyBuilder.keyForXref(xref), xref);
@@ -873,8 +866,6 @@ public class CorePersisterImpl implements CorePersister {
         alias.setCvAliasType( synchronize( alias.getCvAliasType() ) );
         alias.setParent(parent);
 
-        synchronizeBasicObjectCommons( alias );
-
         if (alias.getAc() == null && parent.getAc() != null) {
             annotatedObjectsToPersist.put(keyBuilder.keyForAlias(alias), alias);
         }
@@ -888,8 +879,6 @@ public class CorePersisterImpl implements CorePersister {
                     .getAnnotationDao().getByAc(annotation.getAc());
         }
         annotation.setCvTopic( synchronize( annotation.getCvTopic() ) );
-
-        synchronizeBasicObjectCommons( annotation );
 
         if (annotation.getAc() == null && parent.getAc() != null) {
             annotatedObjectsToPersist.put(keyBuilder.keyForAnnotation(annotation, parent), annotation);

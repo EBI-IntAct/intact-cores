@@ -24,6 +24,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
@@ -227,49 +228,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals( interactionParameterExpected.getUncertainty(), interactionParameterObserved2.getUncertainty());
         Assert.assertEquals( interactionParameterExpected.getExponent(), interactionParameterObserved2.getExponent());
     }
-
- //   @Test
-//    public void interactionInteractionParameterPersisted() throws Exception {
-        /**
-         * Having an interaction without parameters in the database. Tests if it can add a parameter and
-         * persist it to database. It isn't supposed yet by the persister but the test is anyway ready
-         */
-/*        IntactMockBuilder builder = super.getMockBuilder();
-        Interaction interaction = builder.createInteractionRandomBinary();
-        Assert.assertEquals( 0, interaction.getInteractionParameters().size() );
-
-        getCorePersister().saveOrUpdate(interaction);
-
-        Interaction reloadedInteraction = getDaoFactory().getInteractionDao().
-                getByAc( interaction.getAc() );
-        Assert.assertEquals( 0, reloadedInteraction.getInteractionParameters().size() );
-
-        Assert.assertEquals( interaction, reloadedInteraction );        
-        InteractionParameter interactionParameter = builder.createDeterministicInteractionParameter();
-
-        reloadedInteraction.addInteractionParameter( interactionParameter );
-        Assert.assertEquals( 1, reloadedInteraction.getInteractionParameters().size() );
-        Assert.assertEquals( interactionParameter, reloadedInteraction.getInteractionParameters().iterator().next() );
-        getCorePersister().saveOrUpdate( reloadedInteraction );
-        
-        
-        //
-
-        CvParameterType cvParameterType = builder.createCvObject( CvParameterType.class, "JB:666", "testShortLabel" );
-        interactionParameter.setCvParameterType( cvParameterType );
-        getCorePersister().saveOrUpdate( cvParameterType );
-        getDaoFactory().getInteractionDao().update( (InteractionImpl)reloadedInteraction );
-        getDaoFactory().getInteractionParameterDao().persist( interactionParameter);
-
-
-        //
-
-        Interaction reloadedInteraction2 = getDaoFactory().getInteractionDao().getByAc( interaction.getAc() );
-        Assert.assertEquals( reloadedInteraction, reloadedInteraction2 );
-        Assert.assertEquals( 1, reloadedInteraction2.getInteractionParameters().size() );
-        Assert.assertEquals( interactionParameter, reloadedInteraction2.getInteractionParameters().iterator().next() );
-    }  */
-
 
     @Test
     public void institutionPersisted() throws Exception {
@@ -929,6 +887,47 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         
         Interaction finalInteraction = reloadByAc(refreshedInteraction);
         Assert.assertEquals(2, finalInteraction.getComponents().size());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void persist_addAdditionalComponentToExistingInteraction() throws Exception {
+        Interaction interaction1 = null;
+
+        final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        Protein p = getMockBuilder().createProtein("P12345", "prot");
+        Component c1 = getMockBuilder().createComponentBait(p);
+        interaction1 = getMockBuilder().createInteraction(c1);
+
+
+        getCorePersister().saveOrUpdate(interaction1);
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
+
+        final TransactionStatus transactionStatus2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        Interaction refreshedInteraction = interaction1;
+        Assert.assertEquals(1, refreshedInteraction.getComponents().size());
+
+        InteractionDao interactionDao = getIntactContext().getDaoFactory().getInteractionDao();
+        Assert.assertTrue(interactionDao.isTransient((InteractionImpl)refreshedInteraction));
+        Component bait = refreshedInteraction.getBait();
+
+        CvExperimentalRole preyRole = CvObjectUtils.createCvObject(bait.getOwner(), CvExperimentalRole.class, CvExperimentalRole.PREY_PSI_REF, CvExperimentalRole.PREY);
+        Component prey = new Component(bait.getOwner(), bait.getInteraction(), bait.getInteractor(), preyRole, bait.getCvBiologicalRole());
+        refreshedInteraction.addComponent(prey);
+
+        getCorePersister().saveOrUpdate(refreshedInteraction);
+
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus2);
+
+        final TransactionStatus transactionStatus3 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        Interaction finalInteraction = reloadByAc(refreshedInteraction);
+        Assert.assertEquals(2, finalInteraction.getComponents().size());
+
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus3);
     }
 
     @Test

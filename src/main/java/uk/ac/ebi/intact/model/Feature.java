@@ -7,12 +7,11 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Cascade;
+import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 /**
  * <p/>
@@ -94,11 +93,11 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      *                   be non-null.
      * @param type       the CvfeatureType of the Feature. Manadatory.
      */
-    public Feature( Institution owner, String shortLabel,
+    public Feature( String shortLabel,
                     Component component, CvFeatureType type ) {
 
         //super call sets up a valid AnnotatedObject
-        super( shortLabel, owner );
+        super( shortLabel);
         if ( type == null ) {
             throw new NullPointerException( "Must have a CvFeatureType to create a Feature!" );
         }
@@ -107,6 +106,12 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         }
         this.component = component;
         this.cvFeatureType = type;
+    }
+
+    @Deprecated
+    public Feature( Institution owner, String shortLabel,
+                    Component component, CvFeatureType type ) {
+        this( shortLabel, component, type );
     }
 
     //----------------------- public methods ------------------------------

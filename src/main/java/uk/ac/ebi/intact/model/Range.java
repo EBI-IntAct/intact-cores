@@ -187,15 +187,19 @@ public class Range extends BasicObjectImpl {
      * @param toStart   The starting point of the 'to' interval of the Range. The 'to' end value is set to this value.
      * @param seq       The sequence - maximum of 100 characters (null allowed)
      */
+    public Range( int fromStart, int toStart, String seq ) {
+        this( fromStart, fromStart, toStart, toStart, seq );
+    }
+
     public Range( Institution owner, int fromStart, int toStart, String seq ) {
-        this( owner, fromStart, fromStart, toStart, toStart, seq );
+        this( fromStart, fromStart, toStart, toStart, seq );
+        setOwner(owner);
     }
 
     /**
      * Sets up a valid Range instance. Range is dependent on the feature and hence it cannot exist on its own. Currently
      * a valid Range must have at least the following defined:
      *
-     * @param owner     the owner of this range.
      * @param fromStart The starting point of the 'from' interval for the Range.
      * @param fromEnd   The end point of the 'from' interval.
      * @param toStart   The starting point of the 'to' interval of the Range
@@ -207,9 +211,9 @@ public class Range extends BasicObjectImpl {
      *                  the number line when defining intervals. Thus '-6 to -4', '5 to 20' and '-7 to 15' are  all
      *                  <b>valid</b> single intervals, but '-3 to -8', '12 to 1' and  '5 to -7' are <b>not</b>. </p>
      */
-    public Range( Institution owner, int fromStart, int fromEnd, int toStart, int toEnd, String seq ) {
+    public Range( int fromStart, int fromEnd, int toStart, int toEnd, String seq ) {
         //NB negative intervals are allowed!! This needs more sophisticated checking..
-        super( owner );
+        super( );
 
         if ( fromEnd < fromStart ) {
             throw new IllegalArgumentException( "End of 'from' interval must be bigger than the start!" );
@@ -234,6 +238,12 @@ public class Range extends BasicObjectImpl {
 
         //this.sequence = prepareSequence( seq );
         prepareSequence( seq );
+    }
+
+    @Deprecated
+     public Range( Institution owner, int fromStart, int fromEnd, int toStart, int toEnd, String seq ) {
+       this(fromStart, fromEnd, toStart, toEnd, seq);
+        setOwner(owner);
     }
 
     //------------------------- public methods --------------------------------------
@@ -707,9 +717,8 @@ public boolean isUndetermined() {
         return !st.equals( "N" );
     }
 
-    //@Lob
-    //@Column(name = "full_sequence")
-    @Transient
+    @Lob
+    @Column(name = "full_sequence")
     public String getFullSequence() {
         return fullSequence;
     }
