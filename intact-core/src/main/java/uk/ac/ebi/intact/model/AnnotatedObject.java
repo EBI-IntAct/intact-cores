@@ -12,7 +12,7 @@ import java.util.Collection;
  * @version $Id$
  * @see uk.ac.ebi.intact.model.AnnotatedObjectImpl
  */
-public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicObject, Annotated {
+public interface AnnotatedObject<T extends Xref, A extends Alias> extends IntactObject, Annotated {
 
     /**
      * This matches with the column size for short label
@@ -21,6 +21,13 @@ public interface AnnotatedObject<T extends Xref, A extends Alias> extends BasicO
 
     static final int MAX_SHORT_LABEL_LEN = 256;
     static final int MAX_FULL_NAME_LEN = 1000;
+
+    // institution is here for backwards compatibility. Originally, all annotated objects had institution
+    @Deprecated
+    Institution getOwner();
+
+    @Deprecated
+    void setOwner(Institution institution);
 
     String getShortLabel();
 

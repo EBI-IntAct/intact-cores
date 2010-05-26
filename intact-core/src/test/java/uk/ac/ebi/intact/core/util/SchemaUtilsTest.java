@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,9 +27,11 @@ public class SchemaUtilsTest {
 
     @Test
     public void testGenerateCreateSchemaDDLForOracle() throws Exception {
-        Assert.assertEquals(193, SchemaUtils.generateCreateSchemaDDLForOracle().length); //193
-        Assert.assertEquals(193, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length); //193
-        Assert.assertEquals(191, SchemaUtils.generateCreateSchemaDDLForHSQL().length); //191
-        Assert.assertEquals(191, SchemaUtils.generateCreateSchemaDDLForH2().length); //191
+        Assert.assertEquals(158, SchemaUtils.generateCreateSchemaDDLForOracle().length);
+        Assert.assertEquals(158, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length);
+        Assert.assertEquals(158, SchemaUtils.generateCreateSchemaDDLForHSQL().length);
+        Assert.assertEquals(158, SchemaUtils.generateCreateSchemaDDLForH2().length);
+
+        System.out.println(StringUtils.join(SchemaUtils.generateCreateSchemaDDLForOracle(), "\n"));
     }
 }

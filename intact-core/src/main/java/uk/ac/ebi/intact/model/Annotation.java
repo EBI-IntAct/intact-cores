@@ -63,17 +63,25 @@ public class Annotation extends BasicObjectImpl {
      * set the <code>created</code> and <code>updated</code> fields of the instance
      * to the current time.
      *
-     * @param owner The <code>Institution</code> which 'owns' this BioSource
      * @param topic Refers to the controlled vocabulary topic this Annotation relates
      *              to. This should be non-null.
      *
      * @throws NullPointerException thrown if no Institution specified.
      */
+    public Annotation( CvTopic topic ) {
+
+        //super call sets creation time data
+        super( );
+        setCvTopic( topic );
+    }
+
+    @Deprecated
     public Annotation( Institution owner, CvTopic topic ) {
 
         //super call sets creation time data
-        super( owner );
+        super( );
         setCvTopic( topic );
+        setOwner(owner);
     }
 
     /**

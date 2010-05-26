@@ -79,12 +79,17 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
      *
      * @throws NullPointerException thrown if either no shortLabel or Institution specified.
      */
-    public BioSource( Institution owner, String shortLabel, String taxId ) {
+    public BioSource( String shortLabel, String taxId ) {
 
         //super call sets up a valid AnnotatedObject
-        super( shortLabel, owner );
+        super( shortLabel );
 
         setTaxId( taxId );
+    }
+
+    @Deprecated
+    public BioSource( Institution owner, String shortLabel, String taxId ) {
+        this(shortLabel, taxId);
     }
 
     ///////////////////////////////////////

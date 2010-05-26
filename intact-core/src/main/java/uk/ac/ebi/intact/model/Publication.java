@@ -6,7 +6,6 @@
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.validator.NotNull;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -23,8 +22,8 @@ import java.util.Iterator;
  */
 @Entity
 @Table( name = "ia_publication" )
-public class Publication extends AnnotatedObjectImpl<PublicationXref, PublicationAlias>
-                         implements Editable, ImexRelevant {
+public class Publication extends OwnedAnnotatedObject<PublicationXref, PublicationAlias>
+                         implements Editable {
 
     /**
      * Last relevant change in this object that requires an export to IMEx.
@@ -178,11 +177,11 @@ public class Publication extends AnnotatedObjectImpl<PublicationXref, Publicatio
 
     @Column(name="shortLabel", insertable = false, updatable = false)
     public String getPublicationId() {
-        return shortLabel;
+        return super.getShortLabel();
     }
 
     public void setPublicationId(String publicationId) {
-        this.shortLabel = publicationId;
+        setShortLabel(publicationId);
     }
 
     @Override

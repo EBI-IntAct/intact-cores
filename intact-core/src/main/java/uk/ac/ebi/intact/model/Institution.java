@@ -154,7 +154,7 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
     }
 
     public String toString() {
-        return shortLabel;
+        return "Institution: "+getShortLabel();
     }
 } // end Institution
 

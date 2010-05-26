@@ -9,8 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.annotation.EditorTopic;
-import uk.ac.ebi.intact.model.util.ExperimentUtils;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.model.util.ExperimentUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -28,8 +28,8 @@ import java.util.Date;
 @Entity
 @Table( name = "ia_experiment" )
 @EditorTopic
-public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAlias>
-                        implements  Editable, Searchable, ImexRelevant {
+public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentAlias>
+                        implements  Editable, Searchable {
 
     private static final Log log = LogFactory.getLog( Experiment.class );
 
@@ -148,6 +148,7 @@ public class Experiment extends AnnotatedObjectImpl<ExperimentXref, ExperimentAl
     public void synchronizeShortLabel() {
         if( IntactContext.currentInstanceExists() ) {
             if( IntactContext.getCurrentInstance().getConfig().isAutoUpdateExperimentLabel() ) {
+                String shortLabel = getShortLabel();
                 String newShortLabel = shortLabel;
                 try {
                     newShortLabel = ExperimentUtils.syncShortLabelWithDb(shortLabel, ExperimentUtils.getPubmedId( this ));

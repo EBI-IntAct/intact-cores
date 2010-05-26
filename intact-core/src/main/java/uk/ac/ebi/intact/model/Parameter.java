@@ -15,7 +15,9 @@
  */
 package uk.ac.ebi.intact.model;
 
-import javax.persistence.*;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Represents a parameter value.
@@ -69,17 +71,29 @@ public abstract class Parameter extends BasicObjectImpl {
 		super();
 	}
 
-	public Parameter( Institution owner, CvParameterType cvParameterType, Double factor ) {
-        super(owner);
+    public Parameter( CvParameterType cvParameterType, Double factor ) {
+        super();
         setFactor(factor);
         setCvParameterType(cvParameterType);
     }
 
-	public Parameter( Institution owner, CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
-        super(owner);
+	public Parameter( CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
+        super();
         setFactor(factor);
         setCvParameterType(cvParameterType);
         setCvParameterUnit(cvParameterUnit);
+    }
+
+    @Deprecated
+	public Parameter( Institution owner, CvParameterType cvParameterType, Double factor ) {
+        this(cvParameterType, factor);
+        setOwner(owner);
+    }
+
+    @Deprecated
+	public Parameter( Institution owner, CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
+        this(cvParameterType, cvParameterUnit, factor);
+        setOwner(owner);
     }
 
 	public void setBase( Integer base ) {

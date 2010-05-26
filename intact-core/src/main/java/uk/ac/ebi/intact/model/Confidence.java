@@ -40,15 +40,26 @@ public class Confidence extends BasicObjectImpl {
         super();
     }
 
-    public Confidence( Institution owner, String value ) {
-        super(owner);
-        setValue(value);
+    public Confidence( String value ) {
+        super();
+        this.value = value;
     }
 
+    public Confidence(CvConfidenceType cvType, String value ) {
+        this(value);
+        this.cvConfidenceType = cvType;
+    }
+    
+    @Deprecated
+    public Confidence( Institution owner, String value ) {
+        this(value);
+        setOwner(owner);
+    }
+
+    @Deprecated
     public Confidence(Institution owner, CvConfidenceType cvType, String value ) {
-        super(owner);
-        setCvConfidenceType( cvType );
-        setValue( value );
+        this(cvType, value);
+        setOwner(owner);
     }
 
     @Length(max = 4000)
