@@ -7,11 +7,12 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Cascade;
-import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 /**
  * <p/>

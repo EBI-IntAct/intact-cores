@@ -15,9 +15,7 @@
  */
 package uk.ac.ebi.intact.model;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 /**
  * Represents a parameter value.

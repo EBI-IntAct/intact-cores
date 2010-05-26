@@ -5,12 +5,16 @@
  */
 package uk.ac.ebi.intact.model;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
+import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Represents an object with biological annotation.
