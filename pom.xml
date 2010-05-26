@@ -40,13 +40,6 @@
     </build>
 
     <dependencies>
-        <!-- test -->
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>oracle-thin</artifactId>
-            <version>10.2.0.4</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- intact deps -->
         <dependency>
