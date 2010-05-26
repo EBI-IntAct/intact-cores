@@ -92,9 +92,9 @@ public class IntactInitializer implements ApplicationContextAware{
             log.info("\tAutopersist:         " + autoPersist);
             log.info("\tConfiguration:       " + configuration);
 
-            Map<String, Object> datasourceMap = intactContext.getSpringContext().getBeansOfType(DataSource.class);
+            Map<String, DataSource> datasourceMap = intactContext.getSpringContext().getBeansOfType(DataSource.class);
             log.info("\tDataSources("+ datasourceMap.size() +"):");
-            for ( Map.Entry<String, Object> e : datasourceMap.entrySet() ) {
+            for ( Map.Entry<String, DataSource> e : datasourceMap.entrySet() ) {
                 log.info("\t\t" + e.getKey() + ": " + printDataSource( (DataSource) e.getValue() ));
             }
         }
