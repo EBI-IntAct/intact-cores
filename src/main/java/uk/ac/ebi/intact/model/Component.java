@@ -5,15 +5,19 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.annotations.Cascade;
-import uk.ac.ebi.intact.core.util.HashCodeUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 /**
  * The specific instance of an interactor which participates in an interaction.

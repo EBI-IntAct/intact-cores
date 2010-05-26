@@ -15,9 +15,15 @@
  */
 package uk.ac.ebi.intact.core.util;
 
+import oracle.jdbc.driver.OracleDriver;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.jdbc.ConnectionManager;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.Arrays;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
