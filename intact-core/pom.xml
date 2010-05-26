@@ -18,6 +18,8 @@
 
     <properties>
         <maven.pmd.skip>true</maven.pmd.skip>
+
+        <spring.version>3.0.2.RELEASE</spring.version>
     </properties>
 
     <build>
@@ -40,6 +42,13 @@
     </build>
 
     <dependencies>
+        <!-- test -->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>oracle-thin</artifactId>
+            <version>10.2.0.4</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- intact deps -->
         <dependency>
@@ -73,24 +82,7 @@
             <artifactId>google-collections</artifactId>
             <version>0.5</version>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.agitar</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0.4-000276</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.agitar</groupId>
-            <artifactId>mockingbird</artifactId>
-            <version>1.0.4-000276</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -159,31 +151,42 @@
         </dependency>
 
         <!-- Spring  -->
+         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring</artifactId>
-            <version>2.5.6</version>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>2.5.6</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
-            <version>2.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-agent</artifactId>
-            <version>2.5.6</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>2.5.6</version>
+            <version>${spring.version}</version>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.6.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.6.8</version>
         </dependency>
 
 
@@ -201,6 +204,26 @@
             <version>2.0</version>
             <optional>true</optional>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.agitar</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0.4-000276</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.agitar</groupId>
+            <artifactId>mockingbird</artifactId>
+            <version>1.0.4-000276</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
