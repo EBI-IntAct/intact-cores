@@ -75,15 +75,6 @@ public class Annotation extends BasicObjectImpl {
         setCvTopic( topic );
     }
 
-    @Deprecated
-    public Annotation( Institution owner, CvTopic topic ) {
-
-        //super call sets creation time data
-        super( );
-        setCvTopic( topic );
-        setOwner(owner);
-    }
-
     /**
      * Creates a valid Annotation instance. A valid instance must have at least
      * a non-null Institution specified. A side-effect of this constructor is to
@@ -97,15 +88,29 @@ public class Annotation extends BasicObjectImpl {
      *
      * @throws NullPointerException thrown if no Institution specified.
      */
-    public Annotation( Institution owner, CvTopic topic, String annotationText ) {
+    public Annotation( CvTopic topic, String annotationText ) {
 
-        this( owner, topic );
+        this( topic );
 
         if ( annotationText != null ) {
             this.annotationText = annotationText.trim();
         } else {
             log.warn( "AnnotationText is null when instantiating Annotation using full constructor" );
         }
+    }
+
+    @Deprecated
+    public Annotation( Institution owner, CvTopic topic ) {
+
+        //super call sets creation time data
+        super( );
+        setCvTopic( topic );
+        setOwner(owner);
+    }
+
+    @Deprecated
+    public Annotation( Institution owner, CvTopic topic, String annotationText ) {
+        this(topic, annotationText);
     }
 
     ///////////////////////////////////////

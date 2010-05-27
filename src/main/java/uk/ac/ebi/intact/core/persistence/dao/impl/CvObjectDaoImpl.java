@@ -57,18 +57,21 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
                 .add( Restrictions.in( "miIdentifier", psiMis ) ).list();
     }
 
+    /**
+     *
+     * @deprecated use getByIdentifier(id)
+     */
+    @Deprecated
     public T getByPsiMiRef( String psiMiRef ) {
+        return getByIdentifier(psiMiRef);
+    }
+
+     public T getByIdentifier( String id ) {
         Query query = getEntityManager().createQuery(
                 "select cv from "+getEntityClass().getName()+" cv " +
-                "where identifier = '"+psiMiRef+"'");
+                "where identifier = '"+id+"'");
 
         return uniqueResult(query);
-        /* 
-        return ( T ) getSession().createCriteria( getEntityClass() ).createAlias( "xrefs", "xref" )
-                .createAlias( "xref.cvDatabase", "cvDb" )
-                .createAlias( "cvDb.xrefs", "cvDbXref" )
-                .add( Restrictions.eq( "cvDbXref.primaryId", CvDatabase.PSI_MI_MI_REF ) )
-                .add( Restrictions.eq( "xref.primaryId", psiMiRef ) ).uniqueResult();  */
     }
 
     public List<T> getByObjClass( Class[] objClasses ) {
