@@ -165,10 +165,17 @@ public class CvTopic extends CvDagObject implements Editable {
      *
      * @throws NullPointerException thrown if either parameters are not specified
      */
+    @Deprecated
     public CvTopic( Institution owner, String shortLabel ) {
 
         //super call sets up a valid CvObject
         super( owner, shortLabel );
+    }
+
+    public CvTopic( String shortLabel ) {
+
+        //super call sets up a valid CvObject
+        super( null, shortLabel );
     }
 
 } // end CvTopic

@@ -50,5 +50,4 @@ public class BioSourceAlias extends Alias {
     public String getParentAc() {
         return super.getParentAc();
     }
-
 }

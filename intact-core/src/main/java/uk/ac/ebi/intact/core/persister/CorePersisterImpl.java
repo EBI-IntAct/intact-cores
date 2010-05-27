@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.persister;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.TransientObjectException;
 import org.hibernate.ejb.HibernateEntityManager;
@@ -248,7 +249,7 @@ public class CorePersisterImpl implements CorePersister {
 
                     // updated the managed object based on ao's properties, but only add it to merge
                     // if something has been copied (it was not a duplicate)
-                    boolean copied = entityStateCopier.copy( ao, managedObject );
+                    boolean copied = entityStateCopier.copy( ao, managedObject);
 
                     // this will allow to reload the AO by its AC after flushing
                     ao.setAc(managedObject.getAc());
@@ -305,14 +306,14 @@ public class CorePersisterImpl implements CorePersister {
                     try {
                         boolean copied = false;
                         try {
-                            copied = entityStateCopier.copy( ao, managedObject );
+                            copied = entityStateCopier.copy( ao, managedObject);
                         } catch (Exception e) {
                             throw new PersisterException("Problem copying state to managed object of type "+ao.getClass().getSimpleName()+" and AC "+ao.getAc()+", from object: "+ao, e);
                         }
 
                         // this will allow to reload the AO by its AC after flushing
                         ao.setAc(ac);
-
+                        
                         // traverse annotatedObject's properties and assign AC where appropriate
                         try {
                             copyAnnotatedObjectAttributeAcs(managedObject, ao);
@@ -372,70 +373,79 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     private <T extends AnnotatedObject> void copyAnnotatedObjectAttributeAcs( T source, T target ) {
+        if (Hibernate.isInitialized(target.getXrefs())) {
 
-        Collection<Xref> xrefsToAdd = new ArrayList<Xref>( );
-        for ( Iterator itXrefTarget = target.getXrefs().iterator(); itXrefTarget.hasNext(); ) {
-            Xref targetXref = (Xref) itXrefTarget.next();
+            Collection<Xref> xrefsToAdd = new ArrayList<Xref>( );
+            for ( Iterator itXrefTarget = target.getXrefs().iterator(); itXrefTarget.hasNext(); ) {
+                Xref targetXref = (Xref) itXrefTarget.next();
 
-            for ( Iterator itXrefSrc = source.getXrefs().iterator(); itXrefSrc.hasNext(); ) {
-                Xref sourceXref = ( Xref ) itXrefSrc.next();
+                for ( Iterator itXrefSrc = source.getXrefs().iterator(); itXrefSrc.hasNext(); ) {
+                    Xref sourceXref = ( Xref ) itXrefSrc.next();
 
-                if( EqualsUtils.sameXref( sourceXref, targetXref ) ) {
-                    // replace Xref of the target and store the managed one so it can be added later
-                    itXrefTarget.remove();
-                    xrefsToAdd.add( sourceXref );
+                    if( EqualsUtils.sameXref( sourceXref, targetXref ) ) {
+                        // replace Xref of the target and store the managed one so it can be added later
+                        itXrefTarget.remove();
+                        xrefsToAdd.add( sourceXref );
 
-                    // go to next target xref
-                    break;
+                        // go to next target xref
+                        break;
+                    }
                 }
             }
+            for ( Xref xref : xrefsToAdd ) {
+                target.addXref( xref );
+            }
+
         }
-        for ( Xref xref : xrefsToAdd ) {
-            target.addXref( xref );
-        }
 
+        if (Hibernate.isInitialized(target.getAliases())) {
 
-        Collection<Alias> aliasesToAdd = new ArrayList<Alias>( );
-        for ( Iterator itAliasTarget = target.getAliases().iterator(); itAliasTarget.hasNext(); ) {
-            Alias targetAlias = (Alias) itAliasTarget.next();
+            Collection<Alias> aliasesToAdd = new ArrayList<Alias>( );
+            for ( Iterator itAliasTarget = target.getAliases().iterator(); itAliasTarget.hasNext(); ) {
+                Alias targetAlias = (Alias) itAliasTarget.next();
 
-            for ( Iterator itAliasSrc = source.getAliases().iterator(); itAliasSrc.hasNext(); ) {
-                Alias sourceAlias = ( Alias ) itAliasSrc.next();
+                for ( Iterator itAliasSrc = source.getAliases().iterator(); itAliasSrc.hasNext(); ) {
+                    Alias sourceAlias = ( Alias ) itAliasSrc.next();
 
-                if( EqualsUtils.sameAlias( sourceAlias, targetAlias ) ) {
-                    // replaces Alias of the target and store the managed one so it can be added later
-                    itAliasTarget.remove();
-                    aliasesToAdd.add( sourceAlias );
+                    if( EqualsUtils.sameAlias( sourceAlias, targetAlias ) ) {
+                        // replaces Alias of the target and store the managed one so it can be added later
+                        itAliasTarget.remove();
+                        aliasesToAdd.add( sourceAlias );
 
-                    // go to next target xref
-                    break;
+                        // go to next target xref
+                        break;
+                    }
                 }
             }
+            for ( Alias alias : aliasesToAdd ) {
+                target.addAlias( alias );
+            }
+
         }
-        for ( Alias alias : aliasesToAdd ) {
-            target.addAlias( alias );
-        }
 
+        if (Hibernate.isInitialized(target.getAnnotations())) {
 
-        Collection<Annotation> annotToAdd = new ArrayList<Annotation>( );
-        for ( Iterator itAnnotTarget = target.getAnnotations().iterator(); itAnnotTarget.hasNext(); ) {
-            Annotation targetAnnot = (Annotation) itAnnotTarget.next();
+            Collection<Annotation> annotToAdd = new ArrayList<Annotation>( );
+            for ( Iterator itAnnotTarget = target.getAnnotations().iterator(); itAnnotTarget.hasNext(); ) {
+                Annotation targetAnnot = (Annotation) itAnnotTarget.next();
 
-            for ( Iterator itAnnotSrc = source.getAnnotations().iterator(); itAnnotSrc.hasNext(); ) {
-                Annotation sourceAnnot = ( Annotation ) itAnnotSrc.next();
+                for ( Iterator itAnnotSrc = source.getAnnotations().iterator(); itAnnotSrc.hasNext(); ) {
+                    Annotation sourceAnnot = ( Annotation ) itAnnotSrc.next();
 
-                if( EqualsUtils.sameAnnotation( sourceAnnot, targetAnnot ) ) {
-                    // replaces Alias of the target and store the managed one so it can be added later
-                    itAnnotTarget.remove();
-                    annotToAdd.add( sourceAnnot );
+                    if( EqualsUtils.sameAnnotation( sourceAnnot, targetAnnot ) ) {
+                        // replaces Alias of the target and store the managed one so it can be added later
+                        itAnnotTarget.remove();
+                        annotToAdd.add( sourceAnnot );
 
-                    // go to next target xref
-                    break;
+                        // go to next target xref
+                        break;
+                    }
                 }
             }
-        }
-        for ( Annotation annotation : annotToAdd ) {
-            target.addAnnotation( annotation );
+            for ( Annotation annotation : annotToAdd ) {
+                target.addAnnotation( annotation );
+            }
+
         }
     }
 

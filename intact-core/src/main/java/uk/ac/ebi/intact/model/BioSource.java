@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.annotations.ForeignKey;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
@@ -101,6 +102,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
             joinColumns = {@JoinColumn( name = "biosource_ac" )},
             inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
     )
+    @ForeignKey(name = "FK_BIO2ANNOT$ANNOTATION", inverseName = "FK_BIO2ANNOT$BIOSOURCE")
     @Override
     public Collection<Annotation> getAnnotations() {
         return super.getAnnotations();
@@ -145,6 +147,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     // access methods for associations
     @ManyToOne
     @JoinColumn( name = "tissue_ac" )
+    @ForeignKey(name = "FK_BIOSOURCE$TISSUE")
     public CvTissue getCvTissue() {
         return cvTissue;
     }
@@ -155,6 +158,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
 
     @ManyToOne
     @JoinColumn( name = "celltype_ac" )
+    @ForeignKey(name = "FK_BIOSOURCE$CELLTYPE")
     public CvCellType getCvCellType() {
         return cvCellType;
     }
