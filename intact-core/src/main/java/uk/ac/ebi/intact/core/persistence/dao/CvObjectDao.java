@@ -30,6 +30,8 @@ public interface CvObjectDao<T extends CvObject> extends AnnotatedObjectDao<T> {
      */
     T getByPsiMiRef( String psiMiRef );
 
+    T getByIdentifier( String id );
+
     List<T> getByObjClass( Class[] objClasses );
 
     <T extends CvObject> T getByShortLabel( Class<T> cvType, String label );
