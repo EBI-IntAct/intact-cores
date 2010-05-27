@@ -52,6 +52,8 @@ public class Range extends BasicObjectImpl {
 
     //------------ attributes ------------------------------------
 
+    private static final int minimumSizeForAlignment = 40;
+
     /**
      * Sequence size limit for this class. Set to a default value.
      */
@@ -89,6 +91,10 @@ public class Range extends BasicObjectImpl {
      * Contains the full feature sequence
      */
     private String fullSequence;
+
+    private String upStreamSequence;
+
+    private String downStreamSequence;
 
     /**
      * TODO Comments This is really a boolean but we need to use a character for it because Oracle does not support
@@ -181,7 +187,6 @@ public class Range extends BasicObjectImpl {
     /**
      * This is a convenient constructor to create Range with from and end values.
      *
-     * @param owner     the owner of this range.
      * @param fromStart The starting point of the 'from' interval for the Range. The 'from' end value is set to this
      *                  value.
      * @param toStart   The starting point of the 'to' interval of the Range. The 'to' end value is set to this value.
@@ -385,9 +390,71 @@ public boolean isUndetermined() {
      * x bytes starting from from interval start is used.
      *
      * @param sequence the raw sequence (generally this string is the full sequence).
+     * @deprecated  the setFullSequence is now keeping the full sequence of the feature
      */
+    @Deprecated
     public void setSequence( String sequence ) {
         this.sequence = sequence;
+    }
+
+    /**
+     *
+     * @param rangeStart : the start position of the feature range
+     * @param rangeEnd : the end position of the feature range
+     * @param fullSequence : the total sequence
+     */
+    private void prepareUpStreamDownStreamSequence(int rangeStart, int rangeEnd, String fullSequence){
+        this.upStreamSequence = null;
+        this.downStreamSequence = null;
+        
+        int numberOfAminoAcidsUpStream = 0;
+        int numberOfAminoAcidsDownStream = 0;
+
+        if (rangeStart < 0){
+            throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be negative.");
+        }
+        if (rangeEnd > fullSequence.length()){
+            throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be superior to the length of the protein ("+fullSequence.length()+").");
+        }
+        if (rangeEnd < rangeStart){
+            throw  new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the end of the feature range ("+rangeEnd+")");
+        }
+
+        // count number of amino acids upstream the feature
+        if (rangeStart - (minimumSizeForAlignment/2) < 0){
+             numberOfAminoAcidsUpStream = Math.max(0, rangeStart - 1);
+        }
+        else {
+            numberOfAminoAcidsUpStream = minimumSizeForAlignment/2;
+        }
+
+        // count the number of amino acids downstream the feature
+        if (rangeEnd + (minimumSizeForAlignment/2) > fullSequence.length()){
+             numberOfAminoAcidsDownStream = Math.max(0, fullSequence.length() - rangeEnd);
+        }
+        else {
+            numberOfAminoAcidsDownStream = minimumSizeForAlignment/2;
+        }
+
+        // Adjust the number of amino acids downstream and upstream to have a total number of amino acids equal to the minimumSizeForAlignment
+        if (numberOfAminoAcidsUpStream < minimumSizeForAlignment/2){
+            int numberAminoAcidsPendingAtTheEnd = fullSequence.length() - (rangeEnd + numberOfAminoAcidsDownStream);
+
+            numberOfAminoAcidsDownStream += Math.min(numberAminoAcidsPendingAtTheEnd, (minimumSizeForAlignment/2) - numberOfAminoAcidsUpStream);
+        }
+        if (numberOfAminoAcidsDownStream < minimumSizeForAlignment/2){
+            int numberAminoAcidsPendingAtTheBeginning = Math.max((rangeStart - numberOfAminoAcidsUpStream) - 1, 0);
+
+            numberOfAminoAcidsUpStream += Math.min(numberAminoAcidsPendingAtTheBeginning, (minimumSizeForAlignment/2) - numberOfAminoAcidsDownStream);
+        }
+
+        // Extract the proper downstream and upstream sequence
+        if (numberOfAminoAcidsUpStream > 0){
+            setUpStreamSequence(fullSequence.substring(Math.max(rangeStart - numberOfAminoAcidsUpStream - 1, 0), Math.max(rangeStart, 1)));            
+        }
+        if (numberOfAminoAcidsDownStream > 0){
+            setDownStreamSequence(fullSequence.substring(Math.min(fullSequence.length() - 1, rangeEnd), rangeEnd + numberOfAminoAcidsDownStream));
+        }
     }
 
     public void prepareSequence( String sequence ) {
@@ -396,33 +463,40 @@ public boolean isUndetermined() {
             // Get the sequence from start if there is no fuzzy type.
             if ( fromCvFuzzyType == null ) {
                 setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalStart));
+                setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
+                prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
             }
             else{
                 // Truncate according to type.
                 if ( fromCvFuzzyType.isCTerminal() ) {
                     setSequenceIntern( getLastSequence( sequence ) );
                     setFullSequence( getLastFullSequence( sequence ));
+                    prepareUpStreamDownStreamSequence(Math.max(1, sequence.length() - ourMaxSeqSize), sequence.length(), sequence);
                 } else if ( fromCvFuzzyType.isNTerminal() || fromCvFuzzyType.isUndetermined() ) {
                     setSequenceIntern( getFirstSequence( sequence ) );
                     setFullSequence( getFirstFullSequence( sequence ));
+                    prepareUpStreamDownStreamSequence(1, Math.min(ourMaxSeqSize, sequence.length()), sequence);
                 } else {
                     setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                    setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalStart));
+                    setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
+                    prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
                 }
             }
         }
         else {
             this.sequence = null;
             this.fullSequence = null;
+            this.upStreamSequence = null;
+            this.downStreamSequence = null;
         }
     }
 
+    /**
+     * @deprecated the getFullSequence returns the full sequence of the feature and not a sequence of 100 amino acids
+     * @return  the truncated sequence
+     */
+    @Deprecated
     public String getSequence() {
-
-        if (this.fullSequence != null){
-            return this.fullSequence;
-        }
         return this.sequence;
     }
 
@@ -727,9 +801,22 @@ public boolean isUndetermined() {
         this.fullSequence = fullSequence;
     }
 
-    @Transient
-    public String getTruncatedSequence(){
-        return this.sequence;
+    @Column( name = "upstream_sequence", length = minimumSizeForAlignment)
+    public String getUpStreamSequence() {
+        return upStreamSequence;
+    }
+
+    public void setUpStreamSequence(String upStreamSequence) {
+        this.upStreamSequence = upStreamSequence;
+    }
+
+    @Column( name = "downstream_sequence", length = minimumSizeForAlignment)
+    public String getDownStreamSequence() {
+        return downStreamSequence;
+    }
+
+    public void setDownStreamSequence(String downStreamSequence) {
+        this.downStreamSequence = downStreamSequence;
     }
 }
 

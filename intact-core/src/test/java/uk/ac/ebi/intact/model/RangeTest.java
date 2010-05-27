@@ -52,6 +52,8 @@ public class RangeTest {
         Assert.assertEquals( 110, s.length() );
         Assert.assertTrue( range.getFullSequence().startsWith( "GAV" ));
         Assert.assertEquals( s.substring(0, 109), range.getFullSequence());
+        Assert.assertEquals(null, range.getUpStreamSequence());
+        Assert.assertEquals( s.substring(109, 110), range.getDownStreamSequence());
     }
 
     @Test
@@ -72,6 +74,8 @@ public class RangeTest {
         
         Assert.assertEquals( 110, s.length() );
         Assert.assertEquals( s.substring(10, 110), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 10), range.getUpStreamSequence());
+        Assert.assertEquals( null, range.getDownStreamSequence());
     }
 
     @Test
@@ -91,6 +95,8 @@ public class RangeTest {
         range.prepareSequence(s);
 
         Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(100, 110), range.getDownStreamSequence());
         Assert.assertEquals( s.substring(0, 100), range.getFullSequence());
+        Assert.assertEquals( null, range.getUpStreamSequence());
     }
 }

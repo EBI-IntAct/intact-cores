@@ -236,8 +236,10 @@ public class IntactCloner {
         clone.setToIntervalStart( range.getToIntervalStart() );
         clone.setToIntervalEnd( range.getToIntervalEnd() );
         
-        clone.setSequence( range.getTruncatedSequence() );
+        clone.setSequence( range.getSequence() );
         clone.setFullSequence( range.getFullSequence());
+        clone.setUpStreamSequence( range.getUpStreamSequence());
+        clone.setDownStreamSequence( range.getDownStreamSequence());
 
         clone.setFromCvFuzzyType(clone( range.getFromCvFuzzyType() ));
         clone.setToCvFuzzyType(clone( range.getToCvFuzzyType() ));
