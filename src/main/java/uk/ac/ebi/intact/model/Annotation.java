@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Length;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
@@ -129,6 +130,7 @@ public class Annotation extends BasicObjectImpl {
     // access methods for associations
     @ManyToOne( fetch = FetchType.LAZY )
     @JoinColumn( name = "topic_ac" )
+    @ForeignKey(name = "FK_ANNOTATION$TOPIC")
     public CvTopic getCvTopic() {
         return cvTopic;
     }
