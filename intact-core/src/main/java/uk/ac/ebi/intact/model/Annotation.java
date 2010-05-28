@@ -128,7 +128,7 @@ public class Annotation extends BasicObjectImpl {
 
     ///////////////////////////////////////
     // access methods for associations
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne
     @JoinColumn( name = "topic_ac" )
     @ForeignKey(name = "FK_ANNOTATION$TOPIC")
     public CvTopic getCvTopic() {
