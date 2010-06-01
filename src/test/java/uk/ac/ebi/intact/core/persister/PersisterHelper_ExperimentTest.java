@@ -2,6 +2,10 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
@@ -271,7 +275,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void interactionInExpPersistedCorrectly() throws Exception {
 
         Experiment experiment = getMockBuilder().createExperimentEmpty();
@@ -291,7 +294,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void removingExperiments() throws Exception {
 
         Experiment experiment = getMockBuilder().createExperimentRandom(1);
@@ -322,7 +324,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void persist_sameYearDifferentPublication() throws Exception {
         int year = 2007;
         Experiment experiment = getMockBuilder().createExperimentEmpty("lala-2007-1", "123");
@@ -347,7 +348,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void persist_correctLabeling() throws Exception {
         final Experiment exp1 = getMockBuilder().createExperimentEmpty("lala-2007", "17560331");
         exp1.getBioSource().setTaxId("1");
@@ -392,7 +392,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void addingInteractionsWithSlightlyTheSameExperiment() throws Exception {
         // this tests that if we add interactions that have the same experiment (different instances),
         // and have one additional annotation (the new experiments all have the same annotations, but they
@@ -437,6 +436,37 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
         Assert.assertNotNull(getDaoFactory().getExperimentDao().getByShortLabel("tarassov-2008-1"));
         Assert.assertNotNull(getDaoFactory().getExperimentDao().getByShortLabel("tarassov-2008-2"));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    public void removeInteractionByAcFromExperiment() throws Exception {
+
+        final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        Experiment experiment = getMockBuilder().createExperimentEmpty();
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        interaction.getExperiments().clear();
+        Interaction interaction2 = getMockBuilder().createInteractionRandomBinary();
+        interaction2.getExperiments().clear();
+        experiment.addInteraction(interaction);
+        experiment.addInteraction(interaction2);
+
+        getCorePersister().saveOrUpdate(experiment);
+
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getProteinDao().countAll());
+
+        final TransactionStatus transactionStatus2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+        getDaoFactory().getInteractionDao().deleteByAc(interaction2.getAc());
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus2);
+
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(4, getDaoFactory().getProteinDao().countAll());
     }
 
     private Experiment reloadByAc(Experiment experiment) {
