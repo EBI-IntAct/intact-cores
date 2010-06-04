@@ -524,6 +524,10 @@ public boolean isUndetermined() {
 
         if ( fullSequence != null ? !fullSequence.equals( range.fullSequence ) : range.fullSequence != null ) return false;
 
+        if ( upStreamSequence != null ? !upStreamSequence.equals( range.upStreamSequence ) : range.upStreamSequence != null ) return false;
+
+        if ( downStreamSequence != null ? !downStreamSequence.equals( range.downStreamSequence ) : range.downStreamSequence != null ) return false;
+
         // Check that they are attached to the same feature, otherwise these ranges should be considered different
         // We do a feature identity check to avoid triggering an infinite loop as feature includes ranges too.
         if ( feature != null ? !feature.equals( range.feature, true, false ) : range.feature != null ) return false;
@@ -546,6 +550,8 @@ public boolean isUndetermined() {
 
         result = 31 * result + ( sequence != null ? sequence.hashCode() : 0 );
         result = 31 * result + ( fullSequence != null ? fullSequence.hashCode() : 0 );
+        result = 31 * result + ( upStreamSequence != null ? upStreamSequence.hashCode() : 0 );
+        result = 31 * result + ( downStreamSequence != null ? downStreamSequence.hashCode() : 0 );
 
         // Include the feature this range is linked to.
         result = 31 * result + ( feature != null ? feature.hashCode( true, false ) : 0 );
