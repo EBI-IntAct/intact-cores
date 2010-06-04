@@ -427,18 +427,33 @@ public class DefaultFinder implements Finder {
         return null;
     }
 
-    private boolean same( CvObject cv1, CvObject cv2 ) {
-        if ( cv1 == null && cv2 == null ) {
+    /**
+     *
+     * @param cv1 : the cv in the database to compare with
+     * @param cvToFind : the CV to find in the database
+     * @return  true if the cv in the database is matches the CV to find. If the cv to find doesn't have any cross references, we look only
+     * if the short label is matching
+     */
+    private boolean same( CvObject cv1, CvObject cvToFind ) {
+        if ( cv1 == null && cvToFind == null ) {
             return true;
         }
 
-        if (cv1 == null || cv2 == null) {
+        if (cv1 == null || cvToFind == null) {
+            return false;
+        }
+
+        // The cv to find doesn't have any cross references, we need to look only the shortLabel of the match in the database
+        if (cvToFind.getXrefs().isEmpty()){
+            if (cvToFind.getShortLabel() != null){
+                return cvToFind.getShortLabel().equals(cv1.getShortLabel());
+            }
             return false;
         }
 
         // if any of the identities is the same, we consider them to be the same
         final Collection<CvObjectXref> xrefs1 = XrefUtils.getIdentityXrefs(cv1);
-        final Collection<CvObjectXref> xrefs2 = XrefUtils.getIdentityXrefs(cv2);
+        final Collection<CvObjectXref> xrefs2 = XrefUtils.getIdentityXrefs(cvToFind);
 
         Collection<String> ids1 = getIds(xrefs1);
         Collection<String> ids2 = getIds(xrefs2);
@@ -600,9 +615,9 @@ public class DefaultFinder implements Finder {
             String valueForShortLabel = findAcForCvObjectUsingShortLabel( cvObject, cvClass );
 
             if (valueForShortLabel != null){
-                 throw new FinderException(" The CV object " + cvObject.getIdentifier() + ":" + cvObject.getShortLabel() + " has an identifier" +
-                         " which can't match any CV object identifiers of type " + cvClass +" but the shortlabel is matching one CVObject in the database : "+
-                 valueForShortLabel + ". The CV object can't be duplicated with a different identifier, you should change the identifier.");
+                throw new FinderException(" The CV object " + cvObject.getIdentifier() + ":" + cvObject.getShortLabel() + " has an identifier" +
+                        " which can't match any CV object identifiers of type " + cvClass +" but the shortlabel is matching one CVObject in the database : "+
+                        valueForShortLabel + ". The CV object can't be duplicated with a different identifier, you should change the identifier.");
             }
         }
         else{

@@ -397,6 +397,23 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void findAcForBioSource_CellTypeWithoutSRefs() {
+        final BioSource bs = getMockBuilder().createBioSource( 9606, "human-hacat" );
+        final CvCellType ct = getMockBuilder().createCvObject(CvCellType.class, null, "hacat");
+        bs.setCvCellType(ct);
+        Assert.assertTrue(ct.getXrefs().isEmpty());
+        getCorePersister().saveOrUpdate( bs );
+        final String originalAc = bs.getAc();
+
+        BioSource empty = getMockBuilder().createBioSource( 9606, "human-hacat" );
+        CvCellType hacat = getMockBuilder().createCvObject(CvCellType.class, null, "hacat");
+        empty.setCvCellType(hacat);
+        String ac = finder.findAc(empty);
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( originalAc, ac );
+    }
+
+    @Test
     public void findAcForBioSource_only_taxid() {
         BioSource bs1 = getMockBuilder().createBioSource( 9606, "human" );
         getCorePersister().saveOrUpdate( bs1 );
