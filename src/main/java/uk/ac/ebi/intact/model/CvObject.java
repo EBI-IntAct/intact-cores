@@ -104,14 +104,14 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     }
 
     @OneToMany( mappedBy = "parent")
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<CvObjectXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent")
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<CvObjectAlias> getAliases() {
         return super.getAliases();

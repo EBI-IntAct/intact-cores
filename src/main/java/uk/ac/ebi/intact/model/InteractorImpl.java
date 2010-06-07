@@ -209,14 +209,14 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
 
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<InteractorXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<InteractorAlias> getAliases() {
         return super.getAliases();

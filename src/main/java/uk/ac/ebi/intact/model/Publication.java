@@ -125,14 +125,14 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<PublicationXref> getXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @OneToMany( mappedBy = "parent"  )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<PublicationAlias> getAliases() {
         return super.getAliases();

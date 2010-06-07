@@ -318,14 +318,14 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
 
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<ExperimentXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<ExperimentAlias> getAliases() {
         return super.getAliases();

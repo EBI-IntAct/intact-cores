@@ -7,12 +7,11 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Cascade;
+import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 /**
  * <p/>
@@ -179,7 +178,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      *
      * @return A List of Ranges (expected to be non-empty)
      */
-    @OneToMany( mappedBy = "feature", cascade = {CascadeType.ALL} )
+    @OneToMany( mappedBy = "feature", cascade = {CascadeType.PERSIST} )
     public Collection<Range> getRanges() {
         return ranges;
     }
@@ -216,21 +215,20 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<FeatureXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<FeatureAlias> getAliases() {
         return super.getAliases();
     }
 
     @ManyToMany( cascade = CascadeType.PERSIST)
-    
     @JoinTable(
             name = "ia_feature2annot",
             joinColumns = {@JoinColumn( name = "feature_ac" )},
