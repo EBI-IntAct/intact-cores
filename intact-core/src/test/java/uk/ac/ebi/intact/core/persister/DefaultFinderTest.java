@@ -114,6 +114,32 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void findAcForExperimentWithoutAnnotations() throws Exception {
+        final Experiment e = getMockBuilder().createDeterministicExperiment();
+        Annotation annotation = getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1");
+        e.addAnnotation(annotation);
+        getCorePersister().saveOrUpdate( e );
+
+        IntactCloner cloner = new IntactCloner();
+        cloner.setExcludeACs(true);
+
+        Experiment e2 = cloner.clone(e);
+        e2.getAnnotations().clear();
+        Assert.assertTrue(e2.getAnnotations().isEmpty());
+        Experiment e3 = cloner.clone(e2);
+        e3.addAnnotation(annotation);
+
+        String acExpected = finder.findAc( e3);
+
+        Assert.assertNotNull( acExpected );
+        Assert.assertEquals( e.getAc(),acExpected );
+        
+        String ac = finder.findAc( e2 );
+        Assert.assertNull( ac );
+
+    }
+
+    @Test
     public void findAcForExperiment_diffAnnotations_sameNumOfAnnots() throws Exception {
         final Experiment exp1 = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" );
         exp1.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1"));
