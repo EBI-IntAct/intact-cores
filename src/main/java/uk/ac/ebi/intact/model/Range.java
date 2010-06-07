@@ -758,6 +758,10 @@ public boolean isUndetermined() {
         } else {
             seq = sequence.substring( Math.max( 0, start - 1 ), end ); // we make sure that we don't request index < 0.
         }
+
+        if (seq.length() == 0){
+            return null;
+        }
         return seq;
     }
 
@@ -813,6 +817,10 @@ public boolean isUndetermined() {
     }
 
     public void setUpStreamSequence(String upStreamSequence) {
+
+        if (upStreamSequence.length() > minimumSizeForAlignment * 2){
+            throw new IllegalArgumentException("You try to set the upstream sequence of the range with a sequence of lenth "+upStreamSequence.length()+". The upstream sequence can't have more than "+minimumSizeForAlignment*2+" amino acids");
+        }
         this.upStreamSequence = upStreamSequence;
     }
 
@@ -822,6 +830,9 @@ public boolean isUndetermined() {
     }
 
     public void setDownStreamSequence(String downStreamSequence) {
+        if (downStreamSequence.length() > minimumSizeForAlignment * 2){
+            throw new IllegalArgumentException("You try to set the downstream sequence of the range with a sequence of lenth "+downStreamSequence.length()+". The downstream sequence can't have more than "+minimumSizeForAlignment*2+" amino acids");
+        }
         this.downStreamSequence = downStreamSequence;
     }
 }
