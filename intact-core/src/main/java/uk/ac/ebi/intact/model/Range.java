@@ -439,7 +439,6 @@ public boolean isUndetermined() {
         // Adjust the number of amino acids downstream and upstream to have a total number of amino acids equal to the minimumSizeForAlignment
         if (numberOfAminoAcidsUpStream < minimumSizeForAlignment/2){
             int numberAminoAcidsPendingAtTheEnd = fullSequence.length() - (rangeEnd + numberOfAminoAcidsDownStream);
-
             numberOfAminoAcidsDownStream += Math.min(numberAminoAcidsPendingAtTheEnd, (minimumSizeForAlignment/2) - numberOfAminoAcidsUpStream);
         }
         if (numberOfAminoAcidsDownStream < minimumSizeForAlignment/2){
@@ -448,10 +447,9 @@ public boolean isUndetermined() {
             numberOfAminoAcidsUpStream += Math.min(numberAminoAcidsPendingAtTheBeginning, (minimumSizeForAlignment/2) - numberOfAminoAcidsDownStream);
         }
 
-        System.out.println();
         // Extract the proper downstream and upstream sequence
         if (numberOfAminoAcidsUpStream > 0){
-            setUpStreamSequence(fullSequence.substring(Math.max(rangeStart - numberOfAminoAcidsUpStream, 0), Math.max(rangeStart, 1)));            
+            setUpStreamSequence(fullSequence.substring(Math.max(rangeStart - numberOfAminoAcidsUpStream - 1, 0), Math.max(rangeStart - 1, 1)));
         }
         if (numberOfAminoAcidsDownStream > 0){
             setDownStreamSequence(fullSequence.substring(Math.min(fullSequence.length() - 1, rangeEnd), rangeEnd + numberOfAminoAcidsDownStream));
@@ -472,7 +470,7 @@ public boolean isUndetermined() {
                 if ( fromCvFuzzyType.isCTerminal() ) {
                     setSequenceIntern( getLastSequence( sequence ) );
                     setFullSequence( getLastFullSequence( sequence ));
-                    prepareUpStreamDownStreamSequence(Math.max(1, sequence.length() - ourMaxSeqSize), sequence.length(), sequence);
+                    prepareUpStreamDownStreamSequence(Math.max(1, sequence.length() - ourMaxSeqSize + 1), sequence.length(), sequence);
                 } else if ( fromCvFuzzyType.isNTerminal() || fromCvFuzzyType.isUndetermined() ) {
                     setSequenceIntern( getFirstSequence( sequence ) );
                     setFullSequence( getFirstFullSequence( sequence ));
