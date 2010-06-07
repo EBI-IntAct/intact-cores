@@ -440,12 +440,12 @@ public class InteractionImpl extends InteractorImpl
          this.interactionParameters.remove( interactionParameter );
      }
 
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.ALL} )
+    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.PERSIST} )
     public Collection<Confidence> getConfidences() {
         return confidences;
     }
     
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.ALL} )
+    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.PERSIST} )
     public Collection<InteractionParameter> getParameters() {
         return interactionParameters;
     }

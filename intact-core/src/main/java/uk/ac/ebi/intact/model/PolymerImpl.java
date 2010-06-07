@@ -153,7 +153,7 @@ public class PolymerImpl extends InteractorImpl implements Polymer {
         this.crc64 = crc64;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = CascadeType.ALL )
+    @OneToMany( mappedBy = "parent", cascade = CascadeType.PERSIST )
     @IndexColumn( name = "sequence_index" )
     public List<SequenceChunk> getSequenceChunks() {
         return sequenceChunks;

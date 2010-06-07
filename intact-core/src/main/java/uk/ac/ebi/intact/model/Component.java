@@ -5,19 +5,15 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
+import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 /**
  * The specific instance of an interactor which participates in an interaction.
@@ -508,7 +504,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * {@inheritDoc}
      */
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<ComponentXref> getXrefs() {
         return super.getXrefs();
@@ -518,7 +514,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * {@inheritDoc}
      */
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.ALL )
+    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
     @Override
     public Collection<ComponentAlias> getAliases() {
         return super.getAliases();
