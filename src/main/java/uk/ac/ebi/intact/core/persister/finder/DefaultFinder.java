@@ -209,7 +209,12 @@ public class DefaultFinder implements Finder {
         if (experimentAcs.size() == 1 && experiment.getAnnotations().isEmpty()) {
 
             experimentAc = experimentAcs.get(0);
+            
+            Experiment match = getDaoFactory().getExperimentDao().getByAc(experimentAc);
 
+            if (!match.getAnnotations().isEmpty()){
+                 experimentAc = null;
+            }
         } else if ( experimentAcs.size() != 0 ){
             // check the annotations
             Collection<String> expAnnotDescs = CollectionUtils.collect(experiment.getAnnotations(), new BeanToPropertyValueTransformer("annotationText"));
