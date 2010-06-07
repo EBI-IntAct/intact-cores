@@ -466,6 +466,7 @@ public boolean isUndetermined() {
                 prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
             }
             else{
+                
                 // Truncate according to type.
                 if ( fromCvFuzzyType.isCTerminal() ) {
                     setSequenceIntern( getLastSequence( sequence ) );
