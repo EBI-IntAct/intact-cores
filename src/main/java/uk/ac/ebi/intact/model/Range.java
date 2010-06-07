@@ -448,9 +448,10 @@ public boolean isUndetermined() {
             numberOfAminoAcidsUpStream += Math.min(numberAminoAcidsPendingAtTheBeginning, (minimumSizeForAlignment/2) - numberOfAminoAcidsDownStream);
         }
 
+        System.out.println();
         // Extract the proper downstream and upstream sequence
         if (numberOfAminoAcidsUpStream > 0){
-            setUpStreamSequence(fullSequence.substring(Math.max(rangeStart - numberOfAminoAcidsUpStream - 1, 0), Math.max(rangeStart, 1)));            
+            setUpStreamSequence(fullSequence.substring(Math.max(rangeStart - numberOfAminoAcidsUpStream, 0), Math.max(rangeStart, 1)));            
         }
         if (numberOfAminoAcidsDownStream > 0){
             setDownStreamSequence(fullSequence.substring(Math.min(fullSequence.length() - 1, rangeEnd), rangeEnd + numberOfAminoAcidsDownStream));
