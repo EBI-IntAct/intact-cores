@@ -246,8 +246,8 @@ public class Range extends BasicObjectImpl {
     }
 
     @Deprecated
-     public Range( Institution owner, int fromStart, int fromEnd, int toStart, int toEnd, String seq ) {
-       this(fromStart, fromEnd, toStart, toEnd, seq);
+    public Range( Institution owner, int fromStart, int fromEnd, int toStart, int toEnd, String seq ) {
+        this(fromStart, fromEnd, toStart, toEnd, seq);
         setOwner(owner);
     }
 
@@ -406,7 +406,7 @@ public boolean isUndetermined() {
     private void prepareUpStreamDownStreamSequence(int rangeStart, int rangeEnd, String fullSequence){
         this.upStreamSequence = null;
         this.downStreamSequence = null;
-        
+
         int numberOfAminoAcidsUpStream = 0;
         int numberOfAminoAcidsDownStream = 0;
 
@@ -422,7 +422,7 @@ public boolean isUndetermined() {
 
         // count number of amino acids upstream the feature
         if (rangeStart - (minimumSizeForAlignment/2) < 0){
-             numberOfAminoAcidsUpStream = Math.max(0, rangeStart - 1);
+            numberOfAminoAcidsUpStream = Math.max(0, rangeStart - 1);
         }
         else {
             numberOfAminoAcidsUpStream = minimumSizeForAlignment/2;
@@ -430,7 +430,7 @@ public boolean isUndetermined() {
 
         // count the number of amino acids downstream the feature
         if (rangeEnd + (minimumSizeForAlignment/2) > fullSequence.length()){
-             numberOfAminoAcidsDownStream = Math.max(0, fullSequence.length() - rangeEnd);
+            numberOfAminoAcidsDownStream = Math.max(0, fullSequence.length() - rangeEnd);
         }
         else {
             numberOfAminoAcidsDownStream = minimumSizeForAlignment/2;
@@ -466,7 +466,7 @@ public boolean isUndetermined() {
                 prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
             }
             else{
-                
+
                 // Truncate according to type.
                 if ( fromCvFuzzyType.isCTerminal() ) {
                     setSequenceIntern( getLastSequence( sequence ) );
@@ -818,21 +818,28 @@ public boolean isUndetermined() {
 
     public void setUpStreamSequence(String upStreamSequence) {
 
-        if (upStreamSequence.length() > minimumSizeForAlignment * 2){
-            throw new IllegalArgumentException("You try to set the upstream sequence of the range with a sequence of lenth "+upStreamSequence.length()+". The upstream sequence can't have more than "+minimumSizeForAlignment*2+" amino acids");
+        if (upStreamSequence != null){
+            if (upStreamSequence.length() > minimumSizeForAlignment * 2){
+                throw new IllegalArgumentException("You try to set the upstream sequence of the range with a sequence of lenth "+upStreamSequence.length()+". The upstream sequence can't have more than "+minimumSizeForAlignment*2+" amino acids");
+            }
         }
+
         this.upStreamSequence = upStreamSequence;
     }
 
     @Column( name = "downstream_sequence", length = minimumSizeForAlignment)
     public String getDownStreamSequence() {
+
         return downStreamSequence;
     }
 
     public void setDownStreamSequence(String downStreamSequence) {
-        if (downStreamSequence.length() > minimumSizeForAlignment * 2){
-            throw new IllegalArgumentException("You try to set the downstream sequence of the range with a sequence of lenth "+downStreamSequence.length()+". The downstream sequence can't have more than "+minimumSizeForAlignment*2+" amino acids");
+        if (downStreamSequence != null){
+            if (downStreamSequence.length() > minimumSizeForAlignment * 2){
+                throw new IllegalArgumentException("You try to set the downstream sequence of the range with a sequence of lenth "+downStreamSequence.length()+". The downstream sequence can't have more than "+minimumSizeForAlignment*2+" amino acids");
+            }
         }
+
         this.downStreamSequence = downStreamSequence;
     }
 }
