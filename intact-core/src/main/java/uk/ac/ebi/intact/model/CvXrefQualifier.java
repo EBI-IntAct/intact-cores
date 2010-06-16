@@ -37,6 +37,9 @@ public class CvXrefQualifier extends CvDagObject implements Editable {
     public static final String ISOFORM_PARENT = "isoform-parent";
     public static final String ISOFORM_PARENT_MI_REF = "MI:0243";
 
+    public static final String CHAIN_PARENT = "chain-parent";
+    public static final String CHAIN_PARENT_MI_REF = "MI:0951";
+
     public static final String PRIMARY_REFERENCE = "primary-reference";
     public static final String PRIMARY_REFERENCE_MI_REF = "MI:0358";
 
