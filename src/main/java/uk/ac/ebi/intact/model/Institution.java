@@ -95,12 +95,12 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
         this.url = url;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST})
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL})
     public Collection<InstitutionAlias> getAliases() {
         return super.getAliases();
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST} )
+    @ManyToMany( cascade = {CascadeType.ALL} )
     //@Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @JoinTable(
             name = "ia_institution2annot",
@@ -111,7 +111,7 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST})
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL})
     public Collection<InstitutionXref> getXrefs() {
         return super.getXrefs();
     }
