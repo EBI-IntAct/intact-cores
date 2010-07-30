@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
@@ -273,7 +274,9 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
             }
         }
 
-        if (!CollectionUtils.isEqualCollection( getXrefs(), annotatedObject.getXrefs() )) {
+        if (Hibernate.isInitialized(getXrefs()) &&
+                Hibernate.isInitialized(annotatedObject.getXrefs()) &&
+                !CollectionUtils.isEqualCollection( getXrefs(), annotatedObject.getXrefs() )) {
             return false;
         }
         if (!CollectionUtils.isEqualCollection( getAnnotations(), annotatedObject.getAnnotations() )) {
