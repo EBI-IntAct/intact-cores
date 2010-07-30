@@ -413,6 +413,9 @@ public boolean isUndetermined() {
         if (rangeStart < 0){
             throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be negative.");
         }
+        if (rangeEnd < 0){
+            throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be negative.");
+        }
         if (rangeEnd > fullSequence.length()){
             throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be superior to the length of the protein ("+fullSequence.length()+").");
         }
@@ -656,6 +659,9 @@ public boolean isUndetermined() {
         if (end > sequence.length()){
             end = sequence.length();
         }
+        if (end <= 0){
+            end = 1;
+        }
         return getSequence( sequence, 1, end );
     }
 
@@ -739,6 +745,10 @@ public boolean isUndetermined() {
 
         if (start < 0){
             log.warn("The start position " + start + " is not valid. It can't be a negative value, so we will consider the start position as the first amino acid in the sequence.");
+            start = 1;
+        }
+        if (end <= 0){
+            log.warn("The end position " + end + " is not valid. It can't be a negative value, so we will consider the end position as the first amino acid in the sequence.");
             start = 1;
         }
         if (end > sequence.length()){
