@@ -197,7 +197,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
 
     @Override
     public String toString() {
-        return "MI="+ identifier +", "+super.toString();
+        return "Id="+ identifier +", "+super.toString();
     }
 } // end CvObject
 
