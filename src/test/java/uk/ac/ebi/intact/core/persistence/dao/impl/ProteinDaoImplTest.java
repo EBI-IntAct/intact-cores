@@ -82,6 +82,23 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void getChains() throws Exception {
+        Protein masterProt1 = getMockBuilder().createProtein("P12345", "master1");
+
+        // master protein needs to be persisted first
+        getCorePersister().saveOrUpdate(masterProt1);
+        Assert.assertNotNull(masterProt1.getAc());
+
+        Protein chain11 = getMockBuilder().createProteinChain(masterProt1, "P12345-1", "sv11");
+        Protein chain12 = getMockBuilder().createProteinChain(masterProt1, "P12345-2", "sv12");
+
+        getCorePersister().saveOrUpdate(chain11, chain12);
+
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().getProteinChains(masterProt1).size());
+    }
+
+    @Test
 
     public void getSpliceVariantMasterProtein() throws Exception {
         Protein masterProt1 = getMockBuilder().createProtein("P12345", "master1");
@@ -98,5 +115,24 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(masterProt1.getAc(), getDaoFactory().getProteinDao().getSpliceVariantMasterProtein(spliceVar11).getAc());
         Assert.assertEquals(masterProt1.getAc(), getDaoFactory().getProteinDao().getSpliceVariantMasterProtein(spliceVar12).getAc());
+    }
+
+    @Test
+
+    public void getChainMasterProtein() throws Exception {
+        Protein masterProt1 = getMockBuilder().createProtein("P12345", "master1");
+
+        // master protein needs to be persisted first
+        getCorePersister().saveOrUpdate(masterProt1);
+        Assert.assertNotNull(masterProt1.getAc());
+
+        Protein chain11 = getMockBuilder().createProteinChain(masterProt1, "P12345-1", "sv11");
+        Protein chain12 = getMockBuilder().createProteinChain(masterProt1, "P12345-2", "sv12");
+
+        getCorePersister().saveOrUpdate(chain11, chain12);
+
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(masterProt1.getAc(), getDaoFactory().getProteinDao().getChainMasterProtein(chain11).getAc());
+        Assert.assertEquals(masterProt1.getAc(), getDaoFactory().getProteinDao().getChainMasterProtein(chain12).getAc());
     }
 }

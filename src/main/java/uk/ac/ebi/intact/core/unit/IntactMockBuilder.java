@@ -280,6 +280,22 @@ public class IntactMockBuilder {
         return spliceVariant;
     }
 
+    public Protein createProteinChain(Protein masterProt, String uniprotId, String shortLabel) {
+        Protein chain = createProtein(uniprotId, shortLabel);
+
+        if (masterProt.getAc() == null) {
+            throw new IllegalArgumentException("Cannot create a chain if the master protein does not have an AC: "+masterProt.getShortLabel());
+        }
+
+        CvXrefQualifier chainParent = createCvObject(CvXrefQualifier.class, CvXrefQualifier.CHAIN_PARENT_MI_REF, CvXrefQualifier.CHAIN_PARENT);
+        CvDatabase uniprotKb = createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
+
+        InteractorXref isoformXref = createXref(chain, masterProt.getAc(), chainParent, uniprotKb);
+        chain.addXref(isoformXref);
+
+        return chain;
+    }
+
     public Protein createDeterministicProtein(String uniprotId, String shortLabel) {
         return createProtein(uniprotId, shortLabel, createDeterministicBioSource());
     }
