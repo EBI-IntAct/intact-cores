@@ -74,6 +74,13 @@ public interface ProteinDao extends PolymerDao<ProteinImpl> {
     List<ProteinImpl> getSpliceVariants( Protein protein );
 
     /**
+     * Searches and return all chains of the given protein.
+     * @param protein the protein of which we want the chains
+     * @return a non null list of intact proteins.
+     */
+    List<ProteinImpl> getProteinChains( Protein protein );
+
+    /**
      * Given a splice variant, search and return the corresponding master protein.
      *
      * @param spliceVariant the splice variant we are searching the master of.
@@ -81,6 +88,13 @@ public interface ProteinDao extends PolymerDao<ProteinImpl> {
      * @return a master protein, may return null but should be considered as a database inconsistency.
      */
     ProteinImpl getSpliceVariantMasterProtein( Protein spliceVariant );
+
+    /**
+     * Given a chain, search and return the corresponding master protein.
+     * @param chain the chain we are searching the master of.
+     * @return a master protein, may return null but should be considered as a database inconsistency.
+     */
+    ProteinImpl getChainMasterProtein( Protein chain );
 
     /**
      * Gets all the uniprot ACs from the database, which are involved in interactions

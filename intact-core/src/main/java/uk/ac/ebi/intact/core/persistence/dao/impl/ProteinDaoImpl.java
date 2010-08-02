@@ -223,45 +223,83 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
                 .setProjection( Projections.distinct( Property.forName( "xref.primaryId" ) ) ).list();
     }
 
-    public List<ProteinImpl> getSpliceVariants( Protein protein ) {
+    protected List<ProteinImpl> getProteinTranscripts( Protein protein, String cvXRefQualifier) {
         if ( protein == null ) {
             throw new NullPointerException( "The master protein must not be null." );
+        }
+
+        if ( cvXRefQualifier == null ) {
+            throw new NullPointerException( "The Cv Xref qualifier must not be null." );
         }
 
         String ac = protein.getAc();
 
         if ( ac == null ) {
-            // This protein doesn't have an AC, it cannot have splice variants.
-            if (log.isWarnEnabled()) log.warn("Cannot find splice variants for a protein without AC: "+protein.getShortLabel());
+            // This protein doesn't have an AC, it cannot have protein transcripts.
+            if (log.isWarnEnabled()) log.warn("Cannot find protein transcripts for a protein without AC: "+protein.getShortLabel());
             return Collections.EMPTY_LIST;
         }
 
         Query query = getEntityManager().createQuery("select prot from ProteinImpl prot inner join " +
-                                                     "prot.xrefs as xref where " +
-                                                     "xref.cvXrefQualifier.identifier = :isoformParentMi " +
-                                                     "and xref.cvDatabase.identifier = :intactMi " +
-                                                     "and xref.primaryId = :masterAc");
-        query.setParameter("isoformParentMi", CvXrefQualifier.ISOFORM_PARENT_MI_REF);
+                "prot.xrefs as xref where " +
+                "xref.cvXrefQualifier.identifier = :transcriptParentMi " +
+                "and xref.cvDatabase.identifier = :intactMi " +
+                "and xref.primaryId = :masterAc");
+        query.setParameter("transcriptParentMi", cvXRefQualifier);
         query.setParameter("intactMi", CvDatabase.INTACT_MI_REF);
         query.setParameter("masterAc", ac);
-        
+
         return query.getResultList();
     }
 
-    public ProteinImpl getSpliceVariantMasterProtein( Protein spliceVariant ) {
+    public List<ProteinImpl> getSpliceVariants( Protein protein ) {
+        /**if ( protein == null ) {
+         throw new NullPointerException( "The master protein must not be null." );
+         }
 
-        if ( spliceVariant == null ) {
-            throw new NullPointerException( "spliceVariant must not be null." );
+         String ac = protein.getAc();
+
+         if ( ac == null ) {
+         // This protein doesn't have an AC, it cannot have splice variants.
+         if (log.isWarnEnabled()) log.warn("Cannot find splice variants for a protein without AC: "+protein.getShortLabel());
+         return Collections.EMPTY_LIST;
+         }
+
+         Query query = getEntityManager().createQuery("select prot from ProteinImpl prot inner join " +
+         "prot.xrefs as xref where " +
+         "xref.cvXrefQualifier.identifier = :isoformParentMi " +
+         "and xref.cvDatabase.identifier = :intactMi " +
+         "and xref.primaryId = :masterAc");
+         query.setParameter("isoformParentMi", CvXrefQualifier.ISOFORM_PARENT_MI_REF);
+         query.setParameter("intactMi", CvDatabase.INTACT_MI_REF);
+         query.setParameter("masterAc", ac);
+
+         return query.getResultList();**/
+
+        return getProteinTranscripts(protein, CvXrefQualifier.ISOFORM_PARENT_MI_REF);
+    }
+
+    public List<ProteinImpl> getProteinChains( Protein protein ) {
+
+        return getProteinTranscripts(protein, CvXrefQualifier.CHAIN_PARENT_MI_REF);
+    }
+    protected ProteinImpl getProteinTranscriptsMasterProtein( Protein proteinTranscript, String cvXRefQualifier) {
+        if ( proteinTranscript == null ) {
+            throw new NullPointerException( "proteinTranscript must not be null." );
+        }
+
+        if ( cvXRefQualifier == null ) {
+            throw new NullPointerException( "The Cv Xref qualifier must not be null." );
         }
 
         String masterProtAc = null;
 
-        for (InteractorXref xref : spliceVariant.getXrefs()) {
-            if (xref.getCvXrefQualifier() != null && CvXrefQualifier.ISOFORM_PARENT_MI_REF.equals(xref.getCvXrefQualifier().getIdentifier())) {
+        for (InteractorXref xref : proteinTranscript.getXrefs()) {
+            if (xref.getCvXrefQualifier() != null && cvXRefQualifier.equals(xref.getCvXrefQualifier().getIdentifier())) {
                 if (masterProtAc == null) {
                     masterProtAc = xref.getPrimaryId();
                 } else {
-                    throw new IntactException("This splice variant contains more than one \"isoform-parent\" xrefs: "+spliceVariant.getShortLabel() );
+                    throw new IntactException("This protein transcript contains more than one "+cvXRefQualifier+" xrefs: "+proteinTranscript.getShortLabel() );
                 }
             }
         }
@@ -270,7 +308,18 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return getByAc(masterProtAc);
     }
 
-     /**
+
+    public ProteinImpl getSpliceVariantMasterProtein( Protein spliceVariant ) {
+
+        return getProteinTranscriptsMasterProtein(spliceVariant, CvXrefQualifier.ISOFORM_PARENT_MI_REF);
+    }
+
+    public ProteinImpl getChainMasterProtein( Protein chain ) {
+
+        return getProteinTranscriptsMasterProtein(chain, CvXrefQualifier.CHAIN_PARENT_MI_REF);
+    }
+
+    /**
      * Gets all the uniprot ACs from the database, which are involved in interactions
      * @return the uniprot ACs
      *
@@ -278,9 +327,9 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
      */
     public List<String> getAllUniprotAcs() {
         Query query = getEntityManager().createQuery("select distinct(xref.primaryId) from InteractorXref xref " +
-                                                     "where xref.cvXrefQualifier.identifier = :qualifierMi " +
-                                                     "and xref.cvDatabase.identifier = :uniprotMi " +
-                                                     "and size(xref.parent.activeInstances) > 0");
+                "where xref.cvXrefQualifier.identifier = :qualifierMi " +
+                "and xref.cvDatabase.identifier = :uniprotMi " +
+                "and size(xref.parent.activeInstances) > 0");
         query.setParameter("qualifierMi", CvXrefQualifier.IDENTITY_MI_REF);
         query.setParameter("uniprotMi", CvDatabase.UNIPROT_MI_REF);
 
@@ -298,9 +347,9 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
                 .createAlias( "xref.cvDatabase", "cvDatabase" )
                 .createAlias( "xref.cvXrefQualifier", "cvXrefQualifier" )
                 .add( Restrictions.eq( "cvDatabase.miIdentifier",
-                                       CvDatabase.UNIPROT_MI_REF ) )
+                        CvDatabase.UNIPROT_MI_REF ) )
                 .add( Restrictions.eq( "cvXrefQualifier.miIdentifier",
-                                       CvXrefQualifier.IDENTITY_MI_REF ) )
+                        CvXrefQualifier.IDENTITY_MI_REF ) )
 
                 .add( Restrictions.not( Restrictions.like( "xref.primaryId", "A%" ) ) )
                 .add( Restrictions.not( Restrictions.like( "xref.primaryId", "B%" ) ) )
