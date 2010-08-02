@@ -749,7 +749,7 @@ public boolean isUndetermined() {
         }
         if (end <= 0){
             log.warn("The end position " + end + " is not valid. It can't be a negative value, so we will consider the end position as the first amino acid in the sequence.");
-            start = 1;
+            end = 1;
         }
         if (end > sequence.length()){
             log.warn("The end position " + end + " is not valid. It can't be superior to the length of the full sequence, so we will consider the end position as the last amino acid in the sequence");
