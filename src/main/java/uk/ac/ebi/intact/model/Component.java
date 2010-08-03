@@ -444,7 +444,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'bindingDomains'.
      */
-    @OneToMany( mappedBy = "component", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "component", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
     public Collection<Feature> getBindingDomains() {
         return bindingDomains;
     }
@@ -487,7 +487,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     /**
      * {@inheritDoc}
      */
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
 
     @JoinTable(
             name = "ia_component2annot",
@@ -504,7 +504,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * {@inheritDoc}
      */
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE })
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE })
     @Override
     public Collection<ComponentXref> getXrefs() {
         return super.getXrefs();
@@ -514,7 +514,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * {@inheritDoc}
      */
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE } )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE } )
     @Override
     public Collection<ComponentAlias> getAliases() {
         return super.getAliases();
