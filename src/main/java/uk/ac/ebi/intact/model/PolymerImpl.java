@@ -158,7 +158,7 @@ public class PolymerImpl extends InteractorImpl implements Polymer {
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @IndexColumn( name = "sequence_index" )
     public List<SequenceChunk> getSequenceChunks() {
         return sequenceChunks;
