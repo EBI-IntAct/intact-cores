@@ -113,7 +113,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     ///////////////////////////////
     // Override AnnotatedObject
 
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
     @JoinTable(
             name = "ia_pub2annot",
             joinColumns = {@JoinColumn( name = "publication_ac" )},
@@ -125,14 +125,14 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Override
     public Collection<PublicationXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent"  )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Override
     public Collection<PublicationAlias> getAliases() {
         return super.getAliases();
