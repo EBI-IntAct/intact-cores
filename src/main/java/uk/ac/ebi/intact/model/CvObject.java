@@ -92,7 +92,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         this.objClass = objClass;
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST})
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
     @JoinTable(
             name = "ia_cvobject2annot",
             joinColumns = {@JoinColumn( name = "cvobject_ac" )},
@@ -104,14 +104,14 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     }
 
     @OneToMany( mappedBy = "parent")
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Override
     public Collection<CvObjectXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent")
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Override
     public Collection<CvObjectAlias> getAliases() {
         return super.getAliases();
