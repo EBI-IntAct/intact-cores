@@ -56,7 +56,7 @@ public class InteractorDaoTest extends IntactBasicTestCase {
 
         final Map<String,List<String>> partnersMap = getDaoFactory().getInteractorDao()
                 .getPartnersWithInteractionAcsByInteractorAc(prot1.getAc());
-        
+
         Assert.assertEquals(2, partnersMap.size());
         Assert.assertTrue(partnersMap.containsKey(prot2.getAc()));
         Assert.assertEquals(interaction.getAc(), partnersMap.get(prot2.getAc()).get(0));
@@ -169,7 +169,7 @@ public class InteractorDaoTest extends IntactBasicTestCase {
         Assert.assertEquals("uk.ac.ebi.intact.model.InteractorImpl", returnedInteractor.getObjClass());
     }
 
-     @Test
+    @Test
     public void getProtein_usingInteractorType_interaction() throws Exception {
         CvInteractorType type = getMockBuilder().createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION);
         Interactor interactor = new InteractorImpl("interaction1", getIntactContext().getInstitution(), type);
@@ -183,5 +183,28 @@ public class InteractorDaoTest extends IntactBasicTestCase {
 
         final InteractorImpl returnedInteractor = getDaoFactory().getInteractorDao().getAll().get(0);
         Assert.assertEquals("uk.ac.ebi.intact.model.InteractionImpl", returnedInteractor.getObjClass());
+    }
+
+    @Test
+    public void countInteractionsForInteractorWithAc(){
+        Protein prot1 = getMockBuilder().createProtein("A", "prot1");
+        Protein prot2 = getMockBuilder().createProtein("B", "prot2");
+        Protein prot3 = getMockBuilder().createProtein("C", "prot3");
+        Protein prot4 = getMockBuilder().createProtein("D", "prot4");
+        Interaction interaction = getMockBuilder().createInteraction(prot1, prot2, prot3);
+
+        getCorePersister().saveOrUpdate(interaction);
+        getCorePersister().saveOrUpdate(prot4);
+
+        String ac = prot1.getAc();
+        String ac2 = prot4.getAc();
+
+        int countInteraction = getIntactContext().getDaoFactory().getProteinDao().countInteractionsForInteractorWithAc(ac);
+
+        Assert.assertEquals(1, countInteraction);
+
+        int countInteraction2 = getIntactContext().getDaoFactory().getProteinDao().countInteractionsForInteractorWithAc(ac2);
+
+        Assert.assertEquals(0, countInteraction2);
     }
 }
