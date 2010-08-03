@@ -65,6 +65,23 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
 
     @Test
 
+    public void deleteProtein() throws Exception {
+        Protein nonInteractingProt = getMockBuilder().createProtein("Q00000", "non");
+
+        Protein protA = getMockBuilder().createProtein("P00111", "protA");
+        Protein protB = getMockBuilder().createProtein("P00112", "protB");
+        Interaction interaction = getMockBuilder().createInteraction(protA, protB);
+
+        getCorePersister().saveOrUpdate(nonInteractingProt, interaction);
+
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+
+        getDaoFactory().getProteinDao().delete((ProteinImpl) nonInteractingProt);
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+    }
+
+    @Test
+
     public void getSpliceVariants() throws Exception {
         Protein masterProt1 = getMockBuilder().createProtein("P12345", "master1");
 

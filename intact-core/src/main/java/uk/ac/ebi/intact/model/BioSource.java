@@ -76,7 +76,6 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
      *
      * @param shortLabel The label used to identify this instance
      * @param taxId      the NCBI taxId, which must be unique if defined (may be null)
-     * @param owner      The <code>Institution</code> which 'owns' this BioSource
      *
      * @throws NullPointerException thrown if either no shortLabel or Institution specified.
      */
@@ -96,7 +95,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     ///////////////////////////////////////
     //access methods for attributes
 
-    @ManyToMany( cascade = {CascadeType.PERSIST} )
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
     @JoinTable(
             name = "ia_biosource2annot",
             joinColumns = {@JoinColumn( name = "biosource_ac" )},

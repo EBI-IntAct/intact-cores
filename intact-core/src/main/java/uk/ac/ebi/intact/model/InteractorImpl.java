@@ -195,7 +195,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         return interactorType;
     }
 
-    @ManyToMany( cascade = CascadeType.PERSIST)
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_int2annot",
@@ -209,14 +209,14 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
 
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
     @Override
     public Collection<InteractorXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
     @Override
     public Collection<InteractorAlias> getAliases() {
         return super.getAliases();
