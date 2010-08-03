@@ -87,7 +87,6 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      * This constructor currently assumes that a valid Feature instance must have
      * at least an owner, shortLabel and Component.
      *
-     * @param owner      The owner of the Feature - must be non-null
      * @param shortLabel A shortLabel to reference the Feature - must be non-null
      * @param component  The Component to which this Feature is attached - must
      *                   be non-null.
@@ -178,7 +177,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      *
      * @return A List of Ranges (expected to be non-empty)
      */
-    @OneToMany( mappedBy = "feature", cascade = {CascadeType.PERSIST} )
+    @OneToMany( mappedBy = "feature", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
     public Collection<Range> getRanges() {
         return ranges;
     }
@@ -215,20 +214,20 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
     @Override
     public Collection<FeatureXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
     @Override
     public Collection<FeatureAlias> getAliases() {
         return super.getAliases();
     }
 
-    @ManyToMany( cascade = CascadeType.PERSIST)
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinTable(
             name = "ia_feature2annot",
             joinColumns = {@JoinColumn( name = "feature_ac" )},

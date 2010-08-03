@@ -5,9 +5,13 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -153,7 +157,8 @@ public class PolymerImpl extends InteractorImpl implements Polymer {
         this.crc64 = crc64;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = CascadeType.PERSIST )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
     @IndexColumn( name = "sequence_index" )
     public List<SequenceChunk> getSequenceChunks() {
         return sequenceChunks;

@@ -304,7 +304,7 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
         this.bioSourceAc = ac;
     }
 
-    @ManyToMany( cascade = CascadeType.PERSIST)
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_exp2annot",
@@ -318,14 +318,14 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
 
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
     @Override
     public Collection<ExperimentXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE} )
     @Override
     public Collection<ExperimentAlias> getAliases() {
         return super.getAliases();

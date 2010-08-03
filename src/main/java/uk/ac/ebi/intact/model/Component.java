@@ -487,7 +487,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     /**
      * {@inheritDoc}
      */
-    @ManyToMany( cascade = {CascadeType.PERSIST} )
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
 
     @JoinTable(
             name = "ia_component2annot",
@@ -504,7 +504,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * {@inheritDoc}
      */
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE })
     @Override
     public Collection<ComponentXref> getXrefs() {
         return super.getXrefs();
@@ -514,7 +514,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * {@inheritDoc}
      */
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = org.hibernate.annotations.CascadeType.PERSIST )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE } )
     @Override
     public Collection<ComponentAlias> getAliases() {
         return super.getAliases();
