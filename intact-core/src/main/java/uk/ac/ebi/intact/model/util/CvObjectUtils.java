@@ -34,6 +34,8 @@ public class CvObjectUtils {
      * @since 1.8.0
      */
     public static String getIdentity( CvObject cvObject ) {
+        if (cvObject == null) return null;
+        
         // try the PSI MI first
         if (cvObject.getIdentifier() != null) {
             return cvObject.getIdentifier();
