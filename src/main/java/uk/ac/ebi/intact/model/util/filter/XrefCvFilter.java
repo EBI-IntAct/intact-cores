@@ -40,7 +40,10 @@ public class XrefCvFilter implements IntactObjectFilter<Xref>{
 
     public boolean accept(Xref xref) {
         String dbId = CvObjectUtils.getIdentity(xref.getCvDatabase());
-        if (dbId == null) xref.getCvDatabase().getShortLabel();
+
+        if (dbId == null && xref.getCvDatabase() != null) {
+            dbId = xref.getCvDatabase().getShortLabel();
+        }
 
         if (databaseFilterGroup.isAccepted(dbId)) {
 
