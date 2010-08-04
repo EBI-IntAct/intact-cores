@@ -40,6 +40,8 @@ public class IntactObjectFilterPredicate implements Predicate {
      * @throws ClassCastException (runtime) if the input is the wrong class
      */
     public boolean evaluate(Object object) {
+        if (object == null) return false;
+        
         if (!(object instanceof IntactObject)) {
             throw new ClassCastException("Expecting IntactObject");
         }
