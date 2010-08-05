@@ -734,11 +734,12 @@ public boolean isUndetermined() {
     private static String getSequence( String sequence, int start, boolean first ) {
         String seq = null;
 
-        if (sequence.length() < start){
-            throw new IllegalArgumentException("the start position ("+start+") is superior to the sequence length.");
-        }
         if ( ( sequence == null ) || sequence.length() == 0) {
             return seq;
+        }
+
+        if (sequence.length() < start){
+            throw new IllegalArgumentException("the start position ("+start+") is superior to the sequence length.");
         }
 
         if ( sequence.length() <= getMaxSequenceSize() ) {
@@ -793,6 +794,11 @@ public boolean isUndetermined() {
             log.warn("The end position " + end + " is not valid. It can't be a negative value, so we will consider the end position as the first amino acid in the sequence.");
             end = 1;
         }
+
+        if ( ( sequence == null ) || sequence.length() == 0 || ( sequence.length() < start ) ) {
+            return seq;
+        }
+
         if (end > sequence.length()){
             throw new IllegalArgumentException("The end position " + end + " is not valid. It can't be superior to the length of the full sequence.");
         }
@@ -801,10 +807,6 @@ public boolean isUndetermined() {
         }
         if (start > end){
             throw new IllegalArgumentException("The feature range start position " + start + " is superior to the feature range end position " + end + ".");
-        }
-
-        if ( ( sequence == null ) || sequence.length() == 0 || ( sequence.length() < start ) ) {
-            return seq;
         }
 
         if ( start == 0 ) {
