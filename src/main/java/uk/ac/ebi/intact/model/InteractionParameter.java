@@ -15,7 +15,10 @@
  */
 package uk.ac.ebi.intact.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Represents a specific parameter value of an interaction.
@@ -33,11 +36,21 @@ public class InteractionParameter extends Parameter {
 	public InteractionParameter() {
 		super();
 	}
-	
+
+    public InteractionParameter( CvParameterType cvParameterType, Double factor ) {
+        super(cvParameterType, factor);
+    }
+
+	public InteractionParameter( CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
+        super(cvParameterType, cvParameterUnit, factor);
+    }
+
+    @Deprecated
 	public InteractionParameter( Institution owner, CvParameterType cvParameterType, Double factor ) {
         super(owner, cvParameterType, factor);
     }
-	
+
+    @Deprecated
 	public InteractionParameter( Institution owner, CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
         super(owner, cvParameterType, cvParameterUnit, factor);
     }
