@@ -236,6 +236,36 @@ public class Range extends BasicObjectImpl {
             throw new IllegalArgumentException( "The 'from' interval cannot begin during the 'to' interval!" );
         }
 
+        if (fromStart < 0){
+            throw new IllegalArgumentException( "The 'from' start position ("+fromStart+") cannot be negative." );
+        }
+        if (fromEnd < 0){
+            throw new IllegalArgumentException( "The 'from' en position ("+fromEnd+") cannot be negative." );
+        }
+        if (toStart < 0 ){
+            throw new IllegalArgumentException( "The 'to' start position ("+toStart+") cannot be negative." );
+        }
+        if (toEnd < 0){
+            throw new IllegalArgumentException( "The 'to' end position ("+toEnd+") cannot be negative." );
+        }
+
+        if (seq != null){
+            int sequenceLength = seq.length();
+
+            if (fromStart > sequenceLength){
+                throw new IllegalArgumentException( "The sequence length ("+sequenceLength+") is inferior to the 'from' start position ("+fromStart+")" );
+            }
+            if (fromEnd > sequenceLength){
+                throw new IllegalArgumentException( "The sequence length ("+sequenceLength+") is inferior to the 'from' en position ("+fromEnd+")" );
+            }
+            if (toStart > sequenceLength){
+                throw new IllegalArgumentException( "The sequence length ("+sequenceLength+") is inferior to the 'to' start position ("+toStart+")" );
+            }
+            if (toEnd > sequenceLength){
+                throw new IllegalArgumentException( "The sequence length ("+sequenceLength+") is inferior to the 'to' end position ("+toEnd+")" );
+            }
+        }
+
         this.fromIntervalStart = fromStart;
         this.fromIntervalEnd = fromEnd;
         this.toIntervalStart = toStart;
@@ -415,6 +445,9 @@ public boolean isUndetermined() {
         }
         if (rangeEnd < 0){
             throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be negative.");
+        }
+        if (rangeStart > fullSequence.length()){
+            throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the length of the protein ("+fullSequence.length()+").");
         }
         if (rangeEnd > fullSequence.length()){
             throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be superior to the length of the protein ("+fullSequence.length()+").");
@@ -701,7 +734,10 @@ public boolean isUndetermined() {
     private static String getSequence( String sequence, int start, boolean first ) {
         String seq = null;
 
-        if ( ( sequence == null ) || sequence.length() == 0 || ( sequence.length() < start ) ) {
+        if (sequence.length() < start){
+            throw new IllegalArgumentException("the start position ("+start+") is superior to the sequence length.");
+        }
+        if ( ( sequence == null ) || sequence.length() == 0) {
             return seq;
         }
 
@@ -744,16 +780,24 @@ public boolean isUndetermined() {
         String seq = null;
 
         if (start < 0){
-            log.warn("The start position " + start + " is not valid. It can't be a negative value, so we will consider the start position as the first amino acid in the sequence.");
+            throw new IllegalArgumentException("The start of the feature range ("+start+") can't be negative.");
+        }
+        if (end < 0){
+            throw new IllegalArgumentException("The end of the feature range ("+end+") can't be negative.");
+        }
+        if (start == 0){
+            log.warn("The start position " + start + " is 0, so we will consider the start position as the first amino acid in the sequence.");
             start = 1;
         }
-        if (end <= 0){
+        if (end == 0){
             log.warn("The end position " + end + " is not valid. It can't be a negative value, so we will consider the end position as the first amino acid in the sequence.");
             end = 1;
         }
         if (end > sequence.length()){
-            log.warn("The end position " + end + " is not valid. It can't be superior to the length of the full sequence, so we will consider the end position as the last amino acid in the sequence");
-            end = sequence.length();
+            throw new IllegalArgumentException("The end position " + end + " is not valid. It can't be superior to the length of the full sequence.");
+        }
+        if (sequence.length() < start){
+            throw new IllegalArgumentException("the start position ("+start+") is superior to the sequence length.");
         }
         if (start > end){
             throw new IllegalArgumentException("The feature range start position " + start + " is superior to the feature range end position " + end + ".");
