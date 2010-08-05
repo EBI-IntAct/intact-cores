@@ -26,7 +26,7 @@ import java.util.Collection;
  */
 @Entity
 @Table( name = "ia_component" )
-public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias> {
+public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias> implements Parameterizable<ComponentParameter> {
 
     private static final Log log = LogFactory.getLog( Component.class );
 

@@ -13,7 +13,7 @@ import java.util.Date;
  * @version $Id$
  * @see uk.ac.ebi.intact.model.InteractionImpl
  */
-public interface Interaction extends Interactor {
+public interface Interaction extends Interactor, Parameterizable<InteractionParameter> {
 
     Date getLastImexUpdate();
 
