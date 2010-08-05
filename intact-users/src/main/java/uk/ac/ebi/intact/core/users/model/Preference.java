@@ -29,7 +29,7 @@ public class Preference implements Identifiable {
 
     @ManyToOne( targetEntity = User.class )
     @JoinColumn( name = "user_id" )
-    @ForeignKey(name="FK_USER")
+    @ForeignKey(name="FK_PREF_USER")
     private User user;
 
     //////////////////

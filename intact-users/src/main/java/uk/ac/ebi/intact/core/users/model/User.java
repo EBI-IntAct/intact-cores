@@ -56,7 +56,7 @@ public class User implements Identifiable {
             joinColumns = {@JoinColumn( name = "user_id" )},
             inverseJoinColumns = {@JoinColumn( name = "role_id" )}
     )
-    @ForeignKey(name = "FK_USER", inverseName = "FK_ROLE")
+    @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
     private Set<Role> roles;
 
     @OneToMany( mappedBy = "user" )
