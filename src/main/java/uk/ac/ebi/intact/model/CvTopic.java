@@ -133,6 +133,11 @@ public class CvTopic extends CvDagObject implements Editable {
     
     public static final String LAST_IMEX_UPDATE = "last-imex-update";
 
+    public static final String CHAIN_SEQ_START = "chain-seq-start";
+    public static final String CHAIN_SEQ_START_ID = "IA:0919";
+    public static final String CHAIN_SEQ_END = "chain-seq-end";
+    public static final String CHAIN_SEQ_END_ID = "  \t IA:0920";
+
 
     /**
      * Cache a Vector of all shortLabels of the class, e.g. for menus. This should not be here as it has no model
