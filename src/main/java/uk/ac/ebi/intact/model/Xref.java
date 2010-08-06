@@ -97,7 +97,6 @@ public abstract class Xref extends BasicObjectImpl {
      * <li>database details (controlled vocabulary instance)</li>
      * <li>a Primary ID</li>
      *
-     * @param anOwner          Owner of the cross-reference (non-null)
      * @param aDatabase        Controlled vocabulary instance defining the database details (non-null)
      * @param aPrimaryId       primary identifier for the cross-reference (non-null), this should be 30 characters maximum
      *                         if it's more it will be truncated. if not done, Oracle would throw an error.
@@ -108,6 +107,21 @@ public abstract class Xref extends BasicObjectImpl {
      *
      * @throws NullPointerException thrown if any mandatory parameters are not specified
      */
+    public Xref( CvDatabase aDatabase,
+                 String aPrimaryId,
+                 String aSecondaryId,
+                 String aDatabaseRelease,
+                 CvXrefQualifier aCvXrefQualifier
+    ) {
+
+        //super call sets creation time data
+        this( aDatabase, aPrimaryId, aCvXrefQualifier );
+
+        this.secondaryId = fixId( aSecondaryId );
+        this.dbRelease = aDatabaseRelease;
+    }
+
+    @Deprecated
     public Xref( Institution anOwner,
                  CvDatabase aDatabase,
                  String aPrimaryId,
