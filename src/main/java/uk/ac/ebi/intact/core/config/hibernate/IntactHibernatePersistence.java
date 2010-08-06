@@ -35,6 +35,7 @@ import java.util.Properties;
 public class IntactHibernatePersistence extends HibernatePersistence {
 
     public static final String CV_LOCAL_SEQ = "cv_local_seq";
+    public static final String UNASSIGNED_SEQ = "unassigned_seq";
 
     /**
      * Get an entity manager factory by its entity manager name and given the
@@ -102,6 +103,7 @@ public class IntactHibernatePersistence extends HibernatePersistence {
 
     public void configure(Ejb3Configuration configuration) {
         configuration.addAuxiliaryDatabaseObject(new SequenceAuxiliaryDatabaseObject(CV_LOCAL_SEQ, 1));
+        configuration.addAuxiliaryDatabaseObject(new SequenceAuxiliaryDatabaseObject(UNASSIGNED_SEQ, 1));
     }
 }
 

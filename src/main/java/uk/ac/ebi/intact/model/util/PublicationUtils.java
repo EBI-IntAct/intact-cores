@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.model.util;
 
+import uk.ac.ebi.intact.core.config.SequenceManager;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.Annotation;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Experiment;
@@ -24,14 +26,8 @@ public class PublicationUtils {
                 return true;
             }
         }
-
-        for ( Experiment experiment : publication.getExperiments()) {
-            if( ExperimentUtils.isAccepted( experiment ) ) {
-                return true;
-            }
-        }
-
-        return false;
+        
+        return ExperimentUtils.areAllAccepted(publication.getExperiments());
     }
 
     public static boolean isToBeReviewed( Publication publication ) {
@@ -73,5 +69,10 @@ public class PublicationUtils {
         }
         
         return false;
+    }
+
+    public static String nextUnassignedId(IntactContext intactContext) {
+        SequenceManager sequenceManager = (SequenceManager) intactContext.getSpringContext().getBean("sequenceManager");
+        return "unassigned"+sequenceManager.getNextValueForSequence("unassigned_seq");
     }
 }
