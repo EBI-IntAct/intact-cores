@@ -36,13 +36,9 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
     ///////////////////////////////////////
     // associations
 
-    private String detectionMethodAc;
-    private String identMethodAc;
-    private String relatedExperimentAc;
     private String cvIdentificationAc;
     private String cvInteractionAc;
     private String bioSourceAc;
-    private String publicationAc;
 
     /**
      * Last relevant change in this object that requires an export to IMEx.
@@ -318,14 +314,20 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
 
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+                org.hibernate.annotations.CascadeType.DELETE,
+                org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                org.hibernate.annotations.CascadeType.MERGE} )
     @Override
     public Collection<ExperimentXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+                org.hibernate.annotations.CascadeType.DELETE,
+                org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                org.hibernate.annotations.CascadeType.MERGE} )
     @Override
     public Collection<ExperimentAlias> getAliases() {
         return super.getAliases();

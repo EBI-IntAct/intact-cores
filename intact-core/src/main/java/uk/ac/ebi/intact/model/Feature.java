@@ -214,14 +214,20 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+                org.hibernate.annotations.CascadeType.DELETE,
+                org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                org.hibernate.annotations.CascadeType.MERGE} )
     @Override
     public Collection<FeatureXref> getXrefs() {
         return super.getXrefs();
     }
 
     @OneToMany( mappedBy = "parent" )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+                org.hibernate.annotations.CascadeType.DELETE,
+                org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                org.hibernate.annotations.CascadeType.MERGE} )
     @Override
     public Collection<FeatureAlias> getAliases() {
         return super.getAliases();
