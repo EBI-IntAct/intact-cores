@@ -5,6 +5,7 @@
  */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
@@ -108,13 +109,21 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     }
 
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+                org.hibernate.annotations.CascadeType.DELETE,
+                org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                org.hibernate.annotations.CascadeType.MERGE} )
     @Override
     public Collection<BioSourceXref> getXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+                org.hibernate.annotations.CascadeType.DELETE,
+                org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                org.hibernate.annotations.CascadeType.MERGE} )
     @Override
     public Collection<BioSourceAlias> getAliases() {
         return super.getAliases();
