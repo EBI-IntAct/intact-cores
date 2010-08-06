@@ -27,10 +27,20 @@ public class ExperimentXref extends Xref {
     public ExperimentXref() {
     }
 
+    public ExperimentXref( CvDatabase aDatabase, String aPrimaryId, String aSecondaryId, String aDatabaseRelease, CvXrefQualifier aCvXrefQualifier ) {
+        super( aDatabase, aPrimaryId, aSecondaryId, aDatabaseRelease, aCvXrefQualifier );
+    }
+
+    public ExperimentXref( CvDatabase aDatabase, String aPrimaryId, CvXrefQualifier aCvXrefQualifier ) {
+        super( aDatabase, aPrimaryId, aCvXrefQualifier );
+    }
+
+    @Deprecated
     public ExperimentXref( Institution anOwner, CvDatabase aDatabase, String aPrimaryId, String aSecondaryId, String aDatabaseRelease, CvXrefQualifier aCvXrefQualifier ) {
         super( anOwner, aDatabase, aPrimaryId, aSecondaryId, aDatabaseRelease, aCvXrefQualifier );
     }
 
+    @Deprecated
     public ExperimentXref( Institution anOwner, CvDatabase aDatabase, String aPrimaryId, CvXrefQualifier aCvXrefQualifier ) {
         super( anOwner, aDatabase, aPrimaryId, aCvXrefQualifier );
     }
