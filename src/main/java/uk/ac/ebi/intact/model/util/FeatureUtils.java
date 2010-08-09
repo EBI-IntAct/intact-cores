@@ -103,4 +103,89 @@ public class FeatureUtils {
 
         return badFeatures;
     }
+
+    /**
+     *
+     * @param protein : the protein to check
+     * @return a set of the protein feature ranges which are overlapping or out of bound
+     */
+    public static Set<Range> getBadRanges(Protein protein){
+
+        Set<Range> badRanges = getOutOfBoundRanges(protein);
+        badRanges.addAll(getOverlappingRanges(protein));
+
+        return badRanges;
+    }
+
+    /**
+     *
+     * @param protein  : the protein to check
+     * @return a set of the protein feature ranges containing overlapping ranges.
+     */
+    public static Set<Range> getOverlappingRanges(Protein protein){
+
+        Collection<Component> components = protein.getActiveInstances();
+        Set<Range> badRanges = new HashSet<Range>();
+
+        for (Component component : components){
+            Collection<Feature> features = component.getBindingDomains();
+
+            for (Feature feature : features){
+                Collection<Range> ranges = feature.getRanges();
+
+                for (Range range : ranges){
+                    if (range.getFromIntervalStart() > range.getFromIntervalEnd() || range.getToIntervalStart() > range.getToIntervalEnd() || range.getFromIntervalStart() > range.getToIntervalStart() || range.getFromIntervalEnd() > range.getToIntervalEnd()){
+                        badRanges.add(range);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return badRanges;
+    }
+
+    /**
+     *
+     * @param protein : the protein to check
+     * @return a set of the protein feature out of bound ranges
+     */
+    public static Set<Range> getOutOfBoundRanges(Protein protein){
+        int sequenceLength = 0;
+        String sequence = protein.getSequence();
+        if (sequence != null){
+            sequenceLength = sequence.length();
+        }
+
+        Collection<Component> components = protein.getActiveInstances();
+        Set<Range> badRanges = new HashSet<Range>();
+
+        for (Component component : components){
+            Collection<Feature> features = component.getBindingDomains();
+
+            for (Feature feature : features){
+                Collection<Range> ranges = feature.getRanges();
+
+                for (Range range : ranges){
+                    if (range.getToCvFuzzyType() != null &&
+                            (range.getToCvFuzzyType().isCTerminal() ||
+                                    range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined())) {
+                        continue;
+                    }
+                    else if (range.getFromIntervalStart() < 0 || range.getFromIntervalEnd() < 0 || range.getToIntervalStart() < 0 || range.getToIntervalEnd() < 0){
+                        badRanges.add(range);
+                        break;
+                    }
+                    else if (sequenceLength > 0){
+                        if (range.getFromIntervalStart() > sequenceLength || range.getFromIntervalEnd() > sequenceLength || range.getToIntervalStart() > sequenceLength || range.getToIntervalEnd() > sequenceLength){
+                            badRanges.add(range);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return badRanges;
+    }
 }
