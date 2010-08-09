@@ -205,12 +205,18 @@ public class FeatureUtils {
         }
 
         int sequenceLength = sequence.length();
-        if (range.getFromIntervalEnd() > sequenceLength || range.getToIntervalEnd() > sequenceLength || range.getFromIntervalStart() > sequenceLength || range.getToIntervalStart() > sequenceLength){
+        if (range.getToCvFuzzyType() != null &&
+                            (range.getToCvFuzzyType().isCTerminal() ||
+                                    range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined())) {
+             return true;
+        }
+        else if (range.getFromIntervalEnd() > sequenceLength || range.getToIntervalEnd() > sequenceLength || range.getFromIntervalStart() > sequenceLength || range.getToIntervalStart() > sequenceLength){
             return false;
         }
         else if (range.getFromIntervalEnd() < 0 || range.getToIntervalEnd() < 0 || range.getFromIntervalStart() < 0 || range.getToIntervalStart() < 0){
             return false;
         }
+        
         return true;
     }
 }
