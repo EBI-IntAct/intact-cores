@@ -188,4 +188,29 @@ public class FeatureUtils {
 
         return badRanges;
     }
+
+    /**
+     *
+     * @param range : the range to check
+     * @param sequence : the sequence of the protein
+     * @return true if the range is within the sequence
+     */
+    public static boolean isRangeWithinSequence(Range range, String sequence){
+
+        if (sequence == null){
+            return false;
+        }
+        else if (range == null){
+            return false;
+        }
+
+        int sequenceLength = sequence.length();
+        if (range.getFromIntervalEnd() > sequenceLength || range.getToIntervalEnd() > sequenceLength || range.getFromIntervalStart() > sequenceLength || range.getToIntervalStart() > sequenceLength){
+            return false;
+        }
+        else if (range.getFromIntervalEnd() < 0 || range.getToIntervalEnd() < 0 || range.getFromIntervalStart() < 0 || range.getToIntervalStart() < 0){
+            return false;
+        }
+        return true;
+    }
 }
