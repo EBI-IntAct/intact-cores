@@ -104,6 +104,7 @@ public class ProteinUtils {
      * @since 1.6
      */
     public static String getGeneName( final Interactor protein ) {
+        if (protein == null) return null;
 
         if ( (protein instanceof Protein) && !(isFromUniprot( (Protein)protein )) ) {
             // if the protein is NOT a UniProt one, then use the shortlabel as we won't get a gene name.
