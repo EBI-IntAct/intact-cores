@@ -19,12 +19,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.CvExperimentalRole;
+import uk.ac.ebi.intact.model.Interaction;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * TODO comment this
@@ -77,88 +77,20 @@ public class InteractionShortLabelGenerator {
      * @since 1.6
      */
     public static String createCandidateShortLabel( final Interaction interaction ) {
-        // this collections will contain the geneNames, and will be filled according the experimental roles of
-        // the components
-        Collection<String> baits = new ArrayList<String>( 2 );
-        Collection<String> preys = new ArrayList<String>( 2 );
-        Collection<String> neutrals = new ArrayList<String>( 2 );
+        List<Component> components = new ArrayList<Component>(interaction.getComponents());
 
-        Collection<Component> components = interaction.getComponents();
+        Collections.sort(components, new ComponentRoleComparator());
 
-        if ( components.isEmpty() ) {
-            throw new IllegalArgumentException( "Interaction without components" );
+        if (components.size() == 1) {
+            return getLabel(components.get(0));
+        } else if (components.size() > 1) {
+            String shortLabel1 = getLabel(components.get(0));
+            String shortLabel2 = getLabel(components.get(1));
+
+            return createCandidateShortLabel( shortLabel1, shortLabel2 );
         }
 
-        // Search for a gene name in the set, if none exist, take the protein ID.
-        for ( Component component : components ) {
-
-            Interactor interactor = component.getInteractor();
-            String geneName = ProteinUtils.getGeneName( interactor );
-
-
-            Collection<CvExperimentalRole> experimentalRoles = component.getExperimentalRoles();
-
-            if ( experimentalRoles == null ) {
-                throw new NullPointerException( "Component found without experimental role: " + component.getAc() );
-            }
-
-
-            if ( ComponentUtils.isBait( experimentalRoles ) ) {
-                baits.add( geneName );
-            } else if ( ComponentUtils.isPrey( experimentalRoles ) ) {
-                preys.add( geneName );
-            } else if ( ComponentUtils.isNeurtralOrUnspecified( experimentalRoles ) ) {
-                neutrals.add( geneName );
-            } else {
-                // we should never get in here if RoleChecker plays its role !
-                throw new IllegalStateException( "Found role: " + experimentalRoles.iterator().next().getShortLabel() + "which is not supported at the moment (" +
-                                                 "so far only bait, prey and 'neutral component' are accepted)." );
-            }
-
-            // }//end inner for
-
-        } //end for
-
-        // we can have either 1..n bait with 1..n prey
-        // or 2..n neutral
-        String baitShortlabel = null;
-        String preyShortlabel = null;
-
-        if ( baits.isEmpty() && preys.isEmpty() ) {
-            // we have only neutral
-            if ( neutrals.isEmpty() ) {
-                throw new IllegalStateException( "Not bait nor pray, nor neutral components" );
-            }
-
-            String[] _geneNames = neutrals.toArray( new String[neutrals.size()] );
-            Arrays.sort( _geneNames, String.CASE_INSENSITIVE_ORDER );
-
-            baitShortlabel = _geneNames[0];
-
-            if ( _geneNames.length > 2 ) {
-                // if more than 2 components, get one and add the cound of others.
-                preyShortlabel = ( _geneNames.length - 1 ) + "";
-            } else if ( _geneNames.length == 2 ) {
-                preyShortlabel = _geneNames[1];
-            }
-
-        } else {
-
-            // bait-prey
-            baitShortlabel = getLabelFromCollection( baits, true ); // fail on error
-            preyShortlabel = getLabelFromCollection( preys, false ); // don't fail on error
-            if ( preyShortlabel == null ) {
-                preyShortlabel = getLabelFromCollection( neutrals, true ); // fail on error
-            }
-        }
-
-
-        String candidateShortLabel = createCandidateShortLabel( baitShortlabel, preyShortlabel );
-
-        return candidateShortLabel;
-        // that updates the experiment collection and only leaves those for which we have to create a new interaction
-        //createInteractionShortLabels( interaction, experiments, baitShortlabel, preyShortlabel );
-
+        return null;
     }
 
     /**
@@ -477,5 +409,54 @@ public class InteractionShortLabelGenerator {
             return label;
         }
 
+    }
+
+    protected static class ComponentRoleComparator implements Comparator<Component> {
+        public int compare(Component comp1, Component comp2) {
+            String name1 = getLabel(comp1);
+            String name2 = getLabel(comp2);
+
+            // same role? alphabetical order
+            CvExperimentalRole role1 = null;
+            CvExperimentalRole role2 = null;
+
+            if (comp1.getExperimentalRoles().isEmpty()) {
+                role1 = comp1.getExperimentalRoles().iterator().next();
+            }
+
+            if (comp2.getExperimentalRoles().isEmpty()) {
+                role2 = comp2.getExperimentalRoles().iterator().next();
+            }
+
+            if (role1 == null && role2 == null) return 0;
+            if (role1 != null && role2 == null) return 1;
+            if (role1 == null) return -1;
+
+            // the order is: bait -> prey -> other
+
+            final boolean isBait1 = ComponentUtils.isBait(comp1.getExperimentalRoles());
+            final boolean isBait2 = ComponentUtils.isBait(comp2.getExperimentalRoles());
+            final boolean isPrey1 = ComponentUtils.isPrey(comp1.getExperimentalRoles());
+            final boolean isPrey2 = ComponentUtils.isPrey(comp2.getExperimentalRoles());
+
+            if (isBait1 && !isBait2) return 1;
+            if (isBait1 && isBait2) return name1.compareTo(name2);
+            if (isBait2) return -1;
+
+            if (isPrey1 && !isPrey2) return 1;
+            if (isPrey1 && isPrey2) return name1.compareTo(name2);
+            if (isPrey2) return -1;
+
+            return name1.compareTo(name2);
+        }
+
+
+    }
+
+    private static String getLabel(Component comp1) {
+        String name = ProteinUtils.getGeneName(comp1.getInteractor());
+        if (name == null) name = "null";
+        name = name.toLowerCase();
+        return name;
     }
 }
