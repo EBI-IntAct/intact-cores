@@ -101,7 +101,7 @@ public class FeatureUtils {
                                 break;
                             }
                         }
-                        else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
+                        else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getFromCvFuzzyType().isGreaterThan()){
                             if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
                                 badFeatures.add(feature);
                                 break;
@@ -206,7 +206,7 @@ public class FeatureUtils {
                                 break;
                             }
                         }
-                        else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
+                        else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getFromCvFuzzyType().isGreaterThan()){
                             if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
                                 badRanges.add(range);
                                 break;
