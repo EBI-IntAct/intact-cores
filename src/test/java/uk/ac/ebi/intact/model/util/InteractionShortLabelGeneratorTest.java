@@ -125,6 +125,20 @@ public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void createCandidateShortLabel_fromInteraction_null1() throws Exception {
+        Interactor interactorA = getMockBuilder().createProtein("Q13158", "fadd");
+        Interactor interactorB = getMockBuilder().createProtein("Q14790", "casp8");
+        Interaction interaction = getMockBuilder().createInteraction("fadd-casp8-2", interactorB, interactorA, getMockBuilder().createExperimentEmpty("exp"));
+
+        assertNotNull(interaction);
+
+        String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(interaction);
+
+        assertNotNull(candLabel);
+        Assert.assertEquals("casp8-fadd", candLabel);
+    }
+
+    @Test
     public void createCandidateShortLabel_badCharsInInteractor() throws Exception {
         String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel("bis3-indolylmaleimid", "prey");
         Assert.assertEquals("bis3_indolylmal-prey", candLabel);

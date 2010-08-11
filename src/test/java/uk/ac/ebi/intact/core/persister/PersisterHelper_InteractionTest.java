@@ -28,6 +28,7 @@ import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
@@ -334,6 +335,8 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+
+        System.out.println(DebugUtil.labelList(getDaoFactory().getInteractionDao().getAll()));
 
         Interaction reloadedInteraction = getDaoFactory().getInteractionDao().getByShortLabel("bar-foo-1");
         Assert.assertNotNull(reloadedInteraction);
