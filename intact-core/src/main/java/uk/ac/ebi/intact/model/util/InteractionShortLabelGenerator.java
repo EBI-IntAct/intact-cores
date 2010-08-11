@@ -420,17 +420,17 @@ public class InteractionShortLabelGenerator {
             CvExperimentalRole role1 = null;
             CvExperimentalRole role2 = null;
 
-            if (comp1.getExperimentalRoles().isEmpty()) {
+            if (!comp1.getExperimentalRoles().isEmpty()) {
                 role1 = comp1.getExperimentalRoles().iterator().next();
             }
 
-            if (comp2.getExperimentalRoles().isEmpty()) {
+            if (!comp2.getExperimentalRoles().isEmpty()) {
                 role2 = comp2.getExperimentalRoles().iterator().next();
             }
 
-            if (role1 == null && role2 == null) return 0;
-            if (role1 != null && role2 == null) return 1;
-            if (role1 == null) return -1;
+            if (role1 == null && role2 == null) return name1.compareTo(name2);
+            if (role1 != null && role2 == null) return -1;
+            if (role1 == null) return 1;
 
             // the order is: bait -> prey -> other
 
@@ -439,13 +439,13 @@ public class InteractionShortLabelGenerator {
             final boolean isPrey1 = ComponentUtils.isPrey(comp1.getExperimentalRoles());
             final boolean isPrey2 = ComponentUtils.isPrey(comp2.getExperimentalRoles());
 
-            if (isBait1 && !isBait2) return 1;
+            if (isBait1 && !isBait2) return -1;
             if (isBait1 && isBait2) return name1.compareTo(name2);
-            if (isBait2) return -1;
+            if (isBait2) return 1;
 
-            if (isPrey1 && !isPrey2) return 1;
+            if (isPrey1 && !isPrey2) return -1;
             if (isPrey1 && isPrey2) return name1.compareTo(name2);
-            if (isPrey2) return -1;
+            if (isPrey2) return 1;
 
             return name1.compareTo(name2);
         }

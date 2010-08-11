@@ -108,10 +108,9 @@ public class ComponentTest extends IntactBasicTestCase {
         Assert.assertEquals( "baaa-naaa", interaction3.getShortLabel() );
 
         //bait(), prey(paaa, pbbb, pccc), neutral(naaa)
-        //since bait is empty it throws an exception and it creates a predefined short label unk-unk in the catchblock of IntactMockBuilder..createInteraction(Component ... components)
         Interaction interaction4 = getMockBuilder().createInteraction( preyComponent1, preyComponent2, preyComponent3, neutraulComponent );
         getPersisterHelper().save( interaction4 );
-        Assert.assertEquals( "unk-unk", interaction4.getShortLabel() );
+        Assert.assertEquals( "paaa-pbbb", interaction4.getShortLabel() );
 
 
     }
