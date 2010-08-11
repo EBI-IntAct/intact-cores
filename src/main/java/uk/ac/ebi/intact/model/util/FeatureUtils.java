@@ -66,11 +66,7 @@ public class FeatureUtils {
      * @return a set of the protein features containing out of bound ranges
      */
     public static Set<Feature> getFeaturesWithOutOfBoundRanges(Protein protein){
-        int sequenceLength = 0;
         String sequence = protein.getSequence();
-        if (sequence != null){
-            sequenceLength = sequence.length();
-        }
 
         Collection<Component> components = protein.getActiveInstances();
         Set<Feature> badFeatures = new HashSet<Feature>();
@@ -82,20 +78,40 @@ public class FeatureUtils {
                 Collection<Range> ranges = feature.getRanges();
 
                 for (Range range : ranges){
-                    if (range.getToCvFuzzyType() != null &&
-                            (range.getToCvFuzzyType().isCTerminal() ||
-                                    range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined())) {
-                        continue;
+                    boolean isRangeWithinSequence = isRangeWithinSequence(range, sequence);
+
+                    if (range.getToCvFuzzyType() != null) {
+                        if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
+                            if (range.getToIntervalStart() != 0 || range.getToIntervalEnd() != 0){
+                                badFeatures.add(feature);
+                                break;
+                            }
+                        }
+                        else if (range.getToCvFuzzyType().isCertain() || range.getToCvFuzzyType().isRange() || range.getToCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
+                            if (range.getToIntervalStart() == 0 || range.getToIntervalEnd() == 0 || !isRangeWithinSequence){
+                                badFeatures.add(feature);
+                                break;
+                            }
+                        }
                     }
-                    else if (range.getFromIntervalStart() < 0 || range.getFromIntervalEnd() < 0 || range.getToIntervalStart() < 0 || range.getToIntervalEnd() < 0){
+                    if (range.getFromCvFuzzyType() != null) {
+                        if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
+                            if (range.getFromIntervalStart() != 0 || range.getFromIntervalEnd() != 0){
+                                badFeatures.add(feature);
+                                break;
+                            }
+                        }
+                        else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
+                            if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
+                                badFeatures.add(feature);
+                                break;
+                            }
+                        }
+                    }
+
+                    if ((range.getFromCvFuzzyType() == null || range.getToCvFuzzyType() == null) && !isRangeWithinSequence){
                         badFeatures.add(feature);
                         break;
-                    }
-                    else if (sequenceLength > 0){
-                        if (range.getFromIntervalStart() > sequenceLength || range.getFromIntervalEnd() > sequenceLength || range.getToIntervalStart() > sequenceLength || range.getToIntervalEnd() > sequenceLength){
-                            badFeatures.add(feature);
-                            break;
-                        }
                     }
                 }
             }
@@ -167,25 +183,44 @@ public class FeatureUtils {
                 Collection<Range> ranges = feature.getRanges();
 
                 for (Range range : ranges){
-                    if (range.getToCvFuzzyType() != null &&
-                            (range.getToCvFuzzyType().isCTerminal() ||
-                                    range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined())) {
-                        continue;
+                    boolean isRangeWithinSequence = isRangeWithinSequence(range, sequence);
+
+                    if (range.getToCvFuzzyType() != null) {
+                        if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
+                            if (range.getToIntervalStart() != 0 || range.getToIntervalEnd() != 0){
+                                badRanges.add(range);
+                                break;
+                            }
+                        }
+                        else if (range.getToCvFuzzyType().isCertain() || range.getToCvFuzzyType().isRange() || range.getToCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
+                            if (range.getToIntervalStart() == 0 || range.getToIntervalEnd() == 0 || !isRangeWithinSequence){
+                                badRanges.add(range);
+                                break;
+                            }
+                        }
                     }
-                    else if (range.getFromIntervalStart() < 0 || range.getFromIntervalEnd() < 0 || range.getToIntervalStart() < 0 || range.getToIntervalEnd() < 0){
+                    if (range.getFromCvFuzzyType() != null) {
+                        if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
+                            if (range.getFromIntervalStart() != 0 || range.getFromIntervalEnd() != 0){
+                                badRanges.add(range);
+                                break;
+                            }
+                        }
+                        else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
+                            if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
+                                badRanges.add(range);
+                                break;
+                            }
+                        }
+                    }
+
+                    if ((range.getFromCvFuzzyType() == null || range.getToCvFuzzyType() == null) && !isRangeWithinSequence){
                         badRanges.add(range);
                         break;
-                    }
-                    else if (sequenceLength > 0){
-                        if (range.getFromIntervalStart() > sequenceLength || range.getFromIntervalEnd() > sequenceLength || range.getToIntervalStart() > sequenceLength || range.getToIntervalEnd() > sequenceLength){
-                            badRanges.add(range);
-                            break;
-                        }
                     }
                 }
             }
         }
-
         return badRanges;
     }
 
@@ -198,25 +233,20 @@ public class FeatureUtils {
     public static boolean isRangeWithinSequence(Range range, String sequence){
 
         if (sequence == null){
-            return false;
+            return true;
         }
         else if (range == null){
             return false;
         }
 
         int sequenceLength = sequence.length();
-        if (range.getToCvFuzzyType() != null &&
-                            (range.getToCvFuzzyType().isCTerminal() ||
-                                    range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined())) {
-             return true;
-        }
-        else if (range.getFromIntervalEnd() > sequenceLength || range.getToIntervalEnd() > sequenceLength || range.getFromIntervalStart() > sequenceLength || range.getToIntervalStart() > sequenceLength){
+        if (range.getFromIntervalEnd() > sequenceLength || range.getToIntervalEnd() > sequenceLength || range.getFromIntervalStart() > sequenceLength || range.getToIntervalStart() > sequenceLength){
             return false;
         }
         else if (range.getFromIntervalEnd() < 0 || range.getToIntervalEnd() < 0 || range.getFromIntervalStart() < 0 || range.getToIntervalStart() < 0){
             return false;
         }
-        
+
         return true;
     }
 }
