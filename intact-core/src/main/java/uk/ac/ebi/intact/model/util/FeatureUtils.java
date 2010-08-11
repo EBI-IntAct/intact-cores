@@ -205,32 +205,32 @@ public class FeatureUtils {
         if (range.getToCvFuzzyType() != null) {
             if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
                 if (range.getToIntervalStart() != 0 || range.getToIntervalEnd() != 0){
-                    return false;
+                    return true;
                 }
             }
             else if (range.getToCvFuzzyType().isCertain() || range.getToCvFuzzyType().isRange() || range.getToCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
                 if (range.getToIntervalStart() == 0 || range.getToIntervalEnd() == 0 || !isRangeWithinSequence){
-                    return false;
+                    return true;
                 }
             }
         }
         if (range.getFromCvFuzzyType() != null) {
             if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
                 if (range.getFromIntervalStart() != 0 || range.getFromIntervalEnd() != 0){
-                    return false;
+                    return true;
                 }
             }
             else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getFromCvFuzzyType().isGreaterThan()){
                 if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
-                    return false;
+                    return true;
                 }
             }
         }
 
         if ((range.getFromCvFuzzyType() == null || range.getToCvFuzzyType() == null) && !isRangeWithinSequence){
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
