@@ -136,7 +136,9 @@ public class CvTopic extends CvDagObject implements Editable {
     public static final String CHAIN_SEQ_START = "chain-seq-start";
     public static final String CHAIN_SEQ_START_ID = "IA:0919";
     public static final String CHAIN_SEQ_END = "chain-seq-end";
-    public static final String CHAIN_SEQ_END_ID = "  \t IA:0920";
+    public static final String CHAIN_SEQ_END_ID = "IA:0920";
+    public static final String INVALID_RANGE = "invalid-range";
+    public static final String INVALID_RANGE_ID = "IA:0923";
 
 
     /**
