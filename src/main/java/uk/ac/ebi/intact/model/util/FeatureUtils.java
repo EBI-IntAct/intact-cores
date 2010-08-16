@@ -187,6 +187,36 @@ public class FeatureUtils {
 
     /**
      *
+     * @param range
+     * @return true if the Cvfuzzy types are coherent with each other : a N, C terminal and undetermined start fuzzy type should always
+     * be associated with the same end fuzzy type.
+     */
+    public static boolean areFrom_ToCvFuzzyTypeConsistent(Range range){
+
+        if (range.getToCvFuzzyType() != null && range.getFromCvFuzzyType() != null){
+            if ((range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()) && !range.getToCvFuzzyType().equals(range.getFromCvFuzzyType())){
+                return false;
+            }
+            else if ((range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()) && !range.getToCvFuzzyType().equals(range.getFromCvFuzzyType())){
+                return false;
+            }
+        }
+        else if (range.getToCvFuzzyType() != null && range.getFromCvFuzzyType() == null){
+            if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
+                return false;
+            }
+        }
+        else if (range.getFromCvFuzzyType() != null && range.getToCvFuzzyType() == null){
+            if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     *
      * @param range : the range to check
      * @param sequence : the sequence of the protein
      * @return true if the range is within the sequence, coherent with its fuzzy type and not overlapping
@@ -202,33 +232,35 @@ public class FeatureUtils {
 
         boolean isRangeWithinSequence = isRangeWithinSequence(range, sequence);
 
-        if (range.getToCvFuzzyType() != null) {
-            if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
-                if (range.getToIntervalStart() != 0 || range.getToIntervalEnd() != 0){
-                    return true;
+        if (areFrom_ToCvFuzzyTypeConsistent(range)){
+            if (range.getToCvFuzzyType() != null) {
+                if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
+                    if (range.getToIntervalStart() != 0 || range.getToIntervalEnd() != 0){
+                        return true;
+                    }
+                }
+                else if (range.getToCvFuzzyType().isCertain() || range.getToCvFuzzyType().isRange() || range.getToCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
+                    if (range.getToIntervalStart() == 0 || range.getToIntervalEnd() == 0 || !isRangeWithinSequence){
+                        return true;
+                    }
                 }
             }
-            else if (range.getToCvFuzzyType().isCertain() || range.getToCvFuzzyType().isRange() || range.getToCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
-                if (range.getToIntervalStart() == 0 || range.getToIntervalEnd() == 0 || !isRangeWithinSequence){
-                    return true;
+            if (range.getFromCvFuzzyType() != null) {
+                if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
+                    if (range.getFromIntervalStart() != 0 || range.getFromIntervalEnd() != 0){
+                        return true;
+                    }
+                }
+                else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getFromCvFuzzyType().isGreaterThan()){
+                    if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
+                        return true;
+                    }
                 }
             }
-        }
-        if (range.getFromCvFuzzyType() != null) {
-            if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
-                if (range.getFromIntervalStart() != 0 || range.getFromIntervalEnd() != 0){
-                    return true;
-                }
-            }
-            else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getFromCvFuzzyType().isGreaterThan()){
-                if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
-                    return true;
-                }
-            }
-        }
 
-        if ((range.getFromCvFuzzyType() == null || range.getToCvFuzzyType() == null) && !isRangeWithinSequence){
-            return true;
+            if ((range.getFromCvFuzzyType() == null || range.getToCvFuzzyType() == null) && !isRangeWithinSequence){
+                return true;
+            }
         }
 
         return false;
