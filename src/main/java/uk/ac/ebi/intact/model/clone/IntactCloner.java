@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.model.clone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.TransactionStatus;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -319,8 +320,10 @@ public class IntactCloner {
         clone.setBioSource(clone( experiment.getBioSource() ));
         clone.setPublication(clone( experiment.getPublication() ));
 
-        for ( Interaction i : experiment.getInteractions() ) {
-            clone.addInteraction(clone( i ));
+        if (Hibernate.isInitialized(experiment.getInteractions())) {
+            for ( Interaction i : experiment.getInteractions() ) {
+                clone.addInteraction(clone( i ));
+            }
         }
 
         return clone;
