@@ -304,6 +304,8 @@ public class InteractionShortLabelGenerator {
          * @param completeLabel
          */
         private void parse( String completeLabel ) throws IllegalLabelFormatException {
+            if (completeLabel == null) return;
+
             String[] baitPrayLabels = completeLabel.split( INTERACTION_SEPARATOR );
 
             if ( baitPrayLabels.length > 3 ) {
