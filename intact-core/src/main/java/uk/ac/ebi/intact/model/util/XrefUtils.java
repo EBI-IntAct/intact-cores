@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.util.ClassUtils;
 import uk.ac.ebi.intact.model.*;
@@ -105,7 +106,14 @@ public class XrefUtils {
     public static <X extends Xref> Collection<X> getIdentityXrefs(AnnotatedObject<X,?> annotatedObject) {
         Collection<X> xrefs = new ArrayList<X>();
 
-        for (X xref : annotatedObject.getXrefs()) {
+        Collection<X> allXrefs = annotatedObject.getXrefs();
+
+        if (!Hibernate.isInitialized(annotatedObject.getXrefs()) && IntactContext.currentInstanceExists()) {
+            Class xrefClass = AnnotatedObjectUtils.getXrefClassType(annotatedObject.getClass());
+            allXrefs = IntactContext.getCurrentInstance().getDaoFactory().getXrefDao(xrefClass).getByParentAc(annotatedObject.getAc());
+        }
+
+        for (X xref : allXrefs) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             String qualifierMi = null;
             if (qualifier != null && ((qualifierMi = qualifier.getIdentifier()) != null &&
