@@ -335,7 +335,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyCollection( Collection sourceCol, Collection targetCol ) {
-        if (!Hibernate.isInitialized(sourceCol) || !Hibernate.isInitialized(targetCol)) {
+        if (!Hibernate.isInitialized(sourceCol)) {
             return;
         }
 

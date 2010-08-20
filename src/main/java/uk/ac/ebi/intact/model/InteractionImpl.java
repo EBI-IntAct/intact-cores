@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import uk.ac.ebi.intact.annotation.EditorTopic;
@@ -635,14 +636,20 @@ public class InteractionImpl extends InteractorImpl
 
     @Override
     public String toString() {
-        String result = "Interaction: " + getAc() + " Label: " + getShortLabel()
-                        + " [" + NEW_LINE;
+        StringBuilder sb = new StringBuilder();
+        sb.append("Interaction: ").append(getAc()).append(" Label: ").append(getShortLabel()).append(" [").append(NEW_LINE);
+
+        if (Hibernate.isInitialized(getComponents())) {
         if ( null != this.getComponents() ) {
             for ( Object o : this.getComponents() ) {
-                result += ( ( Component ) o ).getInteractor();
+                sb.append(( ( Component ) o ).getInteractor());
             }
         }
-        return result + "] Interaction" + NEW_LINE;
+        } else {
+            sb.append("Components not initialized");
+        }
+        sb.append("] Interaction").append(NEW_LINE);
+        return sb.toString();
     }
 } // end Interaction
 
