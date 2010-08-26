@@ -498,10 +498,34 @@ public boolean isUndetermined() {
         if (sequence != null){
             if (FeatureUtils.areFrom_ToCvFuzzyTypeConsistent(this)){
                 // Get the sequence from start if there is no fuzzy type.
-                if ( fromCvFuzzyType == null || toCvFuzzyType == null ) {
+                if ( fromCvFuzzyType == null && toCvFuzzyType == null ) {
                     setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                     setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
                     prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
+                }
+                else if ( fromCvFuzzyType == null && toCvFuzzyType != null ) {
+                    if (toCvFuzzyType.isGreaterThan()){
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart, sequence.length()));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart, sequence.length(), sequence);
+                    }
+                    else {
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
+                    }
+                }
+                else if ( fromCvFuzzyType != null && toCvFuzzyType == null ) {
+                    if (fromCvFuzzyType.isLessThan()) {
+                        setSequenceIntern( getSequenceStartingFrom( sequence, 1 ) );
+                        setFullSequence( getSequence( sequence, 1, toIntervalEnd));
+                        prepareUpStreamDownStreamSequence(1, toIntervalEnd, sequence);
+                    }
+                    else {
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
+                    }
                 }
                 else{
                     // Truncate according to type.
@@ -513,12 +537,29 @@ public boolean isUndetermined() {
                         setSequenceIntern( getFirstSequence( sequence ) );
                         setFullSequence( getFirstFullSequence( sequence ));
                         prepareUpStreamDownStreamSequence(1, Math.min(ourMaxSeqSize, sequence.length()), sequence);
-                    } else {
+                    }else if ( fromCvFuzzyType.isLessThan() && toCvFuzzyType.isGreaterThan() ) {
+                        setSequenceIntern( getFirstSequence( sequence ) );
+                        setFullSequence( sequence );
+                    }else if (fromCvFuzzyType.isLessThan()) {
+                        setSequenceIntern( getSequenceStartingFrom( sequence, 1 ) );
+                        setFullSequence( getSequence( sequence, 1, toIntervalEnd));
+                        prepareUpStreamDownStreamSequence(1, toIntervalEnd, sequence);
+                    }else if (toCvFuzzyType.isGreaterThan()) {
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart, sequence.length()));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart, sequence.length(), sequence);
+                    }else {
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                         setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
                         prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
                     }
                 }
+            }
+            else {
+                this.sequence = null;
+                this.fullSequence = null;
+                this.upStreamSequence = null;
+                this.downStreamSequence = null;
             }
         }
         else {
@@ -812,7 +853,7 @@ public boolean isUndetermined() {
         }
 
         seq = sequence.substring( Math.max( 0, start - 1 ), end ); // we make sure that we don't request index < 0.
-       
+
         return seq;
     }
 
