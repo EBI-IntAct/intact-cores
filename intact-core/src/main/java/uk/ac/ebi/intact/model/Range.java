@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Type;
+import uk.ac.ebi.intact.model.util.FeatureUtils;
 
 import javax.persistence.*;
 
@@ -495,27 +496,28 @@ public boolean isUndetermined() {
     public void prepareSequence( String sequence ) {
 
         if (sequence != null){
-            // Get the sequence from start if there is no fuzzy type.
-            if ( fromCvFuzzyType == null ) {
-                setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
-                prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
-            }
-            else{
-
-                // Truncate according to type.
-                if ( fromCvFuzzyType.isCTerminal() ) {
-                    setSequenceIntern( getLastSequence( sequence ) );
-                    setFullSequence( getLastFullSequence( sequence ));
-                    prepareUpStreamDownStreamSequence(Math.max(1, sequence.length() - ourMaxSeqSize + 1), sequence.length(), sequence);
-                } else if ( fromCvFuzzyType.isNTerminal() || fromCvFuzzyType.isUndetermined() ) {
-                    setSequenceIntern( getFirstSequence( sequence ) );
-                    setFullSequence( getFirstFullSequence( sequence ));
-                    prepareUpStreamDownStreamSequence(1, Math.min(ourMaxSeqSize, sequence.length()), sequence);
-                } else {
+            if (FeatureUtils.areFrom_ToCvFuzzyTypeConsistent(this)){
+                // Get the sequence from start if there is no fuzzy type.
+                if ( fromCvFuzzyType == null || toCvFuzzyType == null ) {
                     setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                     setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
                     prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
+                }
+                else{
+                    // Truncate according to type.
+                    if ( fromCvFuzzyType.isCTerminal()) {
+                        setSequenceIntern( getLastSequence( sequence ) );
+                        setFullSequence( getLastFullSequence( sequence ));
+                        prepareUpStreamDownStreamSequence(Math.max(1, sequence.length() - ourMaxSeqSize + 1), sequence.length(), sequence);
+                    } else if ( fromCvFuzzyType.isNTerminal() || fromCvFuzzyType.isUndetermined() ) {
+                        setSequenceIntern( getFirstSequence( sequence ) );
+                        setFullSequence( getFirstFullSequence( sequence ));
+                        prepareUpStreamDownStreamSequence(1, Math.min(ourMaxSeqSize, sequence.length()), sequence);
+                    } else {
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
+                    }
                 }
             }
         }
@@ -755,14 +757,14 @@ public boolean isUndetermined() {
         if ( first ) {
             if ( sequence.length() >= start + getMaxSequenceSize() ) {
                 // The given sequence is large enough to go upto max size
-                seq = sequence.substring( start, start + getMaxSequenceSize() );
+                seq = sequence.substring( Math.max( 0, start - 1 ), Math.max( 0, start - 1 ) + getMaxSequenceSize() );
             } else {
                 // Exceeds the current sequence length
                 seq = sequence.substring( Math.max( 0, start - 1 ) ); // we make sure that we don't request index < 0.
             }
         } else {
             // returning the last 'size' characters
-            seq = sequence.substring( sequence.length() - getMaxSequenceSize() );
+            seq = sequence.substring( Math.max(0, sequence.length() - getMaxSequenceSize()) );
         }
 
         return seq;
@@ -795,7 +797,7 @@ public boolean isUndetermined() {
             end = 1;
         }
 
-        if ( ( sequence == null ) || sequence.length() == 0 || ( sequence.length() < start ) ) {
+        if ( ( sequence == null ) || sequence.length() == 0) {
             return seq;
         }
 
@@ -809,15 +811,8 @@ public boolean isUndetermined() {
             throw new IllegalArgumentException("The feature range start position " + start + " is superior to the feature range end position " + end + ".");
         }
 
-        if ( start == 0 ) {
-            seq = sequence.substring(start, end);
-        } else {
-            seq = sequence.substring( Math.max( 0, start - 1 ), end ); // we make sure that we don't request index < 0.
-        }
-
-        if (seq.length() == 0){
-            return null;
-        }
+        seq = sequence.substring( Math.max( 0, start - 1 ), end ); // we make sure that we don't request index < 0.
+       
         return seq;
     }
 
