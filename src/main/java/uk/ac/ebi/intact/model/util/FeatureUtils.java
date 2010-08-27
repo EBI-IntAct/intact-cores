@@ -49,7 +49,7 @@ public class FeatureUtils {
                 Collection<Range> ranges = feature.getRanges();
 
                 for (Range range : ranges){
-                    if (range.getFromIntervalStart() > range.getFromIntervalEnd() || range.getToIntervalStart() > range.getToIntervalEnd() || range.getFromIntervalStart() > range.getToIntervalStart() || range.getFromIntervalEnd() > range.getToIntervalEnd()){
+                    if (isOverlappingRange(range)){
                         badFeatures.add(feature);
                         break;
                     }
@@ -79,7 +79,7 @@ public class FeatureUtils {
 
                 for (Range range : ranges){
 
-                    if (isABadRange(range, sequence)){
+                    if (!isRangeWithinSequence(range, sequence)){
                         badFeatures.add(feature);
                         break;
                     }
@@ -120,7 +120,7 @@ public class FeatureUtils {
                 Collection<Range> ranges = feature.getRanges();
 
                 for (Range range : ranges){
-                    if (range.getFromIntervalStart() > range.getFromIntervalEnd() || range.getToIntervalStart() > range.getToIntervalEnd() || range.getFromIntervalStart() > range.getToIntervalStart() || range.getFromIntervalEnd() > range.getToIntervalEnd()){
+                    if (isOverlappingRange(range)){
                         badRanges.add(range);
                         break;
                     }
@@ -150,13 +150,31 @@ public class FeatureUtils {
 
                 for (Range range : ranges){
 
-                    if (isABadRange(range, sequence)){
+                    if (!isRangeWithinSequence(range, sequence)){
                         badRanges.add(range);
                     }
                 }
             }
         }
         return badRanges;
+    }
+
+    /**
+     *
+     * @param range
+     * @return true if the range is overlapping (start > end)
+     */
+    public static boolean isOverlappingRange(Range range){
+
+        if (range == null){
+            return false;
+        }
+
+        if (range.getFromIntervalStart() > range.getFromIntervalEnd() || range.getToIntervalStart() > range.getToIntervalEnd() || range.getFromIntervalStart() > range.getToIntervalStart() || range.getFromIntervalEnd() > range.getToIntervalEnd()){
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -232,35 +250,40 @@ public class FeatureUtils {
 
         boolean isRangeWithinSequence = isRangeWithinSequence(range, sequence);
 
-        if (areFrom_ToCvFuzzyTypeConsistent(range)){
-            if (range.getToCvFuzzyType() != null) {
-                if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
-                    if (range.getToIntervalStart() != 0 || range.getToIntervalEnd() != 0){
-                        return true;
+        if (!isOverlappingRange(range)){
+            if (areFrom_ToCvFuzzyTypeConsistent(range)){
+                if (range.getToCvFuzzyType() != null) {
+                    if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
+                        if (range.getToIntervalStart() != 0 || range.getToIntervalEnd() != 0){
+                            return true;
+                        }
+                    }
+                    else if (range.getToCvFuzzyType().isCertain() || range.getToCvFuzzyType().isRange() || range.getToCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
+                        if (range.getToIntervalStart() == 0 || range.getToIntervalEnd() == 0 || !isRangeWithinSequence){
+                            return true;
+                        }
                     }
                 }
-                else if (range.getToCvFuzzyType().isCertain() || range.getToCvFuzzyType().isRange() || range.getToCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
-                    if (range.getToIntervalStart() == 0 || range.getToIntervalEnd() == 0 || !isRangeWithinSequence){
-                        return true;
+                if (range.getFromCvFuzzyType() != null) {
+                    if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
+                        if (range.getFromIntervalStart() != 0 || range.getFromIntervalEnd() != 0){
+                            return true;
+                        }
+                    }
+                    else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getFromCvFuzzyType().isGreaterThan()){
+                        if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
+                            return true;
+                        }
                     }
                 }
-            }
-            if (range.getFromCvFuzzyType() != null) {
-                if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
-                    if (range.getFromIntervalStart() != 0 || range.getFromIntervalEnd() != 0){
-                        return true;
-                    }
-                }
-                else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getFromCvFuzzyType().isGreaterThan()){
-                    if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
-                        return true;
-                    }
-                }
-            }
 
-            if ((range.getFromCvFuzzyType() == null || range.getToCvFuzzyType() == null) && !isRangeWithinSequence){
-                return true;
+                if ((range.getFromCvFuzzyType() == null || range.getToCvFuzzyType() == null) && !isRangeWithinSequence){
+                    return true;
+                }
             }
+        }
+        else {
+            return true;
         }
 
         return false;
