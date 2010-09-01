@@ -124,25 +124,29 @@ public class CvObjectUtils {
      * @param recursive request recursive search amongst parents.
      * @return true of the term or one of its parents has the given MI identity.
      */
-    public static boolean isChildOfType( CvDagObject cvDagObject, final String mi, final boolean recursive ) {
+    public static boolean isChildOfType( CvDagObject cvDagObject, final String identifier, final boolean recursive ) {
         if ( cvDagObject == null ) {
             throw new IllegalArgumentException( "You must give a non null CvDagObject" );
         }
-        if ( mi == null ) {
-            throw new IllegalArgumentException( "You must give a non null parent MI" );
+        if ( identifier == null ) {
+            throw new IllegalArgumentException( "You must give a non null parent identifier" );
         }
 
-        final Collection<CvObjectXref> identities = XrefUtils.getIdentityXrefs( cvDagObject );
-        for ( CvObjectXref identity : identities ) {
-            if ( mi.equals( identity.getPrimaryId() ) ) {
-                return true;
-            }
+        if (identifier.equals(cvDagObject.getIdentifier())) {
+            return true;
         }
+
+//        final Collection<CvObjectXref> identities = XrefUtils.getIdentityXrefs( cvDagObject );
+//        for ( CvObjectXref identity : identities ) {
+//            if ( mi.equals( identity.getPrimaryId() ) ) {
+//                return true;
+//            }
+//        }
 
         if ( recursive ) {
             final Collection<CvDagObject> parents = cvDagObject.getParents();
             for ( CvDagObject parent : parents ) {
-                if ( isChildOfType( parent, mi, recursive ) ) {
+                if ( isChildOfType( parent, identifier, recursive ) ) {
                     return true;
                 }
             }
