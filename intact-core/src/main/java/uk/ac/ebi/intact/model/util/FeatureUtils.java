@@ -1,9 +1,6 @@
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.model.Component;
-import uk.ac.ebi.intact.model.Feature;
-import uk.ac.ebi.intact.model.Protein;
-import uk.ac.ebi.intact.model.Range;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,20 +22,6 @@ public class FeatureUtils {
      * @return a set of the protein features containing bad ranges (overlapping or out of bound)
      */
     public static Set<Feature> getFeaturesWithBadRanges(Protein protein){
-
-        Set<Feature> badFeatures = getFeaturesWithOutOfBoundRanges(protein);
-        badFeatures.addAll(getFeaturesWithOverlappingRanges(protein));
-
-        return badFeatures;
-    }
-
-    /**
-     *
-     * @param protein  : the protein to check
-     * @return a set of the protein features containing overlapping ranges.
-     */
-    public static Set<Feature> getFeaturesWithOverlappingRanges(Protein protein){
-
         Collection<Component> components = protein.getActiveInstances();
         Set<Feature> badFeatures = new HashSet<Feature>();
 
@@ -49,37 +32,7 @@ public class FeatureUtils {
                 Collection<Range> ranges = feature.getRanges();
 
                 for (Range range : ranges){
-                    if (isOverlappingRange(range)){
-                        badFeatures.add(feature);
-                        break;
-                    }
-                }
-            }
-        }
-
-        return badFeatures;
-    }
-
-    /**
-     *
-     * @param protein : the protein to check
-     * @return a set of the protein features containing out of bound ranges
-     */
-    public static Set<Feature> getFeaturesWithOutOfBoundRanges(Protein protein){
-        String sequence = protein.getSequence();
-
-        Collection<Component> components = protein.getActiveInstances();
-        Set<Feature> badFeatures = new HashSet<Feature>();
-
-        for (Component component : components){
-            Collection<Feature> features = component.getBindingDomains();
-
-            for (Feature feature : features){
-                Collection<Range> ranges = feature.getRanges();
-
-                for (Range range : ranges){
-
-                    if (!isRangeWithinSequence(range, sequence)){
+                    if (isABadRange(range, protein.getSequence())){
                         badFeatures.add(feature);
                         break;
                     }
@@ -97,19 +50,6 @@ public class FeatureUtils {
      */
     public static Set<Range> getBadRanges(Protein protein){
 
-        Set<Range> badRanges = getOutOfBoundRanges(protein);
-        badRanges.addAll(getOverlappingRanges(protein));
-
-        return badRanges;
-    }
-
-    /**
-     *
-     * @param protein  : the protein to check
-     * @return a set of the protein feature ranges containing overlapping ranges.
-     */
-    public static Set<Range> getOverlappingRanges(Protein protein){
-
         Collection<Component> components = protein.getActiveInstances();
         Set<Range> badRanges = new HashSet<Range>();
 
@@ -120,117 +60,14 @@ public class FeatureUtils {
                 Collection<Range> ranges = feature.getRanges();
 
                 for (Range range : ranges){
-                    if (isOverlappingRange(range)){
+                    if (isABadRange(range, protein.getSequence())){
                         badRanges.add(range);
-                        break;
                     }
                 }
             }
         }
 
         return badRanges;
-    }
-
-    /**
-     *
-     * @param protein : the protein to check
-     * @return a set of the protein feature out of bound ranges
-     */
-    public static Set<Range> getOutOfBoundRanges(Protein protein){
-        String sequence = protein.getSequence();
-
-        Collection<Component> components = protein.getActiveInstances();
-        Set<Range> badRanges = new HashSet<Range>();
-
-        for (Component component : components){
-            Collection<Feature> features = component.getBindingDomains();
-
-            for (Feature feature : features){
-                Collection<Range> ranges = feature.getRanges();
-
-                for (Range range : ranges){
-
-                    if (!isRangeWithinSequence(range, sequence)){
-                        badRanges.add(range);
-                    }
-                }
-            }
-        }
-        return badRanges;
-    }
-
-    /**
-     *
-     * @param range
-     * @return true if the range is overlapping (start > end)
-     */
-    public static boolean isOverlappingRange(Range range){
-
-        if (range == null){
-            return false;
-        }
-
-        if (range.getFromIntervalStart() > range.getFromIntervalEnd() || range.getToIntervalStart() > range.getToIntervalEnd() || range.getFromIntervalStart() > range.getToIntervalStart() || range.getFromIntervalEnd() > range.getToIntervalEnd() || range.getFromIntervalEnd() > range.getToIntervalEnd() ){
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     * @param range : the range to check
-     * @param sequence : the sequence of the protein
-     * @return true if the range is within the sequence
-     */
-    public static boolean isRangeWithinSequence(Range range, String sequence){
-
-        if (sequence == null){
-            return true;
-        }
-        else if (range == null){
-            return false;
-        }
-
-        int sequenceLength = sequence.length();
-        if (range.getFromIntervalEnd() > sequenceLength || range.getToIntervalEnd() > sequenceLength || range.getFromIntervalStart() > sequenceLength || range.getToIntervalStart() > sequenceLength){
-            return false;
-        }
-        else if (range.getFromIntervalEnd() < 0 || range.getToIntervalEnd() < 0 || range.getFromIntervalStart() < 0 || range.getToIntervalStart() < 0){
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     *
-     * @param range
-     * @return true if the Cvfuzzy types are coherent with each other : a N, C terminal and undetermined start fuzzy type should always
-     * be associated with the same end fuzzy type.
-     */
-    public static boolean areFrom_ToCvFuzzyTypeConsistent(Range range){
-
-        if (range.getToCvFuzzyType() != null && range.getFromCvFuzzyType() != null){
-            if ((range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()) && !range.getToCvFuzzyType().equals(range.getFromCvFuzzyType())){
-                return false;
-            }
-            else if ((range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()) && !range.getToCvFuzzyType().equals(range.getFromCvFuzzyType())){
-                return false;
-            }
-        }
-        else if (range.getToCvFuzzyType() != null && range.getFromCvFuzzyType() == null){
-            if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
-                return false;
-            }
-        }
-        else if (range.getFromCvFuzzyType() != null && range.getToCvFuzzyType() == null){
-            if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -241,51 +78,220 @@ public class FeatureUtils {
      */
     public static boolean isABadRange(Range range, String sequence){
 
-        if (sequence == null){
-            return false;
-        }
-        else if (range == null){
+        if (range == null){
             return true;
         }
+        CvFuzzyType startStatus = range.getFromCvFuzzyType();
+        CvFuzzyType endStatus = range.getToCvFuzzyType();
 
-        boolean isRangeWithinSequence = isRangeWithinSequence(range, sequence);
-
-        if (!isOverlappingRange(range)){
-            if (areFrom_ToCvFuzzyTypeConsistent(range)){
-                if (range.getToCvFuzzyType() != null) {
-                    if (range.getToCvFuzzyType().isCTerminal() || range.getToCvFuzzyType().isNTerminal() || range.getToCvFuzzyType().isUndetermined()){
-                        if (range.getToIntervalStart() != 0 || range.getToIntervalEnd() != 0){
-                            return true;
-                        }
-                    }
-                    else if (range.getToCvFuzzyType().isCertain() || range.getToCvFuzzyType().isRange() || range.getToCvFuzzyType().isLessThan() || range.getToCvFuzzyType().isGreaterThan()){
-                        if (range.getToIntervalStart() == 0 || range.getToIntervalEnd() == 0 || !isRangeWithinSequence){
-                            return true;
-                        }
+        if (!checkRangePositionsAccordingToRangeType(startStatus, range.getFromIntervalStart(), range.getFromIntervalEnd(), sequence)
+                || !checkRangePositionsAccordingToRangeType(endStatus, range.getToIntervalStart(), range.getToIntervalEnd(), sequence)
+                || areRangeStatusInconsistent(startStatus, endStatus)){
+            return true;
+        }
+        else{
+            if (sequence == null){
+                if (startStatus != null && endStatus != null){
+                    if (!startStatus.isCTerminal() && !endStatus.isCTerminal() && areRangePositionsOverlapping(range)){
+                        return true;
                     }
                 }
-                if (range.getFromCvFuzzyType() != null) {
-                    if (range.getFromCvFuzzyType().isCTerminal() || range.getFromCvFuzzyType().isNTerminal() || range.getFromCvFuzzyType().isUndetermined()){
-                        if (range.getFromIntervalStart() != 0 || range.getFromIntervalEnd() != 0){
-                            return true;
-                        }
-                    }
-                    else if (range.getFromCvFuzzyType().isCertain() || range.getFromCvFuzzyType().isRange() || range.getFromCvFuzzyType().isLessThan() || range.getFromCvFuzzyType().isGreaterThan()){
-                        if (range.getFromIntervalStart() == 0 || range.getFromIntervalEnd() == 0 || !isRangeWithinSequence){
-                            return true;
-                        }
+                else if (startStatus != null){
+                    if (!startStatus.isCTerminal() && areRangePositionsOverlapping(range)){
+                        return true;
                     }
                 }
-
-                if ((range.getFromCvFuzzyType() == null || range.getToCvFuzzyType() == null) && !isRangeWithinSequence){
+                else if (endStatus != null){
+                    if (!endStatus.isCTerminal() && areRangePositionsOverlapping(range)){
+                        return true;
+                    }
+                }
+                else {
+                    if (areRangePositionsOverlapping(range)){
+                        return true;
+                    }
+                }
+            }
+            else {
+                if (areRangePositionsOverlapping(range)){
                     return true;
                 }
             }
         }
-        else {
+
+        return false;
+    }
+
+    public static boolean areRangePositionsOutOfBound(int start, int end, int sequenceLength){
+
+        if (start <= 0 || end <= 0 || start > sequenceLength || end > sequenceLength){
             return true;
         }
+        return false;
+    }
 
+    public static boolean areRangePositionsInvalid(int start, int end){
+
+        if (start > end){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean checkRangePositionsAccordingToRangeType(CvFuzzyType rangeType, int start, int end, String sequence){
+        int sequenceLength = 0;
+
+        if (sequence != null){
+            sequenceLength = sequence.length();
+        }
+
+        if (rangeType == null){
+            if (!areRangePositionsInvalid(start, end)){
+                if (sequenceLength == 0 ){
+                    if (start > 0 && end > 0){
+                        return true;
+                    }
+                }
+                else {
+                    if (!areRangePositionsOutOfBound(start, end, sequenceLength)){
+                        return true;
+                    }
+                }
+            }
+        }
+        else {
+            if (rangeType.isUndetermined()){
+                if (start == 0 && end == 0){
+                    return true;
+                }
+            }
+            else if (rangeType.isNTerminal()){
+                if (start == 1 && end == 1){
+                    return true;
+                }
+            }
+            else if (rangeType.isCTerminal()){
+
+                if (start == sequenceLength && end == sequenceLength){
+                    return true;
+                }
+            }
+            else if (rangeType.isGreaterThan()){
+                if (sequenceLength == 0){
+                    if (start == end && start >= 1 ){
+                        return true;
+                    }
+                }
+                else {
+                    if (start == end && start < sequenceLength && start >= 1 ){
+                        return true;
+                    }
+                }
+            }
+            else if (rangeType.isLessThan()){
+                if (sequenceLength == 0){
+                    if (start == end && start > 1){
+                        return true;
+                    }
+                }
+                else {
+                    if (start == end && start > 1 && start <= sequenceLength){
+                        return true;
+                    }
+                }
+            }
+            else if (rangeType.isCertain() || rangeType.isRaggedNTerminus()){
+                if (sequenceLength == 0){
+                    if (start == end && start > 0){
+                        return true;
+                    }
+                }
+                else {
+                    if (start == end && !areRangePositionsOutOfBound(start, end, sequenceLength)){
+                        return true;
+                    }
+                }
+            }
+            else {
+                if (sequenceLength == 0){
+                    if (!areRangePositionsInvalid(start, end) && start > 0 && end > 0){
+                        return true;
+                    }
+                }
+                else {
+                    if (!areRangePositionsInvalid(start, end) && areRangePositionsOutOfBound(start, end, sequenceLength)){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean arePositionsOverlapping(int fromStart, int fromEnd, int toStart, int toEnd){
+
+        if (fromStart > toStart || fromEnd > toStart || fromStart > toEnd || fromEnd > toEnd){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean areRangePositionsOverlapping(Range range){
+        CvFuzzyType startStatus = range.getFromCvFuzzyType();
+        CvFuzzyType endStatus = range.getToCvFuzzyType();
+
+        if (startStatus != null && endStatus != null){
+            if (startStatus.isGreaterThan() && endStatus.isLessThan() && range.getToIntervalEnd() - range.getFromIntervalStart() < 2){
+                 return true;
+            }
+            else if (!startStatus.isUndetermined() && !endStatus.isUndetermined()){
+                return arePositionsOverlapping(range.getFromIntervalStart(), range.getFromIntervalEnd(), range.getToIntervalStart(), range.getToIntervalEnd());
+            }
+        }
+        else if (endStatus != null){
+            if (endStatus.isLessThan() && range.getFromIntervalStart() == range.getToIntervalEnd()){
+                return true;
+            }
+            else if (!endStatus.isUndetermined()){
+                return arePositionsOverlapping(range.getFromIntervalStart(), range.getFromIntervalEnd(), range.getToIntervalStart(), range.getToIntervalEnd());
+            }
+        }
+        else if (startStatus != null){
+            if (startStatus.isGreaterThan() && range.getFromIntervalStart() == range.getToIntervalEnd()){
+                return true;
+            }
+            else if (!startStatus.isUndetermined()){
+                return arePositionsOverlapping(range.getFromIntervalStart(), range.getFromIntervalEnd(), range.getToIntervalStart(), range.getToIntervalEnd());
+            }
+        }
+        else {
+            return arePositionsOverlapping(range.getFromIntervalStart(), range.getFromIntervalEnd(), range.getToIntervalStart(), range.getToIntervalEnd());
+        }
+
+        return false;
+    }
+
+    public static boolean areRangeStatusInconsistent(CvFuzzyType startStatus, CvFuzzyType endStatus){
+
+        if (startStatus != null && endStatus != null){
+            if (startStatus.isCTerminal() && !endStatus.isCTerminal()){
+                return true;
+            }
+            else if (endStatus.isNTerminal() && !startStatus.isNTerminal()){
+                return true;
+            }
+        }
+        else if (startStatus != null){
+            if (startStatus.isCTerminal()){
+                return true;
+            }
+        }
+        else if (endStatus != null){
+            if (endStatus.isNTerminal()){
+                return true;
+            }
+        }
         return false;
     }
 }

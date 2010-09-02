@@ -74,7 +74,7 @@ public class RangeDaoTest extends IntactBasicTestCase {
     public void prepareSequenceWithNTerminal() throws Exception {
         final Institution owner = new Institution( "ebi" );
         String s = "MAEKVNNFPPLPKFIPLKPCFYQDFEADIPPQHVSMTKRLYYLWMLNSVTLAVNLVGCLAWLIGGGGATNFGLAFLWLILFTPCSYVCWFRPIYKAFKTDSSFSFMAFFFTFMAQLVISIIQAVGIPGWGVCGWIATISFFGTNIGSAVVMLIPTVMFTVMAVFSFIALSMVHKFYRGSGGSFSKAQEEWTTGAWKNPHVQQAAQNAAMGAAQGAMNQPQTQYSATPNYTYSNEM";
-        Range range = new Range( owner, 0, 0, s);
+        Range range = new Range( owner, 1, 1, s);
         CvFuzzyType rangeFuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class,
         CvFuzzyType.N_TERMINAL_MI_REF,
         CvFuzzyType.N_TERMINAL );
@@ -93,16 +93,17 @@ public class RangeDaoTest extends IntactBasicTestCase {
         System.out.println("upstream sequence : " + r.getUpStreamSequence());
         System.out.println("downstream sequence : " + r.getDownStreamSequence().length());
 
-        Assert.assertEquals( s.substring(0, 100), r.getFullSequence());
+        Assert.assertEquals( s.substring(0, 1), r.getFullSequence());
         Assert.assertEquals(null, r.getUpStreamSequence());
-        Assert.assertEquals( s.substring(100, 140), r.getDownStreamSequence());
+        Assert.assertEquals( s.substring(1, 41), r.getDownStreamSequence());
+        Assert.assertEquals( 40, r.getDownStreamSequence().length());
     }
 
     @Test
     public void prepareSequenceWithCTerminal() throws Exception {
         final Institution owner = new Institution( "ebi" );
         String s = "MAEKVNNFPPLPKFIPLKPCFYQDFEADIPPQHVSMTKRLYYLWMLNSVTLAVNLVGCLAWLIGGGGATNFGLAFLWLILFTPCSYVCWFRPIYKAFKTDSSFSFMAFFFTFMAQLVISIIQAVGIPGWGVCGWIATISFFGTNIGSAVVMLIPTVMFTVMAVFSFIALSMVHKFYRGSGGSFSKAQEEWTTGAWKNPHVQQAAQNAAMGAAQGAMNQPQTQYSATPNYTYSNEM";
-        Range range = new Range( owner, 0, 0, s);
+        Range range = new Range( owner, s.length(), s.length(), s);
         CvFuzzyType rangeFuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class,
         CvFuzzyType.C_TERMINAL_MI_REF,
         CvFuzzyType.C_TERMINAL );
@@ -121,8 +122,8 @@ public class RangeDaoTest extends IntactBasicTestCase {
         System.out.println("upstream sequence : " + r.getUpStreamSequence().length());
         System.out.println("downstream sequence : " + r.getDownStreamSequence());
 
-        Assert.assertEquals( s.substring(s.length() - 100, s.length()), r.getFullSequence());
-        Assert.assertEquals(s.substring(s.length() - 140, s.length() - 100), r.getUpStreamSequence());
+        Assert.assertEquals( s.substring(s.length() - 1, s.length()), r.getFullSequence());
+        Assert.assertEquals(s.substring(s.length() - 41, s.length() - 1), r.getUpStreamSequence());
         Assert.assertEquals(null, r.getDownStreamSequence());
     }
 }

@@ -57,6 +57,8 @@ public class CvFuzzyType extends CvDagObject implements Editable {
      */
     public static final String N_TERMINAL = "n-terminal";
     public static final String N_TERMINAL_MI_REF = "MI:0340";
+    public static final String RAGGED_N_TERMINUS = "ragged n-terminus";
+    public static final String RAGGED_N_TERMINUS_MI_REF = "MI:0341";
 
     /**
      * The constant for certain.
@@ -240,6 +242,14 @@ public class CvFuzzyType extends CvDagObject implements Editable {
     @Transient
     public final boolean isNTerminal() {
         return hasMiIdentity( N_TERMINAL_MI_REF ) || getShortLabel().equals( N_TERMINAL );
+    }
+
+    /**
+     * @return true if this current type is of ragged_n_terminal type.
+     */
+    @Transient
+    public final boolean isRaggedNTerminus() {
+        return hasMiIdentity( RAGGED_N_TERMINUS_MI_REF ) || getShortLabel().equals( RAGGED_N_TERMINUS );
     }
 
     /**

@@ -496,7 +496,7 @@ public boolean isUndetermined() {
     public void prepareSequence( String sequence ) {
 
         if (sequence != null){
-            if (FeatureUtils.areFrom_ToCvFuzzyTypeConsistent(this)){
+            if (!FeatureUtils.isABadRange(this, sequence)){
                 // Get the sequence from start if there is no fuzzy type.
                 if ( fromCvFuzzyType == null && toCvFuzzyType == null ) {
                     setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
@@ -504,10 +504,20 @@ public boolean isUndetermined() {
                     prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
                 }
                 else if ( fromCvFuzzyType == null && toCvFuzzyType != null ) {
-                    if (toCvFuzzyType.isGreaterThan()){
+                    if (toCvFuzzyType.isUndetermined()){
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                         setFullSequence( getSequence( sequence, fromIntervalStart, sequence.length()));
                         prepareUpStreamDownStreamSequence(fromIntervalStart, sequence.length(), sequence);
+                    }
+                    else if (toCvFuzzyType.isGreaterThan()){
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart + 1 ) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd + 1));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd + 1, sequence);
+                    }
+                    else if (toCvFuzzyType.isLessThan()){
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart - 1) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd - 1));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd - 1, sequence);
                     }
                     else {
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
@@ -516,10 +526,20 @@ public boolean isUndetermined() {
                     }
                 }
                 else if ( fromCvFuzzyType != null && toCvFuzzyType == null ) {
-                    if (fromCvFuzzyType.isLessThan()) {
+                    if (fromCvFuzzyType.isUndetermined()){
                         setSequenceIntern( getSequenceStartingFrom( sequence, 1 ) );
                         setFullSequence( getSequence( sequence, 1, toIntervalEnd));
                         prepareUpStreamDownStreamSequence(1, toIntervalEnd, sequence);
+                    }
+                    else if (fromCvFuzzyType.isLessThan()) {
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart - 1 ) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart - 1, toIntervalEnd));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart - 1, toIntervalEnd, sequence);
+                    }
+                    else if (fromCvFuzzyType.isGreaterThan()){
+                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart + 1) );
+                        setFullSequence( getSequence( sequence, fromIntervalStart + 1, toIntervalEnd));
+                        prepareUpStreamDownStreamSequence(fromIntervalStart + 1, toIntervalEnd, sequence);
                     }
                     else {
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
@@ -528,38 +548,53 @@ public boolean isUndetermined() {
                     }
                 }
                 else{
-                    // Truncate according to type.
-                    if ( fromCvFuzzyType.isCTerminal()) {
-                        setSequenceIntern( getLastSequence( sequence ) );
-                        setFullSequence( getLastFullSequence( sequence ));
-                        prepareUpStreamDownStreamSequence(Math.max(1, sequence.length() - ourMaxSeqSize + 1), sequence.length(), sequence);
-                    } else if ( fromCvFuzzyType.isNTerminal() || fromCvFuzzyType.isUndetermined() ) {
-                        setSequenceIntern( getFirstSequence( sequence ) );
-                        setFullSequence( getFirstFullSequence( sequence ));
-                        prepareUpStreamDownStreamSequence(1, Math.min(ourMaxSeqSize, sequence.length()), sequence);
-                    }else if ( fromCvFuzzyType.isLessThan() && toCvFuzzyType.isGreaterThan() ) {
-                        setSequenceIntern( getFirstSequence( sequence ) );
-                        setFullSequence( sequence );
-                    }else if (fromCvFuzzyType.isLessThan()) {
-                        setSequenceIntern( getSequenceStartingFrom( sequence, 1 ) );
-                        setFullSequence( getSequence( sequence, 1, toIntervalEnd));
-                        prepareUpStreamDownStreamSequence(1, toIntervalEnd, sequence);
-                    }else if (toCvFuzzyType.isGreaterThan()) {
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart, sequence.length()));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart, sequence.length(), sequence);
-                    }else {
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
+                    if ((fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isUndetermined())
+                            || (fromCvFuzzyType.isNTerminal() && toCvFuzzyType.isUndetermined())
+                            || (fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isCTerminal())){
+                        this.sequence = null;
+                        this.fullSequence = null;
+                        this.upStreamSequence = null;
+                        this.downStreamSequence = null;
+                    }
+                    else {
+                        int startSequence = fromIntervalStart;
+                        int endSequence = toIntervalEnd;
+
+                        if (fromCvFuzzyType.isGreaterThan()){
+                            startSequence ++;
+                        }
+                        else if (fromCvFuzzyType.isLessThan()){
+                            startSequence --;
+                        }
+                        else if (fromCvFuzzyType.isUndetermined()){
+                            startSequence = 1;
+                        }
+
+                        if (toCvFuzzyType.isGreaterThan()){
+                            endSequence ++;
+                        }
+                        else if (toCvFuzzyType.isLessThan()){
+                            endSequence --;
+                        }
+                        else if (fromCvFuzzyType.isUndetermined()){
+                            startSequence = sequence.length();
+                        }
+
+                        if (fromCvFuzzyType.isGreaterThan() && toCvFuzzyType.isGreaterThan()){
+                            endSequence = sequence.length();
+                        }
+                        else if (fromCvFuzzyType.isLessThan() && toCvFuzzyType.isLessThan()){
+                            startSequence = 1;
+                        }
+
+                        setSequenceIntern( getSequenceStartingFrom( sequence, startSequence ) );
+                        setFullSequence( getSequence( sequence, startSequence, endSequence));
+                        prepareUpStreamDownStreamSequence(startSequence, endSequence, sequence);
                     }
                 }
             }
             else {
-                this.sequence = null;
-                this.fullSequence = null;
-                this.upStreamSequence = null;
-                this.downStreamSequence = null;
+                throw new IllegalArgumentException("It is not possible to extract the sequence of this range from the given protein sequence because the range is invalid.");
             }
         }
         else {
