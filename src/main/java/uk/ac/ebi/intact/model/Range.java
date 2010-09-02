@@ -494,16 +494,22 @@ public boolean isUndetermined() {
     }
 
     public void prepareSequence( String sequence ) {
-
+        // we can only extract the feature sequence if the protein sequence is not null
         if (sequence != null){
+
+            // the range should be valid and consistent with the protein sequence
             if (!FeatureUtils.isABadRange(this, sequence)){
-                // Get the sequence from start if there is no fuzzy type.
+
+                // Both the start and the end don't have any status, the feature sequence will be the sequence from 'fromIntervalStart'
+                // to 'toIntervalEnd'
                 if ( fromCvFuzzyType == null && toCvFuzzyType == null ) {
                     setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                     setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
                     prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
                 }
+                // Only the end has a status. We will have several cases depending on the end status
                 else if ( fromCvFuzzyType == null && toCvFuzzyType != null ) {
+                    // the end is undetermined, we will extract the sequence from 
                     if (toCvFuzzyType.isUndetermined()){
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                         setFullSequence( getSequence( sequence, fromIntervalStart, sequence.length()));
@@ -593,10 +599,12 @@ public boolean isUndetermined() {
                     }
                 }
             }
+            // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence
             else {
                 throw new IllegalArgumentException("It is not possible to extract the sequence of this range from the given protein sequence because the range is invalid.");
             }
         }
+        // protein sequence null, no possible extraction of the feature sequence
         else {
             this.sequence = null;
             this.fullSequence = null;
