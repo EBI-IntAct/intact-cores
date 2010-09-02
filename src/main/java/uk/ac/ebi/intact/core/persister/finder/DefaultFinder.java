@@ -209,13 +209,34 @@ public class DefaultFinder implements Finder {
         if (experimentAcs.size() == 1 && experiment.getAnnotations().isEmpty()) {
 
             experimentAc = experimentAcs.get(0);
-            
+
             Experiment match = getDaoFactory().getExperimentDao().getByAc(experimentAc);
 
             if (!match.getAnnotations().isEmpty()){
-                 experimentAc = null;
+                experimentAc = null;
             }
-        } else if ( experimentAcs.size() != 0 ){
+        }
+        else if (experimentAcs.size() != 0 && experiment.getAnnotations().isEmpty()){
+            Collection<String> experimentsWithoutAnnotations = new ArrayList<String>();
+
+            for (String candidateExperimentAc : experimentAcs) {
+                Experiment match = getDaoFactory().getExperimentDao().getByAc(candidateExperimentAc);
+
+                if (match.getAnnotations().isEmpty()){
+                    experimentsWithoutAnnotations.add(candidateExperimentAc);
+                }
+            }
+
+            if (experimentsWithoutAnnotations.size() == 1){
+                experimentAc = experimentsWithoutAnnotations.iterator().next();
+            }
+            else if (experimentsWithoutAnnotations.size() > 1){
+                log.warn( "There were " + experimentsWithoutAnnotations.size() +" experiments matching " + experiment.getShortLabel() +
+                        "["+ experiment.getAc() +"]: "+ experimentAcs +
+                        " However, none of them had no annotations attached to it. Consequently, none was selected." );
+            }
+        }
+        else if ( experimentAcs.size() != 0 && !experiment.getAnnotations().isEmpty()){
             // check the annotations
             Collection<String> expAnnotDescs = CollectionUtils.collect(experiment.getAnnotations(), new BeanToPropertyValueTransformer("annotationText"));
 
