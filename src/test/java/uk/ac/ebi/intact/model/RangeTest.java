@@ -63,18 +63,21 @@ public class RangeTest {
 
         String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
                 "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
-        Range range = new Range( owner, 1, 109, s);
+        Range range = new Range( owner, 100, 110, s);
 
         CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
                 CvFuzzyType.C_TERMINAL_MI_REF,
                 CvFuzzyType.C_TERMINAL );
-        range.setFromCvFuzzyType( rangeFuzzyType );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        range.setFromCvFuzzyType( rangeFuzzyType2 );
         range.setToCvFuzzyType( rangeFuzzyType );
         range.prepareSequence(s);
         
         Assert.assertEquals( 110, s.length() );
-        Assert.assertEquals( s.substring(10, 110), range.getFullSequence());
-        Assert.assertEquals( s.substring(0, 10), range.getUpStreamSequence());
+        Assert.assertEquals( s.substring(99, 110), range.getFullSequence());
+        Assert.assertEquals( s.substring(59, 99), range.getUpStreamSequence());
         Assert.assertEquals( null, range.getDownStreamSequence());
     }
 
@@ -90,13 +93,16 @@ public class RangeTest {
         CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
                 CvFuzzyType.N_TERMINAL_MI_REF,
                 CvFuzzyType.N_TERMINAL );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
         range.setFromCvFuzzyType( rangeFuzzyType );
-        range.setToCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
         range.prepareSequence(s);
 
         Assert.assertEquals( 110, s.length() );
-        Assert.assertEquals( s.substring(100, 110), range.getDownStreamSequence());
-        Assert.assertEquals( s.substring(0, 100), range.getFullSequence());
+        Assert.assertEquals( s.substring(109, 110), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(0, 109), range.getFullSequence());
         Assert.assertEquals( null, range.getUpStreamSequence());
     }
 }
