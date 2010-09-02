@@ -35,10 +35,7 @@ import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Default implementation of the intact finder.
@@ -217,7 +214,7 @@ public class DefaultFinder implements Finder {
             }
         }
         else if (experimentAcs.size() != 0 && experiment.getAnnotations().isEmpty()){
-            Collection<String> experimentsWithoutAnnotations = new ArrayList<String>();
+            Set<String> experimentsWithoutAnnotations = new HashSet<String>();
 
             for (String candidateExperimentAc : experimentAcs) {
                 Experiment match = getDaoFactory().getExperimentDao().getByAc(candidateExperimentAc);
