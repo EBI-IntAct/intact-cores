@@ -99,7 +99,50 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void persistExperiment_sameUnassigned() throws Exception {
+        Assert.assertEquals(0, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(0, getDaoFactory().getExperimentDao().countAll());
 
+        Experiment exp = getMockBuilder().createExperimentEmpty("lefant-2010-1", "unassigned545");
+        exp.setBioSource(getMockBuilder().createBioSource(4932, "yeast"));
+        exp.addXref(getMockBuilder().createXref(exp, "IMEX-1234",
+                getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.IMEX_PRIMARY_MI_REF, CvXrefQualifier.IMEX_PRIMARY),
+                getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.IMEX_MI_REF, CvDatabase.IMEX)));
+
+        Interaction i1 = getMockBuilder().createInteractionRandomBinary();
+        i1.getExperiments().clear();
+        exp.addInteraction(i1);
+
+        Assert.assertEquals(2, exp.getXrefs().size());
+
+        getCorePersister().saveOrUpdate(i1);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+
+        Assert.assertEquals("Only one experiment expected after saving one interaction", 1, getDaoFactory().getExperimentDao().countAll());
+
+        Experiment exp2 = getMockBuilder().createExperimentEmpty("lefant-2010-1", "unassigned545");
+        exp2.setBioSource(getMockBuilder().createBioSource(4932, "yeast"));
+        exp2.addXref(getMockBuilder().createXref(exp2, "IMEX-1234",
+                getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.IMEX_PRIMARY_MI_REF, CvXrefQualifier.IMEX_PRIMARY),
+                getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.IMEX_MI_REF, CvDatabase.IMEX)));
+
+        Interaction i2 = getMockBuilder().createInteractionRandomBinary();
+        i2.getExperiments().clear();
+        exp2.addInteraction(i2);
+
+        getCorePersister().saveOrUpdate(i2);
+
+        Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals("Only one experiment expected after saving two interactions with the same experiment", 1, getDaoFactory().getExperimentDao().countAll());
+
+        Experiment reloadedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("lefant-2010-1");
+
+        Assert.assertEquals(2, reloadedExperiment.getXrefs().size());
+
+    }
+
+    @Test
     public void updateExperiment_avoidDuplications() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom(1);
         exp.setShortLabel("nopub-2006-1");
