@@ -199,13 +199,13 @@ public class DefaultFinder implements Finder {
         query.setParameter("participantDetMethodMi", experiment.getCvIdentification().getIdentifier());
         query.setParameter("interactionDetectionMethodMi", experiment.getCvInteraction().getIdentifier());
 
-        List<String> experimentAcs = query.getResultList();
+        Set<String> experimentAcs = new HashSet<String>(query.getResultList());
 
         String experimentAc = null;
 
         if (experimentAcs.size() == 1 && experiment.getAnnotations().isEmpty()) {
 
-            experimentAc = experimentAcs.get(0);
+            experimentAc = experimentAcs.iterator().next();
 
             Experiment match = getDaoFactory().getExperimentDao().getByAc(experimentAc);
 
@@ -273,7 +273,7 @@ public class DefaultFinder implements Finder {
         Query query = getEntityManager().createQuery("select i.ac from InteractionImpl i where i.crc = :crc");
         query.setParameter("crc", interactionCrc);
 
-        List<String> acs = query.getResultList();
+        Set<String> acs = new HashSet<String>(query.getResultList());
 
         if (acs.isEmpty()) {
             return null;
@@ -283,7 +283,7 @@ public class DefaultFinder implements Finder {
             log.error("More than one interaction found using the CRC ("+interactionCrc+"). Returning the first one");
         }
 
-        return acs.get(0);
+        return acs.iterator().next();
     }
 
     /**
