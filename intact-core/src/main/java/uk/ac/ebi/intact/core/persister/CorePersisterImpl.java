@@ -516,8 +516,8 @@ public class CorePersisterImpl implements CorePersister {
 
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
 
-        if ( log.isDebugEnabled() ) {
-            log.debug( "Persisting objects..." );
+        if ( log.isTraceEnabled() ) {
+            log.trace( "Committing..." );
         }
 
         // Order the collection of objects to persist: institution, cvs, others
@@ -547,8 +547,8 @@ public class CorePersisterImpl implements CorePersister {
             }
         }
 
-        if ( log.isDebugEnabled() ) {
-            log.debug( "Merging objects..." );
+        if ( log.isTraceEnabled() ) {
+            log.trace( "Merging objects..." );
         }
 
         // Order the collection of objects to persist: institution, cvs, others
@@ -568,7 +568,7 @@ public class CorePersisterImpl implements CorePersister {
         }
 
         try {
-            log.debug( "Invoking an EntityManager flush..." );
+            log.trace( "Invoking an EntityManager flush..." );
             daoFactory.getEntityManager().flush();
         } catch (IllegalStateException ise) {
             if (ise.getCause() instanceof TransientObjectException) {
