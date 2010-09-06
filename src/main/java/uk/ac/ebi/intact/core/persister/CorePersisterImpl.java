@@ -126,6 +126,7 @@ public class CorePersisterImpl implements CorePersister {
     @IntactFlushMode(FlushModeType.COMMIT)
     public PersisterStatistics saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
         for (AnnotatedObject ao : annotatedObjects) {
+            if (log.isDebugEnabled()) log.debug("Saving: "+DebugUtil.annotatedObjectToString(ao, false));
             synchronize(ao);
         }
 
@@ -144,6 +145,7 @@ public class CorePersisterImpl implements CorePersister {
 
     @Transactional
     public PersisterStatistics saveOrUpdate( AnnotatedObject ao ) {
+        if (log.isDebugEnabled()) log.debug("Saving: "+DebugUtil.annotatedObjectToString(ao, false));
 
         dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.COMMIT);
         //dataContext.getDaoFactory().getDataConfig().setAutoFlush(false);
