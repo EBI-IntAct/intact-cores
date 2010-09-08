@@ -601,7 +601,7 @@ public boolean isUndetermined() {
             }
             // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence
             else {
-                throw new IllegalArgumentException("It is not possible to extract the sequence of this range from the given protein sequence because the range is invalid.");
+                throw new IllegalArgumentException("It is not possible to extract the sequence of this range from the given protein sequence because the range is invalid: "+this+" Seq. legth: "+(sequence != null? sequence.length() : 0));
             }
         }
         // protein sequence null, no possible extraction of the feature sequence
