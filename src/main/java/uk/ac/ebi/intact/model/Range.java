@@ -509,51 +509,61 @@ public boolean isUndetermined() {
                 }
                 // Only the end has a status. We will have several cases depending on the end status
                 else if ( fromCvFuzzyType == null && toCvFuzzyType != null ) {
-                    // the end is undetermined, we will extract the sequence from 
+                    // the end is undetermined, we will extract the sequence from the 'fromIntervalStart' to the end of the sequence
                     if (toCvFuzzyType.isUndetermined()){
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                         setFullSequence( getSequence( sequence, fromIntervalStart, sequence.length()));
                         prepareUpStreamDownStreamSequence(fromIntervalStart, sequence.length(), sequence);
                     }
+                    // the end is greater than, we will extract the sequence from the 'fromIntervalStart' to the 'toIntervalEnd + 1'
                     else if (toCvFuzzyType.isGreaterThan()){
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart + 1 ) );
                         setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd + 1));
                         prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd + 1, sequence);
                     }
+                    // the end is less than, we will extract the sequence from the 'fromIntervalStart' to the 'toIntervalEnd - 1'
                     else if (toCvFuzzyType.isLessThan()){
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart - 1) );
                         setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd - 1));
                         prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd - 1, sequence);
                     }
+                    // we will extract the sequence from the 'fromIntervalStart' to the 'toIntervalEnd'
                     else {
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                         setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
                         prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
                     }
                 }
+                // Only the start has a status. We will have several cases depending on the start status
                 else if ( fromCvFuzzyType != null && toCvFuzzyType == null ) {
+                    // the start is undetermined, we will extract the sequence from the beginning of the sequence to the 'toIntervalEnd'
                     if (fromCvFuzzyType.isUndetermined()){
                         setSequenceIntern( getSequenceStartingFrom( sequence, 1 ) );
                         setFullSequence( getSequence( sequence, 1, toIntervalEnd));
                         prepareUpStreamDownStreamSequence(1, toIntervalEnd, sequence);
                     }
+                    // the start is less than, we will extract the sequence from the 'fromIntervalStart - 1' to the 'toIntervalEnd'
                     else if (fromCvFuzzyType.isLessThan()) {
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart - 1 ) );
                         setFullSequence( getSequence( sequence, fromIntervalStart - 1, toIntervalEnd));
                         prepareUpStreamDownStreamSequence(fromIntervalStart - 1, toIntervalEnd, sequence);
                     }
+                    // the start is greater than, we will extract the sequence from the 'fromIntervalStart + 1' to the 'toIntervalEnd'
                     else if (fromCvFuzzyType.isGreaterThan()){
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart + 1) );
                         setFullSequence( getSequence( sequence, fromIntervalStart + 1, toIntervalEnd));
                         prepareUpStreamDownStreamSequence(fromIntervalStart + 1, toIntervalEnd, sequence);
                     }
+                    // we will extract the sequence from the 'fromIntervalStart' to the 'toIntervalEnd'
                     else {
                         setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
                         setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
                         prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
                     }
                 }
+                // both the start position and the end position have a status
                 else{
+                    // if both positions are undetermined, or of type 'n-?' or '?-c', no feature sequence can be extracted
                     if ((fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isUndetermined())
                             || (fromCvFuzzyType.isNTerminal() && toCvFuzzyType.isUndetermined())
                             || (fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isCTerminal())){
@@ -562,33 +572,44 @@ public boolean isUndetermined() {
                         this.upStreamSequence = null;
                         this.downStreamSequence = null;
                     }
+                    // a feature sequence can be extracted
                     else {
+                        // the start position is the start position of the start interval
                         int startSequence = fromIntervalStart;
+                        // the end position is the end position of the end interval
                         int endSequence = toIntervalEnd;
 
+                        // in case of greater than, the start position is starting from fromIntervalStart + 1
                         if (fromCvFuzzyType.isGreaterThan()){
                             startSequence ++;
                         }
+                        // in case of less than, the start position is starting from fromIntervalStart - 1
                         else if (fromCvFuzzyType.isLessThan()){
                             startSequence --;
                         }
+                        // in case of undetermined, the start position is starting from 1
                         else if (fromCvFuzzyType.isUndetermined()){
                             startSequence = 1;
                         }
 
+                        // in case of greater than, the end position is at 'toIntervalEnd' + 1
                         if (toCvFuzzyType.isGreaterThan()){
                             endSequence ++;
                         }
+                        // in case of less than, the end position is at 'toIntervalEnd' - 1
                         else if (toCvFuzzyType.isLessThan()){
                             endSequence --;
                         }
+                        // in case of undetermined, the end position is at the end of the sequence
                         else if (fromCvFuzzyType.isUndetermined()){
                             startSequence = sequence.length();
                         }
 
+                        // if the start is greater than and the end is also greater than, the end is the end of the sequence
                         if (fromCvFuzzyType.isGreaterThan() && toCvFuzzyType.isGreaterThan()){
                             endSequence = sequence.length();
                         }
+                        // if both the start position and the end position is less than, the start position is 1
                         else if (fromCvFuzzyType.isLessThan() && toCvFuzzyType.isLessThan()){
                             startSequence = 1;
                         }
