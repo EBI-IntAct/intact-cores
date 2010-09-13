@@ -188,7 +188,7 @@ public class RangeTest {
 
         String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
                 "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
-        Range range = new Range( owner, 1, 4, null);
+        Range range = new Range( owner, 1, 0, null);
 
         CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
                 CvFuzzyType.N_TERMINAL_MI_REF,
