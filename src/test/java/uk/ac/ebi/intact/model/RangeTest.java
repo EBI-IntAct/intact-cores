@@ -74,7 +74,7 @@ public class RangeTest {
         range.setFromCvFuzzyType( rangeFuzzyType2 );
         range.setToCvFuzzyType( rangeFuzzyType );
         range.prepareSequence(s);
-        
+
         Assert.assertEquals( 110, s.length() );
         Assert.assertEquals( s.substring(99, 110), range.getFullSequence());
         Assert.assertEquals( s.substring(59, 99), range.getUpStreamSequence());
@@ -104,5 +104,405 @@ public class RangeTest {
         Assert.assertEquals( s.substring(109, 110), range.getDownStreamSequence());
         Assert.assertEquals( s.substring(0, 109), range.getFullSequence());
         Assert.assertEquals( null, range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_undetermined_undetermined(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 0, 0, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.UNDETERMINED_MI_REF,
+                CvFuzzyType.UNDETERMINED );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.UNDETERMINED_MI_REF,
+                CvFuzzyType.UNDETERMINED );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( null, range.getDownStreamSequence());
+        Assert.assertEquals( null, range.getFullSequence());
+        Assert.assertEquals( null, range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_undetermined_certain(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 0, 4, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.UNDETERMINED_MI_REF,
+                CvFuzzyType.UNDETERMINED );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(4, 44), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(0, 4), range.getFullSequence());
+        Assert.assertEquals( null, range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_undetermined_cTerminal(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 0, 110, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.UNDETERMINED_MI_REF,
+                CvFuzzyType.UNDETERMINED );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.C_TERMINAL_MI_REF,
+                CvFuzzyType.C_TERMINAL );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( null, range.getDownStreamSequence());
+        Assert.assertEquals( null, range.getFullSequence());
+        Assert.assertEquals( null, range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_nTerminal_undetermined(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 1, 4, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.N_TERMINAL_MI_REF,
+                CvFuzzyType.N_TERMINAL );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.UNDETERMINED_MI_REF,
+                CvFuzzyType.UNDETERMINED );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( null, range.getDownStreamSequence());
+        Assert.assertEquals( null, range.getFullSequence());
+        Assert.assertEquals( null, range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_nTerminal_certain(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 1, 4, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.N_TERMINAL_MI_REF,
+                CvFuzzyType.N_TERMINAL );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(4, 44), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(0,4), range.getFullSequence());
+        Assert.assertEquals( null, range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_certain_cTerminal(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 90, 110, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.C_TERMINAL_MI_REF,
+                CvFuzzyType.C_TERMINAL );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( null, range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(89,110), range.getFullSequence());
+        Assert.assertEquals( s.substring(49, 89), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_range_1(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 2, 2, 4, 4, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.RANGE_MI_REF,
+                CvFuzzyType.RANGE );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.RANGE_MI_REF,
+                CvFuzzyType.RANGE );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(4, 43), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(1,4), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 1), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_range_2(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 2, 3, 5, 6, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.RANGE_MI_REF,
+                CvFuzzyType.RANGE );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.RANGE_MI_REF,
+                CvFuzzyType.RANGE );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(6, 45), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(1,6), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 1), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_greaterThan_greaterThan(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 20, 20, 20, 20, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.GREATER_THAN_MI_REF,
+                CvFuzzyType.GREATER_THAN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.GREATER_THAN_MI_REF,
+                CvFuzzyType.GREATER_THAN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( null, range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(20,110), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 20), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_lessThan_lessThan(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 20, 20, 20, 20, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.LESS_THAN_MI_REF,
+                CvFuzzyType.LESS_THAN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.LESS_THAN_MI_REF,
+                CvFuzzyType.LESS_THAN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(19, 59), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(0,19), range.getFullSequence());
+        Assert.assertEquals( null, range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_greaterThan_lessThan(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 20, 20, 40, 40, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.GREATER_THAN_MI_REF,
+                CvFuzzyType.GREATER_THAN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.LESS_THAN_MI_REF,
+                CvFuzzyType.LESS_THAN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(39, 59), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(20,39), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 20), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_lessThan_greaterThan(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 20, 20, 40, 40, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.LESS_THAN_MI_REF,
+                CvFuzzyType.LESS_THAN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.GREATER_THAN_MI_REF,
+                CvFuzzyType.GREATER_THAN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(41, 63), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(18,41), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 18), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_certain_lessThan(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 17, 17, 20, 20, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.LESS_THAN_MI_REF,
+                CvFuzzyType.LESS_THAN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(19, 43), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(16,19), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 16), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_lessThan_certain(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 17, 17, 20, 20, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.LESS_THAN_MI_REF,
+                CvFuzzyType.LESS_THAN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(20, 45), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(15,20), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 15), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_certain_greaterThan(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 17, 17, 20, 20, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.GREATER_THAN_MI_REF,
+                CvFuzzyType.GREATER_THAN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(21, 45), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(16,21), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 16), range.getUpStreamSequence());
+    }
+
+    @Test
+    public void prepareSequence_greaterThan_certain(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 17, 17, 20, 20, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.GREATER_THAN_MI_REF,
+                CvFuzzyType.GREATER_THAN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( s.substring(20, 43), range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(17,20), range.getFullSequence());
+        Assert.assertEquals( s.substring(0, 17), range.getUpStreamSequence());
     }
 }

@@ -101,16 +101,17 @@ public class FeatureUtils {
         // or the start status is not consistent with the end status, the range is not valid
         final int fromIntervalStart = range.getFromIntervalStart();
         final int fromIntervalEnd = range.getFromIntervalEnd();
+        final int toIntervalStart = range.getToIntervalStart();
+        final int toIntervalEnd = range.getToIntervalEnd();
 
         if (!areRangePositionsAccordingToRangeTypeOk(startStatus, fromIntervalStart, fromIntervalEnd, sequence)) {
             return "Range start status ("+(startStatus != null? startStatus.getShortLabel() : "null")+") and interval begin position ("+ fromIntervalStart +") are inconsistent - "+
                     getRangePositionsAccordingToRangeTypeErrorMessage(startStatus, fromIntervalStart, fromIntervalEnd, sequence);
-        } else if (!areRangePositionsAccordingToRangeTypeOk(endStatus, range.getToIntervalStart(), range.getToIntervalEnd(), sequence)) {
-            return "End status "+(endStatus != null? endStatus.getShortLabel() : "null")+" and end interval position are inconsistent - "+
-                    getRangePositionsAccordingToRangeTypeErrorMessage(startStatus, fromIntervalStart, fromIntervalEnd, sequence);
+        } else if (!areRangePositionsAccordingToRangeTypeOk(endStatus, toIntervalStart, toIntervalEnd, sequence)) {
+            return "End status "+(endStatus != null? endStatus.getShortLabel() : "null")+" and end interval position ("+ toIntervalEnd +") are inconsistent - "+
+                    getRangePositionsAccordingToRangeTypeErrorMessage(endStatus, toIntervalStart, toIntervalEnd, sequence);
         } else if (areRangeStatusInconsistent(startStatus, endStatus)){
-            return "Start status "+(startStatus != null? startStatus.getShortLabel() : "null")+" and end interval position are inconsistent - "+
-                    getRangePositionsAccordingToRangeTypeErrorMessage(startStatus, fromIntervalStart, fromIntervalEnd, sequence);
+            return "Start status "+(startStatus != null? startStatus.getShortLabel() : "null")+" and end status "+(endStatus != null? endStatus.getShortLabel() : "null")+" are inconsistent";
         }
         else{
             // in case of a sequence null, it is not possible to check that the range is overlapping the end of the protein sequence
@@ -120,7 +121,7 @@ public class FeatureUtils {
                     // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
                     // because as the sequence is null, the range C-terminal position is 0
                     if (!(startStatus.isCTerminal() || startStatus.isUndetermined()) && !(endStatus.isCTerminal() || endStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap and the start/end status are not c-terminal. The sequence is null.";
+                        return "The protein sequence is null and the range positions overlap.";
                     }
                 }
                 // only the start status is null, which means that only the start status can be a C-terminal and the position 0
@@ -128,7 +129,7 @@ public class FeatureUtils {
                     // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
                     // because as the sequence is null, the range C-terminal position is 0
                     if (!(startStatus.isCTerminal() || startStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap, with a non c-terminal start status and no end status";
+                        return "Range positions overlap, with a non c-terminal/undetermined start and no end status";
                     }
                 }
                 // only the end status is null, which means that only the end status can be a C-terminal
@@ -136,7 +137,7 @@ public class FeatureUtils {
                     // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
                     // because as the sequence is null, the range C-terminal position is 0
                     if (!(endStatus.isCTerminal() || endStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap, with no start status and a non c-terminal end status";
+                        return "Range positions overlap, with no start status and a non c-terminal/undetermined end";
                     }
                 }
                 else {
@@ -153,7 +154,7 @@ public class FeatureUtils {
                     // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
                     // because as the sequence is null, the range C-terminal position is 0
                     if (!startStatus.isUndetermined() && !endStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap and the start/end status are not c-terminal. The sequence is null.";
+                        return "The range positions overlap..";
                     }
                 }
                 // only the start status is null, which means that only the start status can be a C-terminal and the position 0
@@ -161,7 +162,7 @@ public class FeatureUtils {
                     // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
                     // because as the sequence is null, the range C-terminal position is 0
                     if (!startStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap, with a non c-terminal start status and no end status";
+                        return "Range positions overlap, with a non undetermined start and no end status";
                     }
                 }
                 // only the end status is null, which means that only the end status can be a C-terminal
@@ -169,7 +170,7 @@ public class FeatureUtils {
                     // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
                     // because as the sequence is null, the range C-terminal position is 0
                     if (!endStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap, with no start status and a non c-terminal end status";
+                        return "Range positions overlap, with no start status and a non undetermined end";
                     }
                 }
                 else {
@@ -386,6 +387,14 @@ public class FeatureUtils {
             // in the specific case where the start is superior to a position and the end is inferior to another position, we need to check that the
             // range is not invalid because 'greater than' and 'less than' are both exclusive
             if (startStatus.isGreaterThan() && endStatus.isLessThan() && range.getToIntervalEnd() - range.getFromIntervalStart() < 2){
+                return true;
+            }
+            // we have a greater than start position and the end position is equal to the start position
+            else if (startStatus.isGreaterThan() && !endStatus.isGreaterThan() && range.getFromIntervalStart() == range.getToIntervalStart()){
+                return true;
+            }
+            // we have a less than end position and the start position is equal to the start position
+            else if (!startStatus.isLessThan() && endStatus.isLessThan() && range.getFromIntervalEnd() == range.getToIntervalEnd()){
                 return true;
             }
             // As the range positions are 0 when the status is undetermined, we can only check if the ranges are not overlapping when both start and end are not undetermined

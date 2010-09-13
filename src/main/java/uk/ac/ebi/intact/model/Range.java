@@ -481,6 +481,21 @@ public boolean isUndetermined() {
         // we can only extract the feature sequence if the protein sequence is not null
         if (sequence != null){
 
+            // we update the c-terminal position if not set already (when the sequence length is not known, the c-terminal position is 0.)
+            if (fromCvFuzzyType != null){
+                if (fromCvFuzzyType.isCTerminal() && fromIntervalStart == 0 && fromIntervalEnd == 0){
+                    setFromIntervalStart(sequence.length());
+                    setFromIntervalEnd(sequence.length());
+                }
+            }
+
+            if (toCvFuzzyType != null){
+                if (toCvFuzzyType.isCTerminal() && toIntervalStart == 0 && toIntervalEnd == 0){
+                    setToIntervalStart(sequence.length());
+                    setToIntervalEnd(sequence.length());
+                }
+            }
+
             // the range should be valid and consistent with the protein sequence
             if (!FeatureUtils.isABadRange(this, sequence)){
 
@@ -585,8 +600,8 @@ public boolean isUndetermined() {
                             endSequence --;
                         }
                         // in case of undetermined, the end position is at the end of the sequence
-                        else if (fromCvFuzzyType.isUndetermined()){
-                            startSequence = sequence.length();
+                        else if (toCvFuzzyType.isUndetermined()){
+                            endSequence = sequence.length();
                         }
 
                         // if the start is greater than and the end is also greater than, the end is the end of the sequence
