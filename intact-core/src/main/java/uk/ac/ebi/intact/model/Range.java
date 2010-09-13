@@ -221,22 +221,6 @@ public class Range extends BasicObjectImpl {
         //NB negative intervals are allowed!! This needs more sophisticated checking..
         super( );
 
-        if ( fromEnd < fromStart ) {
-            throw new IllegalArgumentException( "End of 'from' interval must be bigger than the start!" );
-        }
-        if ( toEnd < toStart ) {
-            throw new IllegalArgumentException( "End of 'to' interval must be bigger than the start!" );
-        }
-        if ( fromEnd > toStart ) {
-            throw new IllegalArgumentException( "The 'from' and 'to' intervals cannot overlap!" );
-        }
-        if ( fromStart > toEnd ) {
-            throw new IllegalArgumentException( "The 'from' interval starts beyond the 'to' interval!" );
-        }
-        if ( fromStart > toStart ) {
-            throw new IllegalArgumentException( "The 'from' interval cannot begin during the 'to' interval!" );
-        }
-
         if (fromStart < 0){
             throw new IllegalArgumentException( "The 'from' start position ("+fromStart+") cannot be negative." );
         }
@@ -622,7 +606,7 @@ public boolean isUndetermined() {
             }
             // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence
             else {
-                if (log.isErrorEnabled()) log.error("Problem extracting sequence using range. "+FeatureUtils.getBadRangeInfo(this, sequence)
+                throw new IllegalRangeException("Problem extracting sequence using range. "+FeatureUtils.getBadRangeInfo(this, sequence)
                         +": "+this+" / Start status: "+fromCvFuzzyType+" / End status: "+toCvFuzzyType+" / Seq.Length: "+(sequence != null? sequence.length() : 0));
             }
         }

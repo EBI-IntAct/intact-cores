@@ -25,7 +25,7 @@ public class CvFuzzyTypeTest extends IntactBasicTestCase {
         Assert.assertTrue( fuzzyType.isCTerminal() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
-        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, "MI:xxxx", CvFuzzyType.C_TERMINAL );
+        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, null, CvFuzzyType.C_TERMINAL );
         Assert.assertTrue( fuzzyType.isCTerminal() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
@@ -45,7 +45,7 @@ public class CvFuzzyTypeTest extends IntactBasicTestCase {
         Assert.assertTrue( fuzzyType.isNTerminal() );
         Assert.assertFalse( fuzzyType.isCTerminal() );
 
-        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, "MI:xxxx", CvFuzzyType.N_TERMINAL );
+        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, null, CvFuzzyType.N_TERMINAL );
         Assert.assertTrue( fuzzyType.isNTerminal() );
         Assert.assertFalse( fuzzyType.isCTerminal() );
 
@@ -65,7 +65,7 @@ public class CvFuzzyTypeTest extends IntactBasicTestCase {
         Assert.assertTrue( fuzzyType.isUndetermined() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
-        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, "MI:xxxx", CvFuzzyType.UNDETERMINED );
+        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, null, CvFuzzyType.UNDETERMINED );
         Assert.assertTrue( fuzzyType.isUndetermined() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
@@ -85,7 +85,7 @@ public class CvFuzzyTypeTest extends IntactBasicTestCase {
         Assert.assertTrue( fuzzyType.isLessThan() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
-        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, "MI:xxxx", CvFuzzyType.LESS_THAN );
+        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, null, CvFuzzyType.LESS_THAN );
         Assert.assertTrue( fuzzyType.isLessThan() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
@@ -105,7 +105,7 @@ public class CvFuzzyTypeTest extends IntactBasicTestCase {
         Assert.assertTrue( fuzzyType.isGreaterThan() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
-        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, "MI:xxxx", CvFuzzyType.GREATER_THAN );
+        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, null, CvFuzzyType.GREATER_THAN );
         Assert.assertTrue( fuzzyType.isGreaterThan() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
@@ -125,7 +125,7 @@ public class CvFuzzyTypeTest extends IntactBasicTestCase {
         Assert.assertTrue( fuzzyType.isRange() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
-        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, "MI:xxxx", CvFuzzyType.RANGE );
+        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, null, CvFuzzyType.RANGE );
         Assert.assertTrue( fuzzyType.isRange() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
@@ -145,7 +145,7 @@ public class CvFuzzyTypeTest extends IntactBasicTestCase {
         Assert.assertTrue( fuzzyType.isCertain() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
-        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, "MI:xxxx", CvFuzzyType.CERTAIN );
+        fuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class, null, CvFuzzyType.CERTAIN );
         Assert.assertTrue( fuzzyType.isCertain() );
         Assert.assertFalse( fuzzyType.isNTerminal() );
 
