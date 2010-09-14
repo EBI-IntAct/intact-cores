@@ -505,4 +505,31 @@ public class RangeTest {
         Assert.assertEquals( s.substring(17,20), range.getFullSequence());
         Assert.assertEquals( s.substring(0, 17), range.getUpStreamSequence());
     }
+
+    @Test
+    public void prepareSequence_certain_cTerminal_WithPosition0(){
+        final Institution owner = new Institution( "ebi" );
+        IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );
+
+        String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
+                "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
+        Range range = new Range( owner, 90, 0, null);
+
+        CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.CERTAIN_MI_REF,
+                CvFuzzyType.CERTAIN );
+        CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
+                CvFuzzyType.C_TERMINAL_MI_REF,
+                CvFuzzyType.C_TERMINAL );
+        range.setFromCvFuzzyType( rangeFuzzyType );
+        range.setToCvFuzzyType( rangeFuzzyType2 );
+        range.prepareSequence(s);
+
+        Assert.assertEquals( 110, s.length() );
+        Assert.assertEquals( 110, range.getToIntervalStart() );
+        Assert.assertEquals( 110, range.getToIntervalEnd() );
+        Assert.assertEquals( null, range.getDownStreamSequence());
+        Assert.assertEquals( s.substring(89,110), range.getFullSequence());
+        Assert.assertEquals( s.substring(49, 89), range.getUpStreamSequence());
+    }
 }
