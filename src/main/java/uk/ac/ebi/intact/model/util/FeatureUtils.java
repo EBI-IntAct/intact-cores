@@ -107,77 +107,78 @@ public class FeatureUtils {
         if (!areRangePositionsAccordingToRangeTypeOk(startStatus, fromIntervalStart, fromIntervalEnd, sequence)) {
             return "Range start status ("+(startStatus != null? startStatus.getShortLabel() : "null")+") and interval begin position ("+ fromIntervalStart +") are inconsistent - "+
                     getRangePositionsAccordingToRangeTypeErrorMessage(startStatus, fromIntervalStart, fromIntervalEnd, sequence);
-        } else if (!areRangePositionsAccordingToRangeTypeOk(endStatus, toIntervalStart, toIntervalEnd, sequence)) {
+        }
+        if (!areRangePositionsAccordingToRangeTypeOk(endStatus, toIntervalStart, toIntervalEnd, sequence)) {
             return "End status "+(endStatus != null? endStatus.getShortLabel() : "null")+" and end interval position ("+ toIntervalEnd +") are inconsistent - "+
                     getRangePositionsAccordingToRangeTypeErrorMessage(endStatus, toIntervalStart, toIntervalEnd, sequence);
-        } else if (areRangeStatusInconsistent(startStatus, endStatus)){
+        }
+        if (areRangeStatusInconsistent(startStatus, endStatus)){
             return "Start status "+(startStatus != null? startStatus.getShortLabel() : "null")+" and end status "+(endStatus != null? endStatus.getShortLabel() : "null")+" are inconsistent";
         }
-        else{
-            // in case of a sequence null, it is not possible to check that the range is overlapping the end of the protein sequence
-            if (sequence == null){
-                // both start/end status are not null
-                if (startStatus != null && endStatus != null){
-                    // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                    // because as the sequence is null, the range C-terminal position is 0
-                    if (!(startStatus.isCTerminal() || startStatus.isUndetermined()) && !(endStatus.isCTerminal() || endStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                        return "The protein sequence is null and the range positions overlap.";
-                    }
+
+        // in case of a sequence null, it is not possible to check that the range is overlapping the end of the protein sequence
+        if (sequence == null){
+            // both start/end status are not null
+            if (startStatus != null && endStatus != null){
+                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
+                // because as the sequence is null, the range C-terminal position is 0
+                if (!(startStatus.isCTerminal() || startStatus.isUndetermined()) && !(endStatus.isCTerminal() || endStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
+                    return "The protein sequence is null and the range positions overlap.";
                 }
-                // only the start status is null, which means that only the start status can be a C-terminal and the position 0
-                else if (startStatus != null){
-                    // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                    // because as the sequence is null, the range C-terminal position is 0
-                    if (!(startStatus.isCTerminal() || startStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap, with a non c-terminal/undetermined start and no end status";
-                    }
+            }
+            // only the start status is null, which means that only the start status can be a C-terminal and the position 0
+            else if (startStatus != null){
+                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
+                // because as the sequence is null, the range C-terminal position is 0
+                if (!(startStatus.isCTerminal() || startStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
+                    return "Range positions overlap, with a non c-terminal/undetermined start and no end status";
                 }
-                // only the end status is null, which means that only the end status can be a C-terminal
-                else if (endStatus != null){
-                    // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                    // because as the sequence is null, the range C-terminal position is 0
-                    if (!(endStatus.isCTerminal() || endStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap, with no start status and a non c-terminal/undetermined end";
-                    }
-                }
-                else {
-                    // we need to check that the start interval and end interval are not overlapping
-                    if (areRangePositionsOverlapping(range)){
-                        return "Range positions overlap";
-                    }
+            }
+            // only the end status is null, which means that only the end status can be a C-terminal
+            else if (endStatus != null){
+                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
+                // because as the sequence is null, the range C-terminal position is 0
+                if (!(endStatus.isCTerminal() || endStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
+                    return "Range positions overlap, with no start status and a non c-terminal/undetermined end";
                 }
             }
             else {
                 // we need to check that the start interval and end interval are not overlapping
-                // both start/end status are not null
-                if (startStatus != null && endStatus != null){
-                    // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                    // because as the sequence is null, the range C-terminal position is 0
-                    if (!startStatus.isUndetermined() && !endStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                        return "The range positions overlap..";
-                    }
+                if (areRangePositionsOverlapping(range)){
+                    return "Range positions overlap";
                 }
-                // only the start status is null, which means that only the start status can be a C-terminal and the position 0
-                else if (startStatus != null){
-                    // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                    // because as the sequence is null, the range C-terminal position is 0
-                    if (!startStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap, with a non undetermined start and no end status";
-                    }
+            }
+        }
+        else {
+            // we need to check that the start interval and end interval are not overlapping
+            // both start/end status are not null
+            if (startStatus != null && endStatus != null){
+                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
+                // because as the sequence is null, the range C-terminal position is 0
+                if (!startStatus.isUndetermined() && !endStatus.isUndetermined() && areRangePositionsOverlapping(range)){
+                    return "The range positions overlap..";
                 }
-                // only the end status is null, which means that only the end status can be a C-terminal
-                else if (endStatus != null){
-                    // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                    // because as the sequence is null, the range C-terminal position is 0
-                    if (!endStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                        return "Range positions overlap, with no start status and a non undetermined end";
-                    }
+            }
+            // only the start status is null, which means that only the start status can be a C-terminal and the position 0
+            else if (startStatus != null){
+                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
+                // because as the sequence is null, the range C-terminal position is 0
+                if (!startStatus.isUndetermined() && areRangePositionsOverlapping(range)){
+                    return "Range positions overlap, with a non undetermined start and no end status";
                 }
-                else {
-                    // we need to check that the start interval and end interval are not overlapping
-                    if (areRangePositionsOverlapping(range)){
-                        return "Range positions overlap";
-                    }
+            }
+            // only the end status is null, which means that only the end status can be a C-terminal
+            else if (endStatus != null){
+                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
+                // because as the sequence is null, the range C-terminal position is 0
+                if (!endStatus.isUndetermined() && areRangePositionsOverlapping(range)){
+                    return "Range positions overlap, with no start status and a non undetermined end";
+                }
+            }
+            else {
+                // we need to check that the start interval and end interval are not overlapping
+                if (areRangePositionsOverlapping(range)){
+                    return "Range positions overlap";
                 }
             }
         }
