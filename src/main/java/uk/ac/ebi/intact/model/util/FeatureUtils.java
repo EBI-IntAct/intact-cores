@@ -260,13 +260,13 @@ public class FeatureUtils {
         else {
             // undetermined position, we expect to have a position equal to 0 for both the start and the end
             if (rangeType.isUndetermined()){
-                if (start != 0 && end != 0){
+                if (start != 0 || end != 0){
                     return "Undetermined interval position higher than 0";
                 }
             }
             // n-terminal position : we expect to have a position equal to 1 for both the start and the end
             else if (rangeType.isNTerminal()){
-                if (start != 1 && end != 1){
+                if (start != 1 || end != 1){
                     return "N-terminal interval position different than 1";
                 }
             }
@@ -275,7 +275,7 @@ public class FeatureUtils {
                 if (sequenceLength == 0 && (start < 0 ||end < 0 || start != end)){
                     return "C-terminal interval with inconsistent position. The protein sequence is null, the c-terminal position can be 0 or the known length of the sequence.";
                 }
-                else if (start != sequenceLength && end != sequenceLength && sequenceLength > 0){
+                else if ((start != sequenceLength || end != sequenceLength) && sequenceLength > 0){
                     return "C-terminal interval with inconsistent position";
                 }
             }
