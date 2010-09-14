@@ -275,7 +275,7 @@ public class FeatureUtils {
                 if (sequenceLength == 0 && (start < 0 ||end < 0 || start != end)){
                     return "C-terminal interval with inconsistent position. The protein sequence is null, the c-terminal position can be 0 or the known length of the sequence.";
                 }
-                else if (start != sequenceLength && end != sequenceLength){
+                else if (start != sequenceLength && end != sequenceLength && sequenceLength > 0){
                     return "C-terminal interval with inconsistent position";
                 }
             }
