@@ -324,7 +324,7 @@ public class InteractionImpl extends InteractorImpl
         this.components = someComponent;
     }
 
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.REMOVE, CascadeType.REFRESH} )
     public Collection<Component> getComponents() {
         if (components == null) {
             components = new ArrayList<Component>();
