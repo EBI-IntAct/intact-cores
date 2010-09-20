@@ -377,7 +377,10 @@ public class InteractionImpl extends InteractorImpl
     public void addExperiment( Experiment experiment ) {
         if ( !this.experiments.contains( experiment ) ) {
             this.experiments.add( experiment );
-            experiment.addInteraction( this );
+
+            if (experiment != null) {
+                experiment.addInteraction( this );
+            }
         }
     }
 
