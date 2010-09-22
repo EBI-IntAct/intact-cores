@@ -37,7 +37,7 @@ public class PlaygroundTest {
     @Test
     @Ignore
     public void biMap() {
-        BiMap<String,AnnotatedObject> biMap = new HashBiMap<String, AnnotatedObject>();
+        BiMap<String,AnnotatedObject> biMap = HashBiMap.create();
         final Protein p1 = new IntactMockBuilder().createProteinRandom();
         final Protein p2 = new IntactMockBuilder().createProteinRandom();
         final Protein p3 = new IntactMockBuilder().createProteinRandom();

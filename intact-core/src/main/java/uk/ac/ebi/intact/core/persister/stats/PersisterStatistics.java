@@ -42,10 +42,10 @@ public class PersisterStatistics implements Serializable {
 
 
     public PersisterStatistics() {
-        this.persistedMap = new HashMultimap<Class, StatsUnit>();
-        this.mergedMap = new HashMultimap<Class, StatsUnit>();
-        this.duplicatesMap = new HashMultimap<Class, StatsUnit>();
-        this.transientMap = new HashMultimap<Class, StatsUnit>();
+        this.persistedMap = HashMultimap.create();
+        this.mergedMap = HashMultimap.create();
+        this.duplicatesMap = HashMultimap.create();
+        this.transientMap = HashMultimap.create();
     }
 
     public void reset() {
