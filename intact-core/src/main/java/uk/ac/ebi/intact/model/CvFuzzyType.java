@@ -66,6 +66,18 @@ public class CvFuzzyType extends CvDagObject implements Editable {
     public static final String CERTAIN = "certain";
     public static final String CERTAIN_MI_REF = "MI:0335";
 
+    /**
+     * The constant for n-terminal region.
+     */
+    public static final String N_TERMINAL_REGION = "n-terminal region";
+    //public static final String N_TERMINAL_REGION_MI_REF = "MI:0xx1";
+
+    /**
+     * The constant for c-terminal region.
+     */
+    public static final String C_TERMINAL_REGION = "c-terminal region";
+    //public static final String C_TERMINAL_REGION_MI_REF = "MI:0xx2";
+
     // -- Start of Inner class ------------------------------------------------
 
     /**
@@ -92,8 +104,8 @@ public class CvFuzzyType extends CvDagObject implements Editable {
             ourNormalMap.put( LESS_THAN, "<" );
             ourNormalMap.put( GREATER_THAN, ">" );
             ourNormalMap.put( UNDETERMINED, "?" );
-            ourNormalMap.put( C_TERMINAL, "c" );
-            ourNormalMap.put( N_TERMINAL, "n" );
+            ourNormalMap.put( C_TERMINAL_REGION, "c" );
+            ourNormalMap.put( N_TERMINAL_REGION, "n" );
             ourNormalMap.put( RANGE, ".." );
         }
 
@@ -195,12 +207,12 @@ public class CvFuzzyType extends CvDagObject implements Editable {
     /**
      * @param type the CvFuzzy label to compare
      *
-     * @return true if <code>type</code> is of Untermined or C or N terminal types. False is returned for all other
+     * @return true if <code>type</code> is of Untermined or C or N terminal region types. False is returned for all other
      *         instances.
      */
     @Transient
     public static boolean isSingleType( String type ) {
-        return type.equals( UNDETERMINED ) || type.equals( C_TERMINAL ) || type.equals( N_TERMINAL );
+        return type.equals( UNDETERMINED ) || type.equals( C_TERMINAL_REGION ) || type.equals( N_TERMINAL_REGION );
     }
 
     /**
@@ -243,6 +255,20 @@ public class CvFuzzyType extends CvDagObject implements Editable {
     }
 
     /**
+     * @return true if this current type is of c_terminal region type.
+     */
+    @Transient
+    public final boolean isCTerminalRegion() {
+
+        //if (this.getIdentifier() != null){
+           //return hasMiIdentity( C_TERMINAL_REGION_MI_REF );
+        //}
+        //else{
+            return C_TERMINAL_REGION.equalsIgnoreCase( this.getShortLabel() );
+        //}
+    }
+
+    /**
      * @return true if this current type is of n_terminal type.
      */
     @Transient
@@ -253,6 +279,20 @@ public class CvFuzzyType extends CvDagObject implements Editable {
         else{
             return N_TERMINAL.equalsIgnoreCase( this.getShortLabel() );
         }
+    }
+
+    /**
+     * @return true if this current type is of n_terminal region type.
+     */
+    @Transient
+    public final boolean isNTerminalRegion() {
+
+        //if (this.getIdentifier() != null){
+           //return hasMiIdentity( N_TERMINAL_REGION_MI_REF );
+        //}
+        //else{
+            return N_TERMINAL_REGION.equalsIgnoreCase( this.getShortLabel() );
+        //}
     }
 
     /**

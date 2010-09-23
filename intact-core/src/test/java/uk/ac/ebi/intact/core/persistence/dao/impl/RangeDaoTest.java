@@ -54,9 +54,15 @@ public class RangeDaoTest extends IntactBasicTestCase {
         final Institution owner = new Institution( "ebi" );
         String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
                 "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
-        Range range = new Range( owner, 1, 109, s);
+        Range range = new Range( owner, 1, 109, null);
+        CvFuzzyType certain = getMockBuilder().createCvObject(CvFuzzyType.class, "MI:0355", "certain");
+        range.setFromCvFuzzyType(certain);
+        range.setToCvFuzzyType(certain);
+
+        range.prepareSequence(s);
 
         Feature feature = getMockBuilder().createFeature("test", getMockBuilder().createCvObject(CvFeatureType.class, "MI:0111", "feature_type"));
+        feature.getRanges().clear();
         feature.addRange(range);
         getCorePersister().saveOrUpdate(feature);
         String ac = range.getAc();
@@ -74,7 +80,7 @@ public class RangeDaoTest extends IntactBasicTestCase {
     public void prepareSequenceWithNTerminal() throws Exception {
         final Institution owner = new Institution( "ebi" );
         String s = "MAEKVNNFPPLPKFIPLKPCFYQDFEADIPPQHVSMTKRLYYLWMLNSVTLAVNLVGCLAWLIGGGGATNFGLAFLWLILFTPCSYVCWFRPIYKAFKTDSSFSFMAFFFTFMAQLVISIIQAVGIPGWGVCGWIATISFFGTNIGSAVVMLIPTVMFTVMAVFSFIALSMVHKFYRGSGGSFSKAQEEWTTGAWKNPHVQQAAQNAAMGAAQGAMNQPQTQYSATPNYTYSNEM";
-        Range range = new Range( owner, 1, 1, s);
+        Range range = new Range( owner, 1, 1, null);
         CvFuzzyType rangeFuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class,
         CvFuzzyType.N_TERMINAL_MI_REF,
         CvFuzzyType.N_TERMINAL );
@@ -82,6 +88,7 @@ public class RangeDaoTest extends IntactBasicTestCase {
         range.setToCvFuzzyType( rangeFuzzyType );
         range.prepareSequence(s);
         Feature feature = getMockBuilder().createFeature("test", getMockBuilder().createCvObject(CvFeatureType.class, "MI:0111", "feature_type"));
+        feature.getRanges().clear();
         feature.addRange(range);
         getCorePersister().saveOrUpdate(feature);
         String ac = range.getAc();
@@ -103,7 +110,7 @@ public class RangeDaoTest extends IntactBasicTestCase {
     public void prepareSequenceWithCTerminal() throws Exception {
         final Institution owner = new Institution( "ebi" );
         String s = "MAEKVNNFPPLPKFIPLKPCFYQDFEADIPPQHVSMTKRLYYLWMLNSVTLAVNLVGCLAWLIGGGGATNFGLAFLWLILFTPCSYVCWFRPIYKAFKTDSSFSFMAFFFTFMAQLVISIIQAVGIPGWGVCGWIATISFFGTNIGSAVVMLIPTVMFTVMAVFSFIALSMVHKFYRGSGGSFSKAQEEWTTGAWKNPHVQQAAQNAAMGAAQGAMNQPQTQYSATPNYTYSNEM";
-        Range range = new Range( owner, s.length(), s.length(), s);
+        Range range = new Range( owner, s.length(), s.length(), null);
         CvFuzzyType rangeFuzzyType = getMockBuilder().createCvObject( CvFuzzyType.class,
         CvFuzzyType.C_TERMINAL_MI_REF,
         CvFuzzyType.C_TERMINAL );
@@ -111,6 +118,7 @@ public class RangeDaoTest extends IntactBasicTestCase {
         range.setToCvFuzzyType( rangeFuzzyType );
         range.prepareSequence(s);
         Feature feature = getMockBuilder().createFeature("test", getMockBuilder().createCvObject(CvFeatureType.class, "MI:0111", "feature_type"));
+        feature.getRanges().clear();
         feature.addRange(range);
         getCorePersister().saveOrUpdate(feature);
         String ac = range.getAc();

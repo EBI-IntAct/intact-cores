@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Type;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.util.FeatureUtils;
 
 import javax.persistence.*;
@@ -185,6 +186,30 @@ public class Range extends BasicObjectImpl {
         super();
     }
 
+    public Range(CvFuzzyType fromStatus, int fromStart, CvFuzzyType toStatus, int toStart, String seq){
+
+        this(fromStatus, fromStart, fromStart, toStatus, toStart, toStart, seq);
+    }
+
+    public Range(CvFuzzyType fromStatus, int fromStart, int fromEnd, CvFuzzyType toStatus, int toStart, int toEnd, String seq){
+        super();
+
+        if (fromStatus == null){
+            throw new IllegalArgumentException("The start range status cannot be null.");
+        }
+        if (toStatus == null){
+            throw new IllegalArgumentException("The end range status cannot be null.");
+        }
+
+        setFromCvFuzzyType(fromStatus);
+        setToCvFuzzyType(toStatus);
+        setRangePositions(fromStart, fromEnd, toStart, toEnd, seq);
+
+        if (seq != null){
+            prepareSequence(seq);
+        }
+    }
+
     /**
      * This is a convenient constructor to create Range with from and end values.
      *
@@ -192,13 +217,38 @@ public class Range extends BasicObjectImpl {
      *                  value.
      * @param toStart   The starting point of the 'to' interval of the Range. The 'to' end value is set to this value.
      * @param seq       The sequence - maximum of 100 characters (null allowed)
+     * @deprecated the range status is mandatory in PSI MI. It is not possible to extract properly a feature sequence without this range status.
+     * Here by default, the range status will be set to 'certain'
      */
+    @Deprecated
     public Range( int fromStart, int toStart, String seq ) {
-        this( fromStart, fromStart, toStart, toStart, seq );
+        super();
+
+        CvFuzzyType certain = new CvFuzzyType(null, CvFuzzyType.CERTAIN);
+        certain.setIdentifier(CvFuzzyType.CERTAIN_MI_REF);
+
+        setFromCvFuzzyType(certain);
+        setToCvFuzzyType(certain);
+        setRangePositions(fromStart, fromStart, toStart, toStart, seq);
+
+        if (seq != null){
+            prepareSequence(seq);
+        }
     }
 
+    /**
+     *
+     * @param owner
+     * @param fromStart
+     * @param toStart
+     * @param seq
+     * @deprecated the range status is mandatory in PSI MI. It is not possible to extract properly a feature sequence without this range status.
+     * Here by default, the range status will be set to 'certain'
+     */
+    @Deprecated
     public Range( Institution owner, int fromStart, int toStart, String seq ) {
-        this( fromStart, fromStart, toStart, toStart, seq );
+        this(fromStart, toStart, seq);
+
         setOwner(owner);
     }
 
@@ -216,11 +266,36 @@ public class Range extends BasicObjectImpl {
      *                  NB ASSUMPTION: The progression of intervals is always assumed to be from 'left to right' along
      *                  the number line when defining intervals. Thus '-6 to -4', '5 to 20' and '-7 to 15' are  all
      *                  <b>valid</b> single intervals, but '-3 to -8', '12 to 1' and  '5 to -7' are <b>not</b>. </p>
+     * @deprecated the range status is mandatory in PSI MI. It is not possible to extract properly a feature sequence without this range status.
+     * Here by default, the range status will be set to 'range'
      */
+    @Deprecated
     public Range( int fromStart, int fromEnd, int toStart, int toEnd, String seq ) {
         //NB negative intervals are allowed!! This needs more sophisticated checking..
-        super( );
+        super();
 
+        CvFuzzyType range = new CvFuzzyType(null, CvFuzzyType.RANGE);
+        range.setIdentifier(CvFuzzyType.RANGE_MI_REF);
+
+        setFromCvFuzzyType(range);
+        setToCvFuzzyType(range);
+        setRangePositions(fromStart, fromEnd, toStart, toEnd, seq);
+
+        if (seq != null){
+            prepareSequence(seq);
+        }
+    }
+
+    @Deprecated
+    public Range( Institution owner, int fromStart, int fromEnd, int toStart, int toEnd, String seq ) {
+        this(fromStart, fromEnd, toStart, toEnd, seq);
+        setOwner(owner);
+    }
+
+    //------------------------- public methods --------------------------------------
+
+
+    private void setRangePositions(int fromStart, int fromEnd, int toStart, int toEnd, String seq ){
         if (fromStart < 0){
             throw new IllegalArgumentException( "The 'from' start position ("+fromStart+") cannot be negative." );
         }
@@ -255,19 +330,7 @@ public class Range extends BasicObjectImpl {
         this.fromIntervalEnd = fromEnd;
         this.toIntervalStart = toStart;
         this.toIntervalEnd = toEnd;
-
-        //this.sequence = prepareSequence( seq );
-        prepareSequence( seq );
     }
-
-    @Deprecated
-    public Range( Institution owner, int fromStart, int fromEnd, int toStart, int toEnd, String seq ) {
-        this(fromStart, fromEnd, toStart, toEnd, seq);
-        setOwner(owner);
-    }
-
-    //------------------------- public methods --------------------------------------
-
 
     public int getFromIntervalStart() {
         return fromIntervalStart;
@@ -499,124 +562,64 @@ public boolean isUndetermined() {
             // the range should be valid and consistent with the protein sequence
             if (!FeatureUtils.isABadRange(this, sequence)){
 
-                // Both the start and the end don't have any status, the feature sequence will be the sequence from 'fromIntervalStart'
-                // to 'toIntervalEnd'
-                if ( fromCvFuzzyType == null && toCvFuzzyType == null ) {
-                    setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                    setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
-                    prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
-                }
-                // Only the end has a status. We will have several cases depending on the end status
-                else if ( fromCvFuzzyType == null && toCvFuzzyType != null ) {
-                    // the end is undetermined, we will extract the sequence from the 'fromIntervalStart' to the end of the sequence
-                    if (toCvFuzzyType.isUndetermined()){
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart, sequence.length()));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart, sequence.length(), sequence);
-                    }
-                    // the end is greater than, we will extract the sequence from the 'fromIntervalStart' to the 'toIntervalEnd + 1'
-                    else if (toCvFuzzyType.isGreaterThan()){
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart + 1 ) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd + 1));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd + 1, sequence);
-                    }
-                    // the end is less than, we will extract the sequence from the 'fromIntervalStart' to the 'toIntervalEnd - 1'
-                    else if (toCvFuzzyType.isLessThan()){
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart - 1) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd - 1));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd - 1, sequence);
-                    }
-                    // we will extract the sequence from the 'fromIntervalStart' to the 'toIntervalEnd'
-                    else {
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
-                    }
-                }
-                // Only the start has a status. We will have several cases depending on the start status
-                else if ( fromCvFuzzyType != null && toCvFuzzyType == null ) {
-                    // the start is undetermined, we will extract the sequence from the beginning of the sequence to the 'toIntervalEnd'
-                    if (fromCvFuzzyType.isUndetermined()){
-                        setSequenceIntern( getSequenceStartingFrom( sequence, 1 ) );
-                        setFullSequence( getSequence( sequence, 1, toIntervalEnd));
-                        prepareUpStreamDownStreamSequence(1, toIntervalEnd, sequence);
-                    }
-                    // the start is less than, we will extract the sequence from the 'fromIntervalStart - 1' to the 'toIntervalEnd'
-                    else if (fromCvFuzzyType.isLessThan()) {
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart - 1 ) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart - 1, toIntervalEnd));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart - 1, toIntervalEnd, sequence);
-                    }
-                    // the start is greater than, we will extract the sequence from the 'fromIntervalStart + 1' to the 'toIntervalEnd'
-                    else if (fromCvFuzzyType.isGreaterThan()){
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart + 1) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart + 1, toIntervalEnd));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart + 1, toIntervalEnd, sequence);
-                    }
-                    // we will extract the sequence from the 'fromIntervalStart' to the 'toIntervalEnd'
-                    else {
-                        setSequenceIntern( getSequenceStartingFrom( sequence, fromIntervalStart ) );
-                        setFullSequence( getSequence( sequence, fromIntervalStart, toIntervalEnd));
-                        prepareUpStreamDownStreamSequence(fromIntervalStart, toIntervalEnd, sequence);
-                    }
-                }
                 // both the start position and the end position have a status
-                else{
-                    // if both positions are undetermined, or of type 'n-?' or '?-c', no feature sequence can be extracted
-                    if ((fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isUndetermined())
-                            || (fromCvFuzzyType.isNTerminal() && toCvFuzzyType.isUndetermined())
-                            || (fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isCTerminal())){
-                        this.sequence = null;
-                        this.fullSequence = null;
-                        this.upStreamSequence = null;
-                        this.downStreamSequence = null;
+                // if both positions are undetermined, or of type 'n-?','n-n', 'c-c' or '?-c', no feature sequence can be extracted
+                if ((fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isUndetermined())
+                        || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isUndetermined())
+                        || (fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isCTerminalRegion())
+                        || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isNTerminalRegion())
+                        || (fromCvFuzzyType.isCTerminalRegion() && toCvFuzzyType.isCTerminalRegion())
+                        || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isCTerminalRegion())){
+                    this.sequence = null;
+                    this.fullSequence = null;
+                    this.upStreamSequence = null;
+                    this.downStreamSequence = null;
+                }
+                // a feature sequence can be extracted
+                else {
+                    // the start position is the start position of the start interval
+                    int startSequence = fromIntervalStart;
+                    // the end position is the end position of the end interval
+                    int endSequence = toIntervalEnd;
+
+                    // in case of greater than, the start position is starting from fromIntervalStart + 1
+                    if (fromCvFuzzyType.isGreaterThan()){
+                        startSequence ++;
                     }
-                    // a feature sequence can be extracted
-                    else {
-                        // the start position is the start position of the start interval
-                        int startSequence = fromIntervalStart;
-                        // the end position is the end position of the end interval
-                        int endSequence = toIntervalEnd;
-
-                        // in case of greater than, the start position is starting from fromIntervalStart + 1
-                        if (fromCvFuzzyType.isGreaterThan()){
-                            startSequence ++;
-                        }
-                        // in case of less than, the start position is starting from fromIntervalStart - 1
-                        else if (fromCvFuzzyType.isLessThan()){
-                            startSequence --;
-                        }
-                        // in case of undetermined, the start position is starting from 1
-                        else if (fromCvFuzzyType.isUndetermined()){
-                            startSequence = 1;
-                        }
-
-                        // in case of greater than, the end position is at 'toIntervalEnd' + 1
-                        if (toCvFuzzyType.isGreaterThan()){
-                            endSequence ++;
-                        }
-                        // in case of less than, the end position is at 'toIntervalEnd' - 1
-                        else if (toCvFuzzyType.isLessThan()){
-                            endSequence --;
-                        }
-                        // in case of undetermined, the end position is at the end of the sequence
-                        else if (toCvFuzzyType.isUndetermined()){
-                            endSequence = sequence.length();
-                        }
-
-                        // if the start is greater than and the end is also greater than, the end is the end of the sequence
-                        if (fromCvFuzzyType.isGreaterThan() && toCvFuzzyType.isGreaterThan()){
-                            endSequence = sequence.length();
-                        }
-                        // if both the start position and the end position is less than, the start position is 1
-                        else if (fromCvFuzzyType.isLessThan() && toCvFuzzyType.isLessThan()){
-                            startSequence = 1;
-                        }
-
-                        setSequenceIntern( getSequenceStartingFrom( sequence, startSequence ) );
-                        setFullSequence( getSequence( sequence, startSequence, endSequence));
-                        prepareUpStreamDownStreamSequence(startSequence, endSequence, sequence);
+                    // in case of less than, the start position is starting from fromIntervalStart - 1
+                    else if (fromCvFuzzyType.isLessThan()){
+                        startSequence --;
                     }
+                    // in case of undetermined, the start position is starting from 1
+                    else if (fromCvFuzzyType.isUndetermined() || fromCvFuzzyType.isNTerminalRegion()){
+                        startSequence = 1;
+                    }
+
+                    // in case of greater than, the end position is at 'toIntervalEnd' + 1
+                    if (toCvFuzzyType.isGreaterThan()){
+                        endSequence ++;
+                    }
+                    // in case of less than, the end position is at 'toIntervalEnd' - 1
+                    else if (toCvFuzzyType.isLessThan()){
+                        endSequence --;
+                    }
+                    // in case of undetermined, the end position is at the end of the sequence
+                    else if (toCvFuzzyType.isUndetermined() || toCvFuzzyType.isCTerminalRegion()){
+                        endSequence = sequence.length();
+                    }
+
+                    // if the start is greater than and the end is also greater than, the end is the end of the sequence
+                    if (fromCvFuzzyType.isGreaterThan() && toCvFuzzyType.isGreaterThan()){
+                        endSequence = sequence.length();
+                    }
+                    // if both the start position and the end position is less than, the start position is 1
+                    else if (fromCvFuzzyType.isLessThan() && toCvFuzzyType.isLessThan()){
+                        startSequence = 1;
+                    }
+
+                    setSequenceIntern( getSequenceStartingFrom( sequence, startSequence ) );
+                    setFullSequence( getSequence( sequence, startSequence, endSequence));
+                    prepareUpStreamDownStreamSequence(startSequence, endSequence, sequence);
                 }
             }
             // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence

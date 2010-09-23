@@ -97,6 +97,13 @@ public class FeatureUtils {
         final CvFuzzyType startStatus = range.getFromCvFuzzyType();
         final CvFuzzyType endStatus = range.getToCvFuzzyType();
 
+        if (startStatus == null){
+            return "The start status of the range is null and it is mandatory for PSI-MI.";
+        }
+        if (endStatus == null){
+            return "The end status of the range is null and it is mandatory for PSI-MI.";
+        }
+
         // If the range is the start status and the begin position (s) are not consistent, or the end status and the end position (s) are not consistent
         // or the start status is not consistent with the end status, the range is not valid
         final int fromIntervalStart = range.getFromIntervalStart();
@@ -104,83 +111,23 @@ public class FeatureUtils {
         final int toIntervalStart = range.getToIntervalStart();
         final int toIntervalEnd = range.getToIntervalEnd();
 
-        if (!areRangePositionsAccordingToRangeTypeOk(startStatus, fromIntervalStart, fromIntervalEnd, sequence)) {
-            return "Range start status ("+(startStatus != null? startStatus.getShortLabel() : "null")+") and interval begin position ("+ fromIntervalStart +") are inconsistent - "+
-                    getRangePositionsAccordingToRangeTypeErrorMessage(startStatus, fromIntervalStart, fromIntervalEnd, sequence);
+        String areRangePositionsAccordingToTypeOkStart = getRangePositionsAccordingToRangeTypeErrorMessage(startStatus, fromIntervalStart, fromIntervalEnd, sequence);
+
+        String areRangePositionsAccordingToTypeOkEnd = getRangePositionsAccordingToRangeTypeErrorMessage(endStatus, toIntervalStart, toIntervalEnd, sequence);
+
+        if (areRangePositionsAccordingToTypeOkStart != null) {
+            return areRangePositionsAccordingToTypeOkStart;
         }
-        if (!areRangePositionsAccordingToRangeTypeOk(endStatus, toIntervalStart, toIntervalEnd, sequence)) {
-            return "End status "+(endStatus != null? endStatus.getShortLabel() : "null")+" and end interval position ("+ toIntervalEnd +") are inconsistent - "+
-                    getRangePositionsAccordingToRangeTypeErrorMessage(endStatus, toIntervalStart, toIntervalEnd, sequence);
+        if (areRangePositionsAccordingToTypeOkEnd != null) {
+            return areRangePositionsAccordingToTypeOkEnd;
         }
         if (areRangeStatusInconsistent(startStatus, endStatus)){
-            return "Start status "+(startStatus != null? startStatus.getShortLabel() : "null")+" and end status "+(endStatus != null? endStatus.getShortLabel() : "null")+" are inconsistent";
+            return "Start status "+startStatus.getShortLabel()+" and end status "+endStatus.getShortLabel()+" are inconsistent";
         }
 
-        // in case of a sequence null, it is not possible to check that the range is overlapping the end of the protein sequence
-        if (sequence == null){
-            // both start/end status are not null
-            if (startStatus != null && endStatus != null){
-                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                // because as the sequence is null, the range C-terminal position is 0
-                if (!(startStatus.isCTerminal() || startStatus.isUndetermined()) && !(endStatus.isCTerminal() || endStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                    return "The protein sequence is null and the range positions overlap.";
-                }
-            }
-            // only the start status is null, which means that only the start status can be a C-terminal and the position 0
-            else if (startStatus != null){
-                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                // because as the sequence is null, the range C-terminal position is 0
-                if (!(startStatus.isCTerminal() || startStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                    return "Range positions overlap, with a non c-terminal/undetermined start and no end status";
-                }
-            }
-            // only the end status is null, which means that only the end status can be a C-terminal
-            else if (endStatus != null){
-                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                // because as the sequence is null, the range C-terminal position is 0
-                if (!(endStatus.isCTerminal() || endStatus.isUndetermined()) && areRangePositionsOverlapping(range)){
-                    return "Range positions overlap, with no start status and a non c-terminal/undetermined end";
-                }
-            }
-            else {
-                // we need to check that the start interval and end interval are not overlapping
-                if (areRangePositionsOverlapping(range)){
-                    return "Range positions overlap";
-                }
-            }
-        }
-        else {
-            // we need to check that the start interval and end interval are not overlapping
-            // both start/end status are not null
-            if (startStatus != null && endStatus != null){
-                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                // because as the sequence is null, the range C-terminal position is 0
-                if (!startStatus.isUndetermined() && !endStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                    return "The range positions overlap..";
-                }
-            }
-            // only the start status is null, which means that only the start status can be a C-terminal and the position 0
-            else if (startStatus != null){
-                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                // because as the sequence is null, the range C-terminal position is 0
-                if (!startStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                    return "Range positions overlap, with a non undetermined start and no end status";
-                }
-            }
-            // only the end status is null, which means that only the end status can be a C-terminal
-            else if (endStatus != null){
-                // We can only check if the start interval is not overlapping with the end interval if the status is not C-terminal
-                // because as the sequence is null, the range C-terminal position is 0
-                if (!endStatus.isUndetermined() && areRangePositionsOverlapping(range)){
-                    return "Range positions overlap, with no start status and a non undetermined end";
-                }
-            }
-            else {
-                // we need to check that the start interval and end interval are not overlapping
-                if (areRangePositionsOverlapping(range)){
-                    return "Range positions overlap";
-                }
-            }
+        // if the range has not a position undetermined, C terminal region or N-terminal region, we check if the range positions are not overlapping
+        if (!(startStatus.isCTerminalRegion() || startStatus.isUndetermined() || startStatus.isNTerminalRegion()) && !(endStatus.isCTerminalRegion() || endStatus.isUndetermined() || endStatus.isNTerminalRegion()) && areRangePositionsOverlapping(range)){
+            return "The range positions overlap : " + startStatus.getShortLabel() + ":" + fromIntervalStart + "-" + fromIntervalEnd + "," + endStatus.getShortLabel() + ":" + toIntervalStart + "-" + toIntervalEnd;
         }
 
         return null;
@@ -232,6 +179,11 @@ public class FeatureUtils {
      * @return message with the error. Null otherwise
      */
     public static String getRangePositionsAccordingToRangeTypeErrorMessage(CvFuzzyType rangeType, int start, int end, String sequence){
+
+        if (rangeType == null){
+            throw new IllegalArgumentException("It is not possible to check if the range status is compliant with the range positions because it is null and mandatory.");
+        }
+
         // the sequence length is 0 if the sequence is null
         int sequenceLength = 0;
 
@@ -239,121 +191,100 @@ public class FeatureUtils {
             sequenceLength = sequence.length();
         }
 
-        // the position status is null, we can only check that the numerical values of the positions are valid
-        if (rangeType == null){
-            // start not superior to end
-            if (!areRangePositionsInvalid(start, end)){
-                // the sequence is null, we can only check if the range positions are positive
-                if (sequenceLength == 0 ){
-                    if (!(start > 0 && end > 0)){
-                        return "Non-positive interval start/end position for a null sequence";
-                    }
-                }
-                // the sequence is not null, we can check if the range are out of bound
-                else {
-                    if (areRangePositionsOutOfBounds(start, end, sequenceLength)){
-                        return "Interval start/end position out of bounds";
-                    }
-                }
-            }
-        }
         // the position status is defined
-        else {
-            // undetermined position, we expect to have a position equal to 0 for both the start and the end
-            if (rangeType.isUndetermined()){
-                if (start != 0 || end != 0){
-                    return "Undetermined interval position higher than 0";
-                }
+        // undetermined position, we expect to have a position equal to 0 for both the start and the end
+        if (rangeType.isUndetermined() || rangeType.isCTerminalRegion() || rangeType.isNTerminalRegion()){
+            if (start != 0 || end != 0){
+                return "Undetermined positions (undetermined, N-terminal region, C-terminal region) must always be 0. Actual positions : " + start + "-" + end;
             }
-            // n-terminal position : we expect to have a position equal to 1 for both the start and the end
-            else if (rangeType.isNTerminal()){
-                if (start != 1 || end != 1){
-                    return "N-terminal interval position different than 1";
-                }
+        }
+        // n-terminal position : we expect to have a position equal to 1 for both the start and the end
+        else if (rangeType.isNTerminal()){
+            if (start != 1 || end != 1){
+                return "N-terminal positions must always be 1. Actual positions : " + start + "-" + end;
             }
-            // c-terminal position : we expect to have a position equal to the sequence length (0 if the sequence is null) for both the start and the end
-            else if (rangeType.isCTerminal()){
-                if (sequenceLength == 0 && (start < 0 ||end < 0 || start != end)){
-                    return "C-terminal interval with inconsistent position. The protein sequence is null, the c-terminal position can be 0 or the known length of the sequence.";
-                }
-                else if ((start != sequenceLength || end != sequenceLength) && sequenceLength > 0){
-                    return "C-terminal interval with inconsistent position";
-                }
+        }
+        // c-terminal position : we expect to have a position equal to the sequence length (0 if the sequence is null) for both the start and the end
+        else if (rangeType.isCTerminal()){
+            if (sequenceLength == 0 && (start < 0 ||end < 0 || start != end)){
+                return "C-terminal positions must always be superior to 0. Actual positions : " + start + "-" + end;
             }
-            // greater than position : we don't expect an interval for this position so the start should be equal to the end
-            else if (rangeType.isGreaterThan()){
-                if (start != end) {
-                    return "For a range of type 'Greater than' Start/end interval position should be equal";
-                }
+            else if ((start != sequenceLength || end != sequenceLength) && sequenceLength > 0){
+                return "C-terminal positions must always be equal to the length of the protein sequence. Actual positions : " + start + "-" + end + ", sequence length " + sequenceLength;
+            }
+        }
+        // greater than position : we don't expect an interval for this position so the start should be equal to the end
+        else if (rangeType.isGreaterThan()){
+            if (start != end) {
+                return "Greater than positions must always be a single position and here it is an interval. Actual positions : " + start + "-" + end;
+            }
 
-                // The sequence is null, all we can expect is at least a start superior to 0.
-                if (sequenceLength == 0){
-                    if (start <= 0 ){
-                        return "For a range of type 'Greater than' its interval start should be superior to 0.";
-                    }
-                }
-                // The sequence is not null, we expect to have positions superior to 0 and STRICTLY inferior to the sequence length
-                else {
-                    if (start >= sequenceLength || start <= 0 ){
-                        return "For a range of type 'Greater than' its interval start should be higher to 0 and lower than the sequence length";
-                    }
+            // The sequence is null, all we can expect is at least a start superior to 0.
+            if (sequenceLength == 0){
+                if (start <= 0 ){
+                    return "Greater than positions must always be strictly superior to 0. Actual positions : " + start + "-" + end;
                 }
             }
-            // less than position : we don't expect an interval for this position so the start should be equal to the end
-            else if (rangeType.isLessThan()){
-                if (start != end) {
-                    return "For a range of type 'Less than' range start/end interval positions should be equal.";
-                }
-                // The sequence is null, all we can expect is at least a start STRICTLY superior to 1.
-                if (sequenceLength == 0){
-                    if (start <= 1){
-                        return "For a range of type 'Less than' its interval start should be superior to 1.";
-                    }
-                }
-                // The sequence is not null, we expect to have positions STRICTLY superior to 1 and inferior or equal to the sequence length
-                else {
-                    if (start <= 1 || start > sequenceLength) {
-                        return "For a range of type 'Less than' its interval start should be superior to 1 and lower than the sequence length";
-                    }
-                }
-            }
-            // if the range position is certain or ragged-n-terminus, we expect to have the positions superior to 0 and inferior or
-            // equal to the sequence length (only possible to check if the sequence is not null)
-            // We don't expect any interval for this position so the start should be equal to the end
-            else if (rangeType.isCertain() || rangeType.isRaggedNTerminus()){
-                if (start != end) {
-                    return "For a range of type 'Certain' its interval start/end positions should be equal";
-                }
-
-                if (sequenceLength == 0){
-                    if (start <= 0){
-                        return "For a range of type 'Certain' its interval start positions should be higher than 0";
-                    }
-                }
-                else {
-                    if (areRangePositionsOutOfBounds(start, end, sequenceLength)){
-                        return "Interval start/end position out of bounds in a range of type 'Certain'";
-                    }
-                }
-            }
-            // the range status is not well known, so we allow the position to be an interval, we just check that the start and end are superior to 0 and inferior to the sequence
-            // length (only possible to check if the sequence is not null)
+            // The sequence is not null, we expect to have positions superior to 0 and STRICTLY inferior to the sequence length
             else {
-                if (sequenceLength == 0){
-                    if (areRangePositionsInvalid(start, end) || start <= 0 || end <= 0){
-                        return "Invalid interval start/end position.";
-                    }
-                }
-                else {
-                    if (areRangePositionsInvalid(start, end)) {
-                        return "Invalid interval start/end position";
-                    } else if (areRangePositionsOutOfBounds(start, end, sequenceLength)){
-                        return "Interval start/end position out of sequence bounds";
-                    }
+                if (start >= sequenceLength || start <= 0 ){
+                    return "Greater than positions must always be strictly superior to 0 and strictly inferior to the protein sequence length. Actual positions : " + start + "-" + end + ", sequence length " + sequenceLength;
                 }
             }
         }
+        // less than position : we don't expect an interval for this position so the start should be equal to the end
+        else if (rangeType.isLessThan()){
+            if (start != end) {
+                return "Less than positions must always be a single position and here it is an interval. Actual positions : " + start + "-" + end;
+            }
+            // The sequence is null, all we can expect is at least a start STRICTLY superior to 1.
+            if (sequenceLength == 0){
+                if (start <= 1){
+                    return "Less than positions must always be strictly superior to 1. Actual positions : " + start + "-" + end;
+                }
+            }
+            // The sequence is not null, we expect to have positions STRICTLY superior to 1 and inferior or equal to the sequence length
+            else {
+                if (start <= 1 || start > sequenceLength) {
+                    return "Less than positions must always be strictly superior to 1 and inferior or equal to the protein sequence length. Actual positions : " + start + "-" + end + ", sequence length " + sequenceLength;
+                }
+            }
+        }
+        // if the range position is certain or ragged-n-terminus, we expect to have the positions superior to 0 and inferior or
+        // equal to the sequence length (only possible to check if the sequence is not null)
+        // We don't expect any interval for this position so the start should be equal to the end
+        else if (rangeType.isCertain() || rangeType.isRaggedNTerminus()){
+            if (start != end) {
+                return "Certain and ragged-n-terminus positions must always be a single position and here it is an interval. Actual positions : " + start + "-" + end;
+            }
 
+            if (sequenceLength == 0){
+                if (start <= 0){
+                    return "Certain and ragged-n-terminus positions must always be strictly superior to 0. Actual positions : " + start + "-" + end;
+                }
+            }
+            else {
+                if (areRangePositionsOutOfBounds(start, end, sequenceLength)){
+                    return "Certain and ragged-n-terminus positions must always be strictly superior to 0 and inferior or equal to the protein sequence length. Actual positions : " + start + "-" + end + ", sequence length " + sequenceLength;
+                }
+            }
+        }
+        // the range status is not well known, so we allow the position to be an interval, we just check that the start and end are superior to 0 and inferior to the sequence
+        // length (only possible to check if the sequence is not null)
+        else {
+            if (sequenceLength == 0){
+                if (areRangePositionsInvalid(start, end) || start <= 0 || end <= 0){
+                    return rangeType.getShortLabel() + " positions must always be strictly superior to 0 and the end must be superior or equal to the start. Actual positions : " + start + "-" + end;
+                }
+            }
+            else {
+                if (areRangePositionsInvalid(start, end)) {
+                    return rangeType.getShortLabel() + " positions must always have an end superior or equal to the start. Actual positions : " + start + "-" + end;
+                } else if (areRangePositionsOutOfBounds(start, end, sequenceLength)){
+                    return rangeType.getShortLabel() + " positions must always be strictly superior to 0 and inferior or equal to the sequence length. Actual positions : " + start + "-" + end + ", sequence length " + sequenceLength;
+                }
+            }
+        }
         return null;
     }
 
@@ -383,52 +314,30 @@ public class FeatureUtils {
         CvFuzzyType startStatus = range.getFromCvFuzzyType();
         CvFuzzyType endStatus = range.getToCvFuzzyType();
 
+        if (startStatus == null){
+            throw new IllegalArgumentException("It is not possible to check if the start range status is compliant with the range positions because it is null and mandatory.");
+        }
+
+        if (endStatus == null){
+            throw new IllegalArgumentException("It is not possible to check if the end range status is compliant with the range positions because it is null and mandatory.");
+        }
+
         // both the end and the start have a specific status
-        if (startStatus != null && endStatus != null){
-            // in the specific case where the start is superior to a position and the end is inferior to another position, we need to check that the
-            // range is not invalid because 'greater than' and 'less than' are both exclusive
-            if (startStatus.isGreaterThan() && endStatus.isLessThan() && range.getToIntervalEnd() - range.getFromIntervalStart() < 2){
-                return true;
-            }
-            // we have a greater than start position and the end position is equal to the start position
-            else if (startStatus.isGreaterThan() && !endStatus.isGreaterThan() && range.getFromIntervalStart() == range.getToIntervalStart()){
-                return true;
-            }
-            // we have a less than end position and the start position is equal to the start position
-            else if (!startStatus.isLessThan() && endStatus.isLessThan() && range.getFromIntervalEnd() == range.getToIntervalEnd()){
-                return true;
-            }
-            // As the range positions are 0 when the status is undetermined, we can only check if the ranges are not overlapping when both start and end are not undetermined
-            else if (!startStatus.isUndetermined() && !endStatus.isUndetermined()){
-                return arePositionsOverlapping(range.getFromIntervalStart(), range.getFromIntervalEnd(), range.getToIntervalStart(), range.getToIntervalEnd());
-            }
+        // in the specific case where the start is superior to a position and the end is inferior to another position, we need to check that the
+        // range is not invalid because 'greater than' and 'less than' are both exclusive
+        if (startStatus.isGreaterThan() && endStatus.isLessThan() && range.getToIntervalEnd() - range.getFromIntervalStart() < 2){
+            return true;
         }
-        // only the end position has a status
-        else if (endStatus != null){
-            // in the specific case where the end is inferior to another position, we need to check that the
-            // start is not equal to the end because 'less than' is exclusive
-            if (endStatus.isLessThan() && range.getFromIntervalStart() == range.getToIntervalEnd()){
-                return true;
-            }
-            // As the range positions are 0 when the status is undetermined, we can only check if the ranges are not overlapping when the end is not undetermined
-            else if (!endStatus.isUndetermined()){
-                return arePositionsOverlapping(range.getFromIntervalStart(), range.getFromIntervalEnd(), range.getToIntervalStart(), range.getToIntervalEnd());
-            }
+        // we have a greater than start position and the end position is equal to the start position
+        else if (startStatus.isGreaterThan() && !endStatus.isGreaterThan() && range.getFromIntervalStart() == range.getToIntervalStart()){
+            return true;
         }
-        // only the start position has a status
-        else if (startStatus != null){
-            // in the specific case where the start is superior to another position, we need to check that the
-            // end is not equal to the start because 'greater than' is exclusive
-            if (startStatus.isGreaterThan() && range.getFromIntervalStart() == range.getToIntervalEnd()){
-                return true;
-            }
-            // As the range positions are 0 when the status is undetermined, we can only check if the ranges are not overlapping when the start is not undetermined
-            else if (!startStatus.isUndetermined()){
-                return arePositionsOverlapping(range.getFromIntervalStart(), range.getFromIntervalEnd(), range.getToIntervalStart(), range.getToIntervalEnd());
-            }
+        // we have a less than end position and the start position is equal to the start position
+        else if (!startStatus.isLessThan() && endStatus.isLessThan() && range.getFromIntervalEnd() == range.getToIntervalEnd()){
+            return true;
         }
-        // both start and end positions don't have any status, all we can do is checking that the start interval is not overlapping with the end interval
-        else {
+        // As the range positions are 0 when the status is undetermined, we can only check if the ranges are not overlapping when both start and end are not undetermined
+        else if (!(startStatus.isUndetermined() || startStatus.isNTerminalRegion() || startStatus.isCTerminalRegion()) && !(endStatus.isUndetermined() || endStatus.isCTerminalRegion() || endStatus.isNTerminalRegion())){
             return arePositionsOverlapping(range.getFromIntervalStart(), range.getFromIntervalEnd(), range.getToIntervalStart(), range.getToIntervalEnd());
         }
 
@@ -443,31 +352,32 @@ public class FeatureUtils {
      */
     public static boolean areRangeStatusInconsistent(CvFuzzyType startStatus, CvFuzzyType endStatus){
 
+        if (startStatus == null){
+            throw new IllegalArgumentException("It is not possible to check if the start range status is compliant with the range positions because it is null and mandatory.");
+        }
+
+        if (endStatus == null){
+            throw new IllegalArgumentException("It is not possible to check if the end range status is compliant with the range positions because it is null and mandatory.");
+        }
+
         // both status are not null
-        if (startStatus != null && endStatus != null){
-            // the start position is C-terminal but the end position is different from C-terminal
-            if (startStatus.isCTerminal() && !endStatus.isCTerminal()){
-                return true;
-            }
-            // the end position is N-terminal but the start position is different from N-terminal
-            else if (endStatus.isNTerminal() && !startStatus.isNTerminal()){
-                return true;
-            }
+        // the start position is C-terminal but the end position is different from C-terminal
+        if (startStatus.isCTerminal() && !endStatus.isCTerminal()){
+            return true;
         }
-        // only the start position has a status
-        else if (startStatus != null){
-            // it cannot be C-terminal
-            if (startStatus.isCTerminal()){
-                return true;
-            }
+        // the end position is N-terminal but the start position is different from N-terminal
+        else if (endStatus.isNTerminal() && !startStatus.isNTerminal()){
+            return true;
         }
-        // only the end position has a status
-        else if (endStatus != null){
-            // it cannot be N-terminal
-            if (endStatus.isNTerminal()){
-                return true;
-            }
+        // the end status is C terminal region, the start status can only be C-terminal region or C-terminal
+        else if (startStatus.isCTerminalRegion() && !(endStatus.isCTerminal() || endStatus.isCTerminalRegion())){
+            return true;
         }
+        // the start status is N terminal region, the end status can only be N-terminal region or N-terminal        
+        else if (endStatus.isNTerminal() && !(startStatus.isNTerminal() || startStatus.isNTerminalRegion())){
+            return true;
+        }
+
         return false;
     }
 
@@ -481,37 +391,41 @@ public class FeatureUtils {
         CvFuzzyType startStatus = range.getFromCvFuzzyType();
         CvFuzzyType endStatus = range.getToCvFuzzyType();
 
-        if (startStatus != null){
-            if (startStatus.isUndetermined()){
-                range.setFromIntervalStart(0);
-                range.setFromIntervalEnd(0);
-            }
-            else if (startStatus.isNTerminal()){
-                range.setFromIntervalStart(1);
-                range.setFromIntervalEnd(1);
-            }
-            else if (startStatus.isCTerminal()){
-                if (proteinSequence != null){
-                    range.setFromIntervalStart(proteinSequence.length());
-                    range.setFromIntervalEnd(proteinSequence.length());
-                }
+        if (startStatus == null){
+            throw new IllegalArgumentException("It is not possible to check if the start range status is compliant with the range positions because it is null and mandatory.");
+        }
+
+        if (endStatus == null){
+            throw new IllegalArgumentException("It is not possible to check if the end range status is compliant with the range positions because it is null and mandatory.");
+        }
+
+        if (startStatus.isUndetermined() || startStatus.isCTerminalRegion() || startStatus.isNTerminalRegion()){
+            range.setFromIntervalStart(0);
+            range.setFromIntervalEnd(0);
+        }
+        else if (startStatus.isNTerminal()){
+            range.setFromIntervalStart(1);
+            range.setFromIntervalEnd(1);
+        }
+        else if (startStatus.isCTerminal()){
+            if (proteinSequence != null){
+                range.setFromIntervalStart(proteinSequence.length());
+                range.setFromIntervalEnd(proteinSequence.length());
             }
         }
 
-        if (endStatus != null){
-            if (endStatus.isUndetermined()){
-                range.setToIntervalStart(0);
-                range.setToIntervalEnd(0);
-            }
-            else if (endStatus.isNTerminal()){
-                range.setToIntervalStart(1);
-                range.setToIntervalEnd(1);
-            }
-            else if (endStatus.isCTerminal()){
-                if (proteinSequence != null){
-                    range.setToIntervalStart(proteinSequence.length());
-                    range.setToIntervalEnd(proteinSequence.length());
-                }
+        if (endStatus.isUndetermined() || endStatus.isCTerminalRegion() || endStatus.isNTerminalRegion()){
+            range.setToIntervalStart(0);
+            range.setToIntervalEnd(0);
+        }
+        else if (endStatus.isNTerminal()){
+            range.setToIntervalStart(1);
+            range.setToIntervalEnd(1);
+        }
+        else if (endStatus.isCTerminal()){
+            if (proteinSequence != null){
+                range.setToIntervalStart(proteinSequence.length());
+                range.setToIntervalEnd(proteinSequence.length());
             }
         }
     }

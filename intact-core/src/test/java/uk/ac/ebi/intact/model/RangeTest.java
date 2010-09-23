@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.model;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 
 /**
@@ -12,7 +13,7 @@ import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
  * @since 1.7.1
  */
 
-public class RangeTest {
+public class RangeTest extends IntactBasicTestCase {
 
     @Test
     @Ignore
@@ -48,7 +49,13 @@ public class RangeTest {
         final Institution owner = new Institution( "ebi" );
         String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
                 "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
-        Range range = new Range( owner, 1, 109, s);
+        Range range = new Range( owner, 1, 109, null);
+
+        CvFuzzyType certain = getMockBuilder().createCvObject(CvFuzzyType.class, CvFuzzyType.CERTAIN_MI_REF, CvFuzzyType.CERTAIN);
+        range.setFromCvFuzzyType(certain);
+        range.setToCvFuzzyType(certain);
+        range.prepareSequence(s);
+
         Assert.assertEquals( 110, s.length() );
         Assert.assertTrue( range.getFullSequence().startsWith( "GAV" ));
         Assert.assertEquals( s.substring(0, 109), range.getFullSequence());
@@ -163,14 +170,14 @@ public class RangeTest {
 
         String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
                 "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
-        Range range = new Range( owner, 0, 110, null);
+        Range range = new Range( owner, 0, 0, null);
 
         CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
                 CvFuzzyType.UNDETERMINED_MI_REF,
                 CvFuzzyType.UNDETERMINED );
         CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
-                CvFuzzyType.C_TERMINAL_MI_REF,
-                CvFuzzyType.C_TERMINAL );
+                null,
+                CvFuzzyType.C_TERMINAL_REGION );
         range.setFromCvFuzzyType( rangeFuzzyType );
         range.setToCvFuzzyType( rangeFuzzyType2 );
         range.prepareSequence(s);
@@ -188,11 +195,11 @@ public class RangeTest {
 
         String s = "GAVGKTCLLISYTTNKFPSEYVPTVFDNYAVTVMIGGEPYTLGLFDTAGGAVGKTCLLISYTTNKFPSEYVPTVF" +
                 "DNYAVTVMIGGEPYTLGLFDTAGGALGLFDTAGGA";
-        Range range = new Range( owner, 1, 0, null);
+        Range range = new Range( owner, 0, 0, null);
 
         CvFuzzyType rangeFuzzyType = mockBuilder.createCvObject( CvFuzzyType.class,
-                CvFuzzyType.N_TERMINAL_MI_REF,
-                CvFuzzyType.N_TERMINAL );
+                null,
+                CvFuzzyType.N_TERMINAL_REGION );
         CvFuzzyType rangeFuzzyType2 = mockBuilder.createCvObject( CvFuzzyType.class,
                 CvFuzzyType.UNDETERMINED_MI_REF,
                 CvFuzzyType.UNDETERMINED );

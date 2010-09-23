@@ -64,8 +64,10 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
                 Feature feature = mockBuilder.createFeatureRandom();
                 feature.setCvFeatureType( mockBuilder.createCvObject( CvFeatureType.class, "MI:0117", "binding site" ) );
                 Range range = mockBuilder.createRange( 4, 4, 20, 20 ); // KCVVVGDGAVGKTCLL
-                range.setFromCvFuzzyType( null );
-                range.setToCvFuzzyType( null );
+                CvFuzzyType certain = mockBuilder.createCvObject(CvFuzzyType.class, CvFuzzyType.CERTAIN_MI_REF, CvFuzzyType.CERTAIN);
+
+                range.setFromCvFuzzyType( certain );
+                range.setToCvFuzzyType( certain );
                 feature.addRange( range );
                 range.prepareSequence( bait.getSequence() );
                 Assert.assertEquals( 17, range.getFullSequence().length() );
