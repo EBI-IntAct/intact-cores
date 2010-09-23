@@ -412,6 +412,10 @@ public class FeatureUtils {
                 range.setFromIntervalStart(proteinSequence.length());
                 range.setFromIntervalEnd(proteinSequence.length());
             }
+            else {
+               range.setFromIntervalStart(1);
+                range.setFromIntervalEnd(1); 
+            }
         }
 
         if (endStatus.isUndetermined() || endStatus.isCTerminalRegion() || endStatus.isNTerminalRegion()){
@@ -426,6 +430,10 @@ public class FeatureUtils {
             if (proteinSequence != null){
                 range.setToIntervalStart(proteinSequence.length());
                 range.setToIntervalEnd(proteinSequence.length());
+            }
+            else {
+               range.setToIntervalStart(1);
+                range.setToIntervalEnd(1);
             }
         }
     }
