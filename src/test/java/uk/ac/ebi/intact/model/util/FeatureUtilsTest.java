@@ -301,10 +301,10 @@ public class FeatureUtilsTest  extends IntactBasicTestCase {
     }
 
     @Test
-    public void testRange_valid_cterminal_position_0(){
+    public void testRange_valid_cterminal_position_Without_sequence(){
         String seq = null;
 
-        Range range = getMockBuilder().createRange(1, 1, 0, 0);
+        Range range = getMockBuilder().createRange(1, 1, 1, 1);
         range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "certain"));
         range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "c-terminal"));
 
