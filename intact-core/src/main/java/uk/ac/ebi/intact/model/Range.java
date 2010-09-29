@@ -274,11 +274,25 @@ public class Range extends BasicObjectImpl {
         //NB negative intervals are allowed!! This needs more sophisticated checking..
         super();
 
-        CvFuzzyType range = new CvFuzzyType(null, CvFuzzyType.RANGE);
+        CvFuzzyType range = new CvFuzzyType(this.getOwner(), CvFuzzyType.RANGE);
         range.setIdentifier(CvFuzzyType.RANGE_MI_REF);
+        CvFuzzyType certain = new CvFuzzyType(this.getOwner(), CvFuzzyType.CERTAIN);
+        certain.setIdentifier(CvFuzzyType.CERTAIN_MI_REF);
 
-        setFromCvFuzzyType(range);
-        setToCvFuzzyType(range);
+        if (fromStart != fromEnd){
+            setFromCvFuzzyType(range);
+        }
+        else {
+            setFromCvFuzzyType(certain);
+        }
+
+        if (toStart != toEnd){
+            setToCvFuzzyType(range);
+        }
+        else {
+            setToCvFuzzyType(certain);
+        }
+
         setRangePositions(fromStart, fromEnd, toStart, toEnd, seq);
 
         if (seq != null){
