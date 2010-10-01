@@ -72,6 +72,8 @@ public class CvXrefQualifier extends CvDagObject implements Editable {
     public static final String METHOD_REFERENCE = "method reference";
     public static final String METHOD_REFERENCE_MI_REF = "MI:0357";
 
+    public static final String UNIPROT_REMOVED_AC = "uniprot-removed-ac";
+
 
     /**
      * Cache a Vector of all shortLabels of the class, e.g. for menus.
