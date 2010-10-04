@@ -448,8 +448,10 @@ public class IntactMockBuilder {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
 
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
-        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())),
+        Experiment experimentEmpty = createExperimentEmpty();
+        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(experimentEmpty)),
                                                       cvInteractionType, intType, nextString("label"), getInstitution());
+        experimentEmpty.getInteractions().add(interaction);
 
         createComponentBait(interaction, createProteinRandom());
         createComponentPrey(interaction, createProteinRandom());

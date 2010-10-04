@@ -82,14 +82,17 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
             throw new NullPointerException( "experiment must not be null." );
         }
         if ( !experiments.contains( experiment ) ) {
-            experiments.remove( experiment );
+
             if ( experiment.getPublication() != null && experiment.getPublication() != this ) {
                 throw new IllegalStateException( "The experiment ("+ experiment.getAc() +
-                                                 ") you are trying to remove is linked to an other publication ("+
+                                                 ") you are trying to remove is linked to another publication ("+
                                                  experiment.getPublication().getAc() +")." );
             } else {
                 experiment.setPublication( null );
             }
+        } else {
+            experiments.remove( experiment );
+            experiment.setPublication( null );
         }
     }
 
