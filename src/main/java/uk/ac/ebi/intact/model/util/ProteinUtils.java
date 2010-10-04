@@ -222,4 +222,22 @@ public class ProteinUtils {
         }
         return false;
     }
+
+    /**
+     * Checks if the current protein is a chain
+     * @param protein the protein to check
+     * @return true if the protein is a chain
+     */
+    public static boolean isFeatureChain(Protein protein) {
+        Collection<InteractorXref> xrefs = protein.getXrefs();
+        for (InteractorXref xref : xrefs) {
+            if (xref.getCvXrefQualifier() != null) {
+                String qualifierIdentity = xref.getCvXrefQualifier().getIdentifier();
+                if (CvXrefQualifier.CHAIN_PARENT.equals(qualifierIdentity)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
