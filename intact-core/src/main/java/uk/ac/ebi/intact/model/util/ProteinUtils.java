@@ -21,10 +21,7 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Utility methods for Proteins.
@@ -50,7 +47,7 @@ public class ProteinUtils {
      */
     public static boolean isFromUniprot( Protein protein ) {
         boolean isFromUniprot = true;
-        
+
         for (Annotation annotation : protein.getAnnotations()) {
             String topicLabel = annotation.getCvTopic().getShortLabel();
 
@@ -67,7 +64,7 @@ public class ProteinUtils {
     public static InteractorXref getUniprotXref(Protein protein){
         return getUniprotXref((Interactor)protein);
     }
-    
+
     /**
      * Return the xref of the protein having as cvQualifier, the CvQualifier with psi-mi equal to
      * CvXrefQualifier.IDENTITY_MI_REF and as cvDatabase, the CvDatabase with psi-mi equal to CvDatabase.UNIPROT_MI_REF
@@ -162,7 +159,7 @@ public class ProteinUtils {
 
         CvObjectFilterGroup databaseFilterGroup = new CvObjectFilterGroup();
 
-        if (excludeIdentitiesFromImexPartners) {            
+        if (excludeIdentitiesFromImexPartners) {
             // TODO this has to be maintained in case we get new IMEx partners
             // TODO a work around could be to load the list of MI identities of all institutions present in the repository
             databaseFilterGroup.addExcludedIdentifier(CvDatabase.INTACT_MI_REF);
@@ -239,5 +236,28 @@ public class ProteinUtils {
             }
         }
         return false;
+    }
+
+    private static Collection<InteractorXref> extractCrossReferencesFrom(Protein protein, String databaseMiRef, String qualifierMiRef){
+        Collection<InteractorXref> parents = new ArrayList<InteractorXref>();
+
+        for (InteractorXref ref : protein.getXrefs()){
+            if (ref.getCvDatabase().getIdentifier().equals(databaseMiRef)){
+                if (ref.getCvXrefQualifier().getIdentifier().equals(qualifierMiRef)){
+                    parents.add(ref);
+                }
+            }
+        }
+
+        return parents;
+    }
+
+    public static Collection<InteractorXref> extractChainParentCrossReferencesFrom(Protein protein){
+        return extractCrossReferencesFrom(protein, CvDatabase.INTACT_MI_REF, CvXrefQualifier.CHAIN_PARENT_MI_REF);
+    }
+
+    public static Collection<InteractorXref> extractIsoformParentCrossReferencesFrom(Protein protein){
+
+        return extractCrossReferencesFrom(protein, CvDatabase.INTACT_MI_REF, CvXrefQualifier.ISOFORM_PARENT_MI_REF);
     }
 }
