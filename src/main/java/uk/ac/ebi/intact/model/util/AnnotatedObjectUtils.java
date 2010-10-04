@@ -526,4 +526,36 @@ public class AnnotatedObjectUtils {
     public static boolean isTemporaryLabel(String label) {
         return label.matches( TEMP_LABEL_PATTERN );
     }
+
+    /**
+     * Removes a child from an annotated object, without knowing the exact type (ie. remove a range from a feature).
+     * @param parent
+     * @param child
+     */
+    public static void removeChild(AnnotatedObject parent, IntactObject child) {
+        if (parent instanceof Publication && child instanceof Experiment) {
+            ((Publication)parent).removeExperiment((Experiment)child);
+        } else if (parent instanceof Experiment && child instanceof Interaction) {
+            ((Experiment)parent).removeInteraction((Interaction)child);
+        } else if (parent instanceof Interaction && child instanceof Component) {
+            ((Interaction)parent).removeComponent((Component)child);
+        } else if (parent instanceof Interaction && child instanceof InteractionParameter) {
+            ((Interaction)parent).removeParameter((InteractionParameter)child);
+        } else if (parent instanceof Component && child instanceof Feature) {
+            ((Component)parent).removeBindingDomain((Feature)child);
+        } else if (parent instanceof Component && child instanceof ComponentParameter) {
+            ((Component)parent).removeParameter((ComponentParameter)child);
+        } else if (parent instanceof Feature && child instanceof Range) {
+            ((Feature)parent).removeRange((Range)child);
+        } else if (child instanceof Xref) {
+            parent.removeXref((Xref) child);
+        } else if (child instanceof Annotation) {
+            parent.removeAnnotation((Annotation) child);
+        } else if (child instanceof Alias) {
+            parent.removeAlias((Alias)child);
+        } else {
+            throw new IllegalArgumentException("Unexpected combination parent/child - Parent: "+
+                 parent.getClass().getSimpleName()+" / Child: "+child.getClass().getSimpleName());
+        }
+    }
 }

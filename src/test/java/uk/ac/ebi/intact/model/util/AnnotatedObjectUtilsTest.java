@@ -295,7 +295,7 @@ public class AnnotatedObjectUtilsTest {
         CvTopic comment = getMockBuilder().createCvObject( CvTopic.class, "MI:zzzz", "comment" );
         CvTopic internalRemark = getMockBuilder().createCvObject( CvTopic.class, "MI:yyyy", "internal-remark" );
         internalRemark.getAnnotations().clear();
-        internalRemark.addAnnotation( new Annotation(internalRemark.getOwner(), hidden, "" ) );
+        internalRemark.addAnnotation( new Annotation(hidden, "" ) );
 
         // note: the term hidden is not hidden, hence no reason for that annotation to be filtered out.
         Collection<Annotation> publicAnnotations = AnnotatedObjectUtils.getPublicAnnotations( internalRemark );
@@ -303,12 +303,95 @@ public class AnnotatedObjectUtilsTest {
 
         Experiment exp = getMockBuilder().createExperimentRandom(3);
         exp.getAnnotations().clear();
-        exp.addAnnotation( new Annotation(exp.getOwner(), comment, "a public comment" ) );
-        exp.addAnnotation( new Annotation(exp.getOwner(), internalRemark, "some internal information" ) );
+        exp.addAnnotation( new Annotation(comment, "a public comment" ) );
+        exp.addAnnotation( new Annotation(internalRemark, "some internal information" ) );
 
         publicAnnotations = AnnotatedObjectUtils.getPublicAnnotations( exp );
         Assert.assertEquals( 1 , publicAnnotations.size() );
         Assert.assertEquals( "comment", publicAnnotations.iterator().next().getCvTopic().getShortLabel() );
+    }
+
+    @Test
+    public void removeChild1() throws Exception {
+        final Experiment exp = getMockBuilder().createExperimentRandom(0);
+        final Publication pub = exp.getPublication();
+
+        Assert.assertEquals(1, pub.getExperiments().size());
+
+        AnnotatedObjectUtils.removeChild(pub, exp);
+
+        Assert.assertEquals(0, pub.getExperiments().size());
+    }
+
+    @Test
+    public void removeChild2() throws Exception {
+        final Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        final Experiment exp = interaction.getExperiments().iterator().next();
+
+        Assert.assertEquals(1, exp.getInteractions().size());
+
+        AnnotatedObjectUtils.removeChild(exp, interaction);
+
+        Assert.assertEquals(0, exp.getInteractions().size());
+    }
+
+    @Test
+    public void removeChild3() throws Exception {
+        final Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        final Component component = interaction.getComponents().iterator().next();
+
+        Assert.assertEquals(2, interaction.getComponents().size());
+
+        AnnotatedObjectUtils.removeChild(interaction, component);
+
+        Assert.assertEquals(1, interaction.getComponents().size());
+    }
+
+    @Test
+    public void removeChild4() throws Exception {
+        final Component component = getMockBuilder().createComponentRandom();
+        final Feature feature = getMockBuilder().createFeatureRandom();
+
+        component.addBindingDomain(feature);
+
+        Assert.assertEquals(1, component.getBindingDomains().size());
+
+        AnnotatedObjectUtils.removeChild(component, feature);
+
+        Assert.assertEquals(0, component.getBindingDomains().size());
+    }
+
+    @Test
+    public void removeChild5() throws Exception {
+        final Feature feature = getMockBuilder().createFeatureRandom();
+        final Range range = getMockBuilder().createRangeRandom();
+
+        feature.addRange(range);
+
+        Assert.assertEquals(1, feature.getRanges().size());
+
+        AnnotatedObjectUtils.removeChild(feature, range);
+
+        Assert.assertEquals(0, feature.getRanges().size());
+    }
+
+    @Test
+    public void removeChild6() throws Exception {
+        final Experiment experiment = getMockBuilder().createExperimentRandom(0);
+
+        Assert.assertEquals(1, experiment.getXrefs().size());
+
+        AnnotatedObjectUtils.removeChild(experiment, experiment.getXrefs().iterator().next());
+
+        Assert.assertEquals(0, experiment.getXrefs().size());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void removeChild7() throws Exception {
+        final Experiment exp = getMockBuilder().createExperimentRandom(0);
+        final Publication pub = exp.getPublication();
+
+        AnnotatedObjectUtils.removeChild(exp, pub);
     }
 
 }
