@@ -126,26 +126,4 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
         Feature refreshed = getDaoFactory().getFeatureDao().getByAc(feature2.getAc());
         Assert.assertEquals(2, refreshed.getRanges().size());
     }
-
-    @Test
-    public void persistFeature_deletedRange() throws Exception {
-        Feature feature = getMockBuilder().createFeatureRandom();
-        feature.getRanges().clear();
-        feature.addRange(getMockBuilder().createRangeRandom());
-
-        getCorePersister().saveOrUpdate(feature);
-
-        Assert.assertEquals(1, feature.getRanges().size());
-
-        getEntityManager().flush();
-        getEntityManager().clear();
-        Assert.assertFalse(getEntityManager().contains(feature));
-
-        Feature reloadedFeature = getDaoFactory().getFeatureDao().getByAc(feature.getAc());
-        Range reloadedRange = reloadedFeature.getRanges().iterator().next();
-
-        getDaoFactory().getRangeDao().delete(reloadedRange);
-
-        getCorePersister().saveOrUpdate(reloadedFeature);
-    }
 }
