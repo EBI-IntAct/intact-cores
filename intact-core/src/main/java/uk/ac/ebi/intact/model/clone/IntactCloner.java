@@ -557,7 +557,7 @@ public class IntactCloner {
             Class<? extends AnnotatedObject> clazz = ao.getClass();
             String ac = ao.getAc();
 
-            transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+            transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction("Core - Cloner");
 
             ao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
                     .getAnnotatedObjectDao(clazz).getByAc(ac);
