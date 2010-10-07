@@ -48,19 +48,24 @@ public class DataContext implements Serializable {
     @Deprecated
     public TransactionStatus beginTransactionManualFlush() {
         //getDefaultDataConfig().setAutoFlush(true);
-        return beginTransaction( TransactionDefinition.PROPAGATION_REQUIRED, "Core - Manual flush" );
+        return beginTransaction( TransactionDefinition.PROPAGATION_REQUIRED );
     }
 
     public TransactionStatus beginTransaction() {
-        return beginTransaction( TransactionDefinition.PROPAGATION_REQUIRES_NEW );
+        return beginTransaction( TransactionDefinition.PROPAGATION_REQUIRES_NEW, createConversationName());
     }
 
     public TransactionStatus beginTransaction(String transactionName) {
-        return beginTransaction( TransactionDefinition.PROPAGATION_REQUIRES_NEW, transactionName );
+        return beginTransaction( TransactionDefinition.PROPAGATION_REQUIRES_NEW, transactionName);
     }
 
     public TransactionStatus beginTransaction( int propagation ) {
-        return beginTransaction(propagation, "Core - Default");
+        return beginTransaction(propagation, createConversationName());
+    }
+
+    private String createConversationName() {
+        final StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[3];
+        return stackTraceElement.getClassName()+"."+stackTraceElement.getMethodName();
     }
 
     public TransactionStatus beginTransaction( int propagation, String transactionName ) {
