@@ -58,7 +58,8 @@ public class DataContext implements Serializable {
     public TransactionStatus beginTransaction( int propagation ) {
         PlatformTransactionManager transactionManager = getTransactionManager();
 
-        TransactionDefinition transactionDefinition = new DefaultTransactionDefinition(propagation);
+        DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition(propagation);
+        transactionDefinition.setName("Core");
         
         if (log.isDebugEnabled()) log.debug("Beginning transaction: "+transactionDefinition.getName()+" Propagation="+propagation);
 
