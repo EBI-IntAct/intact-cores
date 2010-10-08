@@ -1,10 +1,10 @@
 package uk.ac.ebi.intact.model.util;
 
+import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.model.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class contains utility methods to check on features
@@ -15,6 +15,227 @@ import java.util.Set;
  */
 
 public class FeatureUtils {
+
+    public static String rangeSeparator = "-";
+    public static String undeterminedCharacter = "?";
+    public static String rangeCharacter = "..";
+    public static String greaterCharacter = ">";
+    public static String lessCharacter = "<";
+    public static String n_terminalCharacter = "n";
+    public static String c_terminalCharacter = "c";
+
+    public static Map<String, CvFuzzyType> rangeStatusMap;
+
+    static {
+        rangeStatusMap = new HashMap<String, CvFuzzyType>();
+        CvFuzzyType n_terminal_region = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, null, CvFuzzyType.N_TERMINAL_REGION);
+        CvFuzzyType c_terminal_region = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, null, CvFuzzyType.C_TERMINAL_REGION);
+        //CvFuzzyType certain = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.CERTAIN_MI_REF, CvFuzzyType.CERTAIN);
+        CvFuzzyType undetermined = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.UNDETERMINED_MI_REF, CvFuzzyType.UNDETERMINED);
+        CvFuzzyType greater_than = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.GREATER_THAN_MI_REF, CvFuzzyType.GREATER_THAN);
+        CvFuzzyType less_than = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.LESS_THAN_MI_REF, CvFuzzyType.LESS_THAN);
+        CvFuzzyType range = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.RANGE_MI_REF, CvFuzzyType.RANGE);
+
+        rangeStatusMap.put(n_terminalCharacter, n_terminal_region);
+        rangeStatusMap.put(c_terminalCharacter, c_terminal_region);
+        rangeStatusMap.put(rangeCharacter, range);
+        rangeStatusMap.put(undeterminedCharacter, undetermined);
+        rangeStatusMap.put(greaterCharacter, greater_than);
+        rangeStatusMap.put(lessCharacter, less_than);
+    }
+
+    /**
+     *
+     * @param rangeAsString : the range as a String of type "pos1-pos2"
+     * @return the range instance matching the range described with the String. The feature sequence will be null.
+     * An IllegalRangeException can be thrown if the range is invalid
+     */
+    public static Range createRangeFromString(String rangeAsString){
+        if (rangeAsString == null){
+            throw new IllegalArgumentException("The range cannot be null.");
+        }
+
+        if (rangeAsString.contains(rangeSeparator)){
+            String [] positions = rangeAsString.split(rangeSeparator);
+
+            if (positions.length == 2){
+                CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
+                CvFuzzyType toStatus = createCvFuzzyType(positions[1]);
+
+                Integer [] intervalStart = convertPosition(positions[0], fromStatus);
+                Integer [] intervalEnd = convertPosition(positions[1], toStatus);
+
+                int fromStart = intervalStart[0];
+                int fromEnd = intervalStart[1];
+                int toStart = intervalEnd[0];
+                int toEnd = intervalEnd[1];
+
+                Range r = new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, null);
+                if (isABadRange(r,null)){
+                    throw new IllegalRangeException(getBadRangeInfo(r, null));
+                }
+
+                return r;
+            }
+            else {
+                throw new IllegalArgumentException("The range " + rangeAsString + " is not valid. The format should be 'start-end' or 'start1..start2-end1..end2'");
+            }
+        }
+        else {
+            throw new IllegalArgumentException("The range " + rangeAsString + " is not valid. The format should be 'start-end' or 'start1..start2-end1..end2'");
+        }
+    }
+
+    /**
+     *
+     * @param rangeAsString : the string containing the range
+     * @param proteinSequence : the sequence of the protein. can be null
+     * @return the range instance matching the range described with the String. The feature sequence will be null.
+     * An IllegalRangeException can be thrown if the range is invalid and doesn't fit the protein sequence
+     */
+    public static Range createRangeFromString(String rangeAsString, String proteinSequence){
+        if (rangeAsString == null){
+            throw new IllegalArgumentException("The range cannot be null.");
+        }
+
+        if (rangeAsString.contains(rangeSeparator)){
+            String [] positions = rangeAsString.split(rangeSeparator);
+
+            if (positions.length == 2){
+                CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
+                CvFuzzyType toStatus = createCvFuzzyType(positions[1]);
+
+                Integer [] intervalStart = convertPosition(positions[0], fromStatus);
+                Integer [] intervalEnd = convertPosition(positions[1], toStatus);
+
+                int fromStart = intervalStart[0];
+                int fromEnd = intervalStart[1];
+                int toStart = intervalEnd[0];
+                int toEnd = intervalEnd[1];
+
+                return new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, proteinSequence);
+            }
+            else {
+                throw new IllegalArgumentException("The range " + rangeAsString + " is not valid. The format should be 'start-end' or 'start1..start2-end1..end2'");
+            }
+        }
+        else {
+            throw new IllegalArgumentException("The range " + rangeAsString + " is not valid. The format should be 'start-end' or 'start1..start2-end1..end2'");
+        }
+    }
+
+    /**
+     *
+     * @param range : the range to convert
+     * @return the range as a String
+     * If the range is invalid, will return fromIntervalStart-toIntervalEnd
+     */
+    public static String convertRangeIntoString(Range range){
+        if (range == null){
+            throw new IllegalArgumentException("The range cannot be null.");
+        }
+
+        if (isABadRange(range, null)){
+            return range.getFromIntervalStart() + rangeSeparator + range.getToIntervalEnd();
+            //throw new IllegalRangeException(getBadRangeInfo(range, null));
+        }
+
+        String startPosition = positionToString(range.getFromCvFuzzyType(), range.getFromIntervalStart(), range.getFromIntervalEnd());
+        String endPosition = positionToString(range.getToCvFuzzyType(), range.getToIntervalStart(), range.getToIntervalEnd());
+
+        return startPosition + rangeSeparator + endPosition;
+    }
+
+    private static String positionToString(CvFuzzyType status, int start, int end){
+        String position;
+
+        if (status.isUndetermined()){
+            position = undeterminedCharacter;
+        }
+        else if (status.isCTerminalRegion()){
+            position = c_terminalCharacter;
+        }
+        else if (status.isNTerminalRegion()){
+            position = n_terminalCharacter;
+        }
+        else if (status.isGreaterThan()){
+            position = greaterCharacter + start;
+        }
+        else if (status.isLessThan()){
+            position = lessCharacter + start;
+        }
+        else if (status.isRange()){
+            position = start + rangeCharacter + end;
+        }
+        else {
+            position = Integer.toString(start);
+        }
+
+        return position;
+    }
+
+    private static Integer[] convertPosition(String position, CvFuzzyType status){
+        if (position == null){
+            throw new IllegalArgumentException("The range position cannot be null.");
+        }
+        if (status == null){
+            throw new IllegalArgumentException("The range status cannot be null.");
+        }
+
+        if (status.isNTerminalRegion() || status.isCTerminalRegion() || status.isUndetermined()){
+            return new Integer [] {0, 0};
+        }
+        else if (status.isGreaterThan()){
+            String exactPosition = position.replace(greaterCharacter, "");
+            int p = Integer.parseInt(exactPosition);
+
+            return new Integer [] {p, p};
+        }
+        else if (status.isLessThan()){
+            String exactPosition = position.replace(lessCharacter, "");
+            int p = Integer.parseInt(exactPosition);
+
+            return new Integer [] {p, p};
+        }
+        else if (status.isRange()){
+            if (position.contains(rangeCharacter)){
+                String [] interval = position.split("\\.\\.");
+
+                if (interval.length == 2){
+                    int p1 = Integer.parseInt(interval[0]);
+                    int p2 = Integer.parseInt(interval[1]);
+
+                    return new Integer [] {p1, p2};
+                }
+                else {
+                    throw new IllegalArgumentException("The range position " + position + " is not valid. The status is 'range' and the format should be 'pos1..pos2'");
+                }
+            }
+            else {
+                throw new IllegalArgumentException("The range position " + position + " is not valid. The status is 'range' and the format should be 'pos1..pos2'");
+            }
+        }
+        else {
+            int p = Integer.parseInt(position);
+
+            return new Integer [] {p, p};
+        }
+    }
+
+    private static CvFuzzyType createCvFuzzyType(String position){
+
+        if (position == null){
+            throw new IllegalArgumentException("The range position cannot be null.");
+        }
+
+        for (String key : rangeStatusMap.keySet()){
+            if (position.contains(key)){
+                return rangeStatusMap.get(key);
+            }
+        }
+
+        return CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.CERTAIN_MI_REF, CvFuzzyType.CERTAIN);
+    }
 
     /**
      *
@@ -413,8 +634,8 @@ public class FeatureUtils {
                 range.setFromIntervalEnd(proteinSequence.length());
             }
             else {
-               range.setFromIntervalStart(1);
-                range.setFromIntervalEnd(1); 
+                range.setFromIntervalStart(1);
+                range.setFromIntervalEnd(1);
             }
         }
 
@@ -432,7 +653,7 @@ public class FeatureUtils {
                 range.setToIntervalEnd(proteinSequence.length());
             }
             else {
-               range.setToIntervalStart(1);
+                range.setToIntervalStart(1);
                 range.setToIntervalEnd(1);
             }
         }

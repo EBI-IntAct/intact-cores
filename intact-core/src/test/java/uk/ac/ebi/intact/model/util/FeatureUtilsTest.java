@@ -322,4 +322,180 @@ public class FeatureUtilsTest  extends IntactBasicTestCase {
         System.out.println(FeatureUtils.getBadRangeInfo(range, seq));
         Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
     }
+
+    @Test
+    public void convert_undetermined_range(){
+        String seq = null;
+
+        Range range = getMockBuilder().createRange(0,0,0,0);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "undetermined"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "undetermined"));
+
+        Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
+
+        Assert.assertEquals("?-?", FeatureUtils.convertRangeIntoString(range));
+
+        Range undetermined2 = FeatureUtils.createRangeFromString("?-?");
+
+        Assert.assertTrue(undetermined2.getFromCvFuzzyType().isUndetermined());
+        Assert.assertEquals(0, undetermined2.getFromIntervalStart());
+        Assert.assertEquals(0, undetermined2.getFromIntervalEnd());
+        Assert.assertTrue(undetermined2.getToCvFuzzyType().isUndetermined());
+        Assert.assertEquals(0, undetermined2.getToIntervalStart());
+        Assert.assertEquals(0, undetermined2.getToIntervalEnd());
+    }
+
+    @Test
+    public void convert_n_terminal_range(){
+        String seq = null;
+
+        Range range = getMockBuilder().createRange(0,0,0,0);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "n-terminal region"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "n-terminal region"));
+
+        Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
+
+        Assert.assertEquals("n-n", FeatureUtils.convertRangeIntoString(range));
+
+        Range undetermined2 = FeatureUtils.createRangeFromString("n-n");
+
+        Assert.assertTrue(undetermined2.getFromCvFuzzyType().isNTerminalRegion());
+        Assert.assertEquals(0, undetermined2.getFromIntervalStart());
+        Assert.assertEquals(0, undetermined2.getFromIntervalEnd());
+        Assert.assertTrue(undetermined2.getToCvFuzzyType().isNTerminalRegion());
+        Assert.assertEquals(0, undetermined2.getToIntervalStart());
+        Assert.assertEquals(0, undetermined2.getToIntervalEnd());
+    }
+
+    @Test
+    public void convert_c_terminal_range(){
+        String seq = null;
+
+        Range range = getMockBuilder().createRange(0,0,0,0);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "c-terminal region"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "c-terminal region"));
+
+        Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
+
+        Assert.assertEquals("c-c", FeatureUtils.convertRangeIntoString(range));
+
+        Range undetermined2 = FeatureUtils.createRangeFromString("c-c");
+
+        Assert.assertTrue(undetermined2.getFromCvFuzzyType().isCTerminalRegion());
+        Assert.assertEquals(0, undetermined2.getFromIntervalStart());
+        Assert.assertEquals(0, undetermined2.getFromIntervalEnd());
+        Assert.assertTrue(undetermined2.getToCvFuzzyType().isCTerminalRegion());
+        Assert.assertEquals(0, undetermined2.getToIntervalStart());
+        Assert.assertEquals(0, undetermined2.getToIntervalEnd());
+    }
+
+    @Test
+    public void convert_range_range(){
+        String seq = null;
+
+        Range range = getMockBuilder().createRange(2,4,6,8);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "range"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "range"));
+
+        Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
+
+        Assert.assertEquals("2..4-6..8", FeatureUtils.convertRangeIntoString(range));
+
+        Range undetermined2 = FeatureUtils.createRangeFromString("2..4-6..8");
+
+        Assert.assertTrue(undetermined2.getFromCvFuzzyType().isRange());
+        Assert.assertEquals(2, undetermined2.getFromIntervalStart());
+        Assert.assertEquals(4, undetermined2.getFromIntervalEnd());
+        Assert.assertTrue(undetermined2.getToCvFuzzyType().isRange());
+        Assert.assertEquals(6, undetermined2.getToIntervalStart());
+        Assert.assertEquals(8, undetermined2.getToIntervalEnd());
+    }
+
+    @Test
+    public void convert_greater_range(){
+        String seq = null;
+
+        Range range = getMockBuilder().createRange(2,2,2,2);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "greater-than"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "greater-than"));
+
+        Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
+
+        Assert.assertEquals(">2->2", FeatureUtils.convertRangeIntoString(range));
+
+        Range undetermined2 = FeatureUtils.createRangeFromString(">2->2");
+
+        Assert.assertTrue(undetermined2.getFromCvFuzzyType().isGreaterThan());
+        Assert.assertEquals(2, undetermined2.getFromIntervalStart());
+        Assert.assertEquals(2, undetermined2.getFromIntervalEnd());
+        Assert.assertTrue(undetermined2.getToCvFuzzyType().isGreaterThan());
+        Assert.assertEquals(2, undetermined2.getToIntervalStart());
+        Assert.assertEquals(2, undetermined2.getToIntervalEnd());
+    }
+
+    @Test
+    public void convert_less_range(){
+        String seq = null;
+
+        Range range = getMockBuilder().createRange(2,2,2,2);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "less-than"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "less-than"));
+
+        Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
+
+        Assert.assertEquals("<2-<2", FeatureUtils.convertRangeIntoString(range));
+
+        Range undetermined2 = FeatureUtils.createRangeFromString("<2-<2");
+
+        Assert.assertTrue(undetermined2.getFromCvFuzzyType().isLessThan());
+        Assert.assertEquals(2, undetermined2.getFromIntervalStart());
+        Assert.assertEquals(2, undetermined2.getFromIntervalEnd());
+        Assert.assertTrue(undetermined2.getToCvFuzzyType().isLessThan());
+        Assert.assertEquals(2, undetermined2.getToIntervalStart());
+        Assert.assertEquals(2, undetermined2.getToIntervalEnd());
+    }
+
+    @Test
+    public void convert_certain_range(){
+        String seq = null;
+
+        Range range = getMockBuilder().createRange(2,2,2,2);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "certain"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "certain"));
+
+        Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
+
+        Assert.assertEquals("2-2", FeatureUtils.convertRangeIntoString(range));
+
+        Range undetermined2 = FeatureUtils.createRangeFromString("2-2");
+
+        Assert.assertTrue(undetermined2.getFromCvFuzzyType().isCertain());
+        Assert.assertEquals(2, undetermined2.getFromIntervalStart());
+        Assert.assertEquals(2, undetermined2.getFromIntervalEnd());
+        Assert.assertTrue(undetermined2.getToCvFuzzyType().isCertain());
+        Assert.assertEquals(2, undetermined2.getToIntervalStart());
+        Assert.assertEquals(2, undetermined2.getToIntervalEnd());
+    }
+
+    @Test
+    public void convert_mix_range(){
+        String seq = null;
+
+        Range range = getMockBuilder().createRange(0,0,20,20);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "undetermined"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "certain"));
+
+        Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
+
+        Assert.assertEquals("?-20", FeatureUtils.convertRangeIntoString(range));
+
+        Range undetermined2 = FeatureUtils.createRangeFromString("?-20");
+
+        Assert.assertTrue(undetermined2.getFromCvFuzzyType().isUndetermined());
+        Assert.assertEquals(0, undetermined2.getFromIntervalStart());
+        Assert.assertEquals(0, undetermined2.getFromIntervalEnd());
+        Assert.assertTrue(undetermined2.getToCvFuzzyType().isCertain());
+        Assert.assertEquals(20, undetermined2.getToIntervalStart());
+        Assert.assertEquals(20, undetermined2.getToIntervalEnd());
+    }
 }
