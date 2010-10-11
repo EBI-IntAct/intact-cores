@@ -86,6 +86,76 @@ public class FeatureUtils {
         }
     }
 
+    private static Range createRangeFromStringWithoutChecking(String rangeAsString){
+        if (rangeAsString == null){
+            return null;
+        }
+
+        if (rangeAsString.contains(rangeSeparator)){
+            String [] positions = rangeAsString.split(rangeSeparator);
+
+            if (positions.length == 2){
+                CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
+                CvFuzzyType toStatus = createCvFuzzyType(positions[1]);
+
+                Integer [] intervalStart = convertPosition(positions[0], fromStatus);
+                Integer [] intervalEnd = convertPosition(positions[1], toStatus);
+
+                int fromStart = intervalStart[0];
+                int fromEnd = intervalStart[1];
+                int toStart = intervalEnd[0];
+                int toEnd = intervalEnd[1];
+
+                Range r = new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, null);
+
+                return r;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    private static Range createRangeFromStringWithoutChecking(String rangeAsString, String sequence){
+        if (rangeAsString == null){
+            return null;
+        }
+
+        if (rangeAsString.contains(rangeSeparator)){
+            String [] positions = rangeAsString.split(rangeSeparator);
+
+            if (positions.length == 2){
+                CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
+                CvFuzzyType toStatus = createCvFuzzyType(positions[1]);
+
+                Integer [] intervalStart = convertPosition(positions[0], fromStatus);
+                Integer [] intervalEnd = convertPosition(positions[1], toStatus);
+
+                int fromStart = intervalStart[0];
+                int fromEnd = intervalStart[1];
+                int toStart = intervalEnd[0];
+                int toEnd = intervalEnd[1];
+
+                Range r = new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, null);
+
+                if (sequence != null && !FeatureUtils.isABadRange(r, sequence)){
+                    r.prepareSequence(sequence);
+                }
+
+                return r;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
     /**
      *
      * @param rangeAsString : the string containing the range
@@ -299,6 +369,13 @@ public class FeatureUtils {
      */
     public static boolean isABadRange(Range range, String sequence){
         return (getBadRangeInfo(range, sequence) != null);
+    }
+
+    public static boolean isABadRange(String range, String sequence){
+
+        Range r = createRangeFromStringWithoutChecking(range, sequence);
+
+        return (getBadRangeInfo(r, sequence) != null);
     }
 
     /**
