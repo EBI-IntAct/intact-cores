@@ -45,116 +45,14 @@ public class FeatureUtils {
 
     /**
      *
-     * @param rangeAsString : the range as a String of type "pos1-pos2"
+     * @param rangeAsString : the string containing the range
      * @return the range instance matching the range described with the String. The feature sequence will be null.
-     * An IllegalRangeException can be thrown if the range is invalid
+     * An IllegalRangeException can be thrown if the range is invalid and doesn't fit the protein sequence
      */
     public static Range createRangeFromString(String rangeAsString){
-        if (rangeAsString == null){
-            throw new IllegalArgumentException("The range cannot be null.");
-        }
-
-        if (rangeAsString.contains(RANGE_SEPARATOR)){
-            String [] positions = rangeAsString.split(RANGE_SEPARATOR);
-
-            if (positions.length == 2){
-                CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
-                CvFuzzyType toStatus = createCvFuzzyType(positions[1]);
-
-                Integer [] intervalStart = convertPosition(positions[0], fromStatus);
-                Integer [] intervalEnd = convertPosition(positions[1], toStatus);
-
-                int fromStart = intervalStart[0];
-                int fromEnd = intervalStart[1];
-                int toStart = intervalEnd[0];
-                int toEnd = intervalEnd[1];
-
-                Range r = new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, null);
-                if (isABadRange(r,null)){
-                    throw new IllegalRangeException(getBadRangeInfo(r, null));
-                }
-
-                return r;
-            }
-            else {
-                throw new IllegalArgumentException("The range " + rangeAsString + " is not valid. The format should be 'start-end' or 'start1..start2-end1..end2'");
-            }
-        }
-        else {
-            throw new IllegalArgumentException("The range " + rangeAsString + " is not valid. The format should be 'start-end' or 'start1..start2-end1..end2'");
-        }
+        return createRangeFromString(rangeAsString, null, false);
     }
-
-    private static Range createRangeFromStringWithoutChecking(String rangeAsString){
-        if (rangeAsString == null){
-            return null;
-        }
-
-        if (rangeAsString.contains(RANGE_SEPARATOR)){
-            String [] positions = rangeAsString.split(RANGE_SEPARATOR);
-
-            if (positions.length == 2){
-                CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
-                CvFuzzyType toStatus = createCvFuzzyType(positions[1]);
-
-                Integer [] intervalStart = convertPosition(positions[0], fromStatus);
-                Integer [] intervalEnd = convertPosition(positions[1], toStatus);
-
-                int fromStart = intervalStart[0];
-                int fromEnd = intervalStart[1];
-                int toStart = intervalEnd[0];
-                int toEnd = intervalEnd[1];
-
-                Range r = new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, null);
-
-                return r;
-            }
-            else {
-                return null;
-            }
-        }
-        else {
-            return null;
-        }
-    }
-
-    private static Range createRangeFromStringWithoutChecking(String rangeAsString, String sequence){
-        if (rangeAsString == null){
-            return null;
-        }
-
-        if (rangeAsString.contains(RANGE_SEPARATOR)){
-            String [] positions = rangeAsString.split(RANGE_SEPARATOR);
-
-            if (positions.length == 2){
-                CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
-                CvFuzzyType toStatus = createCvFuzzyType(positions[1]);
-
-                Integer [] intervalStart = convertPosition(positions[0], fromStatus);
-                Integer [] intervalEnd = convertPosition(positions[1], toStatus);
-
-                int fromStart = intervalStart[0];
-                int fromEnd = intervalStart[1];
-                int toStart = intervalEnd[0];
-                int toEnd = intervalEnd[1];
-
-                Range r = new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, null);
-
-                if (sequence != null && !FeatureUtils.isABadRange(r, sequence)){
-                    r.prepareSequence(sequence);
-                }
-
-                return r;
-            }
-            else {
-                return null;
-            }
-        }
-        else {
-            return null;
-        }
-    }
-
+    
     /**
      *
      * @param rangeAsString : the string containing the range
@@ -163,6 +61,18 @@ public class FeatureUtils {
      * An IllegalRangeException can be thrown if the range is invalid and doesn't fit the protein sequence
      */
     public static Range createRangeFromString(String rangeAsString, String proteinSequence){
+        return createRangeFromString(rangeAsString, proteinSequence, true);
+    }
+
+    /**
+     *
+     * @param rangeAsString the string containing the range
+     * @param proteinSequence the sequence of the protein. can be null
+     * @param enforceConsistency throw an exception if the range is invalid when submitting a protein sequence 
+     * @return the range instance matching the range described with the String. The feature sequence will be null.
+     * An IllegalRangeException can be thrown if the range is invalid and doesn't fit the protein sequence
+     */
+    public static Range createRangeFromString(String rangeAsString, String proteinSequence, boolean enforceConsistency){
         if (rangeAsString == null){
             throw new IllegalArgumentException("The range cannot be null.");
         }
@@ -182,7 +92,10 @@ public class FeatureUtils {
                 int toStart = intervalEnd[0];
                 int toEnd = intervalEnd[1];
 
-                return new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, proteinSequence);
+                final Range range = new Range(fromStatus, fromStart, fromEnd, toStatus, toStart, toEnd, null);
+                range.prepareSequence(proteinSequence, enforceConsistency);
+                
+                return range;
             }
             else {
                 throw new IllegalArgumentException("The range " + rangeAsString + " is not valid. The format should be 'start-end' or 'start1..start2-end1..end2'");
@@ -372,9 +285,19 @@ public class FeatureUtils {
 
     public static boolean isABadRange(String range, String sequence){
 
-        Range r = createRangeFromStringWithoutChecking(range, sequence);
+        Range r = createRangeFromString(range, sequence, false);
 
         return (getBadRangeInfo(r, sequence) != null);
+    }
+
+    /**
+     *
+     * @param rangeAsString : the range to check
+     * @param sequence : the sequence of the protein
+     * @return true if the range is within the sequence, coherent with its fuzzy type and not overlapping
+     */
+    public static String getBadRangeInfo(String rangeAsString, String sequence) {
+        return getBadRangeInfo(createRangeFromString(rangeAsString, sequence, false), sequence);
     }
 
     /**

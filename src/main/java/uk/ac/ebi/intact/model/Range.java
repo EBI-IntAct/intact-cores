@@ -8,7 +8,6 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Type;
-import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.util.FeatureUtils;
 
 import javax.persistence.*;
@@ -555,6 +554,10 @@ public boolean isUndetermined() {
     }
 
     public void prepareSequence( String sequence ) {
+        prepareSequence( sequence, true );
+    }
+
+    public void prepareSequence( String sequence, boolean forceConsistency ) {
         // we can only extract the feature sequence if the protein sequence is not null
         if (sequence != null){
 
@@ -637,7 +640,7 @@ public boolean isUndetermined() {
                 }
             }
             // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence
-            else {
+            else if (forceConsistency) {
                 throw new IllegalRangeException("Problem extracting sequence using range. "+FeatureUtils.getBadRangeInfo(this, sequence)
                         +": "+this+" / Start status: "+fromCvFuzzyType+" / End status: "+toCvFuzzyType+" / Seq.Length: "+(sequence != null? sequence.length() : 0));
             }
