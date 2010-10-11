@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.model.util;
 
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.*;
@@ -16,13 +15,13 @@ import java.util.*;
 
 public class FeatureUtils {
 
-    public static String rangeSeparator = "-";
-    public static String undeterminedCharacter = "?";
-    public static String rangeCharacter = "..";
-    public static String greaterCharacter = ">";
-    public static String lessCharacter = "<";
-    public static String n_terminalCharacter = "n";
-    public static String c_terminalCharacter = "c";
+    public static String RANGE_SEPARATOR = "-";
+    public static String RANGE_UNDETERMINED = "?";
+    public static String RANGE_INTERVAL = "..";
+    public static String RANGE_GREATER = ">";
+    public static String RANGE_LESS = "<";
+    public static String RANGE_N_TERM = "n";
+    public static String RANGE_C_TERM = "c";
 
     public static Map<String, CvFuzzyType> rangeStatusMap;
 
@@ -36,12 +35,12 @@ public class FeatureUtils {
         CvFuzzyType less_than = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.LESS_THAN_MI_REF, CvFuzzyType.LESS_THAN);
         CvFuzzyType range = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.RANGE_MI_REF, CvFuzzyType.RANGE);
 
-        rangeStatusMap.put(n_terminalCharacter, n_terminal_region);
-        rangeStatusMap.put(c_terminalCharacter, c_terminal_region);
-        rangeStatusMap.put(rangeCharacter, range);
-        rangeStatusMap.put(undeterminedCharacter, undetermined);
-        rangeStatusMap.put(greaterCharacter, greater_than);
-        rangeStatusMap.put(lessCharacter, less_than);
+        rangeStatusMap.put(RANGE_N_TERM, n_terminal_region);
+        rangeStatusMap.put(RANGE_C_TERM, c_terminal_region);
+        rangeStatusMap.put(RANGE_INTERVAL, range);
+        rangeStatusMap.put(RANGE_UNDETERMINED, undetermined);
+        rangeStatusMap.put(RANGE_GREATER, greater_than);
+        rangeStatusMap.put(RANGE_LESS, less_than);
     }
 
     /**
@@ -55,8 +54,8 @@ public class FeatureUtils {
             throw new IllegalArgumentException("The range cannot be null.");
         }
 
-        if (rangeAsString.contains(rangeSeparator)){
-            String [] positions = rangeAsString.split(rangeSeparator);
+        if (rangeAsString.contains(RANGE_SEPARATOR)){
+            String [] positions = rangeAsString.split(RANGE_SEPARATOR);
 
             if (positions.length == 2){
                 CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
@@ -91,8 +90,8 @@ public class FeatureUtils {
             return null;
         }
 
-        if (rangeAsString.contains(rangeSeparator)){
-            String [] positions = rangeAsString.split(rangeSeparator);
+        if (rangeAsString.contains(RANGE_SEPARATOR)){
+            String [] positions = rangeAsString.split(RANGE_SEPARATOR);
 
             if (positions.length == 2){
                 CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
@@ -124,8 +123,8 @@ public class FeatureUtils {
             return null;
         }
 
-        if (rangeAsString.contains(rangeSeparator)){
-            String [] positions = rangeAsString.split(rangeSeparator);
+        if (rangeAsString.contains(RANGE_SEPARATOR)){
+            String [] positions = rangeAsString.split(RANGE_SEPARATOR);
 
             if (positions.length == 2){
                 CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
@@ -168,8 +167,8 @@ public class FeatureUtils {
             throw new IllegalArgumentException("The range cannot be null.");
         }
 
-        if (rangeAsString.contains(rangeSeparator)){
-            String [] positions = rangeAsString.split(rangeSeparator);
+        if (rangeAsString.contains(RANGE_SEPARATOR)){
+            String [] positions = rangeAsString.split(RANGE_SEPARATOR);
 
             if (positions.length == 2){
                 CvFuzzyType fromStatus = createCvFuzzyType(positions[0]);
@@ -206,36 +205,36 @@ public class FeatureUtils {
         }
 
         if (isABadRange(range, null)){
-            return range.getFromIntervalStart() + rangeSeparator + range.getToIntervalEnd();
+            return range.getFromIntervalStart() + RANGE_SEPARATOR + range.getToIntervalEnd();
             //throw new IllegalRangeException(getBadRangeInfo(range, null));
         }
 
         String startPosition = positionToString(range.getFromCvFuzzyType(), range.getFromIntervalStart(), range.getFromIntervalEnd());
         String endPosition = positionToString(range.getToCvFuzzyType(), range.getToIntervalStart(), range.getToIntervalEnd());
 
-        return startPosition + rangeSeparator + endPosition;
+        return startPosition + RANGE_SEPARATOR + endPosition;
     }
 
     private static String positionToString(CvFuzzyType status, int start, int end){
         String position;
 
         if (status.isUndetermined()){
-            position = undeterminedCharacter;
+            position = RANGE_UNDETERMINED;
         }
         else if (status.isCTerminalRegion()){
-            position = c_terminalCharacter;
+            position = RANGE_C_TERM;
         }
         else if (status.isNTerminalRegion()){
-            position = n_terminalCharacter;
+            position = RANGE_N_TERM;
         }
         else if (status.isGreaterThan()){
-            position = greaterCharacter + start;
+            position = RANGE_GREATER + start;
         }
         else if (status.isLessThan()){
-            position = lessCharacter + start;
+            position = RANGE_LESS + start;
         }
         else if (status.isRange()){
-            position = start + rangeCharacter + end;
+            position = start + RANGE_INTERVAL + end;
         }
         else {
             position = Integer.toString(start);
@@ -256,19 +255,19 @@ public class FeatureUtils {
             return new Integer [] {0, 0};
         }
         else if (status.isGreaterThan()){
-            String exactPosition = position.replace(greaterCharacter, "");
+            String exactPosition = position.replace(RANGE_GREATER, "");
             int p = Integer.parseInt(exactPosition);
 
             return new Integer [] {p, p};
         }
         else if (status.isLessThan()){
-            String exactPosition = position.replace(lessCharacter, "");
+            String exactPosition = position.replace(RANGE_LESS, "");
             int p = Integer.parseInt(exactPosition);
 
             return new Integer [] {p, p};
         }
         else if (status.isRange()){
-            if (position.contains(rangeCharacter)){
+            if (position.contains(RANGE_INTERVAL)){
                 String [] interval = position.split("\\.\\.");
 
                 if (interval.length == 2){
