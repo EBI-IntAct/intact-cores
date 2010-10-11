@@ -498,4 +498,9 @@ public class FeatureUtilsTest  extends IntactBasicTestCase {
         Assert.assertEquals(20, undetermined2.getToIntervalStart());
         Assert.assertEquals(20, undetermined2.getToIntervalEnd());
     }
+
+    @Test
+    public void isABadRangeFromStr_0_0() {
+        Assert.assertTrue(FeatureUtils.isABadRange("0-0", null));
+    }
 }

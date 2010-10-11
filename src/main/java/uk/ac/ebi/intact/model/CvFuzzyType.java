@@ -375,6 +375,10 @@ public class CvFuzzyType extends CvDagObject implements Editable {
 
     @Transient
     private boolean hasMiIdentity( String miRef ) {
-        return CvObjectUtils.hasIdentity( this, miRef );
+        if (getIdentifier() != null) {
+            return getIdentifier().equals(miRef);
+        } else {
+            return CvObjectUtils.hasIdentity( this, miRef );
+        }
     }
 }

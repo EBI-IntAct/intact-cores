@@ -58,6 +58,10 @@ public class CvObjectUtils {
     // ex1 : cvObject is supposibly the CvDatabase psi-mi, psiMi is CvDatabase.PSI_MI_MI_REF
     // ex2: cvObject is supposibly the CvXrefQualifier identity , psiMi is  CvXrefQualifier.IDENTITY_MI_REF
     public static boolean hasIdentity( CvObject cvObject, String psiMi ) {
+        if (cvObject.getIdentifier() != null && cvObject.getIdentifier().equals(psiMi)) {
+            return true;
+        }
+
         return XrefUtils.hasIdentity( cvObject, psiMi );
     }
 
