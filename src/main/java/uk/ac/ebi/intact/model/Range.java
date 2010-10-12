@@ -205,7 +205,9 @@ public class Range extends BasicObjectImpl {
         setRangePositions(fromStart, fromEnd, toStart, toEnd, seq);
 
         if (seq != null){
-            prepareSequence(seq);
+            if (seq.trim().length() > 0){
+                prepareSequence(seq);
+            }
         }
     }
 
@@ -231,7 +233,9 @@ public class Range extends BasicObjectImpl {
         setRangePositions(fromStart, fromStart, toStart, toStart, seq);
 
         if (seq != null){
-            prepareSequence(seq);
+            if (seq.trim().length() > 0){
+                prepareSequence(seq);
+            }
         }
     }
 
@@ -295,7 +299,9 @@ public class Range extends BasicObjectImpl {
         setRangePositions(fromStart, fromEnd, toStart, toEnd, seq);
 
         if (seq != null){
-            prepareSequence(seq);
+            if (seq.trim().length() > 0){
+                prepareSequence(seq);
+            }
         }
     }
 
@@ -495,61 +501,65 @@ public boolean isUndetermined() {
      * @param fullSequence : the total sequence
      */
     private void prepareUpStreamDownStreamSequence(int rangeStart, int rangeEnd, String fullSequence){
-        this.upStreamSequence = null;
-        this.downStreamSequence = null;
+        if (fullSequence != null){
+            if (fullSequence.trim().length() > 0){
+                this.upStreamSequence = null;
+                this.downStreamSequence = null;
 
-        int numberOfAminoAcidsUpStream = 0;
-        int numberOfAminoAcidsDownStream = 0;
+                int numberOfAminoAcidsUpStream = 0;
+                int numberOfAminoAcidsDownStream = 0;
 
-        if (rangeStart < 0){
-            throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be negative.");
-        }
-        if (rangeEnd < 0){
-            throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be negative.");
-        }
-        if (rangeStart > fullSequence.length()){
-            throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the length of the protein ("+fullSequence.length()+").");
-        }
-        if (rangeEnd > fullSequence.length()){
-            throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be superior to the length of the protein ("+fullSequence.length()+").");
-        }
-        if (rangeEnd < rangeStart){
-            throw  new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the end of the feature range ("+rangeEnd+")");
-        }
+                if (rangeStart < 0){
+                    throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be negative.");
+                }
+                if (rangeEnd < 0){
+                    throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be negative.");
+                }
+                if (rangeStart > fullSequence.length()){
+                    throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the length of the protein ("+fullSequence.length()+").");
+                }
+                if (rangeEnd > fullSequence.length()){
+                    throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be superior to the length of the protein ("+fullSequence.length()+").");
+                }
+                if (rangeEnd < rangeStart){
+                    throw  new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the end of the feature range ("+rangeEnd+")");
+                }
 
-        // count number of amino acids upstream the feature
-        if (rangeStart - (minimumSizeForAlignment/2) < 0){
-            numberOfAminoAcidsUpStream = Math.max(0, rangeStart - 1);
-        }
-        else {
-            numberOfAminoAcidsUpStream = minimumSizeForAlignment/2;
-        }
+                // count number of amino acids upstream the feature
+                if (rangeStart - (minimumSizeForAlignment/2) < 0){
+                    numberOfAminoAcidsUpStream = Math.max(0, rangeStart - 1);
+                }
+                else {
+                    numberOfAminoAcidsUpStream = minimumSizeForAlignment/2;
+                }
 
-        // count the number of amino acids downstream the feature
-        if (rangeEnd + (minimumSizeForAlignment/2) > fullSequence.length()){
-            numberOfAminoAcidsDownStream = Math.max(0, fullSequence.length() - rangeEnd);
-        }
-        else {
-            numberOfAminoAcidsDownStream = minimumSizeForAlignment/2;
-        }
+                // count the number of amino acids downstream the feature
+                if (rangeEnd + (minimumSizeForAlignment/2) > fullSequence.length()){
+                    numberOfAminoAcidsDownStream = Math.max(0, fullSequence.length() - rangeEnd);
+                }
+                else {
+                    numberOfAminoAcidsDownStream = minimumSizeForAlignment/2;
+                }
 
-        // Adjust the number of amino acids downstream and upstream to have a total number of amino acids equal to the minimumSizeForAlignment
-        if (numberOfAminoAcidsUpStream < minimumSizeForAlignment/2){
-            int numberAminoAcidsPendingAtTheEnd = fullSequence.length() - (rangeEnd + numberOfAminoAcidsDownStream);
-            numberOfAminoAcidsDownStream += Math.min(numberAminoAcidsPendingAtTheEnd, (minimumSizeForAlignment/2) - numberOfAminoAcidsUpStream);
-        }
-        if (numberOfAminoAcidsDownStream < minimumSizeForAlignment/2){
-            int numberAminoAcidsPendingAtTheBeginning = Math.max((rangeStart - numberOfAminoAcidsUpStream) - 1, 0);
+                // Adjust the number of amino acids downstream and upstream to have a total number of amino acids equal to the minimumSizeForAlignment
+                if (numberOfAminoAcidsUpStream < minimumSizeForAlignment/2){
+                    int numberAminoAcidsPendingAtTheEnd = fullSequence.length() - (rangeEnd + numberOfAminoAcidsDownStream);
+                    numberOfAminoAcidsDownStream += Math.min(numberAminoAcidsPendingAtTheEnd, (minimumSizeForAlignment/2) - numberOfAminoAcidsUpStream);
+                }
+                if (numberOfAminoAcidsDownStream < minimumSizeForAlignment/2){
+                    int numberAminoAcidsPendingAtTheBeginning = Math.max((rangeStart - numberOfAminoAcidsUpStream) - 1, 0);
 
-            numberOfAminoAcidsUpStream += Math.min(numberAminoAcidsPendingAtTheBeginning, (minimumSizeForAlignment/2) - numberOfAminoAcidsDownStream);
-        }
+                    numberOfAminoAcidsUpStream += Math.min(numberAminoAcidsPendingAtTheBeginning, (minimumSizeForAlignment/2) - numberOfAminoAcidsDownStream);
+                }
 
-        // Extract the proper downstream and upstream sequence
-        if (numberOfAminoAcidsUpStream > 0){
-            setUpStreamSequence(fullSequence.substring(Math.max(rangeStart - numberOfAminoAcidsUpStream - 1, 0), Math.max(rangeStart - 1, 1)));
-        }
-        if (numberOfAminoAcidsDownStream > 0){
-            setDownStreamSequence(fullSequence.substring(Math.min(fullSequence.length() - 1, rangeEnd), rangeEnd + numberOfAminoAcidsDownStream));
+                // Extract the proper downstream and upstream sequence
+                if (numberOfAminoAcidsUpStream > 0){
+                    setUpStreamSequence(fullSequence.substring(Math.max(rangeStart - numberOfAminoAcidsUpStream - 1, 0), Math.max(rangeStart - 1, 1)));
+                }
+                if (numberOfAminoAcidsDownStream > 0){
+                    setDownStreamSequence(fullSequence.substring(Math.min(fullSequence.length() - 1, rangeEnd), rangeEnd + numberOfAminoAcidsDownStream));
+                }
+            }
         }
     }
 
@@ -560,89 +570,96 @@ public boolean isUndetermined() {
     public void prepareSequence( String sequence, boolean forceConsistency ) {
         // we can only extract the feature sequence if the protein sequence is not null
         if (sequence != null){
-
-            // we update the c-terminal position if not set already (when the sequence length is not known, the c-terminal position is 0.)
-            if (fromCvFuzzyType != null){
-                if (fromCvFuzzyType.isCTerminal() && fromIntervalStart == 0 && fromIntervalEnd == 0){
-                    setFromIntervalStart(sequence.length());
-                    setFromIntervalEnd(sequence.length());
+            if (sequence.trim().length() > 0){
+                // we update the c-terminal position if not set already (when the sequence length is not known, the c-terminal position is 0.)
+                if (fromCvFuzzyType != null){
+                    if (fromCvFuzzyType.isCTerminal() && fromIntervalStart == 0 && fromIntervalEnd == 0){
+                        setFromIntervalStart(sequence.length());
+                        setFromIntervalEnd(sequence.length());
+                    }
                 }
-            }
 
-            if (toCvFuzzyType != null){
-                if (toCvFuzzyType.isCTerminal() && toIntervalStart == 0 && toIntervalEnd == 0){
-                    setToIntervalStart(sequence.length());
-                    setToIntervalEnd(sequence.length());
+                if (toCvFuzzyType != null){
+                    if (toCvFuzzyType.isCTerminal() && toIntervalStart == 0 && toIntervalEnd == 0){
+                        setToIntervalStart(sequence.length());
+                        setToIntervalEnd(sequence.length());
+                    }
                 }
-            }
 
-            // the range should be valid and consistent with the protein sequence
-            if (!FeatureUtils.isABadRange(this, sequence)){
+                // the range should be valid and consistent with the protein sequence
+                if (!FeatureUtils.isABadRange(this, sequence)){
 
-                // both the start position and the end position have a status
-                // if both positions are undetermined, or of type 'n-?','n-n', 'c-c' or '?-c', no feature sequence can be extracted
-                if ((fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isUndetermined())
-                        || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isUndetermined())
-                        || (fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isCTerminalRegion())
-                        || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isNTerminalRegion())
-                        || (fromCvFuzzyType.isCTerminalRegion() && toCvFuzzyType.isCTerminalRegion())
-                        || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isCTerminalRegion())){
-                    this.sequence = null;
-                    this.fullSequence = null;
-                    this.upStreamSequence = null;
-                    this.downStreamSequence = null;
+                    // both the start position and the end position have a status
+                    // if both positions are undetermined, or of type 'n-?','n-n', 'c-c' or '?-c', no feature sequence can be extracted
+                    if ((fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isUndetermined())
+                            || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isUndetermined())
+                            || (fromCvFuzzyType.isUndetermined() && toCvFuzzyType.isCTerminalRegion())
+                            || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isNTerminalRegion())
+                            || (fromCvFuzzyType.isCTerminalRegion() && toCvFuzzyType.isCTerminalRegion())
+                            || (fromCvFuzzyType.isNTerminalRegion() && toCvFuzzyType.isCTerminalRegion())){
+                        this.sequence = null;
+                        this.fullSequence = null;
+                        this.upStreamSequence = null;
+                        this.downStreamSequence = null;
+                    }
+                    // a feature sequence can be extracted
+                    else {
+                        // the start position is the start position of the start interval
+                        int startSequence = fromIntervalStart;
+                        // the end position is the end position of the end interval
+                        int endSequence = toIntervalEnd;
+
+                        // in case of greater than, the start position is starting from fromIntervalStart + 1
+                        if (fromCvFuzzyType.isGreaterThan()){
+                            startSequence ++;
+                        }
+                        // in case of less than, the start position is starting from fromIntervalStart - 1
+                        else if (fromCvFuzzyType.isLessThan()){
+                            startSequence --;
+                        }
+                        // in case of undetermined, the start position is starting from 1
+                        else if (fromCvFuzzyType.isUndetermined() || fromCvFuzzyType.isNTerminalRegion()){
+                            startSequence = 1;
+                        }
+
+                        // in case of greater than, the end position is at 'toIntervalEnd' + 1
+                        if (toCvFuzzyType.isGreaterThan()){
+                            endSequence ++;
+                        }
+                        // in case of less than, the end position is at 'toIntervalEnd' - 1
+                        else if (toCvFuzzyType.isLessThan()){
+                            endSequence --;
+                        }
+                        // in case of undetermined, the end position is at the end of the sequence
+                        else if (toCvFuzzyType.isUndetermined() || toCvFuzzyType.isCTerminalRegion()){
+                            endSequence = sequence.length();
+                        }
+
+                        // if the start is greater than and the end is also greater than, the end is the end of the sequence
+                        if (fromCvFuzzyType.isGreaterThan() && toCvFuzzyType.isGreaterThan()){
+                            endSequence = sequence.length();
+                        }
+                        // if both the start position and the end position is less than, the start position is 1
+                        else if (fromCvFuzzyType.isLessThan() && toCvFuzzyType.isLessThan()){
+                            startSequence = 1;
+                        }
+
+                        setSequenceIntern( getSequenceStartingFrom( sequence, startSequence ) );
+                        setFullSequence( getSequence( sequence, startSequence, endSequence));
+                        prepareUpStreamDownStreamSequence(startSequence, endSequence, sequence);
+                    }
                 }
-                // a feature sequence can be extracted
+                // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence
                 else {
-                    // the start position is the start position of the start interval
-                    int startSequence = fromIntervalStart;
-                    // the end position is the end position of the end interval
-                    int endSequence = toIntervalEnd;
-
-                    // in case of greater than, the start position is starting from fromIntervalStart + 1
-                    if (fromCvFuzzyType.isGreaterThan()){
-                        startSequence ++;
-                    }
-                    // in case of less than, the start position is starting from fromIntervalStart - 1
-                    else if (fromCvFuzzyType.isLessThan()){
-                        startSequence --;
-                    }
-                    // in case of undetermined, the start position is starting from 1
-                    else if (fromCvFuzzyType.isUndetermined() || fromCvFuzzyType.isNTerminalRegion()){
-                        startSequence = 1;
-                    }
-
-                    // in case of greater than, the end position is at 'toIntervalEnd' + 1
-                    if (toCvFuzzyType.isGreaterThan()){
-                        endSequence ++;
-                    }
-                    // in case of less than, the end position is at 'toIntervalEnd' - 1
-                    else if (toCvFuzzyType.isLessThan()){
-                        endSequence --;
-                    }
-                    // in case of undetermined, the end position is at the end of the sequence
-                    else if (toCvFuzzyType.isUndetermined() || toCvFuzzyType.isCTerminalRegion()){
-                        endSequence = sequence.length();
-                    }
-
-                    // if the start is greater than and the end is also greater than, the end is the end of the sequence
-                    if (fromCvFuzzyType.isGreaterThan() && toCvFuzzyType.isGreaterThan()){
-                        endSequence = sequence.length();
-                    }
-                    // if both the start position and the end position is less than, the start position is 1
-                    else if (fromCvFuzzyType.isLessThan() && toCvFuzzyType.isLessThan()){
-                        startSequence = 1;
-                    }
-
-                    setSequenceIntern( getSequenceStartingFrom( sequence, startSequence ) );
-                    setFullSequence( getSequence( sequence, startSequence, endSequence));
-                    prepareUpStreamDownStreamSequence(startSequence, endSequence, sequence);
+                    throw new IllegalRangeException("Problem extracting sequence using range. "+FeatureUtils.getBadRangeInfo(this, sequence)
+                            +": "+this+" / Start status: "+fromCvFuzzyType+" / End status: "+toCvFuzzyType+" / Seq.Length: "+(sequence != null? sequence.length() : 0));
                 }
             }
-            // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence
             else if (forceConsistency) {
-                throw new IllegalRangeException("Problem extracting sequence using range. "+FeatureUtils.getBadRangeInfo(this, sequence)
-                        +": "+this+" / Start status: "+fromCvFuzzyType+" / End status: "+toCvFuzzyType+" / Seq.Length: "+(sequence != null? sequence.length() : 0));
+                this.sequence = null;
+                this.fullSequence = null;
+                this.upStreamSequence = null;
+                this.downStreamSequence = null;
             }
         }
         // protein sequence null, no possible extraction of the feature sequence
