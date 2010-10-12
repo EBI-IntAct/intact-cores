@@ -108,9 +108,15 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.2</version>
         </dependency>
+
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-attrs</artifactId>
             <version>1.5.3</version>
         </dependency>
 
