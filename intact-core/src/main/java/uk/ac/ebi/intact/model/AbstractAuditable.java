@@ -54,6 +54,8 @@ public abstract class AbstractAuditable implements Auditable {
      */
     private Date updated;
 
+    private long version;
+
 
     public AbstractAuditable() {
     }
@@ -106,4 +108,13 @@ public abstract class AbstractAuditable implements Auditable {
         this.updator = updator;
     }
 
+    //@Version
+    @Transient
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
 }
