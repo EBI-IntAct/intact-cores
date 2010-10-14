@@ -42,4 +42,8 @@ public interface Auditable extends Serializable {
     String getUpdator();
 
     void setUpdator( String userStamp );
+
+    long getVersion();
+
+    void setVersion( long version );
 }

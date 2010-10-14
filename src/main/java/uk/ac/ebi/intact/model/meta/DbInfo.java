@@ -79,6 +79,10 @@ public class DbInfo implements Auditable {
     @NotNull
     private Date updated;
 
+    //@Version
+    @Transient
+    private long version;
+
     public DbInfo() {
     }
 
@@ -133,6 +137,14 @@ public class DbInfo implements Auditable {
 
     public void setUpdated( Date updated ) {
         this.updated = updated;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 
     @Override
