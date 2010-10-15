@@ -8,8 +8,8 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotNull;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 import javax.persistence.*;

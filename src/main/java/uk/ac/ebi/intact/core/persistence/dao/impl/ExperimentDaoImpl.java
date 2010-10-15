@@ -45,16 +45,11 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
     }
 
     public Integer countInteractionsForExperimentWithAc( String ac ) {
-//        return (Integer) getSession().createCriteria(Experiment.class)
-//                    .add(Restrictions.idEq(ac))
-//                    .createAlias("interactions", "int")
-//                    .setProjection(Projections.countDistinct("int.ac")).uniqueResult();
-
-        // this one performs slightly better
-        return ( Integer ) getSession().createCriteria( InteractionImpl.class )
-                .createAlias( "experiments", "exp" )
-                .add( Restrictions.eq( "exp.ac", ac ) )
-                .setProjection( Projections.rowCount() ).uniqueResult();
+        final Long count = (Long) getSession().createCriteria(InteractionImpl.class)
+                .createAlias("experiments", "exp")
+                .add(Restrictions.eq("exp.ac", ac))
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return count.intValue();
     }
 
     public List<Interaction> getInteractionsForExperimentWithAc( String ac, int firstResult, int maxResults ) {

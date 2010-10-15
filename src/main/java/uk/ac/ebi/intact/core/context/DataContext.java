@@ -52,7 +52,7 @@ public class DataContext implements Serializable {
     }
 
     public TransactionStatus beginTransaction() {
-        return beginTransaction( TransactionDefinition.PROPAGATION_REQUIRES_NEW, createConversationName());
+        return beginTransaction( TransactionDefinition.PROPAGATION_REQUIRES_NEW, createTransactionName());
     }
 
     public TransactionStatus beginTransaction(String transactionName) {
@@ -60,10 +60,10 @@ public class DataContext implements Serializable {
     }
 
     public TransactionStatus beginTransaction( int propagation ) {
-        return beginTransaction(propagation, createConversationName());
+        return beginTransaction(propagation, createTransactionName());
     }
 
-    private String createConversationName() {
+    private String createTransactionName() {
         final StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[3];
         return stackTraceElement.getClassName()+"."+stackTraceElement.getMethodName();
     }

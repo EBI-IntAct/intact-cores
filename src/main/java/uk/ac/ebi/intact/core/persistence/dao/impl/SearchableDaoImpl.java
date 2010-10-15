@@ -64,9 +64,9 @@ public class SearchableDaoImpl extends HibernateBaseDaoImpl<AnnotatedObjectImpl>
         int count = 0;
 
         try {
-            List<Integer> list = criteria.list();
+            List<Long> list = criteria.list();
 
-            for ( Integer entityCount : list ) {
+            for ( Long entityCount : list ) {
                 count += entityCount;
             }
         } catch (HibernateException e) {

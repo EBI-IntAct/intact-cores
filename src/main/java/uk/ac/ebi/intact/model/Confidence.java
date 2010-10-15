@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.intact.model;
 
-import org.hibernate.validator.Length;
+import javax.validation.constraints.Size;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -62,7 +62,7 @@ public class Confidence extends BasicObjectImpl {
         setOwner(owner);
     }
 
-    @Length(max = 4000)
+    @Size(max = 4000)
     public String getValue() {
         return value;
     }

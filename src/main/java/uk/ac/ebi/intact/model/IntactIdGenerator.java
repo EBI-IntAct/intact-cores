@@ -11,6 +11,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.SessionImplementor;
+import org.hibernate.id.IdentifierGeneratorHelper;
+import org.hibernate.id.IntegralDataTypeHolder;
 import org.hibernate.id.SequenceGenerator;
 import org.hibernate.type.Type;
 import org.hibernate.util.PropertiesHelper;
@@ -36,6 +38,15 @@ public class IntactIdGenerator extends SequenceGenerator {
     public static final String SEQUENCE = "sequence";
 
     public static final String INTACT_AC_SEQUENCE_NAME = "intact_ac";
+
+    /**
+     * @HACK if we don't override this method with the specific Long type, the generator cannot be initialized.
+     * @return
+     */
+    @Override
+    protected IntegralDataTypeHolder buildHolder() {
+        return IdentifierGeneratorHelper.getIntegralDataTypeHolder( Long.class );
+    }
 
     @Override
     public void configure( Type type, Properties properties, Dialect dialect ) throws MappingException {

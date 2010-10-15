@@ -72,11 +72,6 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
                 ) ).uniqueResult();
     }
 
-    public int countAll() {
-        return ( Integer ) getSession().createCriteria( getEntityClass() )
-                .setProjection( Projections.rowCount() ).uniqueResult();
-    }
-
     public int countByProteinIntactAc( String proteinIntactAc ) {
         return ( Integer ) getSession().createCriteria( getEntityClass() )
                 .add( Restrictions.or(

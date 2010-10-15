@@ -9,8 +9,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotNull;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 import javax.persistence.*;
@@ -114,7 +114,7 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
     ///////////////////////////////////////
     //access methods for attributes
 
-    @Length( min = 1, max = MAX_SHORT_LABEL_LEN )
+    @Size( min = 1, max = MAX_SHORT_LABEL_LEN )
     @NotNull
     public String getShortLabel() {
         return shortLabel;
@@ -129,7 +129,7 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
     }
 
     @Column( length = MAX_FULL_NAME_LEN )
-    @Length( max = MAX_FULL_NAME_LEN )
+    @Size( max = MAX_FULL_NAME_LEN )
     public String getFullName() {
         return fullName;
     }

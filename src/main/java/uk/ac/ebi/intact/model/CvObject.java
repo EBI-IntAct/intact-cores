@@ -7,7 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
-import org.hibernate.validator.Length;
+import javax.validation.constraints.Size;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
 
@@ -141,7 +141,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      * @since 1.9.x
      */
     @Column(name = "identifier", length = 30)
-    @Length(max = 30)
+    @Size(max = 30)
     @Index(name = "cvobject_id_idx")
     public String getIdentifier() {
         return identifier;

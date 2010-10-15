@@ -72,18 +72,20 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
     }
 
     public Integer countInteractionsForInteractorWithAc( String ac ) {
-        return ( Integer ) getSession().createCriteria( Component.class )
-                .createAlias( "interactor", "interactor" )
-                .createAlias( "interaction", "interaction" )
-                .add( Restrictions.eq( "interactor.ac", ac ) )
-                .setProjection( Projections.countDistinct( "interaction.ac" ) ).uniqueResult();
+        final Long count = (Long) getSession().createCriteria(Component.class)
+                .createAlias("interactor", "interactor")
+                .createAlias("interaction", "interaction")
+                .add(Restrictions.eq("interactor.ac", ac))
+                .setProjection(Projections.countDistinct("interaction.ac")).uniqueResult();
+        return count.intValue();
     }
 
     public Integer countComponentsForInteractorWithAc( String ac ) {
-        return ( Integer ) getSession().createCriteria( Component.class )
-                .createAlias( "interactor", "interactor" )
-                .add( Restrictions.eq( "interactor.ac", ac ) )
-                .setProjection( Projections.countDistinct( "ac" ) ).uniqueResult();
+        final Long count = (Long) getSession().createCriteria(Component.class)
+                .createAlias("interactor", "interactor")
+                .add(Restrictions.eq("interactor.ac", ac))
+                .setProjection(Projections.countDistinct("ac")).uniqueResult();
+        return count.intValue();
     }
 
     public List<String> getGeneNamesByInteractorAc( String proteinAc ) {
@@ -172,8 +174,9 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
      * @since 1.8.0
      */
     public Integer countPartnersByAc( String ac ) {
-        return ( Integer ) partnersByAcCriteria( ac )
-                .setProjection( Projections.countDistinct( "prot.ac" ) ).uniqueResult();
+        final Long count = (Long) partnersByAcCriteria(ac)
+                .setProjection(Projections.countDistinct("prot.ac")).uniqueResult();
+        return count.intValue();
     }
 
     protected Criteria partnersByAcCriteria( String ac ) {

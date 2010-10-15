@@ -57,11 +57,12 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
             log.debug( "Counting interactors for interaction with ac: " + interactionAc );
         }
 
-        return ( Integer ) getSession().createCriteria( InteractionImpl.class )
-                .add( Restrictions.idEq( interactionAc ) )
-                .createAlias( "components", "comp" )
-                .createAlias( "comp.interactor", "interactor" )
-                .setProjection( Projections.count( "interactor.ac" ) ).uniqueResult();
+        final Long count = (Long) getSession().createCriteria(InteractionImpl.class)
+                .add(Restrictions.idEq(interactionAc))
+                .createAlias("components", "comp")
+                .createAlias("comp.interactor", "interactor")
+                .setProjection(Projections.count("interactor.ac")).uniqueResult();
+        return count.intValue();
     }
 
     public List<String> getNestedInteractionAcsByInteractionAc( String interactionAc ) {
