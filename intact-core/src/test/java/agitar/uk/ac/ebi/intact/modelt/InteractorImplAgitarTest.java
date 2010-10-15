@@ -7,11 +7,10 @@
  *
  */
 
-package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.model.*;
-
+package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
-import com.agitar.lib.mockingbird.Mockingbird;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,12 +42,12 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
         assertTrue( "result", result );
     }
 
-    public void testGetAliases() throws Throwable {
-        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( CvInteractorType ) Mockingbird.getProxyObject( CvInteractorType.class ) );
-        Mockingbird.enterTestMode();
-        ArrayList result = ( ArrayList ) smallMoleculeImpl.getAliases();
-        assertEquals( "result.size()", 0, result.size() );
-    }
+//    public void testGetAliases() throws Throwable {
+//        InteractorImpl smallMoleculeImpl = new SmallMoleculeImpl( "testIntLabel", ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( CvInteractorType ) Mockingbird.getProxyObject( CvInteractorType.class ) );
+//        Mockingbird.enterTestMode();
+//        ArrayList result = ( ArrayList ) smallMoleculeImpl.getAliases();
+//        assertEquals( "result.size()", 0, result.size() );
+//    }
 
     public void testGetAnnotations() throws Throwable {
         ArrayList result = ( ArrayList ) new Complex().getAnnotations();

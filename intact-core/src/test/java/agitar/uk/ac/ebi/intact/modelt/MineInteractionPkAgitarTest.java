@@ -7,10 +7,10 @@
  *
  */
 
-package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.model.*;
+package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
-import com.agitar.lib.mockingbird.Mockingbird;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.ArrayList;
 
@@ -23,22 +23,22 @@ public class MineInteractionPkAgitarTest extends AgitarTestCase {
         assertNull( "mineInteractionPk.getInteraction()", mineInteractionPk.getInteraction() );
     }
 
-    public void testConstructor1() throws Throwable {
-        ProteinImpl protein1 = ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class );
-        ProteinImpl protein2 = ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class );
-        InteractionImpl interaction = ( InteractionImpl ) Mockingbird.getProxyObject( InteractionImpl.class );
-        Mockingbird.enterTestMode();
-        Mockingbird.getProxyObject( ProteinImpl.class );
-        Mockingbird.enterTestMode();
-        Mockingbird.getProxyObject( InteractionImpl.class );
-        Mockingbird.enterTestMode();
-        Mockingbird.getProxyObject( ProteinImpl.class );
-        Mockingbird.enterTestMode();
-        MineInteractionPk mineInteractionPk = new MineInteractionPk( protein1, protein2, interaction );
-        assertSame( "mineInteractionPk.getProtein2()", protein2, mineInteractionPk.getProtein2() );
-        assertSame( "mineInteractionPk.getProtein1()", protein1, mineInteractionPk.getProtein1() );
-        assertSame( "mineInteractionPk.getInteraction()", interaction, mineInteractionPk.getInteraction() );
-    }
+//    public void testConstructor1() throws Throwable {
+//        ProteinImpl protein1 = ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class );
+//        ProteinImpl protein2 = ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class );
+//        InteractionImpl interaction = ( InteractionImpl ) Mockingbird.getProxyObject( InteractionImpl.class );
+//        Mockingbird.enterTestMode();
+//        Mockingbird.getProxyObject( ProteinImpl.class );
+//        Mockingbird.enterTestMode();
+//        Mockingbird.getProxyObject( InteractionImpl.class );
+//        Mockingbird.enterTestMode();
+//        Mockingbird.getProxyObject( ProteinImpl.class );
+//        Mockingbird.enterTestMode();
+//        MineInteractionPk mineInteractionPk = new MineInteractionPk( protein1, protein2, interaction );
+//        assertSame( "mineInteractionPk.getProtein2()", protein2, mineInteractionPk.getProtein2() );
+//        assertSame( "mineInteractionPk.getProtein1()", protein1, mineInteractionPk.getProtein1() );
+//        assertSame( "mineInteractionPk.getInteraction()", interaction, mineInteractionPk.getInteraction() );
+//    }
 
     public void testEquals() throws Throwable {
         boolean result = new MineInteractionPk().equals( null );
@@ -96,28 +96,28 @@ public class MineInteractionPkAgitarTest extends AgitarTestCase {
         assertSame( "mineInteractionPk.getInteraction()", interaction, mineInteractionPk.getInteraction() );
     }
 
-    public void testSetInteraction() throws Throwable {
-        MineInteractionPk mineInteractionPk = new MineInteractionPk();
-        InteractionImpl interaction = ( InteractionImpl ) Mockingbird.getProxyObject( InteractionImpl.class );
-        Mockingbird.enterTestMode();
-        mineInteractionPk.setInteraction( interaction );
-        assertSame( "mineInteractionPk.getInteraction()", interaction, mineInteractionPk.getInteraction() );
-    }
-
-    public void testSetProtein1() throws Throwable {
-        MineInteractionPk mineInteractionPk = new MineInteractionPk( ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class ), null, ( InteractionImpl ) Mockingbird.getProxyObject( InteractionImpl.class ) );
-        ProteinImpl protein1 = ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class );
-        Mockingbird.enterTestMode();
-        mineInteractionPk.setProtein1( protein1 );
-        assertSame( "mineInteractionPk.getProtein1()", protein1, mineInteractionPk.getProtein1() );
-    }
-
-    public void testSetProtein2() throws Throwable {
-        MineInteractionPk mineInteractionPk = new MineInteractionPk();
-        ProteinImpl protein2 = ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class );
-        Mockingbird.enterTestMode();
-        mineInteractionPk.setProtein2( protein2 );
-        assertSame( "mineInteractionPk.getProtein2()", protein2, mineInteractionPk.getProtein2() );
-    }
+//    public void testSetInteraction() throws Throwable {
+//        MineInteractionPk mineInteractionPk = new MineInteractionPk();
+//        InteractionImpl interaction = ( InteractionImpl ) Mockingbird.getProxyObject( InteractionImpl.class );
+//        Mockingbird.enterTestMode();
+//        mineInteractionPk.setInteraction( interaction );
+//        assertSame( "mineInteractionPk.getInteraction()", interaction, mineInteractionPk.getInteraction() );
+//    }
+//
+//    public void testSetProtein1() throws Throwable {
+//        MineInteractionPk mineInteractionPk = new MineInteractionPk( ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class ), null, ( InteractionImpl ) Mockingbird.getProxyObject( InteractionImpl.class ) );
+//        ProteinImpl protein1 = ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class );
+//        Mockingbird.enterTestMode();
+//        mineInteractionPk.setProtein1( protein1 );
+//        assertSame( "mineInteractionPk.getProtein1()", protein1, mineInteractionPk.getProtein1() );
+//    }
+//
+//    public void testSetProtein2() throws Throwable {
+//        MineInteractionPk mineInteractionPk = new MineInteractionPk();
+//        ProteinImpl protein2 = ( ProteinImpl ) Mockingbird.getProxyObject( ProteinImpl.class );
+//        Mockingbird.enterTestMode();
+//        mineInteractionPk.setProtein2( protein2 );
+//        assertSame( "mineInteractionPk.getProtein2()", protein2, mineInteractionPk.getProtein2() );
+//    }
 }
 

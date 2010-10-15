@@ -7,10 +7,10 @@
  *
  */
 
-package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.model.*;
+package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
-import com.agitar.lib.mockingbird.Mockingbird;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 import java.util.ArrayList;
@@ -262,19 +262,6 @@ public class ExperimentAgitarTest extends AgitarTestCase {
 //        assertInvoked( cvInteraction, "getShortLabel" );
 //        assertInvoked( cvIdentification, "getShortLabel" );
 //    }
-
-    public void testConstructorThrowsIllegalArgumentException() throws Throwable {
-        Institution owner = ( Institution ) Mockingbird.getProxyObject( Institution.class );
-        BioSource source = ( BioSource ) Mockingbird.getProxyObject( BioSource.class );
-        Mockingbird.enterTestMode();
-        try {
-            new Experiment( owner, "", source );
-            fail( "Expected IllegalArgumentException to be thrown" );
-        } catch ( IllegalArgumentException ex ) {
-            assertEquals( "ex.getMessage()", "Must define a non empty short label", ex.getMessage() );
-            assertThrownBy( AnnotatedObjectUtils.class, ex );
-        }
-    }
 
     public void testConstructorThrowsNullPointerException() throws Throwable {
         try {

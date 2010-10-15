@@ -10,7 +10,6 @@
 package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
-import com.agitar.lib.mockingbird.Mockingbird;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.ArrayList;
@@ -858,13 +857,13 @@ public class MineInteractionAgitarTest extends AgitarTestCase {
         assertSame( "mineInteraction.getDetectionMethod()", detectionMethod, mineInteraction.getDetectionMethod() );
     }
 
-    public void testSetExperiment() throws Throwable {
-        MineInteraction mineInteraction = new MineInteraction();
-        Experiment experiment = ( Experiment ) Mockingbird.getProxyObject( Experiment.class );
-        Mockingbird.enterTestMode();
-        mineInteraction.setExperiment( experiment );
-        assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
-    }
+//    public void testSetExperiment() throws Throwable {
+//        MineInteraction mineInteraction = new MineInteraction();
+//        Experiment experiment = ( Experiment ) Mockingbird.getProxyObject( Experiment.class );
+//        Mockingbird.enterTestMode();
+//        mineInteraction.setExperiment( experiment );
+//        assertSame( "mineInteraction.getExperiment()", experiment, mineInteraction.getExperiment() );
+//    }
 
     public void testSetGraphId() throws Throwable {
         MineInteraction mineInteraction = new MineInteraction();
