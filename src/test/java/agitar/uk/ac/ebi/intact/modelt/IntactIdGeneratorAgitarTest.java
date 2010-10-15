@@ -10,17 +10,10 @@
 package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
-import org.hibernate.dialect.DB2400Dialect;
 import org.hibernate.dialect.DerbyDialect;
-import org.hibernate.dialect.MckoiDialect;
 import org.hibernate.type.ByteType;
-import org.hibernate.type.CharArrayType;
-import org.hibernate.type.TextType;
-import org.hibernate.type.Type;
 import org.hibernate.util.PropertiesHelper;
 import uk.ac.ebi.intact.model.IntactIdGenerator;
-
-import java.util.Properties;
 
 public class IntactIdGeneratorAgitarTest extends AgitarTestCase {
 
@@ -31,30 +24,30 @@ public class IntactIdGeneratorAgitarTest extends AgitarTestCase {
         assertEquals( "intactIdGenerator.getSequenceName()", "intact_ac", intactIdGenerator.getSequenceName() );
     }
 
-    public void testConfigure() throws Throwable {
-        IntactIdGenerator intactIdGenerator = new IntactIdGenerator();
-        Properties properties = new Properties();
-        Type type = new CharArrayType();
-        intactIdGenerator.configure( type, properties, new MckoiDialect() );
-        assertEquals( "properties.size()", 1, properties.size() );
-        assertEquals( "properties.get(\"sequence\")", "intact_ac", properties.get( "sequence" ) );
-        assertEquals( "intactIdGenerator.generatorKey()", "intact_ac", intactIdGenerator.generatorKey() );
-        assertEquals( "intactIdGenerator.sql", "select nextval('intact_ac')", getPrivateField( intactIdGenerator, "sql" ) );
-        assertNull( "intactIdGenerator.parameters", getPrivateField( intactIdGenerator, "parameters" ) );
-        assertSame( "intactIdGenerator.identifierType", type, getPrivateField( intactIdGenerator, "identifierType" ) );
-    }
-
-    public void testConfigure1() throws Throwable {
-        IntactIdGenerator intactIdGenerator = new IntactIdGenerator();
-        Properties properties = new Properties();
-        properties.put( "sequence", "testString" );
-        Type type = new TextType();
-        intactIdGenerator.configure( type, properties, new DB2400Dialect() );
-        assertEquals( "intactIdGenerator.generatorKey()", "testString", intactIdGenerator.generatorKey() );
-        assertEquals( "intactIdGenerator.sql", "values nextval for testString", getPrivateField( intactIdGenerator, "sql" ) );
-        assertNull( "intactIdGenerator.parameters", getPrivateField( intactIdGenerator, "parameters" ) );
-        assertSame( "intactIdGenerator.identifierType", type, getPrivateField( intactIdGenerator, "identifierType" ) );
-    }
+//    public void testConfigure() throws Throwable {
+//        IntactIdGenerator intactIdGenerator = new IntactIdGenerator();
+//        Properties properties = new Properties();
+//        Type type = new CharArrayType();
+//        intactIdGenerator.configure( type, properties, new MckoiDialect() );
+//        assertEquals( "properties.size()", 1, properties.size() );
+//        assertEquals( "properties.get(\"sequence\")", "intact_ac", properties.get( "sequence" ) );
+//        assertEquals( "intactIdGenerator.generatorKey()", "intact_ac", intactIdGenerator.generatorKey() );
+//        assertEquals( "intactIdGenerator.sql", "select nextval('intact_ac')", getPrivateField( intactIdGenerator, "sql" ) );
+//        assertNull( "intactIdGenerator.parameters", getPrivateField( intactIdGenerator, "parameters" ) );
+//        assertSame( "intactIdGenerator.identifierType", type, getPrivateField( intactIdGenerator, "identifierType" ) );
+//    }
+//
+//    public void testConfigure1() throws Throwable {
+//        IntactIdGenerator intactIdGenerator = new IntactIdGenerator();
+//        Properties properties = new Properties();
+//        properties.put( "sequence", "testString" );
+//        Type type = new TextType();
+//        intactIdGenerator.configure( type, properties, new DB2400Dialect() );
+//        assertEquals( "intactIdGenerator.generatorKey()", "testString", intactIdGenerator.generatorKey() );
+//        assertEquals( "intactIdGenerator.sql", "values nextval for testString", getPrivateField( intactIdGenerator, "sql" ) );
+//        assertNull( "intactIdGenerator.parameters", getPrivateField( intactIdGenerator, "parameters" ) );
+//        assertSame( "intactIdGenerator.identifierType", type, getPrivateField( intactIdGenerator, "identifierType" ) );
+//    }
 
     public void testGetSequenceName() throws Throwable {
         String result = new IntactIdGenerator().getSequenceName();

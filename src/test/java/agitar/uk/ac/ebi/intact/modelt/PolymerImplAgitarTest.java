@@ -7,10 +7,10 @@
  *
  */
 
-package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.model.*;
+package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
-import com.agitar.lib.mockingbird.Mockingbird;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -213,39 +213,39 @@ public class PolymerImplAgitarTest extends AgitarTestCase {
         assertEquals( "(ProteinImpl) proteinImpl.getSequenceChunks().size()", 0, proteinImpl.getSequenceChunks().size() );
     }
 
-    public void testSetSequence5() throws Throwable {
-        PolymerImpl nucleicAcidImpl = new NucleicAcidImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel", ( CvInteractorType ) Mockingbird.getProxyObject( CvInteractorType.class ) );
-        Mockingbird.enterTestMode();
-        AbstractList result = ( AbstractList ) nucleicAcidImpl.setSequence( " " );
-        assertEquals( "result.size()", 0, result.size() );
-        assertEquals( "(NucleicAcidImpl) nucleicAcidImpl.getSequenceChunks().size()", 1, nucleicAcidImpl.getSequenceChunks().size() );
-    }
-
-    public void testSetSequence6() throws Throwable {
-        PolymerImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel" );
-        proteinImpl.setSequenceChunks( null );
-        Mockingbird.enterTestMode();
-        AbstractList result = ( AbstractList ) proteinImpl.setSequence( "" );
-        assertEquals( "result.size()", 0, result.size() );
-        assertEquals( "(ProteinImpl) proteinImpl.getSequenceChunks().size()", 0, proteinImpl.getSequenceChunks().size() );
-    }
-
-    public void testSetSequence7() throws Throwable {
-        PolymerImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel" );
-        Mockingbird.enterTestMode();
-        AbstractList result = ( AbstractList ) proteinImpl.setSequence( "" );
-        assertEquals( "result.size()", 0, result.size() );
-        assertEquals( "(ProteinImpl) proteinImpl.getSequenceChunks().size()", 0, proteinImpl.getSequenceChunks().size() );
-    }
-
-    public void testSetSequence8() throws Throwable {
-        PolymerImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel" );
-        proteinImpl.setSequenceChunks( null );
-        Mockingbird.enterTestMode();
-        AbstractList result = ( AbstractList ) proteinImpl.setSequence( "testPolymerImplASequence" );
-        assertEquals( "result.size()", 0, result.size() );
-        assertEquals( "(ProteinImpl) proteinImpl.getSequenceChunks().size()", 1, proteinImpl.getSequenceChunks().size() );
-    }
+//    public void testSetSequence5() throws Throwable {
+//        PolymerImpl nucleicAcidImpl = new NucleicAcidImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel", ( CvInteractorType ) Mockingbird.getProxyObject( CvInteractorType.class ) );
+//        Mockingbird.enterTestMode();
+//        AbstractList result = ( AbstractList ) nucleicAcidImpl.setSequence( " " );
+//        assertEquals( "result.size()", 0, result.size() );
+//        assertEquals( "(NucleicAcidImpl) nucleicAcidImpl.getSequenceChunks().size()", 1, nucleicAcidImpl.getSequenceChunks().size() );
+//    }
+//
+//    public void testSetSequence6() throws Throwable {
+//        PolymerImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel" );
+//        proteinImpl.setSequenceChunks( null );
+//        Mockingbird.enterTestMode();
+//        AbstractList result = ( AbstractList ) proteinImpl.setSequence( "" );
+//        assertEquals( "result.size()", 0, result.size() );
+//        assertEquals( "(ProteinImpl) proteinImpl.getSequenceChunks().size()", 0, proteinImpl.getSequenceChunks().size() );
+//    }
+//
+//    public void testSetSequence7() throws Throwable {
+//        PolymerImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel" );
+//        Mockingbird.enterTestMode();
+//        AbstractList result = ( AbstractList ) proteinImpl.setSequence( "" );
+//        assertEquals( "result.size()", 0, result.size() );
+//        assertEquals( "(ProteinImpl) proteinImpl.getSequenceChunks().size()", 0, proteinImpl.getSequenceChunks().size() );
+//    }
+//
+//    public void testSetSequence8() throws Throwable {
+//        PolymerImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel" );
+//        proteinImpl.setSequenceChunks( null );
+//        Mockingbird.enterTestMode();
+//        AbstractList result = ( AbstractList ) proteinImpl.setSequence( "testPolymerImplASequence" );
+//        assertEquals( "result.size()", 0, result.size() );
+//        assertEquals( "(ProteinImpl) proteinImpl.getSequenceChunks().size()", 1, proteinImpl.getSequenceChunks().size() );
+//    }
 
     public void testSetSequenceChunks() throws Throwable {
         List sequenceChunks = new ArrayList( 100 );
@@ -330,21 +330,21 @@ public class PolymerImplAgitarTest extends AgitarTestCase {
         }
     }
 
-    public void testRemoveSequenceChunkThrowsNullPointerException1() throws Throwable {
-        PolymerImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel" );
-        proteinImpl.setSequenceChunks( null );
-        SequenceChunk sequenceChunk = ( SequenceChunk ) Mockingbird.getProxyObject( SequenceChunk.class );
-        Mockingbird.enterTestMode();
-        try {
-            super.callPrivateMethod("uk.ac.ebi.intact.model.PolymerImpl", "removeSequenceChunk", new Class[]{SequenceChunk.class}, proteinImpl, new Object[]{sequenceChunk} );
-//            proteinImpl.removeSequenceChunk( sequenceChunk );
-            fail( "Expected NullPointerException to be thrown" );
-        } catch ( NullPointerException ex ) {
-            assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( PolymerImpl.class, ex );
-            assertNull( "(ProteinImpl) proteinImpl.getSequenceChunks()", proteinImpl.getSequenceChunks() );
-        }
-    }
+//    public void testRemoveSequenceChunkThrowsNullPointerException1() throws Throwable {
+//        PolymerImpl proteinImpl = new ProteinImpl( ( Institution ) Mockingbird.getProxyObject( Institution.class ), ( BioSource ) Mockingbird.getProxyObject( BioSource.class ), "testPolLabel" );
+//        proteinImpl.setSequenceChunks( null );
+//        SequenceChunk sequenceChunk = ( SequenceChunk ) Mockingbird.getProxyObject( SequenceChunk.class );
+//        Mockingbird.enterTestMode();
+//        try {
+//            super.callPrivateMethod("uk.ac.ebi.intact.model.PolymerImpl", "removeSequenceChunk", new Class[]{SequenceChunk.class}, proteinImpl, new Object[]{sequenceChunk} );
+////            proteinImpl.removeSequenceChunk( sequenceChunk );
+//            fail( "Expected NullPointerException to be thrown" );
+//        } catch ( NullPointerException ex ) {
+//            assertNull( "ex.getMessage()", ex.getMessage() );
+//            assertThrownBy( PolymerImpl.class, ex );
+//            assertNull( "(ProteinImpl) proteinImpl.getSequenceChunks()", proteinImpl.getSequenceChunks() );
+//        }
+//    }
 
     public void testSetSequenceThrowsNullPointerException() throws Throwable {
         PolymerImpl proteinImpl = new ProteinImpl( new Institution( "testPolLabel1" ), new BioSource( new Institution( "testPolLabel" ), "testPolLabel", "47508" ), "testPolLabel" );
