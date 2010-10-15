@@ -7,6 +7,7 @@ import org.hibernate.ejb.HibernatePersistence;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.ProviderUtil;
 import java.util.Map;
 
 /**
@@ -36,6 +37,11 @@ public class IntactPersistenceProvider implements PersistenceProvider {
 
         EntityManagerFactory emf = hibernatePersistence.createContainerEntityManagerFactory(info, map);
         return emf;
+    }
+
+    public ProviderUtil getProviderUtil() {
+        HibernatePersistence hibernatePersistence = new HibernatePersistence();
+        return hibernatePersistence.getProviderUtil();
     }
 
 }

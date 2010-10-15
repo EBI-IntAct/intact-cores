@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.intact.model;
 
-import org.hibernate.validator.NotNull;
+import javax.validation.constraints.NotNull;
 import uk.ac.ebi.intact.model.event.AuditableEventListener;
 
 import javax.persistence.*;

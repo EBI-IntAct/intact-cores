@@ -8,7 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.validator.Length;
+import javax.validation.constraints.Size;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
@@ -200,7 +200,7 @@ public abstract class Xref extends BasicObjectImpl {
         this.primaryId = aPrimaryId;
     }
 
-    @Length( max = MAX_ID_LEN )
+    @Size( max = MAX_ID_LEN )
     public String getSecondaryId() {
         return secondaryId;
     }

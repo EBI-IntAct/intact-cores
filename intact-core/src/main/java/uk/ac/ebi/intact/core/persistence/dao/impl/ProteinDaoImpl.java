@@ -113,7 +113,7 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         Map<String, Integer> results = new HashMap<String, Integer>( queryResults.size() );
 
         for ( Object[] res : queryResults ) {
-            results.put( ( String ) res[1], ( Integer ) res[0] );
+            results.put( ( String ) res[1], (( Long ) res[0]).intValue() );
         }
 
         return results;
@@ -121,8 +121,9 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
 
     @Deprecated
     public Integer countPartnersByProteinAc( String proteinAc ) {
-        return ( Integer ) partnersByAcCriteria( proteinAc )
-                .setProjection( Projections.countDistinct( "prot.ac" ) ).uniqueResult();
+        final Long count = (Long) partnersByAcCriteria(proteinAc)
+                .setProjection(Projections.countDistinct("prot.ac")).uniqueResult();
+        return count.intValue();
     }
 
     public List<ProteinImpl> getUniprotProteins( Integer firstResult, Integer maxResults ) {

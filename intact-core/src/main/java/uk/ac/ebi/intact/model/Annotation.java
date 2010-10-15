@@ -8,7 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.validator.Length;
+import javax.validation.constraints.Size;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
@@ -82,7 +82,6 @@ public class Annotation extends BasicObjectImpl {
      * set the <code>created</code> and <code>updated</code> fields of the instance
      * to the current time.
      *
-     * @param owner          The <code>Institution</code> which 'owns' this BioSource
      * @param topic          Refers to the controlled vocabulary topic this Annotation relates
      *                       to. This should be non-null.
      * @param annotationText the test of the annotation.
@@ -117,7 +116,7 @@ public class Annotation extends BasicObjectImpl {
     ///////////////////////////////////////
     //access methods for attributes
     @Column( name = "description", length = MAX_DESCRIPTION_LEN )
-    @Length( max = MAX_DESCRIPTION_LEN )
+    @Size( max = MAX_DESCRIPTION_LEN )
     public String getAnnotationText() {
         return annotationText;
     }

@@ -15,8 +15,10 @@
  */
 package uk.ac.ebi.intact.model.meta;
 
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotNull;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
 import uk.ac.ebi.intact.model.Auditable;
 import uk.ac.ebi.intact.model.event.AuditableEventListener;
 
@@ -44,11 +46,11 @@ public class DbInfo implements Auditable {
 
     @Id
     @Column( name = "dbi_key", length = 50 )
-    @Length(max = 50)
+    @Size(max = 50)
     private String key;
 
     @Column( name = "value", length = 512 )
-    @Length(max = 512)
+    @Size(max = 512)
     private String value;
 
     /**

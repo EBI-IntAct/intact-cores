@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
 
 /**
  * This is the top level class for all intact model object.
@@ -27,6 +28,7 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
      * The unique accession number of an object. This is defined as protected to allow concrete subclasses to generate
      * copies if required.
      */
+    protected Serializable id;
     protected String ac;
 
     private boolean deprecated;
@@ -39,7 +41,7 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
 
     @Id
     @GeneratedValue( generator = "intact-id-generator" )
-    @GenericGenerator( name = "intact-id-generator", strategy = "uk.ac.ebi.intact.model.IntactIdGenerator" )
+    @GenericGenerator( name = "intact-id-generator", strategy = "uk.ac.ebi.intact.model.IntactIdGenerator")
     @Column( length = 30 )
     public String getAc() {
         return ac;

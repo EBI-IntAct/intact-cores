@@ -133,10 +133,11 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
 
     @Transactional(readOnly = true)
     public int countAll() {
-        return ( Integer ) getSession()
-                .createCriteria( getEntityClass() )
-                .setProjection( Projections.rowCount() )
+        final Long count = (Long) getSession()
+                .createCriteria(getEntityClass())
+                .setProjection(Projections.rowCount())
                 .uniqueResult();
+        return count.intValue();
     }
 
     /**
