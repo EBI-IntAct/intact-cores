@@ -36,7 +36,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.7</version>
+            <version>4.8</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -56,19 +56,14 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
 
-        <!-- Spring  -->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring</artifactId>-->
-            <!--<version>2.5.6</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-test</artifactId>-->
-            <!--<version>2.5.6</version>-->
-            <!--<optional>true</optional>-->
-        <!--</dependency>-->
-                <!-- Spring -->
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.8</version>
+        </dependency>
+
+        <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
