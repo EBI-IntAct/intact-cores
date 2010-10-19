@@ -40,11 +40,16 @@ public class ProteinDaoImplTest extends IntactBasicTestCase {
         getCorePersister().saveOrUpdate( interaction );
 
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+
+
         final List<ProteinImpl> proteins =
                 daoFactory.getProteinDao().getUniprotProteinsInvolvedInInteractions( 0, 10000 );
         Assert.assertNotNull( proteins );
         Assert.assertEquals(11, proteins.size());
+
+        Assert.assertEquals(11, (int) daoFactory.getProteinDao().countUniprotProteinsInvolvedInInteractions());
     }
+
 
     @Test
 

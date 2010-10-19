@@ -158,14 +158,16 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
     }
 
     public Integer countUniprotProteins() {
-        return ( Integer ) criteriaForUniprotProteins()
-                .setProjection( Projections.rowCount() ).uniqueResult();
+        final Long count = (Long) criteriaForUniprotProteins()
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return count.intValue();
     }
 
     public Integer countUniprotProteinsInvolvedInInteractions() {
-        return ( Integer ) criteriaForUniprotProteins()
-                .add( Restrictions.isNotEmpty( "activeInstances" ) )
-                .setProjection( Projections.rowCount() ).uniqueResult();
+        final Long count = (Long) criteriaForUniprotProteins()
+                .add(Restrictions.isNotEmpty("activeInstances"))
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return count.intValue();
     }
 
 
