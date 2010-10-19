@@ -114,9 +114,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
     }
 
     public int countInteractorInvolvedInInteraction() {
-        return ( Integer ) getSession().createCriteria( InteractorImpl.class )
-                .add( Restrictions.isNotEmpty( "activeInstances" ) )
-                .setProjection( Projections.rowCount() ).uniqueResult();
+        final Long count = (Long) getSession().createCriteria(InteractorImpl.class)
+                .add(Restrictions.isNotEmpty("activeInstances"))
+                .setProjection(Projections.rowCount()).uniqueResult();
+        return count.intValue();
     }
 
     public List<T> getInteractorInvolvedInInteraction( Integer firstResult, Integer maxResults ) {
