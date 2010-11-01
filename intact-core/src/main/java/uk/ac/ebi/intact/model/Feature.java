@@ -194,6 +194,9 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      */
     public void addRange( Range range ) {
         if ( !this.ranges.contains( range ) ) {
+            if (range.getFeature() != null && !this.equals(range.getFeature())) {
+               range.getFeature().removeRange(range);
+            }
             this.ranges.add( range );
             range.setFeature( this );
         }
