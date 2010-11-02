@@ -74,6 +74,18 @@ public class FeatureUtilsTest  extends IntactBasicTestCase {
     }
 
     @Test
+    public void testRange_valid_certain_undetermined(){
+        String seq = "AAGCTTPPM";
+
+        Range range = getMockBuilder().createRange(1, 1, 0, 0);
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "certain"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "n-terminal"));
+
+        System.out.println(FeatureUtils.getBadRangeInfo(range, seq));
+        Assert.assertTrue(FeatureUtils.isABadRange(range, seq));
+    }
+
+    @Test
     public void testRange_bad_undetermined_cterminal(){
         String seq = "AAGCTTPPM";
 
