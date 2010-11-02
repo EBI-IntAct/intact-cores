@@ -424,6 +424,7 @@ public class IntactCloner {
 
         clone.setBioSource(clone( interactor.getBioSource() ));
         clone.setCvInteractorType(clone( interactor.getCvInteractorType() ));
+        clone.setObjClass( interactor.getObjClass() );
 
         // This is commented, because it is unusuable in production environments, where
         // one interactions may be present in many components; these components have more interactions

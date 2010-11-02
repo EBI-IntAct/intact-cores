@@ -5,6 +5,7 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DiscriminatorFormula;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
@@ -285,7 +286,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         final InteractorImpl that = ( InteractorImpl ) o;
 
         if (checkOnActiveInstances) {
-            if ( activeInstances != null ? !activeInstances.equals( that.activeInstances ) : that.activeInstances != null ) {
+            if ( activeInstances != null ? !CollectionUtils.isEqualCollection(activeInstances, that.activeInstances ) : that.activeInstances != null ) {
                 return false;
             }
         }
