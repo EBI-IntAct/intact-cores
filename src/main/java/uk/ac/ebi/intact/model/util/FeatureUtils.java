@@ -652,8 +652,8 @@ public class FeatureUtils {
                 range.setToIntervalEnd(proteinSequence.length());
             }
             else {
-                range.setToIntervalStart(1);
-                range.setToIntervalEnd(1);
+                range.setToIntervalStart(0);
+                range.setToIntervalEnd(0);
             }
         }
     }
