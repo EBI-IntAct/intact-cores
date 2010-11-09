@@ -253,23 +253,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>JDK5</id>
-            <activation>
-                <jdk>1.5</jdk>
-            </activation>
-            <dependencies>
-                <!-- @PostConstruct -->
-                <dependency>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-annotation_1.0_spec</artifactId>
-                    <version>1.1.1</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
     <repositories>
         <repository>
               <id>intact.nexus</id>

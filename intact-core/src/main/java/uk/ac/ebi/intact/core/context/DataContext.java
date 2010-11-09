@@ -80,6 +80,11 @@ public class DataContext implements Serializable {
     }
 
     public void commitTransaction( TransactionStatus transactionStatus ) throws IntactTransactionException {
+        if (transactionStatus.isCompleted()) {
+            if (log.isWarnEnabled()) log.warn("Transaction already committed. Cannot commit again");
+            return;
+        }
+
         PlatformTransactionManager transactionManager = getTransactionManager();
         try {
             if (log.isDebugEnabled()) log.debug("Committing transaction");
@@ -91,6 +96,11 @@ public class DataContext implements Serializable {
     }
 
     public void rollbackTransaction( TransactionStatus transactionStatus ) throws IntactTransactionException {
+        if (transactionStatus.isCompleted()) {
+            if (log.isWarnEnabled()) log.warn("Transaction already complete. Cannot rollback");
+            return;
+        }
+
         PlatformTransactionManager transactionManager = getTransactionManager();
 
         try {
