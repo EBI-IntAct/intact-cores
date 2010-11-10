@@ -650,12 +650,12 @@ public boolean isUndetermined() {
                     }
                 }
                 // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence
-                else {
+                else if (forceConsistency) {
                     throw new IllegalRangeException("Problem extracting sequence using range. "+FeatureUtils.getBadRangeInfo(this, sequence)
                             +": "+this+" / Start status: "+fromCvFuzzyType+" / End status: "+toCvFuzzyType+" / Seq.Length: "+(sequence != null? sequence.length() : 0));
                 }
             }
-            else if (forceConsistency) {
+            else {
                 this.sequence = null;
                 this.fullSequence = null;
                 this.upStreamSequence = null;
