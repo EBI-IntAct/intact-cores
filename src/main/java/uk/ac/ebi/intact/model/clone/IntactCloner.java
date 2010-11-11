@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.TransactionStatus;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
@@ -324,6 +325,8 @@ public class IntactCloner {
             for ( Interaction i : experiment.getInteractions() ) {
                 clone.addInteraction(clone( i ));
             }
+        } else {
+            if (log.isErrorEnabled()) log.error("Problem copying interactions - They are not initialized for experiment: "+ DebugUtil.annotatedObjectToString(experiment, false));
         }
 
         return clone;
