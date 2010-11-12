@@ -302,6 +302,28 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void findAcForInteractor_protein_transcript() {
+        final Protein p = getMockBuilder().createProtein( "P12345", "foo" );
+        p.getXrefs().iterator().next().setDbRelease("unique_dbrelease");
+        final Protein p2 = getMockBuilder().createProtein( "P12346", "foo2" );
+        getCorePersister().saveOrUpdate( p, p2 );
+
+        Protein isoform = getMockBuilder().createProteinSpliceVariant(p, "P12345-1", "foo" );
+        getCorePersister().saveOrUpdate( isoform );
+
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+
+        // same parent
+        String ac = finder.findAc( getMockBuilder().createProteinSpliceVariant(p, "P12345-1", "foo" ) );
+        Assert.assertNotNull( ac );
+        Assert.assertEquals( isoform.getAc(), ac );
+
+        // different parent
+        String ac2 = finder.findAc( getMockBuilder().createProteinSpliceVariant(p2, "P12345-1", "foo" ) );
+        Assert.assertNull( ac2 );
+    }
+
+    @Test
     public void findAcForInteractor_other_identity() {
         // small molecule doesn't not have a uniprot identity, we then fall back onto other identity (minus intact, dip, dip)
         final SmallMolecule sm = getMockBuilder().createSmallMolecule( "CHEBI:0001", "nice molecule" );
