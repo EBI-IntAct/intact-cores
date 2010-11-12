@@ -296,6 +296,7 @@ public class DefaultFinder implements Finder {
      */
     protected <T extends InteractorImpl> String findAcForInteractor( T interactor ) {
         String ac = null;
+        Interactor possibleMatch = null;
 
         // first check if the identities refer to the database itself
         for (InteractorXref idXref : ProteinUtils.getIdentityXrefs(interactor, false)) {
@@ -311,6 +312,23 @@ public class DefaultFinder implements Finder {
             }
         }
 
+        // Strategy to find is a protein is already in the database:
+        // 1. same set of parents
+        // 2. Same set of identities (uniprotkb, chebi) and no no-uniprot-update annotation
+        // 3. Same set of identities (uniprotkb, chebi) and no-uniprot-update annotation and same sequence
+        //    note sequence would be checked on if the interactors are polymers.
+
+        CvObjectFilterGroup databaseGroup1 = new CvObjectFilterGroup();
+        databaseGroup1.addIncludedIdentifier(CvDatabase.INTACT_MI_REF);
+
+        CvObjectFilterGroup qualifierGroup1 = new CvObjectFilterGroup();
+        qualifierGroup1.addIncludedIdentifier(CvXrefQualifier.CHAIN_PARENT_MI_REF);
+        qualifierGroup1.addIncludedIdentifier(CvXrefQualifier.ISOFORM_PARENT_MI_REF);
+
+        XrefCvFilter xrefFilter1 = new XrefCvFilter(databaseGroup1, qualifierGroup1);
+
+        List<InteractorXref> parents = AnnotatedObjectUtils.searchXrefs(interactor, xrefFilter1);
+
         CvObjectFilterGroup databaseGroup = new CvObjectFilterGroup();
         databaseGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
         databaseGroup.addIncludedIdentifier(CvDatabase.CHEBI_MI_REF);
@@ -321,11 +339,6 @@ public class DefaultFinder implements Finder {
         XrefCvFilter xrefFilter = new XrefCvFilter(databaseGroup, qualifierGroup);
 
         List<InteractorXref> identities = AnnotatedObjectUtils.searchXrefs(interactor, xrefFilter);
-
-        // Strategy to find is a protein is already in the database:
-        // 1. Same set of identities (uniprotkb, chebi) and no no-uniprot-update annotation
-        // 2. Same set of identities (uniprotkb, chebi) and no-uniprot-update annotation and same sequence
-        //    note sequence would be checked on if the interactors are polymers.
 
         if (!identities.isEmpty()) {
 
@@ -362,6 +375,7 @@ public class DefaultFinder implements Finder {
                                 final String sequenceCandidate = ((Polymer) interactorCandidate).getSequence();
                                 if( StringUtils.equals( sequence, sequenceCandidate) ) {
                                     ac = interactorCandidate.getAc();
+                                    possibleMatch = interactorCandidate;
                                     break;
                                 }
                             }
@@ -371,6 +385,7 @@ public class DefaultFinder implements Finder {
                         }
                     } else {
                         ac = interactorCandidate.getAc();
+                        possibleMatch = interactorCandidate;
                         break;
                     }
                 }
@@ -383,6 +398,33 @@ public class DefaultFinder implements Finder {
             Interactor existingObject = interactorDao.getByShortLabel(interactor.getShortLabel());
             if (existingObject != null) {
                 ac = existingObject.getAc();
+                possibleMatch = existingObject;
+            }
+        }
+
+        if (possibleMatch != null && !parents.isEmpty()){
+
+            List<InteractorXref> parentsToCompare = AnnotatedObjectUtils.searchXrefs(possibleMatch, xrefFilter1);
+
+            if (parentsToCompare.size() != parents.size()){
+                ac = null;
+            }
+            else {
+                for (InteractorXref refParent : parents){
+                    boolean hasFoundParent = false;
+
+                    for (InteractorXref ref : parentsToCompare){
+                        if (ref.getPrimaryId().equals(refParent.getPrimaryId())){
+                            hasFoundParent = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasFoundParent){
+                        ac = null;
+                        break;
+                    }
+                }
             }
         }
 
