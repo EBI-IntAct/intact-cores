@@ -478,6 +478,8 @@ public class CorePersisterImpl implements CorePersister {
      * @param ao The annotated object to refresh
      */
     public void reload( AnnotatedObject ao ) {
+        if (ao == null) return;
+
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
 
         // otherwise, copy the state to the ao from the equivalent object in the db
