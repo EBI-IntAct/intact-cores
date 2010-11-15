@@ -99,7 +99,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     /**
      * Returns an unmodifiable collection of experiment.
      */
-    @OneToMany( mappedBy = "publication" )
+    @OneToMany( mappedBy = "publication", cascade = { CascadeType.REMOVE, CascadeType.REFRESH } )
     public Collection<Experiment> getExperiments() {
         return experiments;
     }
