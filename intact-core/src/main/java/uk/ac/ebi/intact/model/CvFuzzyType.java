@@ -159,7 +159,7 @@ public class CvFuzzyType extends CvDagObject implements Editable {
         @Transient
         public String getFuzzyShortLabel( Matcher matcher ) {
             if ( !matcher.matches() ) {
-                throw new IllegalArgumentException( "No match found" );
+                throw new IllegalArgumentException( "No match found using pattern: "+matcher.pattern() );
             }
             // The short label to return.
             String shortLabel = "";

@@ -185,7 +185,7 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
         this.interactions = someInteraction;
     }
 
-    @ManyToMany( targetEntity = InteractionImpl.class, mappedBy = "experiments" )
+    @ManyToMany( targetEntity = InteractionImpl.class, mappedBy = "experiments", cascade = CascadeType.REMOVE )
     public Collection<Interaction> getInteractions() {
         return interactions;
     }
