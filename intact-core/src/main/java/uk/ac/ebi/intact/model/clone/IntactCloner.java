@@ -326,7 +326,7 @@ public class IntactCloner {
                 clone.addInteraction(clone( i ));
             }
         } else {
-            if (log.isErrorEnabled()) log.error("Problem copying interactions - They are not initialized for experiment: "+ DebugUtil.annotatedObjectToString(experiment, false));
+            if (log.isWarnEnabled()) log.warn("Problem copying interactions - They are not initialized for experiment: "+ DebugUtil.annotatedObjectToString(experiment, false));
         }
 
         return clone;
