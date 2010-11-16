@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.model.util;
 
+import org.hibernate.Hibernate;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.util.ClassUtils;
 import uk.ac.ebi.intact.model.*;
 
@@ -148,7 +150,14 @@ public class CvObjectUtils {
 //        }
 
         if ( recursive ) {
-            final Collection<CvDagObject> parents = cvDagObject.getParents();
+            CvDagObject cv = cvDagObject;
+
+            if (!Hibernate.isInitialized(cvDagObject.getParents())) {
+                cv = (CvDagObject) IntactContext.getCurrentInstance().getDaoFactory()
+                    .getCvObjectDao().getByAc(cv.getAc());
+            }
+
+            final Collection<CvDagObject> parents = cv.getParents();
             for ( CvDagObject parent : parents ) {
                 if ( isChildOfType( parent, identifier, recursive ) ) {
                     return true;
