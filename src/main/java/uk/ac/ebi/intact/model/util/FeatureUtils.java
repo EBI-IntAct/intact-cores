@@ -498,7 +498,7 @@ public class FeatureUtils {
                 }
             }
             else {
-                if (areRangePositionsInvalid(start, end)) {
+                if (areRangePositionsInvalid(start, end) || start <= 0 || end <= 0) {
                     return rangeType.getShortLabel() + " positions must always have an end superior or equal to the start. Actual positions : " + start + "-" + end;
                 } else if (areRangePositionsOutOfBounds(start, end, sequenceLength)){
                     return rangeType.getShortLabel() + " positions must always be strictly superior to 0 and inferior or equal to the sequence length. Actual positions : " + start + "-" + end + ", sequence length " + sequenceLength;
