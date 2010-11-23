@@ -17,11 +17,19 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * TODO comment this
@@ -111,7 +119,7 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Protein sameProt = getMockBuilder().createDeterministicProtein("P12345", "lala");
         Protein prot2 = getMockBuilder().createDeterministicProtein("Q99999", "koko");
         Interaction interaction = getMockBuilder().createInteraction(sameProt, prot2);
-        
+
         getCorePersister().saveOrUpdate(interaction);
 
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
@@ -153,4 +161,64 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Assert.assertEquals("inchi id", byShortLabel.getAnnotations().iterator().next().getCvTopic().getShortLabel());
     }
 
+    @Test
+    @DirtiesContext
+    @Transactional(propagation = Propagation.NEVER)
+    public void test_move_all_components_no_features(){
+        DataContext context = getDataContext();
+        TransactionStatus status = context.beginTransaction();
+
+        Protein source = getMockBuilder().createProtein("P12345", "source");
+        getCorePersister().saveOrUpdate(source);
+
+        Protein destination = getMockBuilder().createProtein("P12346", "destination");
+        getCorePersister().saveOrUpdate(destination);
+
+        Protein random = getMockBuilder().createProteinRandom();
+        getCorePersister().saveOrUpdate(random);
+
+        Interaction i = getMockBuilder().createInteraction(source, random);
+        for (Component c : i.getComponents()){
+            c.getBindingDomains().clear();
+        }
+        getCorePersister().saveOrUpdate(i);
+
+        Assert.assertEquals(3, IntactContext.getCurrentInstance().getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(1, IntactContext.getCurrentInstance().getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(1, source.getActiveInstances().size());
+        Assert.assertEquals(0, destination.getActiveInstances().size());
+
+        context.commitTransaction(status);
+
+        DataContext context2 = getDataContext();
+        TransactionStatus status2 = context2.beginTransaction();
+
+        Protein sourceReloaded = context2.getDaoFactory().getProteinDao().getByAc(source.getAc());
+        Protein destinationReloaded = context2.getDaoFactory().getProteinDao().getByAc(destination.getAc());
+
+        Collection<Component> componentsToMove = new ArrayList<Component>();
+        componentsToMove.addAll(sourceReloaded.getActiveInstances());
+
+        for (Component c : componentsToMove){
+            sourceReloaded.removeActiveInstance(c);
+            destinationReloaded.addActiveInstance(c);
+            context2.getDaoFactory().getComponentDao().update(c);
+        }
+
+        context2.getDaoFactory().getProteinDao().update((ProteinImpl) sourceReloaded);
+        context2.getDaoFactory().getProteinDao().update((ProteinImpl) destinationReloaded);
+
+        context2.commitTransaction(status2);
+
+        DataContext context3 = getDataContext();
+        TransactionStatus status3 = context3.beginTransaction();
+
+        Protein sourceReloaded2 = context2.getDaoFactory().getProteinDao().getByAc(source.getAc());
+        Protein destinationReloaded2 = context2.getDaoFactory().getProteinDao().getByAc(destination.getAc());
+
+        Assert.assertEquals(1, destinationReloaded2.getActiveInstances().size());
+        Assert.assertEquals(0, sourceReloaded2.getActiveInstances().size());
+
+        context3.commitTransaction(status3);
+    }
 }
