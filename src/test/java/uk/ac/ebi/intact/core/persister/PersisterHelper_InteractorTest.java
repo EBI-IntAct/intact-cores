@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import org.hibernate.Hibernate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
@@ -169,18 +170,13 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         TransactionStatus status = context.beginTransaction();
 
         Protein source = getMockBuilder().createProtein("P12345", "source");
-        getCorePersister().saveOrUpdate(source);
 
         Protein destination = getMockBuilder().createProtein("P12346", "destination");
-        getCorePersister().saveOrUpdate(destination);
 
         Protein random = getMockBuilder().createProteinRandom();
-        getCorePersister().saveOrUpdate(random);
+        getCorePersister().saveOrUpdate(source, destination, random);
 
         Interaction i = getMockBuilder().createInteraction(source, random);
-        for (Component c : i.getComponents()){
-            c.getBindingDomains().clear();
-        }
         getCorePersister().saveOrUpdate(i);
 
         Assert.assertEquals(3, IntactContext.getCurrentInstance().getDaoFactory().getProteinDao().countAll());
@@ -200,13 +196,13 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         componentsToMove.addAll(sourceReloaded.getActiveInstances());
 
         for (Component c : componentsToMove){
-            sourceReloaded.removeActiveInstance(c);
-            destinationReloaded.addActiveInstance(c);
+            Hibernate.initialize(c.getBindingDomains());
+            Hibernate.initialize(c.getExperimentalRoles());
+            Hibernate.initialize(c.getExperimentalPreparations());
+
+            c.setInteractor(destinationReloaded);
             context2.getDaoFactory().getComponentDao().update(c);
         }
-
-        context2.getDaoFactory().getProteinDao().update((ProteinImpl) sourceReloaded);
-        context2.getDaoFactory().getProteinDao().update((ProteinImpl) destinationReloaded);
 
         context2.commitTransaction(status2);
 
