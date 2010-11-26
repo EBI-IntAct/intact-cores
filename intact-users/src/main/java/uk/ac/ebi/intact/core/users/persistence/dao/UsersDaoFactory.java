@@ -30,6 +30,9 @@ public class UsersDaoFactory implements Serializable {
     @Autowired
     private RoleDao roleDao;
 
+    @Autowired
+    private PreferenceDao preferenceDao;
+
     public UsersDaoFactory() {
     }
 
@@ -39,6 +42,10 @@ public class UsersDaoFactory implements Serializable {
 
     public RoleDao getRoleDao() {
         return roleDao;
+    }
+
+    public PreferenceDao getPreferenceDao() {
+        return preferenceDao;
     }
 
     public EntityManager getEntityManager() {

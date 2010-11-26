@@ -59,7 +59,7 @@ public class User implements Identifiable {
     @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
     private Set<Role> roles;
 
-    @OneToMany( mappedBy = "user" )
+    @OneToMany( mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER )
     @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     private Collection<Preference> preferences;
 

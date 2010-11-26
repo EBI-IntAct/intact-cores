@@ -38,12 +38,13 @@ public class Preference implements Identifiable {
     protected Preference() {
     }
 
-    public Preference( String key ) {
+    public Preference( User user, String key ) {
         if ( StringUtils.isEmpty(key) ) {
             throw new IllegalArgumentException( "You must give a non empty/null key" );
         }
 
         this.key = key;
+        this.user = user;
     }
 
     ///////////////////////////
