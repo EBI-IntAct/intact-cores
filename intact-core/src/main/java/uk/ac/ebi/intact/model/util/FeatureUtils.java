@@ -27,8 +27,8 @@ public class FeatureUtils {
 
     static {
         rangeStatusMap = new HashMap<String, CvFuzzyType>();
-        CvFuzzyType n_terminal_region = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, null, CvFuzzyType.N_TERMINAL_REGION);
-        CvFuzzyType c_terminal_region = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, null, CvFuzzyType.C_TERMINAL_REGION);
+        CvFuzzyType n_terminal_region = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.N_TERMINAL_REGION_MI_REF, CvFuzzyType.N_TERMINAL_REGION);
+        CvFuzzyType c_terminal_region = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.C_TERMINAL_REGION_MI_REF, CvFuzzyType.C_TERMINAL_REGION);
         //CvFuzzyType certain = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.CERTAIN_MI_REF, CvFuzzyType.CERTAIN);
         CvFuzzyType undetermined = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.UNDETERMINED_MI_REF, CvFuzzyType.UNDETERMINED);
         CvFuzzyType greater_than = CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(), CvFuzzyType.class, CvFuzzyType.GREATER_THAN_MI_REF, CvFuzzyType.GREATER_THAN);
