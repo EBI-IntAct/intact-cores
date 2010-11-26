@@ -69,14 +69,14 @@ public class CvFuzzyType extends CvDagObject implements Editable {
     /**
      * The constant for n-terminal region.
      */
-    public static final String N_TERMINAL_REGION = "n-terminal region";
-    //public static final String N_TERMINAL_REGION_MI_REF = "MI:0xx1";
+    public static final String N_TERMINAL_REGION = "n-terminal region"; // TODO update with n-terminal range
+    public static final String N_TERMINAL_REGION_MI_REF = "MI:1040";
 
     /**
      * The constant for c-terminal region.
      */
-    public static final String C_TERMINAL_REGION = "c-terminal region";
-    //public static final String C_TERMINAL_REGION_MI_REF = "MI:0xx2";
+    public static final String C_TERMINAL_REGION = "c-terminal region"; // TODO update with c-terminal range
+    public static final String C_TERMINAL_REGION_MI_REF = "MI:1039";
 
     // -- Start of Inner class ------------------------------------------------
 
@@ -260,12 +260,12 @@ public class CvFuzzyType extends CvDagObject implements Editable {
     @Transient
     public final boolean isCTerminalRegion() {
 
-        //if (this.getIdentifier() != null){
-           //return hasMiIdentity( C_TERMINAL_REGION_MI_REF );
-        //}
-        //else{
+        if (this.getIdentifier() != null){
+           return hasMiIdentity( C_TERMINAL_REGION_MI_REF );
+        }
+        else{
             return C_TERMINAL_REGION.equalsIgnoreCase( this.getShortLabel() );
-        //}
+        }
     }
 
     /**
@@ -287,12 +287,12 @@ public class CvFuzzyType extends CvDagObject implements Editable {
     @Transient
     public final boolean isNTerminalRegion() {
 
-        //if (this.getIdentifier() != null){
-           //return hasMiIdentity( N_TERMINAL_REGION_MI_REF );
-        //}
-        //else{
+        if (this.getIdentifier() != null){
+           return hasMiIdentity( N_TERMINAL_REGION_MI_REF );
+        }
+        else{
             return N_TERMINAL_REGION.equalsIgnoreCase( this.getShortLabel() );
-        //}
+        }
     }
 
     /**
