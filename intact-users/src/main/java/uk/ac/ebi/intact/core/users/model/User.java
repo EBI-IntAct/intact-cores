@@ -205,6 +205,15 @@ public class User implements Identifiable {
         this.preferences = preferences;
     }
 
+    public Preference getPreference(String prefKey) {
+        for (Preference pref : getPreferences()) {
+            if (pref.getKey().equals(prefKey)) {
+                return pref;
+            }
+        }
+        return null;
+    }
+
     //////////////////////////
     // Object's override
 
