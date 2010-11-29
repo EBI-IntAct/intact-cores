@@ -300,7 +300,7 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
         this.bioSourceAc = ac;
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.DETACH})
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_exp2annot",
@@ -317,7 +317,9 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE} )
+                org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<ExperimentXref> getXrefs() {
         return super.getXrefs();
@@ -327,7 +329,9 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE} )
+                org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<ExperimentAlias> getAliases() {
         return super.getAliases();

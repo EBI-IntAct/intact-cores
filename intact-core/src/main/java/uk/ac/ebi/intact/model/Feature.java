@@ -220,7 +220,9 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE} )
+                org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<FeatureXref> getXrefs() {
         return super.getXrefs();
@@ -230,13 +232,15 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE} )
+                org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<FeatureAlias> getAliases() {
         return super.getAliases();
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(
             name = "ia_feature2annot",
             joinColumns = {@JoinColumn( name = "feature_ac" )},

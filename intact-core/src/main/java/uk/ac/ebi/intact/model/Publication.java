@@ -116,7 +116,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     ///////////////////////////////
     // Override AnnotatedObject
 
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH} )
     @JoinTable(
             name = "ia_pub2annot",
             joinColumns = {@JoinColumn( name = "publication_ac" )},
@@ -131,7 +131,9 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-            org.hibernate.annotations.CascadeType.MERGE} )
+            org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<PublicationXref> getXrefs() {
         return super.getXrefs();
@@ -141,7 +143,9 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-            org.hibernate.annotations.CascadeType.MERGE} )
+            org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<PublicationAlias> getAliases() {
         return super.getAliases();

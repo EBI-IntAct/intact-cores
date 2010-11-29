@@ -96,7 +96,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     ///////////////////////////////////////
     //access methods for attributes
 
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE,  CascadeType.REFRESH, CascadeType.DETACH} )
     @JoinTable(
             name = "ia_biosource2annot",
             joinColumns = {@JoinColumn( name = "biosource_ac" )},
@@ -113,7 +113,9 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE} )
+                org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<BioSourceXref> getXrefs() {
         return super.getXrefs();
@@ -123,7 +125,9 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE} )
+                org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<BioSourceAlias> getAliases() {
         return super.getAliases();

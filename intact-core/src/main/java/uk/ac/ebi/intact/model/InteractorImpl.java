@@ -196,7 +196,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         return interactorType;
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_int2annot",
@@ -213,7 +213,9 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-            org.hibernate.annotations.CascadeType.MERGE} )
+            org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<InteractorXref> getXrefs() {
         return super.getXrefs();
@@ -223,7 +225,9 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE} )
+                org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
         @Override
     public Collection<InteractorAlias> getAliases() {
         return super.getAliases();

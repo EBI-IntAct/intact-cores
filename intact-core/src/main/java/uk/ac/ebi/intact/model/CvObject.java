@@ -7,11 +7,11 @@ package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
-import javax.validation.constraints.Size;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 
 /**
@@ -92,7 +92,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         this.objClass = objClass;
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(
             name = "ia_cvobject2annot",
             joinColumns = {@JoinColumn( name = "cvobject_ac" )},
@@ -107,7 +107,9 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-            org.hibernate.annotations.CascadeType.MERGE} )
+            org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<CvObjectXref> getXrefs() {
         return super.getXrefs();
@@ -117,7 +119,9 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-            org.hibernate.annotations.CascadeType.MERGE} )
+            org.hibernate.annotations.CascadeType.MERGE,
+                org.hibernate.annotations.CascadeType.REFRESH,
+                org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<CvObjectAlias> getAliases() {
         return super.getAliases();
