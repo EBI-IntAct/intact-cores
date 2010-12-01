@@ -18,7 +18,6 @@ package uk.ac.ebi.intact.core.persister;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.TransientObjectException;
 import org.hibernate.ejb.HibernateEntityManager;
@@ -375,7 +374,7 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     private <T extends AnnotatedObject> void copyAnnotatedObjectAttributeAcs( T source, T target ) {
-        if (Hibernate.isInitialized(target.getXrefs())) {
+        if (IntactCore.isInitialized(target.getXrefs())) {
 
             Collection<Xref> xrefsToAdd = new ArrayList<Xref>( );
             for ( Iterator itXrefTarget = target.getXrefs().iterator(); itXrefTarget.hasNext(); ) {
@@ -400,7 +399,7 @@ public class CorePersisterImpl implements CorePersister {
 
         }
 
-        if (Hibernate.isInitialized(target.getAliases())) {
+        if (IntactCore.isInitialized(target.getAliases())) {
 
             Collection<Alias> aliasesToAdd = new ArrayList<Alias>( );
             for ( Iterator itAliasTarget = target.getAliases().iterator(); itAliasTarget.hasNext(); ) {
@@ -425,7 +424,7 @@ public class CorePersisterImpl implements CorePersister {
 
         }
 
-        if (Hibernate.isInitialized(target.getAnnotations())) {
+        if (IntactCore.isInitialized(target.getAnnotations())) {
 
             Collection<Annotation> annotToAdd = new ArrayList<Annotation>( );
             for ( Iterator itAnnotTarget = target.getAnnotations().iterator(); itAnnotTarget.hasNext(); ) {
@@ -815,8 +814,7 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     private <X extends AnnotatedObject> Collection<X> synchronizeCollection( Collection<X> collection ) {
-        if (!Hibernate.isInitialized(collection)) {
-            //System.out.println("NOT INITIALIZED AND WE DO NOT MIND!!!!\n\n\n\n");
+        if (!IntactCore.isInitializedAndDirty(collection)) {
             return collection;
         }
 
@@ -829,9 +827,9 @@ public class CorePersisterImpl implements CorePersister {
 
     private void synchronizeAnnotatedObjectCommons( AnnotatedObject<? extends Xref, ? extends Alias> ao ) {
 
-        Collection synchedXrefs = new ArrayList( ao.getXrefs().size() );
+        Collection synchedXrefs = new ArrayList();
 
-        if (Hibernate.isInitialized(ao.getXrefs())) {
+        if (IntactCore.isInitializedAndDirty(ao.getXrefs())) {
             for ( Xref xref : ao.getXrefs() ) {
                 synchedXrefs.add( synchronizeXref( xref, ao ) );
             }
@@ -841,15 +839,26 @@ public class CorePersisterImpl implements CorePersister {
 
         ao.setXrefs( synchedXrefs );
 
-        Collection synchedAliases = new ArrayList( ao.getAliases().size() );
-        for ( Alias alias : ao.getAliases() ) {
-            synchedAliases.add( synchronizeAlias( alias, ao ) );
+        Collection synchedAliases = new ArrayList();
+
+        if (IntactCore.isInitializedAndDirty(ao.getAliases())) {
+            for ( Alias alias : ao.getAliases() ) {
+                synchedAliases.add( synchronizeAlias( alias, ao ) );
+            }
+        } else {
+            synchedAliases = ao.getAliases();
         }
+
         ao.setAliases( synchedAliases );
 
-        Collection synchedAnnotations = new ArrayList( ao.getAnnotations().size() );
-        for ( Annotation annotation : ao.getAnnotations() ) {
-            synchedAnnotations.add( synchronizeAnnotation( annotation, ao ) );
+        Collection synchedAnnotations = new ArrayList();
+
+        if (IntactCore.isInitializedAndDirty(ao.getAnnotations())) {
+            for ( Annotation annotation : ao.getAnnotations() ) {
+                synchedAnnotations.add( synchronizeAnnotation( annotation, ao ) );
+            }
+        } else {
+            synchedAnnotations = ao.getAnnotations();
         }
         ao.setAnnotations( synchedAnnotations );
 

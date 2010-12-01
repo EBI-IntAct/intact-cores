@@ -17,8 +17,8 @@ package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.core.util.ClassUtils;
 import uk.ac.ebi.intact.model.*;
 
@@ -108,7 +108,7 @@ public class XrefUtils {
 
         Collection<X> allXrefs = annotatedObject.getXrefs();
 
-        if (!Hibernate.isInitialized(annotatedObject.getXrefs()) && IntactContext.currentInstanceExists()) {
+        if (!IntactCore.isInitialized(annotatedObject.getXrefs()) && IntactContext.currentInstanceExists()) {
             Class xrefClass = AnnotatedObjectUtils.getXrefClassType(annotatedObject.getClass());
             allXrefs = IntactContext.getCurrentInstance().getDaoFactory().getXrefDao(xrefClass).getByParentAc(annotatedObject.getAc());
         }

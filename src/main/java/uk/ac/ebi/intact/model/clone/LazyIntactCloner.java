@@ -15,9 +15,9 @@
  */
 package uk.ac.ebi.intact.model.clone;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 
 import java.util.Collection;
 
@@ -39,6 +39,6 @@ public class LazyIntactCloner extends IntactCloner{
 
 
     public boolean isCollectionClonable(Collection col) {
-        return Hibernate.isInitialized(col);
+        return IntactCore.isInitialized(col);
     }
 }
