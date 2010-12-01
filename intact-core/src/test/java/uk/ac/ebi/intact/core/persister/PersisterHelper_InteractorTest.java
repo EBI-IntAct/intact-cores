@@ -132,34 +132,40 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
 
         final SmallMolecule smallMolecule = getMockBuilder().createSmallMolecule("CHEBI:18348", "noname");
+        smallMolecule.getAnnotations().clear();
+
         getCorePersister().saveOrUpdate(smallMolecule);
 
         getEntityManager().clear();
 
         Assert.assertEquals(1, daoFactory.getInteractorDao(SmallMoleculeImpl.class).countAll());
 
-        SmallMoleculeImpl byShortLabel = daoFactory.getInteractorDao(SmallMoleculeImpl.class).getByShortLabel("noname");
-        Assert.assertEquals("noname", byShortLabel.getShortLabel());
+        SmallMoleculeImpl noNameMolecule = daoFactory.getInteractorDao(SmallMoleculeImpl.class).getByShortLabel("noname");
+
+        Assert.assertEquals(0, noNameMolecule.getAnnotations().size());
+        Assert.assertEquals("noname", noNameMolecule.getShortLabel());
 
         //update with new shortlabel and add new annotation persist
         smallMolecule.setShortLabel("newname");
+
         CvTopic inchiCvTopic = CvObjectUtils.createCvObject(smallMolecule.getOwner(), CvTopic.class, "MI:2010", "inchi id");
+
         Annotation annotation = new Annotation(smallMolecule.getOwner(), inchiCvTopic, "thisisinchiid");
-        if (annotation != null) {
-            if (!smallMolecule.getAnnotations().contains(annotation)) {
-                smallMolecule.getAnnotations().add(annotation);
-            }
-        }
+        smallMolecule.addAnnotation(annotation);
+
+        Assert.assertEquals(1, smallMolecule.getAnnotations().size());
+
         getCorePersister().saveOrUpdate(smallMolecule);
 
-        byShortLabel = daoFactory.getInteractorDao(SmallMoleculeImpl.class).getByShortLabel("noname");
-        Assert.assertNull(byShortLabel);
+        SmallMolecule refreshedNoName = daoFactory.getInteractorDao(SmallMoleculeImpl.class).getByShortLabel("noname");
+        Assert.assertNull(refreshedNoName);
 
-        byShortLabel = daoFactory.getInteractorDao(SmallMoleculeImpl.class).getByShortLabel("newname");
-        Assert.assertNotNull(byShortLabel);
+        SmallMolecule refreshedNewName = daoFactory.getInteractorDao(SmallMoleculeImpl.class).getByShortLabel("newname");
+        Assert.assertNotNull(refreshedNewName);
 
-        Assert.assertEquals("CHEBI:18348", byShortLabel.getXrefs().iterator().next().getPrimaryId());
-        Assert.assertEquals("inchi id", byShortLabel.getAnnotations().iterator().next().getCvTopic().getShortLabel());
+        Assert.assertEquals("CHEBI:18348", refreshedNewName.getXrefs().iterator().next().getPrimaryId());
+        Assert.assertEquals(1, refreshedNewName.getAnnotations().size());
+        Assert.assertEquals("inchi id", refreshedNewName.getAnnotations().iterator().next().getCvTopic().getShortLabel());
     }
 
     @Test

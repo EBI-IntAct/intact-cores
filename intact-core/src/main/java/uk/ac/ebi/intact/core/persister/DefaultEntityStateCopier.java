@@ -24,6 +24,7 @@ import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.clone.IntactClonerException;
+import uk.ac.ebi.intact.model.clone.LazyIntactCloner;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
@@ -112,7 +113,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private <T extends AnnotatedObject> T clone(T objToClone) throws IntactClonerException {
-        IntactCloner cloner = new IntactCloner();
+        IntactCloner cloner = new LazyIntactCloner();
         cloner.setExcludeACs(true);
 
         return cloner.clone(objToClone);
@@ -227,7 +228,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private void copyAnnotationCollection( Collection<Annotation> sourceCol, Collection<Annotation> targetCol ) {
-        if (!Hibernate.isInitialized(sourceCol)) {
+        if (!Hibernate.isInitialized(sourceCol) || !Hibernate.isInitialized(targetCol)) {
             return;
         }
         
@@ -263,7 +264,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private <X extends Xref> void copyXrefCollection( Collection<X> sourceCol, Collection<X> targetCol ) {
-        if (!Hibernate.isInitialized(sourceCol)) {
+        if (!Hibernate.isInitialized(sourceCol) || !Hibernate.isInitialized(targetCol)) {
             return;
         }
 
@@ -278,7 +279,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private <A extends Alias> void copyAliasCollection( Collection<A> sourceCol, Collection<A> targetCol ) {
-        if (!Hibernate.isInitialized(sourceCol)) {
+        if (!Hibernate.isInitialized(sourceCol) || !Hibernate.isInitialized(targetCol)) {
             return;
         }
 

@@ -17,16 +17,16 @@ package uk.ac.ebi.intact.model.clone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.TransactionStatus;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
-import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +40,7 @@ import java.util.Map;
  */
 @org.springframework.stereotype.Component
 @Scope(org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE)
+@Qualifier("intactCloner")
 public class IntactCloner {
 
     private static final Log log = LogFactory.getLog( IntactCloner.class );
@@ -321,12 +322,10 @@ public class IntactCloner {
         clone.setBioSource(clone( experiment.getBioSource() ));
         clone.setPublication(clone( experiment.getPublication() ));
 
-        if (Hibernate.isInitialized(experiment.getInteractions())) {
+        if (isCollectionClonable(experiment.getInteractions())) {
             for ( Interaction i : experiment.getInteractions() ) {
                 clone.addInteraction(clone( i ));
             }
-        } else {
-            if (log.isWarnEnabled()) log.warn("Problem copying interactions - They are not initialized for experiment: "+ DebugUtil.annotatedObjectToString(experiment, false));
         }
 
         return clone;
@@ -338,13 +337,15 @@ public class IntactCloner {
 
         clonerManager.addClone( feature, clone );
 
-        clone.setOwner(clone( feature.getOwner() ));
-        clone.setShortLabel( feature.getShortLabel() );
-        clone.setCvFeatureType(clone( feature.getCvFeatureType() ));
-        clone.setCvFeatureIdentification(clone( feature.getCvFeatureIdentification() ));
+        clone.setOwner(clone(feature.getOwner()));
+        clone.setShortLabel(feature.getShortLabel());
+        clone.setCvFeatureType(clone(feature.getCvFeatureType()));
+        clone.setCvFeatureIdentification(clone(feature.getCvFeatureIdentification()));
 
-        for ( Range range : feature.getRanges() ) {
-            clone.addRange(clone( range ));
+        if (isCollectionClonable(feature.getRanges())) {
+            for ( Range range : feature.getRanges() ) {
+                clone.addRange(clone( range ));
+            }
         }
 
         clone.setComponent(clone( feature.getComponent() ));
@@ -361,10 +362,10 @@ public class IntactCloner {
 
         Institution clone = new Institution();
 
-        clonerManager.addClone( institution, clone );
+        clonerManager.addClone(institution, clone);
 
-        clone.setUrl( institution.getUrl() );
-        clone.setPostalAddress( institution.getPostalAddress() );
+        clone.setUrl(institution.getUrl());
+        clone.setPostalAddress(institution.getPostalAddress());
 
         return clone;
     }
@@ -381,22 +382,28 @@ public class IntactCloner {
             clone.getComponents().add(clonedComp);
         }
 
-        clone.setCvInteractionType(clone( interaction.getCvInteractionType() ));
-        clone.setCvInteractorType(clone( interaction.getCvInteractorType() ));
+        clone.setCvInteractionType(clone(interaction.getCvInteractionType()));
+        clone.setCvInteractorType(clone(interaction.getCvInteractorType()));
 
-        for ( Experiment experiment : interaction.getExperiments() ) {
-            clone.addExperiment(clone( experiment ));
+        if (isCollectionClonable(interaction.getExperiments())) {
+            for ( Experiment experiment : interaction.getExperiments() ) {
+                clone.addExperiment(clone( experiment ));
+            }
         }
 
         clone.setKD( interaction.getKD() );
         clone.setCrc( interaction.getCrc() );
 
-        for ( Confidence confidence : interaction.getConfidences() ) {
-            clone.addConfidence(clone( confidence ));
+        if (isCollectionClonable(interaction.getConfidences())) {
+            for ( Confidence confidence : interaction.getConfidences() ) {
+                clone.addConfidence(clone( confidence ));
+            }
         }
-        
-        for ( InteractionParameter interactionParameter : interaction.getParameters() ) {
-            clone.addParameter(clone( interactionParameter ));
+
+        if (isCollectionClonable(interaction.getParameters())) {
+            for ( InteractionParameter interactionParameter : interaction.getParameters() ) {
+                clone.addParameter(clone( interactionParameter ));
+            }
         }
 
         return clone;
@@ -425,9 +432,9 @@ public class IntactCloner {
             p.setCrc64( ( ( Polymer ) interactor ).getCrc64() );
         }
 
-        clone.setBioSource(clone( interactor.getBioSource() ));
+        clone.setBioSource(clone(interactor.getBioSource()));
         clone.setCvInteractorType(clone( interactor.getCvInteractorType() ));
-        clone.setObjClass( interactor.getObjClass() );
+        clone.setObjClass(interactor.getObjClass());
 
         // This is commented, because it is unusuable in production environments, where
         // one interactions may be present in many components; these components have more interactions
@@ -448,7 +455,7 @@ public class IntactCloner {
 
         clone.setTaxId( bioSource.getTaxId() );
         clone.setCvCellType(clone( bioSource.getCvCellType() ));
-        clone.setCvTissue(clone( bioSource.getCvTissue() ));
+        clone.setCvTissue(clone(bioSource.getCvTissue()));
 
         return clone;
     }
@@ -460,8 +467,10 @@ public class IntactCloner {
 
         clonerManager.addClone( publication, clone );
 
-        for ( Experiment e : publication.getExperiments() ) {
-            clone.addExperiment( clone( e ) );
+        if (isCollectionClonable(publication.getExperiments())) {
+            for ( Experiment e : publication.getExperiments() ) {
+                clone.addExperiment( clone( e ) );
+            }
         }
 
         return clone;
@@ -481,25 +490,35 @@ public class IntactCloner {
         clone.setStoichiometry( component.getStoichiometry() );
         clone.setExpressedIn(clone( component.getExpressedIn() ));
 
-        for (ComponentParameter componentParameter : component.getParameters()) {
-            clone.addParameter(clone (componentParameter));
+        if (isCollectionClonable(component.getParameters())) {
+            for (ComponentParameter componentParameter : component.getParameters()) {
+                clone.addParameter(clone (componentParameter));
+            }
         }
 
-        for ( Feature feature : component.getBindingDomains() ) {
-            clone.addBindingDomain(clone( feature ));
+        if (isCollectionClonable(component.getBindingDomains())) {
+            for ( Feature feature : component.getBindingDomains() ) {
+                clone.addBindingDomain(clone( feature ));
+            }
         }
 
-        for ( CvExperimentalPreparation preparation : component.getExperimentalPreparations() ) {
-            clone.getExperimentalPreparations().add(clone( preparation ));
+        if (isCollectionClonable(component.getExperimentalPreparations())) {
+            for ( CvExperimentalPreparation preparation : component.getExperimentalPreparations() ) {
+                clone.getExperimentalPreparations().add(clone( preparation ));
+            }
         }
 
-        for ( CvIdentification method : component.getParticipantDetectionMethods() ) {
-            clone.getParticipantDetectionMethods().add(clone( method ));
+        if (isCollectionClonable(component.getParticipantDetectionMethods())) {
+            for ( CvIdentification method : component.getParticipantDetectionMethods() ) {
+                clone.getParticipantDetectionMethods().add(clone( method ));
+            }
         }
 
 
-        for( CvExperimentalRole expRole : component.getExperimentalRoles()){
-            clone.getExperimentalRoles().add(clone(expRole) );
+        if (isCollectionClonable(component.getExperimentalRoles())) {
+            for( CvExperimentalRole expRole : component.getExperimentalRoles()){
+                clone.getExperimentalRoles().add(clone(expRole) );
+            }
         }
 
         return clone;
@@ -528,11 +547,16 @@ public class IntactCloner {
                 CvDagObject cvDag = (CvDagObject) cvObject;
                 CvDagObject cloneDag = (CvDagObject) clone;
 
-                for (CvDagObject parent : cvDag.getParents()) {
-                    cloneDag.getParents().add(clone(parent));
+                if (isCollectionClonable(cvDag.getParents())) {
+                    for (CvDagObject parent : cvDag.getParents()) {
+                        cloneDag.getParents().add(clone(parent));
+                    }
                 }
-                for (CvDagObject child : cvDag.getChildren()) {
-                    cloneDag.getChildren().add(clone(child));
+
+                if (isCollectionClonable(cvDag.getChildren())) {
+                    for (CvDagObject child : cvDag.getChildren()) {
+                        cloneDag.getChildren().add(clone(child));
+                    }
                 }
             }
         }
@@ -571,14 +595,22 @@ public class IntactCloner {
             }
         }
 
-        for ( Annotation annotation : ao.getAnnotations() ) {
-            clone.addAnnotation(clone( annotation ));
+        if (isCollectionClonable(ao.getAnnotations())) {
+            for ( Annotation annotation : ao.getAnnotations() ) {
+                clone.addAnnotation(clone( annotation ));
+            }
         }
-        for ( Alias alias : ao.getAliases()) {
-            clone.addAlias(clone( alias ));
+
+        if (isCollectionClonable(ao.getAliases())) {
+            for ( Alias alias : ao.getAliases()) {
+                clone.addAlias(clone( alias ));
+            }
         }
-        for ( Xref xref : ao.getXrefs()) {
-            clone.addXref(clone( xref ));
+
+        if (isCollectionClonable(ao.getXrefs())) {
+            for ( Xref xref : ao.getXrefs()) {
+                clone.addXref(clone( xref ));
+            }
         }
 
         if (transactionStatus != null) {
@@ -627,5 +659,9 @@ public class IntactCloner {
 
     public void setCloneCvObjectTree(boolean cloneCvObjectTree) {
         this.cloneCvObjectTree = cloneCvObjectTree;
+    }
+
+    public boolean isCollectionClonable(Collection col) {
+        return true;
     }
 }

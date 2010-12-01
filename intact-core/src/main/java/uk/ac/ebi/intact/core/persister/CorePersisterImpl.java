@@ -815,6 +815,11 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     private <X extends AnnotatedObject> Collection<X> synchronizeCollection( Collection<X> collection ) {
+        if (!Hibernate.isInitialized(collection)) {
+            //System.out.println("NOT INITIALIZED AND WE DO NOT MIND!!!!\n\n\n\n");
+            return collection;
+        }
+
         Collection<X> synchedCollection = new ArrayList<X>( collection.size() );
         for ( X ao : collection ) {
             synchedCollection.add( synchronize( ao ) );
@@ -825,9 +830,15 @@ public class CorePersisterImpl implements CorePersister {
     private void synchronizeAnnotatedObjectCommons( AnnotatedObject<? extends Xref, ? extends Alias> ao ) {
 
         Collection synchedXrefs = new ArrayList( ao.getXrefs().size() );
-        for ( Xref xref : ao.getXrefs() ) {
-            synchedXrefs.add( synchronizeXref( xref, ao ) );
+
+        if (Hibernate.isInitialized(ao.getXrefs())) {
+            for ( Xref xref : ao.getXrefs() ) {
+                synchedXrefs.add( synchronizeXref( xref, ao ) );
+            }
+        } else {
+            synchedXrefs = ao.getXrefs();
         }
+
         ao.setXrefs( synchedXrefs );
 
         Collection synchedAliases = new ArrayList( ao.getAliases().size() );
