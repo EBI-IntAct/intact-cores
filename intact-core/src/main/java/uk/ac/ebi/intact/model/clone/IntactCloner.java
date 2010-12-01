@@ -17,8 +17,6 @@ package uk.ac.ebi.intact.model.clone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.TransactionStatus;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
@@ -38,9 +36,6 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@org.springframework.stereotype.Component
-@Scope(org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE)
-@Qualifier("intactCloner")
 public class IntactCloner {
 
     private static final Log log = LogFactory.getLog( IntactCloner.class );
