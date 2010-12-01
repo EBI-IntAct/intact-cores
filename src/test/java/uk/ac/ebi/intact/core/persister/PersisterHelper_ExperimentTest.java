@@ -39,6 +39,38 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void persistExperiment_publication3333() throws Exception {
+        final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        Experiment exp = getMockBuilder().createExperimentRandom(10);
+        exp.setShortLabel("lala-2005");
+        exp.setPublication(getMockBuilder().createPublication("1234567"));
+
+        getCorePersister().saveOrUpdate(exp);
+
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
+
+        int initialBioSources = getDaoFactory().getBioSourceDao().countAll();
+
+        BioSource bioSource = getMockBuilder().createBioSource(1234, "lalabug");
+        getCorePersister().saveOrUpdate(bioSource);
+
+        Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByShortLabel("lala-2005-1");
+        refreshedExperiment.setBioSource(bioSource);
+
+        getCorePersister().saveOrUpdate(refreshedExperiment);
+
+        Assert.assertNotNull(refreshedExperiment);
+
+        Assert.assertNotNull(refreshedExperiment.getPublication());
+        Assert.assertEquals("1234567", refreshedExperiment.getPublication().getShortLabel());
+
+        Assert.assertEquals(initialBioSources+1, getDaoFactory().getBioSourceDao().countAll());
+    }
+
+    @Test
     public void persistExperiment_assignedLabel() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom(1);
         exp.setShortLabel("lala-2005-2");
