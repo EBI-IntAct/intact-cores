@@ -8,11 +8,11 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
 import uk.ac.ebi.intact.model.util.IllegalLabelFormatException;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
@@ -642,7 +642,7 @@ public class InteractionImpl extends InteractorImpl
         StringBuilder sb = new StringBuilder();
         sb.append("Interaction: ").append(getAc()).append(" Label: ").append(getShortLabel()).append(" [").append(NEW_LINE);
 
-        if (Hibernate.isInitialized(getComponents())) {
+        if (IntactCore.isInitialized(getComponents())) {
         if ( null != this.getComponents() ) {
             for ( Object o : this.getComponents() ) {
                 sb.append(( ( Component ) o ).getInteractor());

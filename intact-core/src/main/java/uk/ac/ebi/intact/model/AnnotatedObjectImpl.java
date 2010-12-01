@@ -8,12 +8,12 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -274,8 +274,8 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
             }
         }
 
-        if (Hibernate.isInitialized(getXrefs()) &&
-                Hibernate.isInitialized(annotatedObject.getXrefs()) &&
+        if (IntactCore.isInitialized(getXrefs()) &&
+                IntactCore.isInitialized(annotatedObject.getXrefs()) &&
                 !CollectionUtils.isEqualCollection( getXrefs(), annotatedObject.getXrefs() )) {
             return false;
         }

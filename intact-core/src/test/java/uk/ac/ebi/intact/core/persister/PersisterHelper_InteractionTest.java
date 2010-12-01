@@ -557,7 +557,9 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
 
-        Interaction clonedInteraction =  (Interaction) ((InteractionImpl)interaction).clone();
+        IntactCloner cloner = new IntactCloner(true);
+
+        Interaction clonedInteraction =  cloner.clone(interaction);
 
         clonedInteraction.setShortLabel( "fooprey-barbait-1");
         clonedInteraction.addComponent(getMockBuilder().createComponentPrey(clonedInteraction,
