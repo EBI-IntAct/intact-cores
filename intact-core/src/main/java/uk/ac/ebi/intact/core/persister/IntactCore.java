@@ -17,7 +17,11 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.hibernate.Hibernate;
 import org.hibernate.collection.PersistentCollection;
+import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.model.*;
 
+import javax.persistence.Query;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -34,6 +38,7 @@ public class IntactCore {
 
     /**
      * Returns true if the collection has been initialized by hibernate and has pending changes.
+     * Modifying a property of an object of the collection will NOT mark as dirty the collection itself.
      * @param collection the collection to check
      * @return true if modified and initialized by hibernate
      */
@@ -43,5 +48,38 @@ public class IntactCore {
         }
 
         return isInitialized(collection);
+    }
+
+    /**
+     * Gets the class for a specific accession.
+     * @param intactContext the IntactContext current instance
+     * @param ac The accession to look for
+     * @return The class for the entity with that accession
+     */
+    public static Class<? extends AnnotatedObject> classForAc(IntactContext intactContext, String ac) {
+        Class[] classes = new Class[] {
+                Publication.class,
+                Experiment.class,
+                InteractionImpl.class, // the order matters here, because otherwise an interaction would return InteractorImpl class
+                InteractorImpl.class,
+                Component.class,
+                Feature.class,
+                CvObject.class,
+                BioSource.class
+        };
+
+        for (Class clazz : classes) {
+            String strQuery = "select count(*) from "+clazz.getSimpleName()+" where ac = :ac";
+            Query query = intactContext.getDaoFactory().getEntityManager().createQuery(strQuery);
+            query.setParameter("ac", ac);
+
+            boolean found = ((Long) query.getSingleResult()) > 0;
+
+            if (found) {
+                return clazz;
+            }
+        }
+
+        throw new IllegalArgumentException("No class for AC: "+ac+" ; searched on: "+ Arrays.asList(classes));
     }
 }
