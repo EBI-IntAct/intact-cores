@@ -36,6 +36,34 @@ public class IntactCore {
         return Hibernate.isInitialized(proxy);
     }
 
+    public static void initialize(Object proxy) {
+        Hibernate.initialize(proxy);
+    }
+
+    /**
+     * Initializes the AnnotatedObject collections (xrefs, aliases, annotations).
+     * @param ao The annotatedObject
+     */
+    public static void initializeAnnotatedObject(AnnotatedObject ao) {
+        initialize(ao.getXrefs());
+        initialize(ao.getAliases());
+        initialize(ao.getAnnotations());
+    }
+
+    /**
+     * Initializes the AnnotatedObject collections (xrefs, aliases, annotations).
+     * @param ao The annotatedObject
+     */
+    public static void initializeCvObject(CvObject cv) {
+         initializeAnnotatedObject(cv);
+
+        if (cv instanceof CvDagObject) {
+            CvDagObject cvdag = (CvDagObject) cv;
+            initialize(cvdag.getParents());
+            initialize(cvdag.getChildren());
+        }
+    }
+
     /**
      * Returns true if the collection has been initialized by hibernate and has pending changes.
      * Modifying a property of an object of the collection will NOT mark as dirty the collection itself.
