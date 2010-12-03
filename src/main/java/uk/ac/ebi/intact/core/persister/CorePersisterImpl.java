@@ -182,6 +182,10 @@ public class CorePersisterImpl implements CorePersister {
             return null;
         }
 
+        if (!IntactCore.isInitialized(ao)) {
+            return ao;
+        }
+
         Class<T> aoClass = ( Class<T> ) ao.getClass();
 
         final Key key = keyBuilder.keyFor( ao );
@@ -738,7 +742,11 @@ public class CorePersisterImpl implements CorePersister {
         component.setInteractor( synchronize( component.getInteractor() ) );
         component.setParticipantDetectionMethods( synchronizeCollection( component.getParticipantDetectionMethods() ) );
         component.setExperimentalPreparations( synchronizeCollection( component.getExperimentalPreparations() ) );
-        component.setParameters( synchronizeComponentParameters( component.getParameters(), component ));
+
+        if (IntactCore.isInitializedAndDirty(component.getParameters())) {
+            component.setParameters( synchronizeComponentParameters( component.getParameters(), component ));
+        }
+
         synchronizeAnnotatedObjectCommons( component );
     }
     
