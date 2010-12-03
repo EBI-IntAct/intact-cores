@@ -16,7 +16,9 @@ package uk.ac.ebi.intact.core.persister;
  */
 
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.collection.PersistentCollection;
+import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 
@@ -32,12 +34,43 @@ import java.util.Collection;
  */
 public class IntactCore {
 
+    /**
+	 * Check if the proxy or persistent collection is initialized.
+	 *
+	 * @param proxy a persistable object, proxy, persistent collection or <tt>null</tt>
+	 * @return true if the argument is already initialized, or is not a proxy or collection
+	 */
     public static boolean isInitialized(Object proxy) {
         return Hibernate.isInitialized(proxy);
     }
 
-    public static void initialize(Object proxy) {
-        Hibernate.initialize(proxy);
+    /**
+	 * Check if the property is initialized. If the named property does not exist
+	 * or is not persistent, this method always returns <tt>true</tt>.
+	 *
+	 * @param proxy The potential proxy
+	 * @param propertyName the name of a persistent attribute of the object
+	 * @return true if the named property of the object is not listed as uninitialized; false otherwise
+	 */
+    public static boolean isPropertyInitialized(Object proxy, String propertyName) {
+        return Hibernate.isPropertyInitialized(proxy, propertyName);
+    }
+
+    /**
+	 * Force initialization of a proxy or persistent collection.
+	 * <p/>
+	 * Note: This only ensures intialization of a proxy object or collection;
+	 * it is not guaranteed that the elements INSIDE the collection will be initialized/materialized.
+	 *
+	 * @param proxy a persistable object, proxy, persistent collection or <tt>null</tt>
+	 * @throws uk.ac.ebi.intact.core.IntactException if we can't initialize the proxy at this time, eg. the <tt>Session</tt> was closed
+	 */
+    public static void initialize(Object proxy) throws IntactException {
+        try {
+            Hibernate.initialize(proxy);
+        } catch (HibernateException e) {
+            throw new IntactException("Problem initializing proxy", e);
+        }
     }
 
     /**
