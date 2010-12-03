@@ -25,6 +25,7 @@ public class Preference implements Identifiable {
     @Index( name = "idx_preference_key" )
     private String key;
 
+    @Lob
     private String value;
 
     @ManyToOne( targetEntity = User.class )
