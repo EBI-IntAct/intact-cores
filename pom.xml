@@ -42,6 +42,19 @@
     </build>
 
     <dependencies>
+        <!-- Maven 2.2.x HACK -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.5.6-Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- test -->
         <dependency>
             <groupId>com.oracle</groupId>
