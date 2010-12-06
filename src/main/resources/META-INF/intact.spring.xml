@@ -35,7 +35,7 @@
 
     <bean id="schemaVersion" class="uk.ac.ebi.intact.core.config.SchemaVersion">
         <constructor-arg value="2"/>
-        <constructor-arg value="3"/>
+        <constructor-arg value="4"/>
         <constructor-arg value="0"/>
     </bean>
 
