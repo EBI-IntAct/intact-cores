@@ -10,9 +10,9 @@
 package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
-import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.dialect.DerbyDialect;
 import org.hibernate.type.ByteType;
+import org.hibernate.util.PropertiesHelper;
 import uk.ac.ebi.intact.model.IntactIdGenerator;
 
 public class IntactIdGeneratorAgitarTest extends AgitarTestCase {
@@ -62,7 +62,7 @@ public class IntactIdGeneratorAgitarTest extends AgitarTestCase {
             fail( "Expected NullPointerException to be thrown" );
         } catch ( NullPointerException ex ) {
             assertNull( "ex.getMessage()", ex.getMessage() );
-            assertThrownBy( ConfigurationHelper.class, ex );
+            assertThrownBy( PropertiesHelper.class, ex );
             assertNull( "intactIdGenerator.generatorKey()", intactIdGenerator.generatorKey() );
             assertNull( "intactIdGenerator.sql", getPrivateField( intactIdGenerator, "sql" ) );
             assertNull( "intactIdGenerator.parameters", getPrivateField( intactIdGenerator, "parameters" ) );

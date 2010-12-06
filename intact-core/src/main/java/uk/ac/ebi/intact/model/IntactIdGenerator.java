@@ -14,8 +14,8 @@ import org.hibernate.engine.SessionImplementor;
 import org.hibernate.id.IdentifierGeneratorHelper;
 import org.hibernate.id.IntegralDataTypeHolder;
 import org.hibernate.id.SequenceGenerator;
-import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.type.Type;
+import org.hibernate.util.PropertiesHelper;
 import uk.ac.ebi.intact.core.context.IntactContext;
 
 import java.io.Serializable;
@@ -51,7 +51,7 @@ public class IntactIdGenerator extends SequenceGenerator {
     @Override
     public void configure( Type type, Properties properties, Dialect dialect ) throws MappingException {
         String defaultSeqValue = "hibernate_sequence";
-        String sequenceName = ConfigurationHelper.getString(SEQUENCE, properties, defaultSeqValue);
+        String sequenceName = PropertiesHelper.getString(SEQUENCE, properties, defaultSeqValue);
 
         // use "intact_ac" only if the default sequence name is provided
         if ( sequenceName.equals( defaultSeqValue ) ) {
