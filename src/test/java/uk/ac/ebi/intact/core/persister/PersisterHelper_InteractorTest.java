@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
-import org.hibernate.Hibernate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
@@ -202,9 +201,12 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         componentsToMove.addAll(sourceReloaded.getActiveInstances());
 
         for (Component c : componentsToMove){
-            Hibernate.initialize(c.getBindingDomains());
-            Hibernate.initialize(c.getExperimentalRoles());
-            Hibernate.initialize(c.getExperimentalPreparations());
+            // The following initializations are not necessary, since we run Hibernate with an assertion removed
+            // in the CollectionEntry class.
+
+            //Hibernate.initialize(c.getBindingDomains());
+            //Hibernate.initialize(c.getExperimentalRoles());
+            //Hibernate.initialize(c.getExperimentalPreparations());
 
             c.setInteractor(destinationReloaded);
             context2.getDaoFactory().getComponentDao().update(c);
