@@ -27,7 +27,7 @@ public class Preference implements Identifiable {
     private String key;
 
     @Lob
-    @Type(type="text")
+    @Type(type="clob")
      private String value;
 
     @ManyToOne( targetEntity = User.class )
