@@ -995,6 +995,7 @@ public boolean isUndetermined() {
     }
 
     @Lob
+    @Type(type = "text")
     @Column(name = "full_sequence")
     public String getFullSequence() {
         return fullSequence;
