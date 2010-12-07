@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.core.users.model;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -27,7 +26,6 @@ public class Preference implements Identifiable {
     private String key;
 
     @Lob
-    @Type(type="clob")
      private String value;
 
     @ManyToOne( targetEntity = User.class )
