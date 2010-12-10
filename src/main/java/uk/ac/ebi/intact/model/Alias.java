@@ -151,6 +151,10 @@ public abstract class Alias extends BasicObjectImpl {
         if ( this == o ) return true;
         if ( !( o instanceof Alias ) ) return false;
 
+        if (!super.equals(o)) {
+            return false;
+        }
+
         //NO! OwnedObject's equals is the Java Object one!!
         //if ( !super.equals ( o ) ) return false;
 
@@ -174,6 +178,8 @@ public abstract class Alias extends BasicObjectImpl {
 
     @Override
     public int hashCode() {
+        if (ac != null) return super.hashCode();
+
         int result = 29;
         if ( name != null ) result = 29 * result + name.hashCode();
         if ( cvAliasType != null ) result = 29 * result + cvAliasType.hashCode();

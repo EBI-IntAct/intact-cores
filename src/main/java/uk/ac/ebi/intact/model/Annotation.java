@@ -8,10 +8,10 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.ForeignKey;
-import javax.validation.constraints.Size;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -162,6 +162,10 @@ public class Annotation extends BasicObjectImpl {
             return false;
         }
 
+        if (!super.equals(o)) {
+            return false;
+        }
+
         final Annotation annotation = ( Annotation ) o;
 
         if ( ac != null ) {
@@ -188,11 +192,9 @@ public class Annotation extends BasicObjectImpl {
      */
     @Override
     public int hashCode() {
+        if (ac != null) return super.hashCode();
 
         int code = 29;
-        if ( ac != null ) {
-            code = 29 * code + ac.hashCode();
-        }
 
         if ( cvTopic != null ) {
             code = 29 * code + cvTopic.hashCode();

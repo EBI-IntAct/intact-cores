@@ -233,25 +233,11 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
      */
     @Override
     public boolean equals( Object o ) {
-        // TODO: the reviewed version of the intact model will provide a better implementation
-        if ( this == o ) {
-            return true;
-        }
-        if ( !( o instanceof AnnotatedObject ) ) {
+        if (!super.equals(o)) {
             return false;
         }
 
-        //YUK! This ends up calling the java Object 'equals', which compares
-        //on identity - NOT what we want....
-//        if (!super.equals(o)) {
-//            return false;
-//        }
-
-        final AnnotatedObject annotatedObject = ( AnnotatedObject ) o;
-
-        if ( annotatedObject.getAc() != null & ac != null ) {
-            return ac.equals( annotatedObject.getAc() );
-        }
+        AnnotatedObjectImpl annotatedObject = (AnnotatedObjectImpl) o;
 
         //short label and full name (if it exists) must be equal also..
         if ( shortLabel != null ) {
@@ -279,10 +265,14 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
                 !CollectionUtils.isEqualCollection( getXrefs(), annotatedObject.getXrefs() )) {
             return false;
         }
-        if (!CollectionUtils.isEqualCollection( getAnnotations(), annotatedObject.getAnnotations() )) {
+        if (IntactCore.isInitialized(getAnnotations()) &&
+                IntactCore.isInitialized(annotatedObject.getAnnotations()) &&
+                !CollectionUtils.isEqualCollection( getAnnotations(), annotatedObject.getAnnotations() )) {
             return false;
         }
-        if (!CollectionUtils.isEqualCollection( getAliases(), annotatedObject.getAliases() )) {
+        if (IntactCore.isInitialized(getAliases()) &&
+                IntactCore.isInitialized(annotatedObject.getAliases()) &&
+                !CollectionUtils.isEqualCollection( getAliases(), annotatedObject.getAliases() )) {
             return false;
         }
 
@@ -297,16 +287,9 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
      */
     @Override
     public int hashCode() {
-
-        //YUK AGAIN! ends up as a call to Object's hashcode, which is
-        //based on indentity. Not require here...
-        //int code = super.hashCode();
+        if (ac != null) return super.hashCode();
 
         int code = 29;
-
-        if ( ac != null ) {
-            return code * ac.hashCode();
-        }
 
         for ( Xref xref : xrefs ) {
             if ( xref.getPrimaryId() != null ) {
