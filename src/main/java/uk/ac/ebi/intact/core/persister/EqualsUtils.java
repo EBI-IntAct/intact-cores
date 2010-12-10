@@ -17,11 +17,8 @@ package uk.ac.ebi.intact.core.persister;
 
 import uk.ac.ebi.intact.model.Alias;
 import uk.ac.ebi.intact.model.Annotation;
-import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.model.Xref;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
-
-import java.util.Collection;
 
 /**
  * Utility allowing to compare attributes of AnnotatedObjects such as Xref, Alias and Annotation.
@@ -36,6 +33,9 @@ public class EqualsUtils {
     }
 
     public static boolean sameXref( Xref x1, Xref x2 ) {
+        if (x1.getAc() != null && x2.getAc() != null) {
+            return x1.getAc().equals(x2.getAc());
+        }
 
         if ( !same( x1.getPrimaryId(), x2.getPrimaryId() ) ) {
             return false;
@@ -61,6 +61,9 @@ public class EqualsUtils {
     }
 
     public static boolean sameAlias( Alias a1, Alias a2 ) {
+        if (a1.getAc() != null && a2.getAc() != null) {
+            return a1.getAc().equals(a2.getAc());
+        }
 
         if ( !same( a1.getName(), a2.getName() ) ) {
             return false;
@@ -74,6 +77,9 @@ public class EqualsUtils {
     }
 
     public static boolean sameAnnotation( Annotation a1, Annotation a2 ) {
+        if (a1.getAc() != null && a2.getAc() != null) {
+            return a1.getAc().equals(a2.getAc());
+        }
 
         if ( !same( a1.getAnnotationText(), a2.getAnnotationText() ) ) {
             return false;
