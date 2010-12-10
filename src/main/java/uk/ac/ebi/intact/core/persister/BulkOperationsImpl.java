@@ -44,7 +44,7 @@ public class BulkOperationsImpl implements BulkOperations {
     @Qualifier("lazyCloner")
     private IntactCloner intactCloner;
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
 
     /**
