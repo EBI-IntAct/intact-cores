@@ -92,5 +92,24 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
     public String toString() {
         return this.ac;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IntactObjectImpl that = (IntactObjectImpl) o;
+
+        if (ac != null && that.getAc() != null) {
+             return ac.equals(that.getAc());
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return ac != null ? ac.hashCode() : 0;
+    }
 } // end IntactObject
 

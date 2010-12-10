@@ -8,10 +8,10 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import javax.validation.constraints.Size;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -321,6 +321,10 @@ public abstract class Xref extends BasicObjectImpl {
         if ( this == o ) return true;
         if ( !( o instanceof Xref ) ) return false;
 
+        if (!super.equals(o)) {
+            return false;
+        }
+
         final Xref xref = ( Xref ) o;
 
         if (!getClass().equals(xref.getClass())) return false;
@@ -348,8 +352,10 @@ public abstract class Xref extends BasicObjectImpl {
 
     @Override
     public int hashCode() {
-        int result;
-        result = primaryId.hashCode();
+        if (ac != null) return super.hashCode();
+
+        int result = 29;
+        result = 29 * result + primaryId.hashCode();
         result = 29 * result + cvDatabase.hashCode();
         result = 29 * result + ( cvXrefQualifier != null ? cvXrefQualifier.hashCode() : 0 );
         return result;
