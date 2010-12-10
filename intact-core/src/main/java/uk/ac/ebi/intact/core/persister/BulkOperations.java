@@ -15,17 +15,16 @@
  */
 package uk.ac.ebi.intact.core.persister;
 
+import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.model.Annotation;
+
+import java.io.Serializable;
+
 /**
- * TODO comment this class header.
- *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+public interface BulkOperations extends Serializable {
 
-
-
-public class BulkOperations {
-
-
-
+    String[] addAnnotation(Annotation annotation, String[] acs, Class<? extends AnnotatedObject> aoClass);
 }
