@@ -26,5 +26,5 @@ import java.io.Serializable;
  */
 public interface BulkOperations extends Serializable {
 
-    String[] addAnnotation(Annotation annotation, String[] acs, Class<? extends AnnotatedObject> aoClass);
+    String[] addAnnotation(Annotation annotation, String[] acs, Class<? extends AnnotatedObject> aoClass, boolean replaceIfTopicMatch);
 }
