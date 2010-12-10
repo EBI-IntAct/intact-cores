@@ -16,8 +16,6 @@
 package uk.ac.ebi.intact.core.persister;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
@@ -25,7 +23,6 @@ import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.Annotation;
 import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.model.IntactObject;
-import uk.ac.ebi.intact.model.clone.IntactCloner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,10 +37,6 @@ import java.util.Collection;
  */
 @Component
 public class BulkOperationsImpl implements BulkOperations {
-
-    @Autowired
-    @Qualifier("lazyCloner")
-    private IntactCloner intactCloner;
 
     @PersistenceContext(unitName = "intact-core-default")
     private EntityManager entityManager;
