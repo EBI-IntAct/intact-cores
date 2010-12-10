@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.Annotation;
+import uk.ac.ebi.intact.model.CvObject;
 import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 
@@ -57,7 +58,7 @@ public class BulkOperationsImpl implements BulkOperations {
      */
     @Override
     @Transactional
-    public String[] addAnnotation(Annotation annotation, String[] acs, Class<? extends AnnotatedObject> aoClass) {
+    public String[] addAnnotation(Annotation annotation, String[] acs, Class<? extends AnnotatedObject> aoClass, boolean replaceIfTopicMatch) {
         Collection<String> updatedAcs = new ArrayList<String>(acs.length);
 
         for (String ac : acs) {
@@ -68,14 +69,42 @@ public class BulkOperationsImpl implements BulkOperations {
             if (ao != null) {
                 updatedAcs.add(ac);
 
-                ao.addAnnotation(clonedAnnotation);
+                if (!replaceIfTopicMatch) {
+                    ao.addAnnotation(clonedAnnotation);
+                    entityManager.persist(clonedAnnotation);
+                } else {
+                    boolean found = false;
 
-                entityManager.persist(clonedAnnotation);
+                    for (Annotation annot : ao.getAnnotations()) {
+                        if (areSameCvObject(annot.getCvTopic(), clonedAnnotation.getCvTopic())) {
+                            annot.setAnnotationText(clonedAnnotation.getAnnotationText());
+                            found = true;
+                        }
+                    }
+
+                    if (found) {
+                        entityManager.merge(ao);
+                    } else {
+                        ao.addAnnotation(clonedAnnotation);
+                        entityManager.persist(clonedAnnotation);
+                    }
+                }
+
+
             }
         }
 
         return updatedAcs.toArray(new String[updatedAcs.size()]);
 
+    }
+
+
+    private boolean areSameCvObject(CvObject cv1, CvObject cv2) {
+        if (cv1.getIdentifier() != null && cv2.getIdentifier() != null) {
+            return cv1.equals(cv2);
+        }
+
+        return cv1.getShortLabel().equals(cv2.getShortLabel());
     }
 
     private <T extends IntactObject> T clone(T intactObject) {
