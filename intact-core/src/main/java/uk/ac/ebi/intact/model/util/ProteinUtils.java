@@ -230,7 +230,7 @@ public class ProteinUtils {
         for (InteractorXref xref : xrefs) {
             if (xref.getCvXrefQualifier() != null) {
                 String qualifierIdentity = xref.getCvXrefQualifier().getIdentifier();
-                if (CvXrefQualifier.CHAIN_PARENT.equals(qualifierIdentity)) {
+                if (CvXrefQualifier.CHAIN_PARENT_MI_REF.equals(qualifierIdentity)) {
                     return true;
                 }
             }
