@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.model.util;
 import org.apache.commons.collections.CollectionUtils;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.IntactObjectFilterPredicate;
@@ -525,6 +526,40 @@ public class AnnotatedObjectUtils {
      */
     public static boolean isTemporaryLabel(String label) {
         return label.matches( TEMP_LABEL_PATTERN );
+    }
+
+    /**
+     * Checks if the parent collection that contains children of the child type passed is initialized.
+     * Can be used as a safety check before executing the removeChild() method.
+     * @param parent
+     * @param child
+     */
+    public static boolean isChildrenInitialized(AnnotatedObject parent, IntactObject child) {
+        if (parent instanceof Publication && child instanceof Experiment) {
+            return IntactCore.isInitialized(((Publication) parent).getExperiments());
+        } else if (parent instanceof Experiment && child instanceof Interaction) {
+            return IntactCore.isInitialized(((Experiment) parent).getInteractions());
+        } else if (parent instanceof Interaction && child instanceof Component) {
+            return IntactCore.isInitialized(((Interaction) parent).getComponents());
+        } else if (parent instanceof Interaction && child instanceof InteractionParameter) {
+             return IntactCore.isInitialized(((Interaction) parent).getParameters());
+        } else if (parent instanceof Component && child instanceof Feature) {
+             return IntactCore.isInitialized(((Component) parent).getBindingDomains());
+        } else if (parent instanceof Component && child instanceof ComponentParameter) {
+            return IntactCore.isInitialized(((Component) parent).getParameters());
+        } else if (parent instanceof Feature && child instanceof Range) {
+            return IntactCore.isInitialized(((Feature) parent).getRanges());
+        } else if (child instanceof Xref) {
+            parent.removeXref((Xref) child);
+            return IntactCore.isInitialized(parent.getXrefs());
+        } else if (child instanceof Annotation) {
+            return IntactCore.isInitialized(parent.getAnnotations());
+        } else if (child instanceof Alias) {
+            return IntactCore.isInitialized(parent.getAliases());
+        } else {
+            throw new IllegalArgumentException("Unexpected combination parent/child - Parent: "+
+                 parent.getClass().getSimpleName()+" / Child: "+child.getClass().getSimpleName());
+        }
     }
 
     /**
