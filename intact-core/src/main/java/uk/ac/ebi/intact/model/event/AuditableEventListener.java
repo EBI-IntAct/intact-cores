@@ -7,9 +7,6 @@ package uk.ac.ebi.intact.model.event;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ConfigurableApplicationContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.context.UserContext;
 import uk.ac.ebi.intact.model.Auditable;
@@ -34,13 +31,13 @@ public class AuditableEventListener {
     @PreUpdate
     public void prePersist(Object object) {
         if (object instanceof Auditable) {
-            if ( log.isDebugEnabled() ) {
-                log.debug( "Running @PrePersist/@PreUpdate on " + object );
+            if ( log.isTraceEnabled() ) {
+                log.trace( "Running @PrePersist/@PreUpdate on " + object );
             }
             Auditable auditable = (Auditable)object;
 
             final Date now = new Date();
-            
+
             if (auditable.getCreated() == null) {
                 auditable.setCreated(now);
             }
@@ -48,8 +45,16 @@ public class AuditableEventListener {
 
             String currentUser = "INTACT";
 
-            if (IntactContext.currentInstanceExists()) {
-                currentUser = IntactContext.getCurrentInstance().getUserContext().getUserId().toUpperCase();
+            if (IntactContext.currentInstanceExists() && IntactContext.getCurrentInstance().getSpringContext().containsBean("userContext")) {
+                UserContext userContext = (UserContext) IntactContext.getCurrentInstance().getSpringContext().getBean("userContext");
+
+                try {
+                    if (userContext.getUserId() != null) {
+                        currentUser = userContext.getUserId().toUpperCase();
+                    }
+                } catch (Exception e) {
+                    if (log.isDebugEnabled()) log.debug("Problem getting current user as the userContext is not available: "+e.getMessage());
+                }
             }
 
             if (auditable.getCreator() == null) {
@@ -58,6 +63,4 @@ public class AuditableEventListener {
             auditable.setUpdator( currentUser );
         }
     }
-
-    
 }
