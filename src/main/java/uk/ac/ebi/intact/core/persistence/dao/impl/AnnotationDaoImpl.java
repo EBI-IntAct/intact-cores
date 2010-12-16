@@ -4,10 +4,12 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
-import uk.ac.ebi.intact.model.Annotation;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotationDao;
+import uk.ac.ebi.intact.model.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,5 +36,27 @@ public class AnnotationDaoImpl extends IntactObjectDaoImpl<Annotation> implement
     public List<Annotation> getByTextLike( String text ) {
         return getSession().createCriteria( getEntityClass() )
                 .add( Restrictions.like( "annotationText", text ) ).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AnnotatedObject> getParentsWithAnnotationAc(String annotationAc) {
+        String[] aoClassNames = {Publication.class.getName(), Experiment.class.getName(),
+                Interactor.class.getName(), Component.class.getName(), BioSource.class.getName(),
+                CvObject.class.getName()};
+
+        List<AnnotatedObject> annotatedObjects = new ArrayList<AnnotatedObject>();
+
+        for (String aoClassName : aoClassNames) {
+            Query query = getEntityManager().createQuery("select ao from " + aoClassName + " ao join ao.annotations as annot " +
+                    "where annot.ac = :annotAc");
+            query.setParameter("annotAc", annotationAc);
+
+            annotatedObjects.addAll(query.getResultList());
+        }
+
+        return annotatedObjects;
     }
 }
