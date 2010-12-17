@@ -657,6 +657,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( !( o instanceof Component ) ) {
             return false;
         }
+
+        if ( !super.equals( o ) ) {
+            return false;
+        }
+        
         // don't call super because that's a OwnedObject !
 
         final Component component = ( Component ) o;
@@ -669,13 +674,20 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
             return false;
         }
 
-        if ( interactor instanceof InteractorImpl && component.getInteractor() instanceof InteractorImpl ) {
+        if ((interactor != null && component.getInteractor() == null) || (interactor == null && component.getInteractor() != null)){
+            return false;
+        }
+        else if ( interactor instanceof InteractorImpl && component.getInteractor() instanceof InteractorImpl ) {
             if ( interactor != null && !( ( InteractorImpl ) interactor ).equals( component.getInteractor(), false ) ) {
                 return false;
             }
         }
 
-        if ( interaction instanceof InteractionImpl && component.getInteraction() instanceof InteractorImpl ) {
+        if ((interaction != null && component.getInteraction() == null) || (interaction == null && component.getInteraction() != null)){
+            return false;
+        }
+
+        else if ( interaction instanceof InteractionImpl && component.getInteraction() instanceof InteractorImpl ) {
             if ( interaction != null && !( ( InteractionImpl ) interaction ).equals( component.getInteraction(), false ) ) {
                 return false;
             }

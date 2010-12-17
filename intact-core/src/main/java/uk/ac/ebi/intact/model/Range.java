@@ -685,6 +685,10 @@ public boolean isUndetermined() {
         if ( this == o ) return true;
         if ( !( o instanceof Range ) ) return false;
 
+        if ( !super.equals( o ) ) {
+            return false;
+        }
+
         Range range = ( Range ) o;
 
         if ( fromIntervalEnd != range.fromIntervalEnd ) return false;
