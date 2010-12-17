@@ -19,8 +19,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.core.persistence.dao.ExperimentDao;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -339,7 +339,7 @@ public class ExperimentUtils {
         }
 
         for(Annotation annotation : experiment.getAnnotations()){
-            if(CvTopic.ON_HOLD.equals(annotation.getCvTopic().getShortLabel())){
+            if(annotation.getCvTopic() != null && CvTopic.ON_HOLD.equals(annotation.getCvTopic().getShortLabel())){
                 return true;
             }
         }
@@ -354,7 +354,7 @@ public class ExperimentUtils {
     public static boolean isPublicationOnHold(Publication publication){
         for (Experiment experiment : publication.getExperiments()) {
             for (Annotation annotation : experiment.getAnnotations()) {
-                if (CvTopic.ON_HOLD.equals(annotation.getCvTopic().getShortLabel())) {
+                if (annotation.getCvTopic() != null && CvTopic.ON_HOLD.equals(annotation.getCvTopic().getShortLabel())) {
                     return true;
                 }
             }
@@ -369,7 +369,7 @@ public class ExperimentUtils {
      */
      public static boolean isToBeReviewed(Experiment experiment){
         for(Annotation annotation : experiment.getAnnotations()){
-            if(CvTopic.TO_BE_REVIEWED.equals(annotation.getCvTopic().getShortLabel())){
+            if(annotation.getCvTopic() != null && CvTopic.TO_BE_REVIEWED.equals(annotation.getCvTopic().getShortLabel())){
                 return true;
             }
         }
