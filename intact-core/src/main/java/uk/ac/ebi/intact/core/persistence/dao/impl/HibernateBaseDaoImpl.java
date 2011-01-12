@@ -251,7 +251,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     }
 
     protected T getByPropertyName( String propertyName, String value ) {
-        return getByPropertyName( propertyName, value, true );
+        return getByPropertyName( propertyName, value, false );
     }
 
     protected T getByPropertyName( String propertyName, String value, boolean ignoreCase ) {
@@ -265,7 +265,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     }
 
     public Collection<T> getColByPropertyName( String propertyName, String value ) {
-        return getColByPropertyName( propertyName, value, true );
+        return getColByPropertyName( propertyName, value, false );
     }
 
     protected Collection<T> getColByPropertyName( String propertyName, String value, boolean ignoreCase ) {
