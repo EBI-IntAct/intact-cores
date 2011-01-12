@@ -111,7 +111,7 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     }
 
     public T getByXref( String primaryId ) {
-        Query query = getEntityManager().createQuery("from "+getEntityClass().getName()+" ao join ao.xrefs as xref " +
+        Query query = getEntityManager().createQuery("select ao from "+getEntityClass().getSimpleName()+" ao join ao.xrefs as xref " +
                 "where xref.primaryId = :primaryId");
         query.setParameter("primaryId", primaryId);
 
@@ -130,7 +130,7 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
 
     @Override
     public Collection<T> getByIdentityXref(String primaryId) {
-        Query query = getEntityManager().createQuery("from "+getEntityClass().getName()+" ao join ao.xrefs as xref " +
+        Query query = getEntityManager().createQuery("select ao from "+getEntityClass().getSimpleName()+" ao join ao.xrefs as xref " +
                 "where xref.cvXrefQualifier.identifier = :identity and xref.primaryId = :primaryId");
         query.setParameter("identity", CvXrefQualifier.IDENTITY_MI_REF);
         query.setParameter("primaryId", primaryId);
