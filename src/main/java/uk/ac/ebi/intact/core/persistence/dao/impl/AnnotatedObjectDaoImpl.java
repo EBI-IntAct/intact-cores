@@ -18,14 +18,18 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
-import uk.ac.ebi.intact.model.*;
-import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
+import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.model.CvDatabase;
+import uk.ac.ebi.intact.model.CvTopic;
+import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * TODO comment this
@@ -107,9 +111,31 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     }
 
     public T getByXref( String primaryId ) {
-        return ( T ) getSession().createCriteria( getEntityClass() )
-                .createCriteria( "xrefs", "xref" )
-                .add( Restrictions.eq( "xref.primaryId", primaryId ) ).uniqueResult();
+        Query query = getEntityManager().createQuery("select "+getEntityClass().getName()+" ao join ao.xrefs as xref " +
+                "where xref.primaryId = :primaryId");
+        query.setParameter("primaryId", primaryId);
+
+        List<T> results = query.getResultList();
+
+        if (results.size() > 1) {
+            log.warn("Query by xref.primaryId '"+primaryId+"' returned more than one results. Using first one.");
+        }
+
+        if (!results.isEmpty()) {
+            return results.get(0);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Collection<T> getByIdentityXref(String primaryId) {
+        Query query = getEntityManager().createQuery("select "+getEntityClass().getName()+" ao join ao.xrefs as xref " +
+                "where xref.cvXrefQualifier.identifier = :identity and xref.primaryId = :primaryId");
+        query.setParameter("identity", CvXrefQualifier.IDENTITY_MI_REF);
+        query.setParameter("primaryId", primaryId);
+
+        return query.getResultList();
     }
 
     public List<T> getByXrefLike( String primaryId ) {
