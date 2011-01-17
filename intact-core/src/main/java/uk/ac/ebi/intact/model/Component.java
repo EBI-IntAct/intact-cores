@@ -337,7 +337,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return list of items for property 'componentParameters'.
      */
-    @OneToMany( mappedBy = "component", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "component", orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
     public Collection<ComponentParameter> getParameters() {
         return this.componentParameters;
     }
@@ -444,7 +445,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'bindingDomains'.
      */
-    @OneToMany( mappedBy = "component", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
+    @OneToMany( mappedBy = "component", orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
     public Collection<Feature> getBindingDomains() {
         return bindingDomains;
     }

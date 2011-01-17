@@ -8,6 +8,8 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.util.ExperimentUtils;
@@ -186,6 +188,7 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
     }
 
     @ManyToMany( targetEntity = InteractionImpl.class, mappedBy = "experiments", cascade = CascadeType.REMOVE )
+    @LazyCollection(LazyCollectionOption.EXTRA)
     public Collection<Interaction> getInteractions() {
         return interactions;
     }

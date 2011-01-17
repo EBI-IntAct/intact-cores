@@ -324,7 +324,8 @@ public class InteractionImpl extends InteractorImpl
         this.components = someComponent;
     }
 
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.REMOVE, CascadeType.REFRESH} )
+    @OneToMany( mappedBy = "interaction", orphanRemoval = true,
+            cascade = {CascadeType.REMOVE, CascadeType.REFRESH} )
     public Collection<Component> getComponents() {
         if (components == null) {
             components = new ArrayList<Component>();
@@ -444,12 +445,14 @@ public class InteractionImpl extends InteractorImpl
          this.interactionParameters.remove( interactionParameter );
      }
 
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "interaction", orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
     public Collection<Confidence> getConfidences() {
         return confidences;
     }
     
-    @OneToMany( mappedBy = "interaction", cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @OneToMany( mappedBy = "interaction", orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
     public Collection<InteractionParameter> getParameters() {
         return interactionParameters;
     }
