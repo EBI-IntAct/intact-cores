@@ -243,7 +243,7 @@ public class CorePersisterImpl implements CorePersister {
                     // object exists in the database, we will update it
                     final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
                     final AnnotatedObjectDao<T> dao = daoFactory.getAnnotatedObjectDao( ( Class<T> ) ao.getClass() );
-                    final   T managedObject = dao.getByAc( ac );
+                    final T managedObject = dao.getByAc( ac );
 
                     if ( managedObject == null ) {
                         throw new IllegalStateException( "No managed object found with ac '" + ac + "' and type '" + ao.getClass() + "' and one was expected" );
@@ -251,6 +251,9 @@ public class CorePersisterImpl implements CorePersister {
 
                     // warn if an instance for this interaction is found in the database, as it could be a duplicate
                     warnIfInteractionDuplicate( ao, managedObject );
+
+                    // initialize collections for the managedObject object
+                    initializeCommonsIfNecessary(ao, managedObject);
 
                     // updated the managed object based on ao's properties, but only add it to merge
                     // if something has been copied (it was not a duplicate)
@@ -264,7 +267,7 @@ public class CorePersisterImpl implements CorePersister {
 
                     if (copied) {
                         if (statisticsEnabled) statistics.addMerged(managedObject);
-                        
+
                         annotatedObjectsToMerge.put(key, managedObject);
 
                         // synchronize the children
@@ -306,6 +309,9 @@ public class CorePersisterImpl implements CorePersister {
                         throw new IllegalStateException(ao.getClass().getSimpleName()+" is transient, but no object with the same AC could be found in database: "+ao.getAc()+" ("+ao.getShortLabel()+")");
                     }
 
+                    // initialize collections for managed object
+                    initializeCommonsIfNecessary(ao, managedObject);
+
                     // updated the managed object based on ao's properties, but only add it to merge
                     // if something has been copied (it was not a duplicate)
                     try {
@@ -330,12 +336,15 @@ public class CorePersisterImpl implements CorePersister {
                         ao.setCreated(managedObject.getCreated());
                         ao.setCreator(managedObject.getCreator());
 
+
                         if (copied) {
                             statistics.addMerged(managedObject);
+                            annotatedObjectsToMerge.put(keyBuilder.keyFor(ao),ao);
                         }
 
                         // synchronize aliases, xrefs, annotations...
-                        synchronizeChildren( managedObject );
+                        synchronizeChildren( ao );
+
 
                     } catch (LazyInitializationException e) {
                         log.warn("Could not copy the state from the annotated object to the transient object. Any modifications to the transient object will be lost: "+ao.getShortLabel()+" ("+ao.getAc()+")");
@@ -375,6 +384,18 @@ public class CorePersisterImpl implements CorePersister {
         }
 
         return ao;
+    }
+
+    private <T extends AnnotatedObject> void initializeCommonsIfNecessary(T ao, T managedObject) {
+        if (IntactCore.isInitialized(ao.getXrefs()))
+            IntactCore.initialize(managedObject.getXrefs());
+
+        if (IntactCore.isInitialized(ao.getAnnotations()))
+            IntactCore.initialize(managedObject.getAnnotations());
+
+        if (IntactCore.isInitialized(ao.getAliases())) {
+            IntactCore.initialize(managedObject.getAliases());
+        }
     }
 
     private <T extends AnnotatedObject> void copyAnnotatedObjectAttributeAcs( T source, T target ) {
@@ -661,8 +682,8 @@ public class CorePersisterImpl implements CorePersister {
     private void synchronizeExperiment( Experiment experiment ) {
 
         experiment.setPublication( synchronize( experiment.getPublication() ) );
-        experiment.setInteractions( synchronizeCollection( experiment.getInteractions() ) );
-        experiment.setCvIdentification( synchronize( experiment.getCvIdentification() ) );
+        experiment.setInteractions(synchronizeCollection(experiment.getInteractions()));
+        experiment.setCvIdentification(synchronize(experiment.getCvIdentification()));
         experiment.setCvInteraction( synchronize( experiment.getCvInteraction() ) );
         experiment.setBioSource( synchronize( experiment.getBioSource() ) );
         synchronizeAnnotatedObjectCommons( experiment );
