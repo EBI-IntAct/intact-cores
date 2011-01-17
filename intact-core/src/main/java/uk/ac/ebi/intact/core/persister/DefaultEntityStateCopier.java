@@ -19,7 +19,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
@@ -228,10 +227,10 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private void copyAnnotationCollection( Collection<Annotation> sourceCol, Collection<Annotation> targetCol ) {
-        if (!Hibernate.isInitialized(sourceCol) || !Hibernate.isInitialized(targetCol)) {
+        if (!IntactCore.isInitialized(sourceCol) || !IntactCore.isInitialized(targetCol)) {
             return;
         }
-        
+
         if (!CollectionUtils.isEqualCollection(sourceCol, targetCol)) {
             copiedProperty = true;
         }
@@ -264,7 +263,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private <X extends Xref> void copyXrefCollection( Collection<X> sourceCol, Collection<X> targetCol ) {
-        if (!Hibernate.isInitialized(sourceCol) || !Hibernate.isInitialized(targetCol)) {
+        if (!IntactCore.isInitialized(sourceCol) || !IntactCore.isInitialized(targetCol)) {
             return;
         }
 
@@ -279,7 +278,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     private <A extends Alias> void copyAliasCollection( Collection<A> sourceCol, Collection<A> targetCol ) {
-        if (!Hibernate.isInitialized(sourceCol) || !Hibernate.isInitialized(targetCol)) {
+        if (!IntactCore.isInitialized(sourceCol) || !IntactCore.isInitialized(targetCol)) {
             return;
         }
 
@@ -336,7 +335,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyCollection( Collection sourceCol, Collection targetCol ) {
-        if (!Hibernate.isInitialized(sourceCol)) {
+        if (!IntactCore.isInitialized(sourceCol)) {
             return;
         }
 

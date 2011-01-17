@@ -245,20 +245,20 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
 
     @Test
-
     public void existingExperiment_aliases() throws Exception {
-        Experiment expWithout = getMockBuilder().createExperimentRandom(1);
+        Experiment expWithout = getMockBuilder().createExperimentRandom(0);
         expWithout.setShortLabel("nopub-2006-1");
         expWithout.setPublication(null);
         expWithout.getXrefs().clear();
         expWithout.getAliases().clear();
         expWithout.getAnnotations().clear();
+        expWithout.getInteractions().clear();
 
         getCorePersister().saveOrUpdate(expWithout);
 
         getEntityManager().clear();
 
-        Experiment expWith = getMockBuilder().createExperimentRandom(1);
+        Experiment expWith = getMockBuilder().createExperimentRandom(0);
         expWith.setShortLabel("nopub-2006-1");
         expWith.setPublication(null);
         expWith.getXrefs().clear();
@@ -267,7 +267,7 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
         expWith.addAlias( getMockBuilder().createAlias( expWith, "comment", "MI:xxxx", "topic" ) );
 
-        CorePersister persister = getPersisterHelper().getCorePersister();
+        CorePersister persister = getCorePersister();
         persister.setUpdateWithoutAcEnabled(true);
         persister.saveOrUpdate(expWith);
 

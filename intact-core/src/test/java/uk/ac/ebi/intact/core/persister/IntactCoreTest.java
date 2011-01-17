@@ -55,6 +55,14 @@ public class IntactCoreTest extends IntactBasicTestCase{
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
+    public void testIsInitialized_vanilla_yes() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentEmpty();
+        Assert.assertTrue(IntactCore.isInitialized(exp.getAnnotations()));
+    }
+
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
     @DirtiesContext
     public void testIsInitialized_no() throws Exception {
         TransactionStatus transaction = getDataContext().beginTransaction();

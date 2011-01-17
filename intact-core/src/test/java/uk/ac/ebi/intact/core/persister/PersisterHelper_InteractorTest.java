@@ -30,6 +30,7 @@ import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * TODO comment this
@@ -224,5 +225,53 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Assert.assertEquals(0, sourceReloaded2.getActiveInstances().size());
 
         context3.commitTransaction(status3);
+    }
+
+    @Test
+    @DirtiesContext
+    @Transactional(propagation = Propagation.NEVER)
+    public void update_protein_delete_xref() throws Exception {
+        TransactionStatus transaction = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        Protein protein = getMockBuilder().createProteinRandom();
+
+        Assert.assertEquals(1, protein.getXrefs().size());
+
+        CvDatabase go = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.GO_MI_REF, CvDatabase.GO);
+        CvXrefQualifier qual = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.PROCESS_MI_REF, CvXrefQualifier.PROCESS);
+
+        protein.addXref(getMockBuilder().createXref(protein, "lala", qual, go));
+
+        getCorePersister().saveOrUpdate(protein);
+
+        Protein refreshedProt = getDaoFactory().getProteinDao().getByAc(protein.getAc());
+
+        Assert.assertEquals(2, refreshedProt.getXrefs().size());
+
+        Iterator<InteractorXref> xrefIter = refreshedProt.getXrefs().iterator();
+
+        while (xrefIter.hasNext()) {
+            InteractorXref next = xrefIter.next();
+
+            if ("lala".equals(next.getPrimaryId())) {
+                xrefIter.remove();
+            }
+        }
+
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction);
+
+        Assert.assertEquals(1, refreshedProt.getXrefs().size());
+
+        TransactionStatus transaction2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        getCorePersister().saveOrUpdate(refreshedProt);
+
+        Protein refreshedProt2 = getDaoFactory().getProteinDao().getByAc(protein.getAc());
+
+        Assert.assertEquals(1, refreshedProt2.getXrefs().size());
+
+
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction2);
+
     }
 }
