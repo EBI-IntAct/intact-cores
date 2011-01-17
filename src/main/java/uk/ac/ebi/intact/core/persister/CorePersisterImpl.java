@@ -359,8 +359,6 @@ public class CorePersisterImpl implements CorePersister {
                 if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
 
                 // managed object
-                // This has been commented out, because synchronizing the children might start a synchronization of the whole database
-                //synchronizeChildren( ao );
             }
         }
 

@@ -274,4 +274,53 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction2);
 
     }
+
+    @Test
+    @DirtiesContext
+    @Transactional(propagation = Propagation.NEVER)
+    public void update_protein_delete_xref_2() throws Exception {
+        TransactionStatus transaction = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        Protein protein = getMockBuilder().createProteinRandom();
+
+        Assert.assertEquals(1, protein.getXrefs().size());
+
+        CvDatabase go = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.GO_MI_REF, CvDatabase.GO);
+        CvXrefQualifier qual = getMockBuilder().createCvObject(CvXrefQualifier.class, CvXrefQualifier.PROCESS_MI_REF, CvXrefQualifier.PROCESS);
+
+        protein.addXref(getMockBuilder().createXref(protein, "lala", qual, go));
+
+        getCorePersister().saveOrUpdate(protein);
+
+        Protein refreshedProt = getDaoFactory().getProteinDao().getByAc(protein.getAc());
+
+        Assert.assertEquals(2, refreshedProt.getXrefs().size());
+
+        Iterator<InteractorXref> xrefIter = refreshedProt.getXrefs().iterator();
+
+        while (xrefIter.hasNext()) {
+            InteractorXref next = xrefIter.next();
+
+            if ("lala".equals(next.getPrimaryId())) {
+                xrefIter.remove();
+            }
+        }
+
+        getCorePersister().saveOrUpdate(refreshedProt);
+
+        getDataContext().commitTransaction(transaction);
+
+        // retrieve the protein again and check number of xrefs - should be 1
+        TransactionStatus transaction2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+
+        Protein refreshedProt2 = getDaoFactory().getProteinDao().getByAc(protein.getAc());
+
+        Assert.assertEquals(1, refreshedProt2.getXrefs().size());
+
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction2);
+
+
+
+
+    }
 }
