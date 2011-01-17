@@ -27,7 +27,6 @@ import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
-import uk.ac.ebi.intact.model.util.ProteinUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -228,58 +227,6 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         context3.commitTransaction(status3);
     }
 
-    @Test
-    @DirtiesContext
-    @Transactional(propagation = Propagation.NEVER)
-    public void test_move_interactorXRef(){
-        DataContext context = getDataContext();
-        TransactionStatus status = context.beginTransaction();
-
-        Protein source = getMockBuilder().createProtein("P12345", "source");
-
-        Protein destination = getMockBuilder().createProtein("P12346", "destination");
-
-        getCorePersister().saveOrUpdate(source, destination);
-
-        Assert.assertEquals(2, IntactContext.getCurrentInstance().getDaoFactory().getProteinDao().countAll());
-        Assert.assertEquals(1, source.getXrefs().size());
-        Assert.assertEquals(1, destination.getXrefs().size());
-
-        context.commitTransaction(status);
-
-        DataContext context2 = getDataContext();
-        TransactionStatus status2 = context2.beginTransaction();
-
-        Protein sourceReloaded = context2.getDaoFactory().getProteinDao().getByAc(source.getAc());
-        Protein destinationReloaded = context2.getDaoFactory().getProteinDao().getByAc(destination.getAc());
-
-        Collection<InteractorXref> refsToMove = new ArrayList(sourceReloaded.getXrefs());
-
-        for (InteractorXref x : refsToMove){
-
-            x.setParentAc(destinationReloaded.getAc());
-            sourceReloaded.removeXref(x);
-            destinationReloaded.addXref(x);
-
-            context2.getDaoFactory().getXrefDao(InteractorXref.class).update(x);
-        }
-
-        getDaoFactory().getProteinDao().update((ProteinImpl) destinationReloaded);
-        getDaoFactory().getProteinDao().update((ProteinImpl) sourceReloaded);
-
-        context2.commitTransaction(status2);
-
-        DataContext context3 = getDataContext();
-        TransactionStatus status3 = context3.beginTransaction();
-
-        Protein sourceReloaded2 = context2.getDaoFactory().getProteinDao().getByAc(source.getAc());
-        Protein destinationReloaded2 = context2.getDaoFactory().getProteinDao().getByAc(destination.getAc());
-
-        Assert.assertEquals(2, destinationReloaded2.getXrefs().size());
-        Assert.assertEquals(1, sourceReloaded2.getXrefs().size());
-
-        context3.commitTransaction(status3);
-    }
 
     @Test
     @DirtiesContext
