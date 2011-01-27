@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persister.CoreDeleter;
 import uk.ac.ebi.intact.core.persister.CorePersister;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 
@@ -108,5 +109,9 @@ public abstract class IntactBasicTestCase {
 
     public CorePersister getCorePersister() {
         return intactContext.getCorePersister();
+    }
+
+    public CoreDeleter getCoreDeleter() {
+        return intactContext.getCoreDeleter();
     }
 }

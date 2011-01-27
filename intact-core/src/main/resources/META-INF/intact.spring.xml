@@ -46,6 +46,10 @@
         <constructor-arg ref="finder"/>
     </bean>
 
+    <bean id="coreDeleter" class="uk.ac.ebi.intact.core.persister.CoreDeleterImpl" scope="prototype">
+        <constructor-arg ref="intactContext"/>
+    </bean>
+
      <bean id="finder" class="uk.ac.ebi.intact.core.persister.finder.DefaultFinder" scope="prototype">
         <constructor-arg ref="intactContext"/>
     </bean>

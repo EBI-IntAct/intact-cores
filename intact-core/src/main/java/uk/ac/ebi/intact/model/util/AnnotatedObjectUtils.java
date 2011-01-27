@@ -16,6 +16,8 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.core.persister.IntactCore;
@@ -39,6 +41,8 @@ import java.util.*;
  * @since <pre>14-Aug-2006</pre>
  */
 public class AnnotatedObjectUtils {
+
+    private static final Log log = LogFactory.getLog(AnnotatedObjectUtils.class);
 
     public static final java.lang.String TEMP_LABEL_PREFIX = "not-defined-";
     private static final java.lang.String TEMP_LABEL_PATTERN = "not-defined-\\d*";
@@ -526,6 +530,51 @@ public class AnnotatedObjectUtils {
      */
     public static boolean isTemporaryLabel(String label) {
         return label.matches( TEMP_LABEL_PATTERN );
+    }
+
+    /**
+     * Find the parent object for an IntactObject.
+     * @param child the child object
+     * @return the parent object. Null if none.
+     * @since 2.4.0
+     */
+    public static AnnotatedObject findParent(IntactObject child) {
+        if (child instanceof Publication) {
+            return null;
+        } else if (child instanceof Experiment) {
+            return ((Experiment)child).getPublication();
+        } else if (child instanceof Interaction) {
+             final Collection<Experiment> experiments = ((Interaction) child).getExperiments();
+
+             if (experiments.isEmpty()) {
+                 return null;
+             }
+
+             if (log.isWarnEnabled() && experiments.size() > 1) {
+                 log.warn("More than one experiment found for child of type Interaction: "+child);
+             }
+
+             return experiments.iterator().next();
+        } else if (child instanceof Component) {
+            return ((Component)child).getInteraction();
+        } else if (child instanceof InteractionParameter) {
+             return ((InteractionParameter) child).getInteraction();
+        } else if (child instanceof Feature) {
+             return ((Feature) child).getComponent();
+        } else if (child instanceof ComponentParameter) {
+            return ((ComponentParameter) child).getComponent();
+        } else if (child instanceof Range) {
+            return ((Range) child).getFeature();
+        } else if (child instanceof Xref) {
+            return ((Xref) child).getParent();
+        } else if (child instanceof Annotation) {
+            throw new IllegalArgumentException("An annotation can have multiple parents");
+        } else if (child instanceof Alias) {
+            return ((Alias) child).getParent();
+        } else {
+            throw new IllegalArgumentException("Cannot find parent for child of type: "+
+                 child.getClass().getSimpleName());
+        }
     }
 
     /**
