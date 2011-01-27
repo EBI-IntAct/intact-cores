@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.core.config.ConfigurationException;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persister.CoreDeleter;
 import uk.ac.ebi.intact.core.persister.CorePersister;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Institution;
@@ -275,6 +276,13 @@ public class IntactContext implements DisposableBean, Serializable {
         return (CorePersister) IntactContext.getCurrentInstance().getSpringContext().getBean("corePersister");
     }
 
+    /**
+     * @since 2.4.0
+     */
+    public CoreDeleter getCoreDeleter() {
+        return (CoreDeleter) IntactContext.getCurrentInstance().getSpringContext().getBean("coreDeleter");
+    }
+
     public ConfigurableApplicationContext getSpringContext() {
         return (ConfigurableApplicationContext) springContext;
     }
@@ -286,4 +294,6 @@ public class IntactContext implements DisposableBean, Serializable {
         if (log.isInfoEnabled()) log.debug( "Destroying IntacContext" );
         instance = null;
     }
+
+
 }
