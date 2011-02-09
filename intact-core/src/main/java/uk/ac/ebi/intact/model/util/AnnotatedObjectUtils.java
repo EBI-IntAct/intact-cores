@@ -544,7 +544,15 @@ public class AnnotatedObjectUtils {
         } else if (child instanceof Experiment) {
             return ((Experiment)child).getPublication();
         } else if (child instanceof Interaction) {
-             final Collection<Experiment> experiments = ((Interaction) child).getExperiments();
+            Interaction interaction = (Interaction) child;
+
+            Collection<Experiment> experiments;
+
+            if (!IntactCore.isInitialized(interaction.getExperiments())) {
+                experiments = IntactContext.getCurrentInstance().getDaoFactory().getInteractionDao().getByAc(interaction.getAc()).getExperiments();
+            } else {
+                experiments = interaction.getExperiments();
+            }
 
              if (experiments.isEmpty()) {
                  return null;
