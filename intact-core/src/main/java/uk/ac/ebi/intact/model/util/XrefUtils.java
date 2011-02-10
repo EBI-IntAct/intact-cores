@@ -22,6 +22,8 @@ import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.core.util.ClassUtils;
 import uk.ac.ebi.intact.model.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -109,8 +111,16 @@ public class XrefUtils {
         Collection<X> allXrefs = annotatedObject.getXrefs();
 
         if (!IntactCore.isInitialized(annotatedObject.getXrefs()) && IntactContext.currentInstanceExists()) {
+            EntityManager entityManager = IntactContext.getCurrentInstance().getDaoFactory().getEntityManager();
+
+            // set the flush mode to manual to avoid hibernate trying to flush the session when querying the xrefs
+            FlushModeType originalFlushMode = entityManager.getFlushMode();
+            entityManager.setFlushMode(FlushModeType.COMMIT);
+
             Class xrefClass = AnnotatedObjectUtils.getXrefClassType(annotatedObject.getClass());
             allXrefs = IntactContext.getCurrentInstance().getDaoFactory().getXrefDao(xrefClass).getByParentAc(annotatedObject.getAc());
+
+            entityManager.setFlushMode(originalFlushMode);
         }
 
         for (X xref : allXrefs) {
