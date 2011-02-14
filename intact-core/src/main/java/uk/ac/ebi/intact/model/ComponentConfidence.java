@@ -23,48 +23,36 @@ import javax.persistence.Table;
 /**
  * Represents a specific confidence value of an interaction.
  *
- * @author Irina Armean (iarmean@ebi.ac.uk)
+ * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
- * @since 1.8.0
+ * @since 2.4.0
  */
 @Entity
-@Table( name = "ia_confidence" )
-public class Confidence extends AbstractConfidence {
-    private InteractionImpl interaction;
+@Table( name = "ia_component_confidence" )
+public class ComponentConfidence extends AbstractConfidence {
+    private Component component;
 
-    public Confidence() {
+    public ComponentConfidence() {
         super();
     }
 
-    public Confidence( String value ) {
+    public ComponentConfidence(String value) {
         super(value);
     }
 
-    public Confidence(CvConfidenceType cvType, String value ) {
+    public ComponentConfidence(CvConfidenceType cvType, String value) {
         super(cvType, value);
     }
-    
-    @Deprecated
-    public Confidence( Institution owner, String value ) {
-        super(value);
-        setOwner(owner);
+
+
+    @ManyToOne ( targetEntity = Component.class )
+    @JoinColumn (name = "component_ac")
+     public Component getComponent() {
+        return component;
     }
 
-    @Deprecated
-    public Confidence(Institution owner, CvConfidenceType cvType, String value ) {
-        super(cvType, value);
-        setOwner(owner);
-    }
-
-
-    @ManyToOne ( targetEntity = InteractionImpl.class )
-    @JoinColumn (name = "interaction_ac")
-     public InteractionImpl getInteraction() {
-        return interaction;
-    }
-
-    public void setInteraction( InteractionImpl interaction ) {
-        this.interaction = interaction;
+    public void setComponent( Component component ) {
+        this.component = component;
     }
 
 
@@ -77,9 +65,9 @@ public class Confidence extends AbstractConfidence {
             return false;
         }
 
-        Confidence that = ( Confidence ) o;
+        ComponentConfidence that = (ComponentConfidence) o;
 
-        if ( interaction != null ? !interaction.equals( that.interaction, false ) : that.interaction != null ) return false;
+        if ( component != null ? !component.equals( that.component, false ) : that.component != null ) return false;
 
         return true;
     }
@@ -87,7 +75,7 @@ public class Confidence extends AbstractConfidence {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + ( interaction != null ? interaction.hashCode() : 0 );
+        result = 31 * result + ( component != null ? component.hashCode() : 0 );
         return result;
     }
 }
