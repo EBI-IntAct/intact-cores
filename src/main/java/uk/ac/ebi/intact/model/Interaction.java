@@ -13,7 +13,7 @@ import java.util.Date;
  * @version $Id$
  * @see uk.ac.ebi.intact.model.InteractionImpl
  */
-public interface Interaction extends Interactor, Parameterizable<InteractionParameter> {
+public interface Interaction extends Interactor, Parameterizable<InteractionParameter>, ConfidenceHolder<Confidence> {
 
     Date getLastImexUpdate();
 
@@ -53,20 +53,4 @@ public interface Interaction extends Interactor, Parameterizable<InteractionPara
     String getCrc();
 
     void setCrc( String crc );
-
-    void setConfidences( Collection<Confidence> confidences );
-
-    void addConfidence( Confidence confidence );
-
-    void removeConfidence( Confidence confidence );
-
-    Collection<Confidence> getConfidences();
-    
-    void setParameters( Collection<InteractionParameter> interactionParameters );
-
-    void addParameter( InteractionParameter interactionParameter );
-
-    void removeParameter( InteractionParameter interactionParameter );
-
-    Collection<InteractionParameter> getParameters();
 }

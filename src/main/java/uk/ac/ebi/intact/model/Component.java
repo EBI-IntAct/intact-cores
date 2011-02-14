@@ -26,7 +26,7 @@ import java.util.Collection;
  */
 @Entity
 @Table( name = "ia_component" )
-public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias> implements Parameterizable<ComponentParameter> {
+public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias> implements Parameterizable<ComponentParameter>, ConfidenceHolder<ComponentConfidence> {
 
     private static final Log log = LogFactory.getLog( Component.class );
 
@@ -110,6 +110,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     private Collection<ComponentParameter> componentParameters;
 
+    /**
+     * Confidences for this component.
+     */
+    private Collection<ComponentConfidence> confidences;
+
     ///////////////////////
     // Constructor
 
@@ -120,6 +125,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         //super call sets creation time data
         super();
         this.componentParameters = new ArrayList<ComponentParameter>();
+        this.confidences = new ArrayList<ComponentConfidence>();
     }
 
     public Component( Institution owner, Interaction interaction, Interactor interactor,
@@ -127,6 +133,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
         this( owner, NON_APPLICABLE, interaction, interactor, experimentRole, biologicalRole );
         this.componentParameters = new ArrayList<ComponentParameter>();
+        this.confidences = new ArrayList<ComponentConfidence>();
     }
 
     /**
@@ -179,6 +186,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         this.biologicalRole = biologicalRole;
 
         this.componentParameters = new ArrayList<ComponentParameter>();
+        this.confidences = new ArrayList<ComponentConfidence>();
     }
 
     @Deprecated
@@ -364,6 +372,27 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
     public void removeParameter( ComponentParameter componentParameter ) {
         this.componentParameters.remove( componentParameter );
+    }
+
+    @OneToMany( mappedBy = "component", orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    public Collection<ComponentConfidence> getConfidences() {
+        return confidences;
+    }
+
+     public void setConfidences( Collection<ComponentConfidence> someConfidences ) {
+       this.confidences = someConfidences;
+    }
+
+    public void addConfidence( ComponentConfidence confidence ) {
+        if ( !this.confidences.contains( confidence ) ) {
+            this.confidences.add( confidence );
+            confidence.setComponent( this);
+        }
+    }
+
+    public void removeConfidence( ComponentConfidence confidence ) {
+        this.confidences.remove( confidence);
     }
 
     /**
