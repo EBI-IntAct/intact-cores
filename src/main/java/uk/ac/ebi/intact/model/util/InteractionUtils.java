@@ -7,6 +7,8 @@ package uk.ac.ebi.intact.model.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.*;
@@ -322,6 +324,30 @@ public class InteractionUtils {
         }
 
         return ids;
+    }
+
+    public static boolean isNegative(Interaction interaction) {
+        Collection<Annotation> annotations = fetchAnnotations(interaction);
+
+        for (Annotation annotation : annotations) {
+            if (annotation.getCvTopic() != null && annotation.getCvTopic().getShortLabel().equals(CvTopic.NEGATIVE)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static Collection<Annotation> fetchAnnotations(Interaction interaction) {
+        Collection<Annotation> annotations;
+
+        if (IntactCore.isInitialized(interaction.getAnnotations())) {
+            annotations = interaction.getAnnotations();
+        } else {
+            Interaction refreshed = IntactContext.getCurrentInstance().getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+            annotations = refreshed.getAnnotations();
+        }
+        return annotations;
     }
 
 }
