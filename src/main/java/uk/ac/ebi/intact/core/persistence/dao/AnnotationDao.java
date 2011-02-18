@@ -4,6 +4,7 @@ import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.Annotation;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -24,4 +25,12 @@ public interface AnnotationDao extends IntactObjectDao<Annotation> {
      * @return the annotated objects that contain such annotation
      */
     List<AnnotatedObject> getParentsWithAnnotationAc(String annotationAc);
+
+    /**
+     * Fetches the annotations using its parent AC.
+     * @param ac The ac for the parent
+     * @return The annotations, if any
+     * @since 2.4.0
+     */
+    Collection<Annotation> getByParentAc(Class<? extends AnnotatedObject> parentClass, String parentAc);
 }

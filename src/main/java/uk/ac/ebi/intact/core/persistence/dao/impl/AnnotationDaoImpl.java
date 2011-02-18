@@ -10,6 +10,7 @@ import uk.ac.ebi.intact.model.*;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -58,5 +59,11 @@ public class AnnotationDaoImpl extends IntactObjectDaoImpl<Annotation> implement
         }
 
         return annotatedObjects;
+    }
+
+    @Override
+    public Collection<Annotation> getByParentAc(Class<? extends AnnotatedObject> parentClass, String parentAc) {
+        Query query = getEntityManager().createQuery("select annotations from "+parentClass.getSimpleName()+" ao join ao.annotations as annotations");
+        return query.getResultList();
     }
 }

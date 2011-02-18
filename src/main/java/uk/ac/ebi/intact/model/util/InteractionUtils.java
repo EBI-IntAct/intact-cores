@@ -344,8 +344,7 @@ public class InteractionUtils {
         if (IntactCore.isInitialized(interaction.getAnnotations())) {
             annotations = interaction.getAnnotations();
         } else {
-            Interaction refreshed = IntactContext.getCurrentInstance().getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-            annotations = refreshed.getAnnotations();
+            annotations = IntactContext.getCurrentInstance().getDaoFactory().getAnnotationDao().getByParentAc(InteractionImpl.class, interaction.getAc());
         }
         return annotations;
     }
