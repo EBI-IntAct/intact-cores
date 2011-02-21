@@ -222,7 +222,7 @@ public class CorePersisterImpl implements CorePersister {
 
         synched.put( key, ao );
 
-        if ( ao.getAc() == null ) {
+        if ( ao.getAc() == null || ao.getAc().length() == 0) {
 
             // the object is new
             final String ac = finder.findAc( ao );
