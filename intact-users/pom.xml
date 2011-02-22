@@ -17,7 +17,6 @@
 
     <properties>
         <maven.pmd.skip>true</maven.pmd.skip>
-        <spring.version>3.0.1.RELEASE</spring.version>
     </properties>
 
     <build>

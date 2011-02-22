@@ -70,6 +70,7 @@ public class User implements Identifiable {
 
     public User() {
         this.roles = new HashSet<Role>();
+        this.preferences = new ArrayList<Preference>();
         this.disabled = false;
     }
 

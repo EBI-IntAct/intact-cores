@@ -23,6 +23,10 @@
         <url>http://code.google.com/p/intact/source/browse/repo/core/trunk</url>
     </scm>
 
+    <properties>
+        <spring.version>3.0.3.RELEASE</spring.version>
+    </properties>
+
     <modules>
         <module>intact-annotations</module>
         <module>intact-apt</module>
