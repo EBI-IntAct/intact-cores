@@ -2,11 +2,12 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.BioSource;
-import uk.ac.ebi.intact.model.CvCellType;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvTissue;
+import uk.ac.ebi.intact.model.*;
 
 /**
  * TODO comment this
@@ -133,6 +134,37 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
         getCorePersister().saveOrUpdate( bs1 );
 
         Assert.assertEquals("human", getDaoFactory().getBioSourceDao().getByTaxonIdUnique("9606").getShortLabel());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void persist_deleteXref_inDetacched() throws Exception {
+        final TransactionStatus transactionStatus = getDataContext().beginTransaction();
+
+        BioSource bs1 = getMockBuilder().createBioSource( 9606, "HUMAN" );
+        bs1.addXref(getMockBuilder().createIdentityXref(bs1, "lala", getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.BIND_MI_REF, CvDatabase.BIND)));
+        getCorePersister().saveOrUpdate( bs1 );
+
+        getDataContext().commitTransaction(transactionStatus);
+
+        Assert.assertEquals(2, getDaoFactory().getXrefDao(BioSourceXref.class).countAll());
+
+        final TransactionStatus transactionStatus2 = getDataContext().beginTransaction();
+
+        BioSource refreshed = getDaoFactory().getBioSourceDao().getByAc(bs1.getAc());
+        bs1.removeXref(refreshed.getXrefs().iterator().next());
+
+        getCorePersister().saveOrUpdate( refreshed );
+
+        getDataContext().commitTransaction(transactionStatus2);
+
+        final TransactionStatus transactionStatus3 = getDataContext().beginTransaction();
+
+        BioSource refreshed2 = getDaoFactory().getBioSourceDao().getByAc(bs1.getAc());
+        Assert.assertEquals(1, refreshed2.getXrefs().size());
+
+        getDataContext().commitTransaction(transactionStatus3);
     }
 
 }
