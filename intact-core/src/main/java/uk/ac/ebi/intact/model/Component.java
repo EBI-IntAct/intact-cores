@@ -534,7 +534,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     /**
      * {@inheritDoc}
      */
-    @OneToMany( mappedBy = "parent" )
+    @OneToMany( mappedBy = "parent", orphanRemoval = true )
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, 
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,
@@ -549,7 +549,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     /**
      * {@inheritDoc}
      */
-    @OneToMany( mappedBy = "parent" )
+    @OneToMany( mappedBy = "parent", orphanRemoval = true )
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                 org.hibernate.annotations.CascadeType.DELETE,
                 org.hibernate.annotations.CascadeType.SAVE_UPDATE,

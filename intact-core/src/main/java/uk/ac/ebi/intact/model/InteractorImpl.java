@@ -167,7 +167,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
     }
 
 
-    @OneToMany( mappedBy = "interactor")
+    @OneToMany( mappedBy = "interactor" )
     public Collection<Component> getActiveInstances() {
         return activeInstances;
     }

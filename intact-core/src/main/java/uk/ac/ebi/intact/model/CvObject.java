@@ -103,7 +103,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent")
+    @OneToMany( mappedBy = "parent", orphanRemoval = true)
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,
@@ -115,7 +115,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent")
+    @OneToMany( mappedBy = "parent", orphanRemoval = true)
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,

@@ -95,7 +95,7 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
         this.url = url;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL})
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true)
     public Collection<InstitutionAlias> getAliases() {
         return super.getAliases();
     }
@@ -111,7 +111,7 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL})
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true )
     public Collection<InstitutionXref> getXrefs() {
         return super.getXrefs();
     }
