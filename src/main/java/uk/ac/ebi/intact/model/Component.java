@@ -458,18 +458,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     }
 
     /**
-     * Setter for property 'bindingDomains'.
-     *
-     * @param someBindingDomain Value to set for property 'bindingDomains'.
-     */
-    public void setBindingDomains( Collection<Feature> someBindingDomain ) {
-        if ( someBindingDomain == null ) {
-            throw new IllegalArgumentException( "features cannot be null." );
-        }
-        this.bindingDomains = someBindingDomain;
-    }
-
-    /**
      * Getter for property 'bindingDomains'.
      *
      * @return Value for property 'bindingDomains'.
@@ -478,6 +466,18 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
     public Collection<Feature> getFeatures() {
         return bindingDomains;
+    }
+
+     /**
+     * Setter for property 'bindingDomains'.
+     *
+     * @param someBindingDomain Value to set for property 'bindingDomains'.
+     */
+    public void setFeatures( Collection<Feature> someBindingDomain ) {
+        if ( someBindingDomain == null ) {
+            throw new IllegalArgumentException( "features cannot be null." );
+        }
+        this.bindingDomains = someBindingDomain;
     }
 
     public void addFeature( Feature feature ) {
@@ -498,6 +498,16 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     @Transient
     public Collection<Feature> getBindingDomains() {
         return getFeatures();
+    }
+
+    /**
+     * Setter for property 'bindingDomains'.
+     *
+     * @param someBindingDomain Value to set for property 'bindingDomains'.
+     */
+    @Deprecated
+    public void setBindingDomains( Collection<Feature> someBindingDomain ) {
+        setFeatures(someBindingDomain);
     }
 
     @Deprecated
