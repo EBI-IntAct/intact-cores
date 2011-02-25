@@ -39,6 +39,14 @@
         </batch:step>
     </batch:job>
 
+    <batch:job id="readInteractionsNonNegativeJob" parent="intactBatchJob">
+        <batch:step id="readInteractionsNonNegativeStep" parent="intactBatchStep">
+            <batch:tasklet>
+                <batch:chunk reader="interactionReaderExcludeNegative" writer="intactObjectCounterWriter"/>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
     <batch:job id="readExperimentsJob" parent="intactBatchJob">
         <batch:step id="readExperimentsStep" parent="intactBatchStep">
             <batch:tasklet>

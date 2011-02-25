@@ -71,14 +71,15 @@ public class ReaderTest extends IntactBasicTestCase {
     @Test
     public void readInteractionsNegative() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom(5);
-        getCorePersister().saveOrUpdate(exp);
 
         Interaction negativeInt = exp.getInteractions().iterator().next();
         negativeInt.addAnnotation(getMockBuilder().createAnnotation("yes", "IA:xxx", CvTopic.NEGATIVE));
 
+        getCorePersister().saveOrUpdate(exp);
+
         Assert.assertEquals(5, getDaoFactory().getInteractionDao().countAll());
 
-        Job job = (Job) applicationContext.getBean("readInteractionsJob");
+        Job job = (Job) applicationContext.getBean("readInteractionsNonNegativeJob");
 
         jobLauncher.run(job, new JobParameters());
 
