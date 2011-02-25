@@ -73,8 +73,9 @@
     <bean id="publicationReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.Publication"/>
     </bean>
-    <bean id="interactorReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
-        <property name="queryString" value="select i from InteractorImpl i where i.objClass &lt;> 'uk.ac.ebi.intact.model.InteractionImpl'"/>
+    <bean id="interactorReader" class="uk.ac.ebi.intact.core.batch.reader.InteractionReader" parent="baseModelReader"/>
+    <bean id="interactorReaderExcludeNegative" class="uk.ac.ebi.intact.core.batch.reader.InteractionReader" parent="baseModelReader">
+        <property name="excludeNegative" value="true" />
     </bean>
     <bean id="interactionReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
         <property name="queryString" value="select distinct i from InteractorImpl i where i.objClass = 'uk.ac.ebi.intact.model.InteractionImpl' order by created ASC"/>
