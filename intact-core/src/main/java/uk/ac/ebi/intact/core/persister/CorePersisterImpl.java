@@ -694,8 +694,16 @@ public class CorePersisterImpl implements CorePersister {
         interaction.setComponents( synchronizeCollection( interaction.getComponents() ) );
         interaction.setBioSource( synchronize( interaction.getBioSource() ) );
         interaction.setExperiments( synchronizeCollection( interaction.getExperiments() ) );
-        interaction.setConfidences( synchronizeConfidences( interaction.getConfidences(), interaction ));
-        interaction.setParameters( synchronizeInteractionParameters( interaction.getParameters(), interaction ));
+
+        // cannot call setConfidences in interaction because of orphan relationship limitation
+        Collection<Confidence> confidences = synchronizeConfidences(interaction.getConfidences(), interaction);
+        interaction.getConfidences().clear();
+        interaction.getConfidences().addAll(confidences);
+
+        // cannot call setParameters in interaction because of orphan relationship limitation
+        Collection<InteractionParameter> interactionParameters = synchronizeInteractionParameters(interaction.getParameters(), interaction);
+        interaction.getParameters().clear();
+        interaction.getParameters().addAll(interactionParameters);
 
         synchronizeAnnotatedObjectCommons( interaction );
     }
@@ -752,8 +760,11 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     private void synchronizeComponent( Component component ) {
+        // cannot call setFeatures in interaction because of orphan relationship limitation
+        Collection<Feature> features = synchronizeCollection(component.getFeatures());
+        component.getFeatures().clear();
+        component.getFeatures().addAll(features);
 
-        component.setBindingDomains( synchronizeCollection( component.getBindingDomains() ) );
         component.setCvBiologicalRole( synchronize( component.getCvBiologicalRole() ) );
         component.setExperimentalRoles( synchronizeCollection( component.getExperimentalRoles() ) );
         component.setExpressedIn( synchronize( component.getExpressedIn() ) );
@@ -763,7 +774,15 @@ public class CorePersisterImpl implements CorePersister {
         component.setExperimentalPreparations( synchronizeCollection( component.getExperimentalPreparations() ) );
 
         if (IntactCore.isInitializedAndDirty(component.getParameters())) {
-            component.setParameters( synchronizeComponentParameters( component.getParameters(), component ));
+            Collection<ComponentParameter> componentParameters = synchronizeComponentParameters(component.getParameters(), component);
+            component.getParameters().clear();
+            component.getParameters().addAll(componentParameters);
+        }
+
+        if (IntactCore.isInitializedAndDirty(component.getConfidences())) {
+            Collection<ComponentConfidence> componentConfidences = synchronizeComponentConfidences(component.getConfidences(), component);
+            component.getConfidences().clear();
+            component.getConfidences().addAll(componentConfidences);
         }
 
         synchronizeAnnotatedObjectCommons( component );
@@ -788,13 +807,36 @@ public class CorePersisterImpl implements CorePersister {
 
     }
 
+    private Collection<ComponentConfidence> synchronizeComponentConfidences( Collection<ComponentConfidence> confidencesToSynchronize, Component parentComponent ) {
+        List<ComponentConfidence> confidences = new ArrayList<ComponentConfidence>(confidencesToSynchronize.size());
+
+        for ( ComponentConfidence confidence : confidencesToSynchronize ) {
+             if (confidence.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentConfidenceDao().isTransient(confidence)) {
+                  confidence = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentConfidenceDao().getByAc(confidence.getAc());
+             }
+
+            confidence.setCvConfidenceType( synchronize (confidence.getCvConfidenceType()));
+            confidence.setComponent(parentComponent);
+
+            confidences.add(confidence);
+        }
+
+        return confidences;
+
+    }
+
+
     private void synchronizeFeature( Feature feature ) {
 
         feature.setBoundDomain( synchronize( feature.getBoundDomain() ) );
         feature.setComponent( synchronize( feature.getComponent() ) );
         feature.setCvFeatureIdentification( synchronize( feature.getCvFeatureIdentification() ) );
         feature.setCvFeatureType( synchronize( feature.getCvFeatureType() ) );
-        feature.setRanges( synchronizeRanges( feature.getRanges(), feature ));
+
+        // cannot call setRanges in interaction because of orphan relationship limitation
+        Collection<Range> ranges = synchronizeRanges(feature.getRanges(), feature);
+        feature.getRanges().clear();
+        feature.getRanges().addAll(ranges);
 
         synchronizeAnnotatedObjectCommons( feature );
     }
@@ -864,7 +906,8 @@ public class CorePersisterImpl implements CorePersister {
             synchedXrefs = ao.getXrefs();
         }
 
-        ao.setXrefs( synchedXrefs );
+        ao.getXrefs().clear();
+        ao.getXrefs().addAll(synchedXrefs);
 
         Collection synchedAliases = new ArrayList();
 
@@ -876,7 +919,8 @@ public class CorePersisterImpl implements CorePersister {
             synchedAliases = ao.getAliases();
         }
 
-        ao.setAliases( synchedAliases );
+        ao.getAliases().clear();
+        ao.getAliases().addAll(synchedAliases);
 
         Collection synchedAnnotations = new ArrayList();
 

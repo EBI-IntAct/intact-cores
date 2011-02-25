@@ -245,7 +245,11 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
     public void existingExperiment_aliases() throws Exception {
+        TransactionStatus status = getDataContext().beginTransaction();
+
         Experiment expWithout = getMockBuilder().createExperimentRandom(0);
         expWithout.setShortLabel("nopub-2006-1");
         expWithout.setPublication(null);
@@ -256,7 +260,9 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(expWithout);
 
-        getEntityManager().clear();
+        getDataContext().commitTransaction(status);
+
+        TransactionStatus status2 = getDataContext().beginTransaction();
 
         Experiment expWith = getMockBuilder().createExperimentRandom(0);
         expWith.setShortLabel("nopub-2006-1");
@@ -271,10 +277,16 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
         persister.setUpdateWithoutAcEnabled(true);
         persister.saveOrUpdate(expWith);
 
+        getDataContext().commitTransaction(status2);
+
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
+
+        TransactionStatus status3 = getDataContext().beginTransaction();
 
         Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertEquals(1, reloadedExp.getAliases().size());
+
+        getDataContext().commitTransaction(status3);
     }
 
     @Test
