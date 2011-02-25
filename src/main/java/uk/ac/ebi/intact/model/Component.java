@@ -476,22 +476,38 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     @OneToMany( mappedBy = "component", orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
-    public Collection<Feature> getBindingDomains() {
+    public Collection<Feature> getFeatures() {
         return bindingDomains;
     }
 
-    public void addBindingDomain( Feature feature ) {
+    public void addFeature( Feature feature ) {
         if ( !this.bindingDomains.contains( feature ) ) {
             this.bindingDomains.add( feature );
             feature.setComponent( this );
         }
     }
 
-    public void removeBindingDomain( Feature feature ) {
+    public void removeFeature( Feature feature ) {
         boolean removed = this.bindingDomains.remove( feature );
         if ( removed ) {
             feature.setComponent( null );
         }
+    }
+
+    @Deprecated
+    @Transient
+    public Collection<Feature> getBindingDomains() {
+        return getFeatures();
+    }
+
+    @Deprecated
+    public void addBindingDomain( Feature feature ) {
+        addFeature(feature);
+    }
+
+    @Deprecated
+    public void removeBindingDomain( Feature feature ) {
+        removeFeature(feature);
     }
 
     /**
