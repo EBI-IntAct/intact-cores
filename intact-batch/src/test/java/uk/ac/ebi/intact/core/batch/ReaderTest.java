@@ -33,7 +33,7 @@ import javax.annotation.Resource;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ReaderTests extends IntactBasicTestCase {
+public class ReaderTest extends IntactBasicTestCase {
 
     @Resource(name = "intactBatchJobLauncher")
     private JobLauncher jobLauncher;
