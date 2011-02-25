@@ -40,6 +40,7 @@ public class DaoFactory implements Serializable {
     @Autowired BioSourceDao bioSourceDao;
     @Autowired ComponentDao componentDao;
     @Autowired ComponentParameterDao componentParameterDao;
+    @Autowired ComponentConfidenceDao componentConfidenceDao;
     @Autowired ConfidenceDao confidenceDao;
     @Autowired DbInfoDao dbInfoDao;
     @Autowired ExperimentDao experimentDao;
@@ -196,6 +197,10 @@ public class DaoFactory implements Serializable {
     
     public ComponentParameterDao getComponentParameterDao(){
         return componentParameterDao;
+    }
+
+    public ComponentConfidenceDao getComponentConfidenceDao(){
+        return componentConfidenceDao;
     }
 
     public SearchableDao getSearchableDao() {

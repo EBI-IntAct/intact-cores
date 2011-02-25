@@ -222,7 +222,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         //}
 
         copyXrefCollection( source.getXrefs(), target.getXrefs() );
-        copyAliasCollection( source.getAliases(), target.getAliases() );
+        copyAliasCollection( source.getAliases(), target.getAliases(), source, target );
         copyAnnotationCollection( source.getAnnotations(), target.getAnnotations() );
     }
 
@@ -277,7 +277,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
         targetCol.addAll( elementsToAdd );
     }
 
-    private <A extends Alias> void copyAliasCollection( Collection<A> sourceCol, Collection<A> targetCol ) {
+    private <A extends Alias> void copyAliasCollection( Collection<A> sourceCol, Collection<A> targetCol, AnnotatedObject source, AnnotatedObject target ) {
         if (!IntactCore.isInitialized(sourceCol) || !IntactCore.isInitialized(targetCol)) {
             return;
         }
@@ -286,8 +286,9 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
             copiedProperty = true;
         }
 
-        Collection elementsToAdd = subtractAliases( sourceCol, targetCol );
-        Collection elementsToRemove = subtractAliases( targetCol, sourceCol );
+
+        Collection<A> elementsToAdd = subtractAliases( sourceCol, targetCol );
+        Collection<A> elementsToRemove = subtractAliases( targetCol, sourceCol );
         targetCol.removeAll( elementsToRemove );
         targetCol.addAll( elementsToAdd );
     }
