@@ -27,7 +27,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.CvDatabase;
+import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Experiment;
+import uk.ac.ebi.intact.model.Interaction;
 
 import javax.annotation.Resource;
 
@@ -63,6 +66,24 @@ public class ReaderTest extends IntactBasicTestCase {
 
         IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
         Assert.assertEquals(5, counter.getCount());
+    }
+
+    @Test
+    public void readInteractionsNegative() throws Exception {
+        Experiment exp = getMockBuilder().createExperimentRandom(5);
+        getCorePersister().saveOrUpdate(exp);
+
+        Interaction negativeInt = exp.getInteractions().iterator().next();
+        negativeInt.addAnnotation(getMockBuilder().createAnnotation("yes", "IA:xxx", CvTopic.NEGATIVE));
+
+        Assert.assertEquals(5, getDaoFactory().getInteractionDao().countAll());
+
+        Job job = (Job) applicationContext.getBean("readInteractionsJob");
+
+        jobLauncher.run(job, new JobParameters());
+
+        IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
+        Assert.assertEquals(4, counter.getCount());
     }
     
     @Test
