@@ -34,7 +34,7 @@ public class InteractionReader extends JpaPagingItemReader {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String query = "select i from InteractionImpl i";
+        String query = "select distinct(i) from InteractionImpl i";
 
         if (isExcludeNegative()) {
             query = query + " where i.ac not in " +
