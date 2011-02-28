@@ -23,6 +23,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
@@ -54,6 +55,7 @@ public class ReaderTest extends IntactBasicTestCase {
     }
 
     @Test
+    @DirtiesContext
     public void readInteractions() throws Exception {
         Experiment exp = getMockBuilder().createExperimentRandom(5);
         getCorePersister().saveOrUpdate(exp);
@@ -69,7 +71,10 @@ public class ReaderTest extends IntactBasicTestCase {
     }
 
     @Test
+    @DirtiesContext
     public void readInteractionsNegative() throws Exception {
+        Assert.assertEquals(0, getDaoFactory().getInteractionDao().countAll());
+
         Experiment exp = getMockBuilder().createExperimentRandom(5);
 
         Interaction negativeInt = exp.getInteractions().iterator().next();
@@ -88,6 +93,7 @@ public class ReaderTest extends IntactBasicTestCase {
     }
     
     @Test
+    @DirtiesContext
     public void readExperiments() throws Exception {
         for (int i=0; i<4; i++) {
             getCorePersister().saveOrUpdate(getMockBuilder().createExperimentEmpty());
