@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.TransactionStatus;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
@@ -371,10 +372,13 @@ public class IntactCloner {
 
         clonerManager.addClone( interaction, clone );
 
+        if (IntactCore.isInitialized(interaction.getComponents())) {
+
         for ( Component component : interaction.getComponents() ) {
             final Component clonedComp = clone(component);
             clonedComp.setInteraction(clone);
             clone.getComponents().add(clonedComp);
+        }
         }
 
         clone.setCvInteractionType(clone(interaction.getCvInteractionType()));
