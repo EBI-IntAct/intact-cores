@@ -4,6 +4,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.CvExperimentalRole;
@@ -102,7 +106,46 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
     }
 
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void persistComponent_updateExpRole() {
+        TransactionStatus transactionStatus = getDataContext().beginTransaction();
 
+        CvExperimentalRole baitExperimentalRole = getMockBuilder().createCvObject( CvExperimentalRole.class, CvExperimentalRole.BAIT_PSI_REF, CvExperimentalRole.BAIT );
+
+        Component comp = getMockBuilder().createComponentBait( getMockBuilder().createDeterministicProtein( "P1", "baaa" ) );
+        comp.getExperimentalRoles().clear();
+        comp.getExperimentalRoles().add(baitExperimentalRole);
+
+        getCorePersister().saveOrUpdate(comp);
+
+        getDataContext().commitTransaction(transactionStatus);
+
+        TransactionStatus transactionStatus2 = getDataContext().beginTransaction();
+
+        Component refreshed = getDaoFactory().getComponentDao().getByAc(comp.getAc());
+
+        CvExperimentalRole neutralExperimentalRole = getMockBuilder().createCvObject( CvExperimentalRole.class, CvExperimentalRole.NEUTRAL_PSI_REF, CvExperimentalRole.NEUTRAL );
+
+        refreshed.setCvExperimentalRole(neutralExperimentalRole);
+
+        getCorePersister().saveOrUpdate(neutralExperimentalRole, refreshed);
+
+        getDataContext().commitTransaction(transactionStatus2);
+
+        TransactionStatus transactionStatus4 = getDataContext().beginTransaction();
+
+        Component refreshed2 = getDaoFactory().getComponentDao().getByAc(comp.getAc());
+
+        Assert.assertEquals(1, refreshed2.getExperimentalRoles().size());
+        Assert.assertEquals(CvExperimentalRole.NEUTRAL_PSI_REF, refreshed2.getExperimentalRoles().iterator().next().getIdentifier());
+
+        getDataContext().commitTransaction(transactionStatus4);
+
+
+
+    }
 
 
 

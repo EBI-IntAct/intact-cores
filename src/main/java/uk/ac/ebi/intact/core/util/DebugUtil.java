@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
 import uk.ac.ebi.intact.model.visitor.impl.JTreeBuilderVisitor;
@@ -108,7 +109,23 @@ public class DebugUtil {
         sb.append(clazz.getSimpleName()).append("{label=").append(ao.getShortLabel()).append(", ac=").append(ao.getAc());
 
         if (showAttributesCount) {
-            sb.append(", xrefCount=").append(ao.getXrefs().size()).append(", aliasCount=").append(ao.getAliases().size()).append(", annotationsCount=").append(ao.getAnnotations().size());
+            String xrefsCount = "[not initialized]";
+            String aliasCount = "[not initialized]";
+            String annotationsCount = "[not initialized]";
+
+            if (IntactCore.isInitialized(ao.getXrefs())) {
+                xrefsCount = String.valueOf(ao.getXrefs().size());
+            }
+
+            if (IntactCore.isInitialized(ao.getAliases())) {
+                aliasCount = String.valueOf(ao.getAliases().size());
+            }
+
+            if (IntactCore.isInitialized(ao.getAnnotations())) {
+                annotationsCount = String.valueOf(ao.getAnnotations().size());
+            }
+
+            sb.append(", xrefCount=").append(xrefsCount).append(", aliasCount=").append(aliasCount).append(", annotationsCount=").append(annotationsCount);
         }
         sb.append("}");
 

@@ -46,7 +46,7 @@ public class CoreDeleterImpl implements CoreDeleter {
 
                  AnnotatedObjectUtils.removeChild(parent, ioToRemove);
 
-                 intactContext.getDaoFactory().getEntityManager().merge(parent);
+//                 intactContext.getDaoFactory().getEntityManager().merge(parent);
              }
 
              if (!intactContext.getDaoFactory().getEntityManager().contains(ioToRemove)) {
