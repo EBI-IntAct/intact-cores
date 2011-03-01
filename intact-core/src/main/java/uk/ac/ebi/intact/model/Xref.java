@@ -263,7 +263,6 @@ public abstract class Xref extends BasicObjectImpl {
     }
 
     public void setCvDatabase( CvDatabase cvDatabase ) {
-        if ( cvDatabase == null ) throw new NullPointerException( "valid Xref must have non-null database details!" );
         this.cvDatabase = cvDatabase;
     }
 
