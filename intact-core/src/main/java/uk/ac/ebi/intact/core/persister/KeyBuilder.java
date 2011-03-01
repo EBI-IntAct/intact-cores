@@ -143,12 +143,20 @@ public class KeyBuilder {
     protected Key keyForComponent( Component component ) {
         final String cacheKey = Component.class.getSimpleName()+":"+System.identityHashCode(component);
 
+        Key interactionKey = null;
+
         if (!keyCache.containsKey(cacheKey)) {
-            keyForInteraction(component.getInteraction());
+            interactionKey = keyForInteraction(component.getInteraction());
         }
 
         if (keyCache.containsKey(cacheKey)) {
             return keyCache.get(cacheKey);
+        }
+
+        if (interactionKey != null) {
+            Key compKey = new Key(interactionKey.getUniqueString()+":"+component.getShortLabel()+"["+component.hashCode()+"]");
+            keyCache.put(cacheKey, compKey);
+            return compKey;
         }
 
         throw new IllegalStateException("This component should already have already a key, generated when the interaction key is generated: "+component);

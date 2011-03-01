@@ -906,8 +906,10 @@ public class CorePersisterImpl implements CorePersister {
             synchedXrefs = ao.getXrefs();
         }
 
-        ao.getXrefs().clear();
-        ao.getXrefs().addAll(synchedXrefs);
+        if (IntactCore.isInitialized(ao.getXrefs())) {
+            ao.getXrefs().clear();
+            ao.getXrefs().addAll(synchedXrefs);
+        }
 
         Collection synchedAliases = new ArrayList();
 
@@ -919,8 +921,10 @@ public class CorePersisterImpl implements CorePersister {
             synchedAliases = ao.getAliases();
         }
 
-        ao.getAliases().clear();
-        ao.getAliases().addAll(synchedAliases);
+        if (IntactCore.isInitialized(ao.getAliases())) {
+            ao.getAliases().clear();
+            ao.getAliases().addAll(synchedAliases);
+        }
 
         Collection synchedAnnotations = new ArrayList();
 
