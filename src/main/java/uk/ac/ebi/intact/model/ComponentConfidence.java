@@ -58,6 +58,11 @@ public class ComponentConfidence extends AbstractConfidence {
 
     @Override
     public boolean equals( Object o ) {
+
+        return equals(o, false);
+    }
+
+    public boolean equals( Object o, boolean checkComponent ) {
          if ( this == o ) return true;
         if ( !( o instanceof AbstractConfidence ) ) return false;
 
@@ -67,7 +72,9 @@ public class ComponentConfidence extends AbstractConfidence {
 
         ComponentConfidence that = (ComponentConfidence) o;
 
-        if ( component != null ? !component.equals( that.component, false ) : that.component != null ) return false;
+        if (checkComponent){
+            if ( component != null ? !component.equals( that.component, false ) : that.component != null ) return false;
+        }
 
         return true;
     }
@@ -75,7 +82,8 @@ public class ComponentConfidence extends AbstractConfidence {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + ( component != null ? component.hashCode() : 0 );
+        // TODO check what to do to fix recursive appel
+        //result = 31 * result + ( component != null ? component.hashCode() : 0 );
         return result;
     }
 }

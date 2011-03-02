@@ -30,66 +30,74 @@ import javax.persistence.Table;
 @Entity
 @Table( name = "ia_component_parameter" )
 public class ComponentParameter extends Parameter {
-	
-	protected Component component;
-    
-	public ComponentParameter() {
-		super();
-	}
+
+    protected Component component;
+
+    public ComponentParameter() {
+        super();
+    }
 
     public ComponentParameter( CvParameterType cvParameterType, Double factor ) {
         super(cvParameterType, factor);
     }
 
-	public ComponentParameter( CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
+    public ComponentParameter( CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
         super(cvParameterType, cvParameterUnit, factor);
     }
 
     @Deprecated
-	public ComponentParameter( Institution owner, CvParameterType cvParameterType, Double factor ) {
+    public ComponentParameter( Institution owner, CvParameterType cvParameterType, Double factor ) {
         super(owner, cvParameterType, factor);
     }
 
     @Deprecated
-	public ComponentParameter( Institution owner, CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
+    public ComponentParameter( Institution owner, CvParameterType cvParameterType, CvParameterUnit cvParameterUnit, Double factor ) {
         super(owner, cvParameterType, cvParameterUnit, factor);
     }
-	
+
     @ManyToOne ( targetEntity = Component.class )
     @JoinColumn (name = "component_ac")
-     public Component getComponent() {
+    public Component getComponent() {
         return this.component;
     }
-    
+
     public void setComponent( Component component ) {
         this.component = component;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result
-				+ ((component == null) ? 0 : component.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        // TODO review recursive problem
+        //result = prime * result
+                //+ ((component == null) ? 0 : component.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final ComponentParameter other = (ComponentParameter) obj;
-		if (component == null) {
-			if (other.component != null)
-				return false;
-		} else if (!component.equals(other.component))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
 
-	
+        return equals(obj, false);
+    }
+
+    public boolean equals(Object obj, boolean checkComponents) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final ComponentParameter other = (ComponentParameter) obj;
+
+        if (checkComponents){
+            if (component == null) {
+                if (other.component != null)
+                    return false;
+            } else if (!component.equals(other.component))
+                return false;
+        }
+
+        return true;
+    }
 }
