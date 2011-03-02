@@ -169,9 +169,9 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( interactor == null ) {
             throw new NullPointerException( "Valid Component must have an Interactor (eg Protein) set!" );
         }
-         if ( experimentalRole == null ) {
-             throw new NullPointerException( "Valid Component must have a non null experimentalRole." );
-         }
+        if ( experimentalRole == null ) {
+            throw new NullPointerException( "Valid Component must have a non null experimentalRole." );
+        }
 
         if ( biologicalRole == null ) {
             throw new NullPointerException( "Valid Component must have a non null biologicalRole." );
@@ -205,7 +205,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     )
     public Collection<CvExperimentalRole> getExperimentalRoles() {
 
-         if ( experimentalRoles == null ) {
+        if ( experimentalRoles == null ) {
             experimentalRoles = new ArrayList<CvExperimentalRole>();
         }
 
@@ -380,8 +380,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         return confidences;
     }
 
-     public void setConfidences( Collection<ComponentConfidence> someConfidences ) {
-       this.confidences = someConfidences;
+    public void setConfidences( Collection<ComponentConfidence> someConfidences ) {
+        this.confidences = someConfidences;
     }
 
     public void addConfidence( ComponentConfidence confidence ) {
@@ -468,7 +468,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         return bindingDomains;
     }
 
-     /**
+    /**
      * Setter for property 'bindingDomains'.
      *
      * @param someBindingDomain Value to set for property 'bindingDomains'.
@@ -561,12 +561,12 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * {@inheritDoc}
      */
     @OneToMany( mappedBy = "parent", orphanRemoval = true )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, 
-                org.hibernate.annotations.CascadeType.DELETE,
-                org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE,
-                org.hibernate.annotations.CascadeType.REFRESH,
-                org.hibernate.annotations.CascadeType.DETACH} )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+            org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+            org.hibernate.annotations.CascadeType.MERGE,
+            org.hibernate.annotations.CascadeType.REFRESH,
+            org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<ComponentXref> getXrefs() {
         return super.getXrefs();
@@ -577,11 +577,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     @OneToMany( mappedBy = "parent", orphanRemoval = true )
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
-                org.hibernate.annotations.CascadeType.DELETE,
-                org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-                org.hibernate.annotations.CascadeType.MERGE,
-                org.hibernate.annotations.CascadeType.REFRESH,
-                org.hibernate.annotations.CascadeType.DETACH} )
+            org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+            org.hibernate.annotations.CascadeType.MERGE,
+            org.hibernate.annotations.CascadeType.REFRESH,
+            org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<ComponentAlias> getAliases() {
         return super.getAliases();
@@ -718,7 +718,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( !super.equals( o ) ) {
             return false;
         }
-        
+
         // don't call super because that's a OwnedObject !
 
         final Component component = ( Component ) o;
@@ -739,7 +739,13 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( !CollectionUtils.isEqualCollection(getConfidences(), component.getConfidences()) ) {
             return false;
         }
-        if ( biologicalRole != null && !biologicalRole.equals( component.getCvBiologicalRole() ) ) {
+        if ( biologicalRole != null ) {
+
+            if (!biologicalRole.equals( component.getCvBiologicalRole() )){
+                return false;
+            }
+        }
+        else if (component.getCvBiologicalRole() != null){
             return false;
         }
 
@@ -806,9 +812,26 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if( experimentalRoles != null ) {
             result = result * 31 + HashCodeUtils.collectionHashCode( experimentalRoles );
         }
-        
+
         if ( biologicalRole != null ) {
             result = result * 31 + biologicalRole.hashCode();
+        }
+
+        if ( participantDetectionMethods != null ) {
+            result = result * 31 + HashCodeUtils.collectionHashCode( participantDetectionMethods );
+        }
+        if ( experimentalPreparations != null ) {
+            result = result * 31 + HashCodeUtils.collectionHashCode( experimentalPreparations );
+        }
+        if ( componentParameters != null) {
+            result = result * 31 + HashCodeUtils.collectionHashCode( componentParameters );
+        }
+        if ( confidences != null ) {
+            result = result * 31 + HashCodeUtils.collectionHashCode( confidences );
+        }
+
+        if ( expressedIn != null ) {
+            result = result * 31 + expressedIn.hashCode();
         }
 
         if( includeFeatures ) {
