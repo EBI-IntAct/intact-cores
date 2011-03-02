@@ -733,6 +733,9 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( !CollectionUtils.isEqualCollection(getExperimentalPreparations(), component.getExperimentalPreparations()) ) {
             return false;
         }
+        if ( !CollectionUtils.isEqualCollection(getParameters(), component.getParameters()) ) {
+            return false;
+        }
         if ( !CollectionUtils.isEqualCollection(getConfidences(), component.getConfidences()) ) {
             return false;
         }
