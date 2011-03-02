@@ -727,7 +727,25 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         if ( !CollectionUtils.isEqualCollection(getExperimentalRoles(), component.getExperimentalRoles()) ) {
             return false;
         }
+        if ( !CollectionUtils.isEqualCollection(getParticipantDetectionMethods(), component.getParticipantDetectionMethods()) ) {
+            return false;
+        }
+        if ( !CollectionUtils.isEqualCollection(getExperimentalPreparations(), component.getExperimentalPreparations()) ) {
+            return false;
+        }
+        if ( !CollectionUtils.isEqualCollection(getConfidences(), component.getConfidences()) ) {
+            return false;
+        }
         if ( biologicalRole != null && !biologicalRole.equals( component.getCvBiologicalRole() ) ) {
+            return false;
+        }
+
+        if ( expressedIn != null ) {
+            if (!expressedIn.equals( component.getExpressedIn() )){
+                return false;
+            }
+        }
+        else if (component.getExpressedIn() != null){
             return false;
         }
 
