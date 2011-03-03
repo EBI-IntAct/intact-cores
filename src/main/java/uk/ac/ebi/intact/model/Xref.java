@@ -188,15 +188,6 @@ public abstract class Xref extends BasicObjectImpl {
     }
 
     public void setPrimaryId( String aPrimaryId ) {
-
-        if ( aPrimaryId == null ) {
-            throw new NullPointerException( "valid Xref must have a primary ID!" );
-        }
-
-        if ( "".equals( aPrimaryId ) ) {
-            throw new IllegalArgumentException( "Must define a non empty primaryId for an Xref." );
-        }
-
         this.primaryId = aPrimaryId;
     }
 
