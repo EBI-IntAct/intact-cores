@@ -508,6 +508,15 @@ public class DefaultFinder implements Finder {
             return false;
         }
 
+        if (!cv1.getClass().equals(cvToFind.getClass())) {
+            return false;
+        }
+
+        // if class and identifier is the same, it is the same cv object
+        if (cv1.getIdentifier() != null && cvToFind.getIdentifier() != null) {
+            return cv1.getIdentifier().equals(cvToFind.getIdentifier());
+        }
+
         // The cv to find doesn't have any cross references, we need to look only the shortLabel of the match in the database
         if (cvToFind.getXrefs().isEmpty()){
             if (cvToFind.getShortLabel() != null){
