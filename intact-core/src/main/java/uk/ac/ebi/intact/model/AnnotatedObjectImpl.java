@@ -367,6 +367,6 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName()+"{"+this.getAc() + "; name=" + this.shortLabel + "; fullname=" + fullName+"}";
+        return this.getClass().getSimpleName()+"{ac="+this.getAc() + "; name=" + this.shortLabel + "; fullname=" + fullName+"}";
     }
 }
