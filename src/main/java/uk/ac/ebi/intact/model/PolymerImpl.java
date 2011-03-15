@@ -96,7 +96,13 @@ public class PolymerImpl extends InteractorImpl implements Polymer {
         // Save work if the new sequence is identical to the old one.
 
         if( aSequence == null ) {
-            sequenceChunks = new ArrayList<SequenceChunk>();
+            List<SequenceChunk> seqChunks = getSequenceChunks();
+
+            if (seqChunks != null) {
+                seqChunks.clear();
+            } else {
+                seqChunks = new ArrayList<SequenceChunk>();
+            }
             return sequenceChunks;
         }
 
@@ -157,7 +163,7 @@ public class PolymerImpl extends InteractorImpl implements Polymer {
         this.crc64 = crc64;
     }
 
-    @OneToMany( mappedBy = "parent" )
+    @OneToMany( mappedBy = "parent", orphanRemoval = true)
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @IndexColumn( name = "sequence_index" )
     public List<SequenceChunk> getSequenceChunks() {
