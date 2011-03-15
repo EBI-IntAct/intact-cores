@@ -2,6 +2,8 @@ package uk.ac.ebi.intact.model.util;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Interaction;
@@ -25,5 +27,26 @@ public class InteractionUtilsTest extends IntactBasicTestCase {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         Assert.assertFalse(InteractionUtils.isNegative(interaction));
+    }
+
+    @Test
+    public void isNegative_no_db() throws Exception {
+        Interaction negative = getMockBuilder().createInteractionRandomBinary();
+        negative.setShortLabel( "neg-neg" );
+        negative.addAnnotation(getMockBuilder().createAnnotation("because of this and that", null, CvTopic.NEGATIVE));
+
+        Interaction positive = getMockBuilder().createInteractionRandomBinary();
+        positive.setShortLabel( "pos-pos" );
+
+        getCorePersister().saveOrUpdate(negative, positive);
+
+        final DaoFactory daoFactory = IntactContext.getCurrentInstance().getDataContext().getDaoFactory();
+        daoFactory.getEntityManager().clear();
+
+        Interaction p = daoFactory.getInteractionDao().getByShortLabel( "pos-pos" );
+        Assert.assertFalse(InteractionUtils.isNegative(p));
+
+        Interaction n = daoFactory.getInteractionDao().getByShortLabel( "neg-neg" );
+        Assert.assertTrue(InteractionUtils.isNegative(n));
     }
 }

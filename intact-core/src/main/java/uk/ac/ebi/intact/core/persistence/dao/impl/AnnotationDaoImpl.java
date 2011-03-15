@@ -63,7 +63,11 @@ public class AnnotationDaoImpl extends IntactObjectDaoImpl<Annotation> implement
 
     @Override
     public Collection<Annotation> getByParentAc(Class<? extends AnnotatedObject> parentClass, String parentAc) {
-        Query query = getEntityManager().createQuery("select annotations from "+parentClass.getSimpleName()+" ao join ao.annotations as annotations");
+        Query query = getEntityManager().createQuery("select annotations " +
+                                                     "from "+parentClass.getSimpleName()+" ao " +
+                                                     "     join ao.annotations as annotations " +
+                                                     "where ao.ac = :parentAc");
+        query.setParameter("parentAc", parentAc);
         return query.getResultList();
     }
 }
