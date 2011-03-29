@@ -26,12 +26,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
+import uk.ac.ebi.intact.model.Protein;
 
 import javax.annotation.Resource;
 
@@ -107,6 +106,41 @@ public class ReaderTest extends IntactBasicTestCase {
 
         IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
         Assert.assertEquals(4, counter.getCount());
+    }
+
+    @Test
+    @DirtiesContext
+    public void readInteractors() throws Exception {
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        getCorePersister().saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
+
+        Job job = (Job) applicationContext.getBean("readInteractorsJob");
+
+        jobLauncher.run(job, new JobParameters());
+
+        IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
+        Assert.assertEquals(2, counter.getCount());
+    }
+
+    @Test
+    @DirtiesContext
+    public void readInteractors_excludeNonInteracting() throws Exception {
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        Protein prot = getMockBuilder().createProteinRandom();
+        getCorePersister().saveOrUpdate(interaction, prot);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+
+        Job job = (Job) applicationContext.getBean("readInteractorsOnlyInteractingJob");
+
+        jobLauncher.run(job, new JobParameters());
+
+        IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
+        Assert.assertEquals(2, counter.getCount());
     }
 
 }

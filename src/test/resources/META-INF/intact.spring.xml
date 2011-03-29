@@ -55,4 +55,20 @@
         </batch:step>
     </batch:job>
 
+    <batch:job id="readInteractorsJob" parent="intactBatchJob">
+        <batch:step id="readInteractorsStep" parent="intactBatchStep">
+            <batch:tasklet>
+                <batch:chunk reader="interactorReader" writer="intactObjectCounterWriter"/>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+    <batch:job id="readInteractorsOnlyInteractingJob" parent="intactBatchJob">
+        <batch:step id="readInteractorsOnlyInteractingStep" parent="intactBatchStep">
+            <batch:tasklet>
+                <batch:chunk reader="interactorReaderOnlyInteracting" writer="intactObjectCounterWriter"/>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
 </beans>
