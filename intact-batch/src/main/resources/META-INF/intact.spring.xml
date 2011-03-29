@@ -67,25 +67,35 @@
     <bean id="cvObjectReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.CvObject"/>
     </bean>
+
     <bean id="experimentReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.Experiment"/>
     </bean>
+
     <bean id="publicationReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.Publication"/>
     </bean>
-    <bean id="interactorReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
-        <property name="queryString" value="select i from InteractorImpl i where i.objClass &lt;> 'uk.ac.ebi.intact.model.InteractionImpl'"/>
+
+    <bean id="interactorReader" class="uk.ac.ebi.intact.core.batch.reader.InteractorReader" parent="baseModelReader"/>
+
+    <bean id="interactorReaderOnlyInteracting" class="uk.ac.ebi.intact.core.batch.reader.InteractorReader" parent="baseModelReader">
+        <property name="interacting" value="true"/>
     </bean>
+
     <bean id="interactionReader" class="uk.ac.ebi.intact.core.batch.reader.InteractionReader" parent="baseModelReader"/>
+
     <bean id="interactionReaderExcludeNegative" class="uk.ac.ebi.intact.core.batch.reader.InteractionReader" parent="baseModelReader">
         <property name="excludeNegative" value="true"/>
     </bean>
+
     <bean id="componentReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.Component"/>
     </bean>
+
     <bean id="proteinReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.ProteinImpl"/>
     </bean>
+
     <bean id="bioSourceReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.BioSource"/>
     </bean>
