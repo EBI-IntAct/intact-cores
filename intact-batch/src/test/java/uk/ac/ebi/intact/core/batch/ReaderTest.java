@@ -134,6 +134,7 @@ public class ReaderTest extends IntactBasicTestCase {
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(3, getDaoFactory().getProteinDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getProteinDao().countInteractorInvolvedInInteraction());
 
         Job job = (Job) applicationContext.getBean("readInteractorsOnlyInteractingJob");
 
