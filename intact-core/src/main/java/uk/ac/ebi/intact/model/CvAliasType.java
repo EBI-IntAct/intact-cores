@@ -32,7 +32,7 @@ public class CvAliasType extends CvDagObject implements Editable {
     public static final String GENE_NAME = "gene name";
     public static final String GENE_NAME_MI_REF = "MI:0301";
 
-    public static final String GENE_NAME_SYNONYM = "gene name-synonym";
+    public static final String GENE_NAME_SYNONYM = "gene name synonym";
     public static final String GENE_NAME_SYNONYM_MI_REF = "MI:0302";
 
     public static final String ORF_NAME = "orf name";
