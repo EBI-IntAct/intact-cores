@@ -83,4 +83,6 @@ public interface InteractionDao extends InteractorDao<InteractionImpl> {
      * @return a non null list of interactions
      */
     List<Interaction> getByExperimentAc( String experimentAc, int firstResult, int maxResult );
+
+    int countAll( boolean includeNegative );
 }
