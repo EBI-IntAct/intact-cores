@@ -9,6 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.config.ConfigurationException;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
@@ -36,7 +37,7 @@ import java.util.List;
 @Controller
 public class IntactContext implements DisposableBean, Serializable {
 
-    private static final Log log = LogFactory.getLog( IntactContext.class );
+    private static final Log log = LogFactory.getLog(IntactContext.class);
 
     private static IntactContext instance;
 
@@ -59,7 +60,7 @@ public class IntactContext implements DisposableBean, Serializable {
     private ApplicationContext springContext;
 
     public IntactContext() {
-                                                                                          
+
     }
 
     @PostConstruct
@@ -73,12 +74,13 @@ public class IntactContext implements DisposableBean, Serializable {
      * Gets the current (ThreadLocal) instance of {@code IntactContext}. If no such instance exist,
      * IntAct Core will be automatically initialized using JPA configurations in the classpath, configured
      * DataConfigs and, if these are not found, using a temporary database.
+     *
      * @return the IntactContext instance
      */
     public static IntactContext getCurrentInstance() {
-        if ( !currentInstanceExists() ) {
+        if (!currentInstanceExists()) {
 
-            log.warn( "Current instance of IntactContext is null. Initializing a context in memory." );
+            log.warn("Current instance of IntactContext is null. Initializing a context in memory.");
 
             initStandaloneContextInMemory();
         }
@@ -88,6 +90,7 @@ public class IntactContext implements DisposableBean, Serializable {
 
     /**
      * Checks if an instance already exists.
+     *
      * @return True if an instance of IntactContext exist.
      */
     public static boolean currentInstanceExists() {
@@ -99,13 +102,14 @@ public class IntactContext implements DisposableBean, Serializable {
      * might be controlled by other means). It will try to find a working configuration or start a temporary database otherwise.
      */
     public static void initStandaloneContext() {
-        initContext( (String)null, new StandaloneSession() );
+        initContext((String) null, new StandaloneSession());
     }
 
     /**
      * Initializes a standalone {@code IntactContext} using the Hibernate configuration file provided
      * (not to use in web applications, where the initialization might be controlled by other means).
      * It will try to find a working configuration or start a temporary database otherwise.
+     *
      * @param hibernateFile The hibernate configuration file
      */
     @Deprecated
@@ -117,7 +121,7 @@ public class IntactContext implements DisposableBean, Serializable {
      * Initializes a standalone {@code IntactContext} using a memory database.
      */
     public static void initStandaloneContextInMemory() {
-        initStandaloneContextInMemory((ApplicationContext)null);
+        initStandaloneContextInMemory((ApplicationContext) null);
     }
 
     /**
@@ -128,49 +132,51 @@ public class IntactContext implements DisposableBean, Serializable {
         parent.getBeanFactory().registerSingleton("intactConfig", config);
         parent.refresh();
 
-        initContext(new String[] { "classpath*:/META-INF/standalone/jpa-standalone.spring.xml",
-                                   "classpath*:/META-INF/standalone/intact-standalone.spring.xml"}, parent);
+        initContext(new String[]{"classpath*:/META-INF/standalone/jpa-standalone.spring.xml",
+                "classpath*:/META-INF/standalone/intact-standalone.spring.xml"}, parent);
     }
 
     public static void initStandaloneContextInMemory(ApplicationContext parent) {
-        initContext(new String[] { "classpath*:/META-INF/standalone/*-standalone.spring.xml" }, parent);
+        initContext(new String[]{"classpath*:/META-INF/standalone/*-standalone.spring.xml"}, parent);
     }
 
     /**
      * Initializes a standalone {@code IntactContext} using a persistence unit name and an {@code IntactSession} instance.
+     *
      * @param persistenceUnitName The name of the persistence unit. This is used to create a {@code DataConfig} of type {@code JpaCoreDataConfig}
-     * @param session The IntactSession object. By default, this will be an instance of {@code StandaloneSession} for
-     * standalone applications or a {@code WebappSession} for web applications. This value cannot be null.
+     * @param session             The IntactSession object. By default, this will be an instance of {@code StandaloneSession} for
+     *                            standalone applications or a {@code WebappSession} for web applications. This value cannot be null.
      */
     @Deprecated
-    public static void initContext( String persistenceUnitName, IntactSession session ) {
+    public static void initContext(String persistenceUnitName, IntactSession session) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * Initializes a standalone {@code IntactContext} using an {@code EntityManagerFactory} and an {@code IntactSession} instance.
-     * @param emf An EntityManagerFactory configured to access the IntAct database. This is used to create a {@code DataConfig} of type {@code JpaEntityManagerFactoryDataConfig}
+     *
+     * @param emf     An EntityManagerFactory configured to access the IntAct database. This is used to create a {@code DataConfig} of type {@code JpaEntityManagerFactoryDataConfig}
      * @param session The IntactSession object. By default, this will be an instance of {@code StandaloneSession} for
-     * standalone applications or a {@code WebappSession} for web applications. This value cannot be null.
+     *                standalone applications or a {@code WebappSession} for web applications. This value cannot be null.
      */
     @Deprecated
-    public static void initContext( EntityManagerFactory emf, IntactSession session ) {
+    public static void initContext(EntityManagerFactory emf, IntactSession session) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * Initializes a standalone context.
      */
-    public static void initContext( String[] configurationResourcePaths ) {
+    public static void initContext(String[] configurationResourcePaths) {
         initContext(configurationResourcePaths, null);
     }
 
     /**
      * Initializes a standalone context.
      */
-    public static void initContext( String[] configurationResourcePaths, ApplicationContext parent ) {
+    public static void initContext(String[] configurationResourcePaths, ApplicationContext parent) {
         // check for overflow initialization
-        for (int i=5; i< Thread.currentThread().getStackTrace().length; i++) {
+        for (int i = 5; i < Thread.currentThread().getStackTrace().length; i++) {
             StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[i];
 
             if (stackTraceElement.getClassName().equals(IntactContext.class.getName())
@@ -188,10 +194,10 @@ public class IntactContext implements DisposableBean, Serializable {
 
         configurationResourcePaths = resourcesList.toArray(new String[resourcesList.size()]);
 
-        if ( log.isDebugEnabled() ) {
-            log.debug( "Loading Spring XML config:" );
-            for ( String configurationResourcePath : configurationResourcePaths ) {
-                log.debug( " - " + configurationResourcePath );
+        if (log.isDebugEnabled()) {
+            log.debug("Loading Spring XML config:");
+            for (String configurationResourcePath : configurationResourcePaths) {
+                log.debug(" - " + configurationResourcePath);
             }
         }
 
@@ -204,19 +210,21 @@ public class IntactContext implements DisposableBean, Serializable {
 
     /**
      * The {@UserContext contains user-specific information, such as the current user name}
+     *
      * @return The UserContext instance
      */
     public UserContext getUserContext() {
         if (userContext == null) {
-            throw new ConfigurationException("No bean of type "+UserContext.class.getName()+" found. One is expected");
+            throw new ConfigurationException("No bean of type " + UserContext.class.getName() + " found. One is expected");
         }
-        
+
         return userContext;
     }
 
     /**
      * Gets the institution from the RuntimeConfig object. In addition, tries to refresh
      * the instance from the database if it is detached.
+     *
      * @return
      * @throws IntactException
      */
@@ -264,8 +272,8 @@ public class IntactContext implements DisposableBean, Serializable {
 //    }
 
     /**
-     * @deprecated Use getCorePersister() instead.
      * @return
+     * @deprecated Use getCorePersister() instead.
      */
     @Deprecated
     public PersisterHelper getPersisterHelper() {
@@ -288,10 +296,10 @@ public class IntactContext implements DisposableBean, Serializable {
     }
 
     public void destroy() throws Exception {
-        if (log.isDebugEnabled()) log.debug( "Releasing LogFactory" );
-        LogFactory.release( Thread.currentThread().getContextClassLoader() );
+        if (log.isDebugEnabled()) log.debug("Releasing LogFactory");
+        LogFactory.release(Thread.currentThread().getContextClassLoader());
 
-        if (log.isInfoEnabled()) log.debug( "Destroying IntacContext" );
+        if (log.isInfoEnabled()) log.debug("Destroying IntacContext");
         instance = null;
     }
 

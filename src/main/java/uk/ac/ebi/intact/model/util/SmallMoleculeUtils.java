@@ -26,8 +26,10 @@ import java.util.Collection;
  * @version $Id$
  * @since TODO specify the maven artifact version
  */
-public class SmallMoleculeUtils {
+public final class SmallMoleculeUtils {
 
+    private SmallMoleculeUtils() {
+    }
 
     /**
      * Return the xref of the smallMolecule having as cvQualifier, the CvQualifier with psi-mi equal to
@@ -37,20 +39,20 @@ public class SmallMoleculeUtils {
      * @param smallMolecule a non null smallMolecule object.
      * @return the smallMolecule identity xref if the smallMolecule has one, null otherwise.
      */
-    public static InteractorXref getChebiXref( Interactor smallMolecule ) {
-        if ( smallMolecule == null ) {
-            throw new NullPointerException( "You must give a non null smallMolecule" );
+    public static InteractorXref getChebiXref(Interactor smallMolecule) {
+        if (smallMolecule == null) {
+            throw new NullPointerException("You must give a non null smallMolecule");
         }
 
         Collection<InteractorXref> xrefs = smallMolecule.getXrefs();
-        for ( InteractorXref xref : xrefs ) {
+        for (InteractorXref xref : xrefs) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
-            if ( qualifier != null ) {
+            if (qualifier != null) {
                 String qualifierIdentity = qualifier.getIdentifier();
-                if ( qualifierIdentity != null && CvXrefQualifier.IDENTITY_MI_REF.equals( qualifierIdentity ) ) {
+                if (qualifierIdentity != null && CvXrefQualifier.IDENTITY_MI_REF.equals(qualifierIdentity)) {
                     CvDatabase database = xref.getCvDatabase();
                     String databaseIdentity = database.getIdentifier();
-                    if ( databaseIdentity != null && CvDatabase.CHEBI_MI_REF.equals( databaseIdentity ) ) {
+                    if (databaseIdentity != null && CvDatabase.CHEBI_MI_REF.equals(databaseIdentity)) {
                         return xref;
                     }
                 }
@@ -60,8 +62,8 @@ public class SmallMoleculeUtils {
     }
 
 
-    public static InteractorXref getChebiXref( SmallMolecule smallMolecule ) {
-        return getChebiXref((Interactor) smallMolecule );
+    public static InteractorXref getChebiXref(SmallMolecule smallMolecule) {
+        return getChebiXref((Interactor) smallMolecule);
     }
 
 

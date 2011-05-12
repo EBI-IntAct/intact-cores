@@ -29,12 +29,15 @@ import java.util.*;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ProteinUtils {
+public final class ProteinUtils {
 
     /**
      * Sets up a logger for that class.
      */
     private static final Log log = LogFactory.getLog(ProteinUtils.class);
+
+    private ProteinUtils() {
+    }
 
     /**
      * Checks if the protein has been annotated with the no-uniprot-update CvTopic, if so, return false, otherwise true.
@@ -42,10 +45,9 @@ public class ProteinUtils {
      * don't want those to be overwitten.
      *
      * @param protein the protein to check
-     *
      * @return true if uniprot
      */
-    public static boolean isFromUniprot( Protein protein ) {
+    public static boolean isFromUniprot(Protein protein) {
         boolean isFromUniprot = true;
 
         for (Annotation annotation : protein.getAnnotations()) {
@@ -60,31 +62,31 @@ public class ProteinUtils {
     }
 
 
-
-    public static InteractorXref getUniprotXref(Protein protein){
-        return getUniprotXref((Interactor)protein);
+    public static InteractorXref getUniprotXref(Protein protein) {
+        return getUniprotXref((Interactor) protein);
     }
 
     /**
      * Return the xref of the protein having as cvQualifier, the CvQualifier with psi-mi equal to
      * CvXrefQualifier.IDENTITY_MI_REF and as cvDatabase, the CvDatabase with psi-mi equal to CvDatabase.UNIPROT_MI_REF
      * and returns it. Return null otherwise.
+     *
      * @param protein a non null Protein object.
      * @return the uniprotkb identity xref if the protein has one, null otherwise.
      */
-    public static InteractorXref getUniprotXref(Interactor protein){
-        if(protein == null){
+    public static InteractorXref getUniprotXref(Interactor protein) {
+        if (protein == null) {
             throw new NullPointerException("Protein is null, shouldn't be null");
         }
         Collection<InteractorXref> xrefs = protein.getXrefs();
-        for(InteractorXref xref : xrefs){
+        for (InteractorXref xref : xrefs) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
-            if(qualifier != null){
+            if (qualifier != null) {
                 String qualifierIdentity = qualifier.getIdentifier();
-                if(qualifierIdentity!= null && CvXrefQualifier.IDENTITY_MI_REF.equals(qualifierIdentity)){
+                if (qualifierIdentity != null && CvXrefQualifier.IDENTITY_MI_REF.equals(qualifierIdentity)) {
                     CvDatabase database = xref.getCvDatabase();
                     String databaseIdentity = database.getIdentifier();
-                    if(databaseIdentity != null && CvDatabase.UNIPROT_MI_REF.equals(databaseIdentity)){
+                    if (databaseIdentity != null && CvDatabase.UNIPROT_MI_REF.equals(databaseIdentity)) {
                         return xref;
                     }
                 }
@@ -94,16 +96,15 @@ public class ProteinUtils {
     }
 
 
-
     /**
      * Get the gene name of a protein
      *
      * @since 1.6
      */
-    public static String getGeneName( final Interactor protein ) {
+    public static String getGeneName(final Interactor protein) {
         if (protein == null) return null;
 
-        if ( (protein instanceof Protein) && !(isFromUniprot( (Protein)protein )) ) {
+        if ((protein instanceof Protein) && !(isFromUniprot((Protein) protein))) {
             // if the protein is NOT a UniProt one, then use the shortlabel as we won't get a gene name.
             return protein.getShortLabel();
         }
@@ -111,9 +112,9 @@ public class ProteinUtils {
         // the gene name we want to extract from the protein.
         String geneName = null;
 
-        for ( Alias alias : protein.getAliases()) {
+        for (Alias alias : protein.getAliases()) {
             CvAliasType aliasType = alias.getCvAliasType();
-            if( aliasType != null ) {
+            if (aliasType != null) {
                 String aliasTypeIdentity = aliasType.getIdentifier();
 
                 if (aliasTypeIdentity != null && CvAliasType.GENE_NAME_MI_REF.equals(aliasTypeIdentity)) {
@@ -123,14 +124,14 @@ public class ProteinUtils {
             }
         }
 
-        if ( geneName == null ) {
+        if (geneName == null) {
 
             geneName = protein.getShortLabel();
 
             // remove any _organism in case it exists
-            int index = geneName.indexOf( '_' );
-            if ( index != -1 ) {
-                geneName = geneName.substring( 0, index );
+            int index = geneName.indexOf('_');
+            if (index != -1) {
+                geneName = geneName.substring(0, index);
             }
         }
 
@@ -139,6 +140,7 @@ public class ProteinUtils {
 
     /**
      * Get the Xref identities for an interactor
+     *
      * @param interactor
      * @return
      */
@@ -148,8 +150,10 @@ public class ProteinUtils {
 
     /**
      * Get the Xref identities for an interactor, allowing the exclude the identities that come from the IMEx partners (intact, mint and dip)
+     *
      * @param interactor
      * @param excludeIdentitiesFromImexPartners
+     *
      * @return
      */
     public static List<InteractorXref> getIdentityXrefs(Interactor interactor, boolean excludeIdentitiesFromImexPartners) {
@@ -172,6 +176,7 @@ public class ProteinUtils {
 
     /**
      * Check if two interactors contain the same identity xrefs, excluding the IMEx partner identities
+     *
      * @param interactor1
      * @param interactor2
      * @return
@@ -193,7 +198,7 @@ public class ProteinUtils {
         Collections.sort(identities1, identityXrefComparator);
         Collections.sort(identities2, identityXrefComparator);
 
-        for (int i=0; i<identities1.size(); i++) {
+        for (int i = 0; i < identities1.size(); i++) {
             if (!(identities1.get(i).equals(identities2.get(i)))) {
                 return false;
             }
@@ -204,6 +209,7 @@ public class ProteinUtils {
 
     /**
      * Checks if the current protein is a splice variant
+     *
      * @param protein the protein to check
      * @return true if the protein is a splice variant
      */
@@ -222,6 +228,7 @@ public class ProteinUtils {
 
     /**
      * Checks if the current protein is a chain
+     *
      * @param protein the protein to check
      * @return true if the protein is a chain
      */
@@ -238,12 +245,12 @@ public class ProteinUtils {
         return false;
     }
 
-    private static Collection<InteractorXref> extractCrossReferencesFrom(Protein protein, String databaseMiRef, String qualifierMiRef){
+    private static Collection<InteractorXref> extractCrossReferencesFrom(Protein protein, String databaseMiRef, String qualifierMiRef) {
         Collection<InteractorXref> parents = new ArrayList<InteractorXref>();
 
-        for (InteractorXref ref : protein.getXrefs()){
-            if (ref.getCvDatabase().getIdentifier().equals(databaseMiRef)){
-                if (ref.getCvXrefQualifier().getIdentifier().equals(qualifierMiRef)){
+        for (InteractorXref ref : protein.getXrefs()) {
+            if (ref.getCvDatabase().getIdentifier().equals(databaseMiRef)) {
+                if (ref.getCvXrefQualifier().getIdentifier().equals(qualifierMiRef)) {
                     parents.add(ref);
                 }
             }
@@ -252,11 +259,11 @@ public class ProteinUtils {
         return parents;
     }
 
-    public static Collection<InteractorXref> extractChainParentCrossReferencesFrom(Protein protein){
+    public static Collection<InteractorXref> extractChainParentCrossReferencesFrom(Protein protein) {
         return extractCrossReferencesFrom(protein, CvDatabase.INTACT_MI_REF, CvXrefQualifier.CHAIN_PARENT_MI_REF);
     }
 
-    public static Collection<InteractorXref> extractIsoformParentCrossReferencesFrom(Protein protein){
+    public static Collection<InteractorXref> extractIsoformParentCrossReferencesFrom(Protein protein) {
 
         return extractCrossReferencesFrom(protein, CvDatabase.INTACT_MI_REF, CvXrefQualifier.ISOFORM_PARENT_MI_REF);
     }
