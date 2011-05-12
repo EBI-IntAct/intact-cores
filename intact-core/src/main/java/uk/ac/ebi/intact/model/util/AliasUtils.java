@@ -26,9 +26,12 @@ import uk.ac.ebi.intact.core.util.ClassUtils;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class AliasUtils {
+public final class AliasUtils {
 
-    public static <A extends Alias> A createAlias(AnnotatedObject<?,A> parent, String name, CvAliasType aliasType) {
+    private AliasUtils() {
+    }
+
+    public static <A extends Alias> A createAlias(AnnotatedObject<?, A> parent, String name, CvAliasType aliasType) {
         A alias = (A) newAliasInstanceFor(parent.getClass());
         alias.setOwner(parent.getOwner());
         alias.setParent(parent);
@@ -38,7 +41,7 @@ public class AliasUtils {
         return alias;
     }
 
-    public static <A extends Alias> A createAliasGeneName(AnnotatedObject<?,A> parent, String name) {
+    public static <A extends Alias> A createAliasGeneName(AnnotatedObject<?, A> parent, String name) {
         CvAliasType cvGeneName = CvObjectUtils.createCvObject(parent.getOwner(), CvAliasType.class, CvAliasType.GENE_NAME_MI_REF, CvAliasType.GENE_NAME);
         return createAlias(parent, name, cvGeneName);
     }

@@ -27,18 +27,19 @@ import java.util.Collection;
  * @version $Id$
  * @since 2.0.1-SNAPSHOT
  */
-public class ComponentUtils {
+public final class ComponentUtils {
 
+    private ComponentUtils() {
+    }
 
     /**
-     *
      * @param experimentalRoles collection of experimental roles
-     * @return  CvExperimentalRole that is prey
+     * @return CvExperimentalRole that is prey
      */
-    public static CvExperimentalRole getPrey( Collection<CvExperimentalRole> experimentalRoles ) {
+    public static CvExperimentalRole getPrey(Collection<CvExperimentalRole> experimentalRoles) {
 
-        for ( CvExperimentalRole expRole : experimentalRoles ) {
-            if ( expRole.getIdentifier().equals( CvExperimentalRole.PREY_PSI_REF ) ) {
+        for (CvExperimentalRole expRole : experimentalRoles) {
+            if (expRole.getIdentifier().equals(CvExperimentalRole.PREY_PSI_REF)) {
                 return expRole;
             }
         }
@@ -48,14 +49,13 @@ public class ComponentUtils {
 
 
     /**
-     *
-     * @param experimentalRoles   collection of experimental roles
+     * @param experimentalRoles collection of experimental roles
      * @return CvExperimentalRole that is bait
      */
-    public static CvExperimentalRole getBait( Collection<CvExperimentalRole> experimentalRoles ) {
+    public static CvExperimentalRole getBait(Collection<CvExperimentalRole> experimentalRoles) {
 
-        for ( CvExperimentalRole expRole : experimentalRoles ) {
-            if ( expRole.getIdentifier().equals( CvExperimentalRole.BAIT_PSI_REF ) ) {
+        for (CvExperimentalRole expRole : experimentalRoles) {
+            if (expRole.getIdentifier().equals(CvExperimentalRole.BAIT_PSI_REF)) {
                 return expRole;
             }
         }
@@ -64,18 +64,17 @@ public class ComponentUtils {
 
 
     /**
-     *
      * @param experimentalRoles collection of experimental roles
      * @return checks if the given collection of roles contains CvExperimentalRole that is prey
      */
-    public static boolean isPrey( Collection<CvExperimentalRole> experimentalRoles ) {
+    public static boolean isPrey(Collection<CvExperimentalRole> experimentalRoles) {
 
-        if ( experimentalRoles == null ) {
-            throw new NullPointerException( "You must give a non null experimentalRoles" );
+        if (experimentalRoles == null) {
+            throw new NullPointerException("You must give a non null experimentalRoles");
         }
 
-        for ( CvExperimentalRole experimentalRole : experimentalRoles ) {
-            if ( experimentalRole.getIdentifier().equals( CvExperimentalRole.PREY_PSI_REF ) ) {
+        for (CvExperimentalRole experimentalRole : experimentalRoles) {
+            if (experimentalRole.getIdentifier().equals(CvExperimentalRole.PREY_PSI_REF)) {
                 return true;
             }
         }
@@ -85,17 +84,16 @@ public class ComponentUtils {
 
 
     /**
-     *
      * @param experimentalRoles collection of experimental roles
      * @return checks if the given collection of roles contains CvExperimentalRole that is bait
      */
-    public static boolean isBait( Collection<CvExperimentalRole> experimentalRoles ) {
-        if ( experimentalRoles == null ) {
-            throw new NullPointerException( "You must give a non null experimentalRoles" );
+    public static boolean isBait(Collection<CvExperimentalRole> experimentalRoles) {
+        if (experimentalRoles == null) {
+            throw new NullPointerException("You must give a non null experimentalRoles");
         }
 
-        for ( CvExperimentalRole experimentalRole : experimentalRoles ) {
-            if ( experimentalRole.getIdentifier().equals( CvExperimentalRole.BAIT_PSI_REF ) ) {
+        for (CvExperimentalRole experimentalRole : experimentalRoles) {
+            if (experimentalRole.getIdentifier().equals(CvExperimentalRole.BAIT_PSI_REF)) {
                 return true;
             }
         }
@@ -104,18 +102,17 @@ public class ComponentUtils {
 
 
     /**
-     *
      * @param experimentalRoles collection of experimental roles
-     * @return  checks if the given collection of roles contains CvExperimentalRole that is either neutral or unspecified
+     * @return checks if the given collection of roles contains CvExperimentalRole that is either neutral or unspecified
      */
 
-    public static boolean isNeurtralOrUnspecified( Collection<CvExperimentalRole> experimentalRoles ) {
-        if ( experimentalRoles == null ) {
-            throw new NullPointerException( "You must give a non null experimentalRoles" );
+    public static boolean isNeurtralOrUnspecified(Collection<CvExperimentalRole> experimentalRoles) {
+        if (experimentalRoles == null) {
+            throw new NullPointerException("You must give a non null experimentalRoles");
         }
 
-        for ( CvExperimentalRole experimentalRole : experimentalRoles ) {
-            if ( experimentalRole.getIdentifier().equals( CvExperimentalRole.NEUTRAL_PSI_REF ) || experimentalRole.getIdentifier().equals( CvExperimentalRole.UNSPECIFIED_PSI_REF ) ) {
+        for (CvExperimentalRole experimentalRole : experimentalRoles) {
+            if (experimentalRole.getIdentifier().equals(CvExperimentalRole.NEUTRAL_PSI_REF) || experimentalRole.getIdentifier().equals(CvExperimentalRole.UNSPECIFIED_PSI_REF)) {
                 return true;
             }
         }

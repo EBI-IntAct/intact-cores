@@ -14,65 +14,68 @@ import uk.ac.ebi.intact.model.Publication;
  * @version $Id$
  * @since 2.2.1
  */
-public class PublicationUtils {
+public final class PublicationUtils {
 
-    public static boolean isAccepted( Publication publication ) {
-        if ( publication == null ) {
-            throw new NullPointerException( "You must give a non null publication" );
+    private PublicationUtils() {
+    }
+
+    public static boolean isAccepted(Publication publication) {
+        if (publication == null) {
+            throw new NullPointerException("You must give a non null publication");
         }
 
-        for ( Annotation a : publication.getAnnotations() ) {
-            if ( a.getCvTopic() != null && CvTopic.ACCEPTED.equals( a.getCvTopic().getShortLabel() ) ) {
+        for (Annotation a : publication.getAnnotations()) {
+            if (a.getCvTopic() != null && CvTopic.ACCEPTED.equals(a.getCvTopic().getShortLabel())) {
                 return true;
             }
         }
-        
+
         return ExperimentUtils.areAllAccepted(publication.getExperiments());
     }
 
-    public static boolean isToBeReviewed( Publication publication ) {
-        if ( publication == null ) {
-            throw new NullPointerException( "You must give a non null publication" );
+    public static boolean isToBeReviewed(Publication publication) {
+        if (publication == null) {
+            throw new NullPointerException("You must give a non null publication");
         }
 
-        for ( Annotation a : publication.getAnnotations() ) {
-            if ( a.getCvTopic() != null && CvTopic.TO_BE_REVIEWED.equals( a.getCvTopic().getShortLabel() ) ) {
+        for (Annotation a : publication.getAnnotations()) {
+            if (a.getCvTopic() != null && CvTopic.TO_BE_REVIEWED.equals(a.getCvTopic().getShortLabel())) {
                 return true;
             }
         }
 
-        for ( Experiment experiment : publication.getExperiments()) {
-            if( ExperimentUtils.isToBeReviewed( experiment ) ) {
+        for (Experiment experiment : publication.getExperiments()) {
+            if (ExperimentUtils.isToBeReviewed(experiment)) {
                 return true;
             }
         }
 
         return false;
     }
-    
-    public static boolean isOnHold( Publication publication ) {
 
-        if ( publication == null ) {
-            throw new NullPointerException( "You must give a non null publication" );
+    public static boolean isOnHold(Publication publication) {
+
+        if (publication == null) {
+            throw new NullPointerException("You must give a non null publication");
         }
 
-        for ( Annotation a : publication.getAnnotations() ) {
-            if ( a.getCvTopic() != null && CvTopic.ON_HOLD.equals( a.getCvTopic().getShortLabel() ) ) {
+        for (Annotation a : publication.getAnnotations()) {
+            if (a.getCvTopic() != null && CvTopic.ON_HOLD.equals(a.getCvTopic().getShortLabel())) {
                 return true;
             }
         }
 
-        for ( Experiment experiment : publication.getExperiments()) {
-            if( ExperimentUtils.isOnHold( experiment ) ) {
+        for (Experiment experiment : publication.getExperiments()) {
+            if (ExperimentUtils.isOnHold(experiment)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
     public static String nextUnassignedId(IntactContext intactContext) {
         SequenceManager sequenceManager = (SequenceManager) intactContext.getSpringContext().getBean("sequenceManager");
-        return "unassigned"+sequenceManager.getNextValueForSequence("unassigned_seq");
+        return "unassigned" + sequenceManager.getNextValueForSequence("unassigned_seq");
     }
 }

@@ -34,56 +34,59 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class XrefUtils {
+public final class XrefUtils {
 
     /**
      * Sets up a logger for that class.
      */
     private static final Log log = LogFactory.getLog(XrefUtils.class);
 
-    public static <X extends Xref> X createIdentityXrefPsiMi(AnnotatedObject<X,?> parent, String primaryId) {
+    private XrefUtils() {
+    }
+
+    public static <X extends Xref> X createIdentityXrefPsiMi(AnnotatedObject<X, ?> parent, String primaryId) {
         CvObjectBuilder builder = new CvObjectBuilder();
         return createIdentityXref(parent, primaryId, builder.createIdentityCvXrefQualifier(parent.getOwner()), builder.createPsiMiCvDatabase(parent.getOwner()));
     }
 
-    public static <X extends Xref> X createIdentityXrefIntact(AnnotatedObject<X,?> parent, String intactId) {
+    public static <X extends Xref> X createIdentityXrefIntact(AnnotatedObject<X, ?> parent, String intactId) {
         CvObjectBuilder builder = new CvObjectBuilder();
         CvDatabase cvDatabase = CvObjectUtils.createCvObject(parent.getOwner(), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
 
         return createIdentityXref(parent, intactId, builder.createIdentityCvXrefQualifier(parent.getOwner()), cvDatabase);
     }
 
-    public static <X extends Xref> X createIdentityXrefChebi(AnnotatedObject<X,?> parent, String chebiId) {
+    public static <X extends Xref> X createIdentityXrefChebi(AnnotatedObject<X, ?> parent, String chebiId) {
         CvObjectBuilder builder = new CvObjectBuilder();
         CvDatabase cvDatabase = CvObjectUtils.createCvObject(parent.getOwner(), CvDatabase.class, CvDatabase.CHEBI_MI_REF, CvDatabase.CHEBI);
 
         return createIdentityXref(parent, chebiId, builder.createIdentityCvXrefQualifier(parent.getOwner()), cvDatabase);
     }
 
-    public static <X extends Xref> X createIdentityXrefEmblGenbankDdbj(AnnotatedObject<X,?> parent, String emblGenbankDdbjId) {
+    public static <X extends Xref> X createIdentityXrefEmblGenbankDdbj(AnnotatedObject<X, ?> parent, String emblGenbankDdbjId) {
         CvObjectBuilder builder = new CvObjectBuilder();
         CvDatabase cvDatabase = CvObjectUtils.createCvObject(parent.getOwner(),
-                                                             CvDatabase.class,
-                                                             CvDatabase.DDBG_MI_REF,
-                                                             CvDatabase.DDBG);
+                CvDatabase.class,
+                CvDatabase.DDBG_MI_REF,
+                CvDatabase.DDBG);
         return createIdentityXref(parent, emblGenbankDdbjId,
-                                  builder.createIdentityCvXrefQualifier(parent.getOwner()),
-                                  cvDatabase);
+                builder.createIdentityCvXrefQualifier(parent.getOwner()),
+                cvDatabase);
     }
 
-    public static <X extends Xref> X createIdentityXrefUniprot(AnnotatedObject<X,?> parent, String primaryId) {
+    public static <X extends Xref> X createIdentityXrefUniprot(AnnotatedObject<X, ?> parent, String primaryId) {
         CvObjectBuilder builder = new CvObjectBuilder();
         CvDatabase cvDatabase = CvObjectUtils.createCvObject(parent.getOwner(), CvDatabase.class, CvDatabase.UNIPROT_MI_REF, CvDatabase.UNIPROT);
 
         return createIdentityXref(parent, primaryId, builder.createIdentityCvXrefQualifier(parent.getOwner()), cvDatabase);
     }
 
-    public static <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvDatabase cvDatabase) {
+    public static <X extends Xref> X createIdentityXref(AnnotatedObject<X, ?> parent, String primaryId, CvDatabase cvDatabase) {
         CvObjectBuilder builder = new CvObjectBuilder();
         return createIdentityXref(parent, primaryId, builder.createIdentityCvXrefQualifier(parent.getOwner()), cvDatabase);
     }
 
-    public static <X extends Xref> X createIdentityXref(AnnotatedObject<X,?> parent, String primaryId, CvXrefQualifier identityQual, CvDatabase cvDatabase) {
+    public static <X extends Xref> X createIdentityXref(AnnotatedObject<X, ?> parent, String primaryId, CvXrefQualifier identityQual, CvDatabase cvDatabase) {
         X xref = (X) newXrefInstanceFor(parent.getClass());
         Institution owner = parent.getOwner();
 
@@ -105,7 +108,7 @@ public class XrefUtils {
         return ClassUtils.newInstance(xrefClass);
     }
 
-    public static <X extends Xref> Collection<X> getIdentityXrefs(AnnotatedObject<X,?> annotatedObject) {
+    public static <X extends Xref> Collection<X> getIdentityXrefs(AnnotatedObject<X, ?> annotatedObject) {
         Collection<X> xrefs = new ArrayList<X>();
 
         Collection<X> allXrefs = annotatedObject.getXrefs();
@@ -127,7 +130,7 @@ public class XrefUtils {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             String qualifierMi = null;
             if (qualifier != null && ((qualifierMi = qualifier.getIdentifier()) != null &&
-                qualifierMi.equals(CvXrefQualifier.IDENTITY_MI_REF))) {
+                    qualifierMi.equals(CvXrefQualifier.IDENTITY_MI_REF))) {
                 xrefs.add(xref);
             }
         }
@@ -135,23 +138,23 @@ public class XrefUtils {
         return xrefs;
     }
 
-    public static <X extends Xref> X getIdentityXref(AnnotatedObject<X,?> annotatedObject, CvDatabase cvDatabase) {
+    public static <X extends Xref> X getIdentityXref(AnnotatedObject<X, ?> annotatedObject, CvDatabase cvDatabase) {
         String dbMi = cvDatabase.getIdentifier();
 
         return getIdentityXref(annotatedObject, dbMi);
     }
 
-    public static <X extends Xref> X getIdentityXref(AnnotatedObject<X,?> annotatedObject, String databaseMi) {
+    public static <X extends Xref> X getIdentityXref(AnnotatedObject<X, ?> annotatedObject, String databaseMi) {
         for (X xref : annotatedObject.getXrefs()) {
             CvXrefQualifier qualifier = xref.getCvXrefQualifier();
             CvDatabase database = xref.getCvDatabase();
             String qualMi;
             String dbMi;
             if (qualifier != null && database != null &&
-                (qualMi = qualifier.getIdentifier()) != null &&
-                (dbMi = database.getIdentifier()) != null &&
-                qualMi.equals(CvXrefQualifier.IDENTITY_MI_REF) &&
-                dbMi.equals(databaseMi)) {
+                    (qualMi = qualifier.getIdentifier()) != null &&
+                    (dbMi = database.getIdentifier()) != null &&
+                    qualMi.equals(CvXrefQualifier.IDENTITY_MI_REF) &&
+                    dbMi.equals(databaseMi)) {
 
                 return xref;
             }
@@ -160,7 +163,7 @@ public class XrefUtils {
         return null;
     }
 
-    public static <X extends Xref> X getPsiMiIdentityXref(AnnotatedObject<X,?> annotatedObject) {
+    public static <X extends Xref> X getPsiMiIdentityXref(AnnotatedObject<X, ?> annotatedObject) {
         if (annotatedObject == null) {
             throw new NullPointerException("annotatedObject should not be null");
         }
@@ -178,7 +181,7 @@ public class XrefUtils {
 
     // ex1 : annotatedObject is supposibly the CvDatabase psi-mi, psiMi is CvDatabase.PSI_MI_MI_REF
     // ex2: annotatedObject is supposibly the CvXrefQualifier identity , psiMi is  CvXrefQualifier.IDENTITY_MI_REF
-    public static <X extends Xref> boolean hasIdentity(AnnotatedObject<X,?> annotatedObject, String psiMi) {
+    public static <X extends Xref> boolean hasIdentity(AnnotatedObject<X, ?> annotatedObject, String psiMi) {
         if (annotatedObject == null) {
             throw new NullPointerException("annotatedObject should not be null");
         }
@@ -201,14 +204,14 @@ public class XrefUtils {
 
     /**
      * Gets all the Xrefs for the CvDatabase with the passed mi identifier
-     * @param annotatedObject the Object with the xrefs
-     * @param databaseMi the database MI to look for
-     * @return list of Xrefs
      *
+     * @param annotatedObject the Object with the xrefs
+     * @param databaseMi      the database MI to look for
+     * @return list of Xrefs
      * @deprecated use AnnotatedObjectUtils.searchXrefsByDatabase instead
      */
     @Deprecated
-    public static <X extends Xref> List<X> getXrefsFilteredByDatabase(AnnotatedObject<X,?> annotatedObject, String databaseMi) {
+    public static <X extends Xref> List<X> getXrefsFilteredByDatabase(AnnotatedObject<X, ?> annotatedObject, String databaseMi) {
         if (annotatedObject == null) throw new NullPointerException("Null annotatedObject");
         if (databaseMi == null) throw new NullPointerException("Database MI Identifier is mandatory");
 

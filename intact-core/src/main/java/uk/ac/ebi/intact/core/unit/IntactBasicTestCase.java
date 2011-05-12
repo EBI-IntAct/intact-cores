@@ -45,12 +45,10 @@ import javax.persistence.PersistenceUnit;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/intact.spring.xml",
-                                   "classpath*:/META-INF/standalone/*-standalone.spring.xml"})
+        "classpath*:/META-INF/standalone/*-standalone.spring.xml"})
 @TransactionConfiguration
 @Transactional
 public abstract class IntactBasicTestCase {
-    @Autowired
-    private IntactContext intactContext;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -65,7 +63,7 @@ public abstract class IntactBasicTestCase {
 
     @Before
     public void prepareBasicTest() throws Exception {
-        mockBuilder = new IntactMockBuilder(intactContext.getConfig().getDefaultInstitution());
+        mockBuilder = new IntactMockBuilder(getIntactContext().getConfig().getDefaultInstitution());
     }
 
     @After
@@ -75,11 +73,11 @@ public abstract class IntactBasicTestCase {
 
     @After
     public void end() throws Exception {
-       //((ConfigurableApplicationContext)applicationContext).close();
+        //((ConfigurableApplicationContext)applicationContext).close();
     }
 
     protected IntactContext getIntactContext() {
-        return intactContext;
+        return (IntactContext) applicationContext.getBean("intactContext");
     }
 
     protected DataContext getDataContext() {
@@ -104,14 +102,14 @@ public abstract class IntactBasicTestCase {
 
     @Deprecated
     public PersisterHelper getPersisterHelper() {
-        return intactContext.getPersisterHelper();
+        return getIntactContext().getPersisterHelper();
     }
 
     public CorePersister getCorePersister() {
-        return intactContext.getCorePersister();
+        return getIntactContext().getCorePersister();
     }
 
     public CoreDeleter getCoreDeleter() {
-        return intactContext.getCoreDeleter();
+        return getIntactContext().getCoreDeleter();
     }
 }
