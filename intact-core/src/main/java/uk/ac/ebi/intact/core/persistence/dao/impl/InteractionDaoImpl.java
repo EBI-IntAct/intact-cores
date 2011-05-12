@@ -306,4 +306,21 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
 
         return query.getResultList();
     }
+
+    @Override
+    public int countAll( boolean includeNegative ) {
+        if( ! includeNegative ) {
+
+            Query query = getEntityManager().createQuery("select count(*) " +
+                                                         "from InteractionImpl " +
+                                                         "where ac not in ( select ni.ac " +
+                                                         "                 from InteractionImpl ni join ni.annotations a " +
+                                                         "                 where a.cvTopic.shortLabel = 'negative'" +
+                                                         "               )");
+//            query.setParameter("interactionClass", InteractionImpl.class.getName());
+            return ((Long) query.getSingleResult()).intValue();
+        }
+
+        return countAll();
+    }
 }
