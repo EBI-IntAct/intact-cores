@@ -14,4 +14,5 @@ import java.util.List;
 public interface ComponentDao extends AnnotatedObjectDao<Component> {
 
     List<Component> getByInteractorAc( String interactorAc );
+    List<Component> getByInteractionAc( String interactionAc );
 }
