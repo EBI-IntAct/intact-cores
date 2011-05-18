@@ -208,4 +208,23 @@ public class IntactCore {
 
         return aliases;
     }
+
+    /**
+     * Retrieves the interactions from an experiment, initializing them if necessary.
+     *
+     * @param experiment the experiment
+     * @return The returned interactions are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<Interaction> ensureInitializedInteractions(Experiment experiment) {
+        Collection<Interaction> interactions;
+
+        if (IntactCore.isInitialized(experiment.getInteractions())) {
+            interactions = experiment.getInteractions();
+        } else {
+            interactions = IntactContext.getCurrentInstance().getDaoFactory().getInteractionDao().getByExperimentAc(experiment.getAc(), 0, Integer.MAX_VALUE);
+        }
+
+        return interactions;
+    }
 }
