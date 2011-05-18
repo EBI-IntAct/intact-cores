@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.model.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.commons.util.Crc64;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.*;
@@ -35,7 +36,7 @@ public class CrcCalculator {
      */
     private static final Log log = LogFactory.getLog(CrcCalculator.class);
 
-    private Map<Integer,UniquenessStringBuilder> identityToCrc;
+    private Map<Integer, UniquenessStringBuilder> identityToCrc;
 
     public CrcCalculator() {
         identityToCrc = new WeakHashMap<Integer, UniquenessStringBuilder>();
@@ -48,7 +49,7 @@ public class CrcCalculator {
         String crc64 = Crc64.getCrc64(uniquenessString);
 
         if (log.isDebugEnabled())
-            log.debug("Created CRC for interaction '"+interaction.getShortLabel()+"': "+crc64+" ("+uniquenessString+")");
+            log.debug("Created CRC for interaction '" + interaction.getShortLabel() + "': " + crc64 + " (" + uniquenessString + ")");
 
         return crc64;
     }
@@ -130,7 +131,8 @@ public class CrcCalculator {
 
         // annotations
         Set<Annotation> annotations = new TreeSet<Annotation>(new AnnotationComparator());
-        annotations.addAll(experiment.getAnnotations());
+
+        annotations.addAll(IntactCore.ensureInitializedAnnotations(experiment));
 
         for (Annotation annotation : annotations) {
             sb.append(createUniquenessString(annotation));
@@ -182,10 +184,10 @@ public class CrcCalculator {
 
         // experimental roles
         List<CvExperimentalRole> expRoles = new ArrayList<CvExperimentalRole>(component.getExperimentalRoles());
-        Collections.sort( expRoles, new CvObjectComparator() );
+        Collections.sort(expRoles, new CvObjectComparator());
 
-        for( CvExperimentalRole expRole : expRoles){
-            sb.append( createUniquenessString( expRole ));
+        for (CvExperimentalRole expRole : expRoles) {
+            sb.append(createUniquenessString(expRole));
         }
 
         // features
@@ -238,13 +240,13 @@ public class CrcCalculator {
         if (interactor == null) return sb;
 
         // IDs
-        List<InteractorXref> idXrefs = new ArrayList<InteractorXref>( XrefUtils.getIdentityXrefs(interactor) );
+        List<InteractorXref> idXrefs = new ArrayList<InteractorXref>(XrefUtils.getIdentityXrefs(interactor));
         // sort identities in case there are more than one
-        Collections.sort( idXrefs, new Comparator<InteractorXref>() {
-            public int compare( InteractorXref o1, InteractorXref o2 ) {
-                return o1.getPrimaryId().toLowerCase().compareTo( o2.getPrimaryId().toLowerCase() );
+        Collections.sort(idXrefs, new Comparator<InteractorXref>() {
+            public int compare(InteractorXref o1, InteractorXref o2) {
+                return o1.getPrimaryId().toLowerCase().compareTo(o2.getPrimaryId().toLowerCase());
             }
-        } );
+        });
 
         for (InteractorXref idXref : idXrefs) {
             sb.append(idXref.getPrimaryId().toLowerCase());
@@ -257,7 +259,7 @@ public class CrcCalculator {
             boolean usedSequence = false;
 
             if (interactor instanceof Polymer) {
-                Polymer polymer = (Polymer)interactor;
+                Polymer polymer = (Polymer) interactor;
 
                 final String sequence = polymer.getSequence();
                 if (sequence != null) {
@@ -318,13 +320,13 @@ public class CrcCalculator {
         sb.append(createUniquenessString(range.getFromCvFuzzyType()));
 
         // interval from
-        sb.append(range.getFromIntervalStart()+"-"+range.getFromIntervalEnd());
+        sb.append(range.getFromIntervalStart() + "-" + range.getFromIntervalEnd());
 
         // type to
         sb.append(createUniquenessString(range.getToCvFuzzyType()));
 
         // interval end
-        sb.append(range.getToIntervalStart()+"-"+range.getToIntervalEnd());
+        sb.append(range.getToIntervalStart() + "-" + range.getToIntervalEnd());
 
 
         return sb;
@@ -379,12 +381,12 @@ public class CrcCalculator {
     }
 
     protected UniquenessStringBuilder getKey(IntactObject io) {
-         return identityToCrc.get(System.identityHashCode(io));
+        return identityToCrc.get(System.identityHashCode(io));
     }
 
     /////////////////////////////////
     // StringBuilder decorator
-    
+
     protected class UniquenessStringBuilder {
 
         private static final char SEPARATOR = '|';

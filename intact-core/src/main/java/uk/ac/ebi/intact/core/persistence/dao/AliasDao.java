@@ -18,5 +18,9 @@ import java.util.Collection;
 @Mockable
 public interface AliasDao<T extends Alias> extends IntactObjectDao<T> {
 
-    Collection<T> getByNameLike( String name );
+    Collection<T> getByNameLike(String name);
+
+    public Collection<T> getByParentAc(String parentAc);
+
+    public Collection<T> getByParentAc(String parentAc, boolean ignoreCase);
 }

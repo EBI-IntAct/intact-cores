@@ -24,11 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 
-/** *
+import java.util.Collection;
+
+/**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class IntactCoreTest extends IntactBasicTestCase{
+public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
@@ -133,7 +135,7 @@ public class IntactCoreTest extends IntactBasicTestCase{
     @Transactional(propagation = Propagation.NEVER)
     @DirtiesContext
     public void testIsInitializedAndDirty_no() throws Exception {
-         TransactionStatus transaction = getDataContext().beginTransaction();
+        TransactionStatus transaction = getDataContext().beginTransaction();
 
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
@@ -171,5 +173,103 @@ public class IntactCoreTest extends IntactBasicTestCase{
         Assert.assertEquals(BioSource.class, IntactCore.classForAc(getIntactContext(), bioSource.getAc()));
         Assert.assertEquals(Component.class, IntactCore.classForAc(getIntactContext(), component.getAc()));
         Assert.assertEquals(Feature.class, IntactCore.classForAc(getIntactContext(), feature.getAc()));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void isInitiallized_collections() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+
+        getCorePersister().saveOrUpdate(interaction);
+
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
+        Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        getDataContext().commitTransaction(transaction2);
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAnnotations()));
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getXrefs()));
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAliases()));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void ensuresInitializedAnnotations1() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+
+        getCorePersister().saveOrUpdate(interaction);
+
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
+        Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        getDataContext().commitTransaction(transaction2);
+
+        Collection<Annotation> annotations = IntactCore.ensureInitializedAnnotations(refreshedInteraction);
+
+        Assert.assertTrue(IntactCore.isInitialized(annotations));
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getXrefs()));
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAliases()));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void ensuresInitializedXrefs() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+
+        getCorePersister().saveOrUpdate(interaction);
+
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
+        Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        getDataContext().commitTransaction(transaction2);
+
+        Collection<? extends Xref> xrefs = IntactCore.ensureInitializedXrefs(refreshedInteraction);
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAnnotations()));
+        Assert.assertTrue(IntactCore.isInitialized(xrefs));
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAliases()));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void ensuresInitializedAliases() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+
+        getCorePersister().saveOrUpdate(interaction);
+
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
+        Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        getDataContext().commitTransaction(transaction2);
+
+        Collection<? extends Alias> aliases = IntactCore.ensureInitializedAliases(refreshedInteraction);
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAnnotations()));
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getXrefs()));
+        Assert.assertTrue(IntactCore.isInitialized(aliases));
     }
 }

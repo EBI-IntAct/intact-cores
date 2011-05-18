@@ -31,11 +31,19 @@ public class AliasDaoImpl<T extends Alias> extends IntactObjectDaoImpl<T> implem
         super((Class<T>) Alias.class);
     }
 
-    public AliasDaoImpl( Class<T> aliasClass, EntityManager entityManager, IntactSession intactSession ) {
-        super( aliasClass, entityManager, intactSession );
+    public AliasDaoImpl(Class<T> aliasClass, EntityManager entityManager, IntactSession intactSession) {
+        super(aliasClass, entityManager, intactSession);
     }
 
-    public Collection<T> getByNameLike( String name ) {
-        return getByPropertyNameLike( "name", name );
+    public Collection<T> getByNameLike(String name) {
+        return getByPropertyNameLike("name", name);
+    }
+
+    public Collection<T> getByParentAc(String parentAc) {
+        return getColByPropertyName("parentAc", parentAc);
+    }
+
+    public Collection<T> getByParentAc(String parentAc, boolean ignoreCase) {
+        return getColByPropertyName("parentAc", parentAc, ignoreCase);
     }
 }
