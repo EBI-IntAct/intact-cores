@@ -34,37 +34,37 @@ import java.util.*;
  */
 public class KeyBuilder {
 
-    private Map<String,Key> keyCache = new LRUMap(10000);
+    private Map<String, Key> keyCache = new LRUMap(10000);
 
-    public Key keyFor( AnnotatedObject ao ) {
+    public Key keyFor(AnnotatedObject ao) {
         Key key;
 
-        String cacheKey = ao.getClass().getSimpleName()+":"+System.identityHashCode(ao);
+        String cacheKey = ao.getClass().getSimpleName() + ":" + System.identityHashCode(ao);
 
         if (ao.getAc() != null) {
             key = new Key(ao.getAc());
         } else if (keyCache.containsKey(cacheKey)) {
             return keyCache.get(cacheKey);
-        } else if ( ao instanceof Institution ) {
-            key = keyForInstitution( ( Institution ) ao );
-        } else if ( ao instanceof Publication ) {
-            key = keyForPublication( ( Publication ) ao );
-        } else if ( ao instanceof CvObject ) {
-            key = keyForCvObject( ( CvObject ) ao );
-        } else if ( ao instanceof Experiment ) {
-            key = keyForExperiment( ( Experiment ) ao );
-        } else if ( ao instanceof Interaction ) {
-            key = keyForInteraction( ( Interaction ) ao );
-        } else if ( ao instanceof Interactor ) {
-            key = keyForInteractor( ( Interactor ) ao );
-        } else if ( ao instanceof BioSource ) {
-            key = keyForBioSource( ( BioSource ) ao );
-        } else if ( ao instanceof Component ) {
-            key = keyForComponent( ( Component ) ao );
-        } else if ( ao instanceof Feature ) {
-            key = keyForFeature( ( Feature ) ao );
+        } else if (ao instanceof Institution) {
+            key = keyForInstitution((Institution) ao);
+        } else if (ao instanceof Publication) {
+            key = keyForPublication((Publication) ao);
+        } else if (ao instanceof CvObject) {
+            key = keyForCvObject((CvObject) ao);
+        } else if (ao instanceof Experiment) {
+            key = keyForExperiment((Experiment) ao);
+        } else if (ao instanceof Interaction) {
+            key = keyForInteraction((Interaction) ao);
+        } else if (ao instanceof Interactor) {
+            key = keyForInteractor((Interactor) ao);
+        } else if (ao instanceof BioSource) {
+            key = keyForBioSource((BioSource) ao);
+        } else if (ao instanceof Component) {
+            key = keyForComponent((Component) ao);
+        } else if (ao instanceof Feature) {
+            key = keyForFeature((Feature) ao);
         } else {
-            throw new IllegalArgumentException( "KeyBuilder doesn't build key for: " + ao.getClass().getName() );
+            throw new IllegalArgumentException("KeyBuilder doesn't build key for: " + ao.getClass().getName());
         }
 
         keyCache.put(cacheKey, key);
@@ -72,60 +72,60 @@ public class KeyBuilder {
         return key;
     }
 
-    protected Key keyForInstitution( Institution institution ) {
-        final Collection<InstitutionXref> institutionXrefs = XrefUtils.getIdentityXrefs( institution );
+    protected Key keyForInstitution(Institution institution) {
+        final Collection<InstitutionXref> institutionXrefs = XrefUtils.getIdentityXrefs(institution);
 
         Key key;
 
-        if ( institutionXrefs.isEmpty() ) {
-            key = keyForAnnotatedObject( institution );
+        if (institutionXrefs.isEmpty()) {
+            key = keyForAnnotatedObject(institution);
         } else {
-            key = new Key( "Institution:" + concatPrimaryIds( institutionXrefs ) );
+            key = new Key("Institution:" + concatPrimaryIds(institutionXrefs));
         }
 
         return key;
     }
 
-    protected Key keyForPublication( Publication publication ) {
-        return keyForAnnotatedObject( publication );
+    protected Key keyForPublication(Publication publication) {
+        return keyForAnnotatedObject(publication);
     }
 
-    protected Key keyForExperiment( Experiment experiment ) {
+    protected Key keyForExperiment(Experiment experiment) {
 
         return new Key(new ExperimentKeyCalculator().calculateExperimentKey(experiment));
     }
 
-    protected Key keyForInteraction( Interaction interaction ) {
+    protected Key keyForInteraction(Interaction interaction) {
         final Key key = new Key(new CrcCalculator().crc64(interaction));
 
         // pre-calculate the keys for the components here and put them in a map
         int n = 0;
 
         for (Component component : interaction.getComponents()) {
-            Key compKey = new Key(key.getUniqueString()+":"+component.getShortLabel()+"["+n+"]");
-            keyCache.put(Component.class.getSimpleName()+":"+System.identityHashCode(component), compKey);
+            Key compKey = new Key(key.getUniqueString() + ":" + component.getShortLabel() + "[" + n + "]");
+            keyCache.put(Component.class.getSimpleName() + ":" + System.identityHashCode(component), compKey);
             n++;
         }
 
         return key;
     }
 
-    protected Key keyForInteractor( Interactor interactor ) {
-        final Collection<InteractorXref> interactorXrefs = XrefUtils.getIdentityXrefs( interactor );
+    protected Key keyForInteractor(Interactor interactor) {
+        final Collection<InteractorXref> interactorXrefs = XrefUtils.getIdentityXrefs(interactor);
 
         Key key;
 
-        if ( interactorXrefs.isEmpty() ) {
-            key = keyForAnnotatedObject( interactor );
+        if (interactorXrefs.isEmpty()) {
+            key = keyForAnnotatedObject(interactor);
         } else {
-            Class normalizedClass = CgLibUtil.removeCglibEnhanced( interactor.getClass() );
-            key = new Key( normalizedClass.getSimpleName() + ":" + concatPrimaryIds( interactorXrefs ) );
+            Class normalizedClass = CgLibUtil.removeCglibEnhanced(interactor.getClass());
+            key = new Key(normalizedClass.getSimpleName() + ":" + concatPrimaryIds(interactorXrefs));
         }
 
         return key;
     }
 
-    protected Key keyForBioSource( BioSource bioSource ) {
+    protected Key keyForBioSource(BioSource bioSource) {
         StringBuilder sb = new StringBuilder(256);
         sb.append("BioSource:").append(bioSource.getTaxId());
 
@@ -137,15 +137,19 @@ public class KeyBuilder {
             sb.append("|").append(bioSource.getCvTissue().getIdentifier());
         }
 
-        return new Key( sb.toString() );
+        return new Key(sb.toString());
     }
 
-    protected Key keyForComponent( Component component ) {
-        final String cacheKey = Component.class.getSimpleName()+":"+System.identityHashCode(component);
+    protected Key keyForComponent(Component component) {
+        final String cacheKey = Component.class.getSimpleName() + ":" + System.identityHashCode(component);
 
         Key interactionKey = null;
 
         if (!keyCache.containsKey(cacheKey)) {
+            if (component.getInteraction() == null) {
+                throw new IllegalArgumentException("Cannot generate a key for a component without interaction: " + component);
+            }
+
             interactionKey = keyForInteraction(component.getInteraction());
         }
 
@@ -154,78 +158,78 @@ public class KeyBuilder {
         }
 
         if (interactionKey != null) {
-            Key compKey = new Key(interactionKey.getUniqueString()+":"+component.getShortLabel()+"["+component.hashCode()+"]");
+            Key compKey = new Key(interactionKey.getUniqueString() + ":" + component.getShortLabel() + "[" + component.hashCode() + "]");
             keyCache.put(cacheKey, compKey);
             return compKey;
         }
 
-        throw new IllegalStateException("This component should already have already a key, generated when the interaction key is generated: "+component);
+        throw new IllegalStateException("This component should already have already a key, generated when the interaction key is generated: " + component);
     }
 
-    protected Key keyForFeature( Feature feature ) {
+    protected Key keyForFeature(Feature feature) {
 
 
-        if ( feature.getComponent() == null ) {
-            throw new IllegalArgumentException( "Cannot create a feature key for feature without component: " + feature );
+        if (feature.getComponent() == null) {
+            throw new IllegalArgumentException("Cannot create a feature key for feature without component: " + feature);
         }
 
-        Key componentKey = keyFor( feature.getComponent() );
-        return new Key( new FeatureKeyCalculator().calculateFeatureKey(feature) + "___" + componentKey.getUniqueString() );
+        Key componentKey = keyFor(feature.getComponent());
+        return new Key(new FeatureKeyCalculator().calculateFeatureKey(feature) + "___" + componentKey.getUniqueString());
 
 //        return new Key( keyForAnnotatedObject( feature ).getUniqueString() + "___" + componentKey.getUniqueString() );
     }
 
-    protected Key keyForCvObject( CvObject cvObject ) {
+    protected Key keyForCvObject(CvObject cvObject) {
         String key = cvObject.getIdentifier();
-        if ( key == null ) {
+        if (key == null) {
             // search for identity
-            final Collection<CvObjectXref> xrefs = XrefUtils.getIdentityXrefs( cvObject );
-            if ( !xrefs.isEmpty() ) {
-                    key = concatPrimaryIds( xrefs );
+            final Collection<CvObjectXref> xrefs = XrefUtils.getIdentityXrefs(cvObject);
+            if (!xrefs.isEmpty()) {
+                key = concatPrimaryIds(xrefs);
             } else {
                 key = cvObject.getShortLabel();
             }
         }
 
-        key = cvObject.getClass().getSimpleName()+"__"+key;
+        key = cvObject.getClass().getSimpleName() + "__" + key;
 
-        return new Key( key );
+        return new Key(key);
     }
 
     public Key keyForXref(Xref xref) {
-        return new Key(keyFor(xref.getParent()).getUniqueString()+"::"+xref.getPrimaryId());
+        return new Key(keyFor(xref.getParent()).getUniqueString() + "::" + xref.getPrimaryId());
     }
 
-     public Key keyForAlias(Alias alias) {
-        return new Key(keyFor(alias.getParent()).getUniqueString()+"::"+alias.getName());
+    public Key keyForAlias(Alias alias) {
+        return new Key(keyFor(alias.getParent()).getUniqueString() + "::" + alias.getName());
     }
 
     public Key keyForAnnotation(Annotation annotation, AnnotatedObject parent) {
-        return new Key(keyFor(parent).getUniqueString()+"::"+annotation.getCvTopic()+"_"+annotation.getAnnotationText());
+        return new Key(keyFor(parent).getUniqueString() + "::" + annotation.getCvTopic() + "_" + annotation.getAnnotationText());
     }
 
-    protected Key keyForAnnotatedObject( AnnotatedObject annotatedObject ) {
-        Class normalizedClass = CgLibUtil.removeCglibEnhanced( annotatedObject.getClass() );
-        return new Key( normalizedClass.getSimpleName() + ":" + annotatedObject.getShortLabel() );
+    protected Key keyForAnnotatedObject(AnnotatedObject annotatedObject) {
+        Class normalizedClass = CgLibUtil.removeCglibEnhanced(annotatedObject.getClass());
+        return new Key(normalizedClass.getSimpleName() + ":" + annotatedObject.getShortLabel());
     }
 
-    protected String concatPrimaryIds( Collection<? extends Xref> xrefs ) {
-        if ( xrefs.isEmpty() ) {
-            throw new IllegalArgumentException( "Expecting a non empty collection of Xrefs" );
+    protected String concatPrimaryIds(Collection<? extends Xref> xrefs) {
+        if (xrefs.isEmpty()) {
+            throw new IllegalArgumentException("Expecting a non empty collection of Xrefs");
         }
 
-        List<String> primaryIds = new ArrayList<String>( xrefs.size() );
+        List<String> primaryIds = new ArrayList<String>(xrefs.size());
 
-        for ( Xref xref : xrefs ) {
-            primaryIds.add( xref.getPrimaryId() );
+        for (Xref xref : xrefs) {
+            primaryIds.add(xref.getPrimaryId());
         }
 
-        Collections.sort( primaryIds );
+        Collections.sort(primaryIds);
 
         StringBuilder sb = new StringBuilder();
 
-        for ( String primaryId : primaryIds ) {
-            sb.append( primaryId ).append( "___" );
+        for (String primaryId : primaryIds) {
+            sb.append(primaryId).append("___");
         }
 
         return sb.toString();
