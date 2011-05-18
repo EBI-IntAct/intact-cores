@@ -36,4 +36,10 @@ public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implemen
                 .createCriteria( "interactor" )
                 .add( Restrictions.idEq( interactorAc ) ).list();
     }
+
+    public List<Component> getByInteractionAc( String interactionAc ) {
+        return getSession().createCriteria( getEntityClass() )
+                .createCriteria( "interaction" )
+                .add( Restrictions.idEq( interactionAc ) ).list();
+    }
 }

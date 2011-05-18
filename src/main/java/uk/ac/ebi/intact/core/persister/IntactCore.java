@@ -227,4 +227,23 @@ public class IntactCore {
 
         return interactions;
     }
+
+     /**
+     * Retrieves the components from an interaction, initializing them if necessary.
+     *
+     * @param interaction the interaction
+     * @return The returned components are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<Component> ensureInitializedParticipants(Interaction interaction) {
+        Collection<Component> components;
+
+        if (IntactCore.isInitialized(interaction.getComponents())) {
+            components = interaction.getComponents();
+        } else {
+            components = IntactContext.getCurrentInstance().getDaoFactory().getComponentDao().getByInteractionAc(interaction.getAc());
+        }
+
+        return components;
+    }
 }
