@@ -385,4 +385,29 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
         Assert.assertTrue(IntactCore.isInitialized(components));
     }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void ensuresInitializedConfidence() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        interaction.addConfidence(getMockBuilder().createDeterministicConfidence());
+        getCorePersister().saveOrUpdate(interaction);
+
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
+        Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        getDataContext().commitTransaction(transaction2);
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getConfidences()));
+
+        Collection<Confidence> confidences = IntactCore.ensureInitializedConfidences(refreshedInteraction);
+
+        Assert.assertTrue(IntactCore.isInitialized(confidences));
+    }
 }

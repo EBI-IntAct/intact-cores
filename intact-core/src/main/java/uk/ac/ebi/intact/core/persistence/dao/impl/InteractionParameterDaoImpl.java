@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -22,6 +23,7 @@ import uk.ac.ebi.intact.core.persistence.dao.InteractionParameterDao;
 import uk.ac.ebi.intact.model.InteractionParameter;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 /**
  * Data Access Object for Interaction parameter.
@@ -40,5 +42,11 @@ public class InteractionParameterDaoImpl extends IntactObjectDaoImpl<Interaction
 
     public InteractionParameterDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
         super( InteractionParameter.class, entityManager, intactSession );
+    }
+
+    public List<InteractionParameter> getByInteractionAc( String interactionAc ) {
+        return getSession().createCriteria( getEntityClass() )
+                .createCriteria( "interaction" )
+                .add( Restrictions.idEq(interactionAc) ).list();
     }
 }

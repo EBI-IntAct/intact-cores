@@ -564,20 +564,26 @@ public class InteractionImpl extends InteractorImpl
         }
 
         if (checkComponents) {
+            // the components must be initialized to check if equals
             Collection<Component> initializedComponents1 = IntactCore.ensureInitializedParticipants(this);
             Collection<Component> initializedComponents2 = IntactCore.ensureInitializedParticipants(interaction);
-
-            if (initializedComponents1.size() != initializedComponents2.size()) {
-                return false;
-            }
 
             if (!CollectionUtils.isEqualCollection(initializedComponents1, initializedComponents2)) {
                 return false;
             }
-            if (!CollectionUtils.isEqualCollection( getConfidences(), interaction.getConfidences())){
+
+            // the confidences must be initialized to check if equals
+            Collection<Confidence> initializedConfidence1 = IntactCore.ensureInitializedConfidences(this);
+            Collection<Confidence> initializedConfidence2 = IntactCore.ensureInitializedConfidences(interaction);
+
+            if (!CollectionUtils.isEqualCollection( initializedConfidence1, initializedConfidence2)){
                 return false;
             }
-            if (!CollectionUtils.isEqualCollection( getParameters(), interaction.getParameters())){
+
+            // the parameters must be initialized to check if equals
+            Collection<InteractionParameter> initializedParameter1 = IntactCore.ensureInitializedInteractionParameters(this);
+            Collection<InteractionParameter> initializedParameter2 = IntactCore.ensureInitializedInteractionParameters(interaction);
+            if (!CollectionUtils.isEqualCollection( initializedParameter1, initializedParameter2)){
                 return false;
             }
         }
