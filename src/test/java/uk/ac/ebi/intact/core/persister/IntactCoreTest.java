@@ -107,6 +107,67 @@ public class IntactCoreTest extends IntactBasicTestCase {
         Assert.assertNull(getDataContext().getDaoFactory().getInteractionDao().getByAc(refreshedInteraction.getAc()));
     }
 
+    //@Test
+    //@Transactional(propagation = Propagation.NEVER)
+    //@DirtiesContext
+    /*public void testIsInitialized_no_try_delete_and_remove_from_experiment() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
+        Experiment experiment = getMockBuilder().createDeterministicExperiment();
+        Interaction interaction = getMockBuilder().createDeterministicInteraction();
+        interaction.getComponents().clear();
+
+        experiment.getInteractions().clear();
+
+        getCorePersister().saveOrUpdate(experiment);
+
+        interaction.getExperiments().clear();
+        interaction.addExperiment(experiment);
+
+        getCorePersister().saveOrUpdate(interaction);
+
+        experiment.addInteraction(interaction);
+
+        getCorePersister().saveOrUpdate(experiment);
+
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
+        Experiment refreshedExperiment = getDaoFactory().getExperimentDao().getByAc(experiment.getAc());
+        Interaction refreshedInteraction = refreshedExperiment.getInteractions().iterator().next();
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getComponents()));
+
+        getDataContext().commitTransaction(transaction2);
+
+        TransactionStatus transaction3 = getDataContext().beginTransaction();
+
+        Interaction refreshedInteraction2 = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+        Assert.assertTrue(refreshedInteraction2.getComponents().isEmpty());
+
+        Component c1 = getMockBuilder().createComponentRandom();
+        Component c2 = getMockBuilder().createComponentRandom();
+        Component c3 = getMockBuilder().createComponentRandom();
+
+        refreshedInteraction2.addComponent(c1);
+        refreshedInteraction2.addComponent(c2);
+        refreshedInteraction2.addComponent(c3);
+
+        getCorePersister().saveOrUpdate(refreshedInteraction2);
+
+        getDataContext().commitTransaction(transaction3);
+
+        TransactionStatus transaction4 = getDataContext().beginTransaction();
+        getDataContext().commitTransaction(transaction3);
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getComponents()));
+
+        getCoreDeleter().delete(refreshedInteraction);
+        getDataContext().commitTransaction(transaction4);
+        Assert.assertNull(getDataContext().getDaoFactory().getInteractionDao().getByAc(refreshedInteraction.getAc()));
+    }*/
+
     @Test
     @Transactional(propagation = Propagation.NEVER)
     @DirtiesContext

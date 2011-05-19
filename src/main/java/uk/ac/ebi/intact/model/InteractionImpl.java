@@ -38,7 +38,7 @@ import java.util.Date;
 @DiscriminatorValue( "uk.ac.ebi.intact.model.InteractionImpl" )
 @EditorTopic( name = "Interaction" )
 public class InteractionImpl extends InteractorImpl
-                             implements Editable, Interaction {
+        implements Editable, Interaction {
 
     /**
      * Sets up a logger for that class.
@@ -94,7 +94,7 @@ public class InteractionImpl extends InteractorImpl
      * Collection of interaction's parameter (eg. dissociation constant)
      */
     private Collection<InteractionParameter> interactionParameters;
-    
+
     public InteractionImpl() {
         //super call sets creation time data
         super();
@@ -263,7 +263,7 @@ public class InteractionImpl extends InteractorImpl
         Instant after = new Instant();
 
         if (log.isDebugEnabled()) log.debug("Calculated crc for interaction '" + getShortLabel() +
-                                            "' in " + new Duration(before, after).getMillis() + "ms: " + crc);
+                "' in " + new Duration(before, after).getMillis() + "ms: " + crc);
     }
 
     /**
@@ -413,7 +413,7 @@ public class InteractionImpl extends InteractorImpl
     }
 
     public void setConfidences( Collection<Confidence> someConfidences ) {
-       this.confidences = someConfidences;
+        this.confidences = someConfidences;
     }
 
     public void addConfidence( Confidence confidence ) {
@@ -426,31 +426,31 @@ public class InteractionImpl extends InteractorImpl
     public void removeConfidence( Confidence confidence ) {
         this.confidences.remove( confidence);
     }
-    
+
     public void setParameters( Collection<InteractionParameter> someInteractionParameters ) {
         if( someInteractionParameters == null ) {
             throw new IllegalArgumentException( "You must set a non null collection of parameter" );
         }
         this.interactionParameters = someInteractionParameters;
-     }
+    }
 
-     public void addParameter( InteractionParameter interactionParameter ) {
-         if ( !this.interactionParameters.contains( interactionParameter ) ) {
-             this.interactionParameters.add( interactionParameter );
-             interactionParameter.setInteraction( this );
-         }
-     }
+    public void addParameter( InteractionParameter interactionParameter ) {
+        if ( !this.interactionParameters.contains( interactionParameter ) ) {
+            this.interactionParameters.add( interactionParameter );
+            interactionParameter.setInteraction( this );
+        }
+    }
 
-     public void removeParameter( InteractionParameter interactionParameter ) {
-         this.interactionParameters.remove( interactionParameter );
-     }
+    public void removeParameter( InteractionParameter interactionParameter ) {
+        this.interactionParameters.remove( interactionParameter );
+    }
 
     @OneToMany( mappedBy = "interaction", orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
     public Collection<Confidence> getConfidences() {
         return confidences;
     }
-    
+
     @OneToMany( mappedBy = "interaction", orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
     public Collection<InteractionParameter> getParameters() {
@@ -472,7 +472,7 @@ public class InteractionImpl extends InteractorImpl
     @Deprecated
     public Component getBait() {
         for ( Component component : components ) {
-            
+
             Collection<CvExperimentalRole> roles = component.getExperimentalRoles();
             if ( roles == null ) {
                 return null;
@@ -563,13 +563,16 @@ public class InteractionImpl extends InteractorImpl
             }
         }
 
-        if (getComponents().size() != interaction.getComponents().size()) {
-            return false;
-        }
-
         if (checkComponents) {
-            if (!CollectionUtils.isEqualCollection(getComponents(), interaction.getComponents())) {
-                 return false;
+            Collection<Component> initializedComponents1 = IntactCore.ensureInitializedParticipants(this);
+            Collection<Component> initializedComponents2 = IntactCore.ensureInitializedParticipants(interaction);
+
+            if (initializedComponents1.size() != initializedComponents2.size()) {
+                return false;
+            }
+
+            if (!CollectionUtils.isEqualCollection(initializedComponents1, initializedComponents2)) {
+                return false;
             }
             if (!CollectionUtils.isEqualCollection( getConfidences(), interaction.getConfidences())){
                 return false;
@@ -636,7 +639,7 @@ public class InteractionImpl extends InteractorImpl
 
         copy.confidences = new ArrayList<Confidence>();
         copy.interactionParameters = new ArrayList<InteractionParameter>();
-        
+
         return copy;
     }
 
@@ -646,11 +649,11 @@ public class InteractionImpl extends InteractorImpl
         sb.append("Interaction: ").append(getAc()).append(" Label: ").append(getShortLabel()).append(" [").append(NEW_LINE);
 
         if (IntactCore.isInitialized(getComponents())) {
-        if ( null != this.getComponents() ) {
-            for ( Object o : this.getComponents() ) {
-                sb.append(( ( Component ) o ).getInteractor());
+            if ( null != this.getComponents() ) {
+                for ( Object o : this.getComponents() ) {
+                    sb.append(( ( Component ) o ).getInteractor());
+                }
             }
-        }
         } else {
             sb.append("Components not initialized");
         }
