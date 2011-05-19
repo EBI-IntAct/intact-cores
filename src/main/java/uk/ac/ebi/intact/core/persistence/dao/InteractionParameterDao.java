@@ -18,6 +18,8 @@ package uk.ac.ebi.intact.core.persistence.dao;
 import uk.ac.ebi.intact.model.InteractionParameter;
 import uk.ac.ebi.intact.annotation.Mockable;
 
+import java.util.List;
+
 /**
  * To access the Parameter of an interaction. 
  *
@@ -27,4 +29,6 @@ import uk.ac.ebi.intact.annotation.Mockable;
  */
 @Mockable
 public interface InteractionParameterDao  extends IntactObjectDao<InteractionParameter>{
+
+    public List<InteractionParameter> getByInteractionAc( String interactionAc );
 }

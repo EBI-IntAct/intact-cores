@@ -246,4 +246,42 @@ public class IntactCore {
 
         return components;
     }
+
+    /**
+     * Retrieves the confidences from an interaction, initializing them if necessary.
+     *
+     * @param interaction the interaction
+     * @return The returned confidences are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<Confidence> ensureInitializedConfidences(Interaction interaction) {
+        Collection<Confidence> confidences;
+
+        if (IntactCore.isInitialized(interaction.getConfidences())) {
+            confidences = interaction.getConfidences();
+        } else {
+            confidences = IntactContext.getCurrentInstance().getDaoFactory().getConfidenceDao().getByInteractionAc(interaction.getAc());
+        }
+
+        return confidences;
+    }
+
+        /**
+     * Retrieves the parameters from an interaction, initializing them if necessary.
+     *
+     * @param interaction the interaction
+     * @return The returned confidences are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<InteractionParameter> ensureInitializedInteractionParameters(Interaction interaction) {
+        Collection<InteractionParameter> parameters;
+
+        if (IntactCore.isInitialized(interaction.getParameters())) {
+            parameters = interaction.getParameters();
+        } else {
+            parameters = IntactContext.getCurrentInstance().getDaoFactory().getInteractionParameterDao().getByInteractionAc(interaction.getAc());
+        }
+
+        return parameters;
+    }
 }

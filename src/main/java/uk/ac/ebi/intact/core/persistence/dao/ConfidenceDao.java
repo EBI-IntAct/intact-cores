@@ -18,6 +18,8 @@ package uk.ac.ebi.intact.core.persistence.dao;
 import uk.ac.ebi.intact.model.Confidence;
 import uk.ac.ebi.intact.annotation.Mockable;
 
+import java.util.List;
+
 /**
  * To access the confidence. 
  *
@@ -27,4 +29,6 @@ import uk.ac.ebi.intact.annotation.Mockable;
  */
 @Mockable
 public interface ConfidenceDao  extends IntactObjectDao<Confidence>{
+
+    public List<Confidence> getByInteractionAc( String interactionAc );
 }
