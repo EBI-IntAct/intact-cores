@@ -550,6 +550,7 @@ public final class AnnotatedObjectUtils {
 
             if (!IntactCore.isInitialized(interaction.getExperiments())) {
                 experiments = IntactContext.getCurrentInstance().getDaoFactory().getInteractionDao().getByAc(interaction.getAc()).getExperiments();
+                interaction.setExperiments(experiments);
             } else {
                 experiments = interaction.getExperiments();
             }
