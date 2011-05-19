@@ -238,6 +238,8 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
         getDataContext().commitTransaction(transaction2);
 
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAnnotations()));
+
         Collection<Annotation> annotations = IntactCore.ensureInitializedAnnotations(refreshedInteraction);
 
         Assert.assertTrue(IntactCore.isInitialized(annotations));
@@ -262,6 +264,8 @@ public class IntactCoreTest extends IntactBasicTestCase {
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
 
         getDataContext().commitTransaction(transaction2);
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getXrefs()));
 
         Collection<? extends Xref> xrefs = IntactCore.ensureInitializedXrefs(refreshedInteraction);
 
@@ -288,10 +292,36 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
         getDataContext().commitTransaction(transaction2);
 
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAliases()));
+
         Collection<? extends Alias> aliases = IntactCore.ensureInitializedAliases(refreshedInteraction);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAnnotations()));
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getXrefs()));
         Assert.assertTrue(IntactCore.isInitialized(aliases));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void ensuresInitializedParticipant() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        getCorePersister().saveOrUpdate(interaction);
+
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
+        Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        getDataContext().commitTransaction(transaction2);
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getComponents()));
+
+        Collection<Component> components = IntactCore.ensureInitializedParticipants(refreshedInteraction);
+
+        Assert.assertTrue(IntactCore.isInitialized(components));
     }
 }
