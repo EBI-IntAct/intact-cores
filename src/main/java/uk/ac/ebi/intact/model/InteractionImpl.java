@@ -258,7 +258,14 @@ public class InteractionImpl extends InteractorImpl
 
         Instant before = new Instant();
 
-        crc = crcCalculator.crc64(this);
+        String newCrc = crcCalculator.crc64(this);
+
+        if (crc == null){
+            crc = newCrc;
+        }
+        else if (!crc.equals(newCrc)){
+            crc = newCrc;
+        }
 
         Instant after = new Instant();
 

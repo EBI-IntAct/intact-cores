@@ -107,10 +107,10 @@ public class IntactCoreTest extends IntactBasicTestCase {
         Assert.assertNull(getDataContext().getDaoFactory().getInteractionDao().getByAc(refreshedInteraction.getAc()));
     }
 
-    //@Test
-    //@Transactional(propagation = Propagation.NEVER)
-    //@DirtiesContext
-    /*public void testIsInitialized_no_try_delete_and_remove_from_experiment() throws Exception {
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+     public void testIsInitialized_no_try_delete_and_remove_from_experiment() throws Exception {
         TransactionStatus transaction = getDataContext().beginTransaction();
 
         Experiment experiment = getMockBuilder().createDeterministicExperiment();
@@ -166,7 +166,7 @@ public class IntactCoreTest extends IntactBasicTestCase {
         getCoreDeleter().delete(refreshedInteraction);
         getDataContext().commitTransaction(transaction4);
         Assert.assertNull(getDataContext().getDaoFactory().getInteractionDao().getByAc(refreshedInteraction.getAc()));
-    }*/
+    }
 
     @Test
     @Transactional(propagation = Propagation.NEVER)

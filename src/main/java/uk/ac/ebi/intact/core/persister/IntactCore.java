@@ -24,6 +24,7 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -164,6 +165,7 @@ public class IntactCore {
             annotations = ao.getAnnotations();
         } else {
             annotations = IntactContext.getCurrentInstance().getDaoFactory().getAnnotationDao().getByParentAc(ao.getClass(), ao.getAc());
+            ao.setAnnotations(annotations);
         }
 
         return annotations;
@@ -223,6 +225,7 @@ public class IntactCore {
             interactions = experiment.getInteractions();
         } else {
             interactions = IntactContext.getCurrentInstance().getDaoFactory().getInteractionDao().getByExperimentAc(experiment.getAc(), 0, Integer.MAX_VALUE);
+            experiment.setInteractions(interactions);
         }
 
         return interactions;
@@ -242,6 +245,7 @@ public class IntactCore {
             components = interaction.getComponents();
         } else {
             components = IntactContext.getCurrentInstance().getDaoFactory().getComponentDao().getByInteractionAc(interaction.getAc());
+            interaction.setComponents(components);
         }
 
         return components;
@@ -261,6 +265,7 @@ public class IntactCore {
             confidences = interaction.getConfidences();
         } else {
             confidences = IntactContext.getCurrentInstance().getDaoFactory().getConfidenceDao().getByInteractionAc(interaction.getAc());
+            interaction.setConfidences(confidences);
         }
 
         return confidences;
@@ -280,6 +285,7 @@ public class IntactCore {
             parameters = interaction.getParameters();
         } else {
             parameters = IntactContext.getCurrentInstance().getDaoFactory().getInteractionParameterDao().getByInteractionAc(interaction.getAc());
+            interaction.setParameters(parameters);
         }
 
         return parameters;
