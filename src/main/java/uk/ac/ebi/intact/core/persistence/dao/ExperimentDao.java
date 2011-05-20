@@ -8,7 +8,6 @@ package uk.ac.ebi.intact.core.persistence.dao;
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
-import uk.ac.ebi.intact.model.Publication;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -56,4 +55,11 @@ public interface ExperimentDao extends AnnotatedObjectDao<Experiment> {
      * @return The experiments with the "lastImexUpdate" between the two dates.
      */
     List<Experiment> getByLastImexUpdate( Date fromDate, Date toDate);
+
+    /**
+     *
+     * @param biosourceAc
+     * @return the list of experiments having this host organism
+     */
+    List<Experiment> getByHostOrganism(String biosourceAc);
 }

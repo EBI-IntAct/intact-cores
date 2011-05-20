@@ -143,4 +143,11 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
 
         return query.getResultList();
     }
+
+    public List<Experiment> getByHostOrganism(String biosourceAc){
+
+        return getSession().createCriteria(getEntityClass())
+                .createCriteria("bioSource")
+                .add(Restrictions.idEq(biosourceAc)).list();
+    }
 }

@@ -582,7 +582,7 @@ public final class AnnotatedObjectUtils {
             return ((Alias) child).getParent();
         } else {
             //throw new IllegalArgumentException("Cannot find parent for child of type: " +
-                    //child.getClass().getSimpleName());
+            //child.getClass().getSimpleName());
             return null;
         }
     }
