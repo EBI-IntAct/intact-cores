@@ -581,8 +581,9 @@ public final class AnnotatedObjectUtils {
         } else if (child instanceof Alias) {
             return ((Alias) child).getParent();
         } else {
-            throw new IllegalArgumentException("Cannot find parent for child of type: " +
-                    child.getClass().getSimpleName());
+            //throw new IllegalArgumentException("Cannot find parent for child of type: " +
+                    //child.getClass().getSimpleName());
+            return null;
         }
     }
 
