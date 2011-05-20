@@ -42,4 +42,10 @@ public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implemen
                 .createCriteria( "interaction" )
                 .add( Restrictions.idEq( interactionAc ) ).list();
     }
+
+    public List<Component> getByExpressedIn(String biosourceAc) {
+        return getSession().createCriteria( getEntityClass() )
+                .createCriteria( "expressedIn" )
+                .add( Restrictions.idEq( biosourceAc ) ).list();
+    }
 }

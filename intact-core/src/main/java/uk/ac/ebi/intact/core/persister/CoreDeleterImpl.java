@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.AnnotatedObject;
+import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.model.IntactObject;
+import uk.ac.ebi.intact.model.Interactor;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 /**
@@ -48,11 +50,51 @@ public class CoreDeleterImpl implements CoreDeleter {
 
 //                 intactContext.getDaoFactory().getEntityManager().merge(parent);
              }
+             else{
+                 if (!isAnnotatedObjectDetachedFromOtherObjects(intactObject)){
+                      throw new IllegalArgumentException("The " + intactObject.getClass().getSimpleName() + ", AC = " + intactObject.getAc() + " cannot be deleted because is still used in other objects in the database.");
+                 }
+             }
 
              if (!intactContext.getDaoFactory().getEntityManager().contains(ioToRemove)) {
                  ioToRemove = intactContext.getDaoFactory().getEntityManager().find(intactObject.getClass(), intactObject.getAc());
              }
              intactContext.getDaoFactory().getEntityManager().remove(ioToRemove);
+        }
+    }
+
+    /**
+     * Checks if the parent collection that contains children of the child type passed is initialized.
+     * Can be used as a safety check before executing the removeChild() method.
+     *
+     * @param child
+     */
+    private boolean isAnnotatedObjectDetachedFromOtherObjects(IntactObject child) {
+        if (child instanceof Interactor) {
+
+            if (intactContext.getDaoFactory().getInteractorDao().countComponentsForInteractorWithAc(child.getAc()) > 0){
+                return false;
+            }
+
+            return true;
+        } else if (child instanceof BioSource) {
+
+            if (intactContext.getDaoFactory().getInteractorDao().getByBioSourceAc(child.getAc()).size() > 0){
+                return false;
+            }
+
+            if (intactContext.getDaoFactory().getComponentDao().getByExpressedIn(child.getAc()).size() > 0){
+                return false;
+            }
+
+            if (intactContext.getDaoFactory().getExperimentDao().getByHostOrganism(child.getAc()).size() > 0){
+                return false;
+            }
+
+            return true;
+        } else {
+            throw new IllegalArgumentException("Unexpected child without any parent : " +
+                    child.getClass().getSimpleName());
         }
     }
 }
