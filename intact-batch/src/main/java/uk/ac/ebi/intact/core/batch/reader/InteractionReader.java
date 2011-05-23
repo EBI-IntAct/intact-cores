@@ -16,9 +16,6 @@
 package uk.ac.ebi.intact.core.batch.reader;
 
 import org.springframework.batch.item.database.JpaPagingItemReader;
-import uk.ac.ebi.intact.model.IntactObject;
-
-import javax.persistence.Query;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -34,7 +31,7 @@ public class InteractionReader extends JpaPagingItemReader {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String query = "select distinct(i) from InteractionImpl i";
+        String query = "select i from InteractionImpl i";
 
         if (isExcludeNegative()) {
             query = query + " where i.ac not in " +
