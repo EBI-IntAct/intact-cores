@@ -463,7 +463,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * @return Value for property 'bindingDomains'.
      */
     @OneToMany( mappedBy = "component", orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE} )
+            cascade = {CascadeType.REMOVE, CascadeType.REFRESH} )
     public Collection<Feature> getFeatures() {
         return bindingDomains;
     }
