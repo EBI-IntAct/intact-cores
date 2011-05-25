@@ -92,9 +92,7 @@ public class CoreDeleterImpl implements CoreDeleter {
             }
 
             return true;
-        } else {
-            throw new IllegalArgumentException("Unexpected child without any parent : " +
-                    child.getClass().getSimpleName());
         }
+        return true;
     }
 }
