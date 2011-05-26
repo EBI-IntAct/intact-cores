@@ -499,8 +499,9 @@ public boolean isUndetermined() {
      * @param rangeStart : the start position of the feature range
      * @param rangeEnd : the end position of the feature range
      * @param fullSequence : the total sequence
+     * @param forceConsistency : if true, this method can throw illegalArgumentException when data not valid
      */
-    private void prepareUpStreamDownStreamSequence(int rangeStart, int rangeEnd, String fullSequence){
+    private void prepareUpStreamDownStreamSequence(int rangeStart, int rangeEnd, String fullSequence, boolean forceConsistency){
         if (fullSequence != null){
             if (fullSequence.trim().length() > 0){
                 this.upStreamSequence = null;
@@ -510,19 +511,44 @@ public boolean isUndetermined() {
                 int numberOfAminoAcidsDownStream = 0;
 
                 if (rangeStart < 0){
-                    throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be negative.");
+                    if (forceConsistency){
+                        throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be negative.");
+                    }
+                    else{
+                        return;
+                    }
                 }
                 if (rangeEnd < 0){
-                    throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be negative.");
+                    if (forceConsistency){
+                        throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be negative.");
+                    }
+                    else{
+                        return;
+                    }
                 }
                 if (rangeStart > fullSequence.length()){
-                    throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the length of the protein ("+fullSequence.length()+").");
+                    if (forceConsistency){
+                        throw new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the length of the protein ("+fullSequence.length()+").");
+                    }
+                    else{
+                        return;
+                    }
                 }
                 if (rangeEnd > fullSequence.length()){
-                    throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be superior to the length of the protein ("+fullSequence.length()+").");
+                    if (forceConsistency){
+                        throw new IllegalArgumentException("The end of the feature range ("+rangeEnd+") can't be superior to the length of the protein ("+fullSequence.length()+").");
+                    }
+                    else{
+                        return;
+                    }
                 }
                 if (rangeEnd < rangeStart){
-                    throw  new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the end of the feature range ("+rangeEnd+")");
+                    if (forceConsistency){
+                        throw  new IllegalArgumentException("The start of the feature range ("+rangeStart+") can't be superior to the end of the feature range ("+rangeEnd+")");
+                    }
+                    else{
+                        return;
+                    }
                 }
 
                 // count number of amino acids upstream the feature
@@ -568,6 +594,7 @@ public boolean isUndetermined() {
     }
 
     public void prepareSequence( String sequence, boolean forceConsistency ) {
+
         // we can only extract the feature sequence if the protein sequence is not null
         if (sequence != null){
             if (sequence.trim().length() > 0){
@@ -644,9 +671,9 @@ public boolean isUndetermined() {
                             startSequence = 1;
                         }
 
-                        setSequenceIntern( getSequenceStartingFrom( sequence, startSequence ) );
-                        setFullSequence( getSequence( sequence, startSequence, endSequence));
-                        prepareUpStreamDownStreamSequence(startSequence, endSequence, sequence);
+                        setSequenceIntern( getSequenceStartingFrom( sequence, startSequence, forceConsistency ) );
+                        setFullSequence( getSequence( sequence, startSequence, endSequence, forceConsistency));
+                        prepareUpStreamDownStreamSequence(startSequence, endSequence, sequence, forceConsistency);
                     }
                 }
                 // if the range is not valid of not consistent with the protein sequence, it is not possible to extract the feature sequence
@@ -794,7 +821,7 @@ public boolean isUndetermined() {
      *         is empty or null.
      */
     private static String getLastSequence( String sequence ) {
-        return getSequence( sequence, 0, false );
+        return getSequence( sequence, 0, false, true );
     }
 
     /**
@@ -806,7 +833,7 @@ public boolean isUndetermined() {
      *         <code>sequence</code> is empty or null.
      */
     private static String getFirstSequence( String sequence ) {
-        return getSequence( sequence, 0, true );
+        return getSequence( sequence, 0, true, true );
     }
 
     /**
@@ -823,7 +850,7 @@ public boolean isUndetermined() {
         if (start < 0){
             start = 1;
         }
-        return getSequence( sequence, start, sequence.length() );
+        return getSequence( sequence, start, sequence.length(), true );
     }
 
     /**
@@ -843,7 +870,7 @@ public boolean isUndetermined() {
         if (end <= 0){
             end = 1;
         }
-        return getSequence( sequence, 1, end );
+        return getSequence( sequence, 1, end, true );
     }
 
     /**
@@ -851,12 +878,13 @@ public boolean isUndetermined() {
      *
      * @param sequence the full sequence
      * @param start    the starting number for the sequence to return.
+     * @param forceConsistency : if the sequence to extract is not valid and forceConsistency is true, will throw an IllegalArgumentException
      *
      * @return the sequence starting at <code>start</code> with max of {@link #getMaxSequenceSize()} characters of the
      *         sequence; could be null if <code>sequence</code> is empty or null.
      */
-    private static String getSequenceStartingFrom( String sequence, int start ) {
-        return getSequence( sequence, start, true );
+    private static String getSequenceStartingFrom( String sequence, int start, boolean forceConsistency ) {
+        return getSequence( sequence, start, true, forceConsistency );
     }
 
     @ManyToOne
@@ -875,11 +903,12 @@ public boolean isUndetermined() {
      * @param sequence the full sequence
      * @param start    the starting number for the sequence to return.
      * @param first    true if we want to start the sequence from 0.
+     * @param forceConsistency : if the data is not consistent and this boolean value is set to true, will throw an illegalArgumentException
      *
      * @return the sequence constructed using given parameters. This sequence contains a maximum of {@link
      *         #getMaxSequenceSize()} characters.
      */
-    private static String getSequence( String sequence, int start, boolean first ) {
+    private static String getSequence( String sequence, int start, boolean first, boolean forceConsistency ) {
         String seq = null;
 
         if ( ( sequence == null ) || sequence.length() == 0) {
@@ -887,7 +916,12 @@ public boolean isUndetermined() {
         }
 
         if (sequence.length() < start){
-            throw new IllegalArgumentException("the start position ("+start+") is superior to the sequence length.");
+            if (forceConsistency){
+                throw new IllegalArgumentException("the start position ("+start+") is superior to the sequence length.");
+            }
+            else {
+                return null;
+            }
         }
 
         if ( sequence.length() <= getMaxSequenceSize() ) {
@@ -922,10 +956,11 @@ public boolean isUndetermined() {
      * @param sequence the full sequence
      * @param start    the starting number for the sequence to return.
      * @param end    the ending number for the sequence to return.
+     * @param forceConsistency : if data not consistent and this boolean is true, can throw an IllegalArgumentException
      *
      * @return the sequence constructed using given parameters. 
      */
-    private static String getSequence( String sequence, int start, int end) {
+    private static String getSequence( String sequence, int start, int end, boolean forceConsistency) {
         String seq = null;
 
         if (start < 0){
@@ -948,13 +983,28 @@ public boolean isUndetermined() {
         }
 
         if (end > sequence.length()){
-            throw new IllegalArgumentException("The end position " + end + " is not valid. It can't be superior to the length of the full sequence.");
+            if (forceConsistency){
+                throw new IllegalArgumentException("The end position " + end + " is not valid. It can't be superior to the length of the full sequence.");
+            }
+            else{
+                return null;
+            }
         }
         if (sequence.length() < start){
-            throw new IllegalArgumentException("the start position ("+start+") is superior to the sequence length.");
+            if (forceConsistency){
+                throw new IllegalArgumentException("the start position ("+start+") is superior to the sequence length.");
+            }
+            else{
+                return null;
+            }
         }
         if (start > end){
-            throw new IllegalArgumentException("The feature range start position " + start + " is superior to the feature range end position " + end + ".");
+            if (forceConsistency){
+                throw new IllegalArgumentException("The feature range start position " + start + " is superior to the feature range end position " + end + ".");
+            }
+            else{
+                return null;
+            }
         }
 
         seq = sequence.substring( Math.max( 0, start - 1 ), end ); // we make sure that we don't request index < 0.

@@ -62,7 +62,7 @@ public final class FeatureUtils {
      *         An IllegalRangeException can be thrown if the range is invalid and doesn't fit the protein sequence
      */
     public static Range createRangeFromString(String rangeAsString, String proteinSequence) {
-        return createRangeFromString(rangeAsString, proteinSequence, true);
+        return createRangeFromString(rangeAsString, proteinSequence, false);
     }
 
     /**
@@ -267,9 +267,14 @@ public final class FeatureUtils {
 
     public static boolean isABadRange(String range, String sequence) {
 
-        Range r = createRangeFromString(range, sequence, true);
+        try{
+            Range r = createRangeFromString(range, sequence, true);
 
-        return (getBadRangeInfo(r, sequence) != null);
+            return (getBadRangeInfo(r, sequence) != null);
+        }
+        catch (IllegalArgumentException e){
+            return true;
+        }
     }
 
     /**
@@ -278,7 +283,7 @@ public final class FeatureUtils {
      * @return true if the range is within the sequence, coherent with its fuzzy type and not overlapping
      */
     public static String getBadRangeInfo(String rangeAsString, String sequence) {
-        return getBadRangeInfo(createRangeFromString(rangeAsString, sequence, false), sequence);
+        return getBadRangeInfo(createRangeFromString(rangeAsString, sequence, true), sequence);
     }
 
     /**
