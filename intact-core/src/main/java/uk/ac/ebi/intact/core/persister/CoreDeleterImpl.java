@@ -51,9 +51,7 @@ public class CoreDeleterImpl implements CoreDeleter {
 //                 intactContext.getDaoFactory().getEntityManager().merge(parent);
              }
              else{
-                 if (!isAnnotatedObjectDetachedFromOtherObjects(intactObject)){
-                      throw new IllegalArgumentException("The " + intactObject.getClass().getSimpleName() + ", AC = " + intactObject.getAc() + " cannot be deleted because is still used in other objects in the database.");
-                 }
+                 checkAnnotatedObjectDetachedFromOtherObjects(intactObject);
              }
 
              if (!intactContext.getDaoFactory().getEntityManager().contains(ioToRemove)) {
@@ -69,30 +67,28 @@ public class CoreDeleterImpl implements CoreDeleter {
      *
      * @param child
      */
-    private boolean isAnnotatedObjectDetachedFromOtherObjects(IntactObject child) {
+    private void checkAnnotatedObjectDetachedFromOtherObjects(IntactObject child) {
         if (child instanceof Interactor) {
-
-            if (intactContext.getDaoFactory().getInteractorDao().countComponentsForInteractorWithAc(child.getAc()) > 0){
-                return false;
+            int countOfParticipants = intactContext.getDaoFactory().getInteractorDao().countComponentsForInteractorWithAc(child.getAc());
+            if (countOfParticipants > 0){
+                throw new IntactObjectDeleteException("The interactor " + child.getAc() + " cannot be deleted because it is still used in " + countOfParticipants + " participants.");
             }
 
-            return true;
         } else if (child instanceof BioSource) {
-
-            if (intactContext.getDaoFactory().getInteractorDao().getByBioSourceAc(child.getAc()).size() > 0){
-                return false;
+            int countOfInteractors = intactContext.getDaoFactory().getInteractorDao().getByBioSourceAc(child.getAc()).size();
+            if ( countOfInteractors > 0){
+                throw new IntactObjectDeleteException("The bioSource " + child.getAc() + " cannot be deleted because it is still used in " + countOfInteractors + " interactors.");
             }
 
-            if (intactContext.getDaoFactory().getComponentDao().getByExpressedIn(child.getAc()).size() > 0){
-                return false;
+            int countOfExpressedIn = intactContext.getDaoFactory().getComponentDao().getByExpressedIn(child.getAc()).size();
+            if (countOfExpressedIn > 0){
+                throw new IntactObjectDeleteException("The bioSource " + child.getAc() + " cannot be deleted because it is still used in " + countOfExpressedIn + " participants as expressed in organism.");
             }
 
-            if (intactContext.getDaoFactory().getExperimentDao().getByHostOrganism(child.getAc()).size() > 0){
-                return false;
+            int countExperiments = intactContext.getDaoFactory().getExperimentDao().getByHostOrganism(child.getAc()).size();
+            if (countExperiments > 0){
+                throw new IntactObjectDeleteException("The bioSource " + child.getAc() + " cannot be deleted because it is still used in " + countExperiments + " experiments.");
             }
-
-            return true;
         }
-        return true;
     }
 }
