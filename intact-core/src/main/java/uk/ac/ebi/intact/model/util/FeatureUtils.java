@@ -267,7 +267,7 @@ public final class FeatureUtils {
 
     public static boolean isABadRange(String range, String sequence) {
 
-        Range r = createRangeFromString(range, sequence, false);
+        Range r = createRangeFromString(range, sequence, true);
 
         return (getBadRangeInfo(r, sequence) != null);
     }
