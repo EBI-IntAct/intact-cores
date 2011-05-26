@@ -336,7 +336,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     protected void copyCollection( Collection sourceCol, Collection targetCol ) {
-        if (!IntactCore.isInitialized(sourceCol)) {
+        if (!IntactCore.isInitialized(sourceCol) || !IntactCore.isInitialized(targetCol)) {
             return;
         }
 
