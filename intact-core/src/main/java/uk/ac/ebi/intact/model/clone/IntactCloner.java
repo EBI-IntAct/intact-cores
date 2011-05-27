@@ -374,13 +374,12 @@ public class IntactCloner {
 
         clonerManager.addClone(interaction, clone);
 
-        if (IntactCore.isInitialized(interaction.getComponents())) {
+        Collection<Component> components = IntactCore.ensureInitializedParticipants(interaction);
 
-            for (Component component : interaction.getComponents()) {
-                final Component clonedComp = clone(component);
-                clonedComp.setInteraction(clone);
-                clone.getComponents().add(clonedComp);
-            }
+        for (Component component : components) {
+            final Component clonedComp = clone(component);
+            clonedComp.setInteraction(clone);
+            clone.getComponents().add(clonedComp);
         }
 
         clone.setCvInteractionType(clone(interaction.getCvInteractionType()));
