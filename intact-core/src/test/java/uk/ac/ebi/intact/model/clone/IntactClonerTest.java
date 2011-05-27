@@ -178,7 +178,8 @@ public class IntactClonerTest extends IntactBasicTestCase {
         for ( Component component : clone.getComponents() ) {
             if( component.getShortLabel().equals( "c1" ) ) {
 
-                Assert.assertEquals( 2, component.getBindingDomains().size() );
+                Assert.assertEquals( 3, component.getBindingDomains().size() );
+                // we accept duplicated features in a participant
                 Assert.assertTrue( "Component c1 is lacking at least one feature: ?-?",
                                    hasFeature( component, "region", CvFeatureType.SUFFICIENT_FOR_BINDING, 0, 0 )
                                     );
@@ -221,8 +222,8 @@ public class IntactClonerTest extends IntactBasicTestCase {
 
         for ( Component component : reloaded.getComponents() ) {
             if( component.getShortLabel().equals( "c1" ) ) {
-
-                Assert.assertEquals( 2, component.getBindingDomains().size() );
+                // we accept duplicated features in a participant
+                Assert.assertEquals( 3, component.getBindingDomains().size() );
 
                 Assert.assertTrue( "Component c1 is lacking at least one feature: ?-?",
                                    hasFeature( component, "region", CvFeatureType.SUFFICIENT_FOR_BINDING, 0, 0 ));
