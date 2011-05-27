@@ -225,7 +225,6 @@ public class IntactCore {
             interactions = experiment.getInteractions();
         } else {
             interactions = IntactContext.getCurrentInstance().getDaoFactory().getInteractionDao().getByExperimentAc(experiment.getAc(), 0, Integer.MAX_VALUE);
-            experiment.setInteractions(interactions);
         }
 
         return interactions;
@@ -233,6 +232,7 @@ public class IntactCore {
 
      /**
      * Retrieves the components from an interaction, initializing them if necessary.
+     * Do not set the initialized collection of components because components cannot be orphan
      *
      * @param interaction the interaction
      * @return The returned components are ensured to be initialized
@@ -245,7 +245,6 @@ public class IntactCore {
             components = interaction.getComponents();
         } else {
             components = IntactContext.getCurrentInstance().getDaoFactory().getComponentDao().getByInteractionAc(interaction.getAc());
-            interaction.setComponents(components);
         }
 
         return components;
@@ -253,7 +252,7 @@ public class IntactCore {
 
     /**
      * Retrieves the confidences from an interaction, initializing them if necessary.
-     *
+     * Do not set the initialized collection of confidences because confidences cannot be orphan
      * @param interaction the interaction
      * @return The returned confidences are ensured to be initialized
      * @since 2.4.0
@@ -265,7 +264,6 @@ public class IntactCore {
             confidences = interaction.getConfidences();
         } else {
             confidences = IntactContext.getCurrentInstance().getDaoFactory().getConfidenceDao().getByInteractionAc(interaction.getAc());
-            interaction.setConfidences(confidences);
         }
 
         return confidences;
@@ -273,7 +271,7 @@ public class IntactCore {
 
         /**
      * Retrieves the parameters from an interaction, initializing them if necessary.
-     *
+         * Do not set the initialized collection of parameters because parameters cannot be orphan
      * @param interaction the interaction
      * @return The returned confidences are ensured to be initialized
      * @since 2.4.0
@@ -285,7 +283,6 @@ public class IntactCore {
             parameters = interaction.getParameters();
         } else {
             parameters = IntactContext.getCurrentInstance().getDaoFactory().getInteractionParameterDao().getByInteractionAc(interaction.getAc());
-            interaction.setParameters(parameters);
         }
 
         return parameters;
