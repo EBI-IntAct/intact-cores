@@ -481,10 +481,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     }
 
     public void addFeature( Feature feature ) {
-        if ( !this.bindingDomains.contains( feature ) ) {
+        // we accept duplicated features in a participant if we want to link a binding site to different features
+        //if ( !this.bindingDomains.contains( feature ) ) {
             this.bindingDomains.add( feature );
             feature.setComponent( this );
-        }
+        //}
     }
 
     public void removeFeature( Feature feature ) {
