@@ -268,7 +268,7 @@ public final class FeatureUtils {
     public static boolean isABadRange(String range, String sequence) {
 
         try{
-            Range r = createRangeFromString(range, sequence, true);
+            Range r = createRangeFromString(range, sequence, false);
 
             return (getBadRangeInfo(r, sequence) != null);
         }
@@ -283,7 +283,7 @@ public final class FeatureUtils {
      * @return true if the range is within the sequence, coherent with its fuzzy type and not overlapping
      */
     public static String getBadRangeInfo(String rangeAsString, String sequence) {
-        return getBadRangeInfo(createRangeFromString(rangeAsString, sequence, true), sequence);
+        return getBadRangeInfo(createRangeFromString(rangeAsString, sequence, false), sequence);
     }
 
     /**
