@@ -203,6 +203,22 @@ public class DefaultFinder implements Finder {
 
         String experimentAc = null;
 
+        BioSource biosource = experiment.getBioSource();
+        if (biosource != null){
+            CvCellType cellType = biosource.getCvCellType();
+            CvTissue cvTissue = biosource.getCvTissue();
+
+            List<String> acs = new ArrayList<String>(experimentAcs);
+            for (String candidateExperimentAc : acs) {
+                Experiment match = getDaoFactory().getExperimentDao().getByAc(candidateExperimentAc);
+
+                if ( !same( cvTissue, match.getBioSource().getCvTissue() ) ||
+                        !same( cellType, match.getBioSource().getCvCellType() ) ) {
+                    experimentAcs.remove(candidateExperimentAc);
+                }
+            }
+        }
+
         if (experimentAcs.size() == 1 && experiment.getAnnotations().isEmpty()) {
 
             experimentAc = experimentAcs.iterator().next();
