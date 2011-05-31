@@ -57,7 +57,10 @@ public class CoreDeleterImpl implements CoreDeleter {
              if (!intactContext.getDaoFactory().getEntityManager().contains(ioToRemove)) {
                  ioToRemove = intactContext.getDaoFactory().getEntityManager().find(intactObject.getClass(), intactObject.getAc());
              }
-             intactContext.getDaoFactory().getEntityManager().remove(ioToRemove);
+
+             if (ioToRemove != null){
+                 intactContext.getDaoFactory().getEntityManager().remove(ioToRemove);
+             }
         }
     }
 
