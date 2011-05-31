@@ -108,6 +108,16 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         return query.list();
     }
 
+    public List<Experiment> getByPubAc(String pubAc) {
+        Query query = getSession()
+                .createQuery("select distinct exp from Experiment exp " +
+                             "left join exp.publication as pub " +
+                             " where pub.ac = :pubAc");
+        query.setString("pubAc", pubAc);
+
+        return query.list();
+    }
+
     public List<Experiment> getByPubIdAndLabelLike(String pubId, String labelLike) {
         Query query = getSession()
                 .createQuery("select distinct exp from Experiment exp " +

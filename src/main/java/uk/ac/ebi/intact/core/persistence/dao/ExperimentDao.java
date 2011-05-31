@@ -39,6 +39,13 @@ public interface ExperimentDao extends AnnotatedObjectDao<Experiment> {
     List<Experiment> getByPubId( String pubId );
 
     /**
+     * Get a list of experiments for the provided publication ac in IntAct
+     * @param pubAc the publication accession in IntAct
+     * @return experiments for that publication
+     */
+    List<Experiment> getByPubAc(String pubAc);
+
+    /**
      * Get a list of experiments for the provided publication id and with a label like the provided
      * @param pubId the publication id
      * @param labelLike the label to use. It has to contain '%'
