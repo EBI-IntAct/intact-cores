@@ -23,15 +23,15 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 @Entity
-@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Xref extends BasicObjectImpl {
 
-    private static final Log log = LogFactory.getLog( Xref.class );
+    private static final Log log = LogFactory.getLog(Xref.class);
 
     ///////////////////////////////////////
     // Constamt
 
-    public static final int MAX_ID_LEN = 50;
+    public static final int MAX_ID_LEN = 256;
     public static final int MAX_DB_RELEASE_LEN = 10;
 
     ///////////////////////////////////////
@@ -104,36 +104,35 @@ public abstract class Xref extends BasicObjectImpl {
      *                         if it's more it will be truncated. if not done, Oracle would throw an error.
      * @param aDatabaseRelease database version
      * @param aCvXrefQualifier controlled vocabulary for any qualifiers (may be null)
-     *
      * @throws NullPointerException thrown if any mandatory parameters are not specified
      */
-    public Xref( CvDatabase aDatabase,
-                 String aPrimaryId,
-                 String aSecondaryId,
-                 String aDatabaseRelease,
-                 CvXrefQualifier aCvXrefQualifier
+    public Xref(CvDatabase aDatabase,
+                String aPrimaryId,
+                String aSecondaryId,
+                String aDatabaseRelease,
+                CvXrefQualifier aCvXrefQualifier
     ) {
 
         //super call sets creation time data
-        this( aDatabase, aPrimaryId, aCvXrefQualifier );
+        this(aDatabase, aPrimaryId, aCvXrefQualifier);
 
-        this.secondaryId = fixId( aSecondaryId );
+        this.secondaryId = fixId(aSecondaryId);
         this.dbRelease = aDatabaseRelease;
     }
 
     @Deprecated
-    public Xref( Institution anOwner,
-                 CvDatabase aDatabase,
-                 String aPrimaryId,
-                 String aSecondaryId,
-                 String aDatabaseRelease,
-                 CvXrefQualifier aCvXrefQualifier
+    public Xref(Institution anOwner,
+                CvDatabase aDatabase,
+                String aPrimaryId,
+                String aSecondaryId,
+                String aDatabaseRelease,
+                CvXrefQualifier aCvXrefQualifier
     ) {
 
         //super call sets creation time data
-        this( anOwner, aDatabase, aPrimaryId, aCvXrefQualifier );
+        this(anOwner, aDatabase, aPrimaryId, aCvXrefQualifier);
 
-        this.secondaryId = fixId( aSecondaryId );
+        this.secondaryId = fixId(aSecondaryId);
         this.dbRelease = aDatabaseRelease;
     }
 
@@ -145,25 +144,24 @@ public abstract class Xref extends BasicObjectImpl {
      * @param aPrimaryId       primary identifier for the cross-reference (non-null), this should be 30 characters
      *                         maximum if it's more it will be truncated. if not done, Oracle would throw an error.
      * @param aCvXrefQualifier controlled vocabulary for any qualifiers (may be null)
-     *
      * @throws NullPointerException thrown if any mandatory parameters are not specified
      */
-    public Xref( CvDatabase aDatabase,
-                 String aPrimaryId,
-                 CvXrefQualifier aCvXrefQualifier
+    public Xref(CvDatabase aDatabase,
+                String aPrimaryId,
+                CvXrefQualifier aCvXrefQualifier
     ) {
 
         //super call sets creation time data
         super();
 
-        if ( aPrimaryId == null ) {
-            throw new NullPointerException( "valid Xref must have a primary ID!" );
+        if (aPrimaryId == null) {
+            throw new NullPointerException("valid Xref must have a primary ID!");
         }
 
-        aPrimaryId = fixId( aPrimaryId );
+        aPrimaryId = fixId(aPrimaryId);
 
-        if ( aPrimaryId.length() == 0 ) {
-            throw new IllegalArgumentException( "Must define a non empty primaryId for an Xref." );
+        if (aPrimaryId.length() == 0) {
+            throw new IllegalArgumentException("Must define a non empty primaryId for an Xref.");
         }
 
         this.primaryId = aPrimaryId;
@@ -172,9 +170,9 @@ public abstract class Xref extends BasicObjectImpl {
     }
 
     @Deprecated
-    public Xref( Institution anOwner, CvDatabase aDatabase,
-                 String aPrimaryId,
-                 CvXrefQualifier aCvXrefQualifier
+    public Xref(Institution anOwner, CvDatabase aDatabase,
+                String aPrimaryId,
+                CvXrefQualifier aCvXrefQualifier
     ) {
 
         this(aDatabase, aPrimaryId, aCvXrefQualifier);
@@ -187,16 +185,16 @@ public abstract class Xref extends BasicObjectImpl {
         return primaryId;
     }
 
-    public void setPrimaryId( String aPrimaryId ) {
+    public void setPrimaryId(String aPrimaryId) {
         this.primaryId = aPrimaryId;
     }
 
-    @Size( max = MAX_ID_LEN )
+    @Size(max = MAX_ID_LEN)
     public String getSecondaryId() {
         return secondaryId;
     }
 
-    public void setSecondaryId( String aSecondaryId ) {
+    public void setSecondaryId(String aSecondaryId) {
         this.secondaryId = aSecondaryId;
     }
 
@@ -205,10 +203,10 @@ public abstract class Xref extends BasicObjectImpl {
     }
 
 
-    public void setDbRelease( String aDbRelease ) {
+    public void setDbRelease(String aDbRelease) {
 
-        if ( aDbRelease != null && aDbRelease.length() >= MAX_DB_RELEASE_LEN ) {
-            aDbRelease = aDbRelease.substring( 0, MAX_DB_RELEASE_LEN );
+        if (aDbRelease != null && aDbRelease.length() >= MAX_DB_RELEASE_LEN) {
+            aDbRelease = aDbRelease.substring(0, MAX_DB_RELEASE_LEN);
         }
 
         this.dbRelease = aDbRelease;
@@ -216,13 +214,13 @@ public abstract class Xref extends BasicObjectImpl {
 
     @Transient
     public String getParentAc() {
-        if ( parent != null ) {
+        if (parent != null) {
             parentAc = parent.getAc();
         }
         return parentAc;
     }
 
-    public void setParentAc( String parentAc ) {
+    public void setParentAc(String parentAc) {
         this.parentAc = parentAc;
     }
 
@@ -231,29 +229,29 @@ public abstract class Xref extends BasicObjectImpl {
         return parent;
     }
 
-    public void setParent( AnnotatedObject parent ) {
+    public void setParent(AnnotatedObject parent) {
         this.parent = parent;
     }
 
     ///////////////////////////////////////
     // access methods for associations
     @ManyToOne
-    @JoinColumn( name = "qualifier_ac" )
+    @JoinColumn(name = "qualifier_ac")
     public CvXrefQualifier getCvXrefQualifier() {
         return cvXrefQualifier;
     }
 
-    public void setCvXrefQualifier( CvXrefQualifier cvXrefQualifier ) {
+    public void setCvXrefQualifier(CvXrefQualifier cvXrefQualifier) {
         this.cvXrefQualifier = cvXrefQualifier;
     }
 
     @ManyToOne
-    @JoinColumn( name = "database_ac" )
+    @JoinColumn(name = "database_ac")
     public CvDatabase getCvDatabase() {
         return cvDatabase;
     }
 
-    public void setCvDatabase( CvDatabase cvDatabase ) {
+    public void setCvDatabase(CvDatabase cvDatabase) {
         this.cvDatabase = cvDatabase;
     }
 
@@ -273,23 +271,23 @@ public abstract class Xref extends BasicObjectImpl {
         boolean stop = false;
 
         // until all annotation are checked or we find the validation rule
-        for ( Iterator iterator = cvDatabase.getAnnotations().iterator(); iterator.hasNext() && false == stop; ) {
-            Annotation annotation = ( Annotation ) iterator.next();
+        for (Iterator iterator = cvDatabase.getAnnotations().iterator(); iterator.hasNext() && false == stop; ) {
+            Annotation annotation = (Annotation) iterator.next();
 
-            if ( CvTopic.XREF_VALIDATION_REGEXP.equals( annotation.getCvTopic().getShortLabel() ) ) {
+            if (CvTopic.XREF_VALIDATION_REGEXP.equals(annotation.getCvTopic().getShortLabel())) {
                 String regexp = annotation.getAnnotationText();
 
                 try {
                     // TODO escape special characters !!
-                    Pattern pattern = Pattern.compile( regexp );
+                    Pattern pattern = Pattern.compile(regexp);
 
                     // validate the primaryId against that regular expression
-                    Matcher matcher = pattern.matcher( primaryId );
-                    if ( false == matcher.matches() ) {
+                    Matcher matcher = pattern.matcher(primaryId);
+                    if (false == matcher.matches()) {
                         valid = false;
                     }
 
-                } catch ( Exception e ) {
+                } catch (Exception e) {
                     // if the RegExp engine thrown an Exception, that may happen if the format is wrong.
                     // we just display it for debugging sake, but the Xref is declared valid.
                     e.printStackTrace();
@@ -307,19 +305,19 @@ public abstract class Xref extends BasicObjectImpl {
     ///////////////////////////////////////
     // instance methods
     @Override
-    public boolean equals( Object o ) {
-        if ( this == o ) return true;
-        if ( !( o instanceof Xref ) ) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Xref)) return false;
 
         if (!super.equals(o)) {
             return false;
         }
 
-        final Xref xref = ( Xref ) o;
+        final Xref xref = (Xref) o;
 
         if (!getClass().equals(xref.getClass())) return false;
 
-        if ( !StringUtils.equals(getPrimaryId(), xref.getPrimaryId() )) return false;
+        if (!StringUtils.equals(getPrimaryId(), xref.getPrimaryId())) return false;
 
         if (!(cvDatabase == null && xref.getCvDatabase() == null)) {
             if (cvDatabase != null && !CvObjectUtils.areEqual(cvDatabase, xref.getCvDatabase())) {
@@ -347,21 +345,21 @@ public abstract class Xref extends BasicObjectImpl {
         int result = 29;
         result = 29 * result + primaryId.hashCode();
         result = 29 * result + cvDatabase.hashCode();
-        result = 29 * result + ( cvXrefQualifier != null ? cvXrefQualifier.hashCode() : 0 );
+        result = 29 * result + (cvXrefQualifier != null ? cvXrefQualifier.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
 
-        final StringBuffer sb = new StringBuffer( 150 );
-        sb.append( "Xref" );
-        sb.append( "{cvDatabase=" ).append( cvDatabase.getShortLabel() );
-        sb.append( ", cvXrefQualifier=" ).append( ( cvXrefQualifier == null ? "-" : cvXrefQualifier.getShortLabel() ) );
-        sb.append( ", primaryId='" ).append( primaryId ).append( '\'' );
-        sb.append( ", secondaryId='" ).append( ( secondaryId == null ? "-" : secondaryId ) ).append( '\'' );
-        sb.append( ", dbRelease='" ).append( ( dbRelease == null ? "-" : dbRelease ) ).append( '\'' );
-        sb.append( '}' );
+        final StringBuffer sb = new StringBuffer(150);
+        sb.append("Xref");
+        sb.append("{cvDatabase=").append(cvDatabase.getShortLabel());
+        sb.append(", cvXrefQualifier=").append((cvXrefQualifier == null ? "-" : cvXrefQualifier.getShortLabel()));
+        sb.append(", primaryId='").append(primaryId).append('\'');
+        sb.append(", secondaryId='").append((secondaryId == null ? "-" : secondaryId)).append('\'');
+        sb.append(", dbRelease='").append((dbRelease == null ? "-" : dbRelease)).append('\'');
+        sb.append('}');
         return sb.toString();
     }
 
@@ -378,25 +376,24 @@ public abstract class Xref extends BasicObjectImpl {
      *
      * @return a cloned version of the current Range. The Cv database and
      *         xref qualifier are not cloned (shared). The parent AC is set to null.
-     *
      * @throws CloneNotSupportedException for errors in cloning this object.
      */
     @Override
     public Object clone() throws CloneNotSupportedException {
-        Xref copy = ( Xref ) super.clone();
+        Xref copy = (Xref) super.clone();
         // Reset the parent ac.
         copy.parentAc = null;
         copy.parent = null;
         return copy;
     }
 
-    private String fixId( String id ) {
-        if ( id != null ) {
+    private String fixId(String id) {
+        if (id != null) {
             // delete leading and trailing spaces.
             id = id.trim();
 
-            if ( id.length() > MAX_ID_LEN ) {
-                id = id.substring( 0, MAX_ID_LEN );
+            if (id.length() > MAX_ID_LEN) {
+                id = id.substring(0, MAX_ID_LEN);
             }
         }
         return id;
