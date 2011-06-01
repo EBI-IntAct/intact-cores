@@ -160,4 +160,17 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
                 .createCriteria("bioSource")
                 .add(Restrictions.idEq(biosourceAc)).list();
     }
+
+        /**
+     * @InheritDoc
+     */
+    public List<Experiment> getByInteractionAc( String interactionAc) {
+        javax.persistence.Query query = getEntityManager().createQuery("select e " +
+                                                     "from Experiment e join e.interactions i " +
+                                                     "where i.ac = :interactionAc " +
+                                                     "order by e.created");
+        query.setParameter("interactionAc", interactionAc);
+
+        return query.getResultList();
+    }
 }

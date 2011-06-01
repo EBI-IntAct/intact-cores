@@ -230,7 +230,64 @@ public class IntactCore {
         return interactions;
     }
 
-     /**
+    /**
+     * Retrieves the experiment from an interaction, initializing them if necessary.
+     *
+     * @param interaction the interaction
+     * @return The returned experiments are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<Experiment> ensureInitializedExperiments(Interaction interaction) {
+        Collection<Experiment> experiments;
+
+        if (IntactCore.isInitialized(interaction.getExperiments())) {
+            experiments = interaction.getExperiments();
+        } else {
+            experiments = IntactContext.getCurrentInstance().getDaoFactory().getExperimentDao().getByInteractionAc(interaction.getAc());
+        }
+
+        return experiments;
+    }
+
+    /**
+     * Retrieves the experiment from a publication, initializing them if necessary.
+     *
+     * @param publication the publication
+     * @return The returned experiments are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<Experiment> ensureInitializedExperiments(Publication publication) {
+        Collection<Experiment> experiments;
+
+        if (IntactCore.isInitialized(publication.getExperiments())) {
+            experiments = publication.getExperiments();
+        } else {
+            experiments = IntactContext.getCurrentInstance().getDaoFactory().getExperimentDao().getByPubAc(publication.getAc());
+        }
+
+        return experiments;
+    }
+
+    /**
+     * Retrieves the ranges from a feature, initializing them if necessary.
+     *
+     * @param feature the feature
+     * @return The returned ranges are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<Range> ensureInitializedRanges(Feature feature) {
+        Collection<Range> ranges;
+
+        if (IntactCore.isInitialized(feature.getRanges())) {
+            ranges = feature.getRanges();
+        } else {
+            ranges = IntactContext.getCurrentInstance().getDaoFactory().getRangeDao().getByFeatureAc(feature.getAc());
+        }
+
+        return ranges;
+    }
+
+    /**
      * Retrieves the components from an interaction, initializing them if necessary.
      * Do not set the initialized collection of components because components cannot be orphan
      *
@@ -269,9 +326,9 @@ public class IntactCore {
         return confidences;
     }
 
-        /**
+    /**
      * Retrieves the parameters from an interaction, initializing them if necessary.
-         * Do not set the initialized collection of parameters because parameters cannot be orphan
+     * Do not set the initialized collection of parameters because parameters cannot be orphan
      * @param interaction the interaction
      * @return The returned confidences are ensured to be initialized
      * @since 2.4.0
@@ -286,5 +343,119 @@ public class IntactCore {
         }
 
         return parameters;
+    }
+
+    /**
+     * Retrieves the parameters from a participant, initializing them if necessary.
+     * Do not set the initialized collection of parameters because parameters cannot be orphan
+     * @param component the component
+     * @return The returned parameters are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<ComponentParameter> ensureInitializedComponentParameters(Component component) {
+        Collection<ComponentParameter> parameters;
+
+        if (IntactCore.isInitialized(component.getParameters())) {
+            parameters = component.getParameters();
+        } else {
+            parameters = IntactContext.getCurrentInstance().getDaoFactory().getComponentParameterDao().getByComponentAc(component.getAc());
+        }
+
+        return parameters;
+    }
+
+    /**
+     * Retrieves the features from a participant, initializing them if necessary.
+     * Do not set the initialized collection of features because features cannot be orphan
+     * @param component the component
+     * @return The returned features are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<Feature> ensureInitializedFeatures(Component component) {
+        Collection<Feature> features;
+
+        if (IntactCore.isInitialized(component.getFeatures())) {
+            features = component.getFeatures();
+        } else {
+            features = IntactContext.getCurrentInstance().getDaoFactory().getFeatureDao().getByComponentAc(component.getAc());
+        }
+
+        return features;
+    }
+
+    /**
+     * Retrieves the experimental preparations from a participant, initializing them if necessary.
+     * Do not set the initialized collection of experimental preparations because cannot be orphan
+     * @param component the component
+     * @return The returned experimental preparations are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<CvExperimentalPreparation> ensureInitializedExperimentalPreparations(Component component) {
+        Collection<CvExperimentalPreparation> expPrep;
+
+        if (IntactCore.isInitialized(component.getExperimentalPreparations())) {
+            expPrep = component.getExperimentalPreparations();
+        } else {
+            expPrep = IntactContext.getCurrentInstance().getDaoFactory().getComponentDao().getExperimentalPreparationsForComponentAc(component.getAc());
+        }
+
+        return expPrep;
+    }
+
+        /**
+     * Retrieves the experimental roles from a participant, initializing them if necessary.
+     * Do not set the initialized collection of experimental roles because cannot be orphan
+     * @param component the component
+     * @return The returned experimental roles are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<CvExperimentalRole> ensureInitializedExperimentalRoles(Component component) {
+        Collection<CvExperimentalRole> roles;
+
+        if (IntactCore.isInitialized(component.getExperimentalRoles())) {
+            roles = component.getExperimentalRoles();
+        } else {
+            roles = IntactContext.getCurrentInstance().getDaoFactory().getComponentDao().getExperimentalRolesForComponentAc(component.getAc());
+        }
+
+        return roles;
+    }
+
+            /**
+     * Retrieves the participant detection methods from a participant, initializing them if necessary.
+     * Do not set the initialized collection of participant detection methods because cannot be orphan
+     * @param component the component
+     * @return The returned participant detection methods are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<CvIdentification> ensureInitializedParticipantIdentificationMethods(Component component) {
+        Collection<CvIdentification> partDet;
+
+        if (IntactCore.isInitialized(component.getParticipantDetectionMethods())) {
+            partDet = component.getParticipantDetectionMethods();
+        } else {
+            partDet = IntactContext.getCurrentInstance().getDaoFactory().getComponentDao().getParticipantIdentificationMethodsForComponentAc(component.getAc());
+        }
+
+        return partDet;
+    }
+
+     /**
+     * Retrieves the confidences from a participant, initializing them if necessary.
+     * Do not set the initialized collection of confidences because confidences cannot be orphan
+     * @param component the component
+     * @return The returned confidences are ensured to be initialized
+     * @since 2.4.0
+     */
+    public static Collection<ComponentConfidence> ensureInitializedComponentConfidences(Component component) {
+        Collection<ComponentConfidence> confidences;
+
+        if (IntactCore.isInitialized(component.getConfidences())) {
+            confidences = component.getConfidences();
+        } else {
+            confidences = IntactContext.getCurrentInstance().getDaoFactory().getComponentConfidenceDao().getByComponentAc(component.getAc());
+        }
+
+        return confidences;
     }
 }

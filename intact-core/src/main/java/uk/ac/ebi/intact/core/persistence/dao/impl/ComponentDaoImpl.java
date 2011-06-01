@@ -5,9 +5,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.ComponentDao;
-import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.List;
 
 /**
@@ -47,5 +48,34 @@ public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implemen
         return getSession().createCriteria( getEntityClass() )
                 .createCriteria( "expressedIn" )
                 .add( Restrictions.idEq( biosourceAc ) ).list();
+    }
+
+    public List<CvExperimentalPreparation> getExperimentalPreparationsForComponentAc( String componentAc) {
+        Query query = getEntityManager().createQuery("select e " +
+                "from Component c join c.experimentalPreparations e " +
+                "where c.ac = :componentAc ");
+        query.setParameter("componentAc", componentAc);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<CvExperimentalRole> getExperimentalRolesForComponentAc(String componentAc) {
+        Query query = getEntityManager().createQuery("select e " +
+                "from Component c join c.experimentalRoles e " +
+                "where c.ac = :componentAc ");
+        query.setParameter("componentAc", componentAc);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<CvIdentification> getParticipantIdentificationMethodsForComponentAc(String componentAc) {
+        Query query = getEntityManager().createQuery("select p " +
+                "from Component c join c.participantDetectionMethods p " +
+                "where c.ac = :componentAc ");
+        query.setParameter("componentAc", componentAc);
+
+        return query.getResultList();
     }
 }

@@ -3,6 +3,8 @@ package uk.ac.ebi.intact.core.persistence.dao;
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Range;
 
+import java.util.List;
+
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -10,5 +12,5 @@ import uk.ac.ebi.intact.model.Range;
  */
 @Mockable
 public interface RangeDao extends IntactObjectDao<Range> {
-
+     List<Range> getByFeatureAc( String featureAc );
 }

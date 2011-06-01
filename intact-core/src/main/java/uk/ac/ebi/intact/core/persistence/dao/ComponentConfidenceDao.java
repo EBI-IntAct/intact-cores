@@ -18,6 +18,8 @@ package uk.ac.ebi.intact.core.persistence.dao;
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.ComponentConfidence;
 
+import java.util.List;
+
 /**
  * To access the confidence. 
  *
@@ -27,4 +29,5 @@ import uk.ac.ebi.intact.model.ComponentConfidence;
  */
 @Mockable
 public interface ComponentConfidenceDao extends IntactObjectDao<ComponentConfidence>{
+    List<ComponentConfidence> getByComponentAc( String componentAc );
 }
