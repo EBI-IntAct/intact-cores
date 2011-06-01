@@ -79,6 +79,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
         c1.getBindingDomains().clear();
         addFeature( c1, CvFeatureType.MUTATION_DECREASING, CvFeatureType.MUTATION_DECREASING_MI_REF, 10, 50, false, "region" );
         addFeature( c1, CvFeatureType.EXPERIMENTAL_FEATURE, CvFeatureType.EXPERIMENTAL_FEATURE_MI_REF, 20, 25, false, "region" );
+        c1.addConfidence(new ComponentConfidence("high"));
 
         Component c2 = iterator.next();
         c2.setShortLabel( "c2" );
@@ -92,6 +93,7 @@ public class IntactClonerTest extends IntactBasicTestCase {
             if( component.getShortLabel().equals( "c1" ) ) {
 
                 Assert.assertEquals(2, component.getBindingDomains().size());
+                Assert.assertEquals(1, component.getConfidences().size());
                 Assert.assertTrue( "Component c1 is lacking at least one feature",
                                    hasFeature( component, "region", CvFeatureType.MUTATION_DECREASING, 10, 50 )
                                    || hasFeature( component, "region", CvFeatureType.EXPERIMENTAL_FEATURE, 20, 25 ) );

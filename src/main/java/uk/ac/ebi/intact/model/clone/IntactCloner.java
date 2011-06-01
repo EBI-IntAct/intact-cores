@@ -109,6 +109,9 @@ public class IntactCloner {
                 clone = (T) cloneInteractionParameter((InteractionParameter) intactObject);
             } else if (intactObject instanceof ComponentParameter) {
                 clone = (T) cloneComponentParameter((ComponentParameter) intactObject);
+            }
+            else if (intactObject instanceof ComponentConfidence) {
+                clone = (T) cloneComponentConfidence((ComponentConfidence) intactObject);
             } else {
                 throw new IllegalArgumentException("Cannot clone objects of type: " + intactObject.getClass().getName());
             }
@@ -304,6 +307,22 @@ public class IntactCloner {
         return clone;
     }
 
+    protected ComponentConfidence cloneComponentConfidence(ComponentConfidence componentConfidence) throws IntactClonerException {
+        if (componentConfidence == null) {
+            throw new IllegalArgumentException("You must give a non null component confidence");
+        }
+
+        ComponentConfidence clone = new ComponentConfidence();
+
+        clonerManager.addClone(componentConfidence, clone);
+
+        clone.setValue(componentConfidence.getValue());
+        clone.setComponent(clone(componentConfidence.getComponent()));
+        clone.setCvConfidenceType(clone(componentConfidence.getCvConfidenceType()));
+
+        return clone;
+    }
+
     ///////////////////////////////////////
     // AnnotatedObject cloners
 
@@ -340,8 +359,10 @@ public class IntactCloner {
         clone.setCvFeatureType(clone(feature.getCvFeatureType()));
         clone.setCvFeatureIdentification(clone(feature.getCvFeatureIdentification()));
 
-        if (isCollectionClonable(feature.getRanges())) {
-            for (Range range : feature.getRanges()) {
+        Collection<Range> ranges = IntactCore.ensureInitializedRanges(feature);
+
+        if (isCollectionClonable(ranges)) {
+            for (Range range : ranges) {
                 clone.addRange(clone(range));
             }
         }
@@ -385,8 +406,10 @@ public class IntactCloner {
         clone.setCvInteractionType(clone(interaction.getCvInteractionType()));
         clone.setCvInteractorType(clone(interaction.getCvInteractorType()));
 
-        if (isCollectionClonable(interaction.getExperiments())) {
-            for (Experiment experiment : interaction.getExperiments()) {
+        Collection<Experiment> experiments = IntactCore.ensureInitializedExperiments(interaction);
+
+        if (isCollectionClonable(experiments)) {
+            for (Experiment experiment : experiments) {
                 clone.addExperiment(clone(experiment));
             }
         }
@@ -394,14 +417,18 @@ public class IntactCloner {
         clone.setKD(interaction.getKD());
         clone.setCrc(interaction.getCrc());
 
-        if (isCollectionClonable(interaction.getConfidences())) {
-            for (Confidence confidence : interaction.getConfidences()) {
+        Collection<Confidence> confidences = IntactCore.ensureInitializedConfidences(interaction);
+
+        if (isCollectionClonable(confidences)) {
+            for (Confidence confidence : confidences) {
                 clone.addConfidence(clone(confidence));
             }
         }
 
-        if (isCollectionClonable(interaction.getParameters())) {
-            for (InteractionParameter interactionParameter : interaction.getParameters()) {
+        Collection<InteractionParameter> parameters = IntactCore.ensureInitializedInteractionParameters(interaction);
+
+        if (isCollectionClonable(parameters)) {
+            for (InteractionParameter interactionParameter : parameters) {
                 clone.addParameter(clone(interactionParameter));
             }
         }
@@ -467,8 +494,10 @@ public class IntactCloner {
 
         clonerManager.addClone(publication, clone);
 
-        if (isCollectionClonable(publication.getExperiments())) {
-            for (Experiment e : publication.getExperiments()) {
+        Collection<Experiment> experiments = IntactCore.ensureInitializedExperiments(publication);
+
+        if (isCollectionClonable(experiments)) {
+            for (Experiment e : experiments) {
                 clone.addExperiment(clone(e));
             }
         }
@@ -490,34 +519,51 @@ public class IntactCloner {
         clone.setStoichiometry(component.getStoichiometry());
         clone.setExpressedIn(clone(component.getExpressedIn()));
 
-        if (isCollectionClonable(component.getParameters())) {
-            for (ComponentParameter componentParameter : component.getParameters()) {
+        Collection<ComponentParameter> parameters = IntactCore.ensureInitializedComponentParameters(component);
+
+        if (isCollectionClonable(parameters)) {
+            for (ComponentParameter componentParameter : parameters) {
                 clone.addParameter(clone(componentParameter));
             }
         }
 
-        if (isCollectionClonable(component.getBindingDomains())) {
-            for (Feature feature : component.getBindingDomains()) {
-                clone.addBindingDomain(clone(feature));
+        Collection<Feature> features = IntactCore.ensureInitializedFeatures(component);
+
+        if (isCollectionClonable(features)) {
+            for (Feature feature : features) {
+                clone.addFeature(clone(feature));
             }
         }
 
-        if (isCollectionClonable(component.getExperimentalPreparations())) {
-            for (CvExperimentalPreparation preparation : component.getExperimentalPreparations()) {
+        Collection<CvExperimentalPreparation> expPreps = IntactCore.ensureInitializedExperimentalPreparations(component);
+
+        if (isCollectionClonable(expPreps)) {
+            for (CvExperimentalPreparation preparation : expPreps) {
                 clone.getExperimentalPreparations().add(clone(preparation));
             }
         }
 
-        if (isCollectionClonable(component.getParticipantDetectionMethods())) {
-            for (CvIdentification method : component.getParticipantDetectionMethods()) {
+        Collection<CvIdentification> partDet = IntactCore.ensureInitializedParticipantIdentificationMethods(component);
+
+        if (isCollectionClonable(partDet)) {
+            for (CvIdentification method : partDet) {
                 clone.getParticipantDetectionMethods().add(clone(method));
             }
         }
 
+        Collection<CvExperimentalRole> roles = IntactCore.ensureInitializedExperimentalRoles(component);
 
-        if (isCollectionClonable(component.getExperimentalRoles())) {
-            for (CvExperimentalRole expRole : component.getExperimentalRoles()) {
+        if (isCollectionClonable(roles)) {
+            for (CvExperimentalRole expRole : roles) {
                 clone.getExperimentalRoles().add(clone(expRole));
+            }
+        }
+
+        Collection<ComponentConfidence> confidences = IntactCore.ensureInitializedComponentConfidences(component);
+
+        if (isCollectionClonable(confidences)) {
+            for (ComponentConfidence conf : confidences) {
+                clone.addConfidence(clone(conf));
             }
         }
 
@@ -595,20 +641,26 @@ public class IntactCloner {
             }
         }
 
-        if (isCollectionClonable(ao.getAnnotations())) {
-            for (Annotation annotation : ao.getAnnotations()) {
+        Collection<Annotation> annotations = IntactCore.ensureInitializedAnnotations(ao);
+
+        if (isCollectionClonable(annotations)) {
+            for (Annotation annotation : annotations) {
                 clone.addAnnotation(clone(annotation));
             }
         }
 
-        if (isCollectionClonable(ao.getAliases())) {
-            for (Alias alias : ao.getAliases()) {
+        Collection<? extends Alias> aliases = IntactCore.ensureInitializedAliases(ao);
+
+        if (isCollectionClonable(aliases)) {
+            for (Alias alias : aliases) {
                 clone.addAlias(clone(alias));
             }
         }
 
-        if (isCollectionClonable(ao.getXrefs())) {
-            for (Xref xref : ao.getXrefs()) {
+        Collection<? extends Xref> refs = IntactCore.ensureInitializedXrefs(ao);
+
+        if (isCollectionClonable(refs)) {
+            for (Xref xref : refs) {
                 clone.addXref(clone(xref));
             }
         }

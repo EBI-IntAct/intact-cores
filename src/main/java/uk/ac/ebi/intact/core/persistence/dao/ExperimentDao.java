@@ -69,4 +69,6 @@ public interface ExperimentDao extends AnnotatedObjectDao<Experiment> {
      * @return the list of experiments having this host organism
      */
     List<Experiment> getByHostOrganism(String biosourceAc);
+
+    List<Experiment> getByInteractionAc( String interactionAc);
 }

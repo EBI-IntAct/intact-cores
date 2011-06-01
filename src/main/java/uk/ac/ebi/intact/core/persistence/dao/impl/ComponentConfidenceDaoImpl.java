@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -22,6 +23,7 @@ import uk.ac.ebi.intact.core.persistence.dao.ComponentConfidenceDao;
 import uk.ac.ebi.intact.model.ComponentConfidence;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 /**
  */
@@ -35,5 +37,11 @@ public class ComponentConfidenceDaoImpl extends IntactObjectDaoImpl<ComponentCon
 
       public ComponentConfidenceDaoImpl(EntityManager entityManager, IntactSession intactSession) {
         super( ComponentConfidence.class, entityManager, intactSession );
+    }
+
+    public List<ComponentConfidence> getByComponentAc( String componentAc ) {
+        return getSession().createCriteria( getEntityClass() )
+                .createCriteria( "component" )
+                .add( Restrictions.idEq(componentAc) ).list();
     }
 }

@@ -2,6 +2,9 @@ package uk.ac.ebi.intact.core.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
 import uk.ac.ebi.intact.model.Component;
+import uk.ac.ebi.intact.model.CvExperimentalPreparation;
+import uk.ac.ebi.intact.model.CvExperimentalRole;
+import uk.ac.ebi.intact.model.CvIdentification;
 
 import java.util.List;
 
@@ -16,4 +19,7 @@ public interface ComponentDao extends AnnotatedObjectDao<Component> {
     List<Component> getByInteractorAc( String interactorAc );
     List<Component> getByInteractionAc( String interactionAc );
     List<Component> getByExpressedIn(String biosourceAc);
+    List<CvExperimentalPreparation> getExperimentalPreparationsForComponentAc( String componentAc);
+    List<CvExperimentalRole> getExperimentalRolesForComponentAc( String componentAc);
+    List<CvIdentification> getParticipantIdentificationMethodsForComponentAc( String componentAc);
 }

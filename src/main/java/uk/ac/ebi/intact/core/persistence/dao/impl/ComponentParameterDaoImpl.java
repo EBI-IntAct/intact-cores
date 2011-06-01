@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -22,6 +23,7 @@ import uk.ac.ebi.intact.core.persistence.dao.ComponentParameterDao;
 import uk.ac.ebi.intact.model.ComponentParameter;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 /**
  * Data Access Object for Interaction parameter.
@@ -40,5 +42,11 @@ public class ComponentParameterDaoImpl extends IntactObjectDaoImpl<ComponentPara
 
     public ComponentParameterDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
         super( ComponentParameter.class, entityManager, intactSession );
+    }
+
+    public List<ComponentParameter> getByComponentAc( String componentAc ) {
+        return getSession().createCriteria( getEntityClass() )
+                .createCriteria( "component" )
+                .add( Restrictions.idEq(componentAc) ).list();
     }
 }

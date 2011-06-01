@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -7,6 +8,7 @@ import uk.ac.ebi.intact.core.persistence.dao.FeatureDao;
 import uk.ac.ebi.intact.model.Feature;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 /**
  * DAO for features
@@ -26,5 +28,12 @@ public class FeatureDaoImpl extends AnnotatedObjectDaoImpl<Feature> implements F
 
     public FeatureDaoImpl( EntityManager entityManager, IntactSession intactSession ) {
         super( Feature.class, entityManager, intactSession );
+    }
+
+    @Override
+    public List<Feature> getByComponentAc(String componentAc) {
+        return getSession().createCriteria( getEntityClass() )
+                .createCriteria( "component" )
+                .add( Restrictions.idEq(componentAc) ).list();
     }
 }
