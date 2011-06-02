@@ -31,14 +31,17 @@ import java.util.Collection;
 @org.springframework.stereotype.Component
 @Scope(org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE)
 @Qualifier("lazyCloner")
-public class LazyIntactCloner extends IntactCloner{
+public class LazyIntactCloner extends IntactCloner {
 
     public LazyIntactCloner() {
         super();
     }
 
+    public LazyIntactCloner(boolean excludeACs) {
+        super(excludeACs);
+    }
 
-    public boolean isCollectionClonable(Collection col) {
+    protected boolean isCollectionClonable(Collection col) {
         return IntactCore.isInitialized(col);
     }
 }
