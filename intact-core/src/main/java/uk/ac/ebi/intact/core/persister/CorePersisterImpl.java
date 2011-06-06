@@ -274,7 +274,7 @@ public class CorePersisterImpl implements CorePersister {
                         synchronizeChildren(managedObject);
 
                     } else {
-                       if (statisticsEnabled) statistics.addDuplicate(ao);
+                        if (statisticsEnabled) statistics.addDuplicate(ao);
                     }
                 } else {
                     if (log.isTraceEnabled()) log.trace("New (but found in database: "+ ac +") "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
@@ -324,7 +324,7 @@ public class CorePersisterImpl implements CorePersister {
 
                         // this will allow to reload the AO by its AC after flushing
                         ao.setAc(ac);
-                        
+
                         // traverse annotatedObject's properties and assign AC where appropriate
                         try {
                             copyAnnotatedObjectAttributeAcs(managedObject, ao);
@@ -358,7 +358,8 @@ public class CorePersisterImpl implements CorePersister {
             } else {
                 if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
 
-                // managed object
+                // managed object but can update/persist children if necessary and initialized
+                synchronizeChildren(ao);
             }
         }
 
@@ -480,14 +481,14 @@ public class CorePersisterImpl implements CorePersister {
             String newImexId = InteractionUtils.getImexIdentifier( newInteraction );
             String existingImexId = InteractionUtils.getImexIdentifier( existingInteraction );
             log.warn( "An AC already exists for this interaction. Possibly a duplicate? : Existing [" + managedObject.getAc() + ", " + managedObject.getShortLabel() + ", " + existingImexId + "] - " +
-                      "New [-, " + ao.getShortLabel() + ", " + newImexId + "]. The existing interaction will be updated" );
+                    "New [-, " + ao.getShortLabel() + ", " + newImexId + "]. The existing interaction will be updated" );
         }
     }
 
     private <T extends AnnotatedObject> void verifyExpectedType( T ao, Class<T> aoClass ) {
         if ( !( aoClass.isAssignableFrom( ao.getClass() ) || ao.getClass().isAssignableFrom( aoClass ) ) ) {
             throw new IllegalArgumentException( "Wrong type returned after synchronization. Expected " + aoClass.getName() + " but found " +
-                                                ao.getClass().getName() + ". The offender was: " + ao );
+                    ao.getClass().getName() + ". The offender was: " + ao );
         }
     }
 
@@ -680,7 +681,12 @@ public class CorePersisterImpl implements CorePersister {
     private void synchronizeExperiment( Experiment experiment ) {
 
         experiment.setPublication( synchronize( experiment.getPublication() ) );
-        experiment.setInteractions(synchronizeCollection(experiment.getInteractions()));
+        if (IntactCore.isInitializedAndDirty(experiment.getInteractions())){
+            Collection<Interaction> interactions = synchronizeCollection(experiment.getInteractions());
+            experiment.getInteractions().clear();
+            experiment.getInteractions().addAll(interactions);
+        }
+
         experiment.setCvIdentification(synchronize(experiment.getCvIdentification()));
         experiment.setCvInteraction( synchronize( experiment.getCvInteraction() ) );
         experiment.setBioSource( synchronize( experiment.getBioSource() ) );
@@ -691,19 +697,32 @@ public class CorePersisterImpl implements CorePersister {
 
         interaction.setCvInteractionType( synchronize( interaction.getCvInteractionType() ) );
         interaction.setCvInteractorType( synchronize( interaction.getCvInteractorType() ) );
-        interaction.setComponents( synchronizeCollection( interaction.getComponents() ) );
+        if (IntactCore.isInitializedAndDirty(interaction.getComponents())){
+            Collection<Component> components = synchronizeCollection(interaction.getComponents());
+            interaction.getComponents().clear();
+            interaction.getComponents().addAll(components);
+        }
         interaction.setBioSource( synchronize( interaction.getBioSource() ) );
-        interaction.setExperiments( synchronizeCollection( interaction.getExperiments() ) );
+        if (IntactCore.isInitializedAndDirty(interaction.getExperiments())){
+            Collection<Experiment> experiment = synchronizeCollection(interaction.getExperiments());
+            interaction.getExperiments().clear();
+            interaction.getExperiments().addAll(experiment);
+        }
 
         // cannot call setConfidences in interaction because of orphan relationship limitation
-        Collection<Confidence> confidences = synchronizeConfidences(interaction.getConfidences(), interaction);
-        interaction.getConfidences().clear();
-        interaction.getConfidences().addAll(confidences);
+        if (IntactCore.isInitializedAndDirty(interaction.getConfidences())){
+            Collection<Confidence> confidences = synchronizeConfidences(interaction.getConfidences(), interaction);
+            interaction.getConfidences().clear();
+            interaction.getConfidences().addAll(confidences);
+        }
 
         // cannot call setParameters in interaction because of orphan relationship limitation
-        Collection<InteractionParameter> interactionParameters = synchronizeInteractionParameters(interaction.getParameters(), interaction);
-        interaction.getParameters().clear();
-        interaction.getParameters().addAll(interactionParameters);
+        if (IntactCore.isInitializedAndDirty(interaction.getParameters())){
+
+            Collection<InteractionParameter> interactionParameters = synchronizeInteractionParameters(interaction.getParameters(), interaction);
+            interaction.getParameters().clear();
+            interaction.getParameters().addAll(interactionParameters);
+        }
 
         synchronizeAnnotatedObjectCommons( interaction );
     }
@@ -712,9 +731,9 @@ public class CorePersisterImpl implements CorePersister {
         List<Confidence> confidences = new ArrayList<Confidence>(confidencesToSynchronize.size());
 
         for ( Confidence confidence : confidencesToSynchronize ) {
-             if (confidence.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getConfidenceDao().isTransient(confidence)) {
-                  confidence = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getConfidenceDao().getByAc(confidence.getAc());
-             }
+            if (confidence.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getConfidenceDao().isTransient(confidence)) {
+                confidence = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getConfidenceDao().getByAc(confidence.getAc());
+            }
 
             confidence.setCvConfidenceType( synchronize (confidence.getCvConfidenceType()));
             confidence.setInteraction((InteractionImpl)parentInteraction);
@@ -725,14 +744,14 @@ public class CorePersisterImpl implements CorePersister {
         return confidences;
 
     }
-    
+
     private Collection<InteractionParameter> synchronizeInteractionParameters( Collection<InteractionParameter> interactionParametersToSynchronize, Interaction parentInteraction ) {
         List<InteractionParameter> interactionParameters = new ArrayList<InteractionParameter>(interactionParametersToSynchronize.size());
 
         for ( InteractionParameter interactionParameter : interactionParametersToSynchronize ) {
-             if (interactionParameter.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInteractionParameterDao().isTransient(interactionParameter)) {
-                  interactionParameter = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInteractionParameterDao().getByAc(interactionParameter.getAc());
-             }
+            if (interactionParameter.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInteractionParameterDao().isTransient(interactionParameter)) {
+                interactionParameter = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getInteractionParameterDao().getByAc(interactionParameter.getAc());
+            }
             interactionParameter.setCvParameterType( synchronize (interactionParameter.getCvParameterType()));
             interactionParameter.setCvParameterUnit( synchronize (interactionParameter.getCvParameterUnit()));
             interactionParameter.setInteraction((InteractionImpl)parentInteraction);
@@ -746,7 +765,12 @@ public class CorePersisterImpl implements CorePersister {
 
     private void synchronizeInteractor( Interactor interactor ) {
 
-        interactor.setActiveInstances( synchronizeCollection( interactor.getActiveInstances() ) );
+        if (IntactCore.isInitializedAndDirty(interactor.getActiveInstances())){
+            Collection<Component> activeInstances = synchronizeCollection(interactor.getActiveInstances());
+            interactor.getActiveInstances().clear();
+            interactor.getActiveInstances().addAll(activeInstances);
+        }
+
         interactor.setBioSource( synchronize( interactor.getBioSource() ) );
         interactor.setCvInteractorType( synchronize( interactor.getCvInteractorType() ) );
         synchronizeAnnotatedObjectCommons( interactor );
@@ -761,17 +785,35 @@ public class CorePersisterImpl implements CorePersister {
 
     private void synchronizeComponent( Component component ) {
         // cannot call setFeatures in interaction because of orphan relationship limitation
-        Collection<Feature> features = synchronizeCollection(component.getFeatures());
-        component.getFeatures().clear();
-        component.getFeatures().addAll(features);
+        if (IntactCore.isInitializedAndDirty(component.getFeatures())) {
+            Collection<Feature> features = synchronizeCollection(component.getFeatures());
+            component.getFeatures().clear();
+            component.getFeatures().addAll(features);
+        }
 
         component.setCvBiologicalRole( synchronize( component.getCvBiologicalRole() ) );
-        component.setExperimentalRoles( synchronizeCollection( component.getExperimentalRoles() ) );
+
+        if (IntactCore.isInitializedAndDirty(component.getExperimentalRoles())) {
+            Collection<CvExperimentalRole> roles = synchronizeCollection( component.getExperimentalRoles() );
+            component.getExperimentalRoles().clear();
+            component.getExperimentalRoles().addAll(roles);
+        }
+
         component.setExpressedIn( synchronize( component.getExpressedIn() ) );
         component.setInteraction( synchronize( component.getInteraction() ) );
         component.setInteractor( synchronize( component.getInteractor() ) );
-        component.setParticipantDetectionMethods( synchronizeCollection( component.getParticipantDetectionMethods() ) );
-        component.setExperimentalPreparations( synchronizeCollection( component.getExperimentalPreparations() ) );
+
+        if (IntactCore.isInitializedAndDirty(component.getParticipantDetectionMethods())) {
+            Collection<CvIdentification> partDet = synchronizeCollection( component.getParticipantDetectionMethods());
+            component.getParticipantDetectionMethods().clear();
+            component.getParticipantDetectionMethods().addAll(partDet);
+        }
+
+        if (IntactCore.isInitializedAndDirty(component.getExperimentalPreparations())) {
+            Collection<CvExperimentalPreparation> expPrep = synchronizeCollection( component.getExperimentalPreparations() );
+            component.getExperimentalPreparations().clear();
+            component.getExperimentalPreparations().addAll(expPrep);
+        }
 
         if (IntactCore.isInitializedAndDirty(component.getParameters())) {
             Collection<ComponentParameter> componentParameters = synchronizeComponentParameters(component.getParameters(), component);
@@ -787,14 +829,14 @@ public class CorePersisterImpl implements CorePersister {
 
         synchronizeAnnotatedObjectCommons( component );
     }
-    
+
     private Collection<ComponentParameter> synchronizeComponentParameters( Collection<ComponentParameter> componentParametersToSynchronize, Component parentComponent ) {
         List<ComponentParameter> componentParameters = new ArrayList<ComponentParameter>(componentParametersToSynchronize.size());
 
         for ( ComponentParameter componentParameter : componentParametersToSynchronize ) {
-             if (componentParameter.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentParameterDao().isTransient(componentParameter)) {
-                  componentParameter = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentParameterDao().getByAc(componentParameter.getAc());
-             }
+            if (componentParameter.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentParameterDao().isTransient(componentParameter)) {
+                componentParameter = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentParameterDao().getByAc(componentParameter.getAc());
+            }
 
             componentParameter.setCvParameterType( synchronize (componentParameter.getCvParameterType()));
             componentParameter.setCvParameterUnit( synchronize (componentParameter.getCvParameterUnit()));
@@ -811,9 +853,9 @@ public class CorePersisterImpl implements CorePersister {
         List<ComponentConfidence> confidences = new ArrayList<ComponentConfidence>(confidencesToSynchronize.size());
 
         for ( ComponentConfidence confidence : confidencesToSynchronize ) {
-             if (confidence.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentConfidenceDao().isTransient(confidence)) {
-                  confidence = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentConfidenceDao().getByAc(confidence.getAc());
-             }
+            if (confidence.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentConfidenceDao().isTransient(confidence)) {
+                confidence = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getComponentConfidenceDao().getByAc(confidence.getAc());
+            }
 
             confidence.setCvConfidenceType( synchronize (confidence.getCvConfidenceType()));
             confidence.setComponent(parentComponent);
@@ -834,9 +876,11 @@ public class CorePersisterImpl implements CorePersister {
         feature.setCvFeatureType( synchronize( feature.getCvFeatureType() ) );
 
         // cannot call setRanges in interaction because of orphan relationship limitation
-        Collection<Range> ranges = synchronizeRanges(feature.getRanges(), feature);
-        feature.getRanges().clear();
-        feature.getRanges().addAll(ranges);
+        if (IntactCore.isInitializedAndDirty(feature.getRanges())){
+            Collection<Range> ranges = synchronizeRanges(feature.getRanges(), feature);
+            feature.getRanges().clear();
+            feature.getRanges().addAll(ranges);
+        }
 
         synchronizeAnnotatedObjectCommons( feature );
     }
@@ -845,9 +889,9 @@ public class CorePersisterImpl implements CorePersister {
         List<Range> ranges = new ArrayList<Range>(rangesToSychronize.size());
 
         for ( Range range : rangesToSychronize ) {
-             if (range.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getRangeDao().isTransient(range)) {
-                  range = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getRangeDao().getByAc(range.getAc());
-             }
+            if (range.getAc() != null && IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getRangeDao().isTransient(range)) {
+                range = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getRangeDao().getByAc(range.getAc());
+            }
 
             range.setFromCvFuzzyType( synchronize( range.getFromCvFuzzyType() ) );
             range.setToCvFuzzyType( synchronize( range.getToCvFuzzyType() ) );
@@ -864,8 +908,17 @@ public class CorePersisterImpl implements CorePersister {
     private void synchronizeCvObject( CvObject cvObject ) {
         if (cvObject instanceof CvDagObject) {
             CvDagObject cvDagObject = (CvDagObject)cvObject;
-            cvDagObject.setChildren(synchronizeCollection(cvDagObject.getChildren()));
-            cvDagObject.setParents(synchronizeCollection(cvDagObject.getParents()));
+
+            if (IntactCore.isInitializedAndDirty(cvDagObject.getChildren())){
+                Collection<CvDagObject> children = synchronizeCollection(cvDagObject.getChildren());
+                cvDagObject.getChildren().clear();
+                cvDagObject.getChildren().addAll(children);
+            }
+            if (IntactCore.isInitializedAndDirty(cvDagObject.getParents())){
+                Collection<CvDagObject> parents = synchronizeCollection(cvDagObject.getParents());
+                cvDagObject.getParents().clear();
+                cvDagObject.getParents().addAll(parents);
+            }
         }
 
         synchronizeAnnotatedObjectCommons( cvObject );
@@ -873,7 +926,12 @@ public class CorePersisterImpl implements CorePersister {
 
     private void synchronizePublication( Publication publication ) {
 
-        publication.setExperiments( synchronizeCollection( publication.getExperiments() ) );
+        if (IntactCore.isInitializedAndDirty(publication.getExperiments())){
+            Collection<Experiment> experiments = synchronizeCollection(publication.getExperiments());
+            publication.getExperiments().clear();
+            publication.getExperiments().addAll(experiments);
+        }
+
         synchronizeAnnotatedObjectCommons( publication );
     }
 

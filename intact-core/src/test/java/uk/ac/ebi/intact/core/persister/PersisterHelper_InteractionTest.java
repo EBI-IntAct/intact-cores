@@ -175,7 +175,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
                 getByAc( interaction.getAc() );
         Assert.assertEquals( 0, reloadedInteraction.getConfidences().size() );
 
-        Assert.assertEquals( interaction, reloadedInteraction );        
+        Assert.assertEquals( interaction, reloadedInteraction );
         Confidence confidence = builder.createDeterministicConfidence();
 
         reloadedInteraction.addConfidence( confidence );
@@ -198,7 +198,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals( 1, reloadedInteraction2.getConfidences().size() );
         Assert.assertEquals( confidence, reloadedInteraction2.getConfidences().iterator().next() );
     }
-    
+
     @Test
     public void interactionParameterPersisted() throws Exception {
         IntactMockBuilder builder = super.getMockBuilder();
@@ -228,6 +228,30 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals( interactionParameterExpected.getBase(), interactionParameterObserved2.getBase());
         Assert.assertEquals( interactionParameterExpected.getUncertainty(), interactionParameterObserved2.getUncertainty());
         Assert.assertEquals( interactionParameterExpected.getExponent(), interactionParameterObserved2.getExponent());
+    }
+
+    @Test
+    public void componentPersisted() throws Exception {
+        IntactMockBuilder builder = super.getMockBuilder();
+        Interaction interaction = builder.createDeterministicInteraction();
+        getCorePersister().saveOrUpdate(interaction);
+
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+
+        interaction.addComponent(getMockBuilder().createComponentRandom());
+        interaction.setShortLabel("updated_interaction");
+
+        getCorePersister().saveOrUpdate(interaction);
+        Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(3, getDaoFactory().getComponentDao().countAll());
+        Assert.assertEquals("updated_interaction", interaction.getShortLabel());
+
+        Component c = interaction.getComponents().iterator().next();
+        c.setShortLabel("updated_component");
+        getCorePersister().saveOrUpdate(interaction);
+
+        Assert.assertEquals("updated_component", getDaoFactory().getComponentDao().getByAc(c.getAc()).getShortLabel());
     }
 
     @Test
@@ -563,7 +587,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         clonedInteraction.setShortLabel( "fooprey-barbait-1");
         clonedInteraction.addComponent(getMockBuilder().createComponentPrey(clonedInteraction,
-                                                        getMockBuilder().createProteinRandom()));
+                getMockBuilder().createProteinRandom()));
 
         getCorePersister().saveOrUpdate(clonedInteraction);
 
@@ -678,7 +702,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
     public void persistDuplicated() throws Exception {
         //IntactContext.getCurrentInstance().close();
         //IntactContext.initContext("intact-core-pg", new StandaloneSession());
-        
+
         Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
 
         final IntactCloner intactCloner = new IntactCloner();
@@ -776,7 +800,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Interaction interaction1 = getMockBuilder().createInteraction(c1, c2);
 
         getCorePersister().saveOrUpdate(interaction1);
-        
+
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
     }
 
@@ -889,7 +913,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         refreshedInteraction.getComponents().add(prey);
 
         getCorePersister().saveOrUpdate(prey);
-        
+
         Interaction finalInteraction = reloadByAc(refreshedInteraction);
         Assert.assertEquals(2, finalInteraction.getComponents().size());
     }
@@ -950,7 +974,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         Component component1 = getMockBuilder().createComponentBait(interactorA);
         Component component2 = getMockBuilder().createComponentPrey(interactorB);
-        
+
         Interaction interaction2 = getMockBuilder().createInteraction(component1, component2);
 
         getCorePersister().saveOrUpdate(interaction2);

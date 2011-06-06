@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.CvExperimentalRole;
 import uk.ac.ebi.intact.model.Feature;
@@ -97,7 +98,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         Component baitNeutralComponent = getMockBuilder().createComponentBait( getMockBuilder().createDeterministicProtein( "P1", "baaa" ) );
         baitNeutralComponent.setExperimentalRoles(baitNeutralExperimentalRoles);
-       
+
         getCorePersister().saveOrUpdate( baitNeutralComponent );
 
         Component reloadedComponent = reloadByAc(baitNeutralComponent);
@@ -147,6 +148,21 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
     }
 
+    @Test
+    public void featurePersisted() throws Exception {
+        IntactMockBuilder builder = super.getMockBuilder();
+        Component component = builder.createComponentRandom();
+        component.getFeatures().clear();
+        getCorePersister().saveOrUpdate(component);
 
+        Assert.assertEquals(0, getDaoFactory().getFeatureDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+
+        component.addFeature(getMockBuilder().createFeatureRandom());
+
+        getCorePersister().saveOrUpdate(component);
+        Assert.assertEquals(1, getDaoFactory().getFeatureDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
+    }
 
 }
