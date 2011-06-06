@@ -476,7 +476,8 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
 
         Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
-        interaction2.setExperiments(Arrays.asList(getMockBuilder().createExperimentEmpty("exp-1979-2")));
+        interaction2.getExperiments().clear();
+        interaction2.getExperiments().add(getMockBuilder().createExperimentEmpty("exp-1979-2"));
 
         getCorePersister().saveOrUpdate(interaction2);
 
