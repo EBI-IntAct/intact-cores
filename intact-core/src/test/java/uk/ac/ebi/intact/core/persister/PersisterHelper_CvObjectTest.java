@@ -18,6 +18,7 @@ package uk.ac.ebi.intact.core.persister;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import uk.ac.ebi.intact.core.config.IntactAuxiliaryConfigurator;
 import uk.ac.ebi.intact.core.config.SequenceManager;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -89,8 +90,8 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertEquals( expRole.getAc(), expRole2.getAc() );
     }
 
-    @Test (expected = PersisterException.class)
-
+    @Test
+    @DirtiesContext
     public void add_annotation_on_existing_cv() throws Exception {
         final String expRoleLabel = "EXP_ROLE";
 

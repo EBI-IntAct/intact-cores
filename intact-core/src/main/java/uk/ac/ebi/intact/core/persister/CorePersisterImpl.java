@@ -960,13 +960,11 @@ public class CorePersisterImpl implements CorePersister {
             for ( Xref xref : ao.getXrefs() ) {
                 synchedXrefs.add( synchronizeXref( xref, ao ) );
             }
-        } else {
-            synchedXrefs = ao.getXrefs();
-        }
 
-        if (IntactCore.isInitialized(ao.getXrefs())) {
             ao.getXrefs().clear();
             ao.getXrefs().addAll(synchedXrefs);
+        } else {
+            synchedXrefs = ao.getXrefs();
         }
 
         Collection synchedAliases = new ArrayList();
@@ -975,13 +973,11 @@ public class CorePersisterImpl implements CorePersister {
             for ( Alias alias : ao.getAliases() ) {
                 synchedAliases.add( synchronizeAlias( alias, ao ) );
             }
-        } else {
-            synchedAliases = ao.getAliases();
-        }
 
-        if (IntactCore.isInitialized(ao.getAliases())) {
             ao.getAliases().clear();
             ao.getAliases().addAll(synchedAliases);
+        } else {
+            synchedAliases = ao.getAliases();
         }
 
         Collection synchedAnnotations = new ArrayList();
@@ -990,10 +986,12 @@ public class CorePersisterImpl implements CorePersister {
             for ( Annotation annotation : ao.getAnnotations() ) {
                 synchedAnnotations.add( synchronizeAnnotation( annotation, ao ) );
             }
+
+            ao.getAnnotations().clear();
+            ao.getAnnotations().addAll(synchedAnnotations);
         } else {
             synchedAnnotations = ao.getAnnotations();
         }
-        ao.setAnnotations( synchedAnnotations );
 
         if (ao instanceof OwnedObject) {
             OwnedObject ownedObject = (OwnedObject) ao;
