@@ -358,7 +358,7 @@ public class CorePersisterImpl implements CorePersister {
             } else {
                 if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
 
-                // managed object but can update/persist children if necessary and initialized
+                // managed object but can update/persist children if necessary and initialized. Create any children of this object if necessary but do not synchronize annotated attributes as it will be done by hibernate
                 synchronizeChildrenButNotAnnotatedAttributes(ao);
             }
         }
