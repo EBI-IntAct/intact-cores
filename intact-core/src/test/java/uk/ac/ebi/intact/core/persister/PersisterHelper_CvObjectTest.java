@@ -90,7 +90,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertEquals( expRole.getAc(), expRole2.getAc() );
     }
 
-    @Test
+    @Test (expected = PersisterException.class)
     @DirtiesContext
     public void add_annotation_on_existing_cv() throws Exception {
         final String expRoleLabel = "EXP_ROLE";

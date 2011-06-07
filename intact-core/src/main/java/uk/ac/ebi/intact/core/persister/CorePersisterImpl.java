@@ -359,7 +359,7 @@ public class CorePersisterImpl implements CorePersister {
                 if (log.isTraceEnabled()) log.trace("Managed "+ao.getClass().getSimpleName()+": "+ao.getShortLabel()+" - Decision: IGNORE");
 
                 // managed object but can update/persist children if necessary and initialized
-                synchronizeChildren(ao);
+                synchronizeChildrenButNotAnnotatedAttributes(ao);
             }
         }
 
@@ -656,29 +656,54 @@ public class CorePersisterImpl implements CorePersister {
 
     private void synchronizeChildren( AnnotatedObject ao ) {
         if ( ao instanceof Institution ) {
-            synchronizeInstitution( ( Institution ) ao );
+            synchronizeInstitution( ( Institution ) ao, true );
         } else if ( ao instanceof Publication ) {
-            synchronizePublication( ( Publication ) ao );
+            synchronizePublication( ( Publication ) ao, true );
         } else if ( ao instanceof CvObject ) {
-            synchronizeCvObject( ( CvObject ) ao );
+            synchronizeCvObject( ( CvObject ) ao, true );
         } else if ( ao instanceof Experiment ) {
-            synchronizeExperiment( ( Experiment ) ao );
+            synchronizeExperiment( ( Experiment ) ao, true );
         } else if ( ao instanceof Interaction ) {
-            synchronizeInteraction( ( Interaction ) ao );
+            synchronizeInteraction( ( Interaction ) ao, true );
         } else if ( ao instanceof Interactor ) {
-            synchronizeInteractor( ( Interactor ) ao );
+            synchronizeInteractor( ( Interactor ) ao, true );
         } else if ( ao instanceof BioSource ) {
-            synchronizeBioSource( ( BioSource ) ao );
+            synchronizeBioSource( ( BioSource ) ao, true );
         } else if ( ao instanceof Component ) {
-            synchronizeComponent( ( Component ) ao );
+            synchronizeComponent( ( Component ) ao, true );
         } else if ( ao instanceof Feature ) {
-            synchronizeFeature( ( Feature ) ao );
+            synchronizeFeature( ( Feature ) ao, true );
         } else {
             throw new IllegalArgumentException( "synchronizeChildren doesn't handle : " + ao.getClass().getName() );
         }
     }
 
-    private void synchronizeExperiment( Experiment experiment ) {
+    private void synchronizeChildrenButNotAnnotatedAttributes( AnnotatedObject ao ) {
+        if ( ao instanceof Institution ) {
+            synchronizeInstitution( ( Institution ) ao, false );
+        } else if ( ao instanceof Publication ) {
+            synchronizePublication( ( Publication ) ao, false );
+        } else if ( ao instanceof CvObject ) {
+            synchronizeCvObject( ( CvObject ) ao, false );
+        } else if ( ao instanceof Experiment ) {
+            synchronizeExperiment( ( Experiment ) ao, false );
+        } else if ( ao instanceof Interaction ) {
+            synchronizeInteraction( ( Interaction ) ao, false );
+        } else if ( ao instanceof Interactor ) {
+            synchronizeInteractor( ( Interactor ) ao, false );
+        } else if ( ao instanceof BioSource ) {
+            synchronizeBioSource( ( BioSource ) ao, false );
+        } else if ( ao instanceof Component ) {
+            synchronizeComponent( ( Component ) ao, false );
+        } else if ( ao instanceof Feature ) {
+            synchronizeFeature( ( Feature ) ao, false );
+        } else {
+            throw new IllegalArgumentException( "synchronizeChildren doesn't handle : " + ao.getClass().getName() );
+        }
+    }
+
+
+    private void synchronizeExperiment( Experiment experiment, boolean synchronizeAnnotatedAttributes ) {
 
         experiment.setPublication( synchronize( experiment.getPublication() ) );
         if (IntactCore.isInitializedAndDirty(experiment.getInteractions())){
@@ -690,10 +715,13 @@ public class CorePersisterImpl implements CorePersister {
         experiment.setCvIdentification(synchronize(experiment.getCvIdentification()));
         experiment.setCvInteraction( synchronize( experiment.getCvInteraction() ) );
         experiment.setBioSource( synchronize( experiment.getBioSource() ) );
-        synchronizeAnnotatedObjectCommons( experiment );
+
+        if (synchronizeAnnotatedAttributes){
+            synchronizeAnnotatedObjectCommons( experiment );
+        }
     }
 
-    private void synchronizeInteraction( Interaction interaction ) {
+    private void synchronizeInteraction( Interaction interaction, boolean synchronizeAnnotatedAttributes ) {
 
         interaction.setCvInteractionType( synchronize( interaction.getCvInteractionType() ) );
         interaction.setCvInteractorType( synchronize( interaction.getCvInteractorType() ) );
@@ -724,7 +752,9 @@ public class CorePersisterImpl implements CorePersister {
             interaction.getParameters().addAll(interactionParameters);
         }
 
-        synchronizeAnnotatedObjectCommons( interaction );
+        if (synchronizeAnnotatedAttributes){
+            synchronizeAnnotatedObjectCommons( interaction );
+        }
     }
 
     private Collection<Confidence> synchronizeConfidences( Collection<Confidence> confidencesToSynchronize, Interaction parentInteraction ) {
@@ -763,7 +793,7 @@ public class CorePersisterImpl implements CorePersister {
 
     }
 
-    private void synchronizeInteractor( Interactor interactor ) {
+    private void synchronizeInteractor( Interactor interactor, boolean synchronizeAnnotatedAtributes ) {
 
         if (IntactCore.isInitializedAndDirty(interactor.getActiveInstances())){
             Collection<Component> activeInstances = synchronizeCollection(interactor.getActiveInstances());
@@ -773,17 +803,23 @@ public class CorePersisterImpl implements CorePersister {
 
         interactor.setBioSource( synchronize( interactor.getBioSource() ) );
         interactor.setCvInteractorType( synchronize( interactor.getCvInteractorType() ) );
-        synchronizeAnnotatedObjectCommons( interactor );
+
+        if (synchronizeAnnotatedAtributes){
+            synchronizeAnnotatedObjectCommons( interactor );
+        }
     }
 
-    private void synchronizeBioSource( BioSource bioSource ) {
+    private void synchronizeBioSource( BioSource bioSource, boolean synchronizeAnnotatedAttributes ) {
 
         bioSource.setCvCellType( synchronize( bioSource.getCvCellType() ) );
         bioSource.setCvTissue( synchronize( bioSource.getCvTissue() ) );
-        synchronizeAnnotatedObjectCommons( bioSource );
+
+        if (synchronizeAnnotatedAttributes){
+            synchronizeAnnotatedObjectCommons( bioSource );
+        }
     }
 
-    private void synchronizeComponent( Component component ) {
+    private void synchronizeComponent( Component component, boolean synchronizeAnnotatedAttributes ) {
         // cannot call setFeatures in interaction because of orphan relationship limitation
         if (IntactCore.isInitializedAndDirty(component.getFeatures())) {
             Collection<Feature> features = synchronizeCollection(component.getFeatures());
@@ -827,7 +863,9 @@ public class CorePersisterImpl implements CorePersister {
             component.getConfidences().addAll(componentConfidences);
         }
 
-        synchronizeAnnotatedObjectCommons( component );
+        if (synchronizeAnnotatedAttributes){
+            synchronizeAnnotatedObjectCommons( component );
+        }
     }
 
     private Collection<ComponentParameter> synchronizeComponentParameters( Collection<ComponentParameter> componentParametersToSynchronize, Component parentComponent ) {
@@ -868,7 +906,7 @@ public class CorePersisterImpl implements CorePersister {
     }
 
 
-    private void synchronizeFeature( Feature feature ) {
+    private void synchronizeFeature( Feature feature, boolean synchronizeAnnotatedAttributes ) {
 
         feature.setBoundDomain( synchronize( feature.getBoundDomain() ) );
         feature.setComponent( synchronize( feature.getComponent() ) );
@@ -882,7 +920,9 @@ public class CorePersisterImpl implements CorePersister {
             feature.getRanges().addAll(ranges);
         }
 
-        synchronizeAnnotatedObjectCommons( feature );
+        if (synchronizeAnnotatedAttributes){
+            synchronizeAnnotatedObjectCommons( feature );
+        }
     }
 
     private Collection<Range> synchronizeRanges( Collection<Range> rangesToSychronize, Feature parentFeature ) {
@@ -905,7 +945,7 @@ public class CorePersisterImpl implements CorePersister {
 
     }
 
-    private void synchronizeCvObject( CvObject cvObject ) {
+    private void synchronizeCvObject( CvObject cvObject, boolean synchronizeAnnotatedAttributes ) {
         if (cvObject instanceof CvDagObject) {
             CvDagObject cvDagObject = (CvDagObject)cvObject;
 
@@ -921,10 +961,12 @@ public class CorePersisterImpl implements CorePersister {
             }
         }
 
-        synchronizeAnnotatedObjectCommons( cvObject );
+        if (synchronizeAnnotatedAttributes){
+            synchronizeAnnotatedObjectCommons( cvObject );
+        }
     }
 
-    private void synchronizePublication( Publication publication ) {
+    private void synchronizePublication( Publication publication, boolean synchronizeAnnotatedAttributes ) {
 
         if (IntactCore.isInitializedAndDirty(publication.getExperiments())){
             Collection<Experiment> experiments = synchronizeCollection(publication.getExperiments());
@@ -932,12 +974,16 @@ public class CorePersisterImpl implements CorePersister {
             publication.getExperiments().addAll(experiments);
         }
 
-        synchronizeAnnotatedObjectCommons( publication );
+        if (synchronizeAnnotatedAttributes){
+            synchronizeAnnotatedObjectCommons( publication );
+        }
     }
 
-    private void synchronizeInstitution( Institution institution ) {
+    private void synchronizeInstitution( Institution institution, boolean synchronyzeCommonAttributes ) {
 
-        synchronizeAnnotatedObjectCommons( institution );
+        if (synchronyzeCommonAttributes){
+            synchronizeAnnotatedObjectCommons( institution );
+        }
     }
 
     private <X extends AnnotatedObject> Collection<X> synchronizeCollection( Collection<X> collection ) {
@@ -1042,6 +1088,9 @@ public class CorePersisterImpl implements CorePersister {
         if (annotation.getAc() != null) {
             return IntactContext.getCurrentInstance().getDataContext().getDaoFactory()
                     .getAnnotationDao().getByAc(annotation.getAc());
+        }
+        else {
+
         }
         annotation.setCvTopic( synchronize( annotation.getCvTopic() ) );
 
