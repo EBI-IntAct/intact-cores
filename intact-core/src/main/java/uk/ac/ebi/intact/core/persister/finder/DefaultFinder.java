@@ -692,7 +692,7 @@ public class DefaultFinder implements Finder {
             }
 
             for (String id : identifiersToTest){
-                Query query = getEntityManager().createQuery( "select r.ac from "+ cvClass.getName() +" r join r.xrefs as xref where r.identifier = :primaryId or (xref.primaryId = :primaryId and xref.cvXrefQualifier.shortLabel = :identity)" );
+                Query query = getEntityManager().createQuery( "select r.ac from "+ cvClass.getName() +" r left join r.xrefs as xref where r.identifier = :primaryId or (xref.primaryId = :primaryId and xref.cvXrefQualifier.shortLabel = :identity)" );
                 query.setParameter( "primaryId", id );
                 query.setParameter( "identity", "identity" );
 
