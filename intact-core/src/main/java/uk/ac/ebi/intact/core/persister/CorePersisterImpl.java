@@ -949,8 +949,16 @@ public class CorePersisterImpl implements CorePersister {
         if (cvObject instanceof CvDagObject) {
             CvDagObject cvDagObject = (CvDagObject)cvObject;
 
-            cvDagObject.setChildren(synchronizeCollection(cvDagObject.getChildren()));
-            cvDagObject.setParents(synchronizeCollection(cvDagObject.getParents()));
+            if (IntactCore.isInitializedAndDirty(cvDagObject.getChildren())){
+                Collection<CvDagObject> children = synchronizeCollection(cvDagObject.getChildren());
+                cvDagObject.getChildren().clear();
+                cvDagObject.getChildren().addAll(children);
+            }
+            if (IntactCore.isInitializedAndDirty(cvDagObject.getParents())){
+                Collection<CvDagObject> parents = synchronizeCollection(cvDagObject.getParents());
+                cvDagObject.getParents().clear();
+                cvDagObject.getParents().addAll(parents);
+            }
         }
 
         if (synchronizeAnnotatedAttributes){
