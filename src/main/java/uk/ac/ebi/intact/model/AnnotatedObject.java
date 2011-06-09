@@ -23,48 +23,46 @@ public interface AnnotatedObject<T extends Xref, A extends Alias> extends Intact
     static final int MAX_FULL_NAME_LEN = 1000;
 
     // institution is here for backwards compatibility. Originally, all annotated objects had institution
-    @Deprecated
     Institution getOwner();
 
-    @Deprecated
     void setOwner(Institution institution);
 
     String getShortLabel();
 
-    void setShortLabel( String shortLabel );
+    void setShortLabel(String shortLabel);
 
     String getFullName();
 
-    void setFullName( String fullName );
+    void setFullName(String fullName);
 
     ///////////////////////////////////////
     // access methods for associations
-    void setAnnotations( Collection<Annotation> someAnnotation );
+    void setAnnotations(Collection<Annotation> someAnnotation);
 
-    void addAnnotation( Annotation annotation );
+    void addAnnotation(Annotation annotation);
 
-    void removeAnnotation( Annotation annotation );
+    void removeAnnotation(Annotation annotation);
 
     ///////////////////
     // Xref related
     ///////////////////
-    void setXrefs( Collection<T> someXrefs );
+    void setXrefs(Collection<T> someXrefs);
 
     Collection<T> getXrefs();
 
-    void addXref( T aXref );
+    void addXref(T aXref);
 
-    void removeXref( T xref );
+    void removeXref(T xref);
 
     ///////////////////
     // Alias related
     ///////////////////
-    void setAliases( Collection<A> someAliases );
+    void setAliases(Collection<A> someAliases);
 
     Collection<A> getAliases();
 
-    void addAlias( A alias );
+    void addAlias(A alias);
 
-    void removeAlias( A alias );
+    void removeAlias(A alias);
 
 }

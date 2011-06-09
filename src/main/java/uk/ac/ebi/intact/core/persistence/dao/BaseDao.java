@@ -35,57 +35,62 @@ public interface BaseDao<T> {
 
     Iterator<T> getAllIterator();
 
-    List<T> getAll( int firstResult, int maxResults );
+    List<T> getAll(int firstResult, int maxResults);
 
     /**
      * Returns all the objects, sorted by the chosen property
-     * @param firstResult The first result (index) to get
-     * @param maxResults The maximum results per page
+     *
+     * @param firstResult  The first result (index) to get
+     * @param maxResults   The maximum results per page
      * @param sortProperty The property to use when sorting
-     * @param ascendant The order of the sort. If true, the sorting is ascendant
+     * @param ascendant    The order of the sort. If true, the sorting is ascendant
      * @return The objects, sorted
      */
-    List<T> getAllSorted( int firstResult, int maxResults, String sortProperty, boolean ascendant);
+    List<T> getAllSorted(int firstResult, int maxResults, String sortProperty, boolean ascendant);
 
     public int countAll();
 
-    void update( T objToUpdate );
+    void update(T objToUpdate);
 
-    void persist( T objToPersist );
+    void persist(T objToPersist);
 
-    void persistAll( Collection<T> objsToPersist );
+    void persistAll(Collection<T> objsToPersist);
 
-    void delete( T objToDelete );
+    void delete(T objToDelete);
 
-    void deleteAll( Collection<T> objsToDelete );
+    void deleteAll(Collection<T> objsToDelete);
 
     int deleteAll();
 
-    void saveOrUpdate( T objToPersist );
+    void saveOrUpdate(T objToPersist);
 
-    void refresh( T obj );
+    void refresh(T obj);
 
-    void evict( T objToEvict );
+    void evict(T objToEvict);
 
     /**
      * Persist the state of the given detached instance, reusing the current identifier value. This operation cascades
      * to associated instances if the association is mapped with cascade="replicate".
+     *
      * @param objToReplicate
      */
-    void replicate( T objToReplicate );
+    void replicate(T objToReplicate);
 
     /**
      * Persist the state of the given detached instance, reusing the current identifier value. This operation cascades
      * to associated instances if the association is mapped with cascade="replicate".
+     *
      * @param objToReplicate
      * @param ignoreIfExisting
      */
     void replicate(T objToReplicate, boolean ignoreIfExisting);
 
-    void merge( T objToReplicate );
+    void merge(T objToReplicate);
 
     boolean isTransient(T object);
 
     void setEntityClass(Class<T> entityClass);
+
+    Class<T> getEntityClass();
 
 }
