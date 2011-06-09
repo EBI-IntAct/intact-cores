@@ -18,10 +18,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
-import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManager;
@@ -279,10 +276,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     @Override
     public List<T> getByInstitutionAc(String institutionAc, int firstResult, int maxResults) {
         Query query = getEntityManager().createQuery("select ao from " + getEntityClass().getName() + " ao " +
-                "where ao.owner.ac = :ownerAc");
-        query.setParameter("ownerAc", institutionAc);
-        query.setFirstResult(firstResult);
-        query.setMaxResults(maxResults);
+                "where ao.owner.ac = :ownerAc")
+                .setParameter("ownerAc", institutionAc)
+                .setFirstResult(firstResult)
+                .setMaxResults(maxResults);
 
         return query.getResultList();
     }
@@ -290,9 +287,27 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     @Override
     public long countByInstitutionAc(String institutionAc) {
         Query query = getEntityManager().createQuery("select count(ao) from " + getEntityClass().getName() + " ao " +
-                "where ao.owner.ac = :ownerAc");
-        query.setParameter("ownerAc", institutionAc);
+                "where ao.owner.ac = :ownerAc")
+                .setParameter("ownerAc", institutionAc);
 
         return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public int replaceInstitution(Institution sourceInstitution, Institution destinationInstitution) {
+        if (sourceInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Source institution needs to be present in the database. Supplied institution does not have an AC: " + destinationInstitution);
+        }
+
+        if (destinationInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Destination institution needs to be present in the database. Supplied institution does not have an AC: " + destinationInstitution);
+        }
+
+        return getEntityManager().createQuery("update " + getEntityClass().getName() + " ao " +
+                "set ao.owner = :destInstitution " +
+                "where ao.owner.ac = :sourceInstitutionAc")
+                .setParameter("sourceInstitutionAc", sourceInstitution.getAc())
+                .setParameter("destInstitution", destinationInstitution)
+                .executeUpdate();
     }
 }

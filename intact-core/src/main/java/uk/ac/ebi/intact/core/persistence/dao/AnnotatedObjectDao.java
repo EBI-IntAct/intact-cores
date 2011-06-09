@@ -6,10 +6,7 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.model.AnnotatedObject;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.model.CvXrefQualifier;
+import uk.ac.ebi.intact.model.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -118,6 +115,17 @@ public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObj
      *
      * @param institutionAc the AC of the institution
      * @return The number of annotated objects for that institution
+     * @since 2.4
      */
     long countByInstitutionAc(String institutionAc);
+
+    /**
+     * Replaces the owner for all the annotated objects of this type.
+     *
+     * @param sourceInstitution      The owner to replace
+     * @param destinationInstitution The owner of the annotated objects
+     * @return number of updated records
+     * @since 2.4
+     */
+    int replaceInstitution(Institution sourceInstitution, Institution destinationInstitution);
 }
