@@ -130,14 +130,12 @@ public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObj
     int replaceInstitution(Institution sourceInstitution, Institution destinationInstitution);
 
     /**
-     * Replaces the institution for all the annotated objects of this type, taking into account
-     * the name of the user that created the record.
+     * Replaces the institution for all the annotated objects of this type, for a specific creator user
      *
-     * @param sourceInstitution      The owner to replace
      * @param destinationInstitution The owner of the annotated objects
      * @param createUser             the name of the user who created a record. Only the institutions for this user will be updated
      * @return number of updated records
      * @since 2.4
      */
-    int replaceInstitution(Institution sourceInstitution, Institution destinationInstitution, String createUser);
+    int replaceInstitution(Institution destinationInstitution, String createUser);
 }
