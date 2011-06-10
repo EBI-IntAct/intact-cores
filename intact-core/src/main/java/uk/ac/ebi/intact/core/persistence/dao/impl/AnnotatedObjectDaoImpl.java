@@ -310,9 +310,11 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
 
         return getEntityManager().createQuery("update " + getEntityClass().getName() + " ao " +
                 "set ao.owner = :destInstitution " +
-                "where ao.owner.ac = :sourceInstitutionAc")
+                "where ao.owner.ac = :sourceInstitutionAc " +
+                "and ao.owner.ac <> :destInstitutionAc")
                 .setParameter("sourceInstitutionAc", sourceInstitution.getAc())
                 .setParameter("destInstitution", destinationInstitution)
+                .setParameter("destInstitutionAc", destinationInstitution.getAc())
                 .executeUpdate();
     }
 
@@ -326,9 +328,11 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
 
         return getEntityManager().createQuery("update " + getEntityClass().getName() + " ao " +
                 "set ao.owner = :destInstitution " +
-                "where ao.creator = :creator")
+                "where ao.creator = :creator " +
+                "and ao.owner.ac <> :destInstitutionAc")
                 .setParameter("destInstitution", destinationInstitution)
                 .setParameter("creator", createUser.toUpperCase())
+                .setParameter("destInstitutionAc", destinationInstitution.getAc())
                 .executeUpdate();
     }
 
