@@ -181,4 +181,44 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
 
     }
 
+    @Test
+    @DirtiesContext
+    public void replaceInstitutionForCreator() throws Exception {
+        Institution sourceInstitution = getMockBuilder().createInstitution("IA:xxx1", "Lala Source Institute");
+        Institution destInstitution = getMockBuilder().createInstitution("IA:xxx2", "Lala Destination Institute");
+
+        Interaction interaction1 = getMockBuilder().createInteractionRandomBinary();
+        interaction1.setOwner(sourceInstitution);
+        interaction1.setCreator("CREATOR 1");
+
+        Interaction interaction2 = getMockBuilder().createInteractionRandomBinary();
+        interaction2.setOwner(sourceInstitution);
+        interaction2.setCreator("CREATOR 2");
+
+        getCorePersister().saveOrUpdate(destInstitution, interaction1, interaction2);
+
+        Interaction reloadedInteraction1 = getDaoFactory().getInteractionDao().getByAc(interaction1.getAc());
+        Assert.assertEquals(sourceInstitution.getAc(), reloadedInteraction1.getOwner().getAc());
+        Assert.assertEquals("CREATOR 1", reloadedInteraction1.getCreator());
+
+        Interaction reloadedInteraction2 = getDaoFactory().getInteractionDao().getByAc(interaction2.getAc());
+        Assert.assertEquals(sourceInstitution.getAc(), reloadedInteraction2.getOwner().getAc());
+        Assert.assertEquals("CREATOR 2", reloadedInteraction2.getCreator());
+
+        int updatedCount = getDaoFactory().getInteractionDao().replaceInstitution(sourceInstitution, destInstitution, "CREATOR 1");
+
+        Assert.assertEquals(1, updatedCount);
+
+        getEntityManager().flush();
+        getEntityManager().clear();
+
+
+        Interaction reloadedInteraction1bis = getDaoFactory().getInteractionDao().getByAc(reloadedInteraction1.getAc());
+        Assert.assertEquals(destInstitution.getAc(), reloadedInteraction1bis.getOwner().getAc());
+
+        Interaction reloadedInteraction2bis = getDaoFactory().getInteractionDao().getByAc(reloadedInteraction2.getAc());
+        Assert.assertEquals(sourceInstitution.getAc(), reloadedInteraction2bis.getOwner().getAc());
+
+    }
+
 }

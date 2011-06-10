@@ -286,6 +286,8 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
 
     @Override
     public long countByInstitutionAc(String institutionAc) {
+        verifyOwnable();
+
         Query query = getEntityManager().createQuery("select count(ao) from " + getEntityClass().getName() + " ao " +
                 "where ao.owner.ac = :ownerAc")
                 .setParameter("ownerAc", institutionAc);
@@ -293,8 +295,11 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return (Long) query.getSingleResult();
     }
 
+
     @Override
     public int replaceInstitution(Institution sourceInstitution, Institution destinationInstitution) {
+        verifyOwnable();
+
         if (sourceInstitution.getAc() == null) {
             throw new IllegalArgumentException("Source institution needs to be present in the database. Supplied institution does not have an AC: " + destinationInstitution);
         }
@@ -309,5 +314,33 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
                 .setParameter("sourceInstitutionAc", sourceInstitution.getAc())
                 .setParameter("destInstitution", destinationInstitution)
                 .executeUpdate();
+    }
+
+    @Override
+    public int replaceInstitution(Institution sourceInstitution, Institution destinationInstitution, String createUser) {
+        verifyOwnable();
+
+        if (sourceInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Source institution needs to be present in the database. Supplied institution does not have an AC: " + destinationInstitution);
+        }
+
+        if (destinationInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Destination institution needs to be present in the database. Supplied institution does not have an AC: " + destinationInstitution);
+        }
+
+        return getEntityManager().createQuery("update " + getEntityClass().getName() + " ao " +
+                "set ao.owner = :destInstitution " +
+                "where ao.owner.ac = :sourceInstitutionAc and " +
+                "ao.creator = :creator")
+                .setParameter("sourceInstitutionAc", sourceInstitution.getAc())
+                .setParameter("destInstitution", destinationInstitution)
+                .setParameter("creator", createUser.toUpperCase())
+                .executeUpdate();
+    }
+
+    private void verifyOwnable() {
+        if (!OwnedAnnotatedObject.class.isAssignableFrom(getEntityClass())) {
+            throw new IllegalArgumentException("Object type is not an OnwedAnnotatedObject, so it has no owner: " + getEntityClass().getName());
+        }
     }
 }
