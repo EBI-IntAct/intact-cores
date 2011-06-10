@@ -205,7 +205,7 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
         Assert.assertEquals(sourceInstitution.getAc(), reloadedInteraction2.getOwner().getAc());
         Assert.assertEquals("CREATOR 2", reloadedInteraction2.getCreator());
 
-        int updatedCount = getDaoFactory().getInteractionDao().replaceInstitution(sourceInstitution, destInstitution, "CREATOR 1");
+        int updatedCount = getDaoFactory().getInteractionDao().replaceInstitution(destInstitution, "CREATOR 1");
 
         Assert.assertEquals(1, updatedCount);
 

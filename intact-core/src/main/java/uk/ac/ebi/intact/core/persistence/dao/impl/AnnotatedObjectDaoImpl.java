@@ -317,12 +317,8 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     }
 
     @Override
-    public int replaceInstitution(Institution sourceInstitution, Institution destinationInstitution, String createUser) {
+    public int replaceInstitution(Institution destinationInstitution, String createUser) {
         verifyOwnable();
-
-        if (sourceInstitution.getAc() == null) {
-            throw new IllegalArgumentException("Source institution needs to be present in the database. Supplied institution does not have an AC: " + destinationInstitution);
-        }
 
         if (destinationInstitution.getAc() == null) {
             throw new IllegalArgumentException("Destination institution needs to be present in the database. Supplied institution does not have an AC: " + destinationInstitution);
@@ -330,9 +326,7 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
 
         return getEntityManager().createQuery("update " + getEntityClass().getName() + " ao " +
                 "set ao.owner = :destInstitution " +
-                "where ao.owner.ac = :sourceInstitutionAc and " +
-                "ao.creator = :creator")
-                .setParameter("sourceInstitutionAc", sourceInstitution.getAc())
+                "where ao.creator = :creator")
                 .setParameter("destInstitution", destinationInstitution)
                 .setParameter("creator", createUser.toUpperCase())
                 .executeUpdate();
