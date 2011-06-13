@@ -358,7 +358,7 @@ public final class AnnotatedObjectUtils {
      */
     public static <X extends Xref> List<X> searchXrefs(AnnotatedObject<X, ?> ao, XrefCvFilter xrefFilter) {
         List<X> xrefList = new ArrayList<X>();
-        CollectionUtils.select(ao.getXrefs(), new IntactObjectFilterPredicate(xrefFilter), xrefList);
+        CollectionUtils.select(IntactCore.ensureInitializedXrefs(ao), new IntactObjectFilterPredicate(xrefFilter), xrefList);
         return xrefList;
     }
 
@@ -381,7 +381,7 @@ public final class AnnotatedObjectUtils {
 
         Collection<Annotation> annotations = new ArrayList<Annotation>();
         if (!topics.isEmpty()) {
-            for (Annotation annotation : annotatedObject.getAnnotations()) {
+            for (Annotation annotation : IntactCore.ensureInitializedAnnotations(annotatedObject)) {
                 if (topics.contains(annotation.getCvTopic())) {
                     annotations.add(annotation);
                 }
@@ -393,7 +393,7 @@ public final class AnnotatedObjectUtils {
     public static Collection<Annotation> getPublicAnnotations(final AnnotatedObject<?, ?> annotatedObject) {
 
         final Collection<Annotation> publicAnnotations = new ArrayList<Annotation>(annotatedObject.getAnnotations().size());
-        final Iterator<Annotation> i = annotatedObject.getAnnotations().iterator();
+        final Iterator<Annotation> i = IntactCore.ensureInitializedAnnotations(annotatedObject).iterator();
         while (i.hasNext()) {
             Annotation annotation = i.next();
             if (isCvTopicPublic(annotation.getCvTopic())) {
@@ -405,7 +405,7 @@ public final class AnnotatedObjectUtils {
     }
 
     public static boolean isCvTopicPublic(CvTopic cvTopic) {
-        for (Annotation annotation : cvTopic.getAnnotations()) {
+        for (Annotation annotation : IntactCore.ensureInitializedAnnotations(cvTopic)) {
             if (annotation.getCvTopic().getShortLabel().equals(CvTopic.HIDDEN)) {
                 return false;
             }
@@ -455,15 +455,15 @@ public final class AnnotatedObjectUtils {
     }
 
     public static boolean containSameAnnotations(AnnotatedObject ao1, AnnotatedObject ao2) {
-        return areCollectionEqual(ao1.getAnnotations(), ao2.getAnnotations());
+        return areCollectionEqual(IntactCore.ensureInitializedAnnotations(ao1), IntactCore.ensureInitializedAnnotations(ao2));
     }
 
     public static boolean containSameXrefs(AnnotatedObject ao1, AnnotatedObject ao2) {
-        return areCollectionEqual(ao1.getXrefs(), ao2.getXrefs());
+        return areCollectionEqual(IntactCore.ensureInitializedXrefs(ao1), IntactCore.ensureInitializedXrefs(ao2));
     }
 
     public static boolean containSameAliases(AnnotatedObject ao1, AnnotatedObject ao2) {
-        return areCollectionEqual(ao1.getAliases(), ao2.getAliases());
+        return areCollectionEqual(IntactCore.ensureInitializedAliases(ao1), IntactCore.ensureInitializedXrefs(ao2));
     }
 
     /**
