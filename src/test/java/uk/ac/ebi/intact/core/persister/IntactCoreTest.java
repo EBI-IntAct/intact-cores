@@ -410,4 +410,29 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
         Assert.assertTrue(IntactCore.isInitialized(confidences));
     }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @DirtiesContext
+    public void ensureInitializedSequence() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
+        Protein protein = getMockBuilder().createProteinRandom();
+        getCorePersister().saveOrUpdate(protein);
+
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
+        Protein refreshedProtein = getDaoFactory().getProteinDao().getByAc(protein.getAc());
+
+        getDataContext().commitTransaction(transaction2);
+
+        Assert.assertFalse(IntactCore.isInitialized(refreshedProtein.getSequenceChunks()));
+
+        String sequence = IntactCore.ensureInitializedSequence(refreshedProtein);
+
+        Assert.assertNotNull(sequence);
+    }
+
 }

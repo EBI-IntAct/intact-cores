@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.cfg.CollectionSecondPass;
 import org.hibernate.collection.PersistentCollection;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -457,5 +458,26 @@ public class IntactCore {
         }
 
         return confidences;
+    }
+
+    /**
+     * Ensures that the sequence is accessible, reloading it from the database when lazy.
+     * @param polymer the polymer
+     * @return The returned sequence is ensured to be initialized
+     * @since 2.4.0
+     */
+    public static String ensureInitializedSequence(Polymer polymer) {
+        Collection<SequenceChunk> sequenceChunks;
+
+        if (IntactCore.isInitialized(polymer.getSequenceChunks())) {
+            sequenceChunks = polymer.getSequenceChunks();
+        } else {
+            sequenceChunks = IntactContext.getCurrentInstance().getDaoFactory()
+                    .getEntityManager().createQuery("select sc from SequenceChunk sc where sc.parentAc = :parentAc")
+                    .setParameter("parentAc", polymer.getAc()).getResultList();
+        }
+
+        return polymer.getSequence(sequenceChunks);
+
     }
 }
