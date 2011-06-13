@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.map.IdentityMap;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 
 import java.util.*;
 
@@ -81,7 +82,7 @@ public class IntactEntry implements Annotated {
         experiments = new IdentityMap();
 
         for (Interaction interaction : getInteractions()) {
-            for (Experiment experiment : interaction.getExperiments()) {
+            for (Experiment experiment : IntactCore.ensureInitializedExperiments(interaction)) {
                 experiments.put(experiment, null);
             }
         }
@@ -112,7 +113,7 @@ public class IntactEntry implements Annotated {
         interactors = new IdentityMap();
 
         for (Interaction interaction : getInteractions()) {
-            for (Component comp : interaction.getComponents()) {
+            for (Component comp : IntactCore.ensureInitializedParticipants(interaction)) {
                 interactors.put(comp.getInteractor(), null);
             }
 
