@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -78,15 +79,18 @@ public class PolymerImpl extends InteractorImpl implements Polymer {
     // access methods for attributes
     @Transient
     public String getSequence() {
+        return getSequence(sequenceChunks);
+    }
 
-        if ( ( null == sequenceChunks ) || 0 == ( sequenceChunks.size() ) ) {
+    @Transient
+    public String getSequence(Collection<SequenceChunk> seqChunks) {
+
+        if ( ( null == seqChunks ) || 0 == ( seqChunks.size() ) ) {
             return null;
         }
-        // Re-join the sequence chunks.
-        // The correct ordering is done during retrieval from the database.
-        // It relies on the OJB setting (mapping)
-        StringBuffer sequence = new StringBuffer();
-        for ( SequenceChunk sequenceChunk : sequenceChunks ) {
+
+        StringBuilder sequence = new StringBuilder();
+        for ( SequenceChunk sequenceChunk : seqChunks ) {
             sequence.append( sequenceChunk.getSequenceChunk() );
         }
         return sequence.toString();

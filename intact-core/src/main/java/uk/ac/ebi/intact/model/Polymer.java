@@ -5,6 +5,7 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.model;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -16,7 +17,9 @@ public interface Polymer extends Interactor {
     /**
      * @return a sequence as a string
      */
-    public String getSequence();
+    String getSequence();
+
+    String getSequence(Collection<SequenceChunk> seqChunks);
 
     /**
      * Sets the current sequence.
@@ -27,24 +30,24 @@ public interface Polymer extends Interactor {
      *         only when the current sequence is longer than the new sequence
      *         (i.e, <code>aSequence</code>).
      */
-    public List<SequenceChunk> setSequence( String aSequence );
+    List<SequenceChunk> setSequence( String aSequence );
 
     /**
      * @return crc64 as a string
      */
-    public String getCrc64();
+    String getCrc64();
 
     /**
      * Sets the crc64
      *
      * @param crc64 the crc64 value
      */
-    public void setCrc64( String crc64 );
+    void setCrc64( String crc64 );
 
     /**
      * This method is mainly for testing purposes to examine the chunks array
      *
      * @return unmodifiable list of sequence chunks.
      */
-    public List<SequenceChunk> getSequenceChunks();
+    List<SequenceChunk> getSequenceChunks();
 }
