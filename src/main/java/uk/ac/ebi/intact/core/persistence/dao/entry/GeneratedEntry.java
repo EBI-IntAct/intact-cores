@@ -104,17 +104,22 @@ public class GeneratedEntry extends IntactEntry {
         return this;
     }
 
+    public GeneratedEntry addPublicationWithAc(String pubAc) {
+        Publication publication = intactContext.getDataContext().getDaoFactory()
+                .getPublicationDao().getByAc(pubAc);
+
+        addPublication(publication);
+
+        return this;
+    }
+
+
+
     public GeneratedEntry addPublicationId(String pubId) {
         Publication publication = intactContext.getDataContext().getDaoFactory()
                 .getPublicationDao().getByShortLabel(pubId);
 
-        if (publication != null) {
-            for (Experiment experiment : publication.getExperiments()) {
-                addExperiment(experiment);
-            }
-        } else {
-            throw new IntactException("No publication found with ID: "+pubId);
-        }
+        addPublication(publication);
 
         return this;
     }
@@ -123,6 +128,18 @@ public class GeneratedEntry extends IntactEntry {
         if (interaction == null) throw new NullPointerException("interaction");
 
         super.getInteractions().add(interaction);
+
+        return this;
+    }
+
+    public GeneratedEntry addPublication(Publication publication) {
+        if (publication != null) {
+            for (Experiment experiment : publication.getExperiments()) {
+                addExperiment(experiment);
+            }
+        } else {
+            throw new IntactException("No publication is null");
+        }
 
         return this;
     }
