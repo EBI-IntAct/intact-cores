@@ -108,8 +108,9 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     }
 
     public T getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select ao from " + getEntityClass().getSimpleName() + " ao join ao.xrefs as xref " +
-                "where xref.primaryId = :primaryId");
+        Query query = getEntityManager().createQuery("select ao from " + getEntityClass().getSimpleName() +
+                                                     " ao join ao.xrefs as xref " +
+                                                     "where xref.primaryId = :primaryId");
         query.setParameter("primaryId", primaryId);
 
         List<T> results = query.getResultList();
@@ -138,16 +139,24 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     public List<T> getByXrefLike(String primaryId) {
 
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
-                " o inner join o.xrefs as xref " +
-                "where xref.primaryId = :id");
-
-        getEntityManager().createQuery("select prot from ProteinImpl prot inner join " +
-                "prot.xrefs as xref where " +
-                "xref.cvXrefQualifier.identifier = :isoformParentMi " +
-                "and xref.cvDatabase.identifier = :intactMi " +
-                "and xref.primaryId = :masterAc");
+                                                     " o inner join o.xrefs as xref " +
+                                                     "where xref.primaryId like :id");
 
         query.setParameter("id", primaryId);
+
+        return query.getResultList();
+    }
+
+    public List<T> getByXref(CvDatabase database, String primaryId) {
+
+        Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
+                                                     " o inner join o.xrefs as xref " +
+                                                     "where xref.primaryId = :id " +
+                                                     "      and xref.cvDatabase.identifier = :dbMi");
+
+
+        query.setParameter("id", primaryId);
+        query.setParameter("dbMi", (database.getIdentifier() != null ? database.getIdentifier() : CvObjectUtils.getIdentity(database)));
 
         return query.getResultList();
     }
@@ -155,13 +164,27 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     public List<T> getByXrefLike(CvDatabase database, String primaryId) {
 
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
-                " o inner join o.xrefs as xref " +
-                "where xref.primaryId = :id " +
-                "      and xref.cvDatabase.identifier = :dbMi");
+                                                     " o inner join o.xrefs as xref " +
+                                                     "where xref.primaryId like :id " +
+                                                     "      and xref.cvDatabase.identifier = :dbMi");
 
 
         query.setParameter("id", primaryId);
         query.setParameter("dbMi", (database.getIdentifier() != null ? database.getIdentifier() : CvObjectUtils.getIdentity(database)));
+
+        return query.getResultList();
+    }
+
+    public List<T> getByXref(CvDatabase database, CvXrefQualifier qualifier, String primaryId) {
+        Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
+                                                     " o inner join o.xrefs as xref " +
+                                                     "where xref.primaryId = :id " +
+                                                     "      and xref.cvDatabase.identifier = :dbMi " +
+                                                     "      and xref.cvXrefQualifier.identifier = :qualifierMi");
+
+        query.setParameter("id", primaryId);
+        query.setParameter("dbMi", (database.getIdentifier() != null ? database.getIdentifier() : CvObjectUtils.getIdentity(database)));
+        query.setParameter("qualifierMi", (qualifier.getIdentifier() != null ? qualifier.getIdentifier() : CvObjectUtils.getIdentity(qualifier)));
 
         return query.getResultList();
     }
@@ -180,12 +203,26 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return query.getResultList();
     }
 
+    public List<T> getByXref(String databaseMi, String qualifierMi, String primaryId) {
+        Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
+                                                     " o inner join o.xrefs as xref " +
+                                                     "where xref.primaryId = :id " +
+                                                     "      and xref.cvDatabase.identifier = :dbMi " +
+                                                     "      and xref.cvXrefQualifier.identifier = :qualifierMi");
+
+        query.setParameter("id", primaryId);
+        query.setParameter("dbMi", databaseMi);
+        query.setParameter("qualifierMi", qualifierMi);
+
+        return query.getResultList();
+    }
+
     public List<T> getByXrefLike(String databaseMi, String qualifierMi, String primaryId) {
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
-                " o inner join o.xrefs as xref " +
-                "where xref.primaryId = :id " +
-                "      and xref.cvDatabase.identifier = :dbMi " +
-                "      and xref.cvXrefQualifier.identifier = :qualifierMi");
+                                                     " o inner join o.xrefs as xref " +
+                                                     "where xref.primaryId like :id " +
+                                                     "      and xref.cvDatabase.identifier = :dbMi " +
+                                                     "      and xref.cvXrefQualifier.identifier = :qualifierMi");
 
         query.setParameter("id", primaryId);
         query.setParameter("dbMi", databaseMi);
