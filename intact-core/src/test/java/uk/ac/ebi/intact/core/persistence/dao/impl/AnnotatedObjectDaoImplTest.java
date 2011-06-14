@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 
@@ -23,7 +24,20 @@ import java.util.List;
 public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
 
     @Test
-    public void testGetByXref_primaryId() throws Exception {
+    public void getByXrefLike() throws Exception {
+        final Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        interaction.getXrefs().clear();
+        interaction.addXref( getMockBuilder().createIdentityXref( interaction, "IM-1-2", getMockBuilder().getPsiMiDatabase() ) );
+        getCorePersister().saveOrUpdate( interaction );
+
+        final InteractionDao dao = getIntactContext().getDataContext().getDaoFactory().getInteractionDao();
+        final List<InteractionImpl> list = dao.getByXrefLike( "IM-1-%" );
+        Assert.assertNotNull( list );
+        Assert.assertEquals( 1, list.size());
+    }
+
+    @Test
+    public void getByXref_primaryId() throws Exception {
         final Protein protein = getMockBuilder().createProtein("P12345", "test");
         Assert.assertEquals(1, protein.getXrefs().size());
         Xref x = protein.getXrefs().iterator().next();
@@ -44,7 +58,7 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void testGetByXref_primaryId_database() throws Exception {
+    public void getByXref_primaryId_database() throws Exception {
         final Protein protein = getMockBuilder().createProtein("P12345", "test");
         Assert.assertEquals(1, protein.getXrefs().size());
         Xref x = protein.getXrefs().iterator().next();
@@ -69,7 +83,7 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void testGetByXref_primaryId_database_qualifier() throws Exception {
+    public void getByXref_primaryId_database_qualifier() throws Exception {
         final Protein protein = getMockBuilder().createProtein("P12345", "test");
         Assert.assertEquals(1, protein.getXrefs().size());
         Xref x = protein.getXrefs().iterator().next();
@@ -97,7 +111,7 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void testGetByXref_primaryId_database_qualifier_mi_only() throws Exception {
+    public void getByXref_primaryId_database_qualifier_mi_only() throws Exception {
         final Protein protein = getMockBuilder().createProtein("P12345", "test");
         Assert.assertEquals(1, protein.getXrefs().size());
         Xref x = protein.getXrefs().iterator().next();
@@ -129,7 +143,6 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
                 CvXrefQualifier.IDENTITY_MI_REF,
                 "P12345").size());
     }
-
 
     @Test
     public void getByInstitutionAc() throws Exception {
@@ -220,5 +233,4 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
         Assert.assertEquals(sourceInstitution.getAc(), reloadedInteraction2bis.getOwner().getAc());
 
     }
-
 }

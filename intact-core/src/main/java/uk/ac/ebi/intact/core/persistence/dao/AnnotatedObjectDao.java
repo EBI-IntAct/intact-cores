@@ -51,9 +51,15 @@ public interface AnnotatedObjectDao<T extends AnnotatedObject> extends IntactObj
 
     List<T> getByXrefLike(String primaryId);
 
+    List<T> getByXref(CvDatabase database, String primaryId);
+
     List<T> getByXrefLike(CvDatabase database, String primaryId);
 
+    List<T> getByXref(CvDatabase database, CvXrefQualifier qualifier, String primaryId);
+
     List<T> getByXrefLike(CvDatabase database, CvXrefQualifier qualifier, String primaryId);
+
+    List<T> getByXref(String databaseMi, String qualifierMi, String primaryId);
 
     List<T> getByXrefLike(String databaseMi, String qualifierMi, String primaryId);
 
