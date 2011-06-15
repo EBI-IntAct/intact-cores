@@ -163,7 +163,12 @@ public class CorePersisterImpl implements CorePersister {
 
     public PersisterStatistics saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException {
         for ( IntactEntry intactEntry : intactEntries ) {
-            for ( Interaction interaction : intactEntry.getInteractions() ) {
+            // Very important to not rely on the collection of interaction of the intactEntry. The core persister is updating the list of interactions
+            // of an experiment so if the collection of interactions of this intactEntry is the collection of interactions of the experiment, we can have
+            // concurrent modification. Indeed, this problem didn't exist when setting the list of experiments in the core persister instead of clear and addAll.
+            Collection<Interaction> interactionsToSave = new ArrayList<Interaction>(intactEntry.getInteractions());
+
+            for ( Interaction interaction : interactionsToSave ) {
                 saveOrUpdate( interaction );
             }
         }
