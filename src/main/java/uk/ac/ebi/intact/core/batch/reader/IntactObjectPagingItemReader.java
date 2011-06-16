@@ -40,31 +40,6 @@ public class IntactObjectPagingItemReader extends JpaPagingItemReader {
         super();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-	@SuppressWarnings("unchecked")
-	protected void doReadPage() {
-		Query query = createQuery().setFirstResult(getPage() * getPageSize()).setMaxResults(getPageSize());
-
-//		if (parameterValues != null) {
-//			for (Map.Entry<String, Object> me : parameterValues.entrySet()) {
-//				query.setParameter(me.getKey(), me.getValue());
-//			}
-//		}
-
-		if (results == null) {
-			results = new CopyOnWriteArrayList();
-		}
-		else {
-			results.clear();
-		}
-		results.addAll(query.getResultList());
-	}
-
-	private Query createQuery() {
-		return IntactContext.getCurrentInstance().getDaoFactory().getEntityManager().createQuery(query);
-	}
-
     public void setIntactObjectClass(Class<? extends IntactObject> intactObjectClass) {
         this.intactObjectClass = intactObjectClass;
         this.query = "select intactObj from " + intactObjectClass.getName()+" intactObj";
