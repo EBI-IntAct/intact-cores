@@ -15,8 +15,16 @@
  */
 package uk.ac.ebi.intact.core.batch.reader;
 
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.model.IntactObject;
+
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
