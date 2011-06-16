@@ -19,6 +19,7 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.IntactObject;
 
 import javax.persistence.EntityTransaction;
@@ -32,15 +33,41 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class IntactObjectPagingItemReader extends JpaPagingItemReader {
 
+    private String query;
     private Class<? extends IntactObject> intactObjectClass;
 
     public IntactObjectPagingItemReader() {
         super();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+	@SuppressWarnings("unchecked")
+	protected void doReadPage() {
+		Query query = createQuery().setFirstResult(getPage() * getPageSize()).setMaxResults(getPageSize());
+
+//		if (parameterValues != null) {
+//			for (Map.Entry<String, Object> me : parameterValues.entrySet()) {
+//				query.setParameter(me.getKey(), me.getValue());
+//			}
+//		}
+
+		if (results == null) {
+			results = new CopyOnWriteArrayList();
+		}
+		else {
+			results.clear();
+		}
+		results.addAll(query.getResultList());
+	}
+
+	private Query createQuery() {
+		return IntactContext.getCurrentInstance().getDaoFactory().getEntityManager().createQuery(query);
+	}
+
     public void setIntactObjectClass(Class<? extends IntactObject> intactObjectClass) {
         this.intactObjectClass = intactObjectClass;
-        String query = "select intactObj from " + intactObjectClass.getName()+" intactObj";
+        this.query = "select intactObj from " + intactObjectClass.getName()+" intactObj";
         setQueryString(query);
     }
 }
