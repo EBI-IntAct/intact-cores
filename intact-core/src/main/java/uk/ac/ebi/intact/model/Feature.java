@@ -277,10 +277,16 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
             return false;
         }
 
-        // Check on component without including features, hence avoiding infinite loop
-        if ( component != null ? !component.equals( feature.component, false ) : feature.component != null ) {
+        if (component == null && feature.getComponent() == null) {
+        } else if ((component == null && feature.getComponent() != null) || (component != null && feature.getComponent() == null)) {
             return false;
-        }
+        } else if (component.getAc() != null && feature.getComponent().getAc() != null) {
+            if (!component.getAc().equals(feature.getComponent().getAc())) {
+                return false;
+            }
+        } else if ( component != null ? !component.equals( feature.component, false ) : feature.component != null ) {
+             return false;
+         }
 
         // Make sure we don't end up in an infinite loop checking on linked features
         if( includeLinkedFeature ) {

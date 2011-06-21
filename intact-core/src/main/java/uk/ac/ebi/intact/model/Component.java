@@ -761,8 +761,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
         if ((interactor != null && component.getInteractor() == null) || (interactor == null && component.getInteractor() != null)){
             return false;
-        }
-        else if ( interactor instanceof InteractorImpl && component.getInteractor() instanceof InteractorImpl ) {
+        } else if (interactor.getAc() != null && component.getInteractor().getAc() != null) {
+            if (!interactor.getAc().equals(component.getInteractor().getAc())) {
+                return false;
+            }
+        } else if ( interactor instanceof InteractorImpl && component.getInteractor() instanceof InteractorImpl ) {
             if ( interactor != null && !( ( InteractorImpl ) interactor ).equals( component.getInteractor(), false ) ) {
                 return false;
             }
@@ -770,9 +773,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
         if ((interaction != null && component.getInteraction() == null) || (interaction == null && component.getInteraction() != null)){
             return false;
-        }
-
-        else if ( interaction instanceof InteractionImpl && component.getInteraction() instanceof InteractorImpl ) {
+        } else if (interaction.getAc() != null && component.getInteraction().getAc() != null) {
+            if (!interaction.getAc().equals(component.getInteraction().getAc())) {
+                return false;
+            }
+        } else if ( interaction instanceof InteractionImpl && component.getInteraction() instanceof InteractorImpl ) {
             if ( interaction != null && !( ( InteractionImpl ) interaction ).equals( component.getInteraction(), false ) ) {
                 return false;
             }
