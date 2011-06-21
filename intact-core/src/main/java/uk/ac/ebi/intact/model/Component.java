@@ -809,10 +809,18 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         //constructor at the moment.....
 
         if ( interactor != null ) {
-            result = result * 31 + interactor.hashCode();
+            if (interactor.getAc() != null) {
+               result = result * 31 + interactor.getAc().hashCode();
+            } else {
+                result = result * 31 + interactor.hashCode();
+            }
         }
         if ( interaction != null ) {
-            result = result * 31 + interaction.hashCode();
+            if (interaction.getAc() != null) {
+                result = result * 31 + interaction.getAc().hashCode();
+            } else {
+                result = result * 31 + interaction.hashCode();
+            }
         }
 
         if( experimentalRoles != null ) {

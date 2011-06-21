@@ -773,7 +773,7 @@ public boolean isUndetermined() {
         result = 31 * result + ( downStreamSequence != null ? downStreamSequence.hashCode() : 0 );
 
         // Include the feature this range is linked to.
-        result = 31 * result + ( feature != null ? feature.hashCode( true, false ) : 0 );
+        result = 31 * result + ( feature != null ? feature.getAc() != null? feature.getAc().hashCode() : feature.hashCode( true, false ) : 0 );
 
         return result;
     }

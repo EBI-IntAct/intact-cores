@@ -313,7 +313,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         result = 31 * result + ( cvFeatureType != null ? cvFeatureType.hashCode() : 0 );
 
         // hashcode component without including features
-        result = 31 * result + ( component != null ? component.hashCode( false ) : 0 );
+        result = 31 * result + ( component != null ? component.getAc() != null? component.getAc().hashCode() : component.hashCode( false ) : 0 );
 
         // make sure we don't end up in an infinite loop checking on linked features
         if( includeBinds ) {
