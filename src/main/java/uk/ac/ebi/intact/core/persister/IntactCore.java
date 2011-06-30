@@ -166,7 +166,6 @@ public class IntactCore {
             annotations = ao.getAnnotations();
         } else {
             annotations = IntactContext.getCurrentInstance().getDaoFactory().getAnnotationDao().getByParentAc(ao.getClass(), ao.getAc());
-            ao.setAnnotations(annotations);
         }
 
         return annotations;
