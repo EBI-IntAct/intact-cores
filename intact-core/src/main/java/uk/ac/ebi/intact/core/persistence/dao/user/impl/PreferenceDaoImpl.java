@@ -1,8 +1,8 @@
-package uk.ac.ebi.intact.core.users.persistence.dao.impl;
+package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.intact.core.users.model.Preference;
-import uk.ac.ebi.intact.core.users.persistence.dao.PreferenceDao;
+import uk.ac.ebi.intact.core.persistence.dao.user.PreferenceDao;
+import uk.ac.ebi.intact.model.user.Preference;
 
 /**
  * Role DAO.

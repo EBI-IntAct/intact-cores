@@ -1,6 +1,6 @@
-package uk.ac.ebi.intact.core.users.persistence.dao;
+package uk.ac.ebi.intact.core.persistence.dao.user;
 
-import uk.ac.ebi.intact.core.users.model.Role;
+import uk.ac.ebi.intact.model.user.Role;
 
 import java.io.Serializable;
 

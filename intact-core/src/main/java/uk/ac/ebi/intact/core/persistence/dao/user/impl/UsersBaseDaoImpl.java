@@ -1,10 +1,10 @@
-package uk.ac.ebi.intact.core.users.persistence.dao.impl;
+package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 
 import org.hibernate.Session;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.users.model.Identifiable;
-import uk.ac.ebi.intact.core.users.persistence.dao.UsersBaseDao;
+import uk.ac.ebi.intact.core.persistence.dao.user.UsersBaseDao;
+import uk.ac.ebi.intact.model.user.Identifiable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,10 +18,10 @@ import java.util.List;
  * @version $Id$
  * @since 2.2.1
  */
-@Transactional( "users" )
+@Transactional
 public class UsersBaseDaoImpl<T extends Identifiable> implements UsersBaseDao<T> {
 
-    @PersistenceContext( unitName = "intact-users-default" )
+    @PersistenceContext( unitName = "intact-core-default" )
     private EntityManager entityManager;
 
     private Class<T> entityClass;
@@ -30,13 +30,13 @@ public class UsersBaseDaoImpl<T extends Identifiable> implements UsersBaseDao<T>
         this.entityClass = entityClass;
     }
 
-    @Transactional( value="users", readOnly = true )
+    @Transactional( readOnly = true )
     public int countAll() {
         final Query query = entityManager.createQuery( "select count(*) from " + entityClass.getSimpleName() + " e" );
         return ((Long) query.getSingleResult()).intValue();
     }
 
-    @Transactional( value="users", readOnly = true )
+    @Transactional( readOnly = true )
     public List<T> getAll() {
         return entityManager.createQuery( "select e from " + entityClass.getSimpleName() + " e" ).getResultList();
     }

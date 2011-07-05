@@ -1,8 +1,8 @@
-package uk.ac.ebi.intact.core.users.persistence.dao.impl;
+package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.intact.core.users.model.User;
-import uk.ac.ebi.intact.core.users.persistence.dao.UserDao;
+import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
+import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.Query;
 import java.util.List;

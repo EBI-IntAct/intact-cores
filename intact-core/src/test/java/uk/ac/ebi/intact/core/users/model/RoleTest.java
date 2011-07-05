@@ -3,8 +3,9 @@ package uk.ac.ebi.intact.core.users.model;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.dao.DataIntegrityViolationException;
-import uk.ac.ebi.intact.core.users.persistence.dao.RoleDao;
-import uk.ac.ebi.intact.core.users.unit.UsersBasicTestCase;
+import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.user.Role;
 
 /**
  * Role Tester.
@@ -13,17 +14,11 @@ import uk.ac.ebi.intact.core.users.unit.UsersBasicTestCase;
  * @version $Id$
  * @since 2.2.1
  */
-public class RoleTest extends UsersBasicTestCase {
+public class RoleTest extends IntactBasicTestCase {
 
     @Test
     public void search() throws Exception {
         final RoleDao roleDao = getDaoFactory().getRoleDao();
-        Assert.assertEquals( 0, roleDao.countAll() );
-
-        Role role = new Role( "CURATOR" );
-        roleDao.persist( role );
-        roleDao.flush();
-        Assert.assertEquals( 1, roleDao.countAll() );
 
         Assert.assertNotNull( roleDao.getRoleByName( "CURATOR" ) );
         Assert.assertNotNull( roleDao.getRoleByName( "cuRAtor" ) );
@@ -35,7 +30,6 @@ public class RoleTest extends UsersBasicTestCase {
     @Test( expected = DataIntegrityViolationException.class )
     public void uniqueRole() throws Exception {
         final RoleDao roleDao = getDaoFactory().getRoleDao();
-        Assert.assertEquals( 0, roleDao.countAll() );
 
         Role role1 = new Role( "CURATOR" );
         roleDao.persist( role1 );

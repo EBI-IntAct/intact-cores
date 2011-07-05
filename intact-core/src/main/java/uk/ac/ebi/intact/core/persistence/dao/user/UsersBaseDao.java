@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.core.users.persistence.dao;
+package uk.ac.ebi.intact.core.persistence.dao.user;
 
 import org.hibernate.Session;
 

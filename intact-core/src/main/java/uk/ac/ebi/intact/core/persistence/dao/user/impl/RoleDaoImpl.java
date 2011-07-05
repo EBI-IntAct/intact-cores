@@ -1,8 +1,8 @@
-package uk.ac.ebi.intact.core.users.persistence.dao.impl;
+package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.intact.core.users.model.Role;
-import uk.ac.ebi.intact.core.users.persistence.dao.RoleDao;
+import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
+import uk.ac.ebi.intact.model.user.Role;
 
 import javax.persistence.Query;
 import java.util.List;

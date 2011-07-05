@@ -3,9 +3,11 @@ package uk.ac.ebi.intact.core.users.model;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.dao.DataIntegrityViolationException;
-import uk.ac.ebi.intact.core.users.persistence.dao.RoleDao;
-import uk.ac.ebi.intact.core.users.persistence.dao.UserDao;
-import uk.ac.ebi.intact.core.users.unit.UsersBasicTestCase;
+import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
+import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.user.Role;
+import uk.ac.ebi.intact.model.user.User;
 
 /**
  * User tester.
@@ -14,18 +16,19 @@ import uk.ac.ebi.intact.core.users.unit.UsersBasicTestCase;
  * @version $Id$
  * @since 2.2.1
  */
-public class UserTest extends UsersBasicTestCase {
+public class UserTest extends IntactBasicTestCase {
 
     @Test
     public void persist() throws Exception {
+        final UserDao userDao = getDaoFactory().getUserDao();
+        long usersAtStart = userDao.countAll();
 
         User john = new User( "john.doe", "john", "doe", "john.doe@gmail.com" );
-        final UserDao userDao = getDaoFactory().getUserDao();
 
         userDao.persist( john );
-        Assert.assertEquals( 1, userDao.countAll() );
+        Assert.assertEquals( usersAtStart+1, userDao.countAll() );
 
-        final User reloadedJohn = userDao.getAll().get( 0 );
+        final User reloadedJohn = userDao.getByLogin("john.doe");
         Assert.assertEquals( "john.doe", reloadedJohn.getLogin() );
         Assert.assertEquals( "john", reloadedJohn.getFirstName() );
         Assert.assertEquals( "doe", reloadedJohn.getLastName() );
@@ -36,7 +39,6 @@ public class UserTest extends UsersBasicTestCase {
     @Test
     public void invalidLoginSearch() throws Exception {
         final UserDao userDao = getDaoFactory().getUserDao();
-        Assert.assertEquals( 0, userDao.countAll() );
         User user = userDao.getByLogin( "foo" );
         Assert.assertNull( user );
     }
@@ -44,7 +46,6 @@ public class UserTest extends UsersBasicTestCase {
     @Test
     public void invalidEmailSearch() throws Exception {
         final UserDao userDao = getDaoFactory().getUserDao();
-        Assert.assertEquals( 0, userDao.countAll() );
         User user = userDao.getByEmail( "foo@bar.com" );
         Assert.assertNull( user );
     }
@@ -117,13 +118,11 @@ public class UserTest extends UsersBasicTestCase {
     @Test
     public void addRole() throws Exception {
         final UserDao userDao = getDaoFactory().getUserDao();
-        Assert.assertEquals( 0, userDao.countAll() );
+
         User john = new User( "john.doe", "john", "doe", "john.doe@gmail.com" );
         userDao.persist( john );
 
-        final RoleDao roleDao = getDaoFactory().getRoleDao();
-        Role curator = new Role( "CURATOR" );
-        roleDao.persist( curator );
+        Role curator = getDaoFactory().getRoleDao().getRoleByName("CURATOR");
 
         john.addRole( curator );
         userDao.update( john );

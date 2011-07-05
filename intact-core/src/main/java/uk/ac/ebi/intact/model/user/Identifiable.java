@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.core.users.model;
+package uk.ac.ebi.intact.model.user;
 
 /**
  * Identifies object having a primaryKey.

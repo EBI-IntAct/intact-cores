@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.core.context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.model.user.User;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -12,52 +13,49 @@ import java.sql.Connection;
  */
 public class UserContext implements Serializable {
 
-    private static final Log log = LogFactory.getLog( UserContext.class );
-
-    private static final String SESSION_ATT_NAME = UserContext.class.getName();
-
-    private String userId = null;
-    private String userMail;
-    private String userPassword;
+    private User user;
 
     private Connection connection;
 
     public UserContext() {
-        this.userId = "default";
-        this.userPassword = "";
+       this("default", "");
     }
 
     public UserContext( String userId, String userPassword ) {
-        this.userId = userId;
-        this.userPassword = userPassword;
+        user = new User();
+        user.setLogin(userId);
+        user.setFirstName(userId);
+        user.setLastName("N/A");
+        user.setPassword(userPassword);
+        user.setEmail(userId+"@ebi.ac.uk");
+    }
+
+    public UserContext(User user) {
+        this.user = user;
     }
 
     public String getUserId() {
-        return userId;
+        return user.getLogin();
     }
 
     public void setUserId( String userId ) {
-        this.userId = userId;
+        this.user.setLogin(userId);
     }
 
     public String getUserMail() {
-        if ( userMail == null ) {
-            return userId + "@ebi.ac.uk";
-
-        }
-        return userMail;
+        return user.getEmail();
     }
 
     public void setUserMail( String userMail ) {
-        this.userMail = userMail;
+        user.setEmail(userMail);
     }
 
     public String getUserPassword() {
-        return userPassword;
+        return user.getPassword();
     }
 
     public void setUserPassword( String userPassword ) {
-        this.userPassword = userPassword;
+        user.setPassword(userPassword);
     }
 
     public Connection getConnection() {
@@ -68,4 +66,11 @@ public class UserContext implements Serializable {
         this.connection = connection;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
