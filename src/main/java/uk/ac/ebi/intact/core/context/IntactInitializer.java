@@ -28,15 +28,20 @@ import org.springframework.util.Assert;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.config.SchemaVersion;
 import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persistence.dao.DbInfoDao;
 import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
+import uk.ac.ebi.intact.core.persister.CorePersister;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.meta.DbInfo;
+import uk.ac.ebi.intact.model.user.Role;
+import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,13 +61,16 @@ public class IntactInitializer implements ApplicationContextAware{
     private SchemaVersion requiredSchemaVersion;
 
     @Autowired
-    private PersisterHelper persisterHelper;
+    private CorePersister corePersister;
     
     @Autowired
     private DbInfoDao dbInfoDao;
 
     @Autowired
     private CvObjectDao cvObjectDao;
+
+    @Autowired
+    private DaoFactory daoFactory;
 
     @Autowired
     private InstitutionDao institutionDao;
@@ -113,7 +121,11 @@ public class IntactInitializer implements ApplicationContextAware{
                 persistInstitution(institution, false);
             }
 
+            // persist the mandatory set of CVs
             persistBasicCvObjects();
+
+            // default user creation
+            createUsersIfNecessary();
         }
     }
 
@@ -148,7 +160,7 @@ public class IntactInitializer implements ApplicationContextAware{
 
         if (institution == null && isAutoPersist()) {
             if (log.isDebugEnabled()) log.debug("Persisting institution: "+candidateInstitution);
-            persisterHelper.save(candidateInstitution);
+            corePersister.saveOrUpdate(candidateInstitution);
         } else if (isDefault) {
             if (institution == null) {
                 institution = candidateInstitution;
@@ -200,7 +212,65 @@ public class IntactInitializer implements ApplicationContextAware{
             log.info("Persisting necessary CvObjects");
 
             CvDatabase intact = CvObjectUtils.createCvObject(configuration.getDefaultInstitution(), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
-            persisterHelper.save(intact);
+            corePersister.saveOrUpdate(intact);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void createUsersIfNecessary() {
+        createDefaultRoles();
+
+        if (daoFactory.getUserDao().countAll() == 0) {
+            createDefaultUsers();
+        }
+    }
+
+    private void createDefaultUsers() {
+        User admin = new User( "admin", "Admin", "N/A", "intact-admin@ebi.ac.uk" );
+        admin.setPassword("d033e22ae348aeb5660fc2140aec35850c4da997");
+
+        createAdminUser(admin);
+
+        User user = intactContext.getUserContext().getUser();
+        if (user != null) {
+            createAdminUser(user);
+        }
+    }
+
+    private void createAdminUser(User user) {
+        User admin = daoFactory.getUserDao().getByLogin( user.getLogin() );
+        if ( admin == null ) {
+            daoFactory.getUserDao().persist( user );
+
+            final Role adminRole = daoFactory.getRoleDao().getRoleByName( "ADMIN" );
+            user.addRole( adminRole );
+            daoFactory.getUserDao().saveOrUpdate( user );
+        }
+    }
+
+    private void createDefaultRoles() {
+        final List<Role> allRoles = daoFactory.getRoleDao().getAll();
+        addMissingRole( allRoles, "ADMIN" );
+        addMissingRole( allRoles, "CURATOR" );
+        addMissingRole( allRoles, "REVIEWER" );
+
+        log.info( "After init: found " + daoFactory.getRoleDao().getAll().size() + " role(s) in the database." );
+    }
+
+    private void addMissingRole( List<Role> allRoles, String roleName ) {
+        boolean found = false;
+        for ( Role role : allRoles ) {
+            if ( role.getName().equals( roleName ) ) {
+                found = true;
+            }
+        }
+
+        if ( !found ) {
+            Role role = new Role( roleName );
+            daoFactory.getRoleDao().persist( role );
+            if ( log.isInfoEnabled() ) {
+                log.info( "Created user role: " + roleName );
+            }
         }
     }
 

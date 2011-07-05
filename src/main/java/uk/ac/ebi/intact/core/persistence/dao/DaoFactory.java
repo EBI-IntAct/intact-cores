@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.impl.*;
+import uk.ac.ebi.intact.core.persistence.dao.user.PreferenceDao;
+import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
+import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
 import uk.ac.ebi.intact.model.*;
 
 import javax.persistence.EntityManager;
@@ -36,23 +39,26 @@ public class DaoFactory implements Serializable {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired AnnotationDao annotationDao;
-    @Autowired BioSourceDao bioSourceDao;
-    @Autowired ComponentDao componentDao;
-    @Autowired ComponentParameterDao componentParameterDao;
-    @Autowired ComponentConfidenceDao componentConfidenceDao;
-    @Autowired ConfidenceDao confidenceDao;
-    @Autowired DbInfoDao dbInfoDao;
-    @Autowired ExperimentDao experimentDao;
-    @Autowired FeatureDao featureDao;
-    @Autowired InstitutionDao institutionDao;
-    @Autowired InteractionDao interactionDao;
-    @Autowired InteractionParameterDao interactionParameterDao;
-    @Autowired MineInteractionDao mineInteractionDao;
-    @Autowired ProteinDao proteinDao;
-    @Autowired PublicationDao publicationDao;
-    @Autowired RangeDao rangeDao;
-    @Autowired SearchableDao searchableDao;
+    @Autowired private AnnotationDao annotationDao;
+    @Autowired private BioSourceDao bioSourceDao;
+    @Autowired private ComponentDao componentDao;
+    @Autowired private ComponentParameterDao componentParameterDao;
+    @Autowired private ComponentConfidenceDao componentConfidenceDao;
+    @Autowired private ConfidenceDao confidenceDao;
+    @Autowired private DbInfoDao dbInfoDao;
+    @Autowired private ExperimentDao experimentDao;
+    @Autowired private FeatureDao featureDao;
+    @Autowired private InstitutionDao institutionDao;
+    @Autowired private InteractionDao interactionDao;
+    @Autowired private InteractionParameterDao interactionParameterDao;
+    @Autowired private MineInteractionDao mineInteractionDao;
+    @Autowired private PreferenceDao preferenceDao;
+    @Autowired private ProteinDao proteinDao;
+    @Autowired private PublicationDao publicationDao;
+    @Autowired private RangeDao rangeDao;
+    @Autowired private RoleDao roleDao;
+    @Autowired private SearchableDao searchableDao;
+    @Autowired private UserDao userDao;
 
     public DaoFactory() {
 
@@ -215,6 +221,18 @@ public class DaoFactory implements Serializable {
         XrefDao dao = getBean(XrefDaoImpl.class);
         dao.setEntityClass(xrefClass);
         return dao;
+    }
+
+    public PreferenceDao getPreferenceDao() {
+        return preferenceDao;
+    }
+
+    public RoleDao getRoleDao() {
+        return roleDao;
+    }
+
+    public UserDao getUserDao() {
+        return userDao;
     }
 
     public EntityManager getEntityManager() {
