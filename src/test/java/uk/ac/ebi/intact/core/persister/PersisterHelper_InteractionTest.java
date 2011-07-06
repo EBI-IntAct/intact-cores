@@ -76,6 +76,8 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void allPersistedWithFeature() throws Exception {
+        int startCvCount = getDaoFactory().getCvObjectDao().countAll();
+
         IntactMockBuilder builder = getMockBuilder();
         IntactEntry intactEntry = builder.createIntactEntryRandom(2, 2, 2);
         Assert.assertEquals( "unknown", builder.getInstitution().getShortLabel() );
@@ -104,7 +106,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         final Institution intact2 = getDaoFactory().getInteractionDao().getAll().iterator().next().getOwner();
         Assert.assertEquals( intact1, intact2 );
 
-        Assert.assertEquals( 23, getDaoFactory().getCvObjectDao().getAll().size() );
+        Assert.assertEquals( startCvCount + 17, getDaoFactory().getCvObjectDao().getAll().size() );
         Assert.assertEquals( 4, getDaoFactory().getInteractionDao().getAll().size() );
 
         intactEntry = builder.createIntactEntryRandom(2, 2, 2);

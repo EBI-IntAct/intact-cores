@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
@@ -35,7 +36,14 @@ import uk.ac.ebi.intact.model.util.CvObjectBuilder;
  * @version $Id$
  */
 public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
-    
+
+    private int startCvCount;
+
+    @Before
+    public void before() {
+        startCvCount = getDaoFactory().getCvObjectDao().countAll();
+    }
+
     @Test
     public void persist_recursive_object() throws Exception {
         // Note: CvDatabase( psi-mi ) has an Xref to psi-mi (that is itself)
@@ -154,7 +162,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         PersisterStatistics stats = getCorePersister().saveOrUpdate(proteinType);
 
-        Assert.assertEquals(8, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startCvCount+2, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
     }
 
@@ -167,7 +175,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         PersisterStatistics stats = getCorePersister().saveOrUpdate(proteinType, megaProteinType);
 
-        Assert.assertEquals(8, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startCvCount+2, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
     }
 
@@ -180,7 +188,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         PersisterStatistics stats = getCorePersister().saveOrUpdate(megaProteinType);
 
-        Assert.assertEquals(8, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startCvCount+2, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(2, stats.getPersistedCount(CvInteractorType.class, false));
     }
 
@@ -203,7 +211,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         
         PersisterStatistics stats = getCorePersister().saveOrUpdate(citation);
 
-        Assert.assertEquals(10, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startCvCount+4, getDaoFactory().getCvObjectDao().countAll());
         Assert.assertEquals(4, stats.getPersistedCount(CvDatabase.class, false));
     }
 

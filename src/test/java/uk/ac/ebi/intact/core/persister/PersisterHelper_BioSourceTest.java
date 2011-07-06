@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.core.persister;
-
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionStatus;
@@ -17,6 +17,16 @@ import uk.ac.ebi.intact.model.*;
  */
 public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
 
+    private int startCvCount;
+    private int startXrefCount;
+
+    @Before
+    public void before() {
+        startCvCount = getDaoFactory().getCvObjectDao().countAll();
+        startXrefCount = getDaoFactory().getXrefDao().countAll();
+    }
+
+
     @Test
     public void persist_sameBioSource() throws Exception {
         BioSource bs1 = getMockBuilder().createBioSource( 9606, "human" );
@@ -24,16 +34,16 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(7, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(14, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(startCvCount+1, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startXrefCount+2, getDaoFactory().getXrefDao().countAll());
 
         BioSource bs2 = getMockBuilder().createBioSource( 9606, "human" );
         getCorePersister().saveOrUpdate( bs2 );
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(7, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(14, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(startCvCount+1, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startXrefCount+2, getDaoFactory().getXrefDao().countAll());
     }
 
     @Test
@@ -43,8 +53,8 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(7, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(14, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(startCvCount+1, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startXrefCount+2, getDaoFactory().getXrefDao().countAll());
 
         getEntityManager().clear();
 
@@ -54,8 +64,8 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
 
         Assert.assertEquals(2, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(8, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(16, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(startCvCount+2, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startXrefCount+4, getDaoFactory().getXrefDao().countAll());
     }
 
     @Test
@@ -68,8 +78,8 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
 
         Assert.assertEquals(2, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(8, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(16, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(startCvCount+2, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startXrefCount+4, getDaoFactory().getXrefDao().countAll());
     }
 
      @Test
@@ -84,8 +94,8 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
 
         Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getInstitutionDao().countAll());
-        Assert.assertEquals(8, getDaoFactory().getCvObjectDao().countAll());
-        Assert.assertEquals(15, getDaoFactory().getXrefDao().countAll());
+        Assert.assertEquals(startCvCount+2, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(startXrefCount+3, getDaoFactory().getXrefDao().countAll());
     }
 
      @Test
@@ -106,8 +116,8 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
          getCorePersister().saveOrUpdate(existingOrganism);
 
          Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
-         Assert.assertEquals(9, getDaoFactory().getCvObjectDao().countAll());
-         Assert.assertEquals(17, getDaoFactory().getXrefDao().countAll());
+         Assert.assertEquals(startCvCount+3, getDaoFactory().getCvObjectDao().countAll());
+         Assert.assertEquals(startXrefCount+5, getDaoFactory().getXrefDao().countAll());
 
          // candidate organism
          BioSource candidateOrganism = getMockBuilder().createBioSource( 9606, "human" );
@@ -123,8 +133,8 @@ public class PersisterHelper_BioSourceTest extends IntactBasicTestCase {
          getCorePersister().saveOrUpdate(candidateOrganism);
 
          Assert.assertEquals(1, getDaoFactory().getBioSourceDao().countAll());
-         Assert.assertEquals(9, getDaoFactory().getCvObjectDao().countAll());
-         Assert.assertEquals(17, getDaoFactory().getXrefDao().countAll());
+         Assert.assertEquals(startCvCount+3, getDaoFactory().getCvObjectDao().countAll());
+         Assert.assertEquals(startXrefCount+5, getDaoFactory().getXrefDao().countAll());
     }
 
 
