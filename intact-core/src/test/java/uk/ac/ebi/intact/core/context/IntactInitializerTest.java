@@ -25,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.CvObject;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -44,9 +46,9 @@ public class IntactInitializerTest extends IntactBasicTestCase {
     private EntityManagerFactory entityManagerFactory;
 
     @Test
-    public void testInit() {
+    public void idtestInit() {
         Assert.assertEquals(4, institutionDao.countAll());
-        Assert.assertEquals(6, cvObjectDao.countAll());
+        Assert.assertEquals(32, cvObjectDao.countAll());
     }
 
     @Test

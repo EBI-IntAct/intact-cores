@@ -32,15 +32,14 @@ import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persistence.dao.DbInfoDao;
 import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
 import uk.ac.ebi.intact.core.persister.CorePersister;
-import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.model.CvDatabase;
-import uk.ac.ebi.intact.model.Institution;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.meta.DbInfo;
 import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.sql.DataSource;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -208,12 +207,67 @@ public class IntactInitializer implements ApplicationContextAware{
     @Transactional(propagation = Propagation.REQUIRES_NEW)
      public void persistBasicCvObjects() {
 
-        if (isAutoPersist() && cvObjectDao.getByPsiMiRef(CvDatabase.INTACT_MI_REF) == null) {
-            log.info("Persisting necessary CvObjects");
+        if (isAutoPersist() ) {
+            log.info( "Persisting necessary CvObjects" );
 
-            CvDatabase intact = CvObjectUtils.createCvObject(configuration.getDefaultInstitution(), CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT);
-            corePersister.saveOrUpdate(intact);
+            createCvIfMissing( CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null );
+
+            // Creating publication status
+            final CvPublicationStatus status = (CvPublicationStatus) createCvIfMissing( CvPublicationStatus.class,
+                                                                                        CvPublicationStatus.STATUS_MI,
+                                                                                        CvPublicationStatus.STATUS,
+                                                                                        null );
+            try {
+                final InputStream is = this.getClass().getResource( "/META-INF/lifecycle/status.tsv" ).openStream();
+                createMissingCvsIfMissing( CvPublicationStatus.class, status, is );
+            } catch ( IOException e ) {
+                throw new RuntimeException( "Could not read /META-INF/lifecycle/status.tsv", e );
+            }
+
+            // creating publication lifecycle event
+            final CvLifecycleEvent event = (CvLifecycleEvent ) createCvIfMissing( CvLifecycleEvent.class,
+                                                                                  CvLifecycleEvent.EVENT_MI,
+                                                                                  CvLifecycleEvent.EVENT,
+                                                                                  null );
+            try {
+                final InputStream is = this.getClass().getResource( "/META-INF/lifecycle/events.tsv" ).openStream();
+                createMissingCvsIfMissing( CvLifecycleEvent.class, event, is );
+            } catch ( IOException e ) {
+                throw new RuntimeException( "Could not read /META-INF/lifecycle/events.tsv", e );
+            }
         }
+    }
+
+    private void createMissingCvsIfMissing( Class clazz, CvDagObject root, InputStream is ) {
+        try {
+
+            BufferedReader reader = new BufferedReader( new InputStreamReader( is ) );
+            String line = null;
+            while( ( line = reader.readLine() ) != null ) {
+                if( line.startsWith( "#" ) ) continue;
+                String[] values = line.split( "\t" );
+                if( values.length != 2 ) {
+                    throw new IllegalStateException( "Your input file is not well formatted: " + line );
+                }
+                createCvIfMissing( clazz, values[0], values[1], root );
+            }
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    private CvObject createCvIfMissing( Class clazz, String cvId, String cvName, CvDagObject parent ) {
+        CvObject cv = null;
+        if ( ( cv = cvObjectDao.getByPsiMiRef(cvId) ) == null) {
+            cv = CvObjectUtils.createCvObject(configuration.getDefaultInstitution(), clazz, cvId, cvName );
+            corePersister.saveOrUpdate(cv);
+
+            if( parent != null && cv instanceof CvDagObject ) {
+                CvDagObject cvDag = (CvDagObject) cv;
+                cvDag.addParent( parent );
+            }
+        }
+        return cv;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
