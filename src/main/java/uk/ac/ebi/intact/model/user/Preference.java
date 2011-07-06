@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.model.user;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import uk.ac.ebi.intact.model.AbstractAuditable;
 
 import javax.persistence.*;
 
@@ -16,21 +17,14 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_preference" )
 @javax.persistence.SequenceGenerator( name="SEQ_USER", sequenceName="users_seq", initialValue = 1 )
-public class Preference implements Identifiable {
+public class Preference extends AbstractAuditable implements Identifiable {
 
-    @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_USER")
     private Long pk;
 
-    @Index( name = "idx_preference_key" )
     private String key;
 
-    @Lob
-     private String value;
+    private String value;
 
-    @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "user_id" )
-    @ForeignKey(name="FK_PREF_USER")
     private User user;
 
     //////////////////
@@ -51,6 +45,8 @@ public class Preference implements Identifiable {
     ///////////////////////////
     // Getters and Setters
 
+    @Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_USER")
     public Long getPk() {
         return pk;
     }
@@ -59,10 +55,16 @@ public class Preference implements Identifiable {
         this.pk = pk;
     }
 
+    @Index( name = "idx_preference_key" )
     public String getKey() {
         return key;
     }
 
+    public void setKey( String key ) {
+        this.key = key;
+    }
+
+    @Lob
     public String getValue() {
         return value;
     }
@@ -71,6 +73,9 @@ public class Preference implements Identifiable {
         this.value = value;
     }
 
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "user_id" )
+    @ForeignKey(name="FK_PREF_USER")
     public User getUser() {
         return user;
     }

@@ -24,11 +24,6 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
 
     protected static final String NEW_LINE = System.getProperty( "line.separator" );
 
-    /**
-     * The unique accession number of an object. This is defined as protected to allow concrete subclasses to generate
-     * copies if required.
-     */
-    protected Serializable id;
     protected String ac;
 
     private boolean deprecated;

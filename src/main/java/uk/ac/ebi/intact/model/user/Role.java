@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.model.user;
 
 import org.hibernate.annotations.Index;
+import uk.ac.ebi.intact.model.AbstractAuditable;
 
 import javax.persistence.*;
 
@@ -14,19 +15,17 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_role" )
 @javax.persistence.SequenceGenerator( name="SEQ_USER", sequenceName="users_seq", initialValue = 1 )
-public class Role implements Identifiable {
+public class Role extends AbstractAuditable implements Identifiable {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="SEQ_USER")
-    private long pk;
+    private Long pk;
 
-    @Column( unique = true, nullable = false )
-    @Index( name = "idx_role_name" )
     private String name;
 
     //////////////////
     // Constructors
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="SEQ_USER")
     public Long getPk() {
         return pk;
     }
@@ -40,7 +39,7 @@ public class Role implements Identifiable {
 
     public Role( String name ) {
         if ( name == null || name.trim().length() == 0 ) {
-            throw new IllegalArgumentException( "You must give a non empty/null name" );
+            throw new IllegalArgumentException( "You must give a non empty/null role name" );
         }
 
         this.name = name.trim().toUpperCase();
@@ -49,8 +48,14 @@ public class Role implements Identifiable {
     ///////////////////////////
     // Getters and Setters
 
+    @Column( unique = true, nullable = false )
+    @Index( name = "idx_role_name" )
     public String getName() {
         return name;
+    }
+
+    protected void setName( String name ) {
+        this.name = name;
     }
 
     //////////////////////////

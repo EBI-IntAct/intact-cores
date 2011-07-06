@@ -6,12 +6,11 @@
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Models a scientific paper and its relationship to (potentialy) many intact Experiments.
@@ -22,8 +21,7 @@ import java.util.Iterator;
  */
 @Entity
 @Table( name = "ia_publication" )
-public class Publication extends OwnedAnnotatedObject<PublicationXref, PublicationAlias>
-                         implements Editable {
+public class Publication extends OwnedAnnotatedObject<PublicationXref, PublicationAlias> implements Editable {
 
     /**
      * Last relevant change in this object that requires an export to IMEx.
@@ -34,6 +32,14 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
      * List of experiments related to that publication.
      */
     private Collection<Experiment> experiments = new ArrayList<Experiment>();
+
+    private List<LifecycleEvent> lifecycleEvents;
+
+    private CvPublicationStatus status;
+
+    private User currentOwner;
+
+    private User currentReviewer;
 
     ///////////////////////////
     // Constructors
@@ -113,6 +119,52 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
         this.experiments = experiments;
     }
 
+    @OneToMany( mappedBy = "parent" )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+                       org.hibernate.annotations.CascadeType.DELETE,
+                       org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                       org.hibernate.annotations.CascadeType.MERGE,
+                       org.hibernate.annotations.CascadeType.REFRESH,
+                       org.hibernate.annotations.CascadeType.DETACH} )
+    public List<LifecycleEvent> getLifecycleEvents() {
+        return lifecycleEvents;
+    }
+
+    public void setLifecycleEvents( List<LifecycleEvent> lifecycleEvents ) {
+        this.lifecycleEvents = lifecycleEvents;
+    }
+
+    @ManyToOne
+    @JoinColumn( name = "status_ac" )
+    @ForeignKey(name="FK_PUBLICATION_STATUS")
+    public CvPublicationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus( CvPublicationStatus status ) {
+        this.status = status;
+    }
+
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "owner_pk" )
+    public User getCurrentOwner() {
+        return currentOwner;
+    }
+
+    public void setCurrentOwner( User currentOwner ) {
+        this.currentOwner = currentOwner;
+    }
+
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "reviewer_pk" )
+    public User getCurrentReviewer() {
+        return currentReviewer;
+    }
+
+    public void setCurrentReviewer( User currentReviewer ) {
+        this.currentReviewer = currentReviewer;
+    }
+
     ///////////////////////////////
     // Override AnnotatedObject
 
@@ -129,11 +181,11 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
 
     @OneToMany( mappedBy = "parent" )
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
-            org.hibernate.annotations.CascadeType.DELETE,
-            org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-            org.hibernate.annotations.CascadeType.MERGE,
-                org.hibernate.annotations.CascadeType.REFRESH,
-                org.hibernate.annotations.CascadeType.DETACH} )
+                       org.hibernate.annotations.CascadeType.DELETE,
+                       org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                       org.hibernate.annotations.CascadeType.MERGE,
+                       org.hibernate.annotations.CascadeType.REFRESH,
+                       org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<PublicationXref> getXrefs() {
         return super.getXrefs();
@@ -141,11 +193,11 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
 
     @OneToMany( mappedBy = "parent"  )
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
-            org.hibernate.annotations.CascadeType.DELETE,
-            org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-            org.hibernate.annotations.CascadeType.MERGE,
-                org.hibernate.annotations.CascadeType.REFRESH,
-                org.hibernate.annotations.CascadeType.DETACH} )
+                       org.hibernate.annotations.CascadeType.DELETE,
+                       org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+                       org.hibernate.annotations.CascadeType.MERGE,
+                       org.hibernate.annotations.CascadeType.REFRESH,
+                       org.hibernate.annotations.CascadeType.DETACH} )
     @Override
     public Collection<PublicationAlias> getAliases() {
         return super.getAliases();

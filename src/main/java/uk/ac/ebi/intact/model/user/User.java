@@ -3,6 +3,9 @@ package uk.ac.ebi.intact.model.user;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import uk.ac.ebi.intact.model.AbstractAuditable;
+import uk.ac.ebi.intact.model.IntactObject;
+import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
 import java.util.*;
@@ -17,26 +20,18 @@ import java.util.*;
 @Entity
 @Table( name = "ia_user" )
 @javax.persistence.SequenceGenerator( name = "SEQ_USER", sequenceName = "users_seq", initialValue = 1 )
-public class User implements Identifiable {
+public class User extends AbstractAuditable implements Identifiable  {
 
-    @Id
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "SEQ_USER" )
     private Long pk;
 
-    @Column( nullable = false, unique = true )
-    @Index( name = "idx_user_login" )
     private String login;
 
     private String password;
 
-    @Column( nullable = false )
     private String firstName;
 
-    @Column( nullable = false )
     private String lastName;
 
-    @Column( nullable = false, unique = true )
-    @Index( name = "idx_user_email" )
     private String email;
 
     private String openIdUrl;
@@ -46,21 +41,11 @@ public class User implements Identifiable {
      */
     private boolean disabled;
 
-    @Temporal( TemporalType.TIMESTAMP )
     private Date lastLogin;
 
-    @ManyToMany( cascade = CascadeType.PERSIST, fetch = FetchType.EAGER )
-    @Cascade( org.hibernate.annotations.CascadeType.SAVE_UPDATE )
-    @JoinTable(
-            name = "ia_user2role",
-            joinColumns = {@JoinColumn( name = "user_id" )},
-            inverseJoinColumns = {@JoinColumn( name = "role_id" )}
-    )
-    @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
     private Set<Role> roles;
 
-    @OneToMany( mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER )
-    @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
+
     private Collection<Preference> preferences;
 
 //    private Collection<Favourite> favourites;
@@ -85,6 +70,8 @@ public class User implements Identifiable {
     ///////////////////////////
     // Getters and Setters
 
+    @Id
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "SEQ_USER" )
     public Long getPk() {
         return pk;
     }
@@ -93,6 +80,8 @@ public class User implements Identifiable {
         this.pk = pk;
     }
 
+    @Column( nullable = false, unique = true )
+    @Index( name = "idx_user_login" )
     public String getLogin() {
         return login;
     }
@@ -112,6 +101,7 @@ public class User implements Identifiable {
         this.password = password;
     }
 
+    @Column( nullable = false )
     public String getFirstName() {
         return firstName;
     }
@@ -120,6 +110,7 @@ public class User implements Identifiable {
         this.firstName = firstName;
     }
 
+    @Column( nullable = false )
     public String getLastName() {
         return lastName;
     }
@@ -128,6 +119,8 @@ public class User implements Identifiable {
         this.lastName = lastName;
     }
 
+    @Column( nullable = false, unique = true )
+    @Index( name = "idx_user_email" )
     public String getEmail() {
         return email;
     }
@@ -147,6 +140,7 @@ public class User implements Identifiable {
         this.openIdUrl = openIdUrl;
     }
 
+    @Temporal( TemporalType.TIMESTAMP )
     public Date getLastLogin() {
         return lastLogin;
     }
@@ -159,8 +153,16 @@ public class User implements Identifiable {
      * Gives read-only access to the roles, use the corresponding addRole, removeRole to update it.
      * @return
      */
+    @ManyToMany( cascade = CascadeType.PERSIST, fetch = FetchType.EAGER )
+    @Cascade( org.hibernate.annotations.CascadeType.SAVE_UPDATE )
+    @JoinTable(
+            name = "ia_user2role",
+            joinColumns = {@JoinColumn( name = "user_id" )},
+            inverseJoinColumns = {@JoinColumn( name = "role_id" )}
+    )
+    @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
     public Set<Role> getRoles() {
-        return Collections.unmodifiableSet( roles );
+        return roles;
     }
 
     public void addRole( Role role ) {
@@ -175,6 +177,10 @@ public class User implements Identifiable {
             throw new IllegalArgumentException( "You must give a non null role" );
         }
         roles.remove( role );
+    }
+
+    protected void setRoles( Set<Role> roles ) {
+        this.roles = roles;
     }
 
     public boolean hasRole( String roleName ) {
@@ -198,6 +204,8 @@ public class User implements Identifiable {
         this.disabled = disabled;
     }
 
+    @OneToMany( mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER )
+    @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     public Collection<Preference> getPreferences() {
         return preferences;
     }
