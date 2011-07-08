@@ -24,16 +24,11 @@ import java.util.*;
 public class Publication extends OwnedAnnotatedObject<PublicationXref, PublicationAlias> implements Editable {
 
     /**
-     * Last relevant change in this object that requires an export to IMEx.
-     */
-    private Date lastImexUpdate;
-
-    /**
      * List of experiments related to that publication.
      */
     private Collection<Experiment> experiments = new ArrayList<Experiment>();
 
-    private List<LifecycleEvent> lifecycleEvents;
+    private List<LifecycleEvent> lifecycleEvents = new ArrayList<LifecycleEvent>();
 
     private CvPublicationStatus status;
 
@@ -52,16 +47,6 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
 
     public Publication( Institution owner, String name ) {
         super( name, owner );
-    }
-
-    @Transient
-//    @Temporal( value = TemporalType.TIMESTAMP )
-    public Date getLastImexUpdate() {
-        return lastImexUpdate;
-    }
-
-    public void setLastImexUpdate( Date lastImexUpdate ) {
-        this.lastImexUpdate = lastImexUpdate;
     }
 
     //////////////////////////////
@@ -119,7 +104,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
         this.experiments = experiments;
     }
 
-    @OneToMany( mappedBy = "parent" )
+    @OneToMany( mappedBy = "publication", orphanRemoval = true )
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
                        org.hibernate.annotations.CascadeType.DELETE,
                        org.hibernate.annotations.CascadeType.SAVE_UPDATE,
@@ -128,6 +113,16 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
                        org.hibernate.annotations.CascadeType.DETACH} )
     public List<LifecycleEvent> getLifecycleEvents() {
         return lifecycleEvents;
+    }
+
+    public void addLifecycleEvent( LifecycleEvent event ) {
+        if(  event.getPublication() != null && event.getPublication() != this ) {
+            throw new IllegalArgumentException( "You are trying to add an event to publication "+
+                                                event.getPublication().getAc() +" that already belong to an other " +
+                                                "publication " + getAc() );
+        }
+        event.setPublication( this );
+        lifecycleEvents.add( event );
     }
 
     public void setLifecycleEvents( List<LifecycleEvent> lifecycleEvents ) {

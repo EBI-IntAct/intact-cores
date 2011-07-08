@@ -60,26 +60,4 @@ public class PublicationDaoTest extends IntactBasicTestCase {
         assertNotNull( pub );
         assertEquals( label, pub.getShortLabel() );
     }
-
-    @Test
-    @Ignore
-    public void getByLastImexUpdate() throws Exception {
-        Publication pub = getMockBuilder().createPublication( "10099999" );
-        pub.setLastImexUpdate( null );
-        getCorePersister().saveOrUpdate( pub );
-
-        final PublicationDao pubDao = getIntactContext().getDataContext().getDaoFactory().getPublicationDao();
-        Publication myPub = pubDao.getByPubmedId( "10099999" );
-        Assert.assertNotNull( myPub );
-        Assert.assertNull( myPub.getLastImexUpdate() );
-
-        final Date now = new Date();
-        myPub.setLastImexUpdate( now );
-        getCorePersister().saveOrUpdate( pub );
-
-        myPub = pubDao.getByPubmedId( "10099999" );
-        Assert.assertNotNull( myPub );
-        Assert.assertNotNull( myPub.getLastImexUpdate() );
-        Assert.assertEquals( now, myPub.getLastImexUpdate());
-    }
 }

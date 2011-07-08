@@ -88,6 +88,8 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
             copyInstitution( ( Institution ) source, ( Institution ) target );
         } else if ( source instanceof Publication ) {
             copyPublication( ( Publication ) source, ( Publication ) target );
+        } else if ( source instanceof LifecycleEvent ) {
+            copyLifecycleEvent( ( LifecycleEvent ) source, ( LifecycleEvent ) target );
         } else if ( source instanceof CvObject ) {
             copyCvObject( ( CvObject ) source, ( CvObject ) target );
         } else if ( source instanceof Experiment ) {
@@ -125,6 +127,20 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
 
     protected void copyPublication( Publication source, Publication target ) {
         copyCollection( source.getExperiments(), target.getExperiments() );
+        copyCollection( source.getLifecycleEvents(), target.getLifecycleEvents() );
+
+        copyProperty(source, "currentOwner", target);
+        copyProperty(source, "currentReviewer", target);
+        copyProperty(source, "publicationId", target);
+        copyProperty(source, "status", target);
+    }
+
+    protected void copyLifecycleEvent( LifecycleEvent source, LifecycleEvent target ) {
+        copyProperty(source, "event", target);
+        copyProperty(source, "who", target);
+        copyProperty(source, "when", target);
+        copyProperty(source, "publication", target);
+        copyProperty(source, "note", target);
     }
 
     protected void copyExperiment( Experiment source, Experiment target ) {
@@ -351,7 +367,7 @@ public class DefaultEntityStateCopier implements EntityStateCopier {
     }
 
     /**
-     * <p>Returs true if two annotated objects are equal. The generic way to do the check
+     * <p>Returns true if two annotated objects are equal. The generic way to do the check
      * is:</p>
      * a) If they have the same AC, consider them equal<br/>
      * b) Otherwise, clone both objects (excluding the ACs) and invoke equals() on them

@@ -59,6 +59,7 @@ public class DaoFactory implements Serializable {
     @Autowired private RoleDao roleDao;
     @Autowired private SearchableDao searchableDao;
     @Autowired private UserDao userDao;
+    @Autowired private LifecycleEventDao lifecycleEventDao;
 
     public DaoFactory() {
 
@@ -233,6 +234,10 @@ public class DaoFactory implements Serializable {
 
     public UserDao getUserDao() {
         return userDao;
+    }
+
+    public LifecycleEventDao getLifecycleEventDao() {
+        return lifecycleEventDao;
     }
 
     public EntityManager getEntityManager() {
