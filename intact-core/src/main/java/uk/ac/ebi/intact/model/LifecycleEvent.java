@@ -31,7 +31,7 @@ public class LifecycleEvent extends AbstractAuditable implements Identifiable {
 
     private String note;
 
-    private Publication parent;
+    private Publication publication;
 
     @Deprecated
     public LifecycleEvent() {
@@ -106,13 +106,13 @@ public class LifecycleEvent extends AbstractAuditable implements Identifiable {
         this.note = note;
     }
 
-    @ManyToOne( targetEntity = Publication.class, fetch = FetchType.LAZY )
-    @JoinColumn( name = "parent_ac" )
-    public AnnotatedObject getParent() {
-        return parent;
+    @ManyToOne( targetEntity = Publication.class, fetch = FetchType.LAZY, optional = false )
+    @JoinColumn( name = "publication_ac" )
+    public Publication getPublication() {
+        return publication;
     }
 
-    public void setParent( Publication parent ) {
-        this.parent = parent;
+    public void setPublication( Publication publication ) {
+        this.publication = publication;
     }
 }

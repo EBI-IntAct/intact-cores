@@ -35,6 +35,9 @@ import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.user.Preference;
+import uk.ac.ebi.intact.model.user.Role;
+import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 
 import javax.persistence.FlushModeType;
@@ -979,9 +982,66 @@ public class CorePersisterImpl implements CorePersister {
             publication.getExperiments().addAll(experiments);
         }
 
+        publication.setStatus( synchronize( publication.getStatus() ) );
+//        publication.setCurrentOwner( synchronize( publication.getCurrentOwner() ) );
+//        publication.setCurrentReviewer( synchronize( publication.getCurrentReviewer() ) );
+
+        final List<LifecycleEvent> events = publication.getLifecycleEvents();
+        if (IntactCore.isInitializedAndDirty( events )){
+            Collection<LifecycleEvent> synchedEvents = new ArrayList<LifecycleEvent>( events.size() );
+            for ( LifecycleEvent event : events ) {
+                synchedEvents.add( synchronize( event ) );
+            }
+            events.clear();
+            events.addAll( synchedEvents );
+        }
+
         if (synchronizeAnnotatedAttributes){
             synchronizeAnnotatedObjectCommons( publication );
         }
+    }
+
+//    private Role synchronize( Role role ) {
+//        return role;
+//    }
+//
+//    private Preference synchronize( Preference preference ) {
+//        preference.setUser(  synchronize( preference.getUser() ) );
+//        return preference;
+//    }
+
+//    private User synchronize( User user ) {
+//
+//        final Set<Role> roles = user.getRoles();
+//        if (IntactCore.isInitializedAndDirty( roles )){
+//           Collection<Role> synchedRoles = new ArrayList<Role>( roles.size() );
+//            for ( Role role : roles ) {
+//                synchedRoles.add( synchronize( role ) );
+//            }
+//            roles.clear();
+//            roles.addAll( synchedRoles );
+//        }
+//
+//        final Collection<Preference> prefs = user.getPreferences();
+//        if (IntactCore.isInitializedAndDirty( prefs )){
+//           Collection<Preference> synchedPrefs = new ArrayList<Preference>( prefs.size() );
+//            for ( Preference p : prefs ) {
+//                synchedPrefs.add( synchronize( p ) );
+//            }
+//            prefs.clear();
+//            prefs.addAll( synchedPrefs );
+//        }
+//
+//        return user;
+//    }
+
+    private LifecycleEvent synchronize( LifecycleEvent event ) {
+
+//        event.setWho( synchronize( event.getWho() ) );
+
+        event.setEvent( synchronize( event.getEvent() ) );
+
+        return event;
     }
 
     private void synchronizeInstitution( Institution institution, boolean synchronyzeCommonAttributes ) {

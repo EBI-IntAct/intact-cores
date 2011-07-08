@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.unit;
 
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.*;
 import uk.ac.ebi.intact.util.Crc64;
 
@@ -596,6 +597,32 @@ public class IntactMockBuilder {
     public Publication createPublication(String pmid) {
         Publication pub = new Publication(getInstitution(), pmid);
         return pub;
+    }
+
+    ////////////////////
+    // Lyfecycle Event
+
+    public LifecycleEvent createLifecycleEvent( CvLifecycleEvent event, User user, String note ) {
+        return new LifecycleEvent( event, user, note );
+    }
+
+    public LifecycleEvent createLifecycleEvent( CvLifecycleEvent event, User user ) {
+        return createLifecycleEvent( event, user, null );
+    }
+
+    //////////////
+    // User
+
+    public User createUser( String login, String firstName, String lastName, String email ) {
+        return new User( login, firstName, lastName, email );
+    }
+
+    public User createUserSandra() {
+        return createUser( "sandra", "sandra", "-", "sandra@ebi.ac.uk" );
+    }
+
+    public User createUserJyoti() {
+        return createUser( "jyoti", "jyoti", "-", "jyoti@ebi.ac.uk" );
     }
 
     /////////////////////
