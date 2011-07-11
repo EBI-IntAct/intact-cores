@@ -38,6 +38,7 @@ import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
+import javax.persistence.FlushModeType;
 import javax.sql.DataSource;
 import java.io.*;
 import java.util.List;
@@ -298,7 +299,7 @@ public class IntactInitializer implements ApplicationContextAware{
 
             final Role adminRole = daoFactory.getRoleDao().getRoleByName( "ADMIN" );
             user.addRole( adminRole );
-            daoFactory.getUserDao().saveOrUpdate( user );
+            daoFactory.getUserDao().saveOrUpdate(user);
         }
     }
 

@@ -1,11 +1,14 @@
 package uk.ac.ebi.intact.core.users.model;
 
 import junit.framework.Assert;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.user.Role;
+
+import javax.persistence.PersistenceException;
 
 /**
  * Role Tester.
@@ -27,7 +30,7 @@ public class RoleTest extends IntactBasicTestCase {
         Assert.assertNull( roleDao.getRoleByName( "foo" ) );
     }
 
-    @Test( expected = DataIntegrityViolationException.class )
+    @Test( expected = PersistenceException.class )
     public void uniqueRole() throws Exception {
         final RoleDao roleDao = getDaoFactory().getRoleDao();
 
@@ -37,6 +40,6 @@ public class RoleTest extends IntactBasicTestCase {
         Role role2 = new Role( "CURATOR" );
         roleDao.persist( role2 );
 
-        roleDao.flush();
+        getDaoFactory().getEntityManager().flush();
     }
 }

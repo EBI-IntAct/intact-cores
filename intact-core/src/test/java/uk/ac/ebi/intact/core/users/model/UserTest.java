@@ -9,6 +9,8 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 
+import javax.persistence.PersistenceException;
+
 /**
  * User tester.
  *
@@ -56,12 +58,12 @@ public class UserTest extends IntactBasicTestCase {
         final UserDao userDao = getDaoFactory().getUserDao();
 
         userDao.persist( john );
-        userDao.flush();
+        getDaoFactory().getEntityManager().flush();
 
         final User reloadedJohn = userDao.getByLogin( "john.doe" );
         reloadedJohn.setEmail( "john.doe@hotmail.com" );
         userDao.update( reloadedJohn );
-        userDao.flush();
+        getDaoFactory().getEntityManager().flush();
 
         final User johnAgain = userDao.getByEmail( "john.doe@hotmail.com" );
         Assert.assertEquals( "john.doe", johnAgain.getLogin() );
@@ -88,7 +90,7 @@ public class UserTest extends IntactBasicTestCase {
         Assert.assertNotNull( user );
     }
 
-    @Test( expected = DataIntegrityViolationException.class )
+    @Test( expected = PersistenceException.class )
     public void uniqueLogin() throws Exception {
 
         final UserDao userDao = getDaoFactory().getUserDao();
@@ -99,10 +101,10 @@ public class UserTest extends IntactBasicTestCase {
         User jack = new User( "jdoe", "jack", "doe", "jack.doe@gmail.com" );
         userDao.persist( jack );
 
-        userDao.flush();
+        getDaoFactory().getEntityManager().flush();
     }
 
-    @Test( expected = DataIntegrityViolationException.class )
+    @Test( expected = PersistenceException.class )
     public void uniqueEmail() throws Exception {
         final UserDao userDao = getDaoFactory().getUserDao();
 
@@ -112,7 +114,7 @@ public class UserTest extends IntactBasicTestCase {
         User jack = new User( "jack.doe", "jack", "doe", "jdoe@gmail.com" );
         userDao.persist( jack );
 
-        userDao.flush();
+        getDaoFactory().getEntityManager().flush();
     }
 
     @Test
@@ -127,7 +129,7 @@ public class UserTest extends IntactBasicTestCase {
         john.addRole( curator );
         userDao.update( john );
 
-        userDao.flush();
+        getDaoFactory().getEntityManager().flush();
 
         final User reloadedJohn = userDao.getByLogin( "john.doe" );
         Assert.assertNotNull( reloadedJohn );

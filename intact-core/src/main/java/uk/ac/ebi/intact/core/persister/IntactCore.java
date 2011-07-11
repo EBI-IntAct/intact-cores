@@ -22,6 +22,9 @@ import org.hibernate.collection.PersistentCollection;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.user.Preference;
+import uk.ac.ebi.intact.model.user.Role;
+import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 import javax.persistence.Query;
@@ -460,6 +463,60 @@ public class IntactCore {
     }
 
     /**
+     * Ensures that the lifecycle events are initialized.
+     * @param publication The publication
+     * @return the initialized events
+     * @since 2.5.0
+     */
+    public static Collection<LifecycleEvent> ensureInitializedLifecycleEvents(Publication publication) {
+       Collection<LifecycleEvent> events;
+
+        if (IntactCore.isInitialized(publication.getLifecycleEvents())) {
+            events = publication.getLifecycleEvents();
+        } else {
+            events = IntactContext.getCurrentInstance().getDaoFactory().getLifecycleEventDao().getByPublicationAc(publication.getAc());
+        }
+
+        return events;
+    }
+
+    /**
+     * Ensures that the preferences are initialized.
+     * @param user The user
+     * @return the initialized objects
+     * @since 2.5.0
+     */
+    public static Collection<Preference> ensureInitializedPreferences(User user) {
+       Collection<Preference> preferences;
+
+        if (IntactCore.isInitialized(user.getPreferences())) {
+            preferences = user.getPreferences();
+        } else {
+            preferences = IntactContext.getCurrentInstance().getDaoFactory().getPreferenceDao().getByUserAc(user.getAc());
+        }
+
+        return preferences;
+    }
+
+    /**
+     * Ensures that the roles are initialized.
+     * @param user The user
+     * @return the initialized objects
+     * @since 2.5.0
+     */
+    public static Collection<Role> ensureInitializedRoles(User user) {
+       Collection<Role> roles;
+
+        if (IntactCore.isInitialized(user.getPreferences())) {
+            roles = user.getRoles();
+        } else {
+            roles = IntactContext.getCurrentInstance().getDaoFactory().getRoleDao().getByUserAc(user.getAc());
+        }
+
+        return roles;
+    }
+
+    /**
      * Ensures that the sequence is accessible, reloading it from the database when lazy.
      * @param polymer the polymer
      * @return The returned sequence is ensured to be initialized
@@ -479,4 +536,6 @@ public class IntactCore {
         return polymer.getSequence(sequenceChunks);
 
     }
+
+
 }

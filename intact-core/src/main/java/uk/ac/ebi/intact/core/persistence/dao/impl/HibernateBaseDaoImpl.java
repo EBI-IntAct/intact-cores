@@ -154,18 +154,21 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return name;
     }
 
+    @Transactional(readOnly = false)
     public void update( T objToUpdate ) {
         checkReadOnly();
 
         getSession().update( objToUpdate );
     }
 
+    @Transactional(readOnly = false)
     public void persist( T objToPersist ) {
         checkReadOnly();
 
         getEntityManager().persist( objToPersist );
     }
 
+    @Transactional(readOnly = false)
     public void persistAll( Collection<T> objsToPersist ) {
         checkReadOnly();
 
@@ -174,12 +177,14 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         }
     }
 
+    @Transactional(readOnly = false)
     public void delete( T objToDelete ) {
         checkReadOnly();
 
         getSession().delete( objToDelete );
     }
 
+    @Transactional(readOnly = false)
     public void deleteAll( Collection<T> objsToDelete ) {
         checkReadOnly();
 
@@ -188,12 +193,14 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         }
     }
 
+    @Transactional(readOnly = false)
     public int deleteAll() {
         // TODO fix this
         Query query = getEntityManager().createQuery("delete from " + getEntityClass());
         return query.executeUpdate();
     }
 
+    @Transactional(readOnly = false)
     public void saveOrUpdate( T objToPersist ) {
         checkReadOnly();
 
@@ -223,6 +230,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         getSession().replicate(objToReplicate, replicationMode);
     }
 
+    @Transactional(readOnly = false)
     public void merge(T objToMerge) {
         getSession().merge(objToMerge);
     }

@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.core.persistence.dao.user;
 
+import uk.ac.ebi.intact.core.persistence.dao.IntactObjectDao;
 import uk.ac.ebi.intact.model.user.User;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.io.Serializable;
  * @version $Id$
  * @since 2.2.1
  */
-public interface UserDao extends UsersBaseDao<User>, Serializable {
+public interface UserDao extends IntactObjectDao<User>, Serializable {
 
     User getByLogin( String login );
 

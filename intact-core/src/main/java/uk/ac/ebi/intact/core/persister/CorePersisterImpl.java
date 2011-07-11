@@ -59,7 +59,7 @@ public class CorePersisterImpl implements CorePersister {
 
     private Map<Key, IntactObject> annotatedObjectsToPersist;
     private Map<Key, AnnotatedObject> annotatedObjectsToMerge;
-    private Map<Key, AnnotatedObject> synched;
+    private Map<Key, IntactObject> synched;
 
     private KeyBuilder keyBuilder;
     private EntityStateCopier entityStateCopier;
@@ -983,8 +983,8 @@ public class CorePersisterImpl implements CorePersister {
         }
 
         publication.setStatus( synchronize( publication.getStatus() ) );
-//        publication.setCurrentOwner( synchronize( publication.getCurrentOwner() ) );
-//        publication.setCurrentReviewer( synchronize( publication.getCurrentReviewer() ) );
+        publication.setCurrentOwner( synchronizeUser(publication.getCurrentOwner()) );
+        publication.setCurrentReviewer( synchronizeUser(publication.getCurrentReviewer()) );
 
         final List<LifecycleEvent> events = publication.getLifecycleEvents();
         if (IntactCore.isInitializedAndDirty( events )){
@@ -1001,44 +1001,66 @@ public class CorePersisterImpl implements CorePersister {
         }
     }
 
-//    private Role synchronize( Role role ) {
-//        return role;
-//    }
-//
-//    private Preference synchronize( Preference preference ) {
-//        preference.setUser(  synchronize( preference.getUser() ) );
-//        return preference;
-//    }
 
-//    private User synchronize( User user ) {
-//
-//        final Set<Role> roles = user.getRoles();
-//        if (IntactCore.isInitializedAndDirty( roles )){
-//           Collection<Role> synchedRoles = new ArrayList<Role>( roles.size() );
-//            for ( Role role : roles ) {
-//                synchedRoles.add( synchronize( role ) );
-//            }
-//            roles.clear();
-//            roles.addAll( synchedRoles );
-//        }
-//
-//        final Collection<Preference> prefs = user.getPreferences();
-//        if (IntactCore.isInitializedAndDirty( prefs )){
-//           Collection<Preference> synchedPrefs = new ArrayList<Preference>( prefs.size() );
-//            for ( Preference p : prefs ) {
-//                synchedPrefs.add( synchronize( p ) );
-//            }
-//            prefs.clear();
-//            prefs.addAll( synchedPrefs );
-//        }
-//
-//        return user;
-//    }
+    private Role synchronizeRole( Role role ) {
+        Key key = new Key("role:"+role.getName());
+
+        if (synched.containsKey(key)) {
+            return (Role) synched.get(key);
+        }
+
+        synched.put(key, role);
+
+        return role;
+    }
+
+    private Preference synchronizePreference( Preference preference ) {
+        preference.setUser(  synchronizeUser(preference.getUser()) );
+        return preference;
+    }
+
+    private User synchronizeUser( User user ) {
+        if (user == null) return null;
+
+        Key key;
+
+        if (user.getAc() != null) {
+            key = new Key("user:"+user.getAc());
+        } else {
+            key = new Key("user:"+user.getLogin());
+        }
+
+        if (synched.containsKey(key)) {
+            return (User) synched.get(key);
+        }
+
+        final Set<Role> roles = user.getRoles();
+        if (IntactCore.isInitializedAndDirty( roles )){
+           Collection<Role> synchedRoles = new ArrayList<Role>( roles.size() );
+            for ( Role role : roles ) {
+                synchedRoles.add( synchronizeRole( role ) );
+            }
+            roles.clear();
+            roles.addAll( synchedRoles );
+        }
+
+        final Collection<Preference> prefs = user.getPreferences();
+        if (IntactCore.isInitializedAndDirty( prefs )){
+           Collection<Preference> synchedPrefs = new ArrayList<Preference>( prefs.size() );
+            for ( Preference p : prefs ) {
+                synchedPrefs.add( synchronizePreference( p ) );
+            }
+            prefs.clear();
+            prefs.addAll( synchedPrefs );
+        }
+
+        synched.put(key, user);
+
+        return user;
+    }
 
     private LifecycleEvent synchronize( LifecycleEvent event ) {
-
-//        event.setWho( synchronize( event.getWho() ) );
-
+        event.setWho( synchronizeUser(event.getWho()) );
         event.setEvent( synchronize( event.getEvent() ) );
 
         return event;

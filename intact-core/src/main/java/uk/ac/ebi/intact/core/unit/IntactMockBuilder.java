@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.unit;
 
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.*;
@@ -596,6 +597,9 @@ public class IntactMockBuilder {
 
     public Publication createPublication(String pmid) {
         Publication pub = new Publication(getInstitution(), pmid);
+
+        PublicationUtils.markAsNew(IntactContext.getCurrentInstance(), pub);
+
         return pub;
     }
 
@@ -618,11 +622,11 @@ public class IntactMockBuilder {
     }
 
     public User createUserSandra() {
-        return createUser( "sandra", "sandra", "-", "sandra@ebi.ac.uk" );
+        return createUser( "sandra", "sandra", "-", "sandra@example.com" );
     }
 
     public User createUserJyoti() {
-        return createUser( "jyoti", "jyoti", "-", "jyoti@ebi.ac.uk" );
+        return createUser( "jyoti", "jyoti", "-", "jyoti@example.com" );
     }
 
     /////////////////////

@@ -22,6 +22,9 @@ import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.user.Preference;
+import uk.ac.ebi.intact.model.user.Role;
+import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
 import java.lang.reflect.Constructor;
@@ -111,6 +114,14 @@ public abstract class AbstractIntactCloner {
                 clone = (T) cloneComponentParameter((ComponentParameter) intactObject);
             } else if (intactObject instanceof ComponentConfidence) {
                 clone = (T) cloneComponentConfidence((ComponentConfidence) intactObject);
+            } else if (intactObject instanceof User) {
+                clone = (T) cloneUser((User) intactObject);
+            } else if (intactObject instanceof Role) {
+                clone = (T) cloneRole((Role) intactObject);
+            } else if (intactObject instanceof Preference) {
+                clone = (T) clonePreference((Preference) intactObject);
+            } else if (intactObject instanceof LifecycleEvent) {
+                clone = (T) cloneLifecycleEvent((LifecycleEvent) intactObject);
             } else {
                 throw new IllegalArgumentException("Cannot clone objects of type: " + intactObject.getClass().getName());
             }
@@ -123,6 +134,7 @@ public abstract class AbstractIntactCloner {
 
         return clone;
     }
+
 
     protected AnnotatedObject cloneAnnotatedObject(AnnotatedObject<?, ?> annotatedObject) throws IntactClonerException {
 
@@ -506,6 +518,18 @@ public abstract class AbstractIntactCloner {
             }
         }
 
+        if (isCollectionClonable(publication.getLifecycleEvents())) {
+            Collection<LifecycleEvent> events = IntactCore.ensureInitializedLifecycleEvents(publication);
+
+            for (LifecycleEvent event : events) {
+                clone.addLifecycleEvent(clone(event));
+            }
+        }
+
+        clone.setStatus(clone(publication.getStatus()));
+        clone.setCurrentOwner(clone(publication.getCurrentOwner()));
+        clone.setCurrentReviewer(clone(publication.getCurrentReviewer()));
+
         return clone;
     }
 
@@ -531,9 +555,9 @@ public abstract class AbstractIntactCloner {
             }
         }
 
-        Collection<Feature> features = IntactCore.ensureInitializedFeatures(component);
+        if (isCollectionClonable(component.getFeatures())) {
+            Collection<Feature> features = IntactCore.ensureInitializedFeatures(component);
 
-        if (isCollectionClonable(features)) {
             for (Feature feature : features) {
                 clone.addFeature(clone(feature));
             }
@@ -613,6 +637,77 @@ public abstract class AbstractIntactCloner {
 
         return clone;
     }
+
+    public User cloneUser(User user) throws IntactClonerException {
+        if (user == null) {
+            throw new IllegalArgumentException("You must give a non null user");
+        }
+
+        User clone = new User();
+        clone.setEmail(user.getEmail());
+        clone.setFirstName(user.getFirstName());
+        clone.setLastName(user.getLastName());
+        clone.setDisabled(user.isDisabled());
+        clone.setLastLogin(user.getLastLogin());
+        clone.setLogin(user.getLogin());
+        clone.setOpenIdUrl(user.getOpenIdUrl());
+        clone.setPassword(user.getPassword());
+
+        if (isCollectionClonable(user.getPreferences())) {
+             Collection<Preference> preferences = IntactCore.ensureInitializedPreferences(user);
+
+            for (Preference preference : preferences) {
+                clone.addPreference(clone(preference));
+            }
+        }
+
+        if (isCollectionClonable(user.getRoles())) {
+            Collection<Role> roles = IntactCore.ensureInitializedRoles(user);
+
+            for (Role role : roles) {
+                clone.addRole(clone(role));
+            }
+        }
+
+        return clone;
+    }
+
+    public Role cloneRole(Role role) throws IntactClonerException {
+        if (role == null) {
+            throw new IllegalArgumentException("You must give a non null role");
+        }
+
+        Role clone = new Role(role.getName());
+
+        return clone;
+    }
+
+    public Preference clonePreference(Preference preference) throws IntactClonerException {
+        if (preference == null) {
+            throw new IllegalArgumentException("You must give a non null preference");
+        }
+
+        Preference clone = new Preference(preference.getUser(), preference.getKey(), preference.getValue());
+        return clone;
+
+    }
+
+    public LifecycleEvent cloneLifecycleEvent(LifecycleEvent lifecycleEvent) throws IntactClonerException {
+        if (lifecycleEvent == null) {
+            throw new IllegalArgumentException("You must give a non null lifecycleEvent");
+        }
+
+        LifecycleEvent clone = new LifecycleEvent();
+        clone.setEvent(clone(lifecycleEvent.getEvent()));
+        clone.setNote(lifecycleEvent.getNote());
+        clone.setPublication(clone(lifecycleEvent.getPublication()));
+        clone.setWho(clone(lifecycleEvent.getWho()));
+        clone.setWhen(lifecycleEvent.getWhen());
+
+        return clone;
+    }
+
+
 
     protected AnnotatedObject cloneAnnotatedObjectCommon(AnnotatedObject<?, ?> ao, AnnotatedObject clone) throws IntactClonerException {
 

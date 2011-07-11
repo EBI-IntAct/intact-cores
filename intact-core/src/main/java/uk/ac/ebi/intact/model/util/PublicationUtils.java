@@ -2,10 +2,10 @@ package uk.ac.ebi.intact.model.util;
 
 import uk.ac.ebi.intact.core.config.SequenceManager;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.model.Annotation;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.model.*;
+
+import java.util.Date;
 
 /**
  * Misc publication utilities.
@@ -77,5 +77,20 @@ public final class PublicationUtils {
     public static String nextUnassignedId(IntactContext intactContext) {
         SequenceManager sequenceManager = (SequenceManager) intactContext.getSpringContext().getBean("sequenceManager");
         return "unassigned" + sequenceManager.getNextValueForSequence("unassigned_seq");
+    }
+
+    public static void markAsNew(IntactContext intactContext, Publication publication) {
+        DaoFactory daoFactory = intactContext.getDaoFactory();
+
+        CvPublicationStatus status = daoFactory.getCvObjectDao(CvPublicationStatus.class)
+                .getByIdentifier(CvPublicationStatus.STATUS_NEW_MI);
+        publication.setStatus(status);
+
+        CvLifecycleEvent cvLifecycleEvent = daoFactory.getCvObjectDao(CvLifecycleEvent.class)
+                .getByIdentifier(CvLifecycleEvent.EVENT_CREATED_MI);
+
+        LifecycleEvent event = new LifecycleEvent(cvLifecycleEvent, intactContext.getUserContext().getUser(), new Date(), "Mock builder");
+
+        publication.addLifecycleEvent(event);
     }
 }
