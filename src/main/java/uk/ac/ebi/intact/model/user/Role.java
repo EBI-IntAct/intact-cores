@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.model.user;
 
 import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.model.AbstractAuditable;
+import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
 
@@ -15,26 +16,14 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_role" )
 @javax.persistence.SequenceGenerator( name="SEQ_USER", sequenceName="users_seq", initialValue = 1 )
-public class Role extends AbstractAuditable implements Identifiable {
-
-    private Long pk;
+public class Role extends IntactObjectImpl {
 
     private String name;
 
     //////////////////
     // Constructors
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="SEQ_USER")
-    public Long getPk() {
-        return pk;
-    }
-
-    public void setPk( Long pk ) {
-        this.pk = pk;
-    }
-
-    protected Role() {
+    public Role() {
     }
 
     public Role( String name ) {
@@ -54,7 +43,7 @@ public class Role extends AbstractAuditable implements Identifiable {
         return name;
     }
 
-    protected void setName( String name ) {
+    public void setName( String name ) {
         this.name = name;
     }
 

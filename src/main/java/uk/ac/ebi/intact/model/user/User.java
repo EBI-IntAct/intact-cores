@@ -20,7 +20,7 @@ import java.util.*;
 @Entity
 @Table( name = "ia_user" )
 @javax.persistence.SequenceGenerator( name = "SEQ_USER", sequenceName = "users_seq", initialValue = 1 )
-public class User extends AbstractAuditable implements Identifiable  {
+public class User extends IntactObjectImpl  {
 
     private Long pk;
 
@@ -69,16 +69,6 @@ public class User extends AbstractAuditable implements Identifiable  {
 
     ///////////////////////////
     // Getters and Setters
-
-    @Id
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "SEQ_USER" )
-    public Long getPk() {
-        return pk;
-    }
-
-    public void setPk( Long pk ) {
-        this.pk = pk;
-    }
 
     @Column( nullable = false, unique = true )
     @Index( name = "idx_user_login" )
@@ -176,7 +166,7 @@ public class User extends AbstractAuditable implements Identifiable  {
         if ( role == null ) {
             throw new IllegalArgumentException( "You must give a non null role" );
         }
-        roles.remove( role );
+        roles.remove(role);
     }
 
     protected void setRoles( Set<Role> roles ) {
@@ -223,6 +213,10 @@ public class User extends AbstractAuditable implements Identifiable  {
         return null;
     }
 
+    public void addPreference(Preference preference) {
+        getPreferences().add(preference);
+    }
+
     //////////////////////////
     // Object's override
 
@@ -259,4 +253,6 @@ public class User extends AbstractAuditable implements Identifiable  {
         sb.append( '}' );
         return sb.toString();
     }
+
+
 }

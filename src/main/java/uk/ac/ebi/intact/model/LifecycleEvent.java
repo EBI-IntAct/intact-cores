@@ -19,7 +19,7 @@ import java.util.Date;
 @Entity
 @Table( name = "ia_lifecycle_event" )
 @javax.persistence.SequenceGenerator( name="SEQ_MISC", sequenceName="misc_seq", initialValue = 1 )
-public class LifecycleEvent extends AbstractAuditable implements Identifiable {
+public class LifecycleEvent extends IntactObjectImpl {
 
     private Long pk;
 
@@ -33,7 +33,6 @@ public class LifecycleEvent extends AbstractAuditable implements Identifiable {
 
     private Publication publication;
 
-    @Deprecated
     public LifecycleEvent() {
     }
 
@@ -52,16 +51,6 @@ public class LifecycleEvent extends AbstractAuditable implements Identifiable {
      */
     public LifecycleEvent( CvLifecycleEvent event, User who, String note ) {
         this( event, who, new Date(), note );
-    }
-
-    @Id
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "SEQ_MISC" )
-    public Long getPk() {
-        return pk;
-    }
-
-    public void setPk( Long pk ) {
-        this.pk = pk;
     }
 
     @ManyToOne( optional = false )

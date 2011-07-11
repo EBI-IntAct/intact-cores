@@ -97,4 +97,42 @@
         <property name="description" value="Undefined institution"/>
     </bean>
 
+
+    <!-- Publication lifecycle -->
+
+    <bean id="lifecycleManager" class="uk.ac.ebi.intact.core.lifecycle.LifecycleManager">
+        <constructor-arg>
+            <ref bean="intactPublicationLifecycle"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="intactPublicationLifecycle" class="uk.ac.ebi.intact.core.lifecycle.Lifecycle">
+        <property name="statusList">
+            <list>
+               <bean id="newStatus" class="uk.ac.ebi.intact.core.lifecycle.DefaultLifecycleStatus">
+                    <property name="name" value="NEW"/>
+                    <property name="transitionList">
+                        <list>
+                            <bean class="uk.ac.ebi.intact.core.lifecycle.impl.AssignToCuratorTransition"/>
+                            <bean class="uk.ac.ebi.intact.core.lifecycle.impl.ClaimOwnershipTransition"/>
+                        </list>
+                    </property>
+                </bean>
+
+                <bean id="reservedStatus" class="uk.ac.ebi.intact.core.lifecycle.DefaultLifecycleStatus">
+                    <property name="name" value="RESERVED"/>
+                </bean>
+
+                <bean id="assignedStatus" class="uk.ac.ebi.intact.core.lifecycle.DefaultLifecycleStatus">
+                    <property name="name" value="ASSIGNED"/>
+                </bean>
+
+                <bean id="curationInProgressStatus" class="uk.ac.ebi.intact.core.lifecycle.DefaultLifecycleStatus">
+                    <property name="name" value="CURATION IN PROGRESS"/>
+                </bean>
+            </list>
+        </property>
+
+    </bean>
+
 </beans>

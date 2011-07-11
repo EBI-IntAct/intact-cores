@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.model.AbstractAuditable;
+import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
 
@@ -17,9 +18,7 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_preference" )
 @javax.persistence.SequenceGenerator( name="SEQ_USER", sequenceName="users_seq", initialValue = 1 )
-public class Preference extends AbstractAuditable implements Identifiable {
-
-    private Long pk;
+public class Preference extends IntactObjectImpl {
 
     private String key;
 
@@ -30,7 +29,7 @@ public class Preference extends AbstractAuditable implements Identifiable {
     //////////////////
     // Constructors
 
-    protected Preference() {
+    public Preference() {
     }
 
     public Preference( User user, String key ) {
@@ -42,18 +41,13 @@ public class Preference extends AbstractAuditable implements Identifiable {
         this.user = user;
     }
 
+    public Preference( User user, String key, String value ) {
+        this(user, key);
+        this.value = value;
+    }
+
     ///////////////////////////
     // Getters and Setters
-
-    @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_USER")
-    public Long getPk() {
-        return pk;
-    }
-
-    public void setPk( Long pk ) {
-        this.pk = pk;
-    }
 
     @Index( name = "idx_preference_key" )
     public String getKey() {

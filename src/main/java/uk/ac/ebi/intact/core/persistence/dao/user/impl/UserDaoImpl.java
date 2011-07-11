@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 
 import org.springframework.stereotype.Repository;
+import uk.ac.ebi.intact.core.persistence.dao.impl.IntactObjectDaoImpl;
 import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
 import uk.ac.ebi.intact.model.user.User;
 
@@ -16,7 +17,7 @@ import java.util.List;
  */
 @Repository
 @SuppressWarnings( {"unchecked"} )
-public class UserDaoImpl extends UsersBaseDaoImpl<User> implements UserDao {
+public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
 
     public UserDaoImpl() {
         super( User.class );

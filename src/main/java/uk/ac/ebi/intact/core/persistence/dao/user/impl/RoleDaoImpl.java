@@ -1,10 +1,12 @@
 package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 
 import org.springframework.stereotype.Repository;
+import uk.ac.ebi.intact.core.persistence.dao.impl.IntactObjectDaoImpl;
 import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
 import uk.ac.ebi.intact.model.user.Role;
 
 import javax.persistence.Query;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -16,7 +18,7 @@ import java.util.List;
  */
 @Repository
 @SuppressWarnings( {"unchecked"} )
-public class RoleDaoImpl extends UsersBaseDaoImpl<Role> implements RoleDao {
+public class RoleDaoImpl extends IntactObjectDaoImpl<Role> implements RoleDao {
 
     public RoleDaoImpl() {
         super( Role.class );
@@ -33,5 +35,13 @@ public class RoleDaoImpl extends UsersBaseDaoImpl<Role> implements RoleDao {
             return null;
         }
         return roles.get( 0 );
+    }
+
+    @Override
+    public Collection<Role> getByUserAc(String ac) {
+        Query query = getEntityManager().createQuery("select r from Role r join r.users as user where user.ac = :ac");
+        query.setParameter("ac", ac);
+
+        return query.getResultList();
     }
 }
