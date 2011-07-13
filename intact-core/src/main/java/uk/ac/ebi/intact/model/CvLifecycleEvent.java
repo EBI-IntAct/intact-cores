@@ -17,11 +17,6 @@ import javax.persistence.Entity;
 @EditorTopic
 public class CvLifecycleEvent extends CvDagObject implements Editable {
 
-    public static final String EVENT_MI = "PL:0002";
-    public static final String EVENT = "lifecycle event";
-
-     public static final String EVENT_CREATED_MI = "PL:0016";
-
     /**
      * This constructor should <b>not</b> be used as it could
      * result in objects with invalid state. It is here for object mapping

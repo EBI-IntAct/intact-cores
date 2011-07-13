@@ -83,11 +83,11 @@ public final class PublicationUtils {
         DaoFactory daoFactory = intactContext.getDaoFactory();
 
         CvPublicationStatus status = daoFactory.getCvObjectDao(CvPublicationStatus.class)
-                .getByIdentifier(CvPublicationStatus.STATUS_NEW_MI);
+                .getByIdentifier(CvPublicationStatusType.NEW.identifier());
         publication.setStatus(status);
 
         CvLifecycleEvent cvLifecycleEvent = daoFactory.getCvObjectDao(CvLifecycleEvent.class)
-                .getByIdentifier(CvLifecycleEvent.EVENT_CREATED_MI);
+                .getByIdentifier(CvLifecycleEventType.CREATED.identifier());
 
         LifecycleEvent event = new LifecycleEvent(cvLifecycleEvent, intactContext.getUserContext().getUser(), new Date(), "Mock builder");
 

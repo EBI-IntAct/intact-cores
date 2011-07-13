@@ -654,7 +654,7 @@ public class DefaultFinder implements Finder {
         /* Class cvClass = CgLibUtil.removeCglibEnhanced(cvObject.getClass());
 
        Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where cv.identifier = :id " );
-       query.setParameter( "id", cvObject.getIdentifier() );
+       query.setParameter( "id", cvObject.identifier() );
 
        String value = getFirstAcForQuery( query, cvObject );
 

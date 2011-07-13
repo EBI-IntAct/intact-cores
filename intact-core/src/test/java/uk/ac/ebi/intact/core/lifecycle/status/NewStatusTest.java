@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.core.lifecycle;
+package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.ac.ebi.intact.core.lifecycle.IllegalTransitionException;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleManager;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.CvPublicationStatus;
+import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
 import uk.ac.ebi.intact.model.user.User;
 
@@ -28,28 +32,40 @@ import uk.ac.ebi.intact.model.user.User;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class LifecycleManagerTest extends IntactBasicTestCase {
+public class NewStatusTest extends IntactBasicTestCase {
 
     @Autowired
     private LifecycleManager lifecycleManager;
 
     @Test
-    public void testTransition() throws Exception {
+    public void claimOwnership() throws Exception {
         Publication publication = getMockBuilder().createPublicationRandom();
 
         // assert original status
-        Assert.assertEquals("new", publication.getStatus().getShortLabel());
+        Assert.assertEquals(CvPublicationStatusType.NEW.shortLabel(), publication.getStatus().getShortLabel());
         Assert.assertEquals(1, publication.getLifecycleEvents().size());
 
         lifecycleManager.getNewStatus().claimOwnership(publication);
 
         // assert new status is ASSIGNED
-        Assert.assertEquals("assigned", publication.getStatus().getShortLabel());
+        Assert.assertEquals(CvPublicationStatusType.ASSIGNED.shortLabel(), publication.getStatus().getShortLabel());
         Assert.assertEquals(2, publication.getLifecycleEvents().size());
     }
 
+    @Test (expected = IllegalTransitionException.class)
+    public void claimOwnership_wrongInitialStatus() throws Exception {
+        Publication publication = getMockBuilder().createPublicationRandom();
+        publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.DISCARDED.identifier()));
+
+        // assert original status
+        Assert.assertEquals(CvPublicationStatusType.DISCARDED.shortLabel(), publication.getStatus().getShortLabel());
+        Assert.assertEquals(1, publication.getLifecycleEvents().size());
+
+        lifecycleManager.getNewStatus().claimOwnership(publication);
+    }
+
     @Test
-    public void testTransition2() throws Exception {
+    public void assignToCurator() throws Exception {
         Publication publication = getMockBuilder().createPublicationRandom();
 
         // set original status to NEW
@@ -59,6 +75,6 @@ public class LifecycleManagerTest extends IntactBasicTestCase {
         lifecycleManager.getNewStatus().assignToCurator(publication, user);
 
         // assert new status is ASSIGNED
-        Assert.assertEquals("assigned", publication.getStatus().getShortLabel());
+        Assert.assertEquals(CvPublicationStatusType.ASSIGNED.shortLabel(), publication.getStatus().getShortLabel());
     }
 }
