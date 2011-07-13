@@ -17,11 +17,6 @@ import javax.persistence.Entity;
 @EditorTopic
 public class CvPublicationStatus extends CvDagObject implements Editable {
 
-    public static final String STATUS_MI = "PL:0001";
-    public static final String STATUS = "publication status";
-
-    public static final String STATUS_NEW_MI = "PL:0004";
-
     /**
      * This constructor should <b>not</b> be used as it could
      * result in objects with invalid state. It is here for object mapping

@@ -17,10 +17,9 @@ package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.model.CvLifecycleEvent;
-import uk.ac.ebi.intact.model.CvPublicationStatus;
-import uk.ac.ebi.intact.model.LifecycleEvent;
-import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.model.CvPublicationStatusType;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.user.User;
 
 /**
@@ -32,22 +31,36 @@ import uk.ac.ebi.intact.model.user.User;
 @Controller
 public class NewStatus extends GlobalStatus {
 
+    @LifecycleTransition(fromStatus = CvPublicationStatusType.NEW, toStatus = CvPublicationStatusType.ASSIGNED)
     public void assignToCurator(Publication publication, User user) {
+        IntactContext intactContext = IntactContext.getCurrentInstance();
 
+        publication.setCurrentOwner(intactContext.getUserContext().getUser());
+
+        CvLifecycleEvent lifecycleEvent = intactContext.getDaoFactory()
+                .getCvObjectDao(CvLifecycleEvent.class).getByIdentifier(CvLifecycleEventType.ASSIGNED.identifier());
+        publication.addLifecycleEvent(new LifecycleEvent(lifecycleEvent, intactContext.getUserContext().getUser(), "Assigned to: "+user.getLogin()));
+
+        // TODO use constants
+        CvPublicationStatus publicationStatus = intactContext.getDaoFactory()
+                .getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.ASSIGNED.identifier());
+
+        publication.setStatus(publicationStatus);
     }
 
+    @LifecycleTransition(fromStatus = CvPublicationStatusType.NEW, toStatus = CvPublicationStatusType.ASSIGNED)
     public void claimOwnership(Publication publication) {
         IntactContext intactContext = IntactContext.getCurrentInstance();
 
         publication.setCurrentOwner(intactContext.getUserContext().getUser());
 
         CvLifecycleEvent lifecycleEvent = intactContext.getDaoFactory()
-                .getCvObjectDao(CvLifecycleEvent.class).getByIdentifier("PL:0019");
+                .getCvObjectDao(CvLifecycleEvent.class).getByIdentifier(CvLifecycleEventType.SELF_ASSIGNED.identifier());
         publication.addLifecycleEvent(new LifecycleEvent(lifecycleEvent, intactContext.getUserContext().getUser(), "Claimed ownership"));
 
         // TODO use constants
         CvPublicationStatus publicationStatus = intactContext.getDaoFactory()
-                .getCvObjectDao(CvPublicationStatus.class).getByIdentifier("PL:0006");
+                .getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.ASSIGNED.identifier());
 
         publication.setStatus(publicationStatus);
     }

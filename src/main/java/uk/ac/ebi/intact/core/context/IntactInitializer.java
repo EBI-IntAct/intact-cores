@@ -38,9 +38,7 @@ import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
-import javax.persistence.FlushModeType;
 import javax.sql.DataSource;
-import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -214,46 +212,22 @@ public class IntactInitializer implements ApplicationContextAware{
             createCvIfMissing( CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null );
 
             // Creating publication status
-            final CvPublicationStatus status = (CvPublicationStatus) createCvIfMissing( CvPublicationStatus.class,
-                                                                                        CvPublicationStatus.STATUS_MI,
-                                                                                        CvPublicationStatus.STATUS,
+            final CvPublicationStatus rootStatus = (CvPublicationStatus) createCvIfMissing( CvPublicationStatus.class,
+                                                                                        CvPublicationStatusType.PUB_STATUS.identifier(),
+                                                                                        CvPublicationStatusType.PUB_STATUS.name(),
                                                                                         null );
-            try {
-                final InputStream is = this.getClass().getResource( "/META-INF/lifecycle/status.tsv" ).openStream();
-                createMissingCvsIfMissing( CvPublicationStatus.class, status, is );
-            } catch ( IOException e ) {
-                throw new RuntimeException( "Could not read /META-INF/lifecycle/status.tsv", e );
+            for (CvPublicationStatusType cvPublicationStatusType : CvPublicationStatusType.values()) {
+                createCvIfMissing(CvPublicationStatus.class, cvPublicationStatusType.identifier(), cvPublicationStatusType.shortLabel(), rootStatus );
             }
 
             // creating publication lifecycle event
-            final CvLifecycleEvent event = (CvLifecycleEvent ) createCvIfMissing( CvLifecycleEvent.class,
-                                                                                  CvLifecycleEvent.EVENT_MI,
-                                                                                  CvLifecycleEvent.EVENT,
+            final CvLifecycleEvent rootEvent = (CvLifecycleEvent ) createCvIfMissing( CvLifecycleEvent.class,
+                                                                                  CvLifecycleEventType.LIFECYCLE_EVENT.identifier(),
+                                                                                  CvLifecycleEventType.LIFECYCLE_EVENT.name(),
                                                                                   null );
-            try {
-                final InputStream is = this.getClass().getResource( "/META-INF/lifecycle/events.tsv" ).openStream();
-                createMissingCvsIfMissing( CvLifecycleEvent.class, event, is );
-            } catch ( IOException e ) {
-                throw new RuntimeException( "Could not read /META-INF/lifecycle/events.tsv", e );
+            for (CvLifecycleEventType cvLifecycleEventType : CvLifecycleEventType.values()) {
+                createCvIfMissing(CvLifecycleEvent.class, cvLifecycleEventType.identifier(), cvLifecycleEventType.shortLabel(), rootEvent);
             }
-        }
-    }
-
-    private void createMissingCvsIfMissing( Class clazz, CvDagObject root, InputStream is ) {
-        try {
-
-            BufferedReader reader = new BufferedReader( new InputStreamReader( is ) );
-            String line = null;
-            while( ( line = reader.readLine() ) != null ) {
-                if( line.startsWith( "#" ) ) continue;
-                String[] values = line.split( "\t" );
-                if( values.length != 2 ) {
-                    throw new IllegalStateException( "Your input file is not well formatted: " + line );
-                }
-                createCvIfMissing( clazz, values[0], values[1], root );
-            }
-        } catch ( IOException e ) {
-            e.printStackTrace();
         }
     }
 
