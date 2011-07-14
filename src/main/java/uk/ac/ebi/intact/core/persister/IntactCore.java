@@ -542,7 +542,7 @@ public class IntactCore {
      * @param io the IntactObject
      * @return true is the object is found to be managed, otherwise false.
      */
-    public boolean isManaged( IntactObject io ) {
+    public static boolean isManaged( IntactObject io ) {
         return IntactContext.getCurrentInstance().getDaoFactory().getEntityManager().contains( io );
     }
 
@@ -551,7 +551,7 @@ public class IntactCore {
      * @param io the IntactObject
      * @return true is the object is found to be detached, otherwise false.
      */
-    public boolean isDetached( IntactObject io ) {
+    public static boolean isDetached( IntactObject io ) {
         return ( io.getAc() != null && ! isManaged( io ) );
     }
 }
