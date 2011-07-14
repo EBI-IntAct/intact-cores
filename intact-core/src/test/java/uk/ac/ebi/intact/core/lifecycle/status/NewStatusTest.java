@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.lifecycle.IllegalTransitionException;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleManager;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatus;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
@@ -38,6 +39,21 @@ public class NewStatusTest extends IntactBasicTestCase {
     private LifecycleManager lifecycleManager;
 
     @Test
+    public void reserve() throws Exception {
+        Publication publication = getMockBuilder().createPublicationRandom();
+
+        // assert original status
+        Assert.assertEquals(CvPublicationStatusType.NEW.shortLabel(), publication.getStatus().getShortLabel());
+        Assert.assertEquals(1, publication.getLifecycleEvents().size());
+
+        lifecycleManager.getNewStatus().reserve(publication, "because I say so");
+
+        Assert.assertEquals(CvPublicationStatusType.RESERVED.shortLabel(), publication.getStatus().getShortLabel());
+        Assert.assertEquals(2, publication.getLifecycleEvents().size());
+        Assert.assertEquals(CvLifecycleEventType.RESERVED.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());
+    }
+
+    @Test
     public void claimOwnership() throws Exception {
         Publication publication = getMockBuilder().createPublicationRandom();
 
@@ -47,7 +63,6 @@ public class NewStatusTest extends IntactBasicTestCase {
 
         lifecycleManager.getNewStatus().claimOwnership(publication);
 
-        // assert new status is ASSIGNED
         Assert.assertEquals(CvPublicationStatusType.ASSIGNED.shortLabel(), publication.getStatus().getShortLabel());
         Assert.assertEquals(2, publication.getLifecycleEvents().size());
     }
@@ -57,7 +72,6 @@ public class NewStatusTest extends IntactBasicTestCase {
         Publication publication = getMockBuilder().createPublicationRandom();
         publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.DISCARDED.identifier()));
 
-        // assert original status
         Assert.assertEquals(CvPublicationStatusType.DISCARDED.shortLabel(), publication.getStatus().getShortLabel());
         Assert.assertEquals(1, publication.getLifecycleEvents().size());
 

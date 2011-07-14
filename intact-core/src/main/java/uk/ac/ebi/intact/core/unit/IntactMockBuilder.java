@@ -598,7 +598,7 @@ public class IntactMockBuilder {
     public Publication createPublication(String pmid) {
         Publication pub = new Publication(getInstitution(), pmid);
 
-        PublicationUtils.markAsNew(IntactContext.getCurrentInstance(), pub);
+        IntactContext.getCurrentInstance().getLifecycleManager().getStartStatus().create(pub, "Mock builder");
 
         return pub;
     }

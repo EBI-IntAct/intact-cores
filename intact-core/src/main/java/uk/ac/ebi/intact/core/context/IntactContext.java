@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.config.ConfigurationException;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.context.impl.StandaloneSession;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleManager;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persister.CoreDeleter;
 import uk.ac.ebi.intact.core.persister.CorePersister;
@@ -55,6 +56,9 @@ public class IntactContext implements DisposableBean, Serializable {
 
     @Autowired
     private UserContext userContext;
+
+    @Autowired
+    private LifecycleManager lifecycleManager;
 
     @Autowired
     private ApplicationContext springContext;
@@ -248,6 +252,16 @@ public class IntactContext implements DisposableBean, Serializable {
 
     public DaoFactory getDaoFactory() {
         return daoFactory;
+    }
+
+    /**
+     * Gets the lifecycle manager for publications.
+     *
+     * @return the lifecycle manager.
+     * @since 2.5.0
+     */
+    public LifecycleManager getLifecycleManager() {
+        return lifecycleManager;
     }
 
     /**

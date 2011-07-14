@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface LifecycleTransition {
 
-    CvPublicationStatusType fromStatus();
-    CvPublicationStatusType toStatus();
+    CvPublicationStatusType fromStatus() default CvPublicationStatusType.PUB_STATUS;
+    CvPublicationStatusType[] toStatus() default CvPublicationStatusType.PUB_STATUS;
+    boolean statusChange() default true;
 }

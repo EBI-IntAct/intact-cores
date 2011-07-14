@@ -164,4 +164,12 @@ public class PublicationUtilsTest extends IntactBasicTestCase {
     public void testNextUnassignedId() throws Exception {
         Assert.assertEquals("unassigned1", PublicationUtils.nextUnassignedId(IntactContext.getCurrentInstance()));
     }
+
+    @Test
+    public void testMarkAsOnHold() throws Exception {
+        Publication pub = getMockBuilder().createPublicationRandom();
+        PublicationUtils.markAsOnHold(pub, "on hold because of test");
+
+        Assert.assertTrue(PublicationUtils.isOnHold(pub));
+    }
 }
