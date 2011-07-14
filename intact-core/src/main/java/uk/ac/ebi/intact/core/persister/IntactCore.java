@@ -537,5 +537,21 @@ public class IntactCore {
 
     }
 
+    /**
+     * Checks if the object is managed.
+     * @param io the IntactObject
+     * @return true is the object is found to be managed, otherwise false.
+     */
+    public boolean isManaged( IntactObject io ) {
+        return IntactContext.getCurrentInstance().getDaoFactory().getEntityManager().contains( io );
+    }
 
+    /**
+     * Checks if the given object is detached (i.e. has an AC and is not managed).
+     * @param io the IntactObject
+     * @return true is the object is found to be detached, otherwise false.
+     */
+    public boolean isDetached( IntactObject io ) {
+        return ( io.getAc() != null && ! isManaged( io ) );
+    }
 }
