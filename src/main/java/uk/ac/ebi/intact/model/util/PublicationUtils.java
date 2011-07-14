@@ -79,18 +79,19 @@ public final class PublicationUtils {
         return "unassigned" + sequenceManager.getNextValueForSequence("unassigned_seq");
     }
 
-    public static void markAsNew(IntactContext intactContext, Publication publication) {
-        DaoFactory daoFactory = intactContext.getDaoFactory();
+    /**
+     * Adds the 'on-hold' to a publication.
+     *
+     * @param publication the publication to hold
+     * @param reason the reason for the 'on-hold' status
+     * @since 2.5.0
+     */
+    public static void markAsOnHold(Publication publication, String reason) {
+        CvTopic onholdTopic = IntactContext.getCurrentInstance().getDaoFactory().getCvObjectDao(CvTopic.class).getByShortLabel(CvTopic.ON_HOLD);
 
-        CvPublicationStatus status = daoFactory.getCvObjectDao(CvPublicationStatus.class)
-                .getByIdentifier(CvPublicationStatusType.NEW.identifier());
-        publication.setStatus(status);
+        if (onholdTopic == null) throw new IllegalStateException("CvTopic on-hold was not found in the database");
 
-        CvLifecycleEvent cvLifecycleEvent = daoFactory.getCvObjectDao(CvLifecycleEvent.class)
-                .getByIdentifier(CvLifecycleEventType.CREATED.identifier());
-
-        LifecycleEvent event = new LifecycleEvent(cvLifecycleEvent, intactContext.getUserContext().getUser(), new Date(), "Mock builder");
-
-        publication.addLifecycleEvent(event);
+        Annotation annotation = new Annotation(onholdTopic, reason);
+        publication.addAnnotation(annotation);
     }
 }

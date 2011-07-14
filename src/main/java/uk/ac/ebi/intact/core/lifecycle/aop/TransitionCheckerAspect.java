@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.core.lifecycle.IllegalTransitionException;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
 import uk.ac.ebi.intact.core.util.DebugUtil;
+import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
 
 /**
@@ -42,9 +43,11 @@ public class TransitionCheckerAspect {
             if (obj instanceof Publication) {
                 Publication publication = (Publication) obj;
 
-                if (!publication.getStatus().getIdentifier().equals(lifecycleTransition.fromStatus().identifier())) {
-                    throw new IllegalTransitionException("Transition '"+pjp.getSignature().getName()+"' cannot be applied to publication '"+ DebugUtil.annotatedObjectToString(publication, false)+
-                            "' with state: '"+DebugUtil.cvObjectToSimpleString(publication.getStatus())+"'");
+                if (lifecycleTransition.fromStatus() != CvPublicationStatusType.PUB_STATUS) {
+                    if (!publication.getStatus().getIdentifier().equals(lifecycleTransition.fromStatus().identifier())) {
+                        throw new IllegalTransitionException("Transition '"+pjp.getSignature().getName()+"' cannot be applied to publication '"+ DebugUtil.annotatedObjectToString(publication, false)+
+                                "' with state: '"+DebugUtil.cvObjectToSimpleString(publication.getStatus())+"'");
+                    }
                 }
             }
         }

@@ -210,6 +210,7 @@ public class IntactInitializer implements ApplicationContextAware{
             log.info( "Persisting necessary CvObjects" );
 
             createCvIfMissing( CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null );
+            createCvIfMissing( CvTopic.class, null, CvTopic.ON_HOLD, null );
 
             // Creating publication status
             final CvPublicationStatus rootStatus = (CvPublicationStatus) createCvIfMissing( CvPublicationStatus.class,

@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.core.lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.lifecycle.status.NewStatus;
+import uk.ac.ebi.intact.core.lifecycle.status.*;
 import uk.ac.ebi.intact.model.CvLifecycleEvent;
 import uk.ac.ebi.intact.model.CvPublicationStatus;
 import uk.ac.ebi.intact.model.LifecycleEvent;
@@ -34,9 +34,49 @@ import uk.ac.ebi.intact.model.user.User;
 @Controller
 public class LifecycleManager {
 
+    @Autowired private StartStatus startStatus;
     @Autowired private NewStatus newStatus;
+    @Autowired private AssignedStatus assignedStatus;
+    @Autowired private CurationInProgressStatus curationInProgressStatus;
+    @Autowired private ReadyForCheckingStatus readyForCheckingStatus;
+    @Autowired private AcceptedStatus acceptedStatus;
+    @Autowired private AcceptedOnHoldStatus acceptedOnHoldStatus;
+    @Autowired private ReadyForReleaseStatus readyForReleaseStatus;
+    @Autowired private ReleaseStatus releaseStatus;
+
+    public StartStatus getStartStatus() {
+        return startStatus;
+    }
 
     public NewStatus getNewStatus() {
         return newStatus;
+    }
+
+    public AssignedStatus getAssignedStatus() {
+        return assignedStatus;
+    }
+
+    public CurationInProgressStatus getCurationInProgressStatus() {
+        return curationInProgressStatus;
+    }
+
+    public ReadyForCheckingStatus getReadyForCheckingStatus() {
+        return readyForCheckingStatus;
+    }
+
+    public AcceptedStatus getAcceptedStatus() {
+        return acceptedStatus;
+    }
+
+    public AcceptedOnHoldStatus getAcceptedOnHoldStatus() {
+        return acceptedOnHoldStatus;
+    }
+
+    public ReadyForReleaseStatus getReadyForReleaseStatus() {
+        return readyForReleaseStatus;
+    }
+
+    public ReleaseStatus getReleaseStatus() {
+        return releaseStatus;
     }
 }
