@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.persistence.dao.impl.IntactObjectDaoImpl;
 import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
 import uk.ac.ebi.intact.model.user.Role;
