@@ -29,6 +29,7 @@ import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.core.persister.Finder;
 import uk.ac.ebi.intact.core.persister.FinderException;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.util.*;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
@@ -93,6 +94,23 @@ public class DefaultFinder implements Finder {
             }
         } catch (Throwable t) {
             throw new FinderException("Unable to find AC for "+annotatedObject.getClass().getSimpleName()+": "+annotatedObject, t);
+        }
+
+        return ac;
+    }
+
+    @Override
+    @Transactional
+    public String findAc( Role role ) {
+        String ac = null;
+
+        if ( role.getAc() != null ) {
+            ac = role.getAc();
+        } else {
+            Role aRole = getDaoFactory().getRoleDao().getRoleByName( role.getName() );
+            if( aRole != null ) {
+                ac = aRole.getAc();
+            }
         }
 
         return ac;

@@ -32,6 +32,7 @@ import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.core.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
@@ -124,6 +125,7 @@ public class CorePersisterImpl implements CorePersister {
 
     ////////////////////////
     // Implement Persister
+
     @Transactional
     @IntactFlushMode(FlushModeType.COMMIT)
     public PersisterStatistics saveOrUpdate( AnnotatedObject... annotatedObjects ) throws PersisterException {
@@ -147,7 +149,7 @@ public class CorePersisterImpl implements CorePersister {
 
     @Transactional
     public PersisterStatistics saveOrUpdate( AnnotatedObject ao ) {
-        if (log.isDebugEnabled()) log.debug("Saving: "+DebugUtil.annotatedObjectToString(ao, false));
+        if (log.isDebugEnabled()) log.debug("Saving: "+DebugUtil.annotatedObjectToString( ao, false ));
 
         dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.COMMIT);
         //dataContext.getDaoFactory().getDataConfig().setAutoFlush(false);
@@ -177,6 +179,54 @@ public class CorePersisterImpl implements CorePersister {
         }
 
         return statistics;
+    }
+
+    @Transactional
+    public void saveOrUpdate( User... users ) {
+        try {
+            dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.COMMIT);
+            for ( User user : users ) {
+                // roles
+                Collection<Role> rolesToRemove = new ArrayList<Role>();
+                Collection<Role> rolesToAdd = new ArrayList<Role>();
+                for ( Role role : user.getRoles() ) {
+                    if( role.getAc() == null ) {
+                        final String ac = finder.findAc( role );
+                        if( ac != null ) {
+                            Role reloadedRole = dataContext.getDaoFactory().getRoleDao().getByAc( ac );
+                            rolesToRemove.add( role );
+                            rolesToAdd.add( reloadedRole );
+                        } else {
+                            dataContext.getDaoFactory().getRoleDao().persist( role );
+                        }
+                    } else {
+                        // if the object is not managed, replace it
+                        Role reloadedRole = dataContext.getDaoFactory().getRoleDao().getByAc( role.getAc() );
+                        rolesToRemove.add( role );
+                        rolesToAdd.add( reloadedRole );
+                    }
+                }
+                user.getRoles().removeAll( rolesToRemove );
+                user.getRoles().addAll( rolesToAdd );
+
+                // preferences
+                for ( Preference preference : user.getPreferences() ) {
+                    if( preference.getAc() == null ) {
+                        dataContext.getDaoFactory().getPreferenceDao().persist( preference );
+                    }
+                }
+
+                // user
+                final UserDao userDao = dataContext.getDaoFactory().getUserDao();
+                if( user.getAc() == null ) {
+                    userDao.persist( user );
+                } else {
+                    userDao.update( user );
+                }
+            }
+        } finally {
+            dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.AUTO);
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

@@ -143,7 +143,8 @@ public class User extends IntactObjectImpl  {
      * Gives read-only access to the roles, use the corresponding addRole, removeRole to update it.
      * @return
      */
-    @ManyToMany( cascade = CascadeType.PERSIST, fetch = FetchType.EAGER )
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+                 fetch = FetchType.EAGER )
     @Cascade( org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     @JoinTable(
             name = "ia_user2role",
@@ -166,10 +167,13 @@ public class User extends IntactObjectImpl  {
         if ( role == null ) {
             throw new IllegalArgumentException( "You must give a non null role" );
         }
-        roles.remove(role);
+        roles.remove( role );
     }
 
-    protected void setRoles( Set<Role> roles ) {
+    public void setRoles( Set<Role> roles ) {
+        if ( roles == null ) {
+            throw new IllegalArgumentException( "You must give a non null roles" );
+        }
         this.roles = roles;
     }
 
@@ -194,13 +198,18 @@ public class User extends IntactObjectImpl  {
         this.disabled = disabled;
     }
 
-    @OneToMany( mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER )
+    @OneToMany( mappedBy = "user",
+                cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+                fetch = FetchType.EAGER )
     @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     public Collection<Preference> getPreferences() {
         return preferences;
     }
 
     public void setPreferences( Collection<Preference> preferences ) {
+        if ( preferences == null ) {
+            throw new IllegalArgumentException( "You must give a non null preferences" );
+        }
         this.preferences = preferences;
     }
 
@@ -214,7 +223,17 @@ public class User extends IntactObjectImpl  {
     }
 
     public void addPreference(Preference preference) {
+        if ( preference == null ) {
+            throw new IllegalArgumentException( "You must give a non null preference" );
+        }
         getPreferences().add(preference);
+    }
+
+    public void removePreference(Preference preference) {
+        if ( preference == null ) {
+            throw new IllegalArgumentException( "You must give a non null preference" );
+        }
+        preferences.remove( preference );
     }
 
     //////////////////////////
@@ -253,6 +272,4 @@ public class User extends IntactObjectImpl  {
         sb.append( '}' );
         return sb.toString();
     }
-
-
 }

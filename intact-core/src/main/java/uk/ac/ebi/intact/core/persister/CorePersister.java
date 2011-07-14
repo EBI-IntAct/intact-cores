@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.core.persister;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactEntry;
+import uk.ac.ebi.intact.model.user.User;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -15,6 +16,8 @@ public interface CorePersister {
     PersisterStatistics saveOrUpdate( AnnotatedObject ao );
 
     PersisterStatistics saveOrUpdate( IntactEntry... intactEntries ) throws PersisterException;
+
+    void saveOrUpdate( User... users );
 
     PersisterStatistics saveOrUpdateInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException;
 
