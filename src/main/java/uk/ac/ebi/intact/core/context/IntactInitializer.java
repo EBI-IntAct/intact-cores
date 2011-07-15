@@ -25,6 +25,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import uk.ac.ebi.intact.core.config.ConfigurationHandler;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.config.SchemaVersion;
 import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
@@ -57,6 +58,9 @@ public class IntactInitializer implements ApplicationContextAware{
 
     @Autowired
     private SchemaVersion requiredSchemaVersion;
+
+    @Autowired
+    private ConfigurationHandler configurationHandler;
 
     @Autowired
     private CorePersister corePersister;
@@ -92,7 +96,17 @@ public class IntactInitializer implements ApplicationContextAware{
         Institution defaultInstitution = getDefaultInstitution(configuration);
 
         if (log.isInfoEnabled()) {
-            log.info("Starting IntAct Core module");
+            log.info("Starting IntAct Core module...");
+            log.info("Binding context to Application: "+intactContext.getApplication().getKey());
+        }
+
+        intactContext.bindToApplication(intactContext.getApplication());
+
+        if (isAutoPersist()) {
+            configurationHandler.persistConfiguration();
+        }
+
+        if (log.isInfoEnabled()) {
             log.info("\tDefault institution: " + defaultInstitution);
             log.info("\tSchema version:      " + requiredSchemaVersion);
             log.info("\tAutopersist:         " + autoPersist);

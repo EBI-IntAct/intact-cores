@@ -105,7 +105,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
 
     @Transactional(readOnly = true)
     public List<T> getAll() {
-        return getSession().createCriteria( getEntityClass() ).list();
+        return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o").getResultList();
     }
 
     @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
@@ -115,9 +115,9 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
 
     @Transactional(readOnly = true)
     public List<T> getAll( int firstResult, int maxResults ) {
-        return getSession().createCriteria( getEntityClass() )
+        return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o")
                 .setFirstResult( firstResult )
-                .setMaxResults( maxResults ).list();
+                .setMaxResults( maxResults ).getResultList();
     }
 
     @Transactional(readOnly = true)

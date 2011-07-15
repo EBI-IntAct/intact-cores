@@ -19,10 +19,7 @@ import java.util.*;
  */
 @Entity
 @Table( name = "ia_user" )
-@javax.persistence.SequenceGenerator( name = "SEQ_USER", sequenceName = "users_seq", initialValue = 1 )
 public class User extends IntactObjectImpl  {
-
-    private Long pk;
 
     private String login;
 
