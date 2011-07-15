@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.config.ConfigurationException;
+import uk.ac.ebi.intact.core.config.ConfigurationHandler;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.context.impl.StandaloneSession;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleManager;
@@ -20,8 +21,11 @@ import uk.ac.ebi.intact.core.persister.CoreDeleter;
 import uk.ac.ebi.intact.core.persister.CorePersister;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
 import uk.ac.ebi.intact.model.Institution;
+import uk.ac.ebi.intact.model.meta.Application;
+import uk.ac.ebi.intact.model.util.ApplicationFactoryBean;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.io.Serializable;
@@ -59,6 +63,9 @@ public class IntactContext implements DisposableBean, Serializable {
 
     @Autowired
     private LifecycleManager lifecycleManager;
+
+    @Resource(name = "defaultApp")
+    private Application application;
 
     @Autowired
     private ApplicationContext springContext;
@@ -102,26 +109,6 @@ public class IntactContext implements DisposableBean, Serializable {
     }
 
     /**
-     * Initializes a standalone {@code IntactContext} (not to use in web applications, where the initialization
-     * might be controlled by other means). It will try to find a working configuration or start a temporary database otherwise.
-     */
-    public static void initStandaloneContext() {
-        initContext((String) null, new StandaloneSession());
-    }
-
-    /**
-     * Initializes a standalone {@code IntactContext} using the Hibernate configuration file provided
-     * (not to use in web applications, where the initialization might be controlled by other means).
-     * It will try to find a working configuration or start a temporary database otherwise.
-     *
-     * @param hibernateFile The hibernate configuration file
-     */
-    @Deprecated
-    public static void initStandaloneContext(File hibernateFile) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Initializes a standalone {@code IntactContext} using a memory database.
      */
     public static void initStandaloneContextInMemory() {
@@ -142,30 +129,6 @@ public class IntactContext implements DisposableBean, Serializable {
 
     public static void initStandaloneContextInMemory(ApplicationContext parent) {
         initContext(new String[]{"classpath*:/META-INF/standalone/*-standalone.spring.xml"}, parent);
-    }
-
-    /**
-     * Initializes a standalone {@code IntactContext} using a persistence unit name and an {@code IntactSession} instance.
-     *
-     * @param persistenceUnitName The name of the persistence unit. This is used to create a {@code DataConfig} of type {@code JpaCoreDataConfig}
-     * @param session             The IntactSession object. By default, this will be an instance of {@code StandaloneSession} for
-     *                            standalone applications or a {@code WebappSession} for web applications. This value cannot be null.
-     */
-    @Deprecated
-    public static void initContext(String persistenceUnitName, IntactSession session) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Initializes a standalone {@code IntactContext} using an {@code EntityManagerFactory} and an {@code IntactSession} instance.
-     *
-     * @param emf     An EntityManagerFactory configured to access the IntAct database. This is used to create a {@code DataConfig} of type {@code JpaEntityManagerFactoryDataConfig}
-     * @param session The IntactSession object. By default, this will be an instance of {@code StandaloneSession} for
-     *                standalone applications or a {@code WebappSession} for web applications. This value cannot be null.
-     */
-    @Deprecated
-    public static void initContext(EntityManagerFactory emf, IntactSession session) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -305,15 +268,37 @@ public class IntactContext implements DisposableBean, Serializable {
         return (CoreDeleter) IntactContext.getCurrentInstance().getSpringContext().getBean("coreDeleter");
     }
 
+    public void bindToApplication(Application application) {
+        setApplication(application);
+        getConfigurationHandler().loadConfiguration(application);
+    }
+
+    private ConfigurationHandler getConfigurationHandler() {
+        return (ConfigurationHandler) getSpringContext().getBean("configurationHandler");
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    private void setApplication(Application application) {
+        this.application = application;
+    }
+
     public ConfigurableApplicationContext getSpringContext() {
         return (ConfigurableApplicationContext) springContext;
     }
 
     public void destroy() throws Exception {
+        if (log.isDebugEnabled()) log.debug("Persisting configuration");
+        getConfigurationHandler().persistConfiguration();
+
+        getSpringContext().close();
+
         if (log.isDebugEnabled()) log.debug("Releasing LogFactory");
         LogFactory.release(Thread.currentThread().getContextClassLoader());
 
-        if (log.isInfoEnabled()) log.debug("Destroying IntacContext");
+        if (log.isInfoEnabled()) log.debug("Destroying IntactContext");
         instance = null;
     }
 

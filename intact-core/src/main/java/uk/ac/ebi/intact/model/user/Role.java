@@ -15,7 +15,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table( name = "ia_role" )
-@javax.persistence.SequenceGenerator( name="SEQ_USER", sequenceName="users_seq", initialValue = 1 )
 public class Role extends IntactObjectImpl {
 
     private String name;

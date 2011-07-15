@@ -15,6 +15,9 @@
  */
 package uk.ac.ebi.intact.core.config;
 
+import uk.ac.ebi.intact.core.annotations.PersistentConfiguration;
+import uk.ac.ebi.intact.core.annotations.PersistentProperty;
+import uk.ac.ebi.intact.core.config.property.InstitutionPropertyConverter;
 import uk.ac.ebi.intact.model.Institution;
 
 /**
@@ -23,13 +26,25 @@ import uk.ac.ebi.intact.model.Institution;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@PersistentConfiguration
 public class IntactConfiguration {
 
+    @PersistentProperty
     private String acPrefix;
+
+    @PersistentProperty
     private Institution defaultInstitution;
+
+    @PersistentProperty
     private String localCvPrefix;
+
+    @PersistentProperty
     private boolean autoUpdateExperimentLabel;
+
+    @PersistentProperty
     private boolean autoUpdateInteractionLabel;
+
+    @PersistentProperty
     private boolean skipSchemaCheck;
 
     public IntactConfiguration() {

@@ -12,10 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.impl.*;
+import uk.ac.ebi.intact.core.persistence.dao.meta.ApplicationDao;
+import uk.ac.ebi.intact.core.persistence.dao.meta.ApplicationPropertyDao;
 import uk.ac.ebi.intact.core.persistence.dao.user.PreferenceDao;
 import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
 import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.meta.ApplicationProperty;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,6 +43,8 @@ public class DaoFactory implements Serializable {
     private ApplicationContext applicationContext;
 
     @Autowired private AnnotationDao annotationDao;
+    @Autowired private ApplicationDao applicationDao;
+    @Autowired private ApplicationPropertyDao applicationPropertyDao;
     @Autowired private BioSourceDao bioSourceDao;
     @Autowired private ComponentDao componentDao;
     @Autowired private ComponentParameterDao componentParameterDao;
@@ -234,6 +239,14 @@ public class DaoFactory implements Serializable {
 
     public UserDao getUserDao() {
         return userDao;
+    }
+
+    public ApplicationDao getApplicationDao() {
+        return applicationDao;
+    }
+
+    public ApplicationPropertyDao getApplicationPropertyDao() {
+        return applicationPropertyDao;
     }
 
     public LifecycleEventDao getLifecycleEventDao() {

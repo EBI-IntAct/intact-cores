@@ -1,10 +1,10 @@
-package uk.ac.ebi.intact.model.user;
+package uk.ac.ebi.intact.model.meta;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
-import uk.ac.ebi.intact.model.AbstractAuditable;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
+import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.*;
 
@@ -16,39 +16,31 @@ import javax.persistence.*;
  * @since 2.2.1
  */
 @Entity
-@Table( name = "ia_preference" )
-public class Preference extends IntactObjectImpl {
+@Table( name = "ia_application_prop" )
+public class ApplicationProperty extends IntactObjectImpl {
 
     private String key;
 
     private String value;
 
-    private User user;
+    private Application application;
 
     //////////////////
     // Constructors
 
-    public Preference() {
+    public ApplicationProperty() {
     }
 
-    public Preference( User user, String key ) {
-        if ( StringUtils.isEmpty(key) ) {
-            throw new IllegalArgumentException( "You must give a non empty/null key" );
-        }
-
+    public ApplicationProperty(Application application, String key, String value) {
+        this.application = application;
         this.key = key;
-        this.user = user;
-    }
-
-    public Preference( User user, String key, String value ) {
-        this(user, key);
         this.value = value;
     }
 
     ///////////////////////////
     // Getters and Setters
 
-    @Index( name = "idx_preference_key" )
+    @Index( name = "idx_app_prop_key" )
     public String getKey() {
         return key;
     }
@@ -66,15 +58,15 @@ public class Preference extends IntactObjectImpl {
         this.value = value;
     }
 
-    @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "user_id" )
-    @ForeignKey(name="FK_PREF_USER")
-    public User getUser() {
-        return user;
+    @ManyToOne
+    @JoinColumn( name = "application_ac" )
+    @ForeignKey(name="FK_PROP_APPLICATION")
+    public Application getApplication() {
+        return application;
     }
 
-    public void setUser( User user ) {
-        this.user = user;
+    public void setApplication( Application application ) {
+        this.application = application;
     }
 
     //////////////////////////
@@ -83,9 +75,9 @@ public class Preference extends IntactObjectImpl {
     @Override
     public boolean equals( Object o ) {
         if ( this == o ) return true;
-        if ( !( o instanceof Preference ) ) return false;
+        if ( !( o instanceof ApplicationProperty) ) return false;
 
-        Preference that = ( Preference ) o;
+        ApplicationProperty that = (ApplicationProperty) o;
 
         if ( !key.equals( that.key ) ) return false;
 

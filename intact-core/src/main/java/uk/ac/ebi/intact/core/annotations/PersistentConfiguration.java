@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.core.util;
+package uk.ac.ebi.intact.core.annotations;
 
-import org.junit.Assert;
-import org.junit.Test;
+import javax.persistence.FlushModeType;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class SchemaUtilsTest {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface PersistentConfiguration {
 
-    @Test
-    public void testGenerateCreateSchemaDDLForOracle() throws Exception {
-        String[] strings = SchemaUtils.generateCreateSchemaDDLForOracle();
-
-        Assert.assertEquals(184, strings.length);
-        Assert.assertEquals(184, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length);
-        Assert.assertEquals(184, SchemaUtils.generateCreateSchemaDDLForHSQL().length);
-        Assert.assertEquals(184, SchemaUtils.generateCreateSchemaDDLForH2().length);
-    }
 }

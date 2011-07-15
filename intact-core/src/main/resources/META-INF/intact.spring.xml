@@ -97,5 +97,11 @@
         <property name="description" value="Undefined institution"/>
     </bean>
 
+    <!-- Default application -->
+    <bean id="defaultApp" class="uk.ac.ebi.intact.model.meta.Application">
+        <property name="key" value="${pom.artifactId}:${pom.version}"/>
+        <property name="description" value="Application generated automatically by intact-core"/>
+    </bean>
+
 
 </beans>
