@@ -15,38 +15,34 @@
  */
 package uk.ac.ebi.intact.core.config.property;
 
-import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.annotations.PersistentPropertyConverter;
-import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.model.Institution;
 
 /**
- * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  */
 @PersistentPropertyConverter
-public class InstitutionPropertyConverter implements PropertyConverter<Institution> {
+public class DoublePropertyConverter implements PropertyConverter<Double> {
 
-    public InstitutionPropertyConverter() {
+    public DoublePropertyConverter() {
     }
 
     @Override
-    @Transactional
-    public Institution convertFromString(String str) {
+    public Double convertFromString(String str) {
         if (str == null) return null;
 
-        return IntactContext.getCurrentInstance().getDaoFactory().getInstitutionDao().getByShortLabel(str);
+        return Double.parseDouble( str );
     }
 
     @Override
-    public String convertToString(Institution obj) {
+    public String convertToString(Double obj) {
         if (obj == null) return null;
 
-        return obj.getShortLabel();
+        return obj.toString();
     }
 
     @Override
-    public Class<Institution> getObjectType() {
-        return Institution.class;
+    public Class<Double> getObjectType() {
+        return Double.class;
     }
 }

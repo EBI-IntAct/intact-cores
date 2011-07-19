@@ -275,6 +275,7 @@ public class IntactInitializer implements ApplicationContextAware{
 
         createAdminUser(admin);
 
+        // Make the default user an admin if it does not exist
         User user = intactContext.getUserContext().getUser();
         if (user != null) {
             createAdminUser(user);

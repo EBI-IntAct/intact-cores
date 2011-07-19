@@ -145,8 +145,8 @@ public class User extends IntactObjectImpl  {
     @Cascade( org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     @JoinTable(
             name = "ia_user2role",
-            joinColumns = {@JoinColumn( name = "user_id" )},
-            inverseJoinColumns = {@JoinColumn( name = "role_id" )}
+            joinColumns = {@JoinColumn( name = "user_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "role_ac" )}
     )
     @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
     public Set<Role> getRoles() {

@@ -67,7 +67,7 @@ public class Preference extends IntactObjectImpl {
     }
 
     @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "user_id" )
+    @JoinColumn( name = "user_ac" )
     @ForeignKey(name="FK_PREF_USER")
     public User getUser() {
         return user;

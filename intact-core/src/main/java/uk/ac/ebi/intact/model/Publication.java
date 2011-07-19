@@ -142,6 +142,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
 
     @ManyToOne( targetEntity = User.class )
     @JoinColumn( name = "owner_pk" )
+    @ForeignKey(name="FK_PUBLICATION_OWNER")
     public User getCurrentOwner() {
         return currentOwner;
     }
@@ -152,6 +153,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
 
     @ManyToOne( targetEntity = User.class )
     @JoinColumn( name = "reviewer_pk" )
+    @ForeignKey(name="FK_PUBLICATION_REVIEWER")
     public User getCurrentReviewer() {
         return currentReviewer;
     }

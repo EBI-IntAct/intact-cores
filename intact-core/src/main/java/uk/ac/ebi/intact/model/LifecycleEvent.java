@@ -97,6 +97,7 @@ public class LifecycleEvent extends IntactObjectImpl {
 
     @ManyToOne( targetEntity = Publication.class, fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "publication_ac" )
+    @ForeignKey(name="FK_LIFECYCLE_EVENT_PUBLICATION")
     public Publication getPublication() {
         return publication;
     }
