@@ -51,9 +51,17 @@ public class ConfigurationHandlerTest extends IntactBasicTestCase {
         Application app = new Application("lalaApp", "laladesc");
         app.addProperty(new ApplicationProperty(app, "intactConfig.acPrefix", "LALA"));
 
+        Assert.assertEquals( 1, getDaoFactory().getApplicationDao().countAll());
+
         getIntactContext().bindToApplication(app);
 
+        Assert.assertEquals( 1, getDaoFactory().getApplicationDao().countAll());
+
         intactConfiguration.setDefaultInstitution((Institution) getSpringContext().getBean("institutionIntact"));
+
+        configurationHandler.persistConfiguration();
+
+        Assert.assertEquals(2, getDaoFactory().getApplicationDao().countAll());
 
         configurationHandler.persistConfiguration();
 
@@ -62,6 +70,39 @@ public class ConfigurationHandlerTest extends IntactBasicTestCase {
         Application refreshedApp = getDaoFactory().getApplicationDao().getByKey("lalaApp");
 
         Assert.assertEquals(6, refreshedApp.getProperties().size());
+        Assert.assertEquals("LALA", refreshedApp.getProperty("intactConfig.acPrefix").getValue());
+        Assert.assertEquals("intact", refreshedApp.getProperty("intactConfig.defaultInstitution").getValue());
+    }
+
+    @Test
+    public void testPersistTwiceConfiguration() throws Exception {
+        Assert.assertEquals( 1, getDaoFactory().getApplicationDao().countAll());
+
+        Application app = new Application("lalaApp", "laladesc");
+        app.addProperty(new ApplicationProperty(app, "intactConfig.acPrefix", "LALA"));
+
+        getIntactContext().bindToApplication(app);
+
+        Assert.assertEquals( 1, getDaoFactory().getApplicationDao().countAll());
+
+        intactConfiguration.setDefaultInstitution((Institution) getSpringContext().getBean("institutionIntact"));
+
+        configurationHandler.persistConfiguration();
+
+        Application app2 = new Application("lalaApp", "same");
+
+        getIntactContext().bindToApplication(app2);
+
+        Assert.assertEquals(2, getDaoFactory().getApplicationDao().countAll());
+
+        configurationHandler.persistConfiguration();
+
+        Assert.assertEquals(2, getDaoFactory().getApplicationDao().countAll());
+
+        Application refreshedApp = getDaoFactory().getApplicationDao().getByKey("lalaApp");
+
+        Assert.assertEquals(6, refreshedApp.getProperties().size());
+        Assert.assertEquals("same", refreshedApp.getDescription());
         Assert.assertEquals("LALA", refreshedApp.getProperty("intactConfig.acPrefix").getValue());
         Assert.assertEquals("intact", refreshedApp.getProperty("intactConfig.defaultInstitution").getValue());
     }

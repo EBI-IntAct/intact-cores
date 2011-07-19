@@ -9,6 +9,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
 import uk.ac.ebi.intact.core.util.HashCodeUtils;
 
 import javax.persistence.*;
@@ -347,6 +348,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     @OneToMany( mappedBy = "component", orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
+    @ForeignKey(name="FK_COMPONENT_PARAMETER")
     public Collection<ComponentParameter> getParameters() {
         return this.componentParameters;
     }

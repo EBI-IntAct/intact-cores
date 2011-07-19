@@ -21,7 +21,7 @@ import uk.ac.ebi.intact.core.config.property.InstitutionPropertyConverter;
 import uk.ac.ebi.intact.model.Institution;
 
 /**
- * TODO write description of the class.
+ * Intact Configuration.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$

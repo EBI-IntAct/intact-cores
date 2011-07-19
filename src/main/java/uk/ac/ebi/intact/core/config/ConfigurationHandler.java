@@ -15,23 +15,24 @@
  */
 package uk.ac.ebi.intact.core.config;
 
-import org.apache.commons.beanutils.BeanUtils;
+import com.google.common.collect.Maps;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.annotations.PersistentConfiguration;
 import uk.ac.ebi.intact.core.annotations.PersistentProperty;
-import uk.ac.ebi.intact.core.config.property.PropertyConverter;
+import uk.ac.ebi.intact.core.config.property.*;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.meta.ApplicationDao;
 import uk.ac.ebi.intact.model.meta.Application;
 import uk.ac.ebi.intact.model.meta.ApplicationProperty;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -51,19 +52,19 @@ public class ConfigurationHandler {
             application = appFromDb;
         }
 
-
         if (log.isInfoEnabled()) {
             log.info("Loading configuration for application: "+application.getKey());
         }
 
-        Map<String,Object> beansWithConfig = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory().getBeansWithAnnotation(PersistentConfiguration.class);
+        final ConfigurableListableBeanFactory beanFactory = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory();
+        final Map<String,Object> beansWithConfig = beanFactory.getBeansWithAnnotation( PersistentConfiguration.class );
 
         for (Map.Entry<String,Object> entry : beansWithConfig.entrySet()) {
 
-            String beanName = entry.getKey();
-            Object config = entry.getValue();
+            final String beanName = entry.getKey();
+            final Object beanWithConfig = entry.getValue();
 
-            for (Field field : config.getClass().getDeclaredFields()) {
+            for (Field field : beanWithConfig.getClass().getDeclaredFields()) {
                 PersistentProperty persistentProperty = field.getAnnotation(PersistentProperty.class);
 
                 if (persistentProperty != null) {
@@ -79,12 +80,12 @@ public class ConfigurationHandler {
                             log.debug("Loading field (db): "+key+"="+value);
                         }
 
-                        setConfigValue(config, field, value);
+                        setConfigValue(beanWithConfig, field, value);
                     } else {
-                        String value = getConfigValue(config, field, persistentProperty.defaultValue());
+                        String value = getConfigValue(beanWithConfig, field, persistentProperty.defaultValue());
 
                         if (log.isDebugEnabled()) {
-                            log.debug("Loading field (config object): "+key+"="+value);
+                            log.debug("Loading field (beanWithConfig object): "+key+"="+value);
                         }
 
                         // create the property
@@ -97,26 +98,26 @@ public class ConfigurationHandler {
         }
     }
 
-
     @Transactional
     public void persistConfiguration() {
         // update the Application object with the latest changes, since the last time the config was loaded
         Application application = IntactContext.getCurrentInstance().getApplication();
-
-        if (application.getAc() != null) {
-            application = getApplicationDao().getByKey(application.getKey());
-        }
-
         if (log.isInfoEnabled()) log.info("Persisting configuration for application: "+application.getKey());
+
+        Application dbApp = getApplicationDao().getByKey(application.getKey());
+        if (dbApp != null) {
+            synchronizeApplication( application, dbApp );
+            application = dbApp;
+        }
 
         Map<String,Object> beansWithConfig = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory().getBeansWithAnnotation(PersistentConfiguration.class);
 
         for (Map.Entry<String,Object> entry : beansWithConfig.entrySet()) {
 
-            String beanName = entry.getKey();
-            Object config = entry.getValue();
+            final String beanName = entry.getKey();
+            final Object beanWithConfig = entry.getValue();
 
-            for (Field field : config.getClass().getDeclaredFields()) {
+            for (Field field : beanWithConfig.getClass().getDeclaredFields()) {
                 PersistentProperty persistentProperty = field.getAnnotation(PersistentProperty.class);
 
                 if (persistentProperty != null) {
@@ -124,7 +125,7 @@ public class ConfigurationHandler {
 
                     ApplicationProperty applicationProperty = application.getProperty(key);
 
-                    String value = getConfigValue(config, field, persistentProperty.defaultValue());
+                    String value = getConfigValue(beanWithConfig, field, persistentProperty.defaultValue());
 
                     if (applicationProperty == null) {
                         if (log.isDebugEnabled()) {
@@ -148,41 +149,98 @@ public class ConfigurationHandler {
         getApplicationDao().saveOrUpdate(application);
     }
 
-    private void setConfigValue(Object config, Field field, String value) {
+    /**
+     * Synchronize all attributes of source onto target.
+     * @param source the source application
+     * @param target the target application
+     */
+    private void synchronizeApplication( Application source, Application target ) {
+        target.setDescription( source.getDescription() );
+
+        // create in target missing properties and update existing ones
+        for ( ApplicationProperty sourceProperty : source.getProperties() ) {
+            final ApplicationProperty targetProperty = target.getProperty( sourceProperty.getKey() );
+            if( targetProperty != null ) {
+                 targetProperty.setValue( sourceProperty.getValue() );
+             } else {
+                 target.addProperty( sourceProperty );
+             }
+        }
+
+        // remove from target those properties that are not in the source
+//        final Iterator<ApplicationProperty> targetPropertiesIterator = target.getProperties().iterator();
+//        while ( targetPropertiesIterator.hasNext() ) {
+//            ApplicationProperty targetProperty = targetPropertiesIterator.next();
+//            if( source.getProperty( targetProperty.getKey() ) == null ) {
+//                targetPropertiesIterator.remove();
+//            }
+//        }
+    }
+
+    private void setConfigValue(Object beanWithConfig, Field field, String value) {
         try {
-            PropertyUtils.setProperty(config, field.getName(), value);
+            PropertyConverter converter = getPropertyConverter( field.getType() );
+            Object objectValue = converter.convertFromString( value );
+            PropertyUtils.setProperty(beanWithConfig, field.getName(), objectValue);
         } catch (Throwable e) {
             throw new RuntimeException("Problem writing field: "+field.getName(), e);
         }
     }
 
-    private String getConfigValue(Object config, Field field, String defaultValue) {
+    private String getConfigValue(Object beanWithConfig, Field field, String defaultValue) {
         // get the value
         Object objValue = null;
         try {
-            objValue = PropertyUtils.getProperty(config, field.getName());
+            objValue = PropertyUtils.getProperty(beanWithConfig, field.getName());
         } catch (Throwable e) {
             throw new RuntimeException("Problem reading field: "+field.getName(), e);
         }
 
-        //Class<? extends PropertyConverter> converterClass = persistentProperty.converter();
-        Map<String, PropertyConverter> converters = IntactContext.getCurrentInstance().getSpringContext().getBeansOfType(PropertyConverter.class);
-
-        PropertyConverter converter = null;
-
-        for (PropertyConverter converterCandidate : converters.values()) {
-            if (converterCandidate.getObjectType().isAssignableFrom(objValue.getClass())) {
-                converter = converterCandidate;
-                break;
-            }
-        }
-
+        PropertyConverter converter = getPropertyConverter( objValue.getClass() );
         String value = converter.convertToString(objValue);
 
         if (value == null) {
             value = defaultValue;
         }
         return value;
+    }
+
+    private static Map<Class, PropertyConverter> supportedPrimitiveConverter = Maps.newHashMap();
+    static {
+        final ConfigurableApplicationContext springContext = IntactContext.getCurrentInstance().getSpringContext();
+
+        supportedPrimitiveConverter.put( java.lang.Boolean.TYPE, springContext.getBean( BooleanPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Short.TYPE, springContext.getBean( ShortPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Integer.TYPE, springContext.getBean( IntegerPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Long.TYPE, springContext.getBean( LongPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Float.TYPE, springContext.getBean( FloatPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Double.TYPE, springContext.getBean( DoublePropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Character.TYPE, springContext.getBean( CharPropertyConverter.class ) );
+    }
+
+    private PropertyConverter getPropertyConverter( Class clazz ) {
+
+        PropertyConverter converter = null;
+
+        final ConfigurableApplicationContext springContext = IntactContext.getCurrentInstance().getSpringContext();
+        if( supportedPrimitiveConverter.containsKey( clazz ) ) {
+            // we have a converter for this primitive type
+            converter = supportedPrimitiveConverter.get( clazz );
+        } else {
+            final Map<String, PropertyConverter> converters = springContext.getBeansOfType( PropertyConverter.class );
+            for (PropertyConverter converterCandidate : converters.values()) {
+                if (converterCandidate.getObjectType().isAssignableFrom( clazz )) {
+                    converter = converterCandidate;
+                    break;
+                }
+            }
+        }
+
+        if( converter == null ) {
+            throw new RuntimeException( "Could not find a PropertyConverter for attribute of type: " + clazz.getName() );
+        }
+
+        return converter;
     }
 
     private String calculateKey(String beanName, Field field, PersistentProperty persistentProperty) {
@@ -197,5 +255,4 @@ public class ConfigurationHandler {
     private ApplicationDao getApplicationDao() {
         return IntactContext.getCurrentInstance().getDaoFactory().getApplicationDao();
     }
-
 }

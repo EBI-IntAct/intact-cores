@@ -60,7 +60,11 @@ public class Application extends IntactObjectImpl  {
     }
 
 
-    @OneToMany( mappedBy = "application", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER )
+    @OneToMany( mappedBy = "application",
+                cascade = {CascadeType.PERSIST,
+                           CascadeType.MERGE,
+                           CascadeType.REMOVE},
+                fetch = FetchType.EAGER )
     @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     public Collection<ApplicationProperty> getProperties() {
         return properties;
