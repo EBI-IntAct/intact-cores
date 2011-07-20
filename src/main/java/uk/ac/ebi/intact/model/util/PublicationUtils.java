@@ -82,12 +82,13 @@ public final class PublicationUtils {
     /**
      * Adds the 'on-hold' to a publication.
      *
+     * @param intactContext The IntactContext as accessing data is necessary
      * @param publication the publication to hold
      * @param reason the reason for the 'on-hold' status
      * @since 2.5.0
      */
-    public static void markAsOnHold(Publication publication, String reason) {
-        CvTopic onholdTopic = IntactContext.getCurrentInstance().getDaoFactory().getCvObjectDao(CvTopic.class).getByShortLabel(CvTopic.ON_HOLD);
+    public static void markAsOnHold(IntactContext intactContext, Publication publication, String reason) {
+        CvTopic onholdTopic = intactContext.getDaoFactory().getCvObjectDao(CvTopic.class).getByShortLabel(CvTopic.ON_HOLD);
 
         if (onholdTopic == null) throw new IllegalStateException("CvTopic on-hold was not found in the database");
 
