@@ -168,7 +168,7 @@ public class PublicationUtilsTest extends IntactBasicTestCase {
     @Test
     public void testMarkAsOnHold() throws Exception {
         Publication pub = getMockBuilder().createPublicationRandom();
-        PublicationUtils.markAsOnHold(pub, "on hold because of test");
+        PublicationUtils.markAsOnHold(getIntactContext(), pub, "on hold because of test");
 
         Assert.assertTrue(PublicationUtils.isOnHold(pub));
     }
