@@ -2,17 +2,14 @@ package uk.ac.ebi.intact.core.persistence.svc.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import uk.ac.ebi.intact.core.persistence.dao.user.PreferenceDao;
-import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
-import uk.ac.ebi.intact.core.persistence.dao.user.impl.UserDaoImpl;
 import uk.ac.ebi.intact.core.persistence.svc.UserService;
 import uk.ac.ebi.intact.core.persistence.svc.UserServiceException;
 import uk.ac.ebi.intact.core.persister.CorePersister;
@@ -20,18 +17,24 @@ import uk.ac.ebi.intact.model.user.Preference;
 import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 
-import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
- * A service allowing to import new users in batches.
+ * A service allowing to import/update users in batches.
  *
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
@@ -43,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private CorePersister corePersister;
 
-    @Autowired
+    @Autowired(required = true)
     private UserDao userDao;
 
     public UserServiceImpl() {
@@ -57,20 +60,20 @@ public class UserServiceImpl implements UserService {
      *                            with given ones.
      */
     @Override
+    @Transactional
     public void importUsers( Collection<User> users, boolean updateExistingUsers ) {
 
-        if( userDao == null ) {
-            System.err.println( "userDao is null" );
-            return;
-        }
+        final EntityManager entityManager = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager();
+        final FlushModeType previousFlushMode = entityManager.getFlushMode();
+        entityManager.setFlushMode( FlushModeType.COMMIT );
 
         for ( User newUser : users ) {
             final User existingUser = userDao.getByLogin( newUser.getLogin() );
             if( existingUser == null ) {
                 corePersister.saveOrUpdate( newUser );
-
             } else {
                 if( updateExistingUsers ) {
+
                     // update existing user
                     existingUser.setPassword( newUser.getPassword() );
                     existingUser.setDisabled( newUser.isDisabled() );
@@ -78,6 +81,19 @@ public class UserServiceImpl implements UserService {
                     existingUser.setLastName( newUser.getLastName() );
                     existingUser.setEmail( newUser.getEmail() );
                     existingUser.setOpenIdUrl( newUser.getOpenIdUrl() );
+                    final Iterator<Preference> preferenceIterator = newUser.getPreferences().iterator();
+                    while ( preferenceIterator.hasNext() ) {
+                        Preference pref = preferenceIterator.next();
+
+                        final Preference existingPref = existingUser.getPreference( pref.getKey() );
+                        if( existingPref != null ) {
+                            existingPref.setValue( pref.getValue() );
+                        } else {
+                            preferenceIterator.remove();
+                            pref.setUser( existingUser );
+                            existingUser.addPreference( pref );
+                        }
+                    }
                     existingUser.setPreferences( newUser.getPreferences() );
                     existingUser.setRoles( newUser.getRoles() );
 
@@ -85,6 +101,8 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
+
+        entityManager.setFlushMode( previousFlushMode );
     }
 
     ////////////////////////////
@@ -171,42 +189,54 @@ public class UserServiceImpl implements UserService {
         NodeList root = document.getElementsByTagName( USERS_TAG );
         final NodeList xmlUsers = root.item( 0 ).getChildNodes();
         for ( int i = 0; i < xmlUsers.getLength(); i++ ) {
-            final Element xmlUser = ( Element ) xmlUsers.item( i );
-            final User user = new User();
-            users.add( user );
+            Node node = xmlUsers.item( i );
 
-            user.setLogin( xmlUser.getAttribute( LOGIN_ATTRIBUTE ) );
-            user.setPassword( xmlUser.getAttribute( PASSWORD_ATTRIBUTE ) );
-            user.setEmail( xmlUser.getAttribute( EMAIL_ATTRIBUTE ) );
-            final String disabled = xmlUser.getAttribute( DISABLED_ATTRIBUTE );
-            user.setDisabled( ( disabled == null ? false : ( disabled.equals( TRUE_VALUE ) ? true : false ) ) );
-            user.setFirstName( xmlUser.getAttribute( FIRST_NAME_ATTRIBUTE ) );
-            user.setLastName( xmlUser.getAttribute( LAST_NAME_ATTRIBUTE ) );
-            user.setOpenIdUrl( xmlUser.getAttribute( OPEN_ID_URL_ATTRIBUTE ) );
+            if( node instanceof Element ) {
+                final Element xmlUser = ( Element ) node;
+                final User user = new User();
+                users.add( user );
 
-            // roles
-            final NodeList rolesNode = xmlUser.getElementsByTagName( ROLES_TAG );
-            if ( rolesNode != null && rolesNode.getLength() == 1 ) {
-                for ( int r = 0; r < rolesNode.getLength(); r++ ) {
-                    String role = rolesNode.item( r ).getTextContent();
-                    user.addRole( new Role( role ) );
+                user.setLogin( xmlUser.getAttribute( LOGIN_ATTRIBUTE ) );
+                user.setPassword( xmlUser.getAttribute( PASSWORD_ATTRIBUTE ) );
+                user.setEmail( xmlUser.getAttribute( EMAIL_ATTRIBUTE ) );
+                final String disabled = xmlUser.getAttribute( DISABLED_ATTRIBUTE );
+                user.setDisabled( ( disabled == null ? false : ( disabled.equals( TRUE_VALUE ) ? true : false ) ) );
+                user.setFirstName( xmlUser.getAttribute( FIRST_NAME_ATTRIBUTE ) );
+                user.setLastName( xmlUser.getAttribute( LAST_NAME_ATTRIBUTE ) );
+                user.setOpenIdUrl( xmlUser.getAttribute( OPEN_ID_URL_ATTRIBUTE ) );
+
+                // roles
+                final NodeList rolesNode = xmlUser.getElementsByTagName( ROLES_TAG );
+                if( rolesNode != null && rolesNode.getLength() > 0 ) {
+                    final NodeList xmlRoles = rolesNode.item( 0 ).getChildNodes();
+                    for ( int r = 0; r < xmlRoles.getLength(); r++ ) {
+                        final Node roleNode = xmlRoles.item( r );
+                        if( roleNode instanceof Element) {
+                            assert ( roleNode.getNodeName().equals( ROLE_TAG ) );
+                            String role = roleNode.getTextContent();
+                            user.addRole( new Role( role ) );
+                        }
+                    }
                 }
-            }
 
-            // preferences
-            final NodeList preferencesNode = xmlUser.getElementsByTagName( PREFERENCES_TAG );
-            if ( preferencesNode.getLength() > 0 ) {
-                final NodeList xmlPrefs = preferencesNode.item( 0 ).getChildNodes();
-                for ( int p = 0; p < xmlPrefs.getLength(); p++ ) {
-                    final Element xmlPref = ( Element ) xmlPrefs.item( p );
-                    assert ( xmlPref.getNodeName().equals( PREFERENCE_TAG ) );
-                    String key = xmlPref.getAttribute( KEY_ATTRIBUTE );
-                    String value = xmlPref.getTextContent();
+                // preferences
+                final NodeList preferencesNode = xmlUser.getElementsByTagName( PREFERENCES_TAG );
+                if ( preferencesNode != null && preferencesNode.getLength() > 0 ) {
+                    final NodeList xmlPrefs = preferencesNode.item( 0 ).getChildNodes();
+                    for ( int p = 0; p < xmlPrefs.getLength(); p++ ) {
+                        Node pnode = xmlPrefs.item( p );
+                        if( pnode instanceof Element ) {
+                            final Element xmlPref = ( Element ) pnode;
+                            assert ( xmlPref.getNodeName().equals( PREFERENCE_TAG ) );
+                            String key = xmlPref.getAttribute( KEY_ATTRIBUTE );
+                            String value = xmlPref.getTextContent();
 
-                    Preference pr = new Preference( user, key );
-                    pr.setValue( value );
+                            Preference pr = new Preference( user, key );
+                            pr.setValue( value );
 
-                    user.getPreferences().add( pr );
+                            user.getPreferences().add( pr );
+                        }
+                    }
                 }
             }
         }
@@ -217,12 +247,16 @@ public class UserServiceImpl implements UserService {
     public void marshallUsers( Collection<User> users, OutputStream os ) throws UserServiceException {
 
         Document doc = buildUsersDocument( users );
-
-        OutputFormat format = new OutputFormat( doc );
-        XMLSerializer output = new XMLSerializer( os, format );
         try {
-            output.serialize( doc );
-        } catch ( IOException e ) {
+            TransformerFactory tFactory = TransformerFactory.newInstance();
+            tFactory.setAttribute("indent-number", 2);
+            Transformer transformer =  tFactory.newTransformer();
+            transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(os);
+            transformer.transform(source, result);
+        } catch ( Exception e ) {
             throw new UserServiceException( "Failed to marshall DOM Document", e );
         }
     }

@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.core.config;
 
 import uk.ac.ebi.intact.core.annotations.PersistentConfiguration;
 import uk.ac.ebi.intact.core.annotations.PersistentProperty;
-import uk.ac.ebi.intact.core.config.property.InstitutionPropertyConverter;
 import uk.ac.ebi.intact.model.Institution;
 
 /**

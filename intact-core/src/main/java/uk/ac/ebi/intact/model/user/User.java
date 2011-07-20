@@ -196,7 +196,10 @@ public class User extends IntactObjectImpl  {
     }
 
     @OneToMany( mappedBy = "user",
-                cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+                cascade = {CascadeType.PERSIST,
+                           CascadeType.MERGE,
+                           CascadeType.REMOVE,
+                           CascadeType.REFRESH},
                 fetch = FetchType.EAGER )
     @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     public Collection<Preference> getPreferences() {

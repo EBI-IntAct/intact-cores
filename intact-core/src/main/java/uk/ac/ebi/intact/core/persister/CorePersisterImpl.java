@@ -32,6 +32,7 @@ import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.core.persistence.dao.BaseDao;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persistence.dao.user.PreferenceDao;
 import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.core.util.DebugUtil;
@@ -182,50 +183,53 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     @Transactional
+    @IntactFlushMode(FlushModeType.COMMIT)
     public void saveOrUpdate( User... users ) {
-        try {
-            dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.COMMIT);
-            for ( User user : users ) {
-                // roles
-                Collection<Role> rolesToRemove = new ArrayList<Role>();
-                Collection<Role> rolesToAdd = new ArrayList<Role>();
-                for ( Role role : user.getRoles() ) {
-                    if( role.getAc() == null ) {
-                        final String ac = finder.findAc( role );
-                        if( ac != null ) {
-                            Role reloadedRole = dataContext.getDaoFactory().getRoleDao().getByAc( ac );
-                            rolesToRemove.add( role );
-                            rolesToAdd.add( reloadedRole );
-                        } else {
-                            dataContext.getDaoFactory().getRoleDao().persist( role );
-                        }
-                    } else {
-                        // if the object is not managed, replace it
-                        Role reloadedRole = dataContext.getDaoFactory().getRoleDao().getByAc( role.getAc() );
+        for ( User user : users ) {
+            // roles
+            Collection<Role> rolesToRemove = new ArrayList<Role>();
+            Collection<Role> rolesToAdd = new ArrayList<Role>();
+            for ( Role role : user.getRoles() ) {
+                if( role.getAc() == null ) {
+                    final String ac = finder.findAc( role );
+                    if( ac != null ) {
+                        Role reloadedRole = dataContext.getDaoFactory().getRoleDao().getByAc( ac );
                         rolesToRemove.add( role );
                         rolesToAdd.add( reloadedRole );
+                    } else {
+                        dataContext.getDaoFactory().getRoleDao().persist( role );
                     }
-                }
-                user.getRoles().removeAll( rolesToRemove );
-                user.getRoles().addAll( rolesToAdd );
-
-                // preferences
-                for ( Preference preference : user.getPreferences() ) {
-                    if( preference.getAc() == null ) {
-                        dataContext.getDaoFactory().getPreferenceDao().persist( preference );
-                    }
-                }
-
-                // user
-                final UserDao userDao = dataContext.getDaoFactory().getUserDao();
-                if( user.getAc() == null ) {
-                    userDao.persist( user );
                 } else {
-                    userDao.update( user );
+                    // if the object is not managed, replace it
+                    Role reloadedRole = dataContext.getDaoFactory().getRoleDao().getByAc( role.getAc() );
+                    rolesToRemove.add( role );
+                    rolesToAdd.add( reloadedRole );
                 }
             }
-        } finally {
-            dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.AUTO);
+            user.getRoles().removeAll( rolesToRemove );
+            user.getRoles().addAll( rolesToAdd );
+
+            // preferences
+            for ( Preference preference : user.getPreferences() ) {
+                final PreferenceDao preferenceDao = dataContext.getDaoFactory().getPreferenceDao();
+                if( preference.getAc() == null ) {
+                    preferenceDao.persist( preference );
+                } else {
+                    preferenceDao.update( preference );
+                }
+            }
+
+            // user
+            final UserDao userDao = dataContext.getDaoFactory().getUserDao();
+            if( user.getAc() == null ) {
+                userDao.persist( user );
+            } else {
+                if( IntactCore.isManaged( user ) ) {
+                    userDao.update( user );
+                } else {
+                    userDao.merge( user );
+                }
+            }
         }
     }
 
