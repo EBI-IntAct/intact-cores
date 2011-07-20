@@ -51,7 +51,7 @@ public class AcceptedOnHoldStatusTest extends IntactBasicTestCase {
         Publication publication = getMockBuilder().createPublicationRandom();
         publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.ACCEPTED_ON_HOLD.identifier()));
 
-        PublicationUtils.markAsOnHold(publication, "test on hold");
+        PublicationUtils.markAsOnHold(getIntactContext(), publication, "test on hold");
 
         lifecycleManager.getAcceptedOnHoldStatus().onHoldRemoved(publication, "accepting!");
 

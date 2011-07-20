@@ -51,7 +51,7 @@ public class ReadyForCheckingStatusTest extends IntactBasicTestCase {
         Publication publication = getMockBuilder().createPublicationRandom();
         publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.READY_FOR_CHECKING.identifier()));
 
-        PublicationUtils.markAsOnHold(publication, "on hold because of test");
+        PublicationUtils.markAsOnHold(getIntactContext(), publication, "on hold because of test");
 
         lifecycleManager.getReadyForCheckingStatus().accept(publication, "this looks good, but I am not allow to publish it");
 
