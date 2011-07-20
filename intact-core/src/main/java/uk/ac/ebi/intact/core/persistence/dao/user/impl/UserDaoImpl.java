@@ -24,8 +24,8 @@ public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
     }
 
     public User getByLogin( String login ) {
-        final Query query = getEntityManager().createQuery( "select u from User as u where u.login = :login" );
-        query.setParameter( "login", login );
+        final Query query = getEntityManager().createQuery( "select u from User as u where lower(u.login) = :login" );
+        query.setParameter( "login", login.toLowerCase() );
         List<User> users = query.getResultList();
         if ( users.isEmpty() ) {
             return null;
@@ -34,8 +34,8 @@ public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
     }
 
     public User getByEmail( String email ) {
-        final Query query = getEntityManager().createQuery( "select u from User as u where u.email = :email" );
-        query.setParameter( "email", email );
+        final Query query = getEntityManager().createQuery( "select u from User as u where lower(u.email) = :email" );
+        query.setParameter( "email", email.toLowerCase() );
         List<User> users = query.getResultList();
         if ( users.isEmpty() ) {
             return null;
