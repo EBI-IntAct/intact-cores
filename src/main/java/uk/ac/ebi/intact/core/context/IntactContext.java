@@ -301,6 +301,4 @@ public class IntactContext implements DisposableBean, Serializable {
         if (log.isInfoEnabled()) log.debug("Destroying IntactContext");
         instance = null;
     }
-
-
 }

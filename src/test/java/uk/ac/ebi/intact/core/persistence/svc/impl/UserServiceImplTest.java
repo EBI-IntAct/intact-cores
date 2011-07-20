@@ -129,16 +129,20 @@ public class UserServiceImplTest extends IntactBasicTestCase {
         return new File( resource.getFile() ).getParentFile();
     }
 
-    private void assertUserEquals( User sam, User copy ) {
-        Assert.assertEquals( copy.getLogin(), sam.getLogin() );
-        Assert.assertEquals( copy.getPassword(), sam.getPassword() );
-        Assert.assertEquals( copy.getEmail(), sam.getEmail() );
-        Assert.assertEquals( copy.getOpenIdUrl(), sam.getOpenIdUrl() );
-        Assert.assertEquals( copy.getFirstName(), sam.getFirstName() );
-        Assert.assertEquals( copy.getLastName(), sam.getLastName() );
+    private void assertUserEquals( User user, User copy ) {
+        Assert.assertEquals( copy.getLogin(), user.getLogin() );
+        Assert.assertEquals( copy.getPassword(), user.getPassword() );
+        Assert.assertEquals( copy.getEmail(), user.getEmail() );
+        Assert.assertEquals( copy.getOpenIdUrl(), user.getOpenIdUrl() );
+        Assert.assertEquals( copy.getFirstName(), user.getFirstName() );
+        Assert.assertEquals( copy.getLastName(), user.getLastName() );
 
-        Assert.assertTrue( CollectionUtils.isEqualCollection( copy.getRoles(), sam.getRoles() ) );
-        Assert.assertTrue( CollectionUtils.isEqualCollection( copy.getPreferences(), sam.getPreferences() ) );
+        if( ! CollectionUtils.isEqualCollection( copy.getRoles(), user.getRoles() ) ) {
+            Assert.fail( "Roles are different:\nExpected: " + copy.getRoles() + "\nFound:    " + user.getRoles() );
+        }
+        if( ! CollectionUtils.isEqualCollection( copy.getPreferences(), user.getPreferences() ) ) {
+            Assert.fail( "Roles are different:\nExpected: " + copy.getPreferences() + "\nFound: " + user.getPreferences() );
+        }
     }
 
     private User createSam() {
@@ -190,6 +194,7 @@ public class UserServiceImplTest extends IntactBasicTestCase {
         InputStream is = new FileInputStream( output );
         final Collection<User> users = userService.parseUsers( is );
         User copy = users.iterator().next();
+        Assert.assertEquals( "ADMIN", copy.getRoles().iterator().next().getName() );
 
         assertUserEquals( sam, copy );
     }
