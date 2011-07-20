@@ -42,11 +42,10 @@ public class GlobalStatus {
      * This curator decides to curate the publication.
      *
      * @param publication the publication to use
-     * @param reason a mandatory reason
+     * @param reason an optional comment
      */
     @LifecycleTransition(statusChange = false)
     public void changeOwnership(Publication publication, String reason) {
-        enfoceMandatory(reason);
         addLifecycleEvent(publication, CvLifecycleEventType.OWNER_CHANGED, reason);
     }
 
