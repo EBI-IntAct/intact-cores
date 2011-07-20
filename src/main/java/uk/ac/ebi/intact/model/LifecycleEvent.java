@@ -65,7 +65,7 @@ public class LifecycleEvent extends IntactObjectImpl {
         this.event = event;
     }
 
-    @ManyToOne( targetEntity = User.class, optional = false )
+    @ManyToOne( optional = false )
     @JoinColumn( name = "user_ac" )
     @ForeignKey(name="FK_LIFECYCLE_EVENT_USER")
     @Index( name = "idx_event_who" )
