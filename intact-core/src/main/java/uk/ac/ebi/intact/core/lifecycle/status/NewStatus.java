@@ -55,6 +55,11 @@ public class NewStatus extends GlobalStatus {
         changeStatus(publication, CvPublicationStatusType.ASSIGNED, CvLifecycleEventType.SELF_ASSIGNED, "Claimed ownership");
     }
 
+    @Override
+    public void changeOwnership(Publication publication, String reason) {
+        claimOwnership(publication);
+    }
+
     /**
      * A publication is assigned to another curator, who will be the owner.
      *

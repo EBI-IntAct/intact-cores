@@ -36,8 +36,7 @@ public class GlobalStatusTest extends IntactBasicTestCase {
     public void discard() throws Exception {
         Publication publication = getMockBuilder().createPublicationRandom();
 
-        // we access to the GlobalStatus methods using the StartStatus, a subclass
-        lifecycleManager.getStartStatus().discard(publication, "this one is ugly");
+        lifecycleManager.getGlobalStatus().discard(publication, "this one is ugly");
 
         Assert.assertEquals(CvPublicationStatusType.DISCARDED.identifier(), publication.getStatus().getIdentifier());
         Assert.assertEquals(2, publication.getLifecycleEvents().size());
@@ -50,8 +49,7 @@ public class GlobalStatusTest extends IntactBasicTestCase {
 
         Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
 
-        // we access to the GlobalStatus methods using the StartStatus, a subclass
-        lifecycleManager.getStartStatus().changeOwnership(publication, "the new kid on the block");
+        lifecycleManager.getGlobalStatus().changeOwnership(publication, "the new kid on the block");
 
         Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
         Assert.assertEquals(2, publication.getLifecycleEvents().size());

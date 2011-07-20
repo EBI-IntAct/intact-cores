@@ -44,6 +44,11 @@ public class LifecycleManager {
     @Autowired private ReadyForReleaseStatus readyForReleaseStatus;
     @Autowired private ReleaseStatus releaseStatus;
 
+    public GlobalStatus getGlobalStatus() {
+        // return any of the implementations that does not override any of its methods
+        return startStatus;
+    }
+
     public StartStatus getStartStatus() {
         return startStatus;
     }
