@@ -66,7 +66,7 @@ public class LifecycleEvent extends IntactObjectImpl {
     }
 
     @ManyToOne( targetEntity = User.class, optional = false )
-    @JoinColumn( name = "user_id" )
+    @JoinColumn( name = "user_ac" )
     @ForeignKey(name="FK_LIFECYCLE_EVENT_USER")
     @Index( name = "idx_event_who" )
     public User getWho() {
