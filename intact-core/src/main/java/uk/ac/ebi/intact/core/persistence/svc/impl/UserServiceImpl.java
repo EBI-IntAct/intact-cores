@@ -54,6 +54,9 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Import new users into the local database.
+     * <p/>
+     * Preferences are updated as follow: missing ones are created, existing ones are updated, those that were already
+     * there are left as is.
      *
      * @param users the collection of users to import.
      * @param updateExistingUsers if false, only create new users, otherwise, override all attribute of existing users
@@ -94,7 +97,6 @@ public class UserServiceImpl implements UserService {
                             existingUser.addPreference( pref );
                         }
                     }
-                    existingUser.setPreferences( newUser.getPreferences() );
                     existingUser.setRoles( newUser.getRoles() );
 
                     corePersister.saveOrUpdate( existingUser );

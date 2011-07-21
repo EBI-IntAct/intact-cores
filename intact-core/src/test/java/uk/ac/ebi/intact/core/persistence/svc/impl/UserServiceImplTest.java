@@ -80,6 +80,39 @@ public class UserServiceImplTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void importNewUsersFromXml() throws Exception {
+        final int initialUserCount = getDaoFactory().getUserDao().countAll();
+
+        InputStream is = UserServiceImplTest.class.getResource( "/META-INF/users/users.xml" ).openStream();
+        final Collection<User> users = userService.parseUsers( is );
+        userService.importUsers( users, true );
+
+        // admin is in the file and UNDEFINED_USER is in the database.
+        Assert.assertEquals( users.size() + initialUserCount, getDaoFactory().getUserDao().countAll() );
+    }
+
+    @Test
+    public void importExistingUsersFromXml() throws Exception {
+
+        User marine = getMockBuilder().createUser( "marine", "m", "d", "m.d@example.com" );
+        marine.addPreference( new Preference( marine, "curation.depth", "MIMIx curation" ) );
+        marine.addPreference( new Preference( marine, "test", "..." ) );
+        marine.addRole( new Role( "CURATOR" ) );
+        marine.addRole( new Role( "REVIEWER" ) );
+
+        getCorePersister().saveOrUpdate( marine );
+
+        final int initialUserCount = getDaoFactory().getUserDao().countAll();
+
+        InputStream is = UserServiceImplTest.class.getResource( "/META-INF/users/users.xml" ).openStream();
+        final Collection<User> users = userService.parseUsers( is );
+        userService.importUsers( users, true );
+
+        // user marine was already in the database
+        Assert.assertEquals( users.size() - 1 + initialUserCount, getDaoFactory().getUserDao().countAll() );
+    }
+
+    @Test
     public void importUsers_noUpdate() throws Exception {
 
         final User sandra = getMockBuilder().createUserSandra();
