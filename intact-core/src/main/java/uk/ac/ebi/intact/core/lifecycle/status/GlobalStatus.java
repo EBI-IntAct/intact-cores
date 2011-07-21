@@ -49,6 +49,17 @@ public class GlobalStatus {
         addLifecycleEvent(publication, CvLifecycleEventType.OWNER_CHANGED, reason);
     }
 
+    /**
+     * This reviewer decides to review the publication.
+     *
+     * @param publication the publication to use
+     * @param reason an optional comment
+     */
+    @LifecycleTransition(statusChange = false)
+    public void changeReviewer(Publication publication, String reason) {
+        addLifecycleEvent(publication, CvLifecycleEventType.REVIEWER_CHANGED, reason);
+    }
+
 
     protected void enfoceMandatory(String var) {
         if (var == null || var.isEmpty()) {
