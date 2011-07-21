@@ -55,4 +55,18 @@ public class GlobalStatusTest extends IntactBasicTestCase {
         Assert.assertEquals(2, publication.getLifecycleEvents().size());
         Assert.assertEquals(CvLifecycleEventType.OWNER_CHANGED.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());
     }
+
+    @Test
+    public void changeReviewer() throws Exception {
+        Publication publication = getMockBuilder().createPublicationRandom();
+
+        Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
+
+        lifecycleManager.getGlobalStatus().changeReviewer(publication, "the new reviewer on the block");
+
+        Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
+        Assert.assertEquals(2, publication.getLifecycleEvents().size());
+        Assert.assertEquals(CvLifecycleEventType.REVIEWER_CHANGED.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());
+    }
+
 }
