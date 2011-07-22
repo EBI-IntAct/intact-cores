@@ -189,6 +189,7 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
 
     @ManyToMany( targetEntity = InteractionImpl.class, mappedBy = "experiments", cascade = CascadeType.REMOVE )
     @LazyCollection(LazyCollectionOption.EXTRA)
+    @OrderBy("created")
     public Collection<Interaction> getInteractions() {
         return interactions;
     }
