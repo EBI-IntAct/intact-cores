@@ -91,6 +91,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
      * Returns an unmodifiable collection of experiment.
      */
     @OneToMany( mappedBy = "publication", cascade = { CascadeType.REMOVE, CascadeType.REFRESH } )
+    @OrderBy("created")
     public Collection<Experiment> getExperiments() {
         return experiments;
     }
@@ -111,6 +112,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
                        org.hibernate.annotations.CascadeType.MERGE,
                        org.hibernate.annotations.CascadeType.REFRESH,
                        org.hibernate.annotations.CascadeType.DETACH} )
+    @OrderBy("created")
     public List<LifecycleEvent> getLifecycleEvents() {
         return lifecycleEvents;
     }
