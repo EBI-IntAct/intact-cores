@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
@@ -40,6 +41,11 @@ public class NewStatus extends GlobalStatus {
     @LifecycleTransition(fromStatus = CvPublicationStatusType.NEW, toStatus = CvPublicationStatusType.RESERVED)
     public void reserve(Publication publication, String reason) {
         changeStatus(publication, CvPublicationStatusType.RESERVED, CvLifecycleEventType.RESERVED, reason);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireReserved( publication );
+        }
     }
 
     /**
@@ -50,9 +56,16 @@ public class NewStatus extends GlobalStatus {
     @LifecycleTransition(fromStatus = CvPublicationStatusType.NEW, toStatus = CvPublicationStatusType.ASSIGNED)
     public void claimOwnership(Publication publication) {
         IntactContext intactContext = IntactContext.getCurrentInstance();
+        final User previousOwner = publication.getCurrentOwner();
         publication.setCurrentOwner(intactContext.getUserContext().getUser());
 
         changeStatus(publication, CvPublicationStatusType.ASSIGNED, CvLifecycleEventType.SELF_ASSIGNED, "Claimed ownership");
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireOwnerChanged( publication, previousOwner, intactContext.getUserContext().getUser() );
+            listener.fireAssigned( publication, null, intactContext.getUserContext().getUser() );
+        }
     }
 
     @Override
@@ -64,19 +77,20 @@ public class NewStatus extends GlobalStatus {
      * A publication is assigned to another curator, who will be the owner.
      *
      * @param publication the publication
-     * @param user the curator to be assigned
+     * @param curator the curator to be assigned
      */
     @LifecycleTransition(fromStatus = CvPublicationStatusType.NEW, toStatus = CvPublicationStatusType.ASSIGNED)
-    public void assignToCurator(Publication publication, User user) {
-        publication.setCurrentOwner(user);
+    public void assignToCurator(Publication publication, User curator ) {
+        final User previousOwner = publication.getCurrentOwner();
+        publication.setCurrentOwner( curator );
 
-        changeStatus(publication, CvPublicationStatusType.ASSIGNED, CvLifecycleEventType.ASSIGNED, "Assigned to: "+user.getLogin());
+        final User currentUser = IntactContext.getCurrentInstance().getUserContext().getUser();
+        changeStatus(publication, CvPublicationStatusType.ASSIGNED, CvLifecycleEventType.ASSIGNED, "Assigned to: "+ curator.getLogin() + " by " + currentUser.getLogin() );
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireOwnerChanged( publication, previousOwner, curator );
+            listener.fireAssigned( publication, currentUser, curator );
+        }
     }
-
-
-
-
-
-
-
 }

@@ -15,7 +15,9 @@
  */
 package uk.ac.ebi.intact.core.lifecycle;
 
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.status.*;
@@ -24,6 +26,9 @@ import uk.ac.ebi.intact.model.CvPublicationStatus;
 import uk.ac.ebi.intact.model.LifecycleEvent;
 import uk.ac.ebi.intact.model.Publication;
 import uk.ac.ebi.intact.model.user.User;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * TODO comment this class header.
@@ -43,6 +48,24 @@ public class LifecycleManager {
     @Autowired private AcceptedOnHoldStatus acceptedOnHoldStatus;
     @Autowired private ReadyForReleaseStatus readyForReleaseStatus;
     @Autowired private ReleaseStatus releaseStatus;
+
+    public void registerListener( LifecycleEventListener listener ) {
+        final ConfigurableListableBeanFactory beanFactory = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory();
+        final Map<String,GlobalStatus> allStatus = beanFactory.getBeansOfType( GlobalStatus.class );
+        for ( GlobalStatus status : allStatus.values() ) {
+            System.out.println( status.getClass().getSimpleName() + ".registerListener("+ listener.getClass().getSimpleName() +")" );
+            status.registerListener( listener );
+        }
+    }
+
+    public void removeListener( LifecycleEventListener listener ) {
+        final ConfigurableListableBeanFactory beanFactory = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory();
+        final Map<String,GlobalStatus> allStatus = beanFactory.getBeansOfType( GlobalStatus.class );
+        for ( GlobalStatus status : allStatus.values() ) {
+            System.out.println( status.getClass().getSimpleName() + ".removeListener("+ listener.getClass().getSimpleName() +")" );
+            status.removeListener( listener );
+        }
+    }
 
     public GlobalStatus getGlobalStatus() {
         // return any of the implementations that does not override any of its methods

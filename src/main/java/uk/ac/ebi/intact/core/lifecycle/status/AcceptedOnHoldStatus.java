@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
@@ -43,6 +44,9 @@ public class AcceptedOnHoldStatus extends GlobalStatus {
         }
 
         changeStatus(publication, CvPublicationStatusType.READY_FOR_RELEASE, CvLifecycleEventType.READY_FOR_RELEASE, comment);
-    }
 
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireReadyForRelease( publication );
+        }
+    }
 }

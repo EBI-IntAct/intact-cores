@@ -18,11 +18,13 @@ package uk.ac.ebi.intact.core.lifecycle.status;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleManager;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.model.user.User;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -49,8 +51,13 @@ public class GlobalStatusTest extends IntactBasicTestCase {
 
         Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
 
+        User sandra = getMockBuilder().createUserSandra();
+        Assert.assertNull( publication.getCurrentOwner() );
+
+        IntactContext.getCurrentInstance().getUserContext().setUser( sandra );
         lifecycleManager.getGlobalStatus().changeOwnership(publication, "the new kid on the block");
 
+        Assert.assertEquals( sandra, publication.getCurrentOwner() );
         Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
         Assert.assertEquals(2, publication.getLifecycleEvents().size());
         Assert.assertEquals(CvLifecycleEventType.OWNER_CHANGED.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());
@@ -62,8 +69,12 @@ public class GlobalStatusTest extends IntactBasicTestCase {
 
         Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
 
-        lifecycleManager.getGlobalStatus().changeReviewer(publication, "the new reviewer on the block");
+        User sandra = getMockBuilder().createUserSandra();
+        Assert.assertNull( publication.getCurrentReviewer() );
 
+        lifecycleManager.getGlobalStatus().changeReviewer(publication, sandra, "the new reviewer on the block");
+
+        Assert.assertEquals( sandra, publication.getCurrentReviewer() );
         Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
         Assert.assertEquals(2, publication.getLifecycleEvents().size());
         Assert.assertEquals(CvLifecycleEventType.REVIEWER_CHANGED.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());

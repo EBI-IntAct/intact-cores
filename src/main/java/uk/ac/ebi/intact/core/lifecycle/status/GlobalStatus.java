@@ -15,9 +15,15 @@
  */
 package uk.ac.ebi.intact.core.lifecycle.status;
 
+import com.google.common.collect.Lists;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
+import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.user.User;
+
+import java.util.Collection;
 
 /**
  *
@@ -25,6 +31,28 @@ import uk.ac.ebi.intact.model.*;
  * @version $Id$
  */
 public class GlobalStatus {
+
+    /////////////////////
+    // Listeners
+
+    private Collection<LifecycleEventListener> listeners = Lists.newArrayList();
+
+    public Collection<LifecycleEventListener> getListeners() {
+        return listeners;
+    }
+
+    public void registerListener( LifecycleEventListener listener ) {
+        if( ! listeners.contains( listener ) ) {
+            listeners.add( listener );
+        }
+    }
+
+    public void removeListener( LifecycleEventListener listener ) {
+        listeners.remove( listener );
+    }
+
+    ///////////////////////
+    // State transitions
 
     /**
      * A publication cannot be processed for any reason.
@@ -36,6 +64,11 @@ public class GlobalStatus {
     public void discard(Publication publication, String reason) {
         enfoceMandatory(reason);
         changeStatus(publication, CvPublicationStatusType.DISCARDED, CvLifecycleEventType.DISCARDED, reason);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireDiscarded( publication );
+        }
     }
 
     /**
@@ -46,7 +79,19 @@ public class GlobalStatus {
      */
     @LifecycleTransition(statusChange = false)
     public void changeOwnership(Publication publication, String reason) {
+        if ( publication == null ) {
+            throw new IllegalArgumentException( "You must give a non null publication" );
+        }
+        User newOwner = IntactContext.getCurrentInstance().getUserContext().getUser();
+        User previousOwner = publication.getCurrentOwner();
+        publication.setCurrentOwner( newOwner );
+
         addLifecycleEvent(publication, CvLifecycleEventType.OWNER_CHANGED, reason);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireOwnerChanged( publication, previousOwner, newOwner );
+        }
     }
 
     /**
@@ -56,13 +101,21 @@ public class GlobalStatus {
      * @param reason an optional comment
      */
     @LifecycleTransition(statusChange = false)
-    public void changeReviewer(Publication publication, String reason) {
+    public void changeReviewer(Publication publication, User newReviewer, String reason) {
         addLifecycleEvent(publication, CvLifecycleEventType.REVIEWER_CHANGED, reason);
+
+        User previousReviewer = publication.getCurrentReviewer();
+        publication.setCurrentReviewer( newReviewer );
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireReviewerChanged( publication, previousReviewer, newReviewer );
+        }
     }
 
 
     protected void enfoceMandatory(String var) {
-        if (var == null || var.isEmpty()) {
+        if (var == null || var.trim().isEmpty()) {
             throw new IllegalArgumentException("A comment for the lifecycle event is mandatory");
         }
     }
@@ -73,9 +126,8 @@ public class GlobalStatus {
 
     protected void addLifecycleEvent(Publication publication, String cvLifecycleEventIdentifier, String comment) {
         IntactContext intactContext = IntactContext.getCurrentInstance();
-
-        CvLifecycleEvent lifecycleEvent = intactContext.getDaoFactory()
-                .getCvObjectDao(CvLifecycleEvent.class).getByIdentifier(cvLifecycleEventIdentifier);
+        final CvObjectDao<CvLifecycleEvent> cvObjectDao = intactContext.getDaoFactory().getCvObjectDao( CvLifecycleEvent.class );
+        CvLifecycleEvent lifecycleEvent = cvObjectDao.getByIdentifier( cvLifecycleEventIdentifier );
         publication.addLifecycleEvent(new LifecycleEvent(lifecycleEvent, intactContext.getUserContext().getUser(), comment));
     }
 
@@ -85,10 +137,8 @@ public class GlobalStatus {
 
     protected void changeStatus(Publication publication, String cvPublicationStatusIdentifier) {
         IntactContext intactContext = IntactContext.getCurrentInstance();
-
-        CvPublicationStatus publicationStatus = intactContext.getDaoFactory()
-                .getCvObjectDao(CvPublicationStatus.class).getByIdentifier(cvPublicationStatusIdentifier);
-
+        final CvObjectDao<CvPublicationStatus> cvObjectDao = intactContext.getDaoFactory().getCvObjectDao( CvPublicationStatus.class );
+        CvPublicationStatus publicationStatus = cvObjectDao.getByIdentifier( cvPublicationStatusIdentifier );
         publication.setStatus(publicationStatus);
     }
 
