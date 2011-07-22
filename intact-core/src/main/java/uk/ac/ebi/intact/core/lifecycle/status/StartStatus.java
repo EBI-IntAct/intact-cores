@@ -16,7 +16,10 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.lifecycle.IllegalTransitionException;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
+import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
@@ -36,7 +39,18 @@ public class StartStatus extends GlobalStatus {
      */
     @LifecycleTransition(toStatus = CvPublicationStatusType.NEW)
     public void create(Publication publication, String mechanism) {
-        changeStatus(publication, CvPublicationStatusType.NEW, CvLifecycleEventType.CREATED, mechanism);
-    }
 
+        if( publication.getStatus() != null ) {
+            throw new IllegalTransitionException( "Cannot get publication in status NEW when it's status is already set ("+
+                                                  publication.getStatus().getShortLabel() +"): " +
+                                                  DebugUtil.annotatedObjectToString(publication, false) );
+        }
+
+        changeStatus(publication, CvPublicationStatusType.NEW, CvLifecycleEventType.CREATED, mechanism);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireCreated( publication );
+        }
+    }
 }

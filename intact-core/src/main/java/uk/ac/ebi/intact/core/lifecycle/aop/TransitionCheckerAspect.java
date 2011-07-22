@@ -42,7 +42,6 @@ public class TransitionCheckerAspect {
         for (Object obj : pjp.getArgs()) {
             if (obj instanceof Publication) {
                 Publication publication = (Publication) obj;
-
                 if (lifecycleTransition.fromStatus() != CvPublicationStatusType.PUB_STATUS) {
                     if (!publication.getStatus().getIdentifier().equals(lifecycleTransition.fromStatus().identifier())) {
                         throw new IllegalTransitionException("Transition '"+pjp.getSignature().getName()+"' cannot be applied to publication '"+ DebugUtil.annotatedObjectToString(publication, false)+

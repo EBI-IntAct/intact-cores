@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
@@ -36,6 +37,10 @@ public class AssignedStatus extends GlobalStatus {
     @LifecycleTransition(fromStatus = CvPublicationStatusType.ASSIGNED, toStatus = CvPublicationStatusType.CURATION_IN_PROGRESS)
     public void startCuration(Publication publication) {
         changeStatus(publication, CvPublicationStatusType.CURATION_IN_PROGRESS, CvLifecycleEventType.CURATION_STARTED, "");
+
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireCurationInProgress( publication );
+        }
     }
 
     /**
@@ -48,5 +53,10 @@ public class AssignedStatus extends GlobalStatus {
     public void unassign(Publication publication, String reason) {
         enfoceMandatory(reason);
         changeStatus(publication, CvPublicationStatusType.RESERVED, CvLifecycleEventType.ASSIGNMENT_DECLINED, reason);
+
+        // notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireAssignentDeclined( publication );
+        }
     }
 }

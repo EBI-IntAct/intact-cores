@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
@@ -36,12 +37,17 @@ public class ReadyForCheckingStatus extends GlobalStatus {
      * @param comment optional comment
      */
     @LifecycleTransition(fromStatus = CvPublicationStatusType.READY_FOR_CHECKING,
-            toStatus = {CvPublicationStatusType.ACCEPTED, CvPublicationStatusType.ACCEPTED_ON_HOLD})
+                         toStatus = {CvPublicationStatusType.ACCEPTED, CvPublicationStatusType.ACCEPTED_ON_HOLD})
     public void accept(Publication publication, String comment) {
         if (PublicationUtils.isOnHold(publication)) {
             changeStatus(publication, CvPublicationStatusType.ACCEPTED_ON_HOLD, CvLifecycleEventType.ACCEPTED, comment);
         } else {
             changeStatus(publication, CvPublicationStatusType.ACCEPTED, CvLifecycleEventType.ACCEPTED, comment);
+        }
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireAccepted( publication );
         }
     }
 
@@ -52,9 +58,15 @@ public class ReadyForCheckingStatus extends GlobalStatus {
      * @param publication the publication
      * @param comment mandatory comment
      */
-    @LifecycleTransition(fromStatus = CvPublicationStatusType.READY_FOR_CHECKING, toStatus = CvPublicationStatusType.CURATION_IN_PROGRESS)
+    @LifecycleTransition(fromStatus = CvPublicationStatusType.READY_FOR_CHECKING,
+                         toStatus = CvPublicationStatusType.CURATION_IN_PROGRESS)
     public void reject(Publication publication, String comment) {
         enfoceMandatory(comment);
         changeStatus(publication, CvPublicationStatusType.READY_FOR_CHECKING, CvLifecycleEventType.REJECTED, comment);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireRejected( publication );
+        }
     }
 }

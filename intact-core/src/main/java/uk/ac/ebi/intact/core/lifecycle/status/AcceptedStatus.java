@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
@@ -37,6 +38,9 @@ public class AcceptedStatus extends GlobalStatus {
     @LifecycleTransition(fromStatus = CvPublicationStatusType.ACCEPTED, toStatus = CvPublicationStatusType.READY_FOR_RELEASE)
     public void readyForRelease(Publication publication, String comment) {
         changeStatus(publication, CvPublicationStatusType.READY_FOR_RELEASE, CvLifecycleEventType.READY_FOR_RELEASE, comment);
-    }
 
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireReadyForRelease( publication );
+        }
+    }
 }
