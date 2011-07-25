@@ -15,23 +15,16 @@
  */
 package uk.ac.ebi.intact.core.lifecycle;
 
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.status.*;
-import uk.ac.ebi.intact.model.CvLifecycleEvent;
-import uk.ac.ebi.intact.model.CvPublicationStatus;
-import uk.ac.ebi.intact.model.LifecycleEvent;
-import uk.ac.ebi.intact.model.Publication;
-import uk.ac.ebi.intact.model.user.User;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * TODO comment this class header.
+ * Lifecycle manager.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -47,23 +40,33 @@ public class LifecycleManager {
     @Autowired private AcceptedStatus acceptedStatus;
     @Autowired private AcceptedOnHoldStatus acceptedOnHoldStatus;
     @Autowired private ReadyForReleaseStatus readyForReleaseStatus;
-    @Autowired private ReleaseStatus releaseStatus;
+    @Autowired private ReleasedStatus releasedStatus;
+
+    private Collection<GlobalStatus> getAllStatus() {
+        final ConfigurableListableBeanFactory beanFactory = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory();
+        return beanFactory.getBeansOfType( GlobalStatus.class ).values();
+    }
 
     public void registerListener( LifecycleEventListener listener ) {
-        final ConfigurableListableBeanFactory beanFactory = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory();
-        final Map<String,GlobalStatus> allStatus = beanFactory.getBeansOfType( GlobalStatus.class );
-        for ( GlobalStatus status : allStatus.values() ) {
+        final Collection<GlobalStatus> allStatus = getAllStatus();
+        for ( GlobalStatus status : allStatus ) {
             System.out.println( status.getClass().getSimpleName() + ".registerListener("+ listener.getClass().getSimpleName() +")" );
             status.registerListener( listener );
         }
     }
 
     public void removeListener( LifecycleEventListener listener ) {
-        final ConfigurableListableBeanFactory beanFactory = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory();
-        final Map<String,GlobalStatus> allStatus = beanFactory.getBeansOfType( GlobalStatus.class );
-        for ( GlobalStatus status : allStatus.values() ) {
+        final Collection<GlobalStatus> allStatus = getAllStatus();
+        for ( GlobalStatus status : allStatus ) {
             System.out.println( status.getClass().getSimpleName() + ".removeListener("+ listener.getClass().getSimpleName() +")" );
             status.removeListener( listener );
+        }
+    }
+
+    public void removeAllListeners(){
+        final Collection<GlobalStatus> allStatus = getAllStatus();
+        for ( GlobalStatus status : allStatus ) {
+            status.removeAllListeners();
         }
     }
 
@@ -104,7 +107,7 @@ public class LifecycleManager {
         return readyForReleaseStatus;
     }
 
-    public ReleaseStatus getReleaseStatus() {
-        return releaseStatus;
+    public ReleasedStatus getReleasedStatus() {
+        return releasedStatus;
     }
 }

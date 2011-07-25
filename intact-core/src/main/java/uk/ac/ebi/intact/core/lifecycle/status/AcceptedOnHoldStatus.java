@@ -16,10 +16,14 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
+import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
+import uk.ac.ebi.intact.model.CvPublicationStatus;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
 import uk.ac.ebi.intact.model.util.PublicationUtils;
@@ -30,6 +34,10 @@ import uk.ac.ebi.intact.model.util.PublicationUtils;
  */
 @Controller
 public class AcceptedOnHoldStatus extends GlobalStatus {
+
+    public AcceptedOnHoldStatus() {
+        setStatusType( CvPublicationStatusType.ACCEPTED_ON_HOLD );
+    }
 
     /**
      * The publication is ready to go through the release project.

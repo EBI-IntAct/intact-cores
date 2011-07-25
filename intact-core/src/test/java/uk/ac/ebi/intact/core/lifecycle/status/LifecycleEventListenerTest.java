@@ -10,6 +10,9 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.PublicationUtils;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * LifecycleEventListener Tester.
  *
@@ -25,7 +28,7 @@ public class LifecycleEventListenerTest extends IntactBasicTestCase {
     public void fireCreated() throws Exception {
 
         Publication publication = getMockBuilder().createPublicationRandom();
-        publication.setStatus(null);
+        publication.setStatus( null );
         publication.getLifecycleEvents().clear();
 
         final CountingLifecycleEventListener countingListener = new CountingLifecycleEventListener();
@@ -49,7 +52,7 @@ public class LifecycleEventListenerTest extends IntactBasicTestCase {
         publication.setStatus( null );
         publication.getLifecycleEvents().clear();
 
-        lifecycleManager.getStartStatus().create(publication, "test");
+        lifecycleManager.getStartStatus().create( publication, "test" );
 
         Assert.assertEquals( 0, countingListener.getCreatedCount() );
     }
@@ -239,6 +242,29 @@ public class LifecycleEventListenerTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void fireAccepted_onHold() throws Exception {
+
+        final CountingLifecycleEventListener countingListener = new CountingLifecycleEventListener();
+        lifecycleManager.registerListener( countingListener );
+
+        Publication publication = getMockBuilder().createPublicationRandom();
+        publication.setStatus( getStatus( CvPublicationStatusType.READY_FOR_CHECKING ) );
+        publication.getLifecycleEvents().clear();
+
+        PublicationUtils.markAsOnHold( IntactContext.getCurrentInstance(), publication, "it's not getting out yet" );
+
+        Assert.assertEquals( 0, countingListener.getAcceptedCount() );
+        Assert.assertEquals( 0, countingListener.getAcceptedOnHoldCount() );
+
+        lifecycleManager.getReadyForCheckingStatus().accept( publication, "good stuff" );
+
+        Assert.assertEquals( 0, countingListener.getAcceptedCount() );
+        Assert.assertEquals( 1, countingListener.getAcceptedOnHoldCount() );
+
+        Assert.assertEquals( getStatus( CvPublicationStatusType.ACCEPTED_ON_HOLD ), publication.getStatus()  );
+    }
+
+    @Test
     public void fireRejected() throws Exception {
 
         final CountingLifecycleEventListener countingListener = new CountingLifecycleEventListener();
@@ -273,29 +299,6 @@ public class LifecycleEventListenerTest extends IntactBasicTestCase {
     }
 
     @Test
-
-    public void fireReadyForRelease_onHold() throws Exception {
-
-        final CountingLifecycleEventListener countingListener = new CountingLifecycleEventListener();
-        lifecycleManager.registerListener( countingListener );
-
-        Publication publication = getMockBuilder().createPublicationRandom();
-        publication.setStatus( getStatus( CvPublicationStatusType.READY_FOR_CHECKING ) );
-        publication.getLifecycleEvents().clear();
-
-        PublicationUtils.markAsOnHold( IntactContext.getCurrentInstance(), publication, "it's not getting out yet" );
-
-        Assert.assertEquals( 0, countingListener.getAcceptedCount() );
-
-        lifecycleManager.getReadyForCheckingStatus().accept( publication, "good stuff" );
-
-        // TODO do we need to check the onhold status ??
-        Assert.assertEquals( getStatus( CvPublicationStatusType.ACCEPTED_ON_HOLD ), publication.getStatus()  );
-
-        Assert.assertEquals( 1, countingListener.getAcceptedCount() );
-    }
-
-    @Test
     public void fireReleased() throws Exception {
 
         final CountingLifecycleEventListener countingListener = new CountingLifecycleEventListener();
@@ -310,6 +313,36 @@ public class LifecycleEventListenerTest extends IntactBasicTestCase {
         lifecycleManager.getReadyForReleaseStatus().release( publication, "off it goes" );
 
         Assert.assertEquals( 1, countingListener.getReleasedCount() );
+    }
+
+    @Test
+    public void fireDiscarded() throws Exception {
+
+        // check that from all status, one can discard a paper
+        final Collection<GlobalStatus> allStatus = getSpringContext().getBeansOfType( GlobalStatus.class ).values();
+        for ( GlobalStatus status : allStatus ) {
+            lifecycleManager.removeAllListeners();
+
+            final CountingLifecycleEventListener countingListener = new CountingLifecycleEventListener();
+            lifecycleManager.registerListener( countingListener );
+
+            Publication publication = getMockBuilder().createPublicationRandom();
+            final CvPublicationStatusType statusType = status.getCvPublicationStatusType();
+            if( statusType == null ){
+                publication.setStatus( null );
+            } else {
+                publication.setStatus( getStatus( statusType ) );
+            }
+            publication.getLifecycleEvents().clear();
+
+            Assert.assertEquals( 0, countingListener.getDiscardedCount() );
+
+            status.discard( publication, "discarded" );
+
+            Assert.assertEquals( "fireDiscarded() wasn't called when discarding from status " +
+                                 (statusType == null ? null : statusType.shortLabel() ),
+                                 1, countingListener.getDiscardedCount() );
+        }
     }
 
     private CvPublicationStatus getStatus( CvPublicationStatusType status ) {

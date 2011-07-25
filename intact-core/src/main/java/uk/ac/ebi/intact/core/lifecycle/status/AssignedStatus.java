@@ -29,6 +29,10 @@ import uk.ac.ebi.intact.model.Publication;
 @Controller
 public class AssignedStatus extends GlobalStatus {
 
+    public AssignedStatus() {
+        setStatusType( CvPublicationStatusType.ASSIGNED );
+    }
+
     /**
      * The curator starts to work on a specific publication.
      *

@@ -16,9 +16,13 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
+import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
+import uk.ac.ebi.intact.model.CvPublicationStatus;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
 import uk.ac.ebi.intact.model.util.PublicationUtils;
@@ -29,6 +33,10 @@ import uk.ac.ebi.intact.model.util.PublicationUtils;
  */
 @Controller
 public class ReadyForCheckingStatus extends GlobalStatus {
+
+    public ReadyForCheckingStatus() {
+        setStatusType( CvPublicationStatusType.READY_FOR_CHECKING );
+    }
 
     /**
      * The reviewer accepts the publication.
@@ -41,16 +49,18 @@ public class ReadyForCheckingStatus extends GlobalStatus {
     public void accept(Publication publication, String comment) {
         if (PublicationUtils.isOnHold(publication)) {
             changeStatus(publication, CvPublicationStatusType.ACCEPTED_ON_HOLD, CvLifecycleEventType.ACCEPTED, comment);
+            // Notify listeners
+            for ( LifecycleEventListener listener : getListeners() ) {
+                listener.fireAcceptedOnHold( publication );
+            }
         } else {
             changeStatus(publication, CvPublicationStatusType.ACCEPTED, CvLifecycleEventType.ACCEPTED, comment);
-        }
-
-        // Notify listeners
-        for ( LifecycleEventListener listener : getListeners() ) {
-            listener.fireAccepted( publication );
+            // Notify listeners
+            for ( LifecycleEventListener listener : getListeners() ) {
+                listener.fireAccepted( publication );
+            }
         }
     }
-
 
     /**
      * The reviewer rejects the publication and corrections are required by the owner.

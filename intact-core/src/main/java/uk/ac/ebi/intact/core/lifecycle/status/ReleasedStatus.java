@@ -16,12 +16,16 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.model.CvPublicationStatusType;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
 @Controller
-public class ReleaseStatus extends GlobalStatus {
+public class ReleasedStatus extends GlobalStatus {
 
+    protected ReleasedStatus() {
+        setStatusType( CvPublicationStatusType.RELEASED );
+    }
 }

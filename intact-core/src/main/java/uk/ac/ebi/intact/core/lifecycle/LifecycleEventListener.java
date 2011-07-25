@@ -30,13 +30,13 @@ public interface LifecycleEventListener {
 
     void fireAccepted( Publication publication );
 
+    void fireAcceptedOnHold( Publication publication );
+
     void fireRejected( Publication publication );
 
     void fireReadyForRelease( Publication publication );
 
     void fireReleased( Publication publication );
-
-    void fireReleasedOnHold( Publication publication );
 
     void fireDiscarded( Publication publication );
 }

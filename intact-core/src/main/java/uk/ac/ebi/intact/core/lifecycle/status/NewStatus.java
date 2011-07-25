@@ -32,6 +32,10 @@ import uk.ac.ebi.intact.model.user.User;
 @Controller
 public class NewStatus extends GlobalStatus {
 
+    public NewStatus() {
+        setStatusType( CvPublicationStatusType.NEW );
+    }
+
     /**
      * Mark as planned to be curated without specifying who.
      *

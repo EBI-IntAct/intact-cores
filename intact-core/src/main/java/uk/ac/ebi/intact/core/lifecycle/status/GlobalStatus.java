@@ -26,16 +26,31 @@ import uk.ac.ebi.intact.model.user.User;
 import java.util.Collection;
 
 /**
+ * The state of a publication in the publication lifecycle (State machine).
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
 public class GlobalStatus {
 
+    private Collection<LifecycleEventListener> listeners = Lists.newArrayList();
+
+    private CvPublicationStatusType statusType;
+
+    /**
+     * Returns the CvPublicationStatus corresponding
+     * @return
+     */
+    public CvPublicationStatusType getCvPublicationStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType( CvPublicationStatusType statusType ) {
+        this.statusType = statusType;
+    }
+
     /////////////////////
     // Listeners
-
-    private Collection<LifecycleEventListener> listeners = Lists.newArrayList();
 
     public Collection<LifecycleEventListener> getListeners() {
         return listeners;
@@ -49,6 +64,10 @@ public class GlobalStatus {
 
     public void removeListener( LifecycleEventListener listener ) {
         listeners.remove( listener );
+    }
+
+    public void removeAllListeners() {
+        listeners.clear();
     }
 
     ///////////////////////

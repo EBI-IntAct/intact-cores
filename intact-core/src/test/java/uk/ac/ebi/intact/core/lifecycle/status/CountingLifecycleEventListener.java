@@ -22,10 +22,10 @@ public class CountingLifecycleEventListener extends AbstractLifecycleEventListen
     private int curationInProgressCount;
     private int readyForCheckingCount;
     private int acceptedCount;
+    private int acceptedOnHoldCount;
     private int rejectedCount;
     private int readyForReleaseCount;
     private int releasedCount;
-    private int releasedOnHoldCount;
     private int discardedCount;
 
     ////////////////////////
@@ -92,8 +92,8 @@ public class CountingLifecycleEventListener extends AbstractLifecycleEventListen
     }
 
     @Override
-    public void fireReleasedOnHold( Publication publication ) {
-        releasedOnHoldCount++;
+    public void fireAcceptedOnHold( Publication publication ) {
+        acceptedOnHoldCount++;
     }
 
     @Override
@@ -152,8 +152,8 @@ public class CountingLifecycleEventListener extends AbstractLifecycleEventListen
         return releasedCount;
     }
 
-    public int getReleasedOnHoldCount() {
-        return releasedOnHoldCount;
+    public int getAcceptedOnHoldCount() {
+        return acceptedOnHoldCount;
     }
 
     public int getDiscardedCount() {
