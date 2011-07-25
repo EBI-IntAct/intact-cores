@@ -49,6 +49,10 @@ public class AbstractLifecycleEventListener implements LifecycleEventListener {
     }
 
     @Override
+    public void fireAcceptedOnHold( Publication publication ) {
+    }
+
+    @Override
     public void fireRejected( Publication publication ) {
     }
 
@@ -58,10 +62,6 @@ public class AbstractLifecycleEventListener implements LifecycleEventListener {
 
     @Override
     public void fireReleased( Publication publication ) {
-    }
-
-    @Override
-    public void fireReleasedOnHold( Publication publication ) {
     }
 
     @Override

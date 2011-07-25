@@ -31,6 +31,10 @@ import uk.ac.ebi.intact.model.Publication;
 @Controller
 public class StartStatus extends GlobalStatus {
 
+    public StartStatus() {
+        setStatusType( null );
+    }
+
     /**
      * Create a publication object.
      *

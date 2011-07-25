@@ -29,6 +29,10 @@ import uk.ac.ebi.intact.model.Publication;
 @Controller
 public class CurationInProgressStatus extends GlobalStatus {
 
+    public CurationInProgressStatus() {
+        setStatusType( CvPublicationStatusType.CURATION_IN_PROGRESS );
+    }
+
     /**
      * The curator decides the publication can now be checked. Needs to know the outcome of the sanity check
      * in order to do the transition to the right status.

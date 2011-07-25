@@ -16,9 +16,13 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
+import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
+import uk.ac.ebi.intact.model.CvPublicationStatus;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
 
@@ -28,6 +32,10 @@ import uk.ac.ebi.intact.model.Publication;
  */
 @Controller
 public class AcceptedStatus extends GlobalStatus {
+
+    public AcceptedStatus() {
+        setStatusType( CvPublicationStatusType.ACCEPTED );
+    }
 
     /**
      * The publication is ready to go through the release project.

@@ -29,6 +29,10 @@ import uk.ac.ebi.intact.model.Publication;
 @Controller
 public class ReadyForReleaseStatus extends GlobalStatus {
 
+    public ReadyForReleaseStatus() {
+        setStatusType( CvPublicationStatusType.READY_FOR_RELEASE );
+    }
+
     /**
      * The publication is made public.
      *
