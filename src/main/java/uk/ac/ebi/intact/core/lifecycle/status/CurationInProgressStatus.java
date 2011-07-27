@@ -15,9 +15,11 @@
  */
 package uk.ac.ebi.intact.core.lifecycle.status;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
+import uk.ac.ebi.intact.core.lifecycle.correctionassigner.CorrectionAssigner;
 import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
@@ -28,6 +30,9 @@ import uk.ac.ebi.intact.model.Publication;
  */
 @Controller
 public class CurationInProgressStatus extends GlobalStatus {
+
+    @Autowired
+    private CorrectionAssigner correctionAssigner;
 
     public CurationInProgressStatus() {
         setStatusType( CvPublicationStatusType.CURATION_IN_PROGRESS );
@@ -47,6 +52,8 @@ public class CurationInProgressStatus extends GlobalStatus {
         if (successfulSanityCheck) {
             // TODO assign a reviewer
             changeStatus(publication, CvPublicationStatusType.READY_FOR_CHECKING, CvLifecycleEventType.READY_FOR_CHECKING, message);
+
+            correctionAssigner.assignReviewer(publication);
 
             // notify listeners
             for ( LifecycleEventListener listener : getListeners() ) {
