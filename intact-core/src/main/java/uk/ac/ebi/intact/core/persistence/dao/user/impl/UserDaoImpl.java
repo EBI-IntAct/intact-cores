@@ -42,4 +42,12 @@ public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
         }
         return users.get( 0 );
     }
+
+    @Override
+    public List<User> getByRole(String roleName) {
+        final Query query = getEntityManager().createQuery("select u from User as u join u.roles as role where role.name = :roleName");
+        query.setParameter("roleName", roleName);
+
+        return query.getResultList();
+    }
 }

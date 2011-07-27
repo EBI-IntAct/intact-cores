@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.unit;
 
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.*;
 import uk.ac.ebi.intact.util.Crc64;
@@ -622,11 +623,26 @@ public class IntactMockBuilder {
     }
 
     public User createUserSandra() {
-        return createUser( "sandra", "sandra", "-", "sandra@example.com" );
+        return createReviewer( "sandra", "sandra", "-", "sandra@example.com" );
     }
 
     public User createUserJyoti() {
-        return createUser( "jyoti", "jyoti", "-", "jyoti@example.com" );
+        return createReviewer( "jyoti", "jyoti", "-", "jyoti@example.com" );
+    }
+
+     public User createReviewer(String login, String firstName, String lastName, String email) {
+         User user = createUser(login, firstName, lastName, email);
+         user.addRole(new Role(Role.ROLE_REVIEWER));
+         user.addRole(new Role(Role.ROLE_CURATOR));
+
+         return user;
+     }
+
+    public User createCurator(String login, String firstName, String lastName, String email) {
+        User user = createUser(login, firstName, lastName, email);
+        user.addRole(new Role(Role.ROLE_CURATOR));
+
+        return user;
     }
 
     /////////////////////

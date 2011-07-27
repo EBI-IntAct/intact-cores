@@ -58,7 +58,7 @@ public class LifecycleEventDaoImplTest extends IntactBasicTestCase {
         Assert.assertNotNull( publication.getAc() );
 
         User sandra = getMockBuilder().createUserSandra();
-        getDaoFactory().getUserDao().persist( sandra );
+        getCorePersister().saveOrUpdate( sandra );
         Assert.assertNotNull( sandra.getAc() );
 
         CvLifecycleEvent createdEvent = getMockBuilder().createCvObject( CvLifecycleEvent.class, "PL:0016", "created" );

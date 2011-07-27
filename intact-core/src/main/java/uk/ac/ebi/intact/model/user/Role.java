@@ -1,10 +1,11 @@
 package uk.ac.ebi.intact.model.user;
 
 import org.hibernate.annotations.Index;
-import uk.ac.ebi.intact.model.AbstractAuditable;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * A role that can be assigned to a user.
@@ -16,6 +17,10 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_role" )
 public class Role extends IntactObjectImpl {
+
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_REVIEWER = "REVIEWER";
+    public static final String ROLE_CURATOR = "CURATOR";
 
     private String name;
 
