@@ -287,7 +287,7 @@ public class IntactInitializer implements ApplicationContextAware{
         if ( admin == null ) {
             daoFactory.getUserDao().persist( user );
 
-            final Role adminRole = daoFactory.getRoleDao().getRoleByName( "ADMIN" );
+            final Role adminRole = daoFactory.getRoleDao().getRoleByName( Role.ROLE_ADMIN );
             user.addRole( adminRole );
             daoFactory.getUserDao().saveOrUpdate(user);
         }
@@ -295,9 +295,9 @@ public class IntactInitializer implements ApplicationContextAware{
 
     private void createDefaultRoles() {
         final List<Role> allRoles = daoFactory.getRoleDao().getAll();
-        addMissingRole( allRoles, "ADMIN" );
-        addMissingRole( allRoles, "CURATOR" );
-        addMissingRole( allRoles, "REVIEWER" );
+        addMissingRole( allRoles, Role.ROLE_ADMIN );
+        addMissingRole( allRoles, Role.ROLE_CURATOR );
+        addMissingRole( allRoles, Role.ROLE_REVIEWER );
 
         log.info( "After init: found " + daoFactory.getRoleDao().getAll().size() + " role(s) in the database." );
     }

@@ -18,7 +18,10 @@ package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
+
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -56,5 +59,20 @@ public class UserDaoImplTest extends IntactBasicTestCase {
 
         User nonExistentUser = getDaoFactory().getUserDao().getByEmail("abcd@example.com");
         Assert.assertNull(nonExistentUser);
+    }
+
+    @Test
+    public void testGetByRole() throws Exception {
+        User reviewer1 = getMockBuilder().createReviewer("lalaReviewer", "Lala", "Smith", "lala@example.com");
+        User reviewer2 = getMockBuilder().createReviewer("tataReviewer", "Tata", "Toto", "tata@example.com");
+        User curator = getMockBuilder().createCurator("loloCurator", "Lolo", "Jones", "lolo@example.com");
+        getCorePersister().saveOrUpdate(reviewer1, reviewer2, curator);
+
+        List<User> users = getDaoFactory().getUserDao().getByRole(Role.ROLE_REVIEWER);
+
+        Assert.assertEquals(2, users.size());
+        Assert.assertTrue(users.contains(reviewer1));
+        Assert.assertTrue(users.contains(reviewer2));
+        Assert.assertFalse(users.contains(curator));
     }
 }

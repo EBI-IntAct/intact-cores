@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.model.user;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
-import uk.ac.ebi.intact.model.AbstractAuditable;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
@@ -18,6 +17,9 @@ import javax.persistence.*;
 @Entity
 @Table( name = "ia_preference" )
 public class Preference extends IntactObjectImpl {
+
+    public static final String KEY_REVIEWER_AVAILABILITY = "reviewer.availability";
+    public static final String KEY_MENTOR_REVIEWER = "reviewer.mentor";
 
     private String key;
 

@@ -40,8 +40,7 @@ public class UserServiceImplTest extends IntactBasicTestCase {
         final User jyoti = getMockBuilder().createUserJyoti();
 
         final UserDao userDao = getDataContext().getDaoFactory().getUserDao();
-        userDao.persist( sandra );
-        userDao.persist( jyoti );
+         getCorePersister().saveOrUpdate( sandra, jyoti );
 
         final List<User> users = userDao.getAll();
         for ( User user : users ) {

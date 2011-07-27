@@ -4,6 +4,7 @@ import uk.ac.ebi.intact.core.persistence.dao.IntactObjectDao;
 import uk.ac.ebi.intact.model.user.User;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * User DAO.
@@ -17,4 +18,6 @@ public interface UserDao extends IntactObjectDao<User>, Serializable {
     User getByLogin( String login );
 
     User getByEmail( String email );
+
+    List<User> getByRole( String roleName );
 }

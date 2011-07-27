@@ -3,8 +3,6 @@ package uk.ac.ebi.intact.model.user;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
-import uk.ac.ebi.intact.model.AbstractAuditable;
-import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
@@ -222,11 +220,30 @@ public class User extends IntactObjectImpl  {
         return null;
     }
 
-    public void addPreference(Preference preference) {
+    public Preference addPreference(String key, String value) {
+        Preference preference = new Preference(this, key, value);
+        addPreference(preference);
+        return preference;
+    }
+
+    public Preference addPreference(Preference preference) {
         if ( preference == null ) {
             throw new IllegalArgumentException( "You must give a non null preference" );
         }
         getPreferences().add(preference);
+
+        return preference;
+    }
+
+    public Preference addOrUpdatePreference(String key, String value) {
+        for (Preference preference : getPreferences()) {
+            if (key.equals(preference.getKey())) {
+                preference.setValue(value);
+                return preference;
+            }
+        }
+
+        return addPreference(key, value);
     }
 
     public void removePreference(Preference preference) {
@@ -272,4 +289,6 @@ public class User extends IntactObjectImpl  {
         sb.append( '}' );
         return sb.toString();
     }
+
+
 }

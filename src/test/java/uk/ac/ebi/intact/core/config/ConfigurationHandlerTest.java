@@ -43,7 +43,9 @@ public class ConfigurationHandlerTest extends IntactBasicTestCase {
         configurationHandler.loadConfiguration(app);
 
         Assert.assertEquals("LALA", intactConfiguration.getAcPrefix());
-        Assert.assertEquals(6, getIntactContext().getApplication().getProperties().size());
+
+        Assert.assertEquals("lalaApp", app.getKey());
+        Assert.assertEquals(6, app.getProperties().size());
     }
 
     @Test
