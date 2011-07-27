@@ -192,6 +192,9 @@ public class LifecycleEventListenerTest extends IntactBasicTestCase {
 
     @Test
     public void fireReadyForChecking_successfulSanityCheck() throws Exception {
+        User reviewer1 = getMockBuilder().createReviewer("lalaReviewer", "Lala", "Smith", "lala@example.com");
+        User reviewer2 = getMockBuilder().createReviewer("tataReviewer", "Tata", "Toto", "tata@example.com");
+        getCorePersister().saveOrUpdate(reviewer1, reviewer2);
 
         final CountingLifecycleEventListener countingListener = new CountingLifecycleEventListener();
         lifecycleManager.registerListener( countingListener );
@@ -199,6 +202,7 @@ public class LifecycleEventListenerTest extends IntactBasicTestCase {
         Publication publication = getMockBuilder().createPublicationRandom();
         publication.setStatus( getStatus( CvPublicationStatusType.CURATION_IN_PROGRESS ) );
         publication.getLifecycleEvents().clear();
+        publication.setCurrentOwner(reviewer1);
 
         Assert.assertEquals( 0, countingListener.getReadyForCheckingCount() );
 
