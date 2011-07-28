@@ -20,4 +20,10 @@ public interface UserDao extends IntactObjectDao<User>, Serializable {
     User getByEmail( String email );
 
     List<User> getByRole( String roleName );
+
+    List<User> getCurators();
+
+    List<User> getReviewers();
+
+    List<User> getAdmins( );
 }
