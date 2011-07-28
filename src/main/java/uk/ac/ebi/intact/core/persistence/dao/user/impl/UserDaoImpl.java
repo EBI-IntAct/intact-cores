@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.core.persistence.dao.impl.IntactObjectDaoImpl;
 import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
+import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.Query;
@@ -49,5 +50,20 @@ public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
         query.setParameter("roleName", roleName);
 
         return query.getResultList();
+    }
+
+    @Override
+    public List<User> getCurators() {
+        return getByRole(Role.ROLE_CURATOR);
+    }
+
+    @Override
+    public List<User> getReviewers() {
+        return getByRole(Role.ROLE_REVIEWER);
+    }
+
+    @Override
+    public List<User> getAdmins() {
+        return getByRole(Role.ROLE_ADMIN);
     }
 }

@@ -75,4 +75,41 @@ public class UserDaoImplTest extends IntactBasicTestCase {
         Assert.assertTrue(users.contains(reviewer2));
         Assert.assertFalse(users.contains(curator));
     }
+
+    @Test
+    public void testGetCurators() throws Exception {
+        User reviewer = getMockBuilder().createReviewer("lalaReviewer", "Lala", "Smith", "lala@example.com");
+        User curator = getMockBuilder().createCurator("loloCurator", "Lolo", "Jones", "lolo@example.com");
+
+        getCorePersister().saveOrUpdate(reviewer, curator);
+
+        List<User> users = getDaoFactory().getUserDao().getCurators();
+        Assert.assertEquals(2, users.size());
+        Assert.assertTrue(users.contains(reviewer));
+        Assert.assertTrue(users.contains(curator));
+    }
+
+    @Test
+    public void testGetReviewers() throws Exception {
+        User reviewer = getMockBuilder().createReviewer("lalaReviewer", "Lala", "Smith", "lala@example.com");
+        User curator = getMockBuilder().createCurator("loloCurator", "Lolo", "Jones", "lolo@example.com");
+
+        getCorePersister().saveOrUpdate(reviewer, curator);
+
+        List<User> users = getDaoFactory().getUserDao().getReviewers();
+        Assert.assertEquals(1, users.size());
+        Assert.assertEquals(reviewer, users.iterator().next());
+    }
+
+    @Test
+    public void testGetAdmins() throws Exception {
+        User reviewer = getMockBuilder().createReviewer("lalaReviewer", "Lala", "Smith", "lala@example.com");
+        User curator = getMockBuilder().createCurator("loloCurator", "Lolo", "Jones", "lolo@example.com");
+
+        getCorePersister().saveOrUpdate(reviewer, curator);
+
+        List<User> users = getDaoFactory().getUserDao().getAdmins();
+
+        Assert.assertEquals(2, users.size()); // admins during initialization
+    }
 }

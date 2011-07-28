@@ -630,6 +630,13 @@ public class IntactMockBuilder {
         return createReviewer( "jyoti", "jyoti", "-", "jyoti@example.com" );
     }
 
+    public User createAdmin(String login, String firstName, String lastName, String email) {
+        User user = createUser(login, firstName, lastName, email);
+        user.addRole(new Role(Role.ROLE_ADMIN));
+
+        return user;
+    }
+
      public User createReviewer(String login, String firstName, String lastName, String email) {
          User user = createUser(login, firstName, lastName, email);
          user.addRole(new Role(Role.ROLE_REVIEWER));
