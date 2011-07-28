@@ -16,9 +16,8 @@
 package uk.ac.ebi.intact.core.lifecycle;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
-import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.status.*;
 
 import java.util.Collection;
@@ -32,6 +31,9 @@ import java.util.Collection;
 @Controller
 public class LifecycleManager {
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Autowired private StartStatus startStatus;
     @Autowired private NewStatus newStatus;
     @Autowired private AssignedStatus assignedStatus;
@@ -43,8 +45,7 @@ public class LifecycleManager {
     @Autowired private ReleasedStatus releasedStatus;
 
     private Collection<GlobalStatus> getAllStatus() {
-        final ConfigurableListableBeanFactory beanFactory = IntactContext.getCurrentInstance().getSpringContext().getBeanFactory();
-        return beanFactory.getBeansOfType( GlobalStatus.class ).values();
+        return applicationContext.getBeansOfType( GlobalStatus.class ).values();
     }
 
     public void registerListener( LifecycleEventListener listener ) {
