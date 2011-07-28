@@ -248,6 +248,18 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
         setShortLabel(publicationId);
     }
 
+    public LifecycleEvent getLastEventOfType(String cvLifecycleEventId) {
+        LifecycleEvent lastEvent = null;
+
+        for (LifecycleEvent event : getLifecycleEvents()) {
+            if (cvLifecycleEventId.equals(event.getEvent().getIdentifier())) {
+                lastEvent = event;
+            }
+        }
+
+        return lastEvent;
+    }
+
     @Override
     public boolean equals( Object o ) {
         if ( this == o ) {

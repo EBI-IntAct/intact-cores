@@ -31,9 +31,6 @@ import static org.junit.Assert.assertNotNull;
 public class PublicationDaoTest extends IntactBasicTestCase {
 
     @Autowired
-    private PersisterHelper persisterHelper;
-
-    @Autowired
     private PublicationDao publicationDao;
 
     @Before
