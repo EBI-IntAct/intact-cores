@@ -84,6 +84,8 @@ public class UserServiceImpl implements UserService {
                     existingUser.setLastName( newUser.getLastName() );
                     existingUser.setEmail( newUser.getEmail() );
                     existingUser.setOpenIdUrl( newUser.getOpenIdUrl() );
+
+                    // preferences
                     final Iterator<Preference> preferenceIterator = newUser.getPreferences().iterator();
                     while ( preferenceIterator.hasNext() ) {
                         Preference pref = preferenceIterator.next();
@@ -97,6 +99,8 @@ public class UserServiceImpl implements UserService {
                             existingUser.addPreference( pref );
                         }
                     }
+
+                    // roles
                     existingUser.setRoles( newUser.getRoles() );
 
                     corePersister.saveOrUpdate( existingUser );

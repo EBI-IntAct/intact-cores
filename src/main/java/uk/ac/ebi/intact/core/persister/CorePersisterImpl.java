@@ -209,25 +209,29 @@ public class CorePersisterImpl implements CorePersister {
             user.getRoles().removeAll( rolesToRemove );
             user.getRoles().addAll( rolesToAdd );
 
-            // preferences
-            for ( Preference preference : user.getPreferences() ) {
-                final PreferenceDao preferenceDao = dataContext.getDaoFactory().getPreferenceDao();
-                if( preference.getAc() == null ) {
-                    preferenceDao.persist( preference );
-                } else {
-                    preferenceDao.update( preference );
-                }
-            }
-
             // user
             final UserDao userDao = dataContext.getDaoFactory().getUserDao();
             if( user.getAc() == null ) {
+                // let the cascade deal with the preferences
                 userDao.persist( user );
             } else {
                 if( IntactCore.isManaged( user ) ) {
                     userDao.update( user );
                 } else {
                     userDao.merge( user );
+                }
+
+                // preferences
+                for ( Preference preference : user.getPreferences() ) {
+                    if( preference.getUser() == null ) {
+                        preference.setUser( user );
+                    }
+                    final PreferenceDao preferenceDao = dataContext.getDaoFactory().getPreferenceDao();
+                    if( preference.getAc() == null ) {
+                        preferenceDao.persist( preference );
+                    } else {
+                        preferenceDao.update( preference );
+                    }
                 }
             }
         }

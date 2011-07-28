@@ -623,32 +623,35 @@ public class IntactMockBuilder {
     }
 
     public User createUserSandra() {
-        return createReviewer( "sandra", "sandra", "-", "sandra@example.com" );
+        final User sandra = createReviewer( "sandra", "sandra", "-", "sandra@example.com" );
+        sandra.addPreference( "notes", "-" );
+        sandra.addPreference( "curation.depth", "imex curation" );
+        return sandra;
     }
 
     public User createUserJyoti() {
-        return createReviewer( "jyoti", "jyoti", "-", "jyoti@example.com" );
+        final User jyoti = createReviewer( "jyoti", "jyoti", "-", "jyoti@example.com" );
+        jyoti.addPreference( "notes", "some large scale references" );
+        jyoti.addPreference( "curation.depth", "imex curation" );
+        return jyoti;
     }
 
     public User createAdmin(String login, String firstName, String lastName, String email) {
         User user = createUser(login, firstName, lastName, email);
         user.addRole(new Role(Role.ROLE_ADMIN));
-
         return user;
     }
 
-     public User createReviewer(String login, String firstName, String lastName, String email) {
+    public User createReviewer(String login, String firstName, String lastName, String email) {
          User user = createUser(login, firstName, lastName, email);
          user.addRole(new Role(Role.ROLE_REVIEWER));
          user.addRole(new Role(Role.ROLE_CURATOR));
-
          return user;
      }
 
     public User createCurator(String login, String firstName, String lastName, String email) {
         User user = createUser(login, firstName, lastName, email);
         user.addRole(new Role(Role.ROLE_CURATOR));
-
         return user;
     }
 

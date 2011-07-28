@@ -43,10 +43,6 @@ public class UserServiceImplTest extends IntactBasicTestCase {
          getCorePersister().saveOrUpdate( sandra, jyoti );
 
         final List<User> users = userDao.getAll();
-        for ( User user : users ) {
-            System.out.println(user);
-        }
-
         // admin + undefined + 2
         Assert.assertEquals( 4, users.size() );
 
