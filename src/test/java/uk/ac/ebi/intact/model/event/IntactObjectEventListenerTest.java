@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Institution;
+import uk.ac.ebi.intact.model.user.User;
 
 /**
  * IntactObjectEventListener Tester.

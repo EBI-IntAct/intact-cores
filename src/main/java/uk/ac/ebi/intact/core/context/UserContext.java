@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.core.context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.model.user.User;
 
 import java.io.Serializable;
@@ -27,7 +28,7 @@ public class UserContext implements Serializable {
         user.setFirstName(userId);
         user.setLastName("N/A");
         user.setPassword(userPassword);
-        user.setEmail(userId+"@ebi.ac.uk");
+        user.setEmail(userId+"@example.com");
     }
 
     public UserContext(User user) {
