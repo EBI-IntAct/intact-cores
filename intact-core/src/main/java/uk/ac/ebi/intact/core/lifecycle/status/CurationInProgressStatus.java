@@ -53,7 +53,9 @@ public class CurationInProgressStatus extends GlobalStatus {
             // TODO assign a reviewer
             changeStatus(publication, CvPublicationStatusType.READY_FOR_CHECKING, CvLifecycleEventType.READY_FOR_CHECKING, message);
 
-            correctionAssigner.assignReviewer(publication);
+            if (publication.getCurrentReviewer() == null) {
+                correctionAssigner.assignReviewer(publication);
+            }
 
             // notify listeners
             for ( LifecycleEventListener listener : getListeners() ) {

@@ -55,6 +55,28 @@ public class CurationInProgressStatusTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void readyForChecking_reviewerAlready() throws Exception {
+        User reviewer1 = getMockBuilder().createReviewer("lalaReviewer", "Lala", "Smith", "lala@example.com");
+        User reviewer2 = getMockBuilder().createReviewer("tataReviewer", "Tata", "Toto", "tata@example.com");
+        User reviewer3 = getMockBuilder().createReviewer("loloReviewer", "Lolo", "Toto", "tata@example.com");
+        getCorePersister().saveOrUpdate(reviewer1, reviewer2, reviewer3);
+
+        Publication publication = getMockBuilder().createPublicationRandom();
+        publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.CURATION_IN_PROGRESS.identifier()));
+
+        publication.setCurrentOwner(reviewer1);
+        publication.setCurrentReviewer(reviewer2);
+
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(publication, "ready!", true);
+
+        Assert.assertEquals(CvPublicationStatusType.READY_FOR_CHECKING.identifier(), publication.getStatus().getIdentifier());
+        Assert.assertEquals(2, publication.getLifecycleEvents().size());
+        Assert.assertEquals(CvLifecycleEventType.READY_FOR_CHECKING.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());
+
+        Assert.assertEquals(reviewer2, publication.getCurrentReviewer());
+    }
+
+    @Test
     public void readyForChecking_sanityCheckFail() throws Exception {
         Publication publication = getMockBuilder().createPublicationRandom();
         publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.CURATION_IN_PROGRESS.identifier()));
