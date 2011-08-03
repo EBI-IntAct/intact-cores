@@ -72,10 +72,6 @@ public class NewStatus extends GlobalStatus {
         }
     }
 
-    @Override
-    public void changeOwnership(Publication publication, String reason) {
-        claimOwnership(publication);
-    }
 
     /**
      * A publication is assigned to another curator, who will be the owner.

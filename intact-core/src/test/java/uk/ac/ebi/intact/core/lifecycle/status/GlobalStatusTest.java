@@ -54,8 +54,7 @@ public class GlobalStatusTest extends IntactBasicTestCase {
         User sandra = getMockBuilder().createUserSandra();
         Assert.assertNull( publication.getCurrentOwner() );
 
-        IntactContext.getCurrentInstance().getUserContext().setUser( sandra );
-        lifecycleManager.getGlobalStatus().changeOwnership(publication, "the new kid on the block");
+        lifecycleManager.getGlobalStatus().changeOwnership(publication, sandra, "the new kid on the block");
 
         Assert.assertEquals( sandra, publication.getCurrentOwner() );
         Assert.assertEquals(CvPublicationStatusType.NEW.identifier(), publication.getStatus().getIdentifier());
