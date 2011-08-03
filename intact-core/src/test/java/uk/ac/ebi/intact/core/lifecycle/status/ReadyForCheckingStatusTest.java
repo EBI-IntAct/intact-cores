@@ -59,4 +59,16 @@ public class ReadyForCheckingStatusTest extends IntactBasicTestCase {
         Assert.assertEquals(2, publication.getLifecycleEvents().size());
         Assert.assertEquals(CvLifecycleEventType.ACCEPTED.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());
     }
+
+    @Test
+    public void reject() throws Exception {
+        Publication publication = getMockBuilder().createPublicationRandom();
+        publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.READY_FOR_CHECKING.identifier()));
+
+        lifecycleManager.getReadyForCheckingStatus().reject(publication, "this is crap!");
+
+        Assert.assertEquals(CvPublicationStatusType.CURATION_IN_PROGRESS.identifier(), publication.getStatus().getIdentifier());
+        Assert.assertEquals(2, publication.getLifecycleEvents().size());
+        Assert.assertEquals(CvLifecycleEventType.REJECTED.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());
+    }
 }

@@ -72,7 +72,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
                          toStatus = CvPublicationStatusType.CURATION_IN_PROGRESS)
     public void reject(Publication publication, String comment) {
         enfoceMandatory(comment);
-        changeStatus(publication, CvPublicationStatusType.READY_FOR_CHECKING, CvLifecycleEventType.REJECTED, comment);
+        changeStatus(publication, CvPublicationStatusType.CURATION_IN_PROGRESS, CvLifecycleEventType.REJECTED, comment);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
