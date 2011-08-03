@@ -68,12 +68,11 @@ public class LifecycleEventListenerTest extends IntactBasicTestCase {
         publication.getLifecycleEvents().clear();
 
         final User sandra = getMockBuilder().createUserSandra();
-        IntactContext.getCurrentInstance().getUserContext().setUser( sandra );
 
         Assert.assertEquals( 0, countingListener.getOwnerChangedCount() );
 
         Assert.assertNull( publication.getCurrentOwner() );
-        lifecycleManager.getGlobalStatus().changeOwnership( publication, "got some free time" );
+        lifecycleManager.getGlobalStatus().changeOwnership( publication, sandra, "got some free time" );
         Assert.assertEquals( sandra, publication.getCurrentOwner() );
 
         Assert.assertEquals( 1, countingListener.getOwnerChangedCount() );

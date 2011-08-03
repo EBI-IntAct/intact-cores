@@ -97,15 +97,15 @@ public class GlobalStatus {
      * @param reason an optional comment
      */
     @LifecycleTransition(statusChange = false)
-    public void changeOwnership(Publication publication, String reason) {
+    public void changeOwnership(Publication publication, User newOwner, String reason) {
         if ( publication == null ) {
             throw new IllegalArgumentException( "You must give a non null publication" );
         }
-        User newOwner = IntactContext.getCurrentInstance().getUserContext().getUser();
+
         User previousOwner = publication.getCurrentOwner();
         publication.setCurrentOwner( newOwner );
 
-        addLifecycleEvent(publication, CvLifecycleEventType.OWNER_CHANGED, reason);
+        addLifecycleEvent(publication, CvLifecycleEventType.OWNER_CHANGED,  "New owner: "+newOwner.getLogin()+" - "+reason);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
