@@ -3,10 +3,12 @@ package uk.ac.ebi.intact.model.util;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleManager;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.model.user.User;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -29,6 +31,34 @@ public class PublicationUtilsTest extends IntactBasicTestCase {
         pub.addExperiment(exp2);
 
         Assert.assertEquals(true, PublicationUtils.isAccepted(pub));
+    }
+
+    @Test
+    public void testIsAccepted_yes2() throws Exception {
+         LifecycleManager lifecycleManager = (LifecycleManager) getSpringContext().getBean("lifecycleManager");
+
+        User reviewer = getMockBuilder().createUserSandra();
+        getCorePersister().saveOrUpdate(reviewer);
+
+        Publication pub = getMockBuilder().createPublicationRandom();
+        Assert.assertFalse(PublicationUtils.isAccepted(pub));
+
+        lifecycleManager.getNewStatus().claimOwnership(pub);
+        Assert.assertFalse(PublicationUtils.isAccepted(pub));
+        lifecycleManager.getAssignedStatus().startCuration(pub);
+        Assert.assertFalse(PublicationUtils.isAccepted(pub));
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(pub, "Ready", true);
+        Assert.assertFalse(PublicationUtils.isAccepted(pub));
+        lifecycleManager.getReadyForCheckingStatus().reject(pub, "Rejected!");
+        Assert.assertFalse(PublicationUtils.isAccepted(pub));
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(pub, "Ready again", true);
+        Assert.assertFalse(PublicationUtils.isAccepted(pub));
+        lifecycleManager.getReadyForCheckingStatus().accept(pub, "Now accepted!");
+        Assert.assertTrue(PublicationUtils.isAccepted(pub));
+        lifecycleManager.getAcceptedStatus().readyForRelease(pub, "Ready...");
+        Assert.assertTrue(PublicationUtils.isAccepted(pub));
+        lifecycleManager.getReadyForReleaseStatus().release(pub, "12345");
+        Assert.assertTrue(PublicationUtils.isAccepted(pub));
     }
 
     @Test
@@ -171,5 +201,52 @@ public class PublicationUtilsTest extends IntactBasicTestCase {
         PublicationUtils.markAsOnHold(getIntactContext(), pub, "on hold because of test");
 
         Assert.assertTrue(PublicationUtils.isOnHold(pub));
+    }
+
+    @Test
+    public void isRejected_yes() throws Exception {
+        LifecycleManager lifecycleManager = (LifecycleManager) getSpringContext().getBean("lifecycleManager");
+
+        User reviewer = getMockBuilder().createUserSandra();
+        getCorePersister().saveOrUpdate(reviewer);
+
+        Publication pub = getMockBuilder().createPublicationRandom();
+
+        lifecycleManager.getNewStatus().claimOwnership(pub);
+        lifecycleManager.getAssignedStatus().startCuration(pub);
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(pub, "Ready", true);
+        lifecycleManager.getReadyForCheckingStatus().reject(pub, "Rejected!");
+
+        Assert.assertTrue(PublicationUtils.isRejected(pub));
+    }
+    @Test
+    public void isRejected_no() throws Exception {
+        Publication pub = getMockBuilder().createPublicationRandom();
+
+        Assert.assertFalse(PublicationUtils.isRejected(pub));
+    }
+
+    @Test
+    public void isRejected_no2() throws Exception {
+         LifecycleManager lifecycleManager = (LifecycleManager) getSpringContext().getBean("lifecycleManager");
+
+        User reviewer = getMockBuilder().createUserSandra();
+        getCorePersister().saveOrUpdate(reviewer);
+
+        Publication pub = getMockBuilder().createPublicationRandom();
+        Assert.assertFalse(PublicationUtils.isRejected(pub));
+
+        lifecycleManager.getNewStatus().claimOwnership(pub);
+        Assert.assertFalse(PublicationUtils.isRejected(pub));
+        lifecycleManager.getAssignedStatus().startCuration(pub);
+        Assert.assertFalse(PublicationUtils.isRejected(pub));
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(pub, "Ready", true);
+        Assert.assertFalse(PublicationUtils.isRejected(pub));
+        lifecycleManager.getReadyForCheckingStatus().reject(pub, "Rejected!");
+        Assert.assertTrue(PublicationUtils.isRejected(pub));
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(pub, "Ready again", true);
+        Assert.assertFalse(PublicationUtils.isRejected(pub));
+        lifecycleManager.getReadyForCheckingStatus().accept(pub, "Now accepted!");
+        Assert.assertFalse(PublicationUtils.isRejected(pub));
     }
 }
