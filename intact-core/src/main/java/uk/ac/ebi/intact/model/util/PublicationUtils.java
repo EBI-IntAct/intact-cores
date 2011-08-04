@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.model.util;
 import uk.ac.ebi.intact.core.config.SequenceManager;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.Date;
@@ -64,6 +65,25 @@ public final class PublicationUtils {
     }
 
     /**
+     * Gets the last lifecycle event with the provided CvLifecycleEvent identifier for a publication.
+     * @param publication the publication
+     * @param cvLifecycleEventId the identifier of the CvLifecycleEvent cv
+     * @return The last event with that identifier
+     * @since 2.5.0
+     */
+    public static LifecycleEvent getLastEventOfType(Publication publication, String cvLifecycleEventId) {
+        LifecycleEvent lastEvent = null;
+
+        for (LifecycleEvent event : IntactCore.ensureInitializedLifecycleEvents(publication)) {
+            if (cvLifecycleEventId.equals(event.getEvent().getIdentifier())) {
+                lastEvent = event;
+            }
+        }
+
+        return lastEvent;
+    }
+
+    /**
      * Checks if a lifecycle event "rejected" exists and the publication status is "curation in progress"
      * @param publication  the publication to check
      * @return if the publication has been rejected
@@ -74,7 +94,7 @@ public final class PublicationUtils {
             throw new NullPointerException("You must give a non null publication");
         }
 
-        LifecycleEvent lifecycleEvent = publication.getLastEventOfType(CvLifecycleEventType.REJECTED.identifier());
+        LifecycleEvent lifecycleEvent = getLastEventOfType(publication, CvLifecycleEventType.REJECTED.identifier());
 
         if (lifecycleEvent != null && CvPublicationStatusType.CURATION_IN_PROGRESS.identifier().equals(publication.getStatus().getIdentifier())) {
             return true;

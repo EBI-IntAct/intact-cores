@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.*;
@@ -246,18 +247,6 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
 
     public void setPublicationId(String publicationId) {
         setShortLabel(publicationId);
-    }
-
-    public LifecycleEvent getLastEventOfType(String cvLifecycleEventId) {
-        LifecycleEvent lastEvent = null;
-
-        for (LifecycleEvent event : getLifecycleEvents()) {
-            if (cvLifecycleEventId.equals(event.getEvent().getIdentifier())) {
-                lastEvent = event;
-            }
-        }
-
-        return lastEvent;
     }
 
     @Override
