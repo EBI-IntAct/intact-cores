@@ -24,6 +24,16 @@ public final class PublicationUtils {
             throw new NullPointerException("You must give a non null publication");
         }
 
+        if (publication.getStatus() != null) {
+            final String statusId = publication.getStatus().getIdentifier();
+
+            return CvPublicationStatusType.ACCEPTED.identifier().equals(statusId) ||
+                    CvPublicationStatusType.ACCEPTED_ON_HOLD.identifier().equals(statusId) ||
+                    CvPublicationStatusType.READY_FOR_RELEASE.identifier().equals(statusId) ||
+                    CvPublicationStatusType.RELEASED.identifier().equals(statusId);
+
+        }
+
         for (Annotation a : publication.getAnnotations()) {
             if (a.getCvTopic() != null && CvTopic.ACCEPTED.equals(a.getCvTopic().getShortLabel())) {
                 return true;
@@ -48,6 +58,26 @@ public final class PublicationUtils {
             if (ExperimentUtils.isToBeReviewed(experiment)) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if a lifecycle event "rejected" exists and the publication status is "curation in progress"
+     * @param publication  the publication to check
+     * @return if the publication has been rejected
+     * @since 2.5.0
+     */
+    public static boolean isRejected(Publication publication) {
+        if (publication == null) {
+            throw new NullPointerException("You must give a non null publication");
+        }
+
+        LifecycleEvent lifecycleEvent = publication.getLastEventOfType(CvLifecycleEventType.REJECTED.identifier());
+
+        if (lifecycleEvent != null && CvPublicationStatusType.CURATION_IN_PROGRESS.identifier().equals(publication.getStatus().getIdentifier())) {
+            return true;
         }
 
         return false;
