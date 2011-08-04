@@ -196,11 +196,19 @@ public class ConfigurationHandler {
             throw new RuntimeException("Problem reading field: "+field.getName(), e);
         }
 
-        PropertyConverter converter = getPropertyConverter( objValue.getClass() );
-        String value = converter.convertToString(objValue);
+        String value;
 
-        if (value == null) {
+        if (objValue == null && defaultValue == null) {
+            value = null;
+        } else if (defaultValue != null) {
             value = defaultValue;
+        } else {
+            PropertyConverter converter = getPropertyConverter( objValue.getClass() );
+            value = converter.convertToString(objValue);
+
+            if (value == null) {
+                value = defaultValue;
+            }
         }
         return value;
     }
