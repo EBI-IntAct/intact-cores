@@ -128,6 +128,10 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
         lifecycleEvents.add( event );
     }
 
+    public boolean removeLifecycleEvent(LifecycleEvent evt) {
+        return lifecycleEvents.remove(evt);
+    }
+
     public void setLifecycleEvents( List<LifecycleEvent> lifecycleEvents ) {
         this.lifecycleEvents = lifecycleEvents;
     }
