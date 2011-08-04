@@ -198,9 +198,7 @@ public class ConfigurationHandler {
 
         String value;
 
-        if (objValue == null && defaultValue == null) {
-            value = null;
-        } else if (defaultValue != null) {
+        if (objValue == null) {
             value = defaultValue;
         } else {
             PropertyConverter converter = getPropertyConverter( objValue.getClass() );
