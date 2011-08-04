@@ -110,7 +110,7 @@ public class IntactInitializer implements ApplicationContextAware{
             log.info("\tDefault institution: " + defaultInstitution);
             log.info("\tSchema version:      " + requiredSchemaVersion);
             log.info("\tAutopersist:         " + autoPersist);
-            log.info("\tConfiguration:       " + configuration);
+            log.info("\tConfiguration:       " + intactContext.getApplication().getProperties());
 
             Map<String, DataSource> datasourceMap = intactContext.getSpringContext().getBeansOfType(DataSource.class);
             log.info("\tDataSources("+ datasourceMap.size() +"):");

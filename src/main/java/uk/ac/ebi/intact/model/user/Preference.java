@@ -102,10 +102,8 @@ public class Preference extends IntactObjectImpl {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append( "Preference" );
-        sb.append( "{key='" ).append( key ).append( '\'' );
-        sb.append( ", value='" ).append( value ).append( '\'' );
-        sb.append( '}' );
+        sb.append(  key ).append( "=" );
+        sb.append( value );
         return sb.toString();
     }
 }
