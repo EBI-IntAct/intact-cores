@@ -5,10 +5,12 @@ import org.junit.Test;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleManager;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.CvTopic;
-import uk.ac.ebi.intact.model.Experiment;
-import uk.ac.ebi.intact.model.Publication;
+import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.user.User;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -248,5 +250,31 @@ public class PublicationUtilsTest extends IntactBasicTestCase {
         Assert.assertFalse(PublicationUtils.isRejected(pub));
         lifecycleManager.getReadyForCheckingStatus().accept(pub, "Now accepted!");
         Assert.assertFalse(PublicationUtils.isRejected(pub));
+    }
+
+    @Test
+    public void getLastEventOfType1() throws Exception {
+        LifecycleManager lifecycleManager = (LifecycleManager) getSpringContext().getBean("lifecycleManager");
+
+        User reviewer = getMockBuilder().createUserSandra();
+        getCorePersister().saveOrUpdate(reviewer);
+
+        Publication pub = getMockBuilder().createPublicationRandom();
+        Assert.assertFalse(PublicationUtils.isRejected(pub));
+
+        lifecycleManager.getNewStatus().claimOwnership(pub);
+        lifecycleManager.getAssignedStatus().startCuration(pub);
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(pub, "Ready", true);
+        lifecycleManager.getReadyForCheckingStatus().reject(pub, "Rejected!");
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(pub, "Ready 2", true);
+        lifecycleManager.getReadyForCheckingStatus().reject(pub, "Rejected 2");
+        lifecycleManager.getCurationInProgressStatus().readyForChecking(pub, "Ready 3", true);
+
+        List<LifecycleEvent> shuffled = pub.getLifecycleEvents();
+        Collections.shuffle(shuffled);
+        pub.setLifecycleEvents(shuffled);
+
+        Assert.assertEquals("Rejected 2", PublicationUtils.getLastEventOfType(pub, CvLifecycleEventType.REJECTED.identifier()).getNote());
+        Assert.assertEquals("Ready 3", PublicationUtils.getLastEventOfType(pub, CvLifecycleEventType.READY_FOR_CHECKING.identifier()).getNote());
     }
 }

@@ -92,7 +92,6 @@ public class ConfigurationHandler {
                         applicationProperty = new ApplicationProperty(application, key, value);
                         application.addProperty(applicationProperty);
                     }
-
                 }
             }
         }

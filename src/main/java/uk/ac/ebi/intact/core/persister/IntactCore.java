@@ -31,6 +31,7 @@ import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Global persistence utilities, based on the philosophy of the <code>org.hibernate.Hibernate</code> class.
@@ -468,8 +469,8 @@ public class IntactCore {
      * @return the initialized events
      * @since 2.5.0
      */
-    public static Collection<LifecycleEvent> ensureInitializedLifecycleEvents(Publication publication) {
-       Collection<LifecycleEvent> events;
+    public static List<LifecycleEvent> ensureInitializedLifecycleEvents(Publication publication) {
+       List<LifecycleEvent> events;
 
         if (IntactCore.isInitialized(publication.getLifecycleEvents())) {
             events = publication.getLifecycleEvents();
