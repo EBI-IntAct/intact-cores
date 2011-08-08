@@ -113,7 +113,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
                        org.hibernate.annotations.CascadeType.MERGE,
                        org.hibernate.annotations.CascadeType.REFRESH,
                        org.hibernate.annotations.CascadeType.DETACH} )
-    @OrderBy("created")
+    @OrderBy("when, created")
     public List<LifecycleEvent> getLifecycleEvents() {
         return lifecycleEvents;
     }

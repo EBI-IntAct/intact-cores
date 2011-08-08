@@ -6,7 +6,10 @@ import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Misc publication utilities.
@@ -73,6 +76,15 @@ public final class PublicationUtils {
      */
     public static LifecycleEvent getLastEventOfType(Publication publication, String cvLifecycleEventId) {
         LifecycleEvent lastEvent = null;
+
+        List<LifecycleEvent> sorted = IntactCore.ensureInitializedLifecycleEvents(publication);
+
+        Collections.sort(sorted, new Comparator<LifecycleEvent>() {
+            @Override
+            public int compare(LifecycleEvent o1, LifecycleEvent o2) {
+                return o1.getWhen().compareTo(o2.getWhen());
+            }
+        });
 
         for (LifecycleEvent event : IntactCore.ensureInitializedLifecycleEvents(publication)) {
             if (cvLifecycleEventId.equals(event.getEvent().getIdentifier())) {

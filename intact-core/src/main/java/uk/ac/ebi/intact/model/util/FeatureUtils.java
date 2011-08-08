@@ -240,7 +240,7 @@ public final class FeatureUtils {
         Set<Range> badRanges = new HashSet<Range>();
 
         for (Component component : components) {
-            Collection<Feature> features = component.getBindingDomains();
+            Collection<Feature> features = component.getFeatures();
 
             for (Feature feature : features) {
                 Collection<Range> ranges = feature.getRanges();
