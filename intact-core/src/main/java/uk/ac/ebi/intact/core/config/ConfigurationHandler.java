@@ -45,7 +45,7 @@ public class ConfigurationHandler {
     private static final Log log = LogFactory.getLog(ConfigurationHandler.class);
 
     @Transactional
-    public void loadConfiguration(Application application) {
+    public Application loadConfiguration(Application application) {
         Application appFromDb = getApplicationDao().getByKey(application.getKey());
 
         if (appFromDb != null) {
@@ -95,6 +95,8 @@ public class ConfigurationHandler {
                 }
             }
         }
+
+        return application;
     }
 
     @Transactional

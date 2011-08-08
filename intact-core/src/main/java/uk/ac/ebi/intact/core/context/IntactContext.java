@@ -269,8 +269,8 @@ public class IntactContext implements DisposableBean, Serializable {
     }
 
     public void bindToApplication(Application application) {
-        setApplication(application);
-        getConfigurationHandler().loadConfiguration(application);
+        Application app = getConfigurationHandler().loadConfiguration(application);
+        setApplication(app);
     }
 
     private ConfigurationHandler getConfigurationHandler() {
