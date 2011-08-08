@@ -196,7 +196,7 @@ public final class FeatureUtils {
         }
 
         for (String key : rangeStatusMap.keySet()) {
-            if (position.contains(key)) {
+            if (position.toLowerCase().contains(key)) {
                 return rangeStatusMap.get(key);
             }
         }
