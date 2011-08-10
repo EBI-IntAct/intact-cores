@@ -97,14 +97,12 @@ public class ConfigurationHandlerTest extends IntactBasicTestCase {
 
         Assert.assertEquals(2, getDaoFactory().getApplicationDao().countAll());
 
-        configurationHandler.persistConfiguration();
+        Application refreshedApp = getIntactContext().getApplication();
 
         Assert.assertEquals(2, getDaoFactory().getApplicationDao().countAll());
 
-        Application refreshedApp = getDaoFactory().getApplicationDao().getByKey("lalaApp");
-
         Assert.assertEquals(6, refreshedApp.getProperties().size());
-        Assert.assertEquals("same", refreshedApp.getDescription());
+        Assert.assertEquals("laladesc", refreshedApp.getDescription());
         Assert.assertEquals("LALA", refreshedApp.getProperty("intactConfig.acPrefix").getValue());
         Assert.assertEquals("intact", refreshedApp.getProperty("intactConfig.defaultInstitution").getValue());
     }
