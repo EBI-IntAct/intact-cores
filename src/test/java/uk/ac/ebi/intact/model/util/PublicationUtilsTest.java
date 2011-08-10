@@ -20,23 +20,6 @@ public class PublicationUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void testIsAccepted_yes() throws Exception {
-        Experiment exp1 = getMockBuilder().createExperimentEmpty();
-        exp1.addAnnotation(getMockBuilder().createAnnotation("Accepted 2010-FEB-30 by Lala", null, CvTopic.ACCEPTED));
-        exp1.setPublication(null);
-
-        Experiment exp2 = getMockBuilder().createExperimentEmpty();
-        exp2.addAnnotation(getMockBuilder().createAnnotation("Accepted 2010-FEB-30 by Lala", null, CvTopic.ACCEPTED));
-        exp2.setPublication(null);
-
-        Publication pub = getMockBuilder().createPublication("1234567");
-        pub.addExperiment(exp1);
-        pub.addExperiment(exp2);
-
-        Assert.assertEquals(true, PublicationUtils.isAccepted(pub));
-    }
-
-    @Test
-    public void testIsAccepted_yes2() throws Exception {
          LifecycleManager lifecycleManager = (LifecycleManager) getSpringContext().getBean("lifecycleManager");
 
         User reviewer = getMockBuilder().createUserSandra();
