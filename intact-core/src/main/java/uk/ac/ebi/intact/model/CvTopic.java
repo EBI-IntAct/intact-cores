@@ -140,6 +140,8 @@ public class CvTopic extends CvDagObject implements Editable {
     public static final String INVALID_RANGE = "invalid-range";
     public static final String INVALID_RANGE_ID = "IA:0923";
 
+    public static final String CORRECTION_COMMENT = "correction comment";
+
 
     /**
      * Cache a Vector of all shortLabels of the class, e.g. for menus. This should not be here as it has no model

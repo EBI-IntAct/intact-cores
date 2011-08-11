@@ -281,7 +281,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(postalAddress);
 
-        Assert.assertEquals(4, getDaoFactory().getCvObjectDao(CvTopic.class).countAll());
+        Assert.assertEquals(5, getDaoFactory().getCvObjectDao(CvTopic.class).countAll());
         Assert.assertEquals("contact-email", getDaoFactory().getCvObjectDao(CvTopic.class).getAll().get(0).getShortLabel());
 
         CvTopic repeatedPostalAddress = getMockBuilder().createCvObject(CvTopic.class, "removed", "postalAddress");
@@ -290,7 +290,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(repeatedPostalAddress);
 
-        Assert.assertEquals(4, getDaoFactory().getCvObjectDao(CvTopic.class).countAll());
+        Assert.assertEquals(5, getDaoFactory().getCvObjectDao(CvTopic.class).countAll());
     }
 
     @Test
