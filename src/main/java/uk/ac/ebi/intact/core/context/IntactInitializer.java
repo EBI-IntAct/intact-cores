@@ -228,10 +228,10 @@ public class IntactInitializer implements ApplicationContextAware{
             createCvIfMissing( CvTopic.class, null, CvTopic.ON_HOLD, null );
 
             CvTopic correctionComment = createCvIfMissing( CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null );
-            correctionComment.addAnnotation(new Annotation(hidden, ""));
+            markAsHidden(correctionComment, hidden);
 
             // Creating publication status
-            final CvPublicationStatus rootStatus = (CvPublicationStatus) createCvIfMissing( CvPublicationStatus.class,
+            final CvPublicationStatus rootStatus = createCvIfMissing( CvPublicationStatus.class,
                                                                                         CvPublicationStatusType.PUB_STATUS.identifier(),
                                                                                         CvPublicationStatusType.PUB_STATUS.name(),
                                                                                         null );
@@ -240,7 +240,7 @@ public class IntactInitializer implements ApplicationContextAware{
             }
 
             // creating publication lifecycle event
-            final CvLifecycleEvent rootEvent = (CvLifecycleEvent ) createCvIfMissing( CvLifecycleEvent.class,
+            final CvLifecycleEvent rootEvent = createCvIfMissing( CvLifecycleEvent.class,
                                                                                   CvLifecycleEventType.LIFECYCLE_EVENT.identifier(),
                                                                                   CvLifecycleEventType.LIFECYCLE_EVENT.name(),
                                                                                   null );
@@ -248,6 +248,13 @@ public class IntactInitializer implements ApplicationContextAware{
                 createCvIfMissing(CvLifecycleEvent.class, cvLifecycleEventType.identifier(), cvLifecycleEventType.shortLabel(), rootEvent);
             }
         }
+    }
+
+    private void markAsHidden(CvTopic correctionComment, CvTopic hidden) {
+        final Annotation hiddenAnnotation = new Annotation(hidden, "");
+        correctionComment.addAnnotation(hiddenAnnotation);
+
+        corePersister.saveOrUpdate(correctionComment);
     }
 
     private <T extends CvObject> T createCvIfMissing( Class<T> clazz, String cvId, String cvName, CvDagObject parent ) {

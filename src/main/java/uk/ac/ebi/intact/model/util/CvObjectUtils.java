@@ -260,4 +260,20 @@ public final class CvObjectUtils {
 
         return cv1.getShortLabel().equals(cv2.getShortLabel());
     }
+
+    /**
+     * Checks if a Cv object contains the "hidden" annotation
+     * @param cvObject the object that may be hidden
+     * @return true if hidden
+     *
+     * @since 2.5.0
+     */
+    public static boolean isHidden(CvObject cvObject) {
+        for (Annotation annotation : IntactCore.ensureInitializedAnnotations(cvObject)) {
+            if (annotation.getCvTopic() != null && CvTopic.HIDDEN.equals(annotation.getCvTopic().getShortLabel())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
