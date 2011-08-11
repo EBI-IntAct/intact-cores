@@ -224,8 +224,11 @@ public class IntactInitializer implements ApplicationContextAware{
             log.info( "Persisting necessary CvObjects" );
 
             createCvIfMissing( CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null );
+            CvTopic hidden = createCvIfMissing( CvTopic.class, null, CvTopic.HIDDEN, null );
             createCvIfMissing( CvTopic.class, null, CvTopic.ON_HOLD, null );
-            createCvIfMissing( CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null );
+
+            CvTopic correctionComment = createCvIfMissing( CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null );
+            correctionComment.addAnnotation(new Annotation(hidden, ""));
 
             // Creating publication status
             final CvPublicationStatus rootStatus = (CvPublicationStatus) createCvIfMissing( CvPublicationStatus.class,
@@ -247,9 +250,9 @@ public class IntactInitializer implements ApplicationContextAware{
         }
     }
 
-    private CvObject createCvIfMissing( Class clazz, String cvId, String cvName, CvDagObject parent ) {
-        CvObject cv = null;
-        if ( ( cv = cvObjectDao.getByPsiMiRef(cvId) ) == null) {
+    private <T extends CvObject> T createCvIfMissing( Class<T> clazz, String cvId, String cvName, CvDagObject parent ) {
+        T cv = null;
+        if ( ( cv = (T) cvObjectDao.getByPsiMiRef(cvId) ) == null) {
             cv = CvObjectUtils.createCvObject(configuration.getDefaultInstitution(), clazz, cvId, cvName );
             corePersister.saveOrUpdate(cv);
 

@@ -79,7 +79,7 @@ public class CvObjectDaoTest extends IntactBasicTestCase {
             }
         }
 
-        assertEquals( 6, cvTopicCount );
+        assertEquals( 7, cvTopicCount );
         assertEquals( 3, cvXrefQualifierCount );
     }
 

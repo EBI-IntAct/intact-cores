@@ -48,7 +48,7 @@ public class IntactInitializerTest extends IntactBasicTestCase {
     @Test
     public void idtestInit() {
         Assert.assertEquals(4, institutionDao.countAll());
-        Assert.assertEquals(35, cvObjectDao.countAll());
+        Assert.assertEquals(36, cvObjectDao.countAll());
     }
 
     @Test
