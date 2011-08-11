@@ -225,16 +225,17 @@ public class IntactInitializer implements ApplicationContextAware{
 
             createCvIfMissing( CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null );
             CvTopic usedInClass = createCvIfMissing( CvTopic.class, null, CvTopic.USED_IN_CLASS, null );
+            addUsedInClass(usedInClass, usedInClass, CvObject.class.getName());
 
             CvTopic hidden = createCvIfMissing( CvTopic.class, null, CvTopic.HIDDEN, null );
-            addUsedInClass(hidden, usedInClass, "uk.ac.ebi.intact.CvObject");
+            addUsedInClass(hidden, usedInClass, CvObject.class.getName());
 
-            createCvIfMissing( CvTopic.class, null, CvTopic.ON_HOLD, null );
-            addUsedInClass(hidden, usedInClass, "uk.ac.ebi.intact.Publication,uk.ac.ebi.intact.Experiment");
+            CvTopic onhold = createCvIfMissing( CvTopic.class, null, CvTopic.ON_HOLD, null );
+            addUsedInClass(onhold, usedInClass, Publication.class.getName()+","+Experiment.class.getName());
 
             CvTopic correctionComment = createCvIfMissing( CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null );
             markAsHidden(correctionComment, hidden);
-            addUsedInClass(correctionComment, usedInClass, "uk.ac.ebi.intact.Experiment");
+            addUsedInClass(correctionComment, usedInClass, Experiment.class.getName());
 
             // Creating publication status
             final CvPublicationStatus rootStatus = createCvIfMissing( CvPublicationStatus.class,
