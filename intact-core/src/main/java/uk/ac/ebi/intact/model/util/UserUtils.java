@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.model.util;
 
 import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.user.Preference;
 import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
@@ -34,6 +35,22 @@ public final class UserUtils {
         }
 
         return false;
+    }
+
+    public static Institution getInstitution(IntactContext intactContext, User user) {
+        Preference preference = user.getPreference(Preference.KEY_INSTITUTION_AC);
+
+        if (preference != null) {
+            String institutionAc = preference.getValue();
+            return intactContext.getDaoFactory().getInstitutionDao().getByAc(institutionAc);
+        }
+
+        return null;
+    }
+
+    public static void setInstitution(User user, Institution institution) {
+         user.addOrUpdatePreference(Preference.KEY_INSTITUTION_AC, institution.getAc());
+         user.addOrUpdatePreference(Preference.KEY_INSTITUTION_NAME, institution.getShortLabel());
     }
 
     public static Integer getReviewerAvailability(User user) {
