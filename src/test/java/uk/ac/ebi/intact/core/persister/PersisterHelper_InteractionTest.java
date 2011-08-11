@@ -456,7 +456,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
         interaction2.getAnnotations().clear();
-        CvTopic topic = getMockBuilder().createCvObject(CvTopic.class, "IA:0", CvTopic.HIDDEN);
+        CvTopic topic = getMockBuilder().createCvObject(CvTopic.class, "lala:2", CvTopic.ASSEMBLY);
         topic.getXrefs().iterator().next().setCvDatabase(getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT));
         interaction2.getAnnotations().add(getMockBuilder().createAnnotation("This is an annotation", topic));
 

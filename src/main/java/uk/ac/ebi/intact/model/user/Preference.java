@@ -18,6 +18,8 @@ import javax.persistence.*;
 @Table( name = "ia_preference" )
 public class Preference extends IntactObjectImpl {
 
+    public static final String KEY_INSTITUTION_AC = "editor.institution.ac";
+    public static final String KEY_INSTITUTION_NAME = "editor.institution.name";
     public static final String KEY_REVIEWER_AVAILABILITY = "reviewer.availability";
     public static final String KEY_MENTOR_REVIEWER = "reviewer.mentor";
 

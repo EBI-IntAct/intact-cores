@@ -337,7 +337,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         topic.addAnnotation(getMockBuilder().createAnnotation("Interaction", null, CvTopic.USED_IN_CLASS));
         getCorePersister().saveOrUpdate(topic);
 
-        Assert.assertEquals(initialCvCount+2, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(initialCvCount+1, getDaoFactory().getCvObjectDao().countAll());
 
         // perform the test
         CvTopic sameTopic = getMockBuilder().createCvObject(CvTopic.class, CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
@@ -368,7 +368,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         topic.addAnnotation(getMockBuilder().createAnnotation("Interaction", null, CvTopic.USED_IN_CLASS));
         getCorePersister().saveOrUpdate(topic);
 
-        Assert.assertEquals(initialCvCount+2, getDaoFactory().getCvObjectDao().countAll());
+        Assert.assertEquals(initialCvCount+1, getDaoFactory().getCvObjectDao().countAll());
 
         // perform the test
         CvTopic sameTopic = getMockBuilder().createCvObject(CvTopic.class, CvTopic.COMMENT_MI_REF, CvTopic.COMMENT);
