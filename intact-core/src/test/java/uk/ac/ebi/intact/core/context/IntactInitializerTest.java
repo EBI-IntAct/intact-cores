@@ -26,6 +26,8 @@ import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvObject;
+import uk.ac.ebi.intact.model.CvTopic;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.List;
@@ -49,6 +51,9 @@ public class IntactInitializerTest extends IntactBasicTestCase {
     public void idtestInit() {
         Assert.assertEquals(4, institutionDao.countAll());
         Assert.assertEquals(36, cvObjectDao.countAll());
+
+        CvTopic correctionComment = getDaoFactory().getCvObjectDao(CvTopic.class).getByShortLabel(CvTopic.CORRECTION_COMMENT);
+        Assert.assertTrue(CvObjectUtils.isHidden(correctionComment));
     }
 
     @Test
