@@ -224,11 +224,17 @@ public class IntactInitializer implements ApplicationContextAware{
             log.info( "Persisting necessary CvObjects" );
 
             createCvIfMissing( CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null );
+            CvTopic usedInClass = createCvIfMissing( CvTopic.class, null, CvTopic.USED_IN_CLASS, null );
+
             CvTopic hidden = createCvIfMissing( CvTopic.class, null, CvTopic.HIDDEN, null );
+            addUsedInClass(hidden, usedInClass, "uk.ac.ebi.intact.CvObject");
+
             createCvIfMissing( CvTopic.class, null, CvTopic.ON_HOLD, null );
+            addUsedInClass(hidden, usedInClass, "uk.ac.ebi.intact.Publication,uk.ac.ebi.intact.Experiment");
 
             CvTopic correctionComment = createCvIfMissing( CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null );
             markAsHidden(correctionComment, hidden);
+            addUsedInClass(correctionComment, usedInClass, "uk.ac.ebi.intact.Experiment");
 
             // Creating publication status
             final CvPublicationStatus rootStatus = createCvIfMissing( CvPublicationStatus.class,
@@ -250,13 +256,6 @@ public class IntactInitializer implements ApplicationContextAware{
         }
     }
 
-    private void markAsHidden(CvTopic correctionComment, CvTopic hidden) {
-        final Annotation hiddenAnnotation = new Annotation(hidden, "");
-        correctionComment.addAnnotation(hiddenAnnotation);
-
-        corePersister.saveOrUpdate(correctionComment);
-    }
-
     private <T extends CvObject> T createCvIfMissing( Class<T> clazz, String cvId, String cvName, CvDagObject parent ) {
         T cv = null;
         if ( ( cv = (T) cvObjectDao.getByPsiMiRef(cvId) ) == null) {
@@ -270,6 +269,21 @@ public class IntactInitializer implements ApplicationContextAware{
         }
         return cv;
     }
+
+    private void markAsHidden(CvObject cv, CvTopic hidden) {
+        final Annotation hiddenAnnotation = new Annotation(hidden, "");
+        cv.addAnnotation(hiddenAnnotation);
+
+        corePersister.saveOrUpdate(cv);
+    }
+
+     private void addUsedInClass(CvObject cv, CvTopic usedInClass, String classes) {
+        final Annotation hiddenAnnotation = new Annotation(usedInClass, classes);
+        cv.addAnnotation(hiddenAnnotation);
+
+        corePersister.saveOrUpdate(cv);
+    }
+
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createUsersIfNecessary() {
