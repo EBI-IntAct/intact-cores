@@ -225,6 +225,7 @@ public class IntactInitializer implements ApplicationContextAware{
 
             createCvIfMissing( CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null );
             createCvIfMissing( CvTopic.class, null, CvTopic.ON_HOLD, null );
+            createCvIfMissing( CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null );
 
             // Creating publication status
             final CvPublicationStatus rootStatus = (CvPublicationStatus) createCvIfMissing( CvPublicationStatus.class,
