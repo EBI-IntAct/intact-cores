@@ -16,7 +16,11 @@
 package uk.ac.ebi.intact.core.lifecycle.status;
 
 import org.springframework.stereotype.Controller;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleEventListener;
+import uk.ac.ebi.intact.core.lifecycle.LifecycleTransition;
+import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
+import uk.ac.ebi.intact.model.Publication;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -27,5 +31,18 @@ public class ReleasedStatus extends GlobalStatus {
 
     protected ReleasedStatus() {
         setStatusType( CvPublicationStatusType.RELEASED );
+    }
+
+    @LifecycleTransition(fromStatus = CvPublicationStatusType.RELEASED,
+                         toStatus = CvPublicationStatusType.ACCEPTED_ON_HOLD)
+    public void putOnHold(Publication publication, String reason) {
+        enfoceMandatory(reason);
+
+        changeStatus(publication, CvPublicationStatusType.ACCEPTED_ON_HOLD, CvLifecycleEventType.PUT_ON_HOLD, reason);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.firePutOnHold( publication );
+        }
     }
 }

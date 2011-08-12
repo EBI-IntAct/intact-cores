@@ -67,4 +67,8 @@ public class AbstractLifecycleEventListener implements LifecycleEventListener {
     @Override
     public void fireDiscarded( Publication publication ) {
     }
+
+    @Override
+    public void firePutOnHold(Publication publication) {
+    }
 }

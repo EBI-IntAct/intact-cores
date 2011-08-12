@@ -49,4 +49,17 @@ public class ReadyForReleaseStatus extends GlobalStatus {
             listener.fireReleased( publication );
         }
     }
+
+    @LifecycleTransition(fromStatus = CvPublicationStatusType.READY_FOR_RELEASE,
+                         toStatus = CvPublicationStatusType.ACCEPTED_ON_HOLD)
+    public void putOnHold(Publication publication, String reason) {
+        enfoceMandatory(reason);
+
+        changeStatus(publication, CvPublicationStatusType.ACCEPTED_ON_HOLD, CvLifecycleEventType.PUT_ON_HOLD, reason);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.firePutOnHold( publication );
+        }
+    }
 }
