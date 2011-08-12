@@ -39,4 +39,6 @@ public interface LifecycleEventListener {
     void fireReleased( Publication publication );
 
     void fireDiscarded( Publication publication );
+
+    void firePutOnHold ( Publication publication );
 }

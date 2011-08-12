@@ -38,7 +38,8 @@ public enum CvLifecycleEventType {
     REJECTED("rejected", "PL:0025"),
     READY_FOR_RELEASE("ready for release", "PL:0027"),
     RELEASED("released", "PL:0028"),
-    REVIEWER_CHANGED("reviewer changed", "PL:0029");
+    REVIEWER_CHANGED("reviewer changed", "PL:0029"),
+    PUT_ON_HOLD("put on hold", "PL:0030");
 
     private String shortLabel;
     private String identifier;

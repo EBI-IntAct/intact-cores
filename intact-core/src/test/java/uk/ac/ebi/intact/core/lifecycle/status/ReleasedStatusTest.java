@@ -29,36 +29,17 @@ import uk.ac.ebi.intact.model.Publication;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class ReadyForReleaseStatusTest extends IntactBasicTestCase {
+public class ReleasedStatusTest extends IntactBasicTestCase {
 
-    @Autowired private LifecycleManager lifecycleManager;
-
-    @Test
-    public void readyForRelease() throws Exception {
-        Publication publication = getMockBuilder().createPublicationRandom();
-        publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.READY_FOR_RELEASE.identifier()));
-
-        lifecycleManager.getReadyForReleaseStatus().release(publication, "Release X");
-
-        Assert.assertEquals(CvPublicationStatusType.RELEASED.identifier(), publication.getStatus().getIdentifier());
-        Assert.assertEquals(2, publication.getLifecycleEvents().size());
-        Assert.assertEquals(CvLifecycleEventType.RELEASED.identifier(), publication.getLifecycleEvents().get(1).getEvent().getIdentifier());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void readyForRelease_fail_noComment() throws Exception {
-        Publication publication = getMockBuilder().createPublicationRandom();
-        publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.READY_FOR_RELEASE.identifier()));
-
-        lifecycleManager.getReadyForReleaseStatus().release(publication, "");
-    }
+    @Autowired
+    private LifecycleManager lifecycleManager;
 
     @Test
     public void testPutOnHold() throws Exception {
          Publication publication = getMockBuilder().createPublicationRandom();
-        publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.READY_FOR_RELEASE.identifier()));
+        publication.setStatus(getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByIdentifier(CvPublicationStatusType.RELEASED.identifier()));
 
-        lifecycleManager.getReadyForReleaseStatus().putOnHold(publication, "hold it!");
+        lifecycleManager.getReleasedStatus().putOnHold(publication, "hold it!");
 
         Assert.assertEquals(CvPublicationStatusType.ACCEPTED_ON_HOLD.identifier(), publication.getStatus().getIdentifier());
         Assert.assertEquals(2, publication.getLifecycleEvents().size());
