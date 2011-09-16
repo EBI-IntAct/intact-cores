@@ -42,8 +42,9 @@ public final class InteractionUtils {
 
         if (componentCount == 1) {
             Component component1 = components.iterator().next();
-            if (component1.getStoichiometry() == 2) {
-                log.debug("Binary interaction " + interaction.getAc() + ". Stoichiometry 2, each component with stoichiometry 1");
+            // we consider one participant stoichiometry > 2 as binary even if it forms a complex to avoid duplicated binary
+            if (component1.getStoichiometry() >= 2) {
+                log.debug("Binary interaction " + interaction.getAc() + ". Stoichiometry >= 2, each component with stoichiometry 1");
                 return true;
             }
         } else if (componentCount == 2) {
