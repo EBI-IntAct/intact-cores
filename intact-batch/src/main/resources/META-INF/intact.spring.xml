@@ -16,19 +16,19 @@
 
     <!-- Standard job config -->
     <bean id="intactJobRepository"
-		class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean"
-		p:dataSource-ref="intactBatchDataSource" p:transactionManager-ref="batchTransactionManager" />
+          class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean"
+          p:dataSource-ref="intactBatchDataSource" p:transactionManager-ref="batchTransactionManager" />
 
     <bean id="intactBatchJobLauncher"
-		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
-		<property name="jobRepository" ref="intactJobRepository" />
+          class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="intactJobRepository" />
         <property name="taskExecutor" ref="syncTaskExecutor" />
-	</bean>
+    </bean>
 
     <bean id="syncTaskExecutor" class="org.springframework.core.task.SyncTaskExecutor"/>
 
     <bean id="intactJobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean"
-            p:dataSource-ref="intactBatchDataSource" />
+          p:dataSource-ref="intactBatchDataSource" />
 
     <bean id="intactJobRegistry" class="uk.ac.ebi.intact.core.batch.IntactJobRegistry"/>
 
@@ -37,9 +37,9 @@
         <property name="jobRepository" ref="intactJobRepository" />
         <property name="jobRegistry" ref="intactJobRegistry" />
         <property name="jobLauncher" ref="intactBatchJobLauncher" />
-      </bean>
+    </bean>
 
-   <bean id="batchTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+    <bean id="batchTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
           lazy-init="true">
         <property name="dataSource" ref="intactBatchDataSource"/>
     </bean>
@@ -76,6 +76,10 @@
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.Publication"/>
     </bean>
 
+    <bean id="orderedByCreatedPublicationReader" class="uk.ac.ebi.intact.core.batch.reader.orderedPublicationPagingItemReader" parent="baseModelReader">
+        <property name="orderBy" value="created"/>
+    </bean>
+
     <bean id="interactorReader" class="uk.ac.ebi.intact.core.batch.reader.InteractorReader" parent="baseModelReader"/>
 
     <bean id="interactorReaderOnlyInteracting" class="uk.ac.ebi.intact.core.batch.reader.InteractorReader" parent="baseModelReader">
@@ -102,11 +106,11 @@
 
     <!-- model writers -->
     <bean id="intactObjectLogTraceWriter" class="uk.ac.ebi.intact.core.batch.writer.IntactObjectLoggingItemWriter"
-            p:logLevel="TRACE"/>
+          p:logLevel="TRACE"/>
     <bean id="intactObjectLogDebugWriter" class="uk.ac.ebi.intact.core.batch.writer.IntactObjectLoggingItemWriter"
-            p:logLevel="DEBUG"/>
+          p:logLevel="DEBUG"/>
     <bean id="intactObjectLogInfoWriter" class="uk.ac.ebi.intact.core.batch.writer.IntactObjectLoggingItemWriter"
-            p:logLevel="INFO"/>
+          p:logLevel="INFO"/>
 
 
 

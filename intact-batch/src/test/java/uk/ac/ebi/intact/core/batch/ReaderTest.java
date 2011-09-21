@@ -90,7 +90,7 @@ public class ReaderTest extends IntactBasicTestCase {
         IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
         Assert.assertEquals(4, counter.getCount());
     }
-    
+
     @Test
     @DirtiesContext
     public void readExperiments() throws Exception {
@@ -118,6 +118,28 @@ public class ReaderTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getProteinDao().countAll());
 
         Job job = (Job) applicationContext.getBean("readInteractorsJob");
+
+        jobLauncher.run(job, new JobParameters());
+
+        IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
+        Assert.assertEquals(2, counter.getCount());
+    }
+
+    @Test
+    @DirtiesContext
+    public void readPublicationOrderedByCreated() throws Exception {
+        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        Interaction interaction2 = getMockBuilder().createInteractionRandomBinary();
+        Interaction interaction3 = getMockBuilder().createInteractionRandomBinary();
+        interaction3.getExperiments().clear();
+        interaction3.addExperiment(interaction2.getExperiments().iterator().next());
+        getCorePersister().saveOrUpdate(interaction);
+        getCorePersister().saveOrUpdate(interaction2, interaction3);
+
+        Assert.assertEquals(3, getDaoFactory().getInteractionDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getPublicationDao().countAll());
+
+        Job job = (Job) applicationContext.getBean("readPublicationOrderedByCreated");
 
         jobLauncher.run(job, new JobParameters());
 
