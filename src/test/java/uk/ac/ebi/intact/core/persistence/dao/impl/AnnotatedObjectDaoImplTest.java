@@ -145,6 +145,20 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
     }
 
     @Test
+    public void getByShortlabelLike() throws Exception {
+        getIntactContext().getConfig().setAutoUpdateExperimentLabel(false);
+        Experiment exp1 = getMockBuilder().createExperimentEmpty("lala-2011-1");
+        Experiment exp2 = getMockBuilder().createExperimentEmpty("lala-2011-5");
+
+        getCorePersister().saveOrUpdate(exp1, exp2);
+
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().countAll());
+        Assert.assertEquals(2, getDaoFactory().getExperimentDao().getByShortLabelLike("lala-2011-%").size());
+        Assert.assertEquals(1, getDaoFactory().getExperimentDao().getByShortLabelLike("lala-2011-1").size());
+        Assert.assertEquals(0, getDaoFactory().getExperimentDao().getByShortLabelLike("lolo-2011-%").size());
+    }
+
+    @Test
     public void getByInstitutionAc() throws Exception {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
         interaction.setShortLabel("lalala");
