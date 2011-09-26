@@ -165,8 +165,7 @@ public final class ExperimentUtils {
             Collection<Experiment> experiments = experimentDao.getByShortLabelLike(shortLabel + "%");
 
             //sort the experiments based on shortlabel, otherwise is not giving expected results
-            List<Experiment> sortedExperiments = new ArrayList<Experiment>();
-            sortedExperiments.addAll(experiments);
+            List<Experiment> sortedExperiments = new ArrayList<Experiment>(new HashSet<Experiment>(experiments));
 
             Collections.sort(sortedExperiments, new Comparator<Experiment>() {
                 public int compare(Experiment exp1, Experiment exp2) {

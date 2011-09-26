@@ -154,7 +154,7 @@ public class ExperimentShortlabelGenerator {
     ///////////////////////
     // Instance variable
 
-    private Map author2pubmed = new HashMap();
+    private Map<SuffixKey,Map<String,SuffixBean>> author2pubmed = new HashMap<SuffixKey,Map<String,SuffixBean>>();
 
 
     ////////////////////////
@@ -205,9 +205,9 @@ public class ExperimentShortlabelGenerator {
 
         // check if that key exists already and keep it's reference as it holds the next char to use
         boolean keyExists = false;
-        for ( Iterator iterator = author2pubmed.keySet().iterator(); iterator.hasNext() && keyExists == false; ) {
-            SuffixKey _key = (SuffixKey) iterator.next();
-            if ( _key.equals( key ) ) {
+
+        for (SuffixKey _key : author2pubmed.keySet()) {
+            if (_key.equals(key)) {
                 // found it ... keep its reference
                 key = _key;
                 keyExists = true;
@@ -217,12 +217,12 @@ public class ExperimentShortlabelGenerator {
         if ( keyExists ) {
 
             // then check if it has the pubmed if
-            Map pubmed2suffix = (Map) author2pubmed.get( key );
+            Map<String,SuffixBean> pubmed2suffix = author2pubmed.get( key );
 
             if ( pubmed2suffix.containsKey( pubmedId ) ) {
 
                 // if it has already that pubmedId, then the suffix is already initialized.
-                suffixBean = (SuffixBean) pubmed2suffix.get( pubmedId );
+                suffixBean = pubmed2suffix.get( pubmedId );
 
             } else {
 
@@ -238,7 +238,7 @@ public class ExperimentShortlabelGenerator {
             // create the Map and initialize the suffix
             suffixBean = new SuffixBean( key.getNextChar() );
 
-            Map newPubmed2suffix = new HashMap( 2 );
+            Map<String,SuffixBean> newPubmed2suffix = new HashMap<String,SuffixBean>( 2 );
             newPubmed2suffix.put( pubmedId, suffixBean );
 
             author2pubmed.put( key, newPubmed2suffix );
