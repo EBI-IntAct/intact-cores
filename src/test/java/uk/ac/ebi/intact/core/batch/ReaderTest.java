@@ -127,28 +127,6 @@ public class ReaderTest extends IntactBasicTestCase {
 
     @Test
     @DirtiesContext
-    public void readPublicationOrderedByCreated() throws Exception {
-        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
-        Interaction interaction2 = getMockBuilder().createInteractionRandomBinary();
-        Interaction interaction3 = getMockBuilder().createInteractionRandomBinary();
-        interaction3.getExperiments().clear();
-        interaction3.addExperiment(interaction2.getExperiments().iterator().next());
-        getCorePersister().saveOrUpdate(interaction);
-        getCorePersister().saveOrUpdate(interaction2, interaction3);
-
-        Assert.assertEquals(3, getDaoFactory().getInteractionDao().countAll());
-        Assert.assertEquals(2, getDaoFactory().getPublicationDao().countAll());
-
-        Job job = (Job) applicationContext.getBean("readPublicationOrderedByCreated");
-
-        jobLauncher.run(job, new JobParameters());
-
-        IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
-        Assert.assertEquals(2, counter.getCount());
-    }
-
-    @Test
-    @DirtiesContext
     public void readInteractors_excludeNonInteracting() throws Exception {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
         Protein prot = getMockBuilder().createProteinRandom();
