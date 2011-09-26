@@ -76,10 +76,6 @@
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.Publication"/>
     </bean>
 
-    <bean id="orderedByCreatedPublicationReader" class="uk.ac.ebi.intact.core.batch.reader.orderedPublicationPagingItemReader" parent="baseModelReader">
-        <property name="orderBy" value="created"/>
-    </bean>
-
     <bean id="interactorReader" class="uk.ac.ebi.intact.core.batch.reader.InteractorReader" parent="baseModelReader"/>
 
     <bean id="interactorReaderOnlyInteracting" class="uk.ac.ebi.intact.core.batch.reader.InteractorReader" parent="baseModelReader">
