@@ -71,12 +71,4 @@
         </batch:step>
     </batch:job>
 
-    <batch:job id="readPublicationOrderedByCreated" parent="intactBatchJob">
-        <batch:step id="readPublicationStep" parent="intactBatchStep">
-            <batch:tasklet>
-                <batch:chunk reader="orderedByCreatedPublicationReader" writer="intactObjectCounterWriter"/>
-            </batch:tasklet>
-        </batch:step>
-    </batch:job>
-
 </beans>
