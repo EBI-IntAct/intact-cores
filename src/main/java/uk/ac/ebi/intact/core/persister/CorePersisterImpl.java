@@ -1087,6 +1087,8 @@ public class CorePersisterImpl implements CorePersister {
             return (Preference) synched.get(key);
         }
 
+        synched.put(key, preference);
+
         preference.setUser(  synchronizeUser(preference.getUser()) );
         return preference;
     }
@@ -1105,6 +1107,8 @@ public class CorePersisterImpl implements CorePersister {
         if (synched.containsKey(key)) {
             return (User) synched.get(key);
         }
+
+        synched.put(key, user);
 
         final Set<Role> roles = user.getRoles();
         if (IntactCore.isInitializedAndDirty( roles )){
@@ -1125,8 +1129,6 @@ public class CorePersisterImpl implements CorePersister {
             prefs.clear();
             prefs.addAll( synchedPrefs );
         }
-
-        synched.put(key, user);
 
         return user;
     }
