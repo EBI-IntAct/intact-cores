@@ -1073,6 +1073,20 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     private Preference synchronizePreference( Preference preference ) {
+        if (preference == null) return null;
+
+        Key key;
+
+        if (preference.getAc() != null) {
+            key = new Key("key:"+preference.getAc());
+        } else {
+            key = new Key("key:"+preference.getUser().getLogin()+":"+preference.getKey());
+        }
+
+        if (synched.containsKey(key)) {
+            return (Preference) synched.get(key);
+        }
+
         preference.setUser(  synchronizeUser(preference.getUser()) );
         return preference;
     }
