@@ -144,7 +144,8 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
     public List<ProteinImpl> getUniprotProteinsInvolvedInInteractions( Integer firstResult, Integer maxResults ) {
         Criteria crit = criteriaForUniprotProteins()
                 .add( Restrictions.isNotEmpty( "activeInstances" ) )
-                .addOrder( Order.asc( "xref.primaryId" ) );
+                .addOrder( Order.asc( "xref.primaryId" ) )
+                .addOrder( Order.asc("ac"));
 
         if ( firstResult != null && firstResult >= 0 ) {
             crit.setFirstResult( firstResult );

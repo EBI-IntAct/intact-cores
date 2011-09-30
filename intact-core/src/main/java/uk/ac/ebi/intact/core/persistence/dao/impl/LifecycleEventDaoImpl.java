@@ -1,10 +1,13 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import com.sun.jdi.event.EventSet;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.LifecycleEventDao;
 import uk.ac.ebi.intact.model.LifecycleEvent;
+import uk.ac.ebi.intact.model.MineInteraction;
 import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.EntityManager;
@@ -43,10 +46,27 @@ public class LifecycleEventDaoImpl extends HibernateBaseDaoImpl<LifecycleEvent> 
     @Override
     public List<LifecycleEvent> getByPublicationAc( String publicationAc ) {
         final Query query = getEntityManager().createQuery( "select le " +
-                                                            "from LifecycleEvent le inner join le.publication p " +
-                                                            "where p.ac = :ac" );
+                "from LifecycleEvent le inner join le.publication p " +
+                "where p.ac = :ac" );
         query.setParameter( "ac", publicationAc );
         List<LifecycleEvent> events = query.getResultList();
         return events;
+    }
+
+    @Override
+    public Object executeDetachedCriteria( DetachedCriteria crit, int firstResult, int maxResults ) {
+        return crit.getExecutableCriteria( getSession() )
+                .addOrder(Order.asc("pk"))
+                .setFirstResult( firstResult )
+                .setMaxResults( maxResults )
+                .list();
+    }
+
+    @Override
+    public List<LifecycleEvent> getAll( int firstResult, int maxResults ) {
+        return getSession().createCriteria( getEntityClass() )
+                .addOrder(Order.asc("pk"))
+                .setFirstResult( firstResult )
+                .setMaxResults( maxResults ).list();
     }
 }

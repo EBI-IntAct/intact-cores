@@ -16,6 +16,8 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -81,10 +83,11 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
     }
 
     public List<MineInteraction> getByProteinIntactAc( String proteinIntactAc, Integer firstResult, Integer maxResults ) {
-        Criteria crit = getSession().createCriteria( getEntityClass() )
-                .add( Restrictions.or(
-                        Restrictions.eq( "protein1Ac", proteinIntactAc ),
-                        Restrictions.eq( "protein2Ac", proteinIntactAc ) ) );
+        Criteria crit = getSession().createCriteria(getEntityClass())
+                .add(Restrictions.or(
+                        Restrictions.eq("protein1Ac", proteinIntactAc),
+                        Restrictions.eq("protein2Ac", proteinIntactAc)))
+                .addOrder(org.hibernate.criterion.Order.asc("pk"));
 
         if ( firstResult != null && firstResult > 0 ) {
             crit.setFirstResult( firstResult );
@@ -94,5 +97,22 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
         }
 
         return crit.list();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MineInteraction> getAll( int firstResult, int maxResults ) {
+        return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o order by o.pk")
+                .setFirstResult( firstResult )
+                .setMaxResults( maxResults ).getResultList();
+    }
+
+    @Override
+    public Object executeDetachedCriteria( DetachedCriteria crit, int firstResult, int maxResults ) {
+        return crit.getExecutableCriteria( getSession() )
+                .addOrder(Order.asc("pk"))
+                .setFirstResult(firstResult)
+                .setMaxResults( maxResults )
+                .list();
     }
 }

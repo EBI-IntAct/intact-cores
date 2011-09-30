@@ -313,7 +313,8 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     @Override
     public List<T> getByInstitutionAc(String institutionAc, int firstResult, int maxResults) {
         Query query = getEntityManager().createQuery("select ao from " + getEntityClass().getName() + " ao " +
-                "where ao.owner.ac = :ownerAc")
+                "where ao.owner.ac = :ownerAc " +
+                "order by ao.ac")
                 .setParameter("ownerAc", institutionAc)
                 .setFirstResult(firstResult)
                 .setMaxResults(maxResults);

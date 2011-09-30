@@ -6,6 +6,7 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.hibernate.HibernateException;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +98,22 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
     @Deprecated
     public Iterator<T> iterator( int batchSize ) {
         return getAllIterator();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<T> getAll( int firstResult, int maxResults ) {
+        return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o order by o.ac")
+                .setFirstResult( firstResult )
+                .setMaxResults( maxResults ).getResultList();
+    }
+
+    @Override
+    public Object executeDetachedCriteria( DetachedCriteria crit, int firstResult, int maxResults ) {
+        return crit.getExecutableCriteria( getSession() ).addOrder(Order.asc("ac"))
+                .setFirstResult( firstResult )
+                .setMaxResults( maxResults )
+                .list();
     }
 
     public int deleteByAc( String ac ) {
