@@ -34,7 +34,10 @@ public class InteractorReader extends JpaPagingItemReader {
         String query = "select i from InteractorImpl i where i.objClass <> 'uk.ac.ebi.intact.model.InteractionImpl'";
 
         if (isInteracting()) {
-            query = query + " and size(i.activeInstances) > 0";
+            query = query + " and size(i.activeInstances) > 0 order by i.ac";
+        }
+        else {
+            query += " order by i.ac";
         }
 
         setQueryString(query);
