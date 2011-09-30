@@ -35,7 +35,10 @@ public class InteractionReader extends JpaPagingItemReader {
 
         if (isExcludeNegative()) {
             query = query + " where i.ac not in " +
-                    "(select i2.ac from InteractionImpl i2 join i2.annotations as annot where annot.cvTopic.shortLabel = 'negative')";
+                    "(select i2.ac from InteractionImpl i2 join i2.annotations as annot where annot.cvTopic.shortLabel = 'negative') order by i.ac";
+        }
+        else {
+            query += " order by i.ac";
         }
 
         setQueryString(query);
