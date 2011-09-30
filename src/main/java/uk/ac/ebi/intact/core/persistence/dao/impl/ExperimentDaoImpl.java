@@ -17,9 +17,9 @@ import uk.ac.ebi.intact.core.persistence.dao.ExperimentDao;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
-import uk.ac.ebi.intact.model.Publication;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.Order;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -54,7 +54,8 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
 
     public List<Interaction> getInteractionsForExperimentWithAc( String ac, int firstResult, int maxResults ) {
         return getSession().createCriteria( InteractionImpl.class )
-                .setFirstResult( firstResult )
+                .addOrder(org.hibernate.criterion.Order.asc("ac"))
+                .setFirstResult(firstResult)
                 .setMaxResults( maxResults )
                 .createCriteria( "experiments" )
                 .add( Restrictions.idEq( ac ) ).list();
@@ -68,6 +69,7 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
 
     public List<Interaction> getInteractionsForExperimentWithAcExcluding( String ac, String[] excludedAcs, int firstResult, int maxResults ) {
         Criteria crit = getSession().createCriteria( InteractionImpl.class )
+                .addOrder(org.hibernate.criterion.Order.asc("ac"))
                 .setFirstResult( firstResult )
                 .setMaxResults( maxResults );
 
@@ -84,6 +86,7 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
 
     public List<Interaction> getInteractionsForExperimentWithAcExcludingLike( String ac, String[] excludedAcsLike, int firstResult, int maxResults ) {
         Criteria crit = getSession().createCriteria( InteractionImpl.class )
+                .addOrder(org.hibernate.criterion.Order.asc("ac"))
                 .setFirstResult( firstResult )
                 .setMaxResults( maxResults );
 

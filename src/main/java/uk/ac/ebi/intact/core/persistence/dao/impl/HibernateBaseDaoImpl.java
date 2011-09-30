@@ -331,6 +331,9 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         if ( orderAsc ) {
             criteria.addOrder( Order.asc( propertyName ) );
         }
+        else {
+            criteria.addOrder( Order.desc( propertyName ) );
+        }
 
         return criteria.list();
     }

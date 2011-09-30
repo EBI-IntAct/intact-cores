@@ -81,7 +81,8 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
     public List<Interaction> getInteractionByExperimentShortLabel( String[] experimentLabels, Integer firstResult, Integer maxResults ) {
         Criteria criteria = getSession().createCriteria( Interaction.class )
                 .createCriteria( "experiments" )
-                .add( Restrictions.in( "shortLabel", experimentLabels ) );
+                .add( Restrictions.in( "shortLabel", experimentLabels ) )
+                .addOrder(org.hibernate.criterion.Order.asc("ac"));
 
         if ( firstResult != null && firstResult >= 0 ) {
             criteria.setFirstResult( firstResult );
@@ -299,7 +300,7 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         Query query = getEntityManager().createQuery("select i " +
                                                      "from InteractionImpl i join i.experiments e " +
                                                      "where e.ac = :experimentAc " +
-                                                     "order by i.created");
+                                                     "order by i.created, i.ac");
         query.setParameter("experimentAc", experimentAc);
         query.setFirstResult(firstResult);
         query.setMaxResults(maxResults);

@@ -17,10 +17,13 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.DbInfoDao;
+import uk.ac.ebi.intact.model.MineInteraction;
 import uk.ac.ebi.intact.model.meta.DbInfo;
 
 import javax.persistence.EntityManager;
@@ -60,6 +63,21 @@ public class DbInfoDaoImpl extends HibernateBaseDaoImpl<DbInfo> implements DbInf
         getEntityManager().persist( dbInfo );
     }
 
+    @Override
+    public Object executeDetachedCriteria( DetachedCriteria crit, int firstResult, int maxResults ) {
+        return crit.getExecutableCriteria( getSession() )
+                .addOrder(Order.asc("dbi_key"))
+                .setFirstResult( firstResult )
+                .setMaxResults( maxResults )
+                .list();
+    }
 
+    @Override
+    public List<DbInfo> getAll( int firstResult, int maxResults ) {
+        return getSession().createCriteria( getEntityClass() )
+                .addOrder(Order.asc("dbi_key"))
+                .setFirstResult( firstResult )
+                .setMaxResults( maxResults ).list();
+    }
 
 }

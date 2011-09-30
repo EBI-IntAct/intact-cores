@@ -125,7 +125,7 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
             Criteria crit = getSession().createCriteria( InteractorImpl.class )
 //                    .createAlias("xrefs", "xref")
                     .add( Restrictions.isNotEmpty( "activeInstances" ) )
-//                    .addOrder( Order.asc( "xref.primaryId" ) )
+                    .addOrder( Order.asc( "ac" ) )
                     ;
 
             if ( firstResult != null && firstResult >= 0 ) {
@@ -159,7 +159,7 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
      * @return the interactors in that page
      */
     public List<Interactor> getInteractors(Integer firstResult, Integer maxResults) {
-        Query query = getEntityManager().createQuery("select i from InteractorImpl i where i.objClass <> :interactionClass");
+        Query query = getEntityManager().createQuery("select i from InteractorImpl i where i.objClass <> :interactionClass order by i.ac");
         query.setParameter("interactionClass", InteractionImpl.class.getName());
         query.setFirstResult(firstResult);
         query.setMaxResults(maxResults);
