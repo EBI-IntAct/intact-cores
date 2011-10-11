@@ -149,4 +149,18 @@ public class IntactEntry implements Annotated {
         this.releasedDate = releasedDate;
     }
 
+    public void clear(){
+        if (annotations != null){
+           annotations.clear();
+        }
+
+        if (interactions != null){
+            interactions.clear();
+        }
+
+        experiments = null;
+        interactors = null;
+        institution = null;
+        releasedDate = null;
+    }
 }
