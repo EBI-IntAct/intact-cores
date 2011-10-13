@@ -164,6 +164,7 @@ public class CrcCalculator {
     }
 
     protected UniquenessStringBuilder createUniquenessString(Component component) {
+        // WARNING : corss references of participants are not taken into account because for now we don't want duplicated interactions having exactly same participants excepted the xrefs
         if (keyExists(component)) {
             return getKey(component);
         }
