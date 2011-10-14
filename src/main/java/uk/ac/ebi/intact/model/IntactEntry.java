@@ -175,11 +175,19 @@ public class IntactEntry implements Annotated {
         interactorsList.clear();
     }
 
+    /**
+     * A list of experiments that we want to manually add to this entry
+     * @return
+     */
     public Collection<Experiment> getExperimentsList() {
 
         return experimentsList;
     }
 
+    /**
+     * A list of interactors that we want to manually add to this entry
+     * @return
+     */
     public Collection<Interactor> getInteractorsList() {
 
         return interactorsList;
