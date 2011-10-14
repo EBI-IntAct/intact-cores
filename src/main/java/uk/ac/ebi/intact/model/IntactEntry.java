@@ -177,19 +177,10 @@ public class IntactEntry implements Annotated {
 
     public Collection<Experiment> getExperimentsList() {
 
-        if (experimentsList.isEmpty()){
-            experimentsList.addAll(getExperiments());
-            return experimentsList;
-        }
-
         return experimentsList;
     }
 
     public Collection<Interactor> getInteractorsList() {
-        if (interactorsList.isEmpty()){
-            interactorsList.addAll(getInteractors());
-            return interactorsList;
-        }
 
         return interactorsList;
     }
