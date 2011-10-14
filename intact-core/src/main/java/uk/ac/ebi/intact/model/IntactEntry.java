@@ -44,6 +44,9 @@ public class IntactEntry implements Annotated {
     private transient Map<Experiment,Experiment> experiments;
     private transient Map<Interactor,Interactor> interactors;
 
+    private Collection<Experiment> experimentsList = new ArrayList<Experiment>();
+    private Collection<Interactor> interactorsList = new ArrayList<Interactor>();
+
     //////////////////
     // Constructors
 
@@ -162,5 +165,24 @@ public class IntactEntry implements Annotated {
         interactors = null;
         institution = null;
         releasedDate = null;
+    }
+
+    public Collection<Experiment> getExperimentsList() {
+
+        if (experimentsList.isEmpty()){
+            experimentsList.addAll(getExperiments());
+            return experimentsList;
+        }
+
+        return experimentsList;
+    }
+
+    public Collection<Interactor> getInteractorsList() {
+        if (interactorsList.isEmpty()){
+            interactorsList.addAll(getInteractors());
+            return interactorsList;
+        }
+
+        return interactorsList;
     }
 }
