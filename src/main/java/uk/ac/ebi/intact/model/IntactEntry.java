@@ -81,6 +81,9 @@ public class IntactEntry implements Annotated {
             return experiments.keySet();
 
         }
+        else if (!experimentsList.isEmpty()){
+            return experimentsList;
+        }
 
         experiments = new IdentityMap();
 
@@ -111,6 +114,9 @@ public class IntactEntry implements Annotated {
     public Collection<Interactor> getInteractors() {
         if (interactors != null) {
             return interactors.keySet();
+        }
+        else if (!interactorsList.isEmpty()){
+            return interactorsList;
         }
 
         interactors = new IdentityMap();
@@ -165,6 +171,8 @@ public class IntactEntry implements Annotated {
         interactors = null;
         institution = null;
         releasedDate = null;
+        experimentsList.clear();
+        interactorsList.clear();
     }
 
     public Collection<Experiment> getExperimentsList() {
