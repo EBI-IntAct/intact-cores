@@ -10,7 +10,7 @@
 
     <artifactId>intact-core</artifactId>
     <packaging>jar</packaging>
-    <version>2.5.1-SNAPSHOT</version>
+    <version>2.5.1-20111027-SNAPSHOT</version>
 
     <name>IntAct Core :: Core</name>
     <url>http://intact.googlecode.com</url>
