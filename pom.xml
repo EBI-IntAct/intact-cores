@@ -10,7 +10,7 @@
 
     <artifactId>intact-batch</artifactId>
     <packaging>jar</packaging>
-    <version>2.5.1-20111027-SNAPSHOT</version>
+    <version>2.5.1-SNAPSHOT</version>
 
     <name>IntAct Core :: Batch</name>
     <description>Spring Batch integration with IntAct Core</description>
