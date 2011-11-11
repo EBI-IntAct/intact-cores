@@ -19,7 +19,9 @@ import com.google.common.collect.Maps;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +33,8 @@ import uk.ac.ebi.intact.core.persistence.dao.meta.ApplicationDao;
 import uk.ac.ebi.intact.model.meta.Application;
 import uk.ac.ebi.intact.model.meta.ApplicationProperty;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -43,6 +45,22 @@ import java.util.Map;
 public class ConfigurationHandler {
 
     private static final Log log = LogFactory.getLog(ConfigurationHandler.class);
+
+    private Map<Class, PropertyConverter> supportedPrimitiveConverter = Maps.newHashMap();
+
+    @Autowired
+    private ApplicationContext springContext;
+
+    @PostConstruct
+    public void init() {
+        supportedPrimitiveConverter.put( java.lang.Boolean.TYPE, springContext.getBean( BooleanPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Short.TYPE, springContext.getBean( ShortPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Integer.TYPE, springContext.getBean( IntegerPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Long.TYPE, springContext.getBean( LongPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Float.TYPE, springContext.getBean( FloatPropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Double.TYPE, springContext.getBean( DoublePropertyConverter.class ) );
+        supportedPrimitiveConverter.put( java.lang.Character.TYPE, springContext.getBean( CharPropertyConverter.class ) );
+    }
 
     @Transactional
     public Application loadConfiguration(Application application) {
@@ -210,19 +228,6 @@ public class ConfigurationHandler {
             }
         }
         return value;
-    }
-
-    private static Map<Class, PropertyConverter> supportedPrimitiveConverter = Maps.newHashMap();
-    static {
-        final ConfigurableApplicationContext springContext = IntactContext.getCurrentInstance().getSpringContext();
-
-        supportedPrimitiveConverter.put( java.lang.Boolean.TYPE, springContext.getBean( BooleanPropertyConverter.class ) );
-        supportedPrimitiveConverter.put( java.lang.Short.TYPE, springContext.getBean( ShortPropertyConverter.class ) );
-        supportedPrimitiveConverter.put( java.lang.Integer.TYPE, springContext.getBean( IntegerPropertyConverter.class ) );
-        supportedPrimitiveConverter.put( java.lang.Long.TYPE, springContext.getBean( LongPropertyConverter.class ) );
-        supportedPrimitiveConverter.put( java.lang.Float.TYPE, springContext.getBean( FloatPropertyConverter.class ) );
-        supportedPrimitiveConverter.put( java.lang.Double.TYPE, springContext.getBean( DoublePropertyConverter.class ) );
-        supportedPrimitiveConverter.put( java.lang.Character.TYPE, springContext.getBean( CharPropertyConverter.class ) );
     }
 
     private PropertyConverter getPropertyConverter( Class clazz ) {

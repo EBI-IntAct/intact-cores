@@ -1,12 +1,10 @@
 package uk.ac.ebi.intact.model;
 
-import org.hibernate.annotations.*;
-import uk.ac.ebi.intact.model.user.Identifiable;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -77,6 +75,7 @@ public class LifecycleEvent extends IntactObjectImpl {
         this.who = who;
     }
 
+    @Column(name = "`when`")
     @Temporal( TemporalType.TIMESTAMP )
     public Date getWhen() {
         return when;
