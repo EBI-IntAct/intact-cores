@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.persister;
 
 import uk.ac.ebi.intact.model.*;
+import uk.ac.ebi.intact.model.user.User;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class PersistenceOrderComparator implements Comparator<IntactObject> {
         annotatedObjectPriorities = new HashMap<Class<? extends IntactObject>,Integer>();
 
         // the higher priority (int), the earlier it will be saved
+        annotatedObjectPriorities.put(User.class, 210);
         annotatedObjectPriorities.put(Institution.class, 200);
         annotatedObjectPriorities.put(CvObject.class, 150);
         annotatedObjectPriorities.put(BioSource.class, 110);
