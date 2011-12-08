@@ -1048,7 +1048,7 @@ public class CorePersisterImpl implements CorePersister {
         if (IntactCore.isInitializedAndDirty( events )){
             Collection<LifecycleEvent> synchedEvents = new ArrayList<LifecycleEvent>( events.size() );
             for ( LifecycleEvent event : events ) {
-                synchedEvents.add( synchronize( event ) );
+                synchedEvents.add( synchronizeEvent(event) );
             }
             events.clear();
             events.addAll( synchedEvents );
@@ -1102,6 +1102,7 @@ public class CorePersisterImpl implements CorePersister {
             key = new Key("user:"+user.getAc());
         } else {
             key = new Key("user:"+user.getLogin());
+            annotatedObjectsToPersist.put( key, user );
         }
 
         if (synched.containsKey(key)) {
@@ -1133,7 +1134,7 @@ public class CorePersisterImpl implements CorePersister {
         return user;
     }
 
-    private LifecycleEvent synchronize( LifecycleEvent event ) {
+    private LifecycleEvent synchronizeEvent(LifecycleEvent event) {
         event.setWho( synchronizeUser(event.getWho()) );
         event.setEvent( synchronize( event.getEvent() ) );
 
