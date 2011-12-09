@@ -47,7 +47,7 @@ public abstract class AbstractIntactCloner {
     private boolean excludeACs;
     private boolean cloneCvObjectTree;
 
-    private class ClonerManager<T extends IntactObject> {
+    protected class ClonerManager<T extends IntactObject> {
 
         Map<T, T> register = new HashMap<T, T>();
 
@@ -67,7 +67,7 @@ public abstract class AbstractIntactCloner {
         }
     }
 
-    private ClonerManager clonerManager;
+    protected ClonerManager clonerManager;
 
     public AbstractIntactCloner() {
         clonerManager = new ClonerManager();
