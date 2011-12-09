@@ -133,6 +133,8 @@ public class CrcCalculator {
         Set<Annotation> annotations = new TreeSet<Annotation>(new AnnotationComparator());
 
         annotations.addAll(IntactCore.ensureInitializedAnnotations(experiment));
+        experiment.getAnnotations().clear();
+        experiment.getAnnotations().addAll(annotations);
 
         for (Annotation annotation : annotations) {
             sb.append(createUniquenessString(annotation));
