@@ -182,23 +182,25 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
                                                      "      and xref.cvDatabase.identifier = :dbMi " +
                                                      "      and xref.cvXrefQualifier.identifier = :qualifierMi");
 
+        prepareQuery(database, qualifier, primaryId, query);
+
+        return query.getResultList();
+    }
+
+    private void prepareQuery(CvDatabase database, CvXrefQualifier qualifier, String primaryId, Query query) {
         query.setParameter("id", primaryId);
         query.setParameter("dbMi", (database.getIdentifier() != null ? database.getIdentifier() : CvObjectUtils.getIdentity(database)));
         query.setParameter("qualifierMi", (qualifier.getIdentifier() != null ? qualifier.getIdentifier() : CvObjectUtils.getIdentity(qualifier)));
-
-        return query.getResultList();
     }
 
     public List<T> getByXrefLike(CvDatabase database, CvXrefQualifier qualifier, String primaryId) {
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
                 " o inner join o.xrefs as xref " +
-                "where xref.primaryId = :id " +
+                "where xref.primaryId like :id " +
                 "      and xref.cvDatabase.identifier = :dbMi " +
                 "      and xref.cvXrefQualifier.identifier = :qualifierMi");
 
-        query.setParameter("id", primaryId);
-        query.setParameter("dbMi", (database.getIdentifier() != null ? database.getIdentifier() : CvObjectUtils.getIdentity(database)));
-        query.setParameter("qualifierMi", (qualifier.getIdentifier() != null ? qualifier.getIdentifier() : CvObjectUtils.getIdentity(qualifier)));
+        prepareQuery(database, qualifier, primaryId, query);
 
         return query.getResultList();
     }
