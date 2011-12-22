@@ -226,41 +226,28 @@ public class IntactMockBuilder {
     public Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource) {
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.PROTEIN_MI_REF, CvInteractorType.PROTEIN);
 
+        return createProtein(uniprotId, shortLabel, bioSource, intType);
+    }
+
+    private Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource, CvInteractorType intType) {
         Protein protein = new ProteinImpl(getInstitution(), bioSource, shortLabel, intType);
         InteractorXref idXref = createIdentityXrefUniprot(protein, uniprotId);
         protein.addXref(idXref);
 
         InteractorAlias alias = createAliasGeneName(protein, shortLabel.toUpperCase());
         protein.addAlias(alias);
-        
+
         String sequence = randomPeptideSequence();
         String crc64 = Crc64.getCrc64(sequence);
         protein.setSequence(sequence);
         protein.setCrc64(crc64);
-
-
-
         return protein;
     }
 
     public Protein createPeptide(String uniprotId, String shortLabel, BioSource bioSource) {
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.PEPTIDE_MI_REF, "peptide");
 
-        Protein protein = new ProteinImpl(getInstitution(), bioSource, shortLabel, intType);
-        InteractorXref idXref = createIdentityXrefUniprot(protein, uniprotId);
-        protein.addXref(idXref);
-
-        InteractorAlias alias = createAliasGeneName(protein, shortLabel.toUpperCase());
-        protein.addAlias(alias);
-
-        String sequence = randomPeptideSequence();
-        String crc64 = Crc64.getCrc64(sequence);
-        protein.setSequence(sequence);
-        protein.setCrc64(crc64);
-
-
-
-        return protein;
+        return createProtein(uniprotId, shortLabel, bioSource, intType);
     }
 
     public Protein createProtein(String uniprotId, String shortLabel) {
