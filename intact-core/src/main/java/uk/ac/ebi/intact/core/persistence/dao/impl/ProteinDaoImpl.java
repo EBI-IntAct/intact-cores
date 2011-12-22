@@ -196,23 +196,7 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
                         .add( Projections.property( "int.ac" ) ) )
                 .addOrder( Order.asc( "prot.ac" ) );
 
-        Map<String, List<String>> results = new HashMap<String, List<String>>();
-
-        for ( Object[] res : ( List<Object[]> ) crit.list() ) {
-            String partnerProtAc = ( String ) res[0];
-            String interactionAc = ( String ) res[1];
-
-            if ( results.containsKey( partnerProtAc ) ) {
-                results.get( partnerProtAc ).add( interactionAc );
-            } else {
-                List<String> interactionAcList = new ArrayList<String>();
-                interactionAcList.add( interactionAc );
-
-                results.put( partnerProtAc, interactionAcList );
-            }
-        }
-
-        return results;
+        return getPartnersWithInteractionAcs(crit);
     }
 
     public List<String> getPartnersUniprotIdsByProteinAc( String proteinAc ) {

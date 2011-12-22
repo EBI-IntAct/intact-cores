@@ -210,6 +210,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
                         .add( Projections.property( "int.ac" ) ) )
                 .addOrder( Order.asc( "prot.ac" ) );
 
+        return getPartnersWithInteractionAcs(crit);
+    }
+
+    protected Map<String, List<String>> getPartnersWithInteractionAcs(Criteria crit) {
         Map<String, List<String>> results = new HashMap<String, List<String>>();
 
         for ( Object[] res : ( List<Object[]> ) crit.list() ) {
@@ -225,7 +229,6 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
                 results.put( partnerProtAc, interactionAcList );
             }
         }
-
         return results;
     }
 
