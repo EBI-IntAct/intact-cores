@@ -130,15 +130,7 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         Criteria crit = criteriaForUniprotProteins()
                 .addOrder( Order.asc( "xref.primaryId" ) );
 
-        if ( firstResult != null && firstResult >= 0 ) {
-            crit.setFirstResult( firstResult );
-        }
-
-        if ( maxResults != null && maxResults > 0 ) {
-            crit.setMaxResults( maxResults );
-        }
-
-        return crit.list();
+        return autosetFirstMax(firstResult, maxResults, crit);
     }
 
     public List<ProteinImpl> getUniprotProteinsInvolvedInInteractions( Integer firstResult, Integer maxResults ) {
@@ -147,6 +139,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
                 .addOrder( Order.asc( "xref.primaryId" ) )
                 .addOrder( Order.asc("ac"));
 
+        return autosetFirstMax(firstResult, maxResults, crit);
+    }
+
+    private List<ProteinImpl> autosetFirstMax(Integer firstResult, Integer maxResults, Criteria crit) {
         if ( firstResult != null && firstResult >= 0 ) {
             crit.setFirstResult( firstResult );
         }
