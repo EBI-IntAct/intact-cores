@@ -343,10 +343,7 @@ public class IntactMockBuilder {
     }
 
     public Component createComponentBait(Interactor interactor) {
-        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
-        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
-        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())),
-                                                      cvInteractionType, intType, nextString("label"), getInstitution());
+        Interaction interaction = createInteractionDirect();
         return createComponentBait(interaction, interactor);
     }
 
@@ -358,11 +355,15 @@ public class IntactMockBuilder {
     }
 
     public Component createComponentPrey(Interactor interactor) {
+        Interaction interaction = createInteractionDirect();
+        return createComponentPrey(interaction, interactor);
+    }
+
+    private Interaction createInteractionDirect() {
         CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
-        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())),
+        return new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())),
                                                       cvInteractionType, intType, nextString("label"), getInstitution());
-        return createComponentPrey(interaction, interactor);
     }
 
     public Component createComponentRandom() {
@@ -460,10 +461,7 @@ public class IntactMockBuilder {
     }
     
     public Interaction createInteraction(String ... interactorShortLabels) {
-        CvInteractionType cvInteractionType = createCvObject(CvInteractionType.class, CvInteractionType.DIRECT_INTERACTION_MI_REF, CvInteractionType.DIRECT_INTERACTION);
-        CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.INTERACTION_MI_REF, CvInteractorType.INTERACTION );
-        Interaction interaction = new InteractionImpl(new ArrayList<Experiment>(Arrays.asList(createExperimentEmpty())),
-                                                      cvInteractionType, intType, nextString("label"), getInstitution());
+        Interaction interaction = createInteractionDirect();
 
         Protein prot = null;
         for (String interactorShortLabel : interactorShortLabels) {
