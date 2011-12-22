@@ -26,12 +26,13 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
     @Test
     public void getByXrefLike() throws Exception {
         final Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        final Interaction interaction2 = getMockBuilder().createInteractionRandomBinary();
         interaction.getXrefs().clear();
         interaction.addXref( getMockBuilder().createIdentityXref( interaction, "IM-1-2", getMockBuilder().getPsiMiDatabase() ) );
-        getCorePersister().saveOrUpdate( interaction );
+        getCorePersister().saveOrUpdate( interaction, interaction2 );
 
         final InteractionDao dao = getIntactContext().getDataContext().getDaoFactory().getInteractionDao();
-        final List<InteractionImpl> list = dao.getByXrefLike( "IM-1-%" );
+        final List<InteractionImpl> list = dao.getByXrefLike( "IM-1%" );
         Assert.assertNotNull( list );
         Assert.assertEquals( 1, list.size());
     }
