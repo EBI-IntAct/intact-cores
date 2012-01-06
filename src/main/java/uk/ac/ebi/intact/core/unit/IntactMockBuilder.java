@@ -224,7 +224,7 @@ public class IntactMockBuilder {
     }
 
     public Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource) {
-        return createProtein(uniprotId, shortLabel, shortLabel, bioSource);
+        return createProtein(uniprotId, shortLabel, extractGeneNameFromLabel(shortLabel), bioSource);
     }
 
     public Protein createProtein(String uniprotId, String shortLabel, String geneName, BioSource bioSource) {
@@ -234,7 +234,14 @@ public class IntactMockBuilder {
     }
 
     public Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource, CvInteractorType intType) {
-        return createProtein(uniprotId, shortLabel, shortLabel, bioSource, intType);
+        return createProtein(uniprotId, shortLabel, extractGeneNameFromLabel(shortLabel), bioSource, intType);
+    }
+
+    private String extractGeneNameFromLabel(String shortLabel) {
+        shortLabel = shortLabel.toLowerCase();
+        shortLabel = shortLabel.split("_")[0];
+
+        return shortLabel;
     }
 
     private Protein createProtein(String uniprotId, String shortLabel, String geneName, BioSource bioSource, CvInteractorType intType) {
