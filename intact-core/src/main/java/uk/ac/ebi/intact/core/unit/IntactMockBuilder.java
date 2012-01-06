@@ -224,17 +224,25 @@ public class IntactMockBuilder {
     }
 
     public Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource) {
+        return createProtein(uniprotId, shortLabel, shortLabel, bioSource);
+    }
+
+    public Protein createProtein(String uniprotId, String shortLabel, String geneName, BioSource bioSource) {
         CvInteractorType intType = createCvObject(CvInteractorType.class, CvInteractorType.PROTEIN_MI_REF, CvInteractorType.PROTEIN);
 
-        return createProtein(uniprotId, shortLabel, bioSource, intType);
+        return createProtein(uniprotId, shortLabel, geneName, bioSource, intType );
     }
 
     private Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource, CvInteractorType intType) {
+        return createProtein(uniprotId, shortLabel, shortLabel, bioSource, intType);
+    }
+
+    private Protein createProtein(String uniprotId, String shortLabel, String geneName, BioSource bioSource, CvInteractorType intType) {
         Protein protein = new ProteinImpl(getInstitution(), bioSource, shortLabel, intType);
         InteractorXref idXref = createIdentityXrefUniprot(protein, uniprotId);
         protein.addXref(idXref);
 
-        InteractorAlias alias = createAliasGeneName(protein, shortLabel.toUpperCase());
+        InteractorAlias alias = createAliasGeneName(protein, geneName);
         protein.addAlias(alias);
 
         String sequence = randomPeptideSequence();
@@ -372,6 +380,24 @@ public class IntactMockBuilder {
 
     public Component createComponentPrey(Interaction interaction, Interactor interactor) {
         CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.PREY_PSI_REF, CvExperimentalRole.PREY);
+        CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
+
+        return createComponent(interaction, interactor, expRole, bioRole);
+    }
+
+    public Component createComponentEnzyme(Interactor interactor) {
+        Interaction interaction = createInteractionDirect();
+        
+        CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.ENZYME_PSI_REF, CvExperimentalRole.ENZYME);
+        CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
+
+        return createComponent(interaction, interactor, expRole, bioRole);
+    }
+
+    public Component createComponentEnzymeTarget(Interactor interactor) {
+        Interaction interaction = createInteractionDirect();
+        
+        CvExperimentalRole expRole = createCvObject(CvExperimentalRole.class, CvExperimentalRole.ENZYME_TARGET_PSI_REF, CvExperimentalRole.ENZYME_TARGET);
         CvBiologicalRole bioRole = createCvObject(CvBiologicalRole.class, CvBiologicalRole.UNSPECIFIED_PSI_REF, CvBiologicalRole.UNSPECIFIED);
 
         return createComponent(interaction, interactor, expRole, bioRole);
