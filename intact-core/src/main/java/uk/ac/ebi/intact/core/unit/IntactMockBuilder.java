@@ -233,7 +233,7 @@ public class IntactMockBuilder {
         return createProtein(uniprotId, shortLabel, geneName, bioSource, intType );
     }
 
-    private Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource, CvInteractorType intType) {
+    public Protein createProtein(String uniprotId, String shortLabel, BioSource bioSource, CvInteractorType intType) {
         return createProtein(uniprotId, shortLabel, shortLabel, bioSource, intType);
     }
 
