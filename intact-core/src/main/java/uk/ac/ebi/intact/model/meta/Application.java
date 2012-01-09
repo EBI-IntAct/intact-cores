@@ -4,7 +4,8 @@ import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * An intact user.
