@@ -1,14 +1,11 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
-import com.sun.jdi.event.EventSet;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.LifecycleEventDao;
 import uk.ac.ebi.intact.model.LifecycleEvent;
-import uk.ac.ebi.intact.model.MineInteraction;
-import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
