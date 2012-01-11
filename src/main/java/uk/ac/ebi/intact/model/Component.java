@@ -257,14 +257,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         return experimentalRoles.iterator().next();
     }
 
-    /**
-     * Setter for property 'experimentalRole'.
-     *
-     * @param experimentalRole Value to set for property 'experimentalRole'.
-     */
-    @Deprecated
-    public void setCvExperimentalRole( CvExperimentalRole experimentalRole ) {
-        getExperimentalRoles().clear();
+    public void addExperimentalRole( CvExperimentalRole experimentalRole ) {
         getExperimentalRoles().add( experimentalRole );
     }
 
