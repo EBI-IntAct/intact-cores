@@ -54,7 +54,7 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
 
         Xref xref = AnnotatedObjectUtils.searchXrefs( psimi, psimi ).iterator().next();
         Assert.assertEquals( psimi, xref.getCvDatabase() );
-        Assert.assertSame( psimi, xref.getCvDatabase() );
+        Assert.assertSame( psimi.getIdentifier(), xref.getCvDatabase().getIdentifier() );
     }
 
     @Test
