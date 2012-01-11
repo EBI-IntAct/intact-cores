@@ -69,9 +69,6 @@ public class IntactInitializer implements ApplicationContextAware{
     private DbInfoDao dbInfoDao;
 
     @Autowired
-    private CvObjectDao cvObjectDao;
-
-    @Autowired
     private DaoFactory daoFactory;
 
     @Autowired
@@ -221,9 +218,9 @@ public class IntactInitializer implements ApplicationContextAware{
      public void persistBasicCvObjects() {
 
         if (isAutoPersist() ) {
-            log.info( "Persisting necessary CvObjects" );
+            log.info("Persisting necessary CvObjects");
 
-            createCvIfMissing( CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null );
+            createCvIfMissing(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null);
             CvTopic usedInClass = createCvIfMissing( CvTopic.class, null, CvTopic.USED_IN_CLASS, null );
             addUsedInClass(usedInClass, usedInClass, CvObject.class.getName());
 
@@ -258,8 +255,9 @@ public class IntactInitializer implements ApplicationContextAware{
     }
 
     private <T extends CvObject> T createCvIfMissing( Class<T> clazz, String cvId, String cvName, CvDagObject parent ) {
-        T cv = null;
-        if ( ( cv = (T) cvObjectDao.getByPsiMiRef(cvId) ) == null) {
+        T cv = daoFactory.getCvObjectDao(clazz).getByPsiMiRef(cvId);
+
+        if ( cv == null) {
             cv = CvObjectUtils.createCvObject(configuration.getDefaultInstitution(), clazz, cvId, cvName );
             corePersister.saveOrUpdate(cv);
 
@@ -268,6 +266,7 @@ public class IntactInitializer implements ApplicationContextAware{
                 cvDag.addParent( parent );
             }
         }
+
         return cv;
     }
 

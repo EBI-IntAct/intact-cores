@@ -288,11 +288,12 @@ public class IntactContext implements DisposableBean, Serializable {
     public ConfigurableApplicationContext getSpringContext() {
         return (ConfigurableApplicationContext) springContext;
     }
+    
+    public void close() throws Exception {
+
+    }
 
     public void destroy() throws Exception {
-        if (log.isDebugEnabled()) log.debug("Persisting configuration");
-        getConfigurationHandler().persistConfiguration();
-
         getSpringContext().close();
 
         if (log.isDebugEnabled()) log.debug("Releasing LogFactory");
