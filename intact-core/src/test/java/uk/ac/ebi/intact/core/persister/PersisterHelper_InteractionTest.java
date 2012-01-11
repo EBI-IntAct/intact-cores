@@ -399,8 +399,8 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         CvExperimentalRole expRole2 = componentIterator.next().getCvExperimentalRole();
 
         componentIterator = interaction2.getComponents().iterator();
-        componentIterator.next().setCvExperimentalRole(expRole2);
-        componentIterator.next().setCvExperimentalRole(expRole1);
+        componentIterator.next().addExperimentalRole(expRole2);
+        componentIterator.next().addExperimentalRole(expRole1);
 
         getCorePersister().saveOrUpdate(interaction2);
 
@@ -417,7 +417,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
         Interaction interaction2 = getMockBuilder().createDeterministicInteraction();
-        final Feature feature = interaction2.getComponents().iterator().next().getBindingDomains().iterator().next();
+        final Feature feature = interaction2.getComponents().iterator().next().getFeatures().iterator().next();
         feature.getRanges().iterator().next().setFromIntervalStart(3);
 
         getCorePersister().saveOrUpdate(interaction2);

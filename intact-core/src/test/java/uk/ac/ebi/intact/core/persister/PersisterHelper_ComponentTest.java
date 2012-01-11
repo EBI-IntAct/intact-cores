@@ -129,7 +129,8 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         CvExperimentalRole neutralExperimentalRole = getMockBuilder().createCvObject( CvExperimentalRole.class, CvExperimentalRole.NEUTRAL_PSI_REF, CvExperimentalRole.NEUTRAL );
 
-        refreshed.setCvExperimentalRole(neutralExperimentalRole);
+        refreshed.getExperimentalRoles().clear();
+        refreshed.addExperimentalRole(neutralExperimentalRole);
 
         getCorePersister().saveOrUpdate(neutralExperimentalRole, refreshed);
 
