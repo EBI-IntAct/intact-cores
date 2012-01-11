@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.persister;
 
 import com.google.common.collect.Maps;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
@@ -43,6 +44,7 @@ import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 
 import javax.persistence.FlushModeType;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -595,7 +597,11 @@ public class CorePersisterImpl implements CorePersister {
 
         // copy the state from the managed object to the ao
         if (dbObject != null) {
-            entityStateCopier.copy(dbObject, ao);
+            try {
+                BeanUtils.copyProperties(ao, dbObject);
+            } catch (Exception e) {
+                throw new PersisterException("Problem refreshing state for object: "+ao, e);
+            }
         }
 
         if (ao instanceof InteractionImpl) {
