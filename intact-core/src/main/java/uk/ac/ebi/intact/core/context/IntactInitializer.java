@@ -22,6 +22,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -220,37 +221,39 @@ public class IntactInitializer implements ApplicationContextAware{
         if (isAutoPersist() ) {
             log.info("Persisting necessary CvObjects");
 
+            final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
             createCvIfMissing(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null);
-            CvTopic usedInClass = createCvIfMissing( CvTopic.class, null, CvTopic.USED_IN_CLASS, null );
+            CvTopic usedInClass = createCvIfMissing(CvTopic.class, null, CvTopic.USED_IN_CLASS, null);
             addUsedInClass(usedInClass, usedInClass, CvObject.class.getName());
 
-            CvTopic hidden = createCvIfMissing( CvTopic.class, null, CvTopic.HIDDEN, null );
+            CvTopic hidden = createCvIfMissing(CvTopic.class, null, CvTopic.HIDDEN, null);
             addUsedInClass(hidden, usedInClass, CvObject.class.getName());
 
-            CvTopic onhold = createCvIfMissing( CvTopic.class, null, CvTopic.ON_HOLD, null );
-            addUsedInClass(onhold, usedInClass, Publication.class.getName()+","+Experiment.class.getName());
+            CvTopic onhold = createCvIfMissing(CvTopic.class, null, CvTopic.ON_HOLD, null);
+            addUsedInClass(onhold, usedInClass, Publication.class.getName() + "," + Experiment.class.getName());
 
-            CvTopic correctionComment = createCvIfMissing( CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null );
+            CvTopic correctionComment = createCvIfMissing(CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null);
             markAsHidden(correctionComment, hidden);
             addUsedInClass(correctionComment, usedInClass, Experiment.class.getName());
 
             // Creating publication status
-            final CvPublicationStatus rootStatus = createCvIfMissing( CvPublicationStatus.class,
-                                                                                        CvPublicationStatusType.PUB_STATUS.identifier(),
-                                                                                        CvPublicationStatusType.PUB_STATUS.name(),
-                                                                                        null );
+            final CvPublicationStatus rootStatus = createCvIfMissing(CvPublicationStatus.class,
+                    CvPublicationStatusType.PUB_STATUS.identifier(),
+                    CvPublicationStatusType.PUB_STATUS.name(),
+                    null);
             for (CvPublicationStatusType cvPublicationStatusType : CvPublicationStatusType.values()) {
-                createCvIfMissing(CvPublicationStatus.class, cvPublicationStatusType.identifier(), cvPublicationStatusType.shortLabel(), rootStatus );
+                createCvIfMissing(CvPublicationStatus.class, cvPublicationStatusType.identifier(), cvPublicationStatusType.shortLabel(), rootStatus);
             }
 
             // creating publication lifecycle event
-            final CvLifecycleEvent rootEvent = createCvIfMissing( CvLifecycleEvent.class,
-                                                                                  CvLifecycleEventType.LIFECYCLE_EVENT.identifier(),
-                                                                                  CvLifecycleEventType.LIFECYCLE_EVENT.name(),
-                                                                                  null );
+            final CvLifecycleEvent rootEvent = createCvIfMissing(CvLifecycleEvent.class,
+                    CvLifecycleEventType.LIFECYCLE_EVENT.identifier(),
+                    CvLifecycleEventType.LIFECYCLE_EVENT.name(),
+                    null);
             for (CvLifecycleEventType cvLifecycleEventType : CvLifecycleEventType.values()) {
                 createCvIfMissing(CvLifecycleEvent.class, cvLifecycleEventType.identifier(), cvLifecycleEventType.shortLabel(), rootEvent);
             }
+            IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
         }
     }
 
