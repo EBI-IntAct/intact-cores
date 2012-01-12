@@ -1,8 +1,0 @@
-Data Access
-~~~~~~~~~~~
-
- * {{{data/daos.html}DAOs}}
-
- * {{{data/idgeneration.html}IDs Generation}}
- 
- * {{{data/migrationOJB2Hibernate.html}Migration from OJB to Hibernate}}
