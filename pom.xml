@@ -27,16 +27,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkMode>pertest</forkMode>
-                    <argLine>-Xmx256m</argLine>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
     <dependencies>
