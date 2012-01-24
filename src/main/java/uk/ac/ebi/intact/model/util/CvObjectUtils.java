@@ -97,6 +97,21 @@ public final class CvObjectUtils {
         return cv;
     }
 
+    public static <T extends CvObject> T createIntactCvObject(Institution institution, Class<T> cvClass, String intactId, String shortLabel) {
+        T cv = ClassUtils.newInstance(cvClass);
+        cv.setOwner(institution);
+        cv.setShortLabel(shortLabel);
+        cv.setIdentifier(intactId);
+
+        if (intactId != null) {
+            CvObjectXref idXref = XrefUtils.createIdentityXrefIntact(cv, intactId);
+            cv.addXref(idXref);
+            idXref.prepareParentMi();
+        }
+
+        return cv;
+    }
+
     public static boolean isProteinType(CvInteractorType type) {
         return isChildOfType(type, CvInteractorType.PROTEIN_MI_REF, true);
     }

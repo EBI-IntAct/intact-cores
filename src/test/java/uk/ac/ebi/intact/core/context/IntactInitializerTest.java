@@ -25,12 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
-import uk.ac.ebi.intact.model.CvObject;
+import uk.ac.ebi.intact.model.CvDatabase;
+import uk.ac.ebi.intact.model.CvPublicationStatus;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManagerFactory;
-import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -54,6 +54,9 @@ public class IntactInitializerTest extends IntactBasicTestCase {
 
         CvTopic correctionComment = getDaoFactory().getCvObjectDao(CvTopic.class).getByShortLabel(CvTopic.CORRECTION_COMMENT);
         Assert.assertTrue(CvObjectUtils.isHidden(correctionComment));
+        CvPublicationStatus released = getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByShortLabel("released");
+        Assert.assertEquals(1, released.getXrefs().size());
+        Assert.assertEquals(CvDatabase.INTACT, released.getXrefs().iterator().next().getCvDatabase().getShortLabel());
     }
 
     @Test

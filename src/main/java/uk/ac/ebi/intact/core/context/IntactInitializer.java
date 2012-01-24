@@ -29,7 +29,6 @@ import org.springframework.util.Assert;
 import uk.ac.ebi.intact.core.config.ConfigurationHandler;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.config.SchemaVersion;
-import uk.ac.ebi.intact.core.persistence.dao.CvObjectDao;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persistence.dao.DbInfoDao;
 import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
@@ -237,28 +236,28 @@ public class IntactInitializer implements ApplicationContextAware{
             addUsedInClass(correctionComment, usedInClass, Experiment.class.getName());
 
             // Creating publication status
-            final CvPublicationStatus rootStatus = createCvIfMissing(CvPublicationStatus.class,
+            final CvPublicationStatus rootStatus = createIntactCvIfMissing(CvPublicationStatus.class,
                     CvPublicationStatusType.PUB_STATUS.identifier(),
                     CvPublicationStatusType.PUB_STATUS.name(),
                     null);
             for (CvPublicationStatusType cvPublicationStatusType : CvPublicationStatusType.values()) {
-                createCvIfMissing(CvPublicationStatus.class, cvPublicationStatusType.identifier(), cvPublicationStatusType.shortLabel(), rootStatus);
+                createIntactCvIfMissing(CvPublicationStatus.class, cvPublicationStatusType.identifier(), cvPublicationStatusType.shortLabel(), rootStatus);
             }
 
             // creating publication lifecycle event
-            final CvLifecycleEvent rootEvent = createCvIfMissing(CvLifecycleEvent.class,
+            final CvLifecycleEvent rootEvent = createIntactCvIfMissing(CvLifecycleEvent.class,
                     CvLifecycleEventType.LIFECYCLE_EVENT.identifier(),
                     CvLifecycleEventType.LIFECYCLE_EVENT.name(),
                     null);
             for (CvLifecycleEventType cvLifecycleEventType : CvLifecycleEventType.values()) {
-                createCvIfMissing(CvLifecycleEvent.class, cvLifecycleEventType.identifier(), cvLifecycleEventType.shortLabel(), rootEvent);
+                createIntactCvIfMissing(CvLifecycleEvent.class, cvLifecycleEventType.identifier(), cvLifecycleEventType.shortLabel(), rootEvent);
             }
             IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
         }
     }
 
     private <T extends CvObject> T createCvIfMissing( Class<T> clazz, String cvId, String cvName, CvDagObject parent ) {
-        T cv = daoFactory.getCvObjectDao(clazz).getByPsiMiRef(cvId);
+        T cv = daoFactory.getCvObjectDao(clazz).getByIdentifier(cvId);
 
         if ( cv == null) {
             cv = CvObjectUtils.createCvObject(configuration.getDefaultInstitution(), clazz, cvId, cvName );
@@ -270,6 +269,20 @@ public class IntactInitializer implements ApplicationContextAware{
             }
         }
 
+        return cv;
+    }
+
+    private <T extends CvObject> T createIntactCvIfMissing( Class<T> clazz, String cvId, String cvName, CvDagObject parent ) {
+        T cv = daoFactory.getCvObjectDao(clazz).getByIdentifier(cvId);
+        if ( cv == null) {
+            cv = CvObjectUtils.createIntactCvObject(configuration.getDefaultInstitution(), clazz, cvId, cvName );
+            corePersister.saveOrUpdate(cv);
+
+            if( parent != null && cv instanceof CvDagObject ) {
+                CvDagObject cvDag = (CvDagObject) cv;
+                cvDag.addParent( parent );
+            }
+        }
         return cv;
     }
 
