@@ -786,7 +786,7 @@ public class IntactMockBuilder {
      //////////////////////
     // Confidence
      public Confidence createDeterministicConfidence() {
-        CvConfidenceType cvConfidenceType = createCvObject( CvConfidenceType.class, "IA:9974", "intact confidence");
+        CvConfidenceType cvConfidenceType = CvObjectUtils.createIntactCvObject(getInstitution(), CvConfidenceType.class, "IA:9974", "intact confidence");
         Confidence conf = createConfidence( cvConfidenceType, "0.8");
         return conf;
     }
@@ -797,7 +797,7 @@ public class IntactMockBuilder {
     }
 
      public Confidence createConfidenceRandom() {
-        CvConfidenceType cvConfidenceType = createCvObject( CvConfidenceType.class, "IA:"+ new Random().nextInt(1000), nextString( "cv"));
+        CvConfidenceType cvConfidenceType = CvObjectUtils.createIntactCvObject(getInstitution(), CvConfidenceType.class, "IA:"+ new Random().nextInt(1000), nextString( "cv"));
         Confidence conf = createConfidence(cvConfidenceType, Double.toString( new Random().nextDouble()));
         return conf;
     }
