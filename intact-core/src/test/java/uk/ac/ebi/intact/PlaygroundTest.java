@@ -2,6 +2,7 @@ package uk.ac.ebi.intact;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.h2.tools.Server;
 import org.hibernate.dialect.H2Dialect;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,10 +24,16 @@ public class PlaygroundTest {
     @Test
     @Ignore
     public void printH2Schema() throws Exception {
+        final Server server = Server.createTcpServer("-tcpPort", "39101", "-baseDir", "target", "-tcpDaemon");
+        server.start();
+
         IntactContext.initContext(new String[] {"classpath:/META-INF/persistent-db-test.xml"});
+
+        IntactContext.getCurrentInstance().getCorePersister().saveOrUpdate(new IntactMockBuilder().createPublicationRandom());
 
         System.out.println(IntactContext.getCurrentInstance().getDaoFactory().getPublicationDao().countAll());
 
+//        IntactContext.getCurrentInstance().getSpringContext().close();
         IntactContext.getCurrentInstance().destroy();
 
         System.out.println("\n\n\n\n\n"+IntactContext.currentInstanceExists()+"\n\n\n\n");
@@ -34,5 +41,7 @@ public class PlaygroundTest {
         IntactContext.initContext(new String[] {"classpath:/META-INF/persistent-db-test.xml"});
 
         System.out.println(IntactContext.getCurrentInstance().getDaoFactory().getPublicationDao().countAll());
+
+        server.stop();
     }
 }

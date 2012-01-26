@@ -217,10 +217,13 @@ public class CorePersisterImpl implements CorePersister {
                 // let the cascade deal with the preferences
                 userDao.persist( user );
             } else {
-                if( IntactCore.isManaged( user ) ) {
+                final String ac = finder.findAc(user);
+                
+                if (ac != null) {
+                    user.setAc(ac);
+                    userDao.merge(user);
+                } else if( IntactCore.isManaged( user ) ) {
                     userDao.update( user );
-                } else {
-                    userDao.merge( user );
                 }
 
                 // preferences
@@ -1107,8 +1110,22 @@ public class CorePersisterImpl implements CorePersister {
         if (user.getAc() != null) {
             key = new Key("user:"+user.getAc());
         } else {
-            key = new Key("user:"+user.getLogin());
-            annotatedObjectsToPersist.put( key, user );
+            String userAc = finder.findAc(user);
+            
+            if (userAc != null) {
+                key = new Key("user:"+userAc);
+                User aoUser = dataContext.getDaoFactory().getUserDao().getByAc(userAc);
+                aoUser.setFirstName(user.getFirstName());
+                aoUser.setLastName(user.getLastName());
+                aoUser.setEmail(user.getEmail());
+                aoUser.setPassword(user.getPassword());
+                
+                user = aoUser;
+            } else {
+                key = new Key("user:"+user.getLogin());
+                annotatedObjectsToPersist.put( key, user );
+            }
+
         }
 
         if (synched.containsKey(key)) {

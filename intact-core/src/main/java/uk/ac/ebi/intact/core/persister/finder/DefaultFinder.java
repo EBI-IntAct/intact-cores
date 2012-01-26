@@ -30,6 +30,7 @@ import uk.ac.ebi.intact.core.persister.Finder;
 import uk.ac.ebi.intact.core.persister.FinderException;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.user.Role;
+import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.*;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
 import uk.ac.ebi.intact.model.util.filter.XrefCvFilter;
@@ -110,6 +111,27 @@ public class DefaultFinder implements Finder {
             Role aRole = getDaoFactory().getRoleDao().getRoleByName( role.getName() );
             if( aRole != null ) {
                 ac = aRole.getAc();
+            }
+        }
+
+        return ac;
+    }
+
+    @Override
+    public String findAc(User user) {
+        String ac = null;
+        
+        if (user.getAc() != null) {
+            ac = user.getAc();
+        } else {
+            User aUser = getDaoFactory().getUserDao().getByLogin(user.getLogin());
+
+            if (aUser == null && user.getEmail() != null) {
+                aUser = getDaoFactory().getUserDao().getByEmail(user.getEmail());
+            }
+
+            if (aUser != null) {
+                ac = aUser.getAc();
             }
         }
 

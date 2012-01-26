@@ -19,7 +19,7 @@ public interface Finder {
      * @param annotatedObject the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    public String findAc( AnnotatedObject annotatedObject );
+    String findAc( AnnotatedObject annotatedObject );
 
     /**
      * Finds a role based on its properties.
@@ -27,7 +27,8 @@ public interface Finder {
      * @param role the object we are searching an AC for.
      * @return an AC or null if it couldn't be found.
      */
-    public String findAc( Role role );
+    String findAc( Role role );
 
 
+    String findAc(User user);
 }
