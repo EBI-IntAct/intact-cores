@@ -75,7 +75,7 @@ public class LifecycleEvent extends IntactObjectImpl {
         this.who = who;
     }
 
-    @Column(name = "when")
+    @Column(name = "when_date")
     @Temporal( TemporalType.TIMESTAMP )
     public Date getWhen() {
         return when;
