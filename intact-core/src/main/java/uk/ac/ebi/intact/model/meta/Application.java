@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.model.meta;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
@@ -52,6 +53,7 @@ public class Application extends IntactObjectImpl  {
     }
 
     @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     public String getDescription() {
         return description;
     }

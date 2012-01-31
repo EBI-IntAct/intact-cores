@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.*;
@@ -86,6 +87,7 @@ public class LifecycleEvent extends IntactObjectImpl {
     }
 
     @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     public String getNote() {
         return note;
     }

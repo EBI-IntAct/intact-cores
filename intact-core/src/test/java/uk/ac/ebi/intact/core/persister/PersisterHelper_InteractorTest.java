@@ -205,9 +205,9 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
             // The following initializations are not necessary, since we run Hibernate with an assertion removed
             // in the CollectionEntry class.
 
-            //Hibernate.initialize(c.getBindingDomains());
-            //Hibernate.initialize(c.getExperimentalRoles());
-            //Hibernate.initialize(c.getExperimentalPreparations());
+            IntactCore.initialize(c.getFeatures());
+            IntactCore.initialize(c.getExperimentalRoles());
+            IntactCore.initialize(c.getExperimentalPreparations());
 
             c.setInteractor(destinationReloaded);
             context2.getDaoFactory().getComponentDao().update(c);

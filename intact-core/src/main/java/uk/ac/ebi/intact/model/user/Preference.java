@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.model.user;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
@@ -62,6 +63,7 @@ public class Preference extends IntactObjectImpl {
     }
 
     @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     public String getValue() {
         return value;
     }
