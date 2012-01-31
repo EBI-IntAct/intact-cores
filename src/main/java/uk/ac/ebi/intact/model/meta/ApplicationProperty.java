@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.model.meta;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 import uk.ac.ebi.intact.model.user.User;
 
@@ -50,6 +51,7 @@ public class ApplicationProperty extends IntactObjectImpl {
     }
 
     @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     public String getValue() {
         return value;
     }
