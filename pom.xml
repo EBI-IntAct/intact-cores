@@ -39,32 +39,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- patched hibernate version -->
-        <!--<dependency>-->
-            <!--<groupId>org.hibernate</groupId>-->
-            <!--<artifactId>hibernate-core</artifactId>-->
-            <!--<version>3.6.9.Final</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.hibernate</groupId>-->
-            <!--<artifactId>hibernate-entitymanager</artifactId>-->
-            <!--<version>3.6.9.Final</version>-->
-            <!--<exclusions>-->
-                <!--&lt;!&ndash; using the clib-nodep below, which includes dependencies such as asm &ndash;&gt;-->
-                <!--<exclusion>-->
-                    <!--<groupId>cglib</groupId>-->
-                    <!--<artifactId>cglib</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>cglib</groupId>-->
-            <!--<artifactId>cglib-nodep</artifactId>-->
-            <!--<version>2.2</version>-->
-        <!--</dependency>-->
-
-
         <!-- intact deps -->
         <dependency>
             <groupId>uk.ac.ebi.intact.commons</groupId>
