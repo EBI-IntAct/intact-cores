@@ -642,22 +642,22 @@ public class DefaultFinder implements Finder {
         return false;
     }
 
-    private boolean isAnIdentityCrossReference(CvXrefQualifier qualifier){
+    private boolean isAnIdentityOrSecondaryCrossReference(CvXrefQualifier qualifier){
         if (qualifier == null){
             return false;
         }
         if (qualifier.getIdentifier() != null){
-            if (qualifier.getIdentifier().equals(CvXrefQualifier.IDENTITY_MI_REF)){
+            if (qualifier.getIdentifier().equals(CvXrefQualifier.IDENTITY_MI_REF) || qualifier.getIdentifier().equals(CvXrefQualifier.SECONDARY_AC_MI_REF)){
                 return true;
             }
         }
         else {
             if (qualifier.getShortLabel() != null){
-                if (qualifier.getShortLabel().equals(CvXrefQualifier.IDENTITY)){
+                if (qualifier.getShortLabel().equals(CvXrefQualifier.IDENTITY) || qualifier.getShortLabel().equals(CvXrefQualifier.SECONDARY_AC)){
                     return true;
                 }
             }
-            if (qualifier.getFullName() != null){
+            else if (qualifier.getFullName() != null){
                 if (qualifier.getFullName().equals("identical object")){
                     return true;
                 }
@@ -724,7 +724,7 @@ public class DefaultFinder implements Finder {
                 for (CvObjectXref cr : ref){
                     if (cr.getCvXrefQualifier() != null){
                         CvXrefQualifier qualifier = cr.getCvXrefQualifier();
-                        if (isAnIdentityCrossReference(qualifier)){
+                        if (isAnIdentityOrSecondaryCrossReference(qualifier)){
                             identifiersToTest.add(cr.getPrimaryId());
                         }
                     }
