@@ -217,6 +217,7 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
 
     public void removeAlias( A alias ) {
         this.aliases.remove( alias );
+        alias.setParent(null);
     }
 
     ///////////////////////////////////////
