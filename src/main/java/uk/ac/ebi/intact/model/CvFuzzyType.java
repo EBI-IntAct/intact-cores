@@ -69,13 +69,13 @@ public class CvFuzzyType extends CvDagObject implements Editable {
     /**
      * The constant for n-terminal region.
      */
-    public static final String N_TERMINAL_REGION = "n-terminal region"; // TODO update with n-terminal range
+    public static final String N_TERMINAL_REGION = "n-term range";
     public static final String N_TERMINAL_REGION_MI_REF = "MI:1040";
 
     /**
      * The constant for c-terminal region.
      */
-    public static final String C_TERMINAL_REGION = "c-terminal region"; // TODO update with c-terminal range
+    public static final String C_TERMINAL_REGION = "c-term range";
     public static final String C_TERMINAL_REGION_MI_REF = "MI:1039";
 
     // -- Start of Inner class ------------------------------------------------
