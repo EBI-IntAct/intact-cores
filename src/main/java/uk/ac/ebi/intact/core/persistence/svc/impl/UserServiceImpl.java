@@ -255,8 +255,9 @@ public class UserServiceImpl implements UserService {
         Document doc = buildUsersDocument( users );
         try {
             TransformerFactory tFactory = TransformerFactory.newInstance();
-            tFactory.setAttribute("indent-number", 2);
+
             Transformer transformer =  tFactory.newTransformer();
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
 
             DOMSource source = new DOMSource(doc);
