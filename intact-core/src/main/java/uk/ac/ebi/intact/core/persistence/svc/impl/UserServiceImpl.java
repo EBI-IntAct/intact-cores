@@ -253,11 +253,11 @@ public class UserServiceImpl implements UserService {
     public void marshallUsers( Collection<User> users, OutputStream os ) throws UserServiceException {
 
         Document doc = buildUsersDocument( users );
+
         try {
             TransformerFactory tFactory = TransformerFactory.newInstance();
 
             Transformer transformer =  tFactory.newTransformer();
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
 
             DOMSource source = new DOMSource(doc);
