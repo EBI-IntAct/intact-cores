@@ -362,8 +362,8 @@ public class FeatureUtilsTest  extends IntactBasicTestCase {
         String seq = null;
 
         Range range = getMockBuilder().createRange(0,0,0,0);
-        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "n-terminal region"));
-        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "n-terminal region"));
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "n-term range"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "n-term range"));
 
         Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
 
@@ -384,8 +384,8 @@ public class FeatureUtilsTest  extends IntactBasicTestCase {
         String seq = null;
 
         Range range = getMockBuilder().createRange(0,0,0,0);
-        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "c-terminal region"));
-        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "c-terminal region"));
+        range.setFromCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "c-term range"));
+        range.setToCvFuzzyType(getMockBuilder().createCvObject(CvFuzzyType.class, null, "c-term range"));
 
         Assert.assertFalse(FeatureUtils.isABadRange(range, seq));
 
