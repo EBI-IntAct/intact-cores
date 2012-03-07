@@ -291,10 +291,10 @@ public class DefaultFinder implements Finder {
         }
         else if ( experimentAcs.size() != 0 && !experiment.getAnnotations().isEmpty()){
             // check the annotations
-            Collection<String> expAnnotDescs = CollectionUtils.collect(experiment.getAnnotations(), new BeanToPropertyValueTransformer("annotationText"));
+            Collection<String> expAnnotDescs = convertAnnotToString(experiment.getAnnotations());
 
             for (String candidateExperimentAc : experimentAcs) {
-                Query annotQuery = getEntityManager().createQuery("select annot.annotationText from Experiment exp " +
+                Query annotQuery = getEntityManager().createQuery("select concat(annot.cvTopic.identifier, annot.annotationText) from Experiment exp " +
                         "left join exp.annotations as annot " +
                         "where exp.ac = :experimentAc");
                 annotQuery.setParameter("experimentAc", candidateExperimentAc);
@@ -314,6 +314,21 @@ public class DefaultFinder implements Finder {
         }
 
         return experimentAc;
+    }
+    
+    private Collection<String> convertAnnotToString(Collection<Annotation> annot){
+        Collection<String> annotations = new ArrayList<String>(annot.size());
+        
+        for (Annotation a : annot){
+             if (a.getCvTopic() == null){
+                 annotations.add(a.getAnnotationText() != null ? a.getAnnotationText() : "");
+             }
+            else {
+                 annotations.add(a.getCvTopic().getIdentifier() + (a.getAnnotationText() != null ? a.getAnnotationText() : ""));
+             }
+        }
+
+        return annotations;
     }
 
     /**

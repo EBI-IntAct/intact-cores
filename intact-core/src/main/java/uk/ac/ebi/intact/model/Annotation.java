@@ -164,10 +164,6 @@ public class Annotation extends BasicObjectImpl {
 
         final Annotation annotation = ( Annotation ) o;
 
-        if ( ac != null ) {
-            return ac.equals( annotation.ac );
-        }
-
         if (!CvObjectUtils.areEqual(cvTopic, annotation.getCvTopic()) ) {
             return false;
         }
