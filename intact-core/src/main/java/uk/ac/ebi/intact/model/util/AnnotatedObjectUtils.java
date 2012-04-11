@@ -406,9 +406,14 @@ public final class AnnotatedObjectUtils {
 
     public static boolean isCvTopicPublic(CvTopic cvTopic) {
         for (Annotation annotation : IntactCore.ensureInitializedAnnotations(cvTopic)) {
-            if (annotation.getCvTopic().getShortLabel().equals(CvTopic.HIDDEN)) {
+            if(annotation.getCvTopic() != null){
+                if (annotation.getCvTopic().getShortLabel().equals(CvTopic.HIDDEN) || annotation.getCvTopic().getShortLabel().equals(CvTopic.NO_EXPORT)) {
+                    return false;
+                }
+            } else {
                 return false;
             }
+
         }
         return true;
     }
