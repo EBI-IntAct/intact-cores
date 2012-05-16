@@ -188,14 +188,16 @@ public final class ExperimentUtils {
                     String author = matcher.group(1);
                     String strYear = matcher.group(3);
                     int year;
+                    int currentChunk;
 
                     try {
                         year = Integer.parseInt(strYear);
+                        currentChunk = Integer.parseInt(matcher.group(4));
                     } catch (NumberFormatException e) {
                         throw new IntactException("The year part of the experiment short label is not numberic: " + strYear + " (" + exp.getShortLabel() + ")");
                     }
 
-                    generator.getSuffix(author, year, expPubId);
+                    generator.getSuffix(author, year, currentChunk, expPubId);
                 }
             }
 
@@ -214,7 +216,7 @@ public final class ExperimentUtils {
                 throw new IntactException("The year part of the experiment short label is not numberic: " + strYear + " (" + shortLabel + ")");
             }
 
-            syncedLabel = shortLabel + generator.getSuffix(author, year, pubmedId);
+            syncedLabel = shortLabel + generator.getSuffix(author, year, 0, pubmedId);
 
         } else {
 

@@ -6,7 +6,6 @@
 package uk.ac.ebi.intact.model.util;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -31,7 +30,7 @@ public class ExperimentShortlabelGenerator {
         private final String character;
         private int count;
 
-        public SuffixBean( String character ) {
+        public SuffixBean( String character) {
             this.character = character;
             this.count = INITIAL_COUNT;
         }
@@ -42,6 +41,10 @@ public class ExperimentShortlabelGenerator {
 
         public int getNextCount() {
             return count++;
+        }
+        
+        public void adjustCurrentCount(int currentChunk){
+            count = Math.max(count, currentChunk);
         }
     }
 
@@ -198,6 +201,11 @@ public class ExperimentShortlabelGenerator {
      */
     public String getSuffix( String author, int year, String pubmedId ) {
 
+        return getSuffix(author, year, 0, pubmedId);
+    }
+
+    public String getSuffix( String author, int year, int currentChunk, String pubmedId ) {
+
         String suffix = null;
 
         SuffixKey key = new SuffixKey( author, year );
@@ -223,11 +231,13 @@ public class ExperimentShortlabelGenerator {
 
                 // if it has already that pubmedId, then the suffix is already initialized.
                 suffixBean = pubmed2suffix.get( pubmedId );
+                suffixBean.adjustCurrentCount(currentChunk);
 
             } else {
 
                 // initialize the suffix
-                suffixBean = new SuffixBean( key.getNextChar() );
+                suffixBean = new SuffixBean( key.getNextChar());
+                suffixBean.adjustCurrentCount(currentChunk);
 
                 // update the map
                 pubmed2suffix.put( pubmedId, suffixBean );
@@ -236,7 +246,8 @@ public class ExperimentShortlabelGenerator {
         } else {
 
             // create the Map and initialize the suffix
-            suffixBean = new SuffixBean( key.getNextChar() );
+            suffixBean = new SuffixBean( key.getNextChar());
+            suffixBean.adjustCurrentCount(currentChunk);
 
             Map<String,SuffixBean> newPubmed2suffix = new HashMap<String,SuffixBean>( 2 );
             newPubmed2suffix.put( pubmedId, suffixBean );
