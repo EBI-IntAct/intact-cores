@@ -15,9 +15,10 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * ExperimentShortlabelGenerator Tester.
@@ -53,6 +54,15 @@ public class ExperimentShortlabelGeneratorTest extends IntactBasicTestCase
         assertEquals( "a-1", esg.getSuffix( "author2", 2005, "pubmed3" ) );
 
         assertEquals( "-1", esg.getSuffix( "author2", 2004, "pubmed2" ) );
+    }
+
+    @Test
+    public void testGetSuffix_existingChunk() {
+        ExperimentShortlabelGenerator esg = new ExperimentShortlabelGenerator();
+
+        assertEquals( "-1", esg.getSuffix( "author1", 2005, 1, "pubmed1" ) );
+        assertEquals( "-3", esg.getSuffix( "author1", 2005, 3, "pubmed1" ) );
+        assertEquals( "-4", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
     }
 
     @Test
