@@ -61,7 +61,14 @@ public abstract class IntactSession implements Serializable{
 
             if ( intactPropsFile.exists() && !intactPropsFile.isDirectory() ) {
                 log.info( "Loading properties from classpath: " + intactPropertiesFilename );
-                properties.load( new FileInputStream( intactPropsFile ) );
+                FileInputStream inputStream = new FileInputStream( intactPropsFile );
+
+                try {
+                    properties.load( inputStream );
+                }
+                finally {
+                    inputStream.close();
+                }
             }
         }
 
@@ -80,7 +87,14 @@ public abstract class IntactSession implements Serializable{
 
         if ( propFile.exists() && !propFile.isDirectory() ) {
             log.info( "Loading properties from filesystem: " + propFile );
-            properties.load( new FileInputStream( propFile ) );
+            FileInputStream inputStream = new FileInputStream( propFile );
+
+            try {
+                properties.load( inputStream );
+            }
+            finally {
+                inputStream.close();
+            }
         } else {
             String filePath = System.getProperty( CONFIG_FILE_SYSTEM_VAR );
 
@@ -89,7 +103,14 @@ public abstract class IntactSession implements Serializable{
 
                 if ( propFile.exists() && !propFile.isDirectory() ) {
                     log.info( "Loading properties from filesystem: " + propFile );
-                    properties.load( new FileInputStream( propFile ) );
+                    FileInputStream inputStream = new FileInputStream( propFile );
+
+                    try {
+                        properties.load( inputStream );
+                    }
+                    finally {
+                        inputStream.close();
+                    }
                 }
             }
         }
