@@ -24,7 +24,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -34,9 +33,8 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
 
 /**
  * Wrapper for a {@link DataSource} that can run scripts on start up and shut
@@ -123,12 +121,18 @@ public class BatchDatasourceInitializer implements InitializingBean, DisposableB
                 JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
                 String[] scripts;
                 try {
-                    scripts = StringUtils.delimitedListToStringArray(stripComments(IOUtils.readLines(scriptResource
-                            .getInputStream())), ";");
+                    InputStream stream = scriptResource.getInputStream();
+                    try{
+                        scripts = StringUtils.delimitedListToStringArray(stripComments(IOUtils.readLines(stream)), ";");
+                    }
+                    finally {
+                        stream.close();
+                    }
                 }
                 catch (IOException e) {
                     throw new BeanInitializationException("Cannot load script from [" + scriptResource + "]", e);
                 }
+
                 for (int i = 0; i < scripts.length; i++) {
                     String script = scripts[i].trim();
                     if (StringUtils.hasText(script)) {
