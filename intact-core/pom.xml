@@ -114,17 +114,6 @@
             <version>1.2.2</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>asm</groupId>-->
-        <!--<artifactId>asm</artifactId>-->
-        <!--<version>1.5.3</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>asm</groupId>-->
-        <!--<artifactId>asm-attrs</artifactId>-->
-        <!--<version>1.5.3</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>antlr</groupId>
             <artifactId>antlr</artifactId>
@@ -137,11 +126,6 @@
             <artifactId>h2</artifactId>
             <version>1.2.143</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>hsqldb</groupId>-->
-        <!--<artifactId>hsqldb</artifactId>-->
-        <!--<version>1.8.0.7</version>-->
-        <!--</dependency>-->
 
         <!-- JODA Time Utils -->
         <dependency>
