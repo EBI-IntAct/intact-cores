@@ -16,6 +16,12 @@
     <url>http://intact.googlecode.com</url>
     <description>Intact Core, which contains the base classes for all intact artifacts</description>
 
+    <scm>
+        <connection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk/intact-core/</connection>
+        <developerConnection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk/intact-core/</developerConnection>
+        <url>http://code.google.com/p/intact/source/browse/repo/core/trunk/intact-core/</url>
+    </scm>
+
     <properties>
         <maven.pmd.skip>true</maven.pmd.skip>
     </properties>
