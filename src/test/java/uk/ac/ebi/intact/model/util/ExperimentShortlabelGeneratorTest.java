@@ -39,16 +39,34 @@ public class ExperimentShortlabelGeneratorTest extends IntactBasicTestCase
         assertEquals( "-1", esg.getSuffix( "author1", 2005, "pubmed1" ) );
         assertEquals( "-2", esg.getSuffix( "author1", 2005, "pubmed1" ) );
         assertEquals( "-3", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-4", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-5", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-6", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-7", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-8", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-9", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-10", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-11", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+		assertEquals( "-12", esg.getSuffix( "author1", 2005, "pubmed1" ) );
 
         // here author1 and 2005 are known already and the char to use should be 'a'
         assertEquals( "a-1", esg.getSuffix( "author1", 2005, "pubmed2" ) );
 
-        assertEquals( "-4", esg.getSuffix( "author1", 2005, "pubmed1" ) );
+        assertEquals( "-13", esg.getSuffix( "author1", 2005, "pubmed1" ) );
 
         assertEquals( "a-2", esg.getSuffix( "author1", 2005, "pubmed2" ) );
         assertEquals( "a-3", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-4", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-5", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-6", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-7", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-8", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-9", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-10", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-11", esg.getSuffix( "author1", 2005, "pubmed2" ) );
+		assertEquals( "a-12", esg.getSuffix( "author1", 2005, "pubmed2" ) );
 
-        assertEquals( "-1", esg.getSuffix( "author2", 2005, "pubmed2" ) );
+		assertEquals( "-1", esg.getSuffix( "author2", 2005, "pubmed2" ) );
         assertEquals( "-2", esg.getSuffix( "author2", 2005, "pubmed2" ) );
 
         assertEquals( "a-1", esg.getSuffix( "author2", 2005, "pubmed3" ) );
@@ -63,7 +81,18 @@ public class ExperimentShortlabelGeneratorTest extends IntactBasicTestCase
         assertEquals( "-1", esg.getSuffix( "author1", 2005, 1, "pubmed1" ) );
         assertEquals( "-3", esg.getSuffix( "author1", 2005, 3, "pubmed1" ) );
         assertEquals( "-4", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
-    }
+		assertEquals( "-5", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+		assertEquals( "-6", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+		assertEquals( "-7", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+		assertEquals( "-8", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+		assertEquals( "-9", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+		assertEquals( "-10", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+		assertEquals( "-11", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+		assertEquals( "-12", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+		assertEquals( "-13", esg.getSuffix( "author1", 2005, 0, "pubmed1" ) );
+
+
+	}
 
     @Test
     public void testGetCharacter() {
