@@ -44,9 +44,9 @@ public class CrcCalculatorTest extends IntactBasicTestCase {
             log.debug( crcCalculator.crc64( interaction ) );
             log.debug( crcCalculator.createUniquenessString( interaction ) );
         }
-       
-        Assert.assertEquals( "51E12A43101D5171", crcCalculator.crc64( interaction ) );
-        Assert.assertEquals( "a1|0.0MI:0499|MI:0498|MI:0396|MI:0350|a2|0.0MI:0499|MI:0496|MI:0505|MI:0338|1-1|MI:0338|5-5|MI:0396|MI:0350|foobar-2006-1|MI:0396|MI:0027|5|MI:0407|MI:0612|This is an annotation|",
+
+        Assert.assertEquals( "C622778714B4C649", crcCalculator.crc64( interaction ) );
+        Assert.assertEquals( "a1|0.0MI:0499|MI:0498|MI:0396|MI:0350|a2|0.0MI:0499|MI:0496|feature1|MI:0505|MI:0338|1-1|MI:0338|5-5|MI:0396|MI:0350|foobar-2006-1|MI:0396|MI:0027|5|MI:0407|MI:0612|This is an annotation|",
                              crcCalculator.createUniquenessString( interaction ).toString() );
     }
 
