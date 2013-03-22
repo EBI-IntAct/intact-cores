@@ -287,7 +287,7 @@ public class IntactInitializer implements ApplicationContextAware{
     }
 
     private void markAsHidden(CvObject cv, CvTopic hidden) {
-        final Annotation hiddenAnnotation = new Annotation(hidden, "");
+        final Annotation hiddenAnnotation = new Annotation(hidden, null);
         cv.addAnnotation(hiddenAnnotation);
 
         corePersister.saveOrUpdate(cv);
