@@ -110,7 +110,9 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
     public List<T> getByBioSourceAc( String ac ) {
         return getSession().createCriteria( getEntityClass() )
                 .createCriteria( "bioSource" )
-                .add( Restrictions.idEq( ac ) ).list();
+                .add( Restrictions.idEq( ac ) )
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .list();
     }
 
     public int countInteractorInvolvedInInteraction() {

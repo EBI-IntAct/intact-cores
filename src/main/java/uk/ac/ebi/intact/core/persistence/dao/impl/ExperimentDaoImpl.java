@@ -161,7 +161,7 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
 
         return getSession().createCriteria(getEntityClass())
                 .createCriteria("bioSource")
-                .add(Restrictions.idEq(biosourceAc)).list();
+                .add(Restrictions.idEq(biosourceAc)).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
     }
 
         /**
