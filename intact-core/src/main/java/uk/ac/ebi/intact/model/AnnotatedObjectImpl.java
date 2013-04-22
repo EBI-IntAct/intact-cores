@@ -302,7 +302,7 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
         for ( Annotation annotation : annotations ) {
             if(annotation.getAnnotationText()!=null){
                 code = 29 * code + annotation.getAnnotationText().hashCode();
-            }    
+            }
         }
 
         for ( Alias alias : aliases ) {
@@ -329,14 +329,15 @@ public abstract class AnnotatedObjectImpl<T extends Xref, A extends Alias> exten
 
         Collection<A> aliases = getAliases();
 
+        //We leave to the persister the creation of the post fix in the label
         // Append the "-x" to the short label.
-        if( copy.shortLabel.length() <= MAX_SHORT_LABEL_LEN - 2 ) {
-            // only append '-x' if it is not going to make the shortlabel longer than 20 chars.
-            copy.shortLabel += "-x";
-        } else {
-            log.error( "Could not append '-x' to this " + this.getClass().getSimpleName() + " shorltabel("+
-                       copy.shortLabel +") as it would make it longer than the maximum supported ("+ MAX_SHORT_LABEL_LEN + " chars)." );
-        }
+//        if( copy.shortLabel.length() <= MAX_SHORT_LABEL_LEN - 2 ) {
+//            // only append '-x' if it is not going to make the shortlabel longer than 20 chars.
+//            copy.shortLabel += "-x";
+//        } else {
+//            log.error( "Could not append '-x' to this " + this.getClass().getSimpleName() + " shorltabel("+
+//                       copy.shortLabel +") as it would make it longer than the maximum supported ("+ MAX_SHORT_LABEL_LEN + " chars)." );
+//        }
 
         // Clone annotations; can't use annotations.clone here as annoatations
         // type is shown as a ListProxy (ClassCastException)

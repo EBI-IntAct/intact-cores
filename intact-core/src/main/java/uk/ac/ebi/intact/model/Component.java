@@ -870,14 +870,49 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         copy.interactorAc = null;
 
         // Make deep copies of Features.
-        copy.bindingDomains = new ArrayList<Feature>( bindingDomains.size() );
-        for ( Feature feature : bindingDomains ) {
-            Feature copyFeature = ( Feature ) feature.clone();
-            // Set the copy component as the component for feature copy.
-            copyFeature.setComponentForClone( copy );
-            // Add the cloned feature to the binding domains.
-            copy.bindingDomains.add( copyFeature );
-        }
+		copy.bindingDomains = new ArrayList<Feature>( bindingDomains.size() );
+		for ( Feature feature : bindingDomains ) {
+			Feature copyFeature = ( Feature ) feature.clone();
+			// Set the copy component as the component for feature copy.
+			copyFeature.setComponentForClone( copy );
+			// Add the cloned feature to the binding domains.
+			copy.bindingDomains.add( copyFeature );
+		}
+
+		// Make deep copies of Confidences.
+		copy.confidences = new ArrayList<ComponentConfidence>( confidences.size() );
+		for ( ComponentConfidence confidence : confidences ) {
+			ComponentConfidence copyConfidence = ( ComponentConfidence ) confidence.clone();
+			// Set the copy component as the component for feature copy.
+			copyConfidence.setComponent( copy );
+			// Add the cloned feature to the binding domains.
+			copy.confidences.add( copyConfidence );
+		}
+
+		// Make deep copies of Confidences.
+		copy.componentParameters = new ArrayList<ComponentParameter>( componentParameters.size() );
+		for ( ComponentParameter parameter : componentParameters ) {
+			ComponentParameter copyParameter = ( ComponentParameter ) parameter.clone();
+			// Set the copy component as the component for feature copy.
+			copyParameter.setComponent( copy );
+			// Add the cloned feature to the binding domains.
+			copy.componentParameters.add( copyParameter );
+		}
+
+		// Make deep copies of Confidences.
+		copy.participantDetectionMethods = new ArrayList<CvIdentification>( participantDetectionMethods );
+
+		copy.experimentalPreparations = new ArrayList<CvExperimentalPreparation>( experimentalPreparations );
+
+		copy.experimentalRoles = new ArrayList<CvExperimentalRole>( experimentalRoles );
+
+//		for ( ComponentConfidence confidence : confidences ) {
+//			ComponentConfidence copyConfidence = ( ComponentConfidence ) confidence.clone();
+//			// Set the copy component as the component for feature copy.
+//			copyConfidence.setComponent( copy );
+//			// Add the cloned feature to the binding domains.
+//			copy.confidences.add( copyConfidence );
+//		}
         return copy;
     }
 }

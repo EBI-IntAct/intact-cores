@@ -547,7 +547,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         // clone 1
         Interaction clonedInteraction = (Interaction) ((InteractionImpl)interaction).clone();
-        clonedInteraction.setExperiments(interaction.getExperiments());
+        clonedInteraction.getExperiments().addAll(interaction.getExperiments());
 
         getPersisterHelper().getCorePersister().setUpdateWithoutAcEnabled(true);
         PersisterStatistics stats2 = getCorePersister().saveOrUpdate(clonedInteraction);
