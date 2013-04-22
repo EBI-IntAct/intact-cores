@@ -292,6 +292,8 @@ public class CrcCalculator {
         if (feature == null) return sb;
 
 		// short label
+		// We need to add the short label for the feature because in mutations in the same amino acid is the only way to
+		// distinguish between two features when the AC is not assigned yet.
 		sb.append(feature.getShortLabel());
 
         // feature type
