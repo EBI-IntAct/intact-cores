@@ -163,7 +163,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
         InteractorImpl complex = new Complex();
         complex.setOwner( ( Institution ) new Institution( "testIntLabel" ).clone() );
         String result = complex.toString();
-        assertEquals( "result", "AC: null Owner: testIntLabel-x Label: null[]", result );
+        assertEquals( "result", "AC: null Owner: testIntLabel Label: null[]", result );
     }
 
     public void testAddActiveInstanceThrowsNullPointerException() throws Throwable {
@@ -204,7 +204,7 @@ public class InteractorImplAgitarTest extends AgitarTestCase {
             assertEquals( "(Complex) complex.getActiveInstances().size()", 0, complex.getActiveInstances().size() );
         }
     }
-    
+
     public void testToStringThrowsNullPointerException() throws Throwable {
         try {
             new Complex().toString();

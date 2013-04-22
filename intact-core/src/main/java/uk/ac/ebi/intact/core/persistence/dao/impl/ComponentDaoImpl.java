@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,9 +46,10 @@ public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implemen
     }
 
     public List<Component> getByExpressedIn(String biosourceAc) {
-        return getSession().createCriteria( getEntityClass() )
-                .createCriteria( "expressedIn" )
-                .add( Restrictions.idEq( biosourceAc ) ).list();
+        return getSession().createCriteria(getEntityClass())
+                .createCriteria("expressedIn")
+                .add(Restrictions.idEq(biosourceAc))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
     }
 
     public List<CvExperimentalPreparation> getExperimentalPreparationsForComponentAc( String componentAc) {
