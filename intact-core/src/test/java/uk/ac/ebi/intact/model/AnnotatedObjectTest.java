@@ -21,7 +21,7 @@ public class AnnotatedObjectTest extends IntactBasicTestCase {
 
         try {
             AnnotatedObject aoc = (AnnotatedObject ) ((AnnotatedObjectImpl)ao).clone();
-            Assert.assertEquals( "1234567890-x", aoc.getShortLabel() );
+            Assert.assertEquals( "1234567890", aoc.getShortLabel() );
         } catch ( CloneNotSupportedException e ) {
             Assert.fail();
         }
@@ -33,7 +33,7 @@ public class AnnotatedObjectTest extends IntactBasicTestCase {
 
         try {
             AnnotatedObject aoc = (AnnotatedObject ) ((AnnotatedObjectImpl)ao).clone();
-            Assert.assertEquals( "1234567890123456789-x", aoc.getShortLabel() );  // shortlabel not updated.
+            Assert.assertEquals( "1234567890123456789", aoc.getShortLabel() );  // shortlabel not updated.
         } catch ( CloneNotSupportedException e ) {
             Assert.fail();
         }
