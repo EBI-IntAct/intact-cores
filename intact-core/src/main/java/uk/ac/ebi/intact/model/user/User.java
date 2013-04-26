@@ -16,8 +16,8 @@ import java.util.*;
  * @since 2.2.1
  */
 @Entity
-@Table( name = "ia_user" )
-public class User extends IntactObjectImpl  {
+@Table(name = "ia_user")
+public class User extends IntactObjectImpl {
 
     private String login;
 
@@ -54,26 +54,26 @@ public class User extends IntactObjectImpl  {
         this.disabled = false;
     }
 
-    public User( String login, String firstName, String lastName, String email ) {
+    public User(String login, String firstName, String lastName, String email) {
         this();
-        setLogin( login );
-        setFirstName( firstName );
-        setLastName( lastName );
-        setEmail( email );
+        setLogin(login);
+        setFirstName(firstName);
+        setLastName(lastName);
+        setEmail(email);
     }
 
     ///////////////////////////
     // Getters and Setters
 
-    @Column( nullable = false, unique = true )
-    @Index( name = "idx_user_login" )
+    @Column(nullable = false, unique = true)
+    @Index(name = "idx_user_login")
     public String getLogin() {
         return login;
     }
 
-    public void setLogin( String login ) {
-        if ( login == null || login.trim().length() == 0 ) {
-            throw new IllegalArgumentException( "You must give a non null login" );
+    public void setLogin(String login) {
+        if (login == null || login.trim().length() == 0) {
+            throw new IllegalArgumentException("You must give a non null login");
         }
         this.login = login.trim();
     }
@@ -82,37 +82,37 @@ public class User extends IntactObjectImpl  {
         return password;
     }
 
-    public void setPassword( String password ) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    @Column( nullable = false )
+    @Column(nullable = false)
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName( String firstName ) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    @Column( nullable = false )
+    @Column(nullable = false)
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName( String lastName ) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    @Column( nullable = false, unique = true )
-    @Index( name = "idx_user_email" )
+    @Column(nullable = false, unique = true)
+    @Index(name = "idx_user_email")
     public String getEmail() {
         return email;
     }
 
-    public void setEmail( String email ) {
-        if ( email == null || email.trim().length() == 0 ) {
-            throw new IllegalArgumentException( "You must give a non null email" );
+    public void setEmail(String email) {
+        if (email == null || email.trim().length() == 0) {
+            throw new IllegalArgumentException("You must give a non null email");
         }
         this.email = email;
     }
@@ -121,63 +121,64 @@ public class User extends IntactObjectImpl  {
         return openIdUrl;
     }
 
-    public void setOpenIdUrl( String openIdUrl ) {
+    public void setOpenIdUrl(String openIdUrl) {
         this.openIdUrl = openIdUrl;
     }
 
-    @Temporal( TemporalType.TIMESTAMP )
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin( Date lastLogin ) {
+    public void setLastLogin(Date lastLogin) {
         this.lastLogin = lastLogin;
     }
 
     /**
      * Gives read-only access to the roles, use the corresponding addRole, removeRole to update it.
+     *
      * @return
      */
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-                 fetch = FetchType.EAGER )
-    @Cascade( org.hibernate.annotations.CascadeType.SAVE_UPDATE )
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_user2role",
-            joinColumns = {@JoinColumn( name = "user_ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "role_ac" )}
+            joinColumns = {@JoinColumn(name = "user_ac")},
+            inverseJoinColumns = {@JoinColumn(name = "role_ac")}
     )
     @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
     public Set<Role> getRoles() {
         return roles;
     }
 
-    public void addRole( Role role ) {
-        if ( role == null ) {
-            throw new IllegalArgumentException( "You must give a non null role" );
+    public void addRole(Role role) {
+        if (role == null) {
+            throw new IllegalArgumentException("You must give a non null role");
         }
-        roles.add( role );
+        roles.add(role);
     }
 
-    public void removeRole( Role role ) {
-        if ( role == null ) {
-            throw new IllegalArgumentException( "You must give a non null role" );
+    public void removeRole(Role role) {
+        if (role == null) {
+            throw new IllegalArgumentException("You must give a non null role");
         }
-        roles.remove( role );
+        roles.remove(role);
     }
 
-    public void setRoles( Set<Role> roles ) {
-        if ( roles == null ) {
-            throw new IllegalArgumentException( "You must give a non null roles" );
+    public void setRoles(Set<Role> roles) {
+        if (roles == null) {
+            throw new IllegalArgumentException("You must give a non null roles");
         }
         this.roles = roles;
     }
 
-    public boolean hasRole( String roleName ) {
-        if( roleName != null ) {
+    public boolean hasRole(String roleName) {
+        if (roleName != null) {
             roleName = roleName.trim();
 
-            for ( Role role : roles ) {
-                if( role.getName().equalsIgnoreCase( roleName ) ) {
+            for (Role role : roles) {
+                if (role.getName().equalsIgnoreCase(roleName)) {
                     return true;
                 }
             }
@@ -189,7 +190,7 @@ public class User extends IntactObjectImpl  {
         return disabled;
     }
 
-    public void setDisabled( boolean disabled ) {
+    public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
 
@@ -198,15 +199,15 @@ public class User extends IntactObjectImpl  {
                            CascadeType.MERGE,
                            CascadeType.REMOVE,
                            CascadeType.REFRESH},
-                fetch = FetchType.EAGER )
+                fetch = FetchType.EAGER, orphanRemoval = true)
     @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     public Collection<Preference> getPreferences() {
         return preferences;
     }
 
-    public void setPreferences( Collection<Preference> preferences ) {
-        if ( preferences == null ) {
-            throw new IllegalArgumentException( "You must give a non null preferences" );
+    public void setPreferences(Collection<Preference> preferences) {
+        if (preferences == null) {
+            throw new IllegalArgumentException("You must give a non null preferences");
         }
         this.preferences = preferences;
     }
@@ -227,8 +228,8 @@ public class User extends IntactObjectImpl  {
     }
 
     public Preference addPreference(Preference preference) {
-        if ( preference == null ) {
-            throw new IllegalArgumentException( "You must give a non null preference" );
+        if (preference == null) {
+            throw new IllegalArgumentException("You must give a non null preference");
         }
         getPreferences().add(preference);
 
@@ -247,23 +248,23 @@ public class User extends IntactObjectImpl  {
     }
 
     public void removePreference(Preference preference) {
-        if ( preference == null ) {
-            throw new IllegalArgumentException( "You must give a non null preference" );
+        if (preference == null) {
+            throw new IllegalArgumentException("You must give a non null preference");
         }
-        preferences.remove( preference );
+        preferences.remove(preference);
     }
 
     //////////////////////////
     // Object's override
 
     @Override
-    public boolean equals( Object o ) {
-        if ( this == o ) return true;
-        if ( !( o instanceof User ) ) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
 
-        User user = ( User ) o;
+        User user = (User) o;
 
-        if ( !login.equals( user.login ) ) return false;
+        if (!login.equals(user.login)) return false;
 
         return true;
     }
@@ -276,17 +277,17 @@ public class User extends IntactObjectImpl  {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append( "User" );
-        sb.append( "{login='" ).append( login ).append( '\'' );
-        sb.append( ", firstName='" ).append( firstName ).append( '\'' );
-        sb.append( ", lastName='" ).append( lastName ).append( '\'' );
-        sb.append( ", lastLogin=" ).append( lastLogin );
-        sb.append( ", email='" ).append( email ).append( '\'' );
-        sb.append( ", openIdUrl='" ).append( openIdUrl ).append( '\'' );
-        sb.append( ", disabled='" ).append( disabled ).append( '\'' );
-        sb.append( ", roles=" ).append( roles );
-        sb.append( ", preferences=" ).append( preferences );
-        sb.append( '}' );
+        sb.append("User");
+        sb.append("{login='").append(login).append('\'');
+        sb.append(", firstName='").append(firstName).append('\'');
+        sb.append(", lastName='").append(lastName).append('\'');
+        sb.append(", lastLogin=").append(lastLogin);
+        sb.append(", email='").append(email).append('\'');
+        sb.append(", openIdUrl='").append(openIdUrl).append('\'');
+        sb.append(", disabled='").append(disabled).append('\'');
+        sb.append(", roles=").append(roles);
+        sb.append(", preferences=").append(preferences);
+        sb.append('}');
         return sb.toString();
     }
 

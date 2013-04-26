@@ -49,8 +49,8 @@ public final class UserUtils {
     }
 
     public static void setInstitution(User user, Institution institution) {
-         user.addOrUpdatePreference(Preference.KEY_INSTITUTION_AC, institution.getAc());
-         user.addOrUpdatePreference(Preference.KEY_INSTITUTION_NAME, institution.getShortLabel());
+        user.addOrUpdatePreference(Preference.KEY_INSTITUTION_AC, institution.getAc());
+        user.addOrUpdatePreference(Preference.KEY_INSTITUTION_NAME, institution.getShortLabel());
     }
 
     public static Integer getReviewerAvailability(User user) {
@@ -74,17 +74,28 @@ public final class UserUtils {
     }
 
     public static User getMentorReviewer(IntactContext intactContext, User user) {
-        Preference preference = user.getPreference(Preference.KEY_MENTOR_REVIEWER);
+        if (user != null) {
+            Preference preference = user.getPreference(Preference.KEY_MENTOR_REVIEWER);
 
-        if (preference != null) {
-            String mentorAc = preference.getValue();
-            return intactContext.getDaoFactory().getUserDao().getByAc(mentorAc);
+            if (preference != null) {
+                String mentorAc = preference.getValue();
+                return intactContext.getDaoFactory().getUserDao().getByAc(mentorAc);
+            }
         }
 
         return null;
     }
 
     public static void setMentorReviewer(User user, User mentor) {
-        user.addOrUpdatePreference(Preference.KEY_MENTOR_REVIEWER, mentor.getAc());
+        if (user != null) {
+            if (mentor == null) {
+                // If we have null as a mentor, we want to assign random reviewers again and for that we need
+                // to remove the preference reviewer
+                user.removePreference(user.getPreference(Preference.KEY_MENTOR_REVIEWER));
+            } else {
+                user.addOrUpdatePreference(Preference.KEY_MENTOR_REVIEWER, mentor.getAc());
+
+            }
+        }
     }
 }
