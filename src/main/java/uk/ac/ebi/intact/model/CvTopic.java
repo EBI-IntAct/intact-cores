@@ -41,7 +41,7 @@ public class CvTopic extends CvDagObject implements Editable {
     public static final String AGONIST = "agonist";
     public static final String AGONIST_MI_REF = "MI:0625";
 
-    public static final String CAUTION = "caution";    
+    public static final String CAUTION = "caution";
     public static final String CAUTION_MI_REF = "MI:0618";
 
     public static final String REMARK_INTERNAL = "remark-internal";
@@ -61,7 +61,7 @@ public class CvTopic extends CvDagObject implements Editable {
     public static final String UNIPROT_CC_EXPORT = "uniprot-cc-note";
 
     public static final String NEGATIVE = "negative";
-    
+
     public static final String FUNCTION = "function";
     public static final String FUNCTION_MI_REF = "MI:0613";
 
@@ -128,9 +128,18 @@ public class CvTopic extends CvDagObject implements Editable {
     public static final String DATASET = "dataset";
     public static final String DATASET_MI_REF = "MI:0875";
 
-    public static final String INCHI_ID = "inchi id";
+    public static final String INCHI_ID = "inchi id"; //standard inchi
     public static final String INCHI_ID_MI_REF = "MI:2010";
-    
+
+    public static final String SMILES_STRING = "smiles string";
+    public static final String SMILES_STRING_MI_REF = "MI:2039";
+
+    public static final String INCHI_KEY = "inchi key";
+    public static final String INCHI_KEY_MI_REF = "MI:0970";
+
+    public static final String STANDARD_INCHI_KEY = "standard inchi key";
+    public static final String STANDARD_INCHI_KEY_MI_REF = "MI:1101";
+
     public static final String LAST_IMEX_UPDATE = "last-imex-update";
 
     public static final String CHAIN_SEQ_START = "chain-seq-start";

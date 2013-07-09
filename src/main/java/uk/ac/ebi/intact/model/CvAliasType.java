@@ -47,6 +47,11 @@ public class CvAliasType extends CvDagObject implements Editable {
     public static final String AUTHOR_ASSIGNED_NAME = "author assigned name";
     public static final String AUTHOR_ASSIGNED_NAME_MI_REF = "MI:0345";
 
+    public static final String SYNONYM = "synonym";
+    public static final String SYNONYM_MI_REF = "MI:1041";
+
+    public static final String IUPAC_NAME = "iupac name";
+    public static final String IUPAC_NAME_MI_REF = "MI:2007";
 
     /**
      * This constructor should <b>not</b> be used as it could
