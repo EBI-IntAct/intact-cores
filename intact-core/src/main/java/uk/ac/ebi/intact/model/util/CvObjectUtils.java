@@ -140,11 +140,23 @@ public final class CvObjectUtils {
         return isChildOfType(type, CvInteractorType.INTERACTION_MI_REF, false);
     }
 
+    public static boolean isPolysaccharideType(CvInteractorType type) {
+        return isChildOfType(type, CvInteractorType.POLYSACCHARIDE_MI_REF, true);
+    }
+
+    public static boolean isBiopolymerType(CvInteractorType type) {
+        return isChildOfType(type, CvInteractorType.BIOPOLYMER_MI_REF, true);
+    }
+
+    public static boolean isUnknownParticipantType(CvInteractorType type) {
+        return isChildOfType(type, CvInteractorType.UNKNOWN_PARTICIPANT_MI_REF, true);
+    }
+
     /**
      * Checks if the given term has the given MI identifier. If recursive is true, we also search recursively through its parents.
      *
      * @param cvDagObject the cvDagObject to check on.
-     * @param mi          the MI term to look for.
+     * @param identifier  the MI term to look for.
      * @param recursive   request recursive search amongst parents.
      * @return true of the term or one of its parents has the given MI identity.
      */
