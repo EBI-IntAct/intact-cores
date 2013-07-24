@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.intact.core.persister.finder;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -120,7 +119,7 @@ public class DefaultFinder implements Finder {
     @Override
     public String findAc(User user) {
         String ac = null;
-        
+
         if (user.getAc() != null) {
             ac = user.getAc();
         } else {
@@ -315,10 +314,10 @@ public class DefaultFinder implements Finder {
 
         return experimentAc;
     }
-    
+
     private Collection<String> convertAnnotToString(Collection<Annotation> annot){
         Collection<String> annotations = new ArrayList<String>(annot.size());
-        
+
         for (Annotation a : annot){
              if (a.getCvTopic() == null){
                  annotations.add(a.getAnnotationText() != null ? a.getAnnotationText() : "");
@@ -403,6 +402,8 @@ public class DefaultFinder implements Finder {
         CvObjectFilterGroup databaseGroup = new CvObjectFilterGroup();
         databaseGroup.addIncludedIdentifier(CvDatabase.UNIPROT_MI_REF);
         databaseGroup.addIncludedIdentifier(CvDatabase.CHEBI_MI_REF);
+        databaseGroup.addIncludedIdentifier(CvDatabase.ENSEMBL_MI_REF);
+
 
         CvObjectFilterGroup qualifierGroup = new CvObjectFilterGroup();
         qualifierGroup.addIncludedIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
