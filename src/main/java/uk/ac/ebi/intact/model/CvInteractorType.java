@@ -45,9 +45,13 @@ public class CvInteractorType extends CvDagObject {
     public static final String BIOPOLYMER = "biopolymer";
     public static final String BIOPOLYMER_MI_REF = "MI:0383";
 
+    public static final String GENE = "gene";
+    public static final String GENE_MI_REF = "MI:0250";
+
+
     public static final String UNKNOWN_PARTICIPANT = "unknown participant";
     public static final String UNKNOWN_PARTICIPANT_MI_REF = "MI:0329";
-    
+
     /**
      * @param mi the MI number to check
      *
