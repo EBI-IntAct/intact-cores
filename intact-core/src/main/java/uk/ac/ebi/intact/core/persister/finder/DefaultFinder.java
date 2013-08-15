@@ -323,7 +323,7 @@ public class DefaultFinder implements Finder {
                  annotations.add(a.getAnnotationText() != null ? a.getAnnotationText() : "");
              }
             else {
-                 annotations.add(a.getCvTopic().getIdentifier() + (a.getAnnotationText() != null ? a.getAnnotationText() : ""));
+                 annotations.add(a.getCvTopic().getShortLabel() + (a.getAnnotationText() != null ? a.getAnnotationText() : ""));
              }
         }
 
