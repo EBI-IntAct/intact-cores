@@ -290,16 +290,11 @@ public class DefaultFinder implements Finder {
         }
         else if ( experimentAcs.size() != 0 && !experiment.getAnnotations().isEmpty()){
             // check the annotations
-            Collection<String> expAnnotDescs = convertAnnotToString(experiment.getAnnotations());
 
             for (String candidateExperimentAc : experimentAcs) {
-                Query annotQuery = getEntityManager().createQuery("select concat(annot.cvTopic.identifier, annot.annotationText) from Experiment exp " +
-                        "left join exp.annotations as annot " +
-                        "where exp.ac = :experimentAc");
-                annotQuery.setParameter("experimentAc", candidateExperimentAc);
-                List<String> annotDescs = annotQuery.getResultList();
+                Collection<Annotation> annots = getDaoFactory().getAnnotationDao().getByParentAc(Experiment.class, candidateExperimentAc);
 
-                if (CollectionUtils.isEqualCollection(expAnnotDescs, annotDescs)) {
+                if (CollectionUtils.isEqualCollection(experiment.getAnnotations(), annots)) {
                     experimentAc = candidateExperimentAc;
                     break;
                 }
