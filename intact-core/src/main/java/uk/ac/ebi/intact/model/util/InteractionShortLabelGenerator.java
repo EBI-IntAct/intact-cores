@@ -251,11 +251,11 @@ public class InteractionShortLabelGenerator {
 
             if ( this.baitLabel.contains( INTERACTION_SEPARATOR ) ) {
                 log.warn( "Interaction separator character '-' found in Bait label (" + baitLabel + "). Replaced by '_'" );
-                baitLabel = baitLabel.replaceAll( INTERACTION_SEPARATOR, "_" );
+                this.baitLabel = baitLabel.replaceAll( INTERACTION_SEPARATOR, "_" );
             }
             if ( this.preyLabel != null && preyLabel.contains( INTERACTION_SEPARATOR ) ) {
                 log.warn( "Interaction separator character '-' found in Prey label (" + preyLabel + "). Replaced by '_'" );
-                preyLabel = preyLabel.replaceAll( INTERACTION_SEPARATOR, "_" );
+                this.preyLabel = preyLabel.replaceAll( INTERACTION_SEPARATOR, "_" );
             }
 
         }
