@@ -59,7 +59,13 @@ public class CrcCalculator {
 
     protected UniquenessStringBuilder createUniquenessString(Interaction interaction) {
         if (keyExists(interaction)) {
-            return getKey(interaction);
+            UniquenessStringBuilder builder = getKey(interaction);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(interaction));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
@@ -108,7 +114,13 @@ public class CrcCalculator {
 
     protected UniquenessStringBuilder createUniquenessString(Experiment experiment) {
         if (keyExists(experiment)) {
-            return getKey(experiment);
+            UniquenessStringBuilder builder = getKey(experiment);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(experiment));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
@@ -145,7 +157,13 @@ public class CrcCalculator {
 
     protected UniquenessStringBuilder createUniquenessString(BioSource bioSource) {
         if (keyExists(bioSource)) {
-            return getKey(bioSource);
+            UniquenessStringBuilder builder = getKey(bioSource);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(bioSource));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
@@ -167,7 +185,13 @@ public class CrcCalculator {
     protected UniquenessStringBuilder createUniquenessString(Component component) {
         // WARNING : corss references of participants are not taken into account because for now we don't want duplicated interactions having exactly same participants excepted the xrefs
         if (keyExists(component)) {
-            return getKey(component);
+            UniquenessStringBuilder builder = getKey(component);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(component));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
@@ -233,7 +257,13 @@ public class CrcCalculator {
 
     protected UniquenessStringBuilder createUniquenessString(Interactor interactor) {
         if (keyExists(interactor)) {
-            return getKey(interactor);
+            UniquenessStringBuilder builder = getKey(interactor);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(interactor));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
@@ -282,7 +312,13 @@ public class CrcCalculator {
 
     protected UniquenessStringBuilder createUniquenessString(Feature feature) {
         if (keyExists(feature)) {
-            return getKey(feature);
+            UniquenessStringBuilder builder = getKey(feature);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(feature));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
@@ -315,7 +351,13 @@ public class CrcCalculator {
 
     protected UniquenessStringBuilder createUniquenessString(Range range) {
         if (keyExists(range)) {
-            return getKey(range);
+            UniquenessStringBuilder builder = getKey(range);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(range));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
@@ -342,7 +384,13 @@ public class CrcCalculator {
 
     protected UniquenessStringBuilder createUniquenessString(CvObject cvObject) {
         if (keyExists(cvObject)) {
-            return getKey(cvObject);
+            UniquenessStringBuilder builder = getKey(cvObject);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(cvObject));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
@@ -365,7 +413,13 @@ public class CrcCalculator {
 
     protected UniquenessStringBuilder createUniquenessString(Annotation annotation) {
         if (keyExists(annotation)) {
-            return getKey(annotation);
+            UniquenessStringBuilder builder = getKey(annotation);
+            if (builder != null){
+                return builder;
+            }
+            else{
+                identityToCrc.remove(System.identityHashCode(annotation));
+            }
         }
 
         UniquenessStringBuilder sb = new UniquenessStringBuilder();
