@@ -100,7 +100,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForExperiment() throws Exception {
         final Experiment e = getMockBuilder().createExperimentEmpty( "bruno-2007-1", "123456789" );
-        e.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1"));
+        e.addAnnotation(getMockBuilder().createAnnotation("annot1", "IA:000x", "topic1"));
         getCorePersister().saveOrUpdate( e );
 
         IntactCloner cloner = new IntactCloner();
