@@ -25,6 +25,7 @@ import uk.ac.ebi.intact.model.CvExperimentalRole;
 import uk.ac.ebi.intact.model.Interaction;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * TODO comment this
@@ -33,6 +34,8 @@ import java.util.*;
  * @version $Id$
  */
 public class InteractionShortLabelGenerator {
+
+    private static Pattern DIGIT_PATTERN = Pattern.compile( "\\d+" );
 
     private static final String INTERACTION_SEPARATOR = "-";
 
@@ -309,7 +312,7 @@ public class InteractionShortLabelGenerator {
             String[] baitPrayLabels = completeLabel.split( INTERACTION_SEPARATOR );
 
             if ( baitPrayLabels.length > 3 ) {
-                throw new IllegalLabelFormatException( "This label is not an interaction label (contain more than one '" + INTERACTION_SEPARATOR + "'): " + completeLabel );
+                log.info( "This label is not an interaction label (contain more than one '" + INTERACTION_SEPARATOR + "'): " + completeLabel +". We will ignore last element.");
             }
 
             // self interactions
@@ -322,29 +325,27 @@ public class InteractionShortLabelGenerator {
             } else {
                 if ( baitPrayLabels.length == 1 ) {
                     suffix = null;
-                } else {
+                } else if (baitPrayLabels[1].matches("//d+")) {
                     try {
                         suffix = Integer.valueOf( baitPrayLabels[1] );
                     } catch ( NumberFormatException e ) {
                         throw new IllegalLabelFormatException( completeLabel, "Illegal value for self-interaction label. It was expecting a number for the second element." );
                     }
+                }
+                else {
+                    suffix = null;
                 }
             }
 
-            if ( baitPrayLabels.length == 3 ) {
-                if ( isSelfInteraction ) {
-                    try {
-                        suffix = Integer.valueOf( baitPrayLabels[1] );
-                    } catch ( NumberFormatException e ) {
-                        throw new IllegalLabelFormatException( completeLabel, "Illegal value for self-interaction label. It was expecting a number for the second element." );
-                    }
-                } else {
-                    try {
-                        suffix = Integer.valueOf( baitPrayLabels[2] );
-                    } catch ( NumberFormatException e ) {
-                        throw new IllegalLabelFormatException( completeLabel, "Illegal value for interaction label. It was expecting a number for the third element." );
-                    }
+            if ( baitPrayLabels.length == 3 && baitPrayLabels[2].matches("//d")) {
+                try {
+                    suffix = Integer.valueOf( baitPrayLabels[2] );
+                } catch ( NumberFormatException e ) {
+                    throw new IllegalLabelFormatException( completeLabel, "Illegal value for interaction label. It was expecting a number for the third element." );
                 }
+            }
+            else {
+                suffix = null;
             }
         }
 
