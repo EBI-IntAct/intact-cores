@@ -116,7 +116,7 @@ public class DefaultFinderTest extends IntactBasicTestCase {
     @Test
     public void findAcForExperimentWithoutAnnotations() throws Exception {
         final Experiment e = getMockBuilder().createDeterministicExperiment();
-        Annotation annotation = getMockBuilder().createAnnotation("annot1", "IA:0001", "topic1");
+        Annotation annotation = getMockBuilder().createAnnotation("annot1", "IA:000x", "topic1");
         e.addAnnotation(annotation);
         getCorePersister().saveOrUpdate( e );
 
