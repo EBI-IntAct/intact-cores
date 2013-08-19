@@ -52,7 +52,10 @@ public final class ExperimentUtils {
 
 		Publication publication = experiment.getPublication();
 		if (publication != null) {
-			pubmedId = publication.getShortLabel();
+            PublicationXref xref = PublicationUtils.getPubmedPrimaryReferenceXref(publication);
+            if (xref != null){
+               pubmedId = xref.getPrimaryId();
+            }
 		}
 
 		if (pubmedId == null) {
@@ -96,24 +99,31 @@ public final class ExperimentUtils {
 	 */
 	public static ExperimentXref getPubmedPrimaryReferenceXref(Experiment experiment) {
 		for (ExperimentXref xref : experiment.getXrefs()) {
-			String qualMi = null;
-			String dbMi = null;
+            boolean qualMi = false;
+            boolean dbMi = false;
 
-			if (xref.getCvXrefQualifier() != null) {
-				qualMi = xref.getCvXrefQualifier().getIdentifier();
-			} else {
-				log.warn("Experiment (" + experiment.getShortLabel() + ") xref without qualifier: " + xref);
-			}
-			if (xref.getCvDatabase() != null) {
-				dbMi = xref.getCvDatabase().getIdentifier();
-			} else {
-				log.warn("Experiment (" + experiment.getShortLabel() + ") xref without database: " + xref);
-			}
+            if (xref.getCvXrefQualifier() != null) {
+                if (xref.getCvXrefQualifier().getIdentifier() != null){
+                    qualMi = CvXrefQualifier.PRIMARY_REFERENCE_MI_REF.equals(xref.getCvXrefQualifier().getIdentifier());
+                }
+                else {
+                    qualMi = CvXrefQualifier.PRIMARY_REFERENCE.equalsIgnoreCase(xref.getCvXrefQualifier().getShortLabel());
+                }
+            }
 
-			if (CvXrefQualifier.PRIMARY_REFERENCE_MI_REF.equals(qualMi) &&
-					CvDatabase.PUBMED_MI_REF.equals(dbMi)) {
-				return xref;
-			}
+            if (xref.getCvDatabase() != null) {
+                if (xref.getCvDatabase().getIdentifier() != null){
+                    dbMi = CvDatabase.PUBMED_MI_REF.equals(xref.getCvDatabase().getIdentifier());
+                }
+                else {
+                    dbMi = CvDatabase.PUBMED.equalsIgnoreCase(xref.getCvDatabase().getShortLabel());
+                }
+            }
+
+
+            if (qualMi && dbMi) {
+                return xref;
+            }
 		}
 
 		return null;

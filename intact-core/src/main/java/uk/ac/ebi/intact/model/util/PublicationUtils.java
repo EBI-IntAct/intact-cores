@@ -2,13 +2,11 @@ package uk.ac.ebi.intact.model.util;
 
 import uk.ac.ebi.intact.core.config.SequenceManager;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -156,5 +154,37 @@ public final class PublicationUtils {
 
         Annotation annotation = new Annotation(onholdTopic, reason);
         publication.addAnnotation(annotation);
+    }
+
+    public static PublicationXref getPubmedPrimaryReferenceXref(Publication publication) {
+        for (PublicationXref xref : publication.getXrefs()) {
+            boolean qualMi = false;
+            boolean dbMi = false;
+
+            if (xref.getCvXrefQualifier() != null) {
+                if (xref.getCvXrefQualifier().getIdentifier() != null){
+                   qualMi = CvXrefQualifier.PRIMARY_REFERENCE_MI_REF.equals(xref.getCvXrefQualifier().getIdentifier());
+                }
+                else {
+                    qualMi = CvXrefQualifier.PRIMARY_REFERENCE.equalsIgnoreCase(xref.getCvXrefQualifier().getShortLabel());
+                }
+            }
+
+            if (xref.getCvDatabase() != null) {
+                if (xref.getCvDatabase().getIdentifier() != null){
+                    dbMi = CvDatabase.PUBMED_MI_REF.equals(xref.getCvDatabase().getIdentifier());
+                }
+                else {
+                    dbMi = CvDatabase.PUBMED.equalsIgnoreCase(xref.getCvDatabase().getShortLabel());
+                }
+            }
+
+
+            if (qualMi && dbMi) {
+                return xref;
+            }
+        }
+
+        return null;
     }
 }
