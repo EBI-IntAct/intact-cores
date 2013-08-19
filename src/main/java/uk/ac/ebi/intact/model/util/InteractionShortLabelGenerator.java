@@ -25,7 +25,6 @@ import uk.ac.ebi.intact.model.CvExperimentalRole;
 import uk.ac.ebi.intact.model.Interaction;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * TODO comment this
@@ -34,8 +33,6 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class InteractionShortLabelGenerator {
-
-    private static Pattern DIGIT_PATTERN = Pattern.compile( "\\d+" );
 
     private static final String INTERACTION_SEPARATOR = "-";
 
@@ -177,7 +174,7 @@ public class InteractionShortLabelGenerator {
      * @param shortLabel a shortLabel with or without suffix
      * @return the shortlabel without suffix
      */
-    protected static String removeSuffix( String shortLabel ) throws IllegalLabelFormatException {
+    protected static String removeSuffix( String shortLabel ) {
         InteractionShortLabel label = new InteractionShortLabel( shortLabel );
         return label.getCompleteLabel( false );
     }
@@ -188,7 +185,7 @@ public class InteractionShortLabelGenerator {
      * @param shortLabel Can already have a suffix or not.
      * @return The next available shortLabel
      */
-    public static String nextAvailableShortlabel( String shortLabel ) throws IllegalLabelFormatException {
+    public static String nextAvailableShortlabel( String shortLabel ) {
         Integer nextSuffix = calculateNextSuffix( shortLabel );
 
         InteractionShortLabel label = new InteractionShortLabel( shortLabel );
@@ -207,7 +204,7 @@ public class InteractionShortLabelGenerator {
      * @param shortLabel the label to use
      * @return the next available suffix.
      */
-    protected static Integer calculateNextSuffix( String shortLabel ) throws IllegalLabelFormatException {
+    protected static Integer calculateNextSuffix( String shortLabel )  {
         String labelWithoutSuffix = removeSuffix( shortLabel );
 
         // we get all the labels with the same bait-prey combination
@@ -241,26 +238,19 @@ public class InteractionShortLabelGenerator {
         private String preyLabel;
         private Integer suffix;
 
-        private Boolean selfInteraction;
+        private boolean isValid;
+        private String originalLabel;
 
-        public InteractionShortLabel( String completeLabel ) throws IllegalLabelFormatException {
-            parse( completeLabel );
+        public InteractionShortLabel( String completeLabel ) {
+            this.isValid = parse( completeLabel );
+            this.originalLabel = completeLabel;
         }
 
         public InteractionShortLabel( String baitLabel, String preyLabel, Integer suffix ) {
             this.baitLabel = prepareLabel( baitLabel );
             this.preyLabel = prepareLabel( preyLabel );
             this.suffix = suffix;
-
-            if ( this.baitLabel.contains( INTERACTION_SEPARATOR ) ) {
-                log.warn( "Interaction separator character '-' found in Bait label (" + baitLabel + "). Replaced by '_'" );
-                this.baitLabel = baitLabel.replaceAll( INTERACTION_SEPARATOR, "_" );
-            }
-            if ( this.preyLabel != null && preyLabel.contains( INTERACTION_SEPARATOR ) ) {
-                log.warn( "Interaction separator character '-' found in Prey label (" + preyLabel + "). Replaced by '_'" );
-                this.preyLabel = preyLabel.replaceAll( INTERACTION_SEPARATOR, "_" );
-            }
-
+            this.isValid = true;
         }
 
         public String getBaitLabel() {
@@ -284,6 +274,10 @@ public class InteractionShortLabelGenerator {
         }
 
         public String getCompleteLabel( boolean includeSuffix ) {
+            if (!isValid){
+               return this.originalLabel;
+            }
+
             truncateLabelsIfNecessary();
 
             String strPrey = "";
@@ -306,13 +300,14 @@ public class InteractionShortLabelGenerator {
          *
          * @param completeLabel
          */
-        private void parse( String completeLabel ) throws IllegalLabelFormatException {
-            if (completeLabel == null) return;
+        private boolean parse( String completeLabel ) {
+            if (completeLabel == null) return false;
 
             String[] baitPrayLabels = completeLabel.split( INTERACTION_SEPARATOR );
 
             if ( baitPrayLabels.length > 3 ) {
                 log.info( "This label is not an interaction label (contain more than one '" + INTERACTION_SEPARATOR + "'): " + completeLabel +". We will ignore last element.");
+                return false;
             }
 
             // self interactions
@@ -325,11 +320,12 @@ public class InteractionShortLabelGenerator {
             } else {
                 if ( baitPrayLabels.length == 1 ) {
                     suffix = null;
-                } else if (baitPrayLabels[1].matches("//d+")) {
+                } else if (baitPrayLabels[1].matches("\\d+")) {
                     try {
                         suffix = Integer.valueOf( baitPrayLabels[1] );
                     } catch ( NumberFormatException e ) {
-                        throw new IllegalLabelFormatException( completeLabel, "Illegal value for self-interaction label. It was expecting a number for the second element." );
+                        log.error( "Illegal value for self-interaction label. It was expecting a number for the second element.", e );
+                        return false;
                     }
                 }
                 else {
@@ -337,22 +333,22 @@ public class InteractionShortLabelGenerator {
                 }
             }
 
-            if ( baitPrayLabels.length == 3 && baitPrayLabels[2].matches("//d")) {
+            if ( baitPrayLabels.length == 3 && baitPrayLabels[2].matches("\\d+")) {
                 try {
                     suffix = Integer.valueOf( baitPrayLabels[2] );
                 } catch ( NumberFormatException e ) {
-                    throw new IllegalLabelFormatException( completeLabel, "Illegal value for interaction label. It was expecting a number for the third element." );
+                    log.error( "Illegal value for interaction label. It was expecting a number for the third element.", e);
+                    return false;
                 }
             }
             else {
                 suffix = null;
             }
+
+            return true;
         }
 
         private boolean isSelfInteraction( String completeLabel ) {
-            if ( selfInteraction != null ) {
-                return selfInteraction;
-            }
 
             String[] baitPrayLabels = completeLabel.split( INTERACTION_SEPARATOR );
 
