@@ -167,7 +167,7 @@ public final class ExperimentUtils {
 		}
 
 		// get only the author-YYYY part (truncate any prefix)
-		shortLabel = shortLabel.substring(0, shortLabel.indexOf("-") + 5);
+		shortLabel = shortLabel.substring(0, shortLabel.lastIndexOf("-"));
 
 		ExperimentDao experimentDao = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getExperimentDao();
 
@@ -192,8 +192,8 @@ public final class ExperimentUtils {
 					String label1 = exp1.getShortLabel();
 					String label2 = exp2.getShortLabel();
 
-					label1 = label1.substring(label1.indexOf("-") + 5,label1.length());
-					label2 = label2.substring(label2.indexOf("-") + 5,label2.length());
+					label1 = label1.substring(label1.lastIndexOf("-"),label1.length());
+					label2 = label2.substring(label2.lastIndexOf("-"),label2.length());
 
 					Matcher matcher1 = pattern.matcher(label1);
 					Matcher matcher2 = pattern.matcher(label2);
