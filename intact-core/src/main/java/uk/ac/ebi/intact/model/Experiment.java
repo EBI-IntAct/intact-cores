@@ -151,7 +151,7 @@ public class Experiment extends OwnedAnnotatedObject<ExperimentXref, ExperimentA
                 try {
                     newShortLabel = ExperimentUtils.syncShortLabelWithDb(shortLabel, ExperimentUtils.getPubmedId( this ));
                 } catch (Exception e) {
-                    log.error("Exception synchronizing the label, probably due to an invalid format: "+newShortLabel);
+                    log.error("Exception synchronizing the label, probably due to an invalid format: "+newShortLabel, e);
                 }
 
                 if (!shortLabel.equals(newShortLabel)) {
