@@ -14,7 +14,6 @@ import uk.ac.ebi.intact.annotation.EditorTopic;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.util.CrcCalculator;
-import uk.ac.ebi.intact.model.util.IllegalLabelFormatException;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 
 import javax.persistence.*;
@@ -280,14 +279,7 @@ public class InteractionImpl extends InteractorImpl
         if( IntactContext.currentInstanceExists() ) {
             if( IntactContext.getCurrentInstance().getConfig().isAutoUpdateInteractionLabel() ) {
                 String shortLabel = getShortLabel();
-                String newShortLabel = null;
-                try {
-                    newShortLabel = InteractionUtils.syncShortLabelWithDb(shortLabel);
-                } catch ( IllegalLabelFormatException e) {
-                    if (log.isErrorEnabled())
-                        log.error("Interaction with unexpected label, but will be persisted as is: "+this, e);
-                    newShortLabel = shortLabel;
-                }
+                String newShortLabel = InteractionUtils.syncShortLabelWithDb(shortLabel);
 
                 if (!shortLabel.equals(newShortLabel)) {
                     if (log.isDebugEnabled()) log.debug("Interaction with label '"+shortLabel+"' renamed '"+newShortLabel+"'" );
