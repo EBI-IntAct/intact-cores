@@ -8,7 +8,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>intact-core-readonly</artifactId>
+    <artifactId>intact-core</artifactId>
     <packaging>jar</packaging>
     <version>2.6.5-SNAPSHOT</version>
 
