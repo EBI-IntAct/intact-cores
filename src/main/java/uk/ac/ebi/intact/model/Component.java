@@ -73,11 +73,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     private Collection<Feature> bindingDomains = new ArrayList<Feature>();
 
-    /**
-     * @Deprecated was replaced by experimental and biological role.
-     */
-    private CvComponentRole componentRole;
-
 
     /**
      * Experimental roles for this component
@@ -253,44 +248,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
     public void addExperimentalRole( CvExperimentalRole experimentalRole ) {
         getExperimentalRoles().add( experimentalRole );
-    }
-
-    /**
-     * Getter for property 'particiantIdentification'.
-     *
-     * @return Value for property 'particiantIdentification'.
-     */
-    @Deprecated
-    @Transient
-    public CvIdentification getParticipantIdentification() {
-        if ( participantDetectionMethods == null ) {
-            return null;
-        }
-
-        if ( participantDetectionMethods.isEmpty() ) {
-            return null;
-        }
-
-        return participantDetectionMethods.iterator().next();
-    }
-
-    /**
-     * Setter for property 'particiantIdentification'.
-     *
-     * @param particiantIdentification Value to set for property 'particiantIdentification'.
-     */
-    @Deprecated
-    public void setParticipantIdentification( CvIdentification particiantIdentification ) {
-        if (particiantIdentification == null){
-            getParticipantDetectionMethods().clear();
-        }
-        else if (getParticipantDetectionMethods().contains(particiantIdentification) && getParticipantDetectionMethods().size() == 1){
-            // do nothing
-        }
-        else{
-            getParticipantDetectionMethods().clear();
-            getParticipantDetectionMethods().add( particiantIdentification );
-        }
     }
 
     @ManyToMany
@@ -517,27 +474,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     @Deprecated
     public void removeBindingDomain( Feature feature ) {
         removeFeature(feature);
-    }
-
-    /**
-     * Getter for property 'cvComponentRole'.
-     *
-     * @return Value for property 'cvComponentRole'.
-     */
-    @Deprecated
-    @Transient
-    public CvComponentRole getCvComponentRole() {
-        return componentRole;
-    }
-
-    /**
-     * Setter for property 'cvComponentRole'.
-     *
-     * @param cvComponentRole Value to set for property 'cvComponentRole'.
-     */
-    @Deprecated
-    public void setCvComponentRole( CvComponentRole cvComponentRole ) {
-        componentRole = cvComponentRole;
     }
 
     /**

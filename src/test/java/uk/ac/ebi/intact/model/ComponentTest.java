@@ -34,26 +34,6 @@ public class ComponentTest extends IntactBasicTestCase {
 
     private static final Log log = LogFactory.getLog( ComponentTest.class );
 
-
-    @Test
-    public void participantDetectionMethods() {
-        Component component = getMockBuilder().createInteractionRandomBinary().getComponents().iterator().next();
-
-        Assert.assertEquals( 1, component.getParticipantDetectionMethods().size() );
-        Assert.assertSame( component.getParticipantIdentification(), component.getParticipantDetectionMethods().iterator().next() );
-
-        component.getParticipantDetectionMethods().clear();
-
-        Assert.assertTrue( component.getParticipantDetectionMethods().isEmpty() );
-        Assert.assertNull( component.getParticipantIdentification() );
-
-        component.setParticipantIdentification( getMockBuilder().createCvObject( CvIdentification.class, CvIdentification.PREDETERMINED_MI_REF, CvIdentification.PREDETERMINED ) );
-
-        Assert.assertEquals( 1, component.getParticipantDetectionMethods().size() );
-        Assert.assertSame( component.getParticipantIdentification(), component.getParticipantDetectionMethods().iterator().next() );
-    }
-
-
     @Test
     public void experimentalRoles() {
 
