@@ -90,12 +90,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     private CvBiologicalRole biologicalRole;
 
     /**
-     * Participant identification method that can override the one defined in the experiment.
-     * If not specified, the experiment's is to be considered.
-     */
-    private CvIdentification participantIdentification;
-
-    /**
      * Participant identifications method that can override the one defined in the experiment.
      * If not specified, the experiment's is to be considered.
      */
@@ -287,7 +281,16 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     @Deprecated
     public void setParticipantIdentification( CvIdentification particiantIdentification ) {
-        getParticipantDetectionMethods().add( particiantIdentification );
+        if (particiantIdentification == null){
+            getParticipantDetectionMethods().clear();
+        }
+        else if (getParticipantDetectionMethods().contains(particiantIdentification) && getParticipantDetectionMethods().size() == 1){
+            // do nothing
+        }
+        else{
+            getParticipantDetectionMethods().clear();
+            getParticipantDetectionMethods().add( particiantIdentification );
+        }
     }
 
     @ManyToMany
