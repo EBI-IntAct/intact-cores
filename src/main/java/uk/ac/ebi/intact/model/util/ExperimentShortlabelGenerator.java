@@ -108,15 +108,16 @@ public class ExperimentShortlabelGenerator {
 
             } else {
                 // 'a' or higher
-                char ch = lastCharUsed.charAt( 0 );
+                char ch = lastCharUsed.charAt( lastCharUsed.length() - 1 );
                 ch++;
 
                 // we can't go over 'z'
                 if ( ch > LAST_CHAR.charAt( 0 ) ) {
-                    throw new IllegalArgumentException( "Can't go over 'z', please gind an other way to do it." );
+                    lastCharUsed = lastCharUsed+FIRST_CHAR;
                 }
-
-                lastCharUsed = "" + ch;
+                else{
+                    lastCharUsed = "" + ch;
+                }
             }
 
             return lastCharUsed;

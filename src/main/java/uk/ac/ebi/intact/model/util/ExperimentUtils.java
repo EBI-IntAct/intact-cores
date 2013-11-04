@@ -35,7 +35,7 @@ public final class ExperimentUtils {
 
 	private static final Log log = LogFactory.getLog(ExperimentUtils.class);
 
-	private static final String SYNCED_LABEL_PATTERN = "(\\w+)-((\\d{4})[a-z]?)-(\\d+)";
+	private static final String SYNCED_LABEL_PATTERN = "(\\w+)-((\\d{4})[a-z]*)-(\\d+)";
 	private static final String NOT_SYNCED_LABEL_PATTERN = "(\\w+)-(\\d{4})";
 
 	private ExperimentUtils() {
@@ -187,7 +187,7 @@ public final class ExperimentUtils {
 					int result = 0;
 
 
-					Pattern pattern = Pattern.compile("([a-z]?)-(\\d+)");
+					Pattern pattern = Pattern.compile("([a-z]*)-(\\d+)");
 
 					String label1 = exp1.getShortLabel();
 					String label2 = exp2.getShortLabel();

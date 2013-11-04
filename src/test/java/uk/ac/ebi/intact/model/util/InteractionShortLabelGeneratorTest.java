@@ -49,12 +49,16 @@ public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
     @Test
     public void createCandidateShortLabel_truncate() throws Exception {
         String baitLabel = "IAmAHappyBayt";
-        String preyLabel ="AndIAmAHappyPrey";
+        String preyLabel ="AndIAmAHappyPreyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
         String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel(baitLabel, preyLabel);
 
         assertNotNull(candLabel);
-        assertEquals("iamahappyb-andiamaha", candLabel);
+        assertEquals("iamahappybayt-andiamahappypreyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", candLabel);
     }
 
     @Test
@@ -141,7 +145,7 @@ public class InteractionShortLabelGeneratorTest extends IntactBasicTestCase {
     @Test
     public void createCandidateShortLabel_badCharsInInteractor() throws Exception {
         String candLabel = InteractionShortLabelGenerator.createCandidateShortLabel("bis3-indolylmaleimid", "prey");
-        Assert.assertEquals("bis3_indolylmal-prey", candLabel);
+        Assert.assertEquals("bis3_indolylmaleimid-prey", candLabel);
     }
 
     @Test

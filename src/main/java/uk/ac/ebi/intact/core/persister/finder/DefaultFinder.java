@@ -584,8 +584,9 @@ public class DefaultFinder implements Finder {
             return false;
         }
 
+        final Collection<CvObjectXref> xrefs2 = XrefUtils.getIdentityXrefs(cvToFind);
         // The cv to find doesn't have any cross references, we need to look only the shortLabel of the match in the database
-        if (cvToFind.getXrefs().isEmpty()){
+        if (xrefs2.isEmpty()){
             if (cvToFind.getShortLabel() != null){
                 return cvToFind.getShortLabel().equals(cv1.getShortLabel());
             }
@@ -594,7 +595,6 @@ public class DefaultFinder implements Finder {
 
         // if any of the identities is the same, we consider them to be the same
         final Collection<CvObjectXref> xrefs1 = XrefUtils.getIdentityXrefs(cv1);
-        final Collection<CvObjectXref> xrefs2 = XrefUtils.getIdentityXrefs(cvToFind);
 
         Collection<String> ids1 = getIds(xrefs1);
         Collection<String> ids2 = getIds(xrefs2);
