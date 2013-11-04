@@ -71,8 +71,8 @@ public final class AnnotatedObjectUtils {
                         "Must define a non empty short label");
             }
 
-            if (shortLabel.length() >= AnnotatedObject.RECOMMENDED_SHORT_LABEL_LEN) {
-                shortLabel = shortLabel.substring(0, AnnotatedObject.RECOMMENDED_SHORT_LABEL_LEN);
+            if (shortLabel.length() >= AnnotatedObject.MAX_SHORT_LABEL_LEN) {
+                shortLabel = shortLabel.substring(0, AnnotatedObject.MAX_SHORT_LABEL_LEN);
                 modified = true;
             }
         }

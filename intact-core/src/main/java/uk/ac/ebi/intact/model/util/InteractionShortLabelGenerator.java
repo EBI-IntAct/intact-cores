@@ -368,7 +368,7 @@ public class InteractionShortLabelGenerator {
         }
 
         private void truncateLabelsIfNecessary() {
-            while ( calculateLabelLength() > AnnotatedObject.RECOMMENDED_SHORT_LABEL_LEN ) {
+            while ( calculateLabelLength() > AnnotatedObject.MAX_SHORT_LABEL_LEN ) {
                 int baitLength = baitLabel.length();
                 int preyLength = ( preyLabel == null ) ? 0 : preyLabel.length();
 

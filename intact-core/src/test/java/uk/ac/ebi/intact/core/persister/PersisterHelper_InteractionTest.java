@@ -851,7 +851,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
         final InteractionImpl interaction = getDaoFactory().getInteractionDao().getAll().get( 0 );
-        Assert.assertEquals("2__1__2__2_amin-lala", interaction.getShortLabel());
+        Assert.assertEquals("2__1__2__2_amino_thiazol_4_yl__2_methoxyimino_acetylamino__2_oxo_ethyl__5_5_dimethyl_thiazolidine_4_carboxylic_acid-lala", interaction.getShortLabel());
     }
 
     @Test
@@ -973,7 +973,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         getCorePersister().saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
-        Assert.assertEquals("abcdefghij-zxcvbnmsa", interaction.getShortLabel());
+        Assert.assertEquals("abcdefghijklmn-zxcvbnmsasdfghj", interaction.getShortLabel());
 
         Component component1 = getMockBuilder().createComponentBait(interactorA);
         Component component2 = getMockBuilder().createComponentPrey(interactorB);
@@ -983,7 +983,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         getCorePersister().saveOrUpdate(interaction2);
 
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
-        Assert.assertEquals("abcdefghi-zxcvbnms-1", interaction2.getShortLabel());
+        Assert.assertEquals("abcdefghijklmn-zxcvbnmsasdfghj-1", interaction2.getShortLabel());
 
         System.out.println(getDaoFactory().getInteractionDao().getAll());
     }
