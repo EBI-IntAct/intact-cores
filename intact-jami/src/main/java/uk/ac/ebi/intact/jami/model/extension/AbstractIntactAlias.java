@@ -15,7 +15,8 @@ import javax.persistence.*;
  * @version $Id$
  * @since <pre>18/12/13</pre>
  */
-@MappedSuperclass
+@Entity
+@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
 public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject implements Alias{
 
     private CvTerm type;
