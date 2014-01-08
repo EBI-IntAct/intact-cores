@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.utils.comparator.annotation.UnambiguousAnnotationComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -20,8 +21,6 @@ import javax.validation.constraints.Size;
 @Entity()
 @Table( name = "ia_annotation" )
 public class IntactAnnotation extends AbstractIntactPrimaryObject implements Annotation{
-
-    public static final int MAX_DESCRIPTION_LEN = 4000;
 
     ///////////////////////////////////////
     //attributes
@@ -65,8 +64,8 @@ public class IntactAnnotation extends AbstractIntactPrimaryObject implements Ann
 
     ///////////////////////////////////////
     //access methods for attributes
-    @Column( name = "description", length = MAX_DESCRIPTION_LEN )
-    @Size( max = MAX_DESCRIPTION_LEN )
+    @Column( name = "description", length = IntactUtils.MAX_DESCRIPTION_LEN )
+    @Size( max = IntactUtils.MAX_DESCRIPTION_LEN )
     public String getValue() {
         return value;
     }

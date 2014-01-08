@@ -12,6 +12,8 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.beans.Transient;
@@ -75,6 +77,14 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         this.fullName = fullName;
     }
 
+    @PrePersist
+    @PreUpdate
+    public void prepareShortLabel() {
+        if (shortName != null){
+            this.shortName.trim().toLowerCase();
+        }
+    }
+
     @Column(name = "shortlabel", nullable = false)
     @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
     @NotNull
@@ -100,21 +110,21 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     }
 
     protected void initialiseXrefs(){
-        this.identifiers = new ArrayList<Xref>();
-        this.xrefs = new ArrayList<Xref>();
-        if (this.persistentXrefs == null || this.persistentXrefs.isEmpty()){
-            this.xrefs = new ArrayList<Xref>();
-            this.identifiers = new ArrayList<Xref>();
-        }
-        else{
+        this.identifiers = new CvTermIdentifierList();
+        this.xrefs = new CvTermXrefList();
+        if (this.persistentXrefs != null){
             for (Xref ref : this.persistentXrefs){
                 if (XrefUtils.isXrefAnIdentifier(ref)){
-                    this.identifiers.add(ref);
+                    ((CvTermIdentifierList)this.identifiers).addOnly(ref);
+                    processAddedIdentifierEvent(ref);
                 }
                 else{
-                    this.xrefs.add(ref);
+                    ((CvTermXrefList)this.xrefs).addOnly(ref);
                 }
             }
+        }
+        else{
+            this.persistentXrefs = new ArrayList<Xref>();
         }
     }
 
@@ -173,7 +183,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         // add new mi if not null
         if (mi != null){
             CvTerm psiMiDatabase = IntactUtils.createMIDatabase(CvTerm.PSI_MI, null);
-
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, null);
             // first remove old psi mi if not null
             if (this.miIdentifier != null){
@@ -259,16 +268,10 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
     @Transient
     protected Collection<Xref> getPersistentXrefs() {
-        // initialise persistent bag if not done yet
-        if (this.persistentXrefs == null && (this.xrefs != null || this.identifiers != null)){
-            this.persistentXrefs = new ArrayList<Xref>(getXrefs().size() + getIdentifiers().size());
-            this.persistentXrefs.addAll(getIdentifiers());
-            this.persistentXrefs.addAll(getXrefs());
-        }
         return this.persistentXrefs;
     }
 
-    private void setPersistentXrefs(Collection<Xref> persistentXrefs){
+    protected void setPersistentXrefs(Collection<Xref> persistentXrefs){
         this.persistentXrefs = persistentXrefs;
         initialiseXrefs();
     }
@@ -384,16 +387,41 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         protected void processAddedObjectEvent(Xref added) {
 
             processAddedIdentifierEvent(added);
+            persistentXrefs.add(added);
         }
 
         @Override
         protected void processRemovedObjectEvent(Xref removed) {
             processRemovedIdentifierEvent(removed);
+            persistentXrefs.remove(removed);
         }
 
         @Override
         protected void clearProperties() {
             clearPropertiesLinkedToIdentifiers();
+            persistentXrefs.retainAll(getXrefs());
+        }
+    }
+
+    private class CvTermXrefList extends AbstractListHavingProperties<Xref> {
+        public CvTermXrefList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(Xref added) {
+            persistentXrefs.add(added);
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(Xref removed) {
+            persistentXrefs.remove(removed);
+        }
+
+        @Override
+        protected void clearProperties() {
+            clearPropertiesLinkedToIdentifiers();
+            persistentXrefs.retainAll(getIdentifiers());
         }
     }
 }

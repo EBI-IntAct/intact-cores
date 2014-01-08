@@ -7,7 +7,6 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.OntologyTerm;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
 import uk.ac.ebi.intact.jami.model.listener.CvIdentifierListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -127,10 +126,10 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Target(IntactXref.class)
     @Override
     public Collection<Xref> getPersistentXrefs() {
-        return super.getXrefs();
+        return super.getPersistentXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactAlias.class)
     @JoinTable(
             name = "ia_cvobject2alias",
             joinColumns = {@JoinColumn( name = "cvobject_ac" )},
@@ -229,19 +228,13 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         this.parents = parents;
     }
 
-    @Transient
+    @Column(name = "definition", length = IntactUtils.MAX_DESCRIPTION_LEN )
+    @Size( max = IntactUtils.MAX_DESCRIPTION_LEN )
     public String getDefinition() {
-        Annotation def = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "definition");
-        return def != null ? def.getValue() : null;
+        return this.definition;
     }
 
     public void setDefinition(String def) {
-        Annotation definition = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "definition");
-        if (definition != null){
-            definition.setValue(def);
-        }
-        else{
-            getAnnotations().add(new IntactAnnotation(IntactUtils.createMITopic("definition", null), def));
-        }
+        this.definition = def;
     }
 }

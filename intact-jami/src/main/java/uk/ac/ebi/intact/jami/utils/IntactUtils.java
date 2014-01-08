@@ -17,6 +17,7 @@ public class IntactUtils {
 
     public static final int MAX_SHORT_LABEL_LEN = 256;
     public static final int MAX_FULL_NAME_LEN = 1000;
+    public static final int MAX_DESCRIPTION_LEN = 4000;
 
     public static final String CV_LOCAL_SEQ = "cv_local_seq";
 

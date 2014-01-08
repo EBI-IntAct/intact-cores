@@ -1,11 +1,16 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultAnnotation;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
+
+import javax.persistence.*;
+import java.util.Collection;
 
 /**
  * Intact implementation of a source. It replaces Institution from intact core
@@ -19,6 +24,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     private Annotation url;
     private Annotation postalAddress;
     private Publication bibRef;
+    private Collection<Annotation> persistentAnnotations;
 
     public IntactSource(String shortName) {
         super(shortName);
@@ -78,24 +84,34 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     @Override
     protected void initialiseAnnotations() {
         initialiseAnnotationsWith(new SourceAnnotationList());
+        if (this.persistentAnnotations != null){
+            for (Annotation annot : this.persistentAnnotations){
+                ((SourceAnnotationList)getAnnotations()).addOnly(annot);
+                processAddedAnnotationEvent(annot);
+            }
+        }
+        else{
+            this.persistentAnnotations = getAnnotations();
+        }
     }
 
+    @Column(name = "url")
     public String getUrl() {
         return this.url != null ? this.url.getValue() : null;
     }
 
     public void setUrl(String url) {
-        SourceAnnotationList sourceAnnotationList = (SourceAnnotationList)getAnnotations();
+        Collection<Annotation> sourceAnnotationList = getAnnotations();
 
         // add new url if not null
         if (url != null){
             CvTerm urlTopic = CvTermUtils.createMICvTerm(Annotation.URL, Annotation.URL_MI);
             // first remove old url if not null
             if (this.url != null){
-                sourceAnnotationList.removeOnly(this.url);
+                sourceAnnotationList.remove(this.url);
             }
             this.url = new DefaultAnnotation(urlTopic, url);
-            sourceAnnotationList.addOnly(this.url);
+            sourceAnnotationList.add(this.url);
         }
         // remove all url if the collection is not empty
         else if (!sourceAnnotationList.isEmpty()) {
@@ -104,22 +120,23 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         }
     }
 
+    @Column(name = "postaladdress")
     public String getPostalAddress() {
         return this.postalAddress != null ? this.postalAddress.getValue() : null;
     }
 
     public void setPostalAddress(String address) {
-        SourceAnnotationList sourceAnnotationList = (SourceAnnotationList)getAnnotations();
+        Collection<Annotation> sourceAnnotationList = getAnnotations();
 
         // add new url if not null
         if (address != null){
             CvTerm addressTopic = new DefaultCvTerm(Annotation.POSTAL_ADDRESS);
             // first remove old url if not null
             if (this.postalAddress != null){
-                sourceAnnotationList.removeOnly(this.postalAddress);
+                sourceAnnotationList.remove(this.postalAddress);
             }
             this.postalAddress = new DefaultAnnotation(addressTopic, address);
-            sourceAnnotationList.addOnly(this.postalAddress);
+            sourceAnnotationList.add(this.postalAddress);
         }
         // remove all url if the collection is not empty
         else if (!sourceAnnotationList.isEmpty()) {
@@ -128,12 +145,58 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         }
     }
 
+    @Transient
     public Publication getPublication() {
         return this.bibRef;
     }
 
     public void setPublication(Publication ref) {
         this.bibRef = ref;
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactAlias.class)
+    @JoinTable(
+            name = "ia_institution2alias",
+            joinColumns = {@JoinColumn( name = "institution_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "alias_ac" )}
+    )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(IntactAlias.class)
+    public Collection<Alias> getSynonyms() {
+        return super.getSynonyms();
+    }
+
+    private void setSynonyms(Collection<Alias> aliases){
+        super.initialiseSynonymsWith(aliases);
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactAnnotation.class)
+    @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinTable(
+            name = "ia_institution2annot",
+            joinColumns = {@JoinColumn( name = "institution_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
+    )
+    @Target(IntactAnnotation.class)
+    protected Collection<Annotation> getPersistentAnnotations() {
+        return this.persistentAnnotations;
+    }
+
+    private void setPersistentAnnotations(Collection<Annotation> persistentAnnotations) {
+        this.persistentAnnotations = persistentAnnotations;
+        initialiseAnnotations();
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactXref.class )
+    @JoinTable(
+            name = "ia_institution2xref",
+            joinColumns = {@JoinColumn( name = "institution_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "xref_ac" )}
+    )
+    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(IntactXref.class)
+    protected Collection<Xref> getPersistentXrefs() {
+        return super.getXrefs();
     }
 
     protected void processAddedAnnotationEvent(Annotation added) {
@@ -167,16 +230,19 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         @Override
         protected void processAddedObjectEvent(Annotation added) {
             processAddedAnnotationEvent(added);
+            persistentAnnotations.add(added);
         }
 
         @Override
         protected void processRemovedObjectEvent(Annotation removed) {
             processRemovedAnnotationEvent(removed);
+            persistentAnnotations.add(removed);
         }
 
         @Override
         protected void clearProperties() {
             clearPropertiesLinkedToAnnotations();
+            persistentAnnotations.clear();
         }
     }
 }
