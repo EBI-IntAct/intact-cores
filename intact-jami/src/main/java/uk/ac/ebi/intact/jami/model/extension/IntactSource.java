@@ -153,9 +153,14 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         this.bibRef = ref;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactAlias.class)
+    @JoinTable(
+            name = "ia_institution2alias",
+            joinColumns = {@JoinColumn( name = "institution_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "alias_ac" )}
+    )
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(SourceAlias.class)
+    @Target(IntactAlias.class)
     public Collection<Alias> getSynonyms() {
         return super.getSynonyms();
     }

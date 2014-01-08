@@ -129,9 +129,14 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getPersistentXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAlias.class)
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactAlias.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(CvTermAlias.class)
+    @JoinTable(
+            name = "ia_cvobject2alias",
+            joinColumns = {@JoinColumn( name = "cvobject_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "alias_ac" )}
+    )
+    @Target(IntactAlias.class)
     @Override
     public Collection<Alias> getSynonyms() {
         return super.getSynonyms();
