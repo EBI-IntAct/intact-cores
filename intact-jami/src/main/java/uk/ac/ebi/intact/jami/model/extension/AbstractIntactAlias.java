@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.utils.comparator.alias.UnambiguousAliasComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 
@@ -16,24 +17,22 @@ import javax.persistence.*;
  * @since <pre>18/12/13</pre>
  */
 @Entity
-@Table( name = "ia_alias")
-public abstract class IntactAlias extends AbstractIntactPrimaryObject implements Alias{
+@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject implements Alias{
 
     private CvTerm type;
     private String name;
 
-    public static final int MAX_ALIAS_NAME_LEN = 256;
-
-    protected IntactAlias() {
+    protected AbstractIntactAlias() {
         super();
     }
 
-    public IntactAlias(CvTerm type, String name) {
+    public AbstractIntactAlias(CvTerm type, String name) {
         this(name);
         this.type = type;
     }
 
-    public IntactAlias(String name) {
+    public AbstractIntactAlias(String name) {
         if (name == null){
             throw new IllegalArgumentException("The alias name is required and cannot be null");
         }
@@ -47,7 +46,7 @@ public abstract class IntactAlias extends AbstractIntactPrimaryObject implements
         return this.type;
     }
 
-    @Column( length = MAX_ALIAS_NAME_LEN, nullable = false)
+    @Column( length = IntactUtils.MAX_ALIAS_NAME_LEN, nullable = false)
     public String getName() {
         return this.name;
     }
