@@ -29,20 +29,10 @@ public abstract class AbstractIntactPrimaryObject extends AbstractAuditable impl
 
     @Id
     @GeneratedValue( generator = "intact-id-generator" )
-    @GenericGenerator( name = "intact-id-generator", strategy = "uk.ac.ebi.intact.model.IntactIdGenerator")
+    @GenericGenerator( name = "intact-id-generator", strategy = "uk.ac.ebi.intact.jami.model.IntactAcGenerator")
     @Column( length = 30 )
     public String getAc() {
         return ac;
-    }
-
-    /**
-     * This method should not be used by applications, as the AC is a primary key which is auto-generated. If we move to
-     * an application server it may then be needed.
-     *
-     * @param ac
-     */
-    public void setAc( String ac ) {
-        this.ac = ac;
     }
 
     ///////////////////////////////////////
@@ -50,6 +40,18 @@ public abstract class AbstractIntactPrimaryObject extends AbstractAuditable impl
     @Override
     public String toString() {
         return this.ac;
+    }
+
+    /**
+     * This method should not be used by applications, as the AC is a primary key which is auto-generated. If we move to
+     * an application server it may then be needed.
+     *
+     * This method is only used by hibernate using reflexion
+     *
+     * @param ac
+     */
+    private void setAc( String ac ) {
+        this.ac = ac;
     }
 }
 

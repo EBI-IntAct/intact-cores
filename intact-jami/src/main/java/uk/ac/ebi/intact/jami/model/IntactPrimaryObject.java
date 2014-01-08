@@ -18,10 +18,4 @@ public interface IntactPrimaryObject extends Auditable {
      * @return primary AC for this object
      */
     public String getAc();
-
-    /**
-     * Sets the primary ac of this object
-     * @param ac
-     */
-    public void setAc(String ac);
 }

@@ -24,8 +24,6 @@ public class User extends AbstractIntactPrimaryObject {
     private String firstName;
     private String lastName;
     private String email;
-    private String openIdUrl;
-
     /**
      * If set to true, the user should not be able to login into the system.
      */
@@ -34,12 +32,11 @@ public class User extends AbstractIntactPrimaryObject {
     private Set<Role> roles;
     private Collection<Preference> preferences;
 
-//    private Collection<Favourite> favourites;
 
     //////////////////
     // Constructors
 
-    public User() {
+    protected User() {
         this.roles = new HashSet<Role>();
         this.preferences = new ArrayList<Preference>();
         this.disabled = false;
@@ -83,6 +80,9 @@ public class User extends AbstractIntactPrimaryObject {
     }
 
     public void setFirstName(String firstName) {
+        if (firstName == null || firstName.length() == 0) {
+            throw new IllegalArgumentException("You must give a non null first name");
+        }
         this.firstName = firstName;
     }
 
@@ -92,6 +92,9 @@ public class User extends AbstractIntactPrimaryObject {
     }
 
     public void setLastName(String lastName) {
+        if (lastName == null || lastName.length() == 0) {
+            throw new IllegalArgumentException("You must give a non null last name");
+        }
         this.lastName = lastName;
     }
 
@@ -105,15 +108,7 @@ public class User extends AbstractIntactPrimaryObject {
         if (email == null || email.trim().length() == 0) {
             throw new IllegalArgumentException("You must give a non null email");
         }
-        this.email = email;
-    }
-
-    public String getOpenIdUrl() {
-        return openIdUrl;
-    }
-
-    public void setOpenIdUrl(String openIdUrl) {
-        this.openIdUrl = openIdUrl;
+        this.email = email.trim();
     }
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -155,10 +150,7 @@ public class User extends AbstractIntactPrimaryObject {
         }
     }
 
-    void setRoles(Set<Role> roles) {
-        if (roles == null) {
-            throw new IllegalArgumentException("You must give a non null roles");
-        }
+    private void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
@@ -185,16 +177,13 @@ public class User extends AbstractIntactPrimaryObject {
         return preferences;
     }
 
-    void setPreferences(Collection<Preference> preferences) {
-        if (preferences == null) {
-            throw new IllegalArgumentException("You must give a non null preferences");
-        }
+    private void setPreferences(Collection<Preference> preferences) {
         this.preferences = preferences;
     }
 
     public Preference getPreference(String prefKey) {
         for (Preference pref : getPreferences()) {
-            if (pref.getPreferenceId().getKey().equals(prefKey)) {
+            if (pref.getKey().equals(prefKey)) {
                 return pref;
             }
         }
@@ -216,7 +205,7 @@ public class User extends AbstractIntactPrimaryObject {
 
     public Preference addOrUpdatePreference(String key, String value) {
         for (Preference preference : getPreferences()) {
-            if (key.equals(preference.getPreferenceId().getKey())) {
+            if (key.equals(preference.getKey())) {
                 preference.setValue(value);
                 return preference;
             }
@@ -243,13 +232,11 @@ public class User extends AbstractIntactPrimaryObject {
         sb.append(", lastName='").append(lastName).append('\'');
         sb.append(", lastLogin=").append(lastLogin);
         sb.append(", email='").append(email).append('\'');
-        sb.append(", openIdUrl='").append(openIdUrl).append('\'');
         sb.append(", disabled='").append(disabled).append('\'');
         sb.append(", roles=").append(roles);
         sb.append(", preferences=").append(preferences);
         sb.append('}');
         return sb.toString();
     }
-
 
 }

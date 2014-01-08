@@ -11,6 +11,7 @@ import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 import uk.ac.ebi.intact.jami.model.context.UserContext;
 
+import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import java.util.Date;
@@ -21,6 +22,7 @@ import java.util.Date;
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  */
+@Entity
 public class AuditableEventListener {
 
     private static final Log log = LogFactory.getLog( AuditableEventListener.class );

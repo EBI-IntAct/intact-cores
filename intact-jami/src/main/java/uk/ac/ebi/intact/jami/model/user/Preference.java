@@ -1,9 +1,8 @@
 package uk.ac.ebi.intact.jami.model.user;
 
 import org.hibernate.annotations.ForeignKey;
-import uk.ac.ebi.intact.jami.model.BackwardCompatibleObjectWithAc;
-import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
-import uk.ac.ebi.intact.jami.model.listener.BackwardCompatibleAcEventListener;
+import org.hibernate.annotations.Index;
+import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 
 import javax.persistence.*;
 
@@ -16,28 +15,31 @@ import javax.persistence.*;
  */
 @Entity
 @Table( name="ia_preference" )
-@EntityListeners(value = {BackwardCompatibleAcEventListener.class})
-public class Preference extends AbstractAuditable implements BackwardCompatibleObjectWithAc {
+public class Preference extends AbstractIntactPrimaryObject {
 
     public static final String KEY_INSTITUTION_AC = "editor.institution.ac";
     public static final String KEY_INSTITUTION_NAME = "editor.institution.name";
     public static final String KEY_REVIEWER_AVAILABILITY = "reviewer.availability";
     public static final String KEY_MENTOR_REVIEWER = "reviewer.mentor";
 
-    private PreferenceId preferenceId;
+    private String key;
+
     private String value;
+
     private User user;
-    private String ac;
 
     //////////////////
     // Constructors
 
-    public Preference() {
+    protected Preference() {
     }
 
     public Preference( User user, String key ) {
+        if ( key == null || key.trim().length() == 0 ) {
+            throw new IllegalArgumentException( "You must give a non empty/null key" );
+        }
 
-        this.preferenceId = new PreferenceId(user.getAc(), key);
+        this.key = key;
         this.user = user;
     }
 
@@ -49,28 +51,18 @@ public class Preference extends AbstractAuditable implements BackwardCompatibleO
     ///////////////////////////
     // Getters and Setters
 
-    @Column(name = "ac", unique = true, updatable = false)
-    public String getAc(){
-        return this.ac;
+    @Index( name = "idx_preference_key")
+    @Column(nullable = false)
+    public String getKey() {
+        return key;
     }
 
-    /**
-     * This method should not be used by applications, as the AC is a primary key which is auto-generated. If we move to
-     * an application server it may then be needed.
-     *
-     * @param ac
-     */
-    public void setAc( String ac ) {
-        this.ac = ac;
-    }
+    public void setKey( String key ) {
 
-    @EmbeddedId
-    public PreferenceId getPreferenceId() {
-        return this.preferenceId;
-    }
-
-    public void setPreferenceId( PreferenceId key ) {
-        this.preferenceId = key;
+        if ( key == null || key.trim().length() == 0 ) {
+            throw new IllegalArgumentException( "You must give a non empty/null key" );
+        }
+        this.key = key;
     }
 
     @Lob
@@ -83,7 +75,7 @@ public class Preference extends AbstractAuditable implements BackwardCompatibleO
     }
 
     @ManyToOne
-    @JoinColumn( name="user_ac", referencedColumnName = "ac")
+    @JoinColumn( name = "user_ac" )
     @ForeignKey(name="FK_PREF_USER")
     public User getUser() {
         return user;
@@ -97,9 +89,24 @@ public class Preference extends AbstractAuditable implements BackwardCompatibleO
     // Object's override
 
     @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( !( o instanceof Preference ) ) return false;
+
+        Preference that = ( Preference ) o;
+
+        return key.equals( that.key );
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(  this.preferenceId != null ? this.preferenceId.getKey() : "" ).append( "=" );
+        sb.append(  key ).append( "=" );
         sb.append( value );
         return sb.toString();
     }
