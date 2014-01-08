@@ -3,11 +3,9 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.model.impl.DefaultAnnotation;
-import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
-import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -105,12 +103,12 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
         // add new url if not null
         if (url != null){
-            CvTerm urlTopic = CvTermUtils.createMICvTerm(Annotation.URL, Annotation.URL_MI);
+            CvTerm urlTopic = IntactUtils.createMITopic(Annotation.URL, Annotation.URL_MI);
             // first remove old url if not null
             if (this.url != null){
                 sourceAnnotationList.remove(this.url);
             }
-            this.url = new DefaultAnnotation(urlTopic, url);
+            this.url = new IntactAnnotation(urlTopic, url);
             sourceAnnotationList.add(this.url);
         }
         // remove all url if the collection is not empty
@@ -130,12 +128,12 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
         // add new url if not null
         if (address != null){
-            CvTerm addressTopic = new DefaultCvTerm(Annotation.POSTAL_ADDRESS);
+            CvTerm addressTopic = IntactUtils.createMITopic(Annotation.POSTAL_ADDRESS, null);
             // first remove old url if not null
             if (this.postalAddress != null){
                 sourceAnnotationList.remove(this.postalAddress);
             }
-            this.postalAddress = new DefaultAnnotation(addressTopic, address);
+            this.postalAddress = new IntactAnnotation(addressTopic, address);
             sourceAnnotationList.add(this.postalAddress);
         }
         // remove all url if the collection is not empty
@@ -146,6 +144,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     }
 
     @Transient
+    // TODO check primary ref?
     public Publication getPublication() {
         return this.bibRef;
     }
