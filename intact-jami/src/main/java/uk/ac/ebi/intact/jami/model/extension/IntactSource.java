@@ -199,7 +199,16 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     @Override
     protected boolean needToWrapXrefForPersistence(Xref added) {
-        return !(added instanceof SourceXref);
+        if (!(added instanceof SourceXref)){
+            return false;
+        }
+        else{
+            SourceXref termXref = (SourceXref)added;
+            if (termXref.getParent() != null && termXref.getParent() != this){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -209,7 +218,16 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     @Override
     protected boolean needToWrapAnnotationForPersistence(Annotation added) {
-        return !(added instanceof SourceAnnotation);
+        if (!(added instanceof SourceAnnotation)){
+            return false;
+        }
+        else{
+            SourceAnnotation termAnnot = (SourceAnnotation)added;
+            if (termAnnot.getParent() != null && termAnnot.getParent() != this){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -219,7 +237,16 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     @Override
     protected boolean needToWrapAliasForPersistence(Alias added) {
-        return !(added instanceof SourceAlias);
+        if (!(added instanceof SourceAlias)){
+            return false;
+        }
+        else{
+            SourceAlias termAlias = (SourceAlias)added;
+            if (termAlias.getParent() != null && termAlias.getParent() != this){
+                return false;
+            }
+        }
+        return true;
     }
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)

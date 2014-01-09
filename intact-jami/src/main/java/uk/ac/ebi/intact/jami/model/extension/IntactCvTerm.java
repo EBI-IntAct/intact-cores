@@ -201,7 +201,16 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     @Override
     protected boolean needToWrapXrefForPersistence(Xref added) {
-        return !(added instanceof CvTermXref);
+        if (!(added instanceof CvTermXref)){
+            return false;
+        }
+        else{
+            CvTermXref termXref = (CvTermXref)added;
+            if (termXref.getParent() != null && termXref.getParent() != this){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -211,7 +220,16 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     @Override
     protected boolean needToWrapAnnotationForPersistence(Annotation added) {
-        return !(added instanceof CvTermAnnotation);
+        if (!(added instanceof CvTermAnnotation)){
+            return false;
+        }
+        else{
+            CvTermAnnotation termAnnot = (CvTermAnnotation)added;
+            if (termAnnot.getParent() != null && termAnnot.getParent() != this){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -221,7 +239,16 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     @Override
     protected boolean needToWrapAliasForPersistence(Alias added) {
-        return !(added instanceof CvTermAlias);
+        if (!(added instanceof CvTermAlias)){
+            return false;
+        }
+        else{
+            CvTermAlias termAlias = (CvTermAlias)added;
+            if (termAlias.getParent() != null && termAlias.getParent() != this){
+                return false;
+            }
+        }
+        return true;
     }
 
     private void setChildren( Collection<OntologyTerm> children ) {
