@@ -3,11 +3,13 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.xref.UnambiguousXrefComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -87,6 +89,23 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
         this.id = id;
     }
 
+    @PrePersist
+    @PreUpdate
+    public void prePersist(){
+        if (!(this.database instanceof IntactCvTerm)){
+            IntactCvTerm clone = new IntactCvTerm(this.database.getShortName());
+            clone.setObjClass(IntactUtils.DATABASE_OBJCLASS);
+            CvTermCloner.copyAndOverrideCvTermProperties(this.database, clone);
+            this.database = clone;
+        }
+        if (this.qualifier != null && !(this.qualifier instanceof IntactCvTerm)){
+            IntactCvTerm clone = new IntactCvTerm(this.qualifier.getShortName());
+            clone.setObjClass(IntactUtils.QUALIFIER_OBJCLASS);
+            CvTermCloner.copyAndOverrideCvTermProperties(this.qualifier, clone);
+            this.qualifier = clone;
+        }
+    }
+
     ///////////////////////////////////////
     //access methods for attributes
 
@@ -137,6 +156,7 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn(name = "database_ac")
     @Target(IntactCvTerm.class)
+    @NotNull
     public CvTerm getDatabase() {
         return this.database;
     }

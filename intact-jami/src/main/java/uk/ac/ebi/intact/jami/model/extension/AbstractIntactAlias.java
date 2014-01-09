@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.alias.UnambiguousAliasComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -41,6 +42,17 @@ public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject im
         this.name = name;
     }
 
+    @PrePersist
+    @PreUpdate
+    public void prePersist(){
+        if (this.type != null && !(this.type instanceof IntactCvTerm)){
+            IntactCvTerm clone = new IntactCvTerm(this.type.getShortName());
+            clone.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+            CvTermCloner.copyAndOverrideCvTermProperties(this.type, clone);
+            this.type = clone;
+        }
+    }
+
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "aliastype_ac" )
     @Target(IntactCvTerm.class)
@@ -48,13 +60,13 @@ public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject im
         return this.type;
     }
 
+    public void setType(CvTerm type) {
+        this.type = type;
+    }
+
     @Column( length = IntactUtils.MAX_ALIAS_NAME_LEN, nullable = false)
     public String getName() {
         return this.name;
-    }
-
-    public void setType(CvTerm type) {
-        this.type = type;
     }
 
     public void setName(String name) {

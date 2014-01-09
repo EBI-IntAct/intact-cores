@@ -4,11 +4,13 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.annotation.UnambiguousAnnotationComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -63,6 +65,17 @@ public abstract class AbstractIntactAnnotation extends AbstractIntactPrimaryObje
         this.value = value;
     }
 
+    @PrePersist
+    @PreUpdate
+    public void prePersist(){
+        if (!(this.topic instanceof IntactCvTerm)){
+            IntactCvTerm clone = new IntactCvTerm(this.topic.getShortName());
+            clone.setObjClass(IntactUtils.TOPIC_OBJCLASS);
+            CvTermCloner.copyAndOverrideCvTermProperties(this.topic, clone);
+            this.topic = clone;
+        }
+    }
+
     ///////////////////////////////////////
     //access methods for attributes
     @Column( name = "description", length = IntactUtils.MAX_DESCRIPTION_LEN )
@@ -81,6 +94,7 @@ public abstract class AbstractIntactAnnotation extends AbstractIntactPrimaryObje
     @JoinColumn( name = "topic_ac" )
     @ForeignKey(name = "FK_ANNOTATION$TOPIC")
     @Target(IntactCvTerm.class)
+    @NotNull
     public CvTerm getTopic() {
         return topic;
     }
