@@ -23,7 +23,7 @@ public class EntityAlias extends AbstractIntactAlias{
 
     private NamedEntity parent;
 
-    public EntityAlias() {
+    protected EntityAlias() {
     }
 
     public EntityAlias(CvTerm type, String name) {

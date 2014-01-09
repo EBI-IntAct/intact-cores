@@ -22,7 +22,7 @@ public class ExperimentAlias extends AbstractIntactAlias{
 
     private NamedExperiment parent;
 
-    public ExperimentAlias() {
+    protected ExperimentAlias() {
     }
 
     public ExperimentAlias(CvTerm type, String name) {

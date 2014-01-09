@@ -188,7 +188,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             if (this.miIdentifier != null){
                 cvTermIdentifiers.remove(this.miIdentifier);
             }
-            this.miIdentifier = new IntactXref(psiMiDatabase, mi, identityQualifier);
+            this.miIdentifier = new CvTermXref(psiMiDatabase, mi, identityQualifier);
             cvTermIdentifiers.add(this.miIdentifier);
         }
         // remove all mi if the collection is not empty
@@ -210,7 +210,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             if (this.modIdentifier != null){
                 cvTermIdentifiers.remove(this.modIdentifier);
             }
-            this.modIdentifier = new IntactXref(psiModDatabase, mod, identityQualifier);
+            this.modIdentifier = new CvTermXref(psiModDatabase, mod, identityQualifier);
             cvTermIdentifiers.add(this.modIdentifier);
         }
         // remove all mod if the collection is not empty
@@ -232,7 +232,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             if (this.parIdentifier != null){
                 cvTermIdentifiers.remove(this.parIdentifier);
             }
-            this.parIdentifier = new IntactXref(psiModDatabase, par, identityQualifier);
+            this.parIdentifier = new CvTermXref(psiModDatabase, par, identityQualifier);
             cvTermIdentifiers.add(this.parIdentifier);
         }
         // remove all mod if the collection is not empty

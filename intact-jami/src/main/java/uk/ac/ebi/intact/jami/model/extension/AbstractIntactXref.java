@@ -5,27 +5,24 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.comparator.xref.UnambiguousXrefComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 /**
- * IntAct implementation of Xref
+ * Abstract IntAct implementation of Xref
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>18/12/13</pre>
  */
 @Entity
-@Table( name = "ia_xref" )
-public class IntactXref extends AbstractIntactPrimaryObject implements Xref{
+@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject implements Xref{
 
     ///////////////////////////////////////
     // Constant
-
-    public static final int MAX_ID_LEN = 256;
-    public static final int MAX_DB_RELEASE_LEN = 10;
-
 
     /**
      * Primary identifier of the database referred to.
@@ -57,28 +54,28 @@ public class IntactXref extends AbstractIntactPrimaryObject implements Xref{
      */
     private CvTerm database;
 
-    protected IntactXref() {
+    protected AbstractIntactXref() {
         //super call sets creation time data
         super();
     }
 
 
-    public IntactXref(CvTerm database, String id, CvTerm qualifier){
+    public AbstractIntactXref(CvTerm database, String id, CvTerm qualifier){
         this(database, id);
         this.qualifier = qualifier;
     }
 
-    public IntactXref(CvTerm database, String id, String version, CvTerm qualifier){
+    public AbstractIntactXref(CvTerm database, String id, String version, CvTerm qualifier){
         this(database, id, version);
         this.qualifier = qualifier;
     }
 
-    public IntactXref(CvTerm database, String id, String version){
+    public AbstractIntactXref(CvTerm database, String id, String version){
         this(database, id);
         this.version = version;
     }
 
-    public IntactXref(CvTerm database, String id){
+    public AbstractIntactXref(CvTerm database, String id){
         if (database == null){
             throw new IllegalArgumentException("The database is required and cannot be null");
         }
@@ -105,7 +102,7 @@ public class IntactXref extends AbstractIntactPrimaryObject implements Xref{
         this.id = aPrimaryId;
     }
 
-    @Size(max = MAX_ID_LEN)
+    @Size(max = IntactUtils.MAX_ID_LEN)
     public String getSecondaryId() {
         return secondaryId;
     }
@@ -115,7 +112,7 @@ public class IntactXref extends AbstractIntactPrimaryObject implements Xref{
     }
 
     @Column(name = "dbrelease")
-    @Size(max = MAX_DB_RELEASE_LEN)
+    @Size(max = IntactUtils.MAX_DB_RELEASE_LEN)
     public String getVersion() {
         return version;
     }

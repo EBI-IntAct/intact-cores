@@ -2,8 +2,8 @@ package uk.ac.ebi.intact.jami.utils;
 
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactXref;
 
 /**
  * Utility class for intact classes and properties
@@ -19,6 +19,8 @@ public class IntactUtils {
     public static final int MAX_FULL_NAME_LEN = 1000;
     public static final int MAX_DESCRIPTION_LEN = 4000;
     public static final int MAX_ALIAS_NAME_LEN = 256;
+    public static final int MAX_ID_LEN = 256;
+    public static final int MAX_DB_RELEASE_LEN = 10;
 
     public static final String CV_LOCAL_SEQ = "cv_local_seq";
 
@@ -40,7 +42,7 @@ public class IntactUtils {
 
     public static IntactCvTerm createIntactMITerm(String name, String MI, String objclass){
         if (MI != null){
-            return new IntactCvTerm(name, new IntactXref(new IntactCvTerm(CvTerm.PSI_MI, null, CvTerm.PSI_MI_MI, DATABASE_OBJCLASS), MI, new IntactCvTerm(Xref.IDENTITY, null, Xref.IDENTITY_MI, QUALIFIER_OBJCLASS)), objclass);
+            return new IntactCvTerm(name, new CvTermXref(new IntactCvTerm(CvTerm.PSI_MI, null, CvTerm.PSI_MI_MI, DATABASE_OBJCLASS), MI, new IntactCvTerm(Xref.IDENTITY, null, Xref.IDENTITY_MI, QUALIFIER_OBJCLASS)), objclass);
         }
         else {
             return new IntactCvTerm(name, (String)null, (String)null, objclass);

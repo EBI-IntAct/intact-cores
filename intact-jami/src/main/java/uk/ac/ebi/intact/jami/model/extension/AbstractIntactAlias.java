@@ -10,7 +10,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.*;
 
 /**
- * IntAct implementation for alias
+ * Abstract IntAct implementation for alias
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

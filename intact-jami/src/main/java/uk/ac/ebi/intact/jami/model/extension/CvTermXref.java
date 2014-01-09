@@ -9,27 +9,35 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Implementation of alias for cv terms
+ * Implementation of xref for cv terms
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_controlledvocab_alias" )
-public class CvTermAlias extends AbstractIntactAlias{
+@Table( name = "ia_controlledvocab_xref" )
+public class CvTermXref extends AbstractIntactXref{
 
     private CvTerm parent;
 
-    protected CvTermAlias() {
+    public CvTermXref() {
     }
 
-    public CvTermAlias(CvTerm type, String name) {
-        super(type, name);
+    public CvTermXref(CvTerm database, String id, CvTerm qualifier) {
+        super(database, id, qualifier);
     }
 
-    public CvTermAlias(String name) {
-        super(name);
+    public CvTermXref(CvTerm database, String id, String version, CvTerm qualifier) {
+        super(database, id, version, qualifier);
+    }
+
+    public CvTermXref(CvTerm database, String id, String version) {
+        super(database, id, version);
+    }
+
+    public CvTermXref(CvTerm database, String id) {
+        super(database, id);
     }
 
     @ManyToOne( targetEntity = IntactCvTerm.class )

@@ -22,7 +22,7 @@ public class FeatureAlias extends AbstractIntactAlias{
 
     private NamedFeature parent;
 
-    public FeatureAlias() {
+    protected FeatureAlias() {
     }
 
     public FeatureAlias(CvTerm type, String name) {

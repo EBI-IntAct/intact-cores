@@ -23,7 +23,7 @@ public class OrganismAlias extends AbstractIntactAlias{
 
     private Organism parent;
 
-    public OrganismAlias() {
+    protected OrganismAlias() {
     }
 
     public OrganismAlias(CvTerm type, String name) {

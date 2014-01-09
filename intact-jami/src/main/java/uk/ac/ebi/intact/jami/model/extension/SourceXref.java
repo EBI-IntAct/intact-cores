@@ -10,27 +10,35 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Implementation of alias for source/institution
+ * Implementation of xref for cv terms
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_institution_alias" )
-public class SourceAlias extends AbstractIntactAlias{
+@Table( name = "ia_source_xref" )
+public class SourceXref extends AbstractIntactXref{
 
     private Source parent;
 
-    protected SourceAlias() {
+    public SourceXref() {
     }
 
-    public SourceAlias(CvTerm type, String name) {
-        super(type, name);
+    public SourceXref(CvTerm database, String id, CvTerm qualifier) {
+        super(database, id, qualifier);
     }
 
-    public SourceAlias(String name) {
-        super(name);
+    public SourceXref(CvTerm database, String id, String version, CvTerm qualifier) {
+        super(database, id, version, qualifier);
+    }
+
+    public SourceXref(CvTerm database, String id, String version) {
+        super(database, id, version);
+    }
+
+    public SourceXref(CvTerm database, String id) {
+        super(database, id);
     }
 
     @ManyToOne( targetEntity = IntactSource.class )
