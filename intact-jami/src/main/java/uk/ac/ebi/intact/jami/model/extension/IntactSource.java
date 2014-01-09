@@ -108,7 +108,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
             if (this.url != null){
                 sourceAnnotationList.remove(this.url);
             }
-            this.url = new IntactAnnotation(urlTopic, url);
+            this.url = new SourceAnnotation(urlTopic, url);
             sourceAnnotationList.add(this.url);
         }
         // remove all url if the collection is not empty
@@ -133,7 +133,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
             if (this.postalAddress != null){
                 sourceAnnotationList.remove(this.postalAddress);
             }
-            this.postalAddress = new IntactAnnotation(addressTopic, address);
+            this.postalAddress = new SourceAnnotation(addressTopic, address);
             sourceAnnotationList.add(this.postalAddress);
         }
         // remove all url if the collection is not empty
@@ -164,14 +164,9 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         super.initialiseSynonymsWith(aliases);
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactAnnotation.class)
-    @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinTable(
-            name = "ia_institution2annot",
-            joinColumns = {@JoinColumn( name = "institution_ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
-    )
-    @Target(IntactAnnotation.class)
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(SourceAnnotation.class)
     protected Collection<Annotation> getPersistentAnnotations() {
         return this.persistentAnnotations;
     }

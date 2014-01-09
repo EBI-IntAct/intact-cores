@@ -10,35 +10,28 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Implementation of xref for experiments
+ * Implementation of annotation for experiments
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_experiment_xref" )
-public class ExperimentXref extends AbstractIntactXref{
+@Table( name = "ia_experiment_annot" )
+public class ExperimentAnnotation extends AbstractIntactAnnotation{
 
     private Experiment parent;
 
-    public ExperimentXref() {
+    public ExperimentAnnotation() {
+        super();
     }
 
-    public ExperimentXref(CvTerm database, String id, CvTerm qualifier) {
-        super(database, id, qualifier);
+    public ExperimentAnnotation(CvTerm topic) {
+        super(topic);
     }
 
-    public ExperimentXref(CvTerm database, String id, String version, CvTerm qualifier) {
-        super(database, id, version, qualifier);
-    }
-
-    public ExperimentXref(CvTerm database, String id, String version) {
-        super(database, id, version);
-    }
-
-    public ExperimentXref(CvTerm database, String id) {
-        super(database, id);
+    public ExperimentAnnotation(CvTerm topic, String value) {
+        super(topic, value);
     }
 
     @ManyToOne( targetEntity = IntactExperiment.class )

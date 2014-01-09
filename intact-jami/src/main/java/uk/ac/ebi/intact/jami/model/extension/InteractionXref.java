@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Feature;
+import psidev.psi.mi.jami.model.Interaction;
 import psidev.psi.mi.jami.model.Interactor;
 
 import javax.persistence.Entity;
@@ -11,45 +11,45 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Implementation of xref for interactors
+ * Implementation of xref for interactions
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_interactor_xref" )
-public class InteractorXref extends AbstractIntactXref{
+@Table( name = "ia_interaction_xref" )
+public class InteractionXref extends AbstractIntactXref{
 
-    private Interactor parent;
+    private Interaction parent;
 
-    public InteractorXref() {
+    public InteractionXref() {
     }
 
-    public InteractorXref(CvTerm database, String id, CvTerm qualifier) {
+    public InteractionXref(CvTerm database, String id, CvTerm qualifier) {
         super(database, id, qualifier);
     }
 
-    public InteractorXref(CvTerm database, String id, String version, CvTerm qualifier) {
+    public InteractionXref(CvTerm database, String id, String version, CvTerm qualifier) {
         super(database, id, version, qualifier);
     }
 
-    public InteractorXref(CvTerm database, String id, String version) {
+    public InteractionXref(CvTerm database, String id, String version) {
         super(database, id, version);
     }
 
-    public InteractorXref(CvTerm database, String id) {
+    public InteractionXref(CvTerm database, String id) {
         super(database, id);
     }
 
-    @ManyToOne( targetEntity = IntactInteractor.class )
+    @ManyToOne( targetEntity = IntactInteraction.class )
     @JoinColumn( name = "parent_ac" )
-    @Target(IntactInteractor.class)
-    public Interactor getParent() {
+    @Target(IntactInteraction.class)
+    public Interaction getParent() {
         return parent;
     }
 
-    public void setParent(Interactor parent) {
+    public void setParent(Interaction parent) {
         this.parent = parent;
     }
 }

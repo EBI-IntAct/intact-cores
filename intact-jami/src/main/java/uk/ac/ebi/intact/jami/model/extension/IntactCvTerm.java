@@ -100,13 +100,9 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         this.objClass = objClass;
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactAnnotation.class)
-    @JoinTable(
-            name = "ia_cvobject2annot",
-            joinColumns = {@JoinColumn( name = "cvobject_ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
-    )
-    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAnnotation.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(CvTermAnnotation.class)
     @Override
     public Collection<Annotation> getAnnotations() {
         return super.getAnnotations();

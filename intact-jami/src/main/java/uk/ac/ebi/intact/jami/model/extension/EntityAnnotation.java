@@ -9,35 +9,28 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Implementation of xref for entities/participants
+ * Implementation of annotation for entities/participants
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_component_xref" )
-public class EntityXref extends AbstractIntactXref{
+@Table( name = "ia_component_annot" )
+public class EntityAnnotation extends AbstractIntactAnnotation{
 
     private psidev.psi.mi.jami.model.Entity parent;
 
-    public EntityXref() {
+    public EntityAnnotation() {
+        super();
     }
 
-    public EntityXref(CvTerm database, String id, CvTerm qualifier) {
-        super(database, id, qualifier);
+    public EntityAnnotation(CvTerm topic) {
+        super(topic);
     }
 
-    public EntityXref(CvTerm database, String id, String version, CvTerm qualifier) {
-        super(database, id, version, qualifier);
-    }
-
-    public EntityXref(CvTerm database, String id, String version) {
-        super(database, id, version);
-    }
-
-    public EntityXref(CvTerm database, String id) {
-        super(database, id);
+    public EntityAnnotation(CvTerm topic, String value) {
+        super(topic, value);
     }
 
     @ManyToOne( targetEntity = IntactEntity.class )

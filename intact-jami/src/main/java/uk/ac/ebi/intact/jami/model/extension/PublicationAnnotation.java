@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.Publication;
 
 import javax.persistence.Entity;
@@ -10,35 +11,28 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Implementation of xref for publications
+ * Implementation of annotation for publication
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_publication_xref" )
-public class PublicationXref extends AbstractIntactXref{
+@Table( name = "ia_publication_annot" )
+public class PublicationAnnotation extends AbstractIntactAnnotation{
 
     private Publication parent;
 
-    public PublicationXref() {
+    public PublicationAnnotation() {
+        super();
     }
 
-    public PublicationXref(CvTerm database, String id, CvTerm qualifier) {
-        super(database, id, qualifier);
+    public PublicationAnnotation(CvTerm topic) {
+        super(topic);
     }
 
-    public PublicationXref(CvTerm database, String id, String version, CvTerm qualifier) {
-        super(database, id, version, qualifier);
-    }
-
-    public PublicationXref(CvTerm database, String id, String version) {
-        super(database, id, version);
-    }
-
-    public PublicationXref(CvTerm database, String id) {
-        super(database, id);
+    public PublicationAnnotation(CvTerm topic, String value) {
+        super(topic, value);
     }
 
     @ManyToOne( targetEntity = IntactPublication.class )

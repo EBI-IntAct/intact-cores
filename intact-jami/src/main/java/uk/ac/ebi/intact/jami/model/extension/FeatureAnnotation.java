@@ -11,35 +11,28 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Implementation of xref for features
+ * Implementation of annotation for features
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_feature_xref" )
-public class FeatureXref extends AbstractIntactXref{
+@Table( name = "ia_feature_annot" )
+public class FeatureAnnotation extends AbstractIntactAnnotation{
 
     private Feature parent;
 
-    public FeatureXref() {
+    public FeatureAnnotation() {
+        super();
     }
 
-    public FeatureXref(CvTerm database, String id, CvTerm qualifier) {
-        super(database, id, qualifier);
+    public FeatureAnnotation(CvTerm topic) {
+        super(topic);
     }
 
-    public FeatureXref(CvTerm database, String id, String version, CvTerm qualifier) {
-        super(database, id, version, qualifier);
-    }
-
-    public FeatureXref(CvTerm database, String id, String version) {
-        super(database, id, version);
-    }
-
-    public FeatureXref(CvTerm database, String id) {
-        super(database, id);
+    public FeatureAnnotation(CvTerm topic, String value) {
+        super(topic, value);
     }
 
     @ManyToOne( targetEntity = IntactFeature.class )

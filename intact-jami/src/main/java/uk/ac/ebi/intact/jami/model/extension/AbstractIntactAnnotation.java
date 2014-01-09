@@ -12,15 +12,15 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 /**
- * Intact implementation of annotation
+ * Abstract Intact implementation of annotation
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>07/01/14</pre>
  */
-@Entity()
-@Table( name = "ia_annotation" )
-public class IntactAnnotation extends AbstractIntactPrimaryObject implements Annotation{
+@Entity
+@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+public abstract class AbstractIntactAnnotation extends AbstractIntactPrimaryObject implements Annotation{
 
     ///////////////////////////////////////
     //attributes
@@ -45,19 +45,19 @@ public class IntactAnnotation extends AbstractIntactPrimaryObject implements Ann
      * purposes only and if possible will be made private.
      *
      */
-    protected IntactAnnotation() {
+    protected AbstractIntactAnnotation() {
         //super call sets creation time data
         super();
     }
 
-    public IntactAnnotation(CvTerm topic){
+    public AbstractIntactAnnotation(CvTerm topic){
         if (topic == null){
             throw new IllegalArgumentException("The annotation topic is required and cannot be null");
         }
         this.topic = topic;
     }
 
-    public IntactAnnotation(CvTerm topic, String value){
+    public AbstractIntactAnnotation(CvTerm topic, String value){
         this(topic);
         this.value = value;
     }
