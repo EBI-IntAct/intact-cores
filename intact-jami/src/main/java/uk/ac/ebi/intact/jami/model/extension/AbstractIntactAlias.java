@@ -44,7 +44,7 @@ public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject im
 
     @PrePersist
     @PreUpdate
-    public void prePersist(){
+    public void prePersistAndUpdate(){
         if (this.type != null && !(this.type instanceof IntactCvTerm)){
             IntactCvTerm clone = new IntactCvTerm(this.type.getShortName());
             clone.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);

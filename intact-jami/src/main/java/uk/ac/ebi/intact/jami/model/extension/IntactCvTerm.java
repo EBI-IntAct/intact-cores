@@ -108,10 +108,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getAnnotations();
     }
 
-    private void setAnnotations(Collection<Annotation> annots){
-        super.initialiseAnnotationsWith(annots);
-    }
-
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CvTermXref.class)
@@ -126,24 +122,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Override
     public Collection<Alias> getSynonyms() {
         return super.getSynonyms();
-    }
-
-    private void setSynonyms(Collection<Alias> aliases){
-        super.initialiseSynonymsWith(aliases);
-    }
-
-    /**
-     * Identifier for this object, which is a de-normalization of the
-     * value contained in the 'identity' xref from the 'psimi' database
-     * @return the MI Identifier for this CVObject
-     * @since 1.9.x
-     * @deprecated Only kept for backward compatibility with intact-core
-     */
-    @Column(name = "identifier", length = 30)
-    @Size(max = 30)
-    @Index(name = "cvobject_id_idx")
-    private String getIdentifier() {
-        return identifier;
     }
 
     public void setIdentifier(String identifier) {
@@ -206,14 +184,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         }
     }
 
-    private void setChildren( Collection<OntologyTerm> children ) {
-        this.children = children;
-    }
-
-    private void setParents( Collection<OntologyTerm> parents ) {
-        this.parents = parents;
-    }
-
     @Column(name = "definition", length = IntactUtils.MAX_DESCRIPTION_LEN )
     @Size( max = IntactUtils.MAX_DESCRIPTION_LEN )
     public String getDefinition() {
@@ -222,5 +192,65 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     public void setDefinition(String def) {
         this.definition = def;
+    }
+
+    @Override
+    protected Xref instantiateXrefFrom(Xref added) {
+        return new CvTermXref(added.getDatabase(), added.getId(), added.getVersion(), added.getQualifier());
+    }
+
+    @Override
+    protected boolean needToWrapXrefForPersistence(Xref added) {
+        return !(added instanceof CvTermXref);
+    }
+
+    @Override
+    protected Annotation instantiateAnnotationFrom(Annotation added) {
+        return new CvTermAnnotation(added.getTopic(), added.getValue());
+    }
+
+    @Override
+    protected boolean needToWrapAnnotationForPersistence(Annotation added) {
+        return !(added instanceof CvTermAnnotation);
+    }
+
+    @Override
+    protected Alias instantiateAliasFrom(Alias added) {
+        return new CvTermAlias(added.getType(), added.getName());
+    }
+
+    @Override
+    protected boolean needToWrapAliasForPersistence(Alias added) {
+        return !(added instanceof CvTermAlias);
+    }
+
+    private void setChildren( Collection<OntologyTerm> children ) {
+        this.children = children;
+    }
+
+    private void setParents( Collection<OntologyTerm> parents ) {
+        this.parents = parents;
+    }
+
+    private void setSynonyms(Collection<Alias> aliases){
+        super.initialiseSynonymsWith(aliases);
+    }
+
+    /**
+     * Identifier for this object, which is a de-normalization of the
+     * value contained in the 'identity' xref from the 'psimi' database
+     * @return the MI Identifier for this CVObject
+     * @since 1.9.x
+     * @deprecated Only kept for backward compatibility with intact-core
+     */
+    @Column(name = "identifier", length = 30)
+    @Size(max = 30)
+    @Index(name = "cvobject_id_idx")
+    private String getIdentifier() {
+        return identifier;
+    }
+
+    private void setAnnotations(Collection<Annotation> annots){
+        super.initialiseAnnotationsWith(annots);
     }
 }

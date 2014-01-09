@@ -160,22 +160,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return super.getSynonyms();
     }
 
-    private void setSynonyms(Collection<Alias> aliases){
-        super.initialiseSynonymsWith(aliases);
-    }
-
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(SourceAnnotation.class)
-    protected Collection<Annotation> getPersistentAnnotations() {
-        return this.persistentAnnotations;
-    }
-
-    private void setPersistentAnnotations(Collection<Annotation> persistentAnnotations) {
-        this.persistentAnnotations = persistentAnnotations;
-        initialiseAnnotations();
-    }
-
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceXref.class)
@@ -204,6 +188,54 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     protected void clearPropertiesLinkedToAnnotations() {
         url = null;
         postalAddress = null;
+    }
+
+    @Override
+    protected Xref instantiateXrefFrom(Xref added) {
+        SourceXref persistentRef;
+        persistentRef = new SourceXref(added.getDatabase(), added.getId(), added.getVersion(), added.getQualifier());
+        return persistentRef;
+    }
+
+    @Override
+    protected boolean needToWrapXrefForPersistence(Xref added) {
+        return !(added instanceof SourceXref);
+    }
+
+    @Override
+    protected Annotation instantiateAnnotationFrom(Annotation added) {
+        return new SourceAnnotation(added.getTopic(), added.getValue());
+    }
+
+    @Override
+    protected boolean needToWrapAnnotationForPersistence(Annotation added) {
+        return !(added instanceof SourceAnnotation);
+    }
+
+    @Override
+    protected Alias instantiateAliasFrom(Alias added) {
+        return new SourceAlias(added.getType(), added.getName());
+    }
+
+    @Override
+    protected boolean needToWrapAliasForPersistence(Alias added) {
+        return !(added instanceof SourceAlias);
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(SourceAnnotation.class)
+    protected Collection<Annotation> getPersistentAnnotations() {
+        return this.persistentAnnotations;
+    }
+
+    private void setSynonyms(Collection<Alias> aliases){
+        super.initialiseSynonymsWith(aliases);
+    }
+
+    private void setPersistentAnnotations(Collection<Annotation> persistentAnnotations) {
+        this.persistentAnnotations = persistentAnnotations;
+        initialiseAnnotations();
     }
 
     private class SourceAnnotationList extends AbstractListHavingProperties<Annotation> {

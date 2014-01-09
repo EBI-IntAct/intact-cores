@@ -67,7 +67,7 @@ public abstract class AbstractIntactAnnotation extends AbstractIntactPrimaryObje
 
     @PrePersist
     @PreUpdate
-    public void prePersist(){
+    public void prePersistAndUpdate(){
         if (!(this.topic instanceof IntactCvTerm)){
             IntactCvTerm clone = new IntactCvTerm(this.topic.getShortName());
             clone.setObjClass(IntactUtils.TOPIC_OBJCLASS);

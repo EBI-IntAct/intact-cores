@@ -91,7 +91,7 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
 
     @PrePersist
     @PreUpdate
-    public void prePersist(){
+    public void prePersistAndUpdate(){
         if (!(this.database instanceof IntactCvTerm)){
             IntactCvTerm clone = new IntactCvTerm(this.database.getShortName());
             clone.setObjClass(IntactUtils.DATABASE_OBJCLASS);
