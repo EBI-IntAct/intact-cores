@@ -12,6 +12,8 @@ import javax.persistence.*;
 /**
  * Abstract IntAct implementation for alias
  *
+ * Note: this implementation was chosen because aliases do not make sense without their parents and are not shared by different entities
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>18/12/13</pre>

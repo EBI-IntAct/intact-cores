@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 
 /**
  * Abstract Intact implementation of annotation
+ * Note: this implementation was chosen because annotations do not make sense without their parents and are not shared by different entities
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
