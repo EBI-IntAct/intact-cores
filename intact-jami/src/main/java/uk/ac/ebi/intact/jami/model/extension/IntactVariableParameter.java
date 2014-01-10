@@ -1,12 +1,15 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValue;
+import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousVariableParameterComparator;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -59,8 +62,27 @@ public class IntactVariableParameter implements VariableParameter {
         this.unit = unit;
     }
 
-    protected void initialiseVatiableParameterValues(){
-        this.variableValues = new ArrayList<VariableParameterValue>();
+    @PrePersist
+    @PreUpdate
+    public void prePersistAndUpdate() {
+        // check if unit possible to persist
+        if (unit != null && !(unit instanceof IntactCvTerm)){
+            IntactCvTerm clone = new IntactCvTerm(this.unit.getShortName());
+            clone.setObjClass(IntactUtils.UNIT_OBJCLASS);
+            CvTermCloner.copyAndOverrideCvTermProperties(this.unit, clone);
+            this.unit = clone;
+        }
+        // check if all variable parameter values are possible to persist
+        if (this.variableValues != null && Hibernate.isInitialized(this.variableValues) && !this.variableValues.isEmpty()){
+            Collection<VariableParameterValue> values = new ArrayList<VariableParameterValue>(this.variableValues);
+            for (VariableParameterValue value : values){
+                if (!(value instanceof IntactVariableParameterValue) && value.getVariableParameter() != null && value.getVariableParameter() != this){
+                    IntactVariableParameterValue clone = new IntactVariableParameterValue(value.getValue(), value.getVariableParameter(), value.getOrder());
+                    this.variableValues.remove(value);
+                    this.variableValues.add(clone);
+                }
+            }
+        }
     }
 
     @Id
@@ -150,5 +172,13 @@ public class IntactVariableParameter implements VariableParameter {
     @Override
     public String toString() {
         return description.toString() + (unit != null ? "(unit: "+unit.toString()+")":"");
+    }
+
+    private void initialiseVatiableParameterValues(){
+        this.variableValues = new ArrayList<VariableParameterValue>();
+    }
+
+    private void setVariableValues(Collection<VariableParameterValue> variableValues) {
+        this.variableValues = variableValues;
     }
 }

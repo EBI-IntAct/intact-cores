@@ -50,7 +50,7 @@ public abstract class AbstractIntactPrimaryObject extends AbstractAuditable impl
      *
      * @param ac
      */
-    private void setAc( String ac ) {
+    public void setAc( String ac ) {
         this.ac = ac;
     }
 }

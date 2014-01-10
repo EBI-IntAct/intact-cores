@@ -84,13 +84,7 @@ public class IntactVariableParameterValue implements VariableParameterValue {
         return null;
     }
 
-    @Column(name = "variableorder")
-    @Size(max = 4000)
-    private int getPersistentOrder() {
-        return this.order;
-    }
-
-    private void setPersistentOrder(int persistentOrder) {
+    public void setPersistentOrder(int persistentOrder) {
         this.order = persistentOrder;
     }
 
@@ -126,5 +120,11 @@ public class IntactVariableParameterValue implements VariableParameterValue {
     @Override
     public String toString() {
         return value != null ? value.toString() : super.toString();
+    }
+
+    @Column(name = "variableorder")
+    @Size(max = 4000)
+    private int getPersistentOrder() {
+        return this.order;
     }
 }

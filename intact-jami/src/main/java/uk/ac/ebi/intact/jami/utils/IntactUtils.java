@@ -28,6 +28,7 @@ public class IntactUtils {
     public static final String QUALIFIER_OBJCLASS="uk.ac.ebi.intact.model.CvXrefQualifier";
     public static final String TOPIC_OBJCLASS="uk.ac.ebi.intact.model.CvTopic";
     public static final String ALIAS_TYPE_OBJCLASS="uk.ac.ebi.intact.model.CvAliasType";
+    public static final String UNIT_OBJCLASS ="uk.ac.ebi.intact.model.CvUnit";
 
     public static IntactCvTerm createMIDatabase(String name, String MI){
         return createIntactMITerm(name, MI, DATABASE_OBJCLASS);

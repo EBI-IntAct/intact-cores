@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.model.VariableParameterValueSet;
@@ -25,6 +26,22 @@ public class IntactVariableParameterValueSet implements VariableParameterValueSe
     public IntactVariableParameterValueSet(){
     }
 
+    @PrePersist
+    @PreUpdate
+    public void prePersistAndUpdate() {
+        // check if all variable parameter values are possible to persist
+        if (variableParameterValues != null && Hibernate.isInitialized(variableParameterValues) && !variableParameterValues.isEmpty()){
+            Collection<VariableParameterValue> values = new ArrayList<VariableParameterValue>(variableParameterValues);
+            for (VariableParameterValue value : values){
+                if (!(value instanceof IntactVariableParameterValue)){
+                    IntactVariableParameterValue clone = new IntactVariableParameterValue(value.getValue(), value.getVariableParameter(), value.getOrder());
+                    this.variableParameterValues.remove(value);
+                    this.variableParameterValues.add(clone);
+                }
+            }
+        }
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idGenerator")
     @SequenceGenerator(name="idGenerator", sequenceName="DEFAULT_ID_SEQ", initialValue = 1)
@@ -34,24 +51,6 @@ public class IntactVariableParameterValueSet implements VariableParameterValueSe
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @ManyToMany( targetEntity = IntactVariableParameterValue.class, fetch = FetchType.EAGER)
-    @JoinTable(
-            name="ia_varset2parametervalue",
-            joinColumns = @JoinColumn( name="varset_id"),
-            inverseJoinColumns = @JoinColumn( name="parametervalue_id")
-    )
-    @Target(IntactVariableParameterValue.class)
-    private Set<VariableParameterValue> getVariableParameterValues() {
-        if (this.variableParameterValues == null){
-           this.variableParameterValues = new HashSet<VariableParameterValue>();
-        }
-        return variableParameterValues;
-    }
-
-    private void setVariableParameterValues(Set<VariableParameterValue> variableParameterValues) {
-        this.variableParameterValues = variableParameterValues;
     }
 
     public int size() {
@@ -123,5 +122,23 @@ public class IntactVariableParameterValueSet implements VariableParameterValueSe
     @Override
     public int hashCode() {
         return VariableParameterValueSetComparator.hashCode(this);
+    }
+
+    @ManyToMany( targetEntity = IntactVariableParameterValue.class, fetch = FetchType.EAGER)
+    @JoinTable(
+            name="ia_varset2parametervalue",
+            joinColumns = @JoinColumn( name="varset_id"),
+            inverseJoinColumns = @JoinColumn( name="parametervalue_id")
+    )
+    @Target(IntactVariableParameterValue.class)
+    private Set<VariableParameterValue> getVariableParameterValues() {
+        if (this.variableParameterValues == null){
+            this.variableParameterValues = new HashSet<VariableParameterValue>();
+        }
+        return variableParameterValues;
+    }
+
+    private void setVariableParameterValues(Set<VariableParameterValue> variableParameterValues) {
+        this.variableParameterValues = variableParameterValues;
     }
 }
