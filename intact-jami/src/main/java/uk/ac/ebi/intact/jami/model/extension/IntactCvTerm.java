@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Target;
@@ -7,11 +8,13 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.OntologyTerm;
 import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.model.listener.CvIdentifierListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -84,17 +87,43 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         this.definition = def;
     }
 
+    @Override
+    @PrePersist
+    @PreUpdate
+    public void prePersistAndUpdate() {
+        super.prePersistAndUpdate();
+        // check if all parents are possible to persist
+        if (parents != null && Hibernate.isInitialized(parents) && !parents.isEmpty()){
+            Collection<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>(parents);
+            for (OntologyTerm parent : ontologyTerms){
+                if (!(parent instanceof IntactCvTerm)){
+                    IntactCvTerm clone = new IntactCvTerm(parent.getShortName());
+                    CvTermCloner.copyAndOverrideOntologyTermProperties(parent, clone);
+                    this.parents.remove(parent);
+                    this.parents.add(clone);
+                }
+            }
+        }
+        // check if all children are possible to persist
+        if (children != null && Hibernate.isInitialized(children) && !children.isEmpty()){
+            Collection<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>(children);
+            for (OntologyTerm child : ontologyTerms){
+                if (!(child instanceof IntactCvTerm)){
+                    IntactCvTerm clone = new IntactCvTerm(child.getShortName());
+                    CvTermCloner.copyAndOverrideOntologyTermProperties(child, clone);
+                    this.children.remove(child);
+                    this.children.add(clone);
+                }
+            }
+        }
+    }
+
     public boolean isIdentifierSet(){
         return this.identifier != null;
     }
 
     /////////////////////////////
     // Entity fields
-
-    @Column( name = "objclass", nullable = false)
-    private String getObjClass() {
-        return objClass;
-    }
 
     public void setObjClass( String objClass ) {
         this.objClass = objClass;
@@ -108,11 +137,12 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class
+            ,fetch = FetchType.EAGER)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CvTermXref.class)
     @Override
-    public Collection<Xref> getPersistentXrefs() {
+    protected Collection<Xref> getPersistentXrefs() {
         return super.getPersistentXrefs();
     }
 
@@ -142,6 +172,9 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     )
     @Target(IntactCvTerm.class)
     public Collection<OntologyTerm> getChildren() {
+        if (children == null){
+            children = new ArrayList<OntologyTerm>();
+        }
         return children;
     }
 
@@ -150,14 +183,14 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     public void addChild( OntologyTerm cvDagObject ) {
 
-        if ( !children.contains( cvDagObject ) ) {
+        if ( !getChildren().contains( cvDagObject ) ) {
             children.add( cvDagObject );
             cvDagObject.getParents().add( this );
         }
     }
 
     public void removeChild( OntologyTerm cvDagObject ) {
-        boolean removed = children.remove( cvDagObject );
+        boolean removed = getChildren().remove( cvDagObject );
         if ( removed ) {
             cvDagObject.getParents().remove( this );
         }
@@ -166,19 +199,22 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @ManyToMany( mappedBy = "children", targetEntity = IntactCvTerm.class )
     @Target(IntactCvTerm.class)
     public Collection<OntologyTerm> getParents() {
+        if (parents == null){
+            parents = new ArrayList<OntologyTerm>();
+        }
         return parents;
     }
 
     public void addParent( OntologyTerm cvDagObject ) {
 
-        if ( !parents.contains( cvDagObject ) ) {
+        if ( !getParents().contains( cvDagObject ) ) {
             parents.add( cvDagObject );
             cvDagObject.getChildren().add( this );
         }
     }
 
     public void removeParent( OntologyTerm cvDagObject ) {
-        boolean removed = parents.remove( cvDagObject );
+        boolean removed = getParents().remove( cvDagObject );
         if ( removed ) {
             cvDagObject.getChildren().remove( this );
         }
@@ -259,10 +295,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         this.parents = parents;
     }
 
-    private void setSynonyms(Collection<Alias> aliases){
-        super.initialiseSynonymsWith(aliases);
-    }
-
     /**
      * Identifier for this object, which is a de-normalization of the
      * value contained in the 'identity' xref from the 'psimi' database
@@ -274,10 +306,11 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Size(max = 30)
     @Index(name = "cvobject_id_idx")
     private String getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
-    private void setAnnotations(Collection<Annotation> annots){
-        super.initialiseAnnotationsWith(annots);
+    @Column( name = "objclass", nullable = false)
+    private String getObjClass() {
+        return objClass;
     }
 }

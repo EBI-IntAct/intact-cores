@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.XrefUtils;
+import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import psidev.psi.mi.jami.utils.comparator.cv.UnambiguousCvTermComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
@@ -20,7 +21,6 @@ import javax.validation.constraints.Size;
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Abstract class for intact cv terms
@@ -35,14 +35,13 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     private String fullName;
     private CvTermXrefList xrefs;
     private CvTermIdentifierList identifiers;
-    private Collection<Annotation> annotations;
-    private Collection<Alias> synonyms;
-
     private Xref miIdentifier;
     private Xref modIdentifier;
     private Xref parIdentifier;
 
-    private Collection<Xref> persistentXrefs;
+    private PersistentXrefList persistentXrefs;
+    private Collection<Annotation> annotations;
+    private Collection<Alias> synonyms;
 
     protected AbstractIntactCvTerm() {
         //super call sets creation time data
@@ -82,10 +81,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     @PrePersist
     @PreUpdate
     public void prePersistAndUpdate() {
-        // first shortname as lower case
-        if (shortName != null){
-            this.shortName.trim().toLowerCase();
-        }
         // check if all aliases are possible to persist
         if (annotations != null && Hibernate.isInitialized(annotations) && !annotations.isEmpty()){
             Collection<Annotation> newAnnots = new ArrayList<Annotation>(annotations);
@@ -121,7 +116,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         if (name == null){
             throw new IllegalArgumentException("The short name cannot be null");
         }
-        this.shortName = name;
+        this.shortName = name.trim().toLowerCase();
     }
 
     @Column( length = IntactUtils.MAX_FULL_NAME_LEN )
@@ -284,7 +279,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             }
         }
         else{
-            this.persistentXrefs = new ArrayList<Xref>();
+            this.persistentXrefs = new PersistentXrefList(null);
         }
     }
 
@@ -302,12 +297,36 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
     @Transient
     protected Collection<Xref> getPersistentXrefs() {
-        return this.persistentXrefs;
+        if (this.persistentXrefs == null){
+            this.persistentXrefs = new PersistentXrefList(null);
+        }
+        return this.persistentXrefs.getWrappedList();
     }
 
     protected void setPersistentXrefs(Collection<Xref> persistentXrefs){
-        this.persistentXrefs = persistentXrefs;
+        if (persistentXrefs instanceof PersistentXrefList){
+            this.persistentXrefs = (PersistentXrefList)persistentXrefs;
+        }
+        else{
+            this.persistentXrefs = new PersistentXrefList(persistentXrefs);
+        }
         initialiseXrefs();
+    }
+
+    protected void initialiseAnnotations(){
+        this.annotations = new ArrayList<Annotation>();
+    }
+
+    protected void initialiseSynonyms(){
+        this.synonyms = new ArrayList<Alias>();
+    }
+
+    protected void setAnnotations(Collection<Annotation> annotations){
+        this.annotations = annotations;
+    }
+
+    protected void setSynonyms(Collection<Alias> aliases){
+        this.synonyms = aliases;
     }
 
     protected void processAddedIdentifierEvent(Xref added) {
@@ -389,32 +408,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         parIdentifier = null;
     }
 
-    protected void initialiseAnnotations(){
-        this.annotations = new ArrayList<Annotation>();
-    }
-
-    protected void initialiseSynonyms(){
-        this.synonyms = new ArrayList<Alias>();
-    }
-
-    protected void initialiseAnnotationsWith(Collection<Annotation> annotations){
-        if (annotations == null){
-            this.annotations = Collections.EMPTY_LIST;
-        }
-        else {
-            this.annotations = annotations;
-        }
-    }
-
-    protected void initialiseSynonymsWith(Collection<Alias> aliases){
-        if (aliases == null){
-            this.synonyms = Collections.EMPTY_LIST;
-        }
-        else {
-            this.synonyms = aliases;
-        }
-    }
-
     protected class CvTermIdentifierList extends AbstractListHavingProperties<Xref> {
         public CvTermIdentifierList(){
             super();
@@ -422,11 +415,11 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
         @Override
         protected void processAddedObjectEvent(Xref added) {
+            processAddedIdentifierEvent(added);
             Xref persistentRef = added;
             if (needToWrapXrefForPersistence(added)){
                 persistentRef = instantiateXrefFrom(added);
             }
-            processAddedIdentifierEvent(added);
             persistentXrefs.add(persistentRef);
         }
 
@@ -464,8 +457,24 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
         @Override
         protected void clearProperties() {
-            clearPropertiesLinkedToIdentifiers();
             persistentXrefs.retainAll(getIdentifiers());
+        }
+    }
+
+    protected class PersistentXrefList extends AbstractCollectionWrapper<Xref> {
+
+        public PersistentXrefList(Collection<Xref> persistentBag){
+            super(persistentBag);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToAdd(Xref added) {
+            return needToWrapXrefForPersistence(added);
+        }
+
+        @Override
+        protected Xref processOrWrapElementToAdd(Xref added) {
+            return instantiateXrefFrom(added);
         }
     }
 }

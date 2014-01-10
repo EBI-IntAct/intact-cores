@@ -4,11 +4,13 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
-import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
+import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Intact implementation of a source. It replaces Institution from intact core
@@ -22,7 +24,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     private Annotation url;
     private Annotation postalAddress;
     private Publication bibRef;
-    private Collection<Annotation> persistentAnnotations;
 
     public IntactSource(String shortName) {
         super(shortName);
@@ -77,20 +78,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         setUrl(url);
         setPostalAddress(address);
         this.bibRef = bibRef;
-    }
-
-    @Override
-    protected void initialiseAnnotations() {
-        initialiseAnnotationsWith(new SourceAnnotationList());
-        if (this.persistentAnnotations != null){
-            for (Annotation annot : this.persistentAnnotations){
-                ((SourceAnnotationList)getAnnotations()).addOnly(annot);
-                processAddedAnnotationEvent(annot);
-            }
-        }
-        else{
-            this.persistentAnnotations = getAnnotations();
-        }
     }
 
     @Column(name = "url")
@@ -153,14 +140,8 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         this.bibRef = ref;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAlias.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(SourceAlias.class)
-    public Collection<Alias> getSynonyms() {
-        return super.getSynonyms();
-    }
-
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class)
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class,
+            fetch = FetchType.EAGER)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceXref.class)
     protected Collection<Xref> getPersistentXrefs() {
@@ -249,43 +230,92 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return true;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class,
+            fetch = FetchType.EAGER)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceAnnotation.class)
-    protected Collection<Annotation> getPersistentAnnotations() {
-        return this.persistentAnnotations;
-    }
-
-    private void setSynonyms(Collection<Alias> aliases){
-        super.initialiseSynonymsWith(aliases);
+    private Collection<Annotation> getPersistentAnnotations() {
+        return ((SourceAnnotationList)super.getAnnotations()).getWrappedList();
     }
 
     private void setPersistentAnnotations(Collection<Annotation> persistentAnnotations) {
-        this.persistentAnnotations = persistentAnnotations;
-        initialiseAnnotations();
+        super.setAnnotations(new SourceAnnotationList(persistentAnnotations));
+        for (Annotation annot : getAnnotations()){
+            processAddedAnnotationEvent(annot);
+        }
     }
 
-    private class SourceAnnotationList extends AbstractListHavingProperties<Annotation> {
-        public SourceAnnotationList(){
-            super();
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAlias.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(SourceAlias.class)
+    public Collection<Alias> getSynonyms() {
+        return super.getSynonyms();
+    }
+
+    private class SourceAnnotationList extends AbstractCollectionWrapper<Annotation> {
+        public SourceAnnotationList(Collection<Annotation> annots){
+            super(annots);
         }
 
         @Override
-        protected void processAddedObjectEvent(Annotation added) {
-            processAddedAnnotationEvent(added);
-            persistentAnnotations.add(added);
+        public boolean add(Annotation xref) {
+            if(super.add(xref)){
+                processAddedAnnotationEvent(xref);
+                return true;
+            }
+            return false;
         }
 
         @Override
-        protected void processRemovedObjectEvent(Annotation removed) {
-            processRemovedAnnotationEvent(removed);
-            persistentAnnotations.add(removed);
+        public boolean remove(Object o) {
+            if (super.remove(o)){
+                processRemovedAnnotationEvent((Annotation)o);
+                return true;
+            }
+            return false;
         }
 
         @Override
-        protected void clearProperties() {
+        public boolean removeAll(Collection<?> c) {
+            boolean hasChanged = false;
+            for (Object annot : c){
+                if (remove(annot)){
+                    hasChanged = true;
+                }
+            }
+            return hasChanged;
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            List<Annotation> existingObject = new ArrayList<Annotation>(this);
+
+            boolean removed = false;
+            for (Annotation o : existingObject){
+                if (!c.contains(o)){
+                    if (remove(o)){
+                        removed = true;
+                    }
+                }
+            }
+
+            return removed;
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
             clearPropertiesLinkedToAnnotations();
-            persistentAnnotations.clear();
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToAdd(Annotation added) {
+            return false;
+        }
+
+        @Override
+        protected Annotation processOrWrapElementToAdd(Annotation added) {
+            return added;
         }
     }
 }

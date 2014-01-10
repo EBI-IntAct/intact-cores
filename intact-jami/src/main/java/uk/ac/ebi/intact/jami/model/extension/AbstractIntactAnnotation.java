@@ -100,7 +100,7 @@ public abstract class AbstractIntactAnnotation extends AbstractIntactPrimaryObje
     }
 
     public void setTopic( CvTerm cvTopic ) {
-        if (topic == null){
+        if (cvTopic == null){
             throw new IllegalArgumentException("The annotation topic is required and cannot be null");
         }
         this.topic = cvTopic;

@@ -162,6 +162,9 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
     }
 
     public void setDatabase(CvTerm cvDatabase) {
+        if (cvDatabase == null){
+            throw new IllegalArgumentException("The xref database is required and cannot be null");
+        }
         this.database = cvDatabase;
     }
 
