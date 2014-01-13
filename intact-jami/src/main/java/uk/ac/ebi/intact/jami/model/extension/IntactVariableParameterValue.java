@@ -4,6 +4,7 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.utils.comparator.experiment.VariableParameterValueComparator;
+import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,7 +19,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "ia_variable_parameter_value")
-public class IntactVariableParameterValue implements VariableParameterValue {
+public class IntactVariableParameterValue extends AbstractAuditable implements VariableParameterValue {
 
     private String value;
     private VariableParameter variableParameter;

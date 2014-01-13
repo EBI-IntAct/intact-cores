@@ -5,6 +5,7 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.model.VariableParameterValueSet;
 import psidev.psi.mi.jami.utils.comparator.experiment.VariableParameterValueSetComparator;
+import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 
 import javax.persistence.*;
 import java.util.*;
@@ -18,7 +19,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "ia_interaction_var_parameters")
-public class IntactVariableParameterValueSet implements VariableParameterValueSet {
+public class IntactVariableParameterValueSet extends AbstractAuditable implements VariableParameterValueSet {
 
     private Long id;
     private Set<VariableParameterValue> variableParameterValues;

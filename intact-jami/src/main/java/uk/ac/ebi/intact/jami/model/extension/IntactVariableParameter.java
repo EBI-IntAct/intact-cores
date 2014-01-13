@@ -9,6 +9,7 @@ import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousVariableParameterComparator;
+import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -26,7 +27,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "ia_variable_parameter")
-public class IntactVariableParameter implements VariableParameter {
+public class IntactVariableParameter extends AbstractAuditable implements VariableParameter {
 
     private String description;
     private CvTerm unit;
