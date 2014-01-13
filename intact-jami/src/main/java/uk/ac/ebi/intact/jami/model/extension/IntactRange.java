@@ -9,10 +9,7 @@ import psidev.psi.mi.jami.model.ResultingSequence;
 import psidev.psi.mi.jami.utils.comparator.range.UnambiguousRangeAndResultingSequenceComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Intact implementation of range
@@ -65,11 +62,21 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
     }
 
     @Embedded
+    @AttributeOverrides( {
+            @AttributeOverride(name="start", column = @Column(name="fromintervalstart") ),
+            @AttributeOverride(name="end", column = @Column(name="fromintervalend") )
+    } )
+    @AssociationOverrides( { @AssociationOverride(name = "status", joinColumns = @JoinColumn(name = "fromfuzzytype_ac")) })
     public Position getStart() {
         return this.start;
     }
 
     @Embedded
+    @AttributeOverrides( {
+            @AttributeOverride(name="start", column = @Column(name="tointervalstart") ),
+            @AttributeOverride(name="end", column = @Column(name="tointervalend") )
+    } )
+    @AssociationOverrides( { @AssociationOverride(name = "status", joinColumns = @JoinColumn(name = "tofuzzytype_ac")) })
     public Position getEnd() {
         return this.end;
     }

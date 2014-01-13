@@ -5,7 +5,6 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.ResultingSequence;
 import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.comparator.range.ResultingSequenceComparator;
-import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.Collection;
  * @since <pre>10/01/14</pre>
  */
 @Embeddable
-public class IntactResultingSequence extends AbstractAuditable implements ResultingSequence{
+public class IntactResultingSequence implements ResultingSequence{
 
     private String originalSequence;
     private String newSequence;
