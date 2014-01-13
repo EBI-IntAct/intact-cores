@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
@@ -239,6 +240,18 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return (miIdentifier != null ? miIdentifier.getId() : (modIdentifier != null ? modIdentifier.getId() : (parIdentifier != null ? parIdentifier.getId() : "-"))) + " ("+shortName+")";
     }
 
+    public boolean isXrefCollectionLoaded(){
+        return Hibernate.isInitialized(this.persistentXrefs);
+    }
+
+    public boolean isAnnotationCollectionLoaded(){
+        return Hibernate.isInitialized(this.annotations);
+    }
+
+    public boolean isAliasCollectionLoaded(){
+        return Hibernate.isInitialized(this.synonyms);
+    }
+
     protected void initialiseXrefs(){
         this.identifiers = new CvTermIdentifierList();
         this.xrefs = new CvTermXrefList();
@@ -261,14 +274,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     protected abstract Xref instantiateXrefFrom(Xref added);
 
     protected abstract boolean needToWrapXrefForPersistence(Xref added);
-
-    protected abstract Annotation instantiateAnnotationFrom(Annotation added);
-
-    protected abstract boolean needToWrapAnnotationForPersistence(Annotation added);
-
-    protected abstract Alias instantiateAliasFrom(Alias added);
-
-    protected abstract boolean needToWrapAliasForPersistence(Alias added);
 
     @Transient
     protected Collection<Xref> getPersistentXrefs() {

@@ -5,6 +5,9 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 /**
  * Utility class for intact classes and properties
  *
@@ -21,6 +24,7 @@ public class IntactUtils {
     public static final int MAX_ALIAS_NAME_LEN = 256;
     public static final int MAX_ID_LEN = 256;
     public static final int MAX_DB_RELEASE_LEN = 10;
+    public final static DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
 
     public static final String CV_LOCAL_SEQ = "cv_local_seq";
 
@@ -29,6 +33,8 @@ public class IntactUtils {
     public static final String TOPIC_OBJCLASS="uk.ac.ebi.intact.model.CvTopic";
     public static final String ALIAS_TYPE_OBJCLASS="uk.ac.ebi.intact.model.CvAliasType";
     public static final String UNIT_OBJCLASS ="uk.ac.ebi.intact.model.CvUnit";
+
+    public static final String RELEASED_STATUS = "released";
 
     public static IntactCvTerm createMIDatabase(String name, String MI){
         return createIntactMITerm(name, MI, DATABASE_OBJCLASS);

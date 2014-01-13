@@ -241,53 +241,15 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     @Override
     protected boolean needToWrapXrefForPersistence(Xref added) {
         if (!(added instanceof SourceXref)){
-            return false;
+            return true;
         }
         else{
             SourceXref termXref = (SourceXref)added;
             if (termXref.getParent() != null && termXref.getParent() != this){
-                return false;
+                return true;
             }
         }
-        return true;
-    }
-
-    @Override
-    protected Annotation instantiateAnnotationFrom(Annotation added) {
-        return new SourceAnnotation(added.getTopic(), added.getValue());
-    }
-
-    @Override
-    protected boolean needToWrapAnnotationForPersistence(Annotation added) {
-        if (!(added instanceof SourceAnnotation)){
-            return false;
-        }
-        else{
-            SourceAnnotation termAnnot = (SourceAnnotation)added;
-            if (termAnnot.getParent() != null && termAnnot.getParent() != this){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    protected Alias instantiateAliasFrom(Alias added) {
-        return new SourceAlias(added.getType(), added.getName());
-    }
-
-    @Override
-    protected boolean needToWrapAliasForPersistence(Alias added) {
-        if (!(added instanceof SourceAlias)){
-            return false;
-        }
-        else{
-            SourceAlias termAlias = (SourceAlias)added;
-            if (termAlias.getParent() != null && termAlias.getParent() != this){
-                return false;
-            }
-        }
-        return true;
+        return false;
     }
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
@@ -306,7 +268,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
      * @deprecated use getURL instead
      */
     private String getPersistentURL() {
-        return persistentURL;
+        return persistentUrl;
     }
 
     @Column(name = "postaladdress")

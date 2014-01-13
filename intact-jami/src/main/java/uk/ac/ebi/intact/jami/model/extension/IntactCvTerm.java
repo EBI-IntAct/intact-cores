@@ -7,6 +7,7 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.OntologyTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.model.listener.CvDefinitionListener;
 import uk.ac.ebi.intact.jami.model.listener.CvIdentifierListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -26,7 +27,7 @@ import java.util.Collection;
 @Entity
 @Table( name = "ia_controlledvocab",
         uniqueConstraints = {@UniqueConstraint(columnNames={"objclass", "shortlabel"})})
-@EntityListeners(value = {CvIdentifierListener.class})
+@EntityListeners(value = {CvIdentifierListener.class, CvDefinitionListener.class})
 public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     /**
@@ -95,16 +96,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     public void setShortName(String name) {
         super.setShortName(name);
-    }
-
-    /**
-     *
-     * @return true if old identifier is set
-     * @deprecated the identifier variable is deprecated and is only kept for backward compatibility with intact-core.
-     * Use getMIIdentifier, getMODIdentifier or getParIdentifier instead
-     */
-    public boolean isIdentifierSet(){
-        return this.identifier != null;
     }
 
     /////////////////////////////
@@ -232,53 +223,15 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Override
     protected boolean needToWrapXrefForPersistence(Xref added) {
         if (!(added instanceof CvTermXref)){
-            return false;
+            return true;
         }
         else{
             CvTermXref termXref = (CvTermXref)added;
             if (termXref.getParent() != null && termXref.getParent() != this){
-                return false;
+                return true;
             }
         }
-        return true;
-    }
-
-    @Override
-    protected Annotation instantiateAnnotationFrom(Annotation added) {
-        return new CvTermAnnotation(added.getTopic(), added.getValue());
-    }
-
-    @Override
-    protected boolean needToWrapAnnotationForPersistence(Annotation added) {
-        if (!(added instanceof CvTermAnnotation)){
-            return false;
-        }
-        else{
-            CvTermAnnotation termAnnot = (CvTermAnnotation)added;
-            if (termAnnot.getParent() != null && termAnnot.getParent() != this){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    protected Alias instantiateAliasFrom(Alias added) {
-        return new CvTermAlias(added.getType(), added.getName());
-    }
-
-    @Override
-    protected boolean needToWrapAliasForPersistence(Alias added) {
-        if (!(added instanceof CvTermAlias)){
-            return false;
-        }
-        else{
-            CvTermAlias termAlias = (CvTermAlias)added;
-            if (termAlias.getParent() != null && termAlias.getParent() != this){
-                return false;
-            }
-        }
-        return true;
+        return false;
     }
 
     private void setChildren( Collection<OntologyTerm> children ) {

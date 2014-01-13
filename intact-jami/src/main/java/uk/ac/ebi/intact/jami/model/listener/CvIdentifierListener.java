@@ -26,7 +26,7 @@ public class CvIdentifierListener {
     @PrePersist
     @PreUpdate
     public void prePersist(IntactCvTerm intactCv) {
-        if (!intactCv.isIdentifierSet()){
+        if (intactCv.isXrefCollectionLoaded()){
             // first look at PSI-MI
             if (intactCv.getMIIdentifier() != null){
                 intactCv.setIdentifier(intactCv.getMIIdentifier());

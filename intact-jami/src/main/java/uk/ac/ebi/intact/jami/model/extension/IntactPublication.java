@@ -1,20 +1,28 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
+import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.model.LifecycleEvent;
+import uk.ac.ebi.intact.jami.model.listener.PublicationLifecycleListener;
+import uk.ac.ebi.intact.jami.model.listener.PublicationPropertiesListener;
+import uk.ac.ebi.intact.jami.model.listener.PublicationShortLabelListener;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * IntAct implementation of publication.
@@ -25,13 +33,14 @@ import java.util.List;
  */
 @javax.persistence.Entity
 @Table( name = "ia_publication" )
+@EntityListeners(value = {PublicationShortLabelListener.class, PublicationPropertiesListener.class, PublicationLifecycleListener.class})
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
     private String title;
     private String journal;
     private Date publicationDate;
     private List<String> authors;
-    private Collection<Xref> identifiers;
-    private Collection<Xref> xrefs;
+    private PublicationIdentifierList identifiers;
+    private PublicationXrefList xrefs;
     private Collection<Annotation> annotations;
     private Collection<Experiment> experiments;
     private CurationDepth curationDepth;
@@ -43,6 +52,11 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private Xref imexId;
 
     private String shortLabel;
+    private PersistentXrefList persistentXrefs;
+    private List<LifecycleEvent> lifecycleEvents;
+    private CvTerm status;
+    private User currentOwner;
+    private User currentReviewer;
 
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
@@ -110,23 +124,6 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         assignImexId(imexId);
     }
 
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndUpdate() {
-        // set shortlabel if not done yet
-        if (this.shortLabel == null){
-            if (this.pubmedId != null){
-                this.shortLabel = this.pubmedId.getId().toLowerCase().trim();
-            }
-            else if (this.doi != null){
-                this.shortLabel = this.doi.getId().toLowerCase().trim();
-            }
-            else if (this.identifiers != null && !this.identifiers.isEmpty()){
-                this.shortLabel = this.identifiers.iterator().next().getId().toLowerCase().trim();
-            }
-        }
-    }
-
     /**
      * Set the shortlabel
      * @param shortLabel
@@ -141,6 +138,9 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     @Transient
     public String getPubmedId() {
+        if (this.identifiers == null){
+            initialiseXrefs();
+        }
         return this.pubmedId != null ? this.pubmedId.getId() : null;
     }
 
@@ -153,10 +153,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             CvTerm identityQualifier = CvTermUtils.createIdentityQualifier();
             // first remove old pubmed if not null
             if (this.pubmedId != null){
-                identifiers.removeOnly(this.pubmedId);
+                identifiers.remove(this.pubmedId);
             }
             this.pubmedId = new DefaultXref(pubmedDatabase, pubmedId, identityQualifier);
-            identifiers.addOnly(this.pubmedId);
+            identifiers.add(this.pubmedId);
         }
         // remove all pubmed if the collection is not empty
         else if (!identifiers.isEmpty()) {
@@ -167,6 +167,9 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     @Transient
     public String getDoi() {
+        if (this.identifiers == null){
+            initialiseXrefs();
+        }
         return this.doi != null ? this.doi.getId() : null;
     }
 
@@ -178,10 +181,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             CvTerm identityQualifier = CvTermUtils.createIdentityQualifier();
             // first remove old doi if not null
             if (this.doi != null){
-                identifiers.removeOnly(this.doi);
+                identifiers.remove(this.doi);
             }
             this.doi = new DefaultXref(doiDatabase, doi, identityQualifier);
-            identifiers.addOnly(this.doi);
+            identifiers.add(this.doi);
         }
         // remove all doi if the collection is not empty
         else if (!identifiers.isEmpty()) {
@@ -193,13 +196,16 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     @Transient
     public Collection<Xref> getIdentifiers() {
         if (identifiers == null){
-            initialiseIdentifiers();
+            initialiseXrefs();
         }
         return this.identifiers;
     }
 
     @Transient
     public String getImexId() {
+        if (this.xrefs == null){
+            initialiseXrefs();
+        }
         return this.imexId != null ? this.imexId.getId() : null;
     }
 
@@ -211,10 +217,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             CvTerm imexPrimaryQualifier = CvTermUtils.createImexPrimaryQualifier();
             // first remove old imex if not null
             if (this.imexId != null){
-                xrefs.removeOnly(this.imexId);
+                xrefs.remove(this.imexId);
             }
             this.imexId = new DefaultXref(imexDatabase, identifier, imexPrimaryQualifier);
-            xrefs.addOnly(this.imexId);
+            xrefs.add(this.imexId);
 
             this.curationDepth = CurationDepth.IMEx;
         }
@@ -253,6 +259,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.publicationDate = date;
     }
 
+    @Transient
     public List<String> getAuthors() {
         if (authors == null){
             initialiseAuthors();
@@ -260,13 +267,9 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.authors;
     }
 
-    public Collection<Xref> getXrefs() {
-        if (xrefs == null){
-            initialiseXrefs();
-        }
-        return this.xrefs;
-    }
-
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationAnnotation.class, fetch = FetchType.EAGER)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(PublicationAnnotation.class)
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
             initialiseAnnotations();
@@ -274,6 +277,18 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.annotations;
     }
 
+    @Transient
+    public Collection<Xref> getXrefs() {
+        if (xrefs == null){
+            initialiseXrefs();
+        }
+        return this.xrefs;
+    }
+
+    @OneToMany( mappedBy = "publication", cascade = { CascadeType.ALL }, targetEntity = IntactExperiment.class)
+    @OrderBy("created")
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(IntactExperiment.class)
     public Collection<Experiment> getExperiments() {
         if (experiments == null){
             initialiseExperiments();
@@ -281,20 +296,18 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.experiments;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "curation_depth", length = IntactUtils.MAX_SHORT_LABEL_LEN)
     public CurationDepth getCurationDepth() {
         return this.curationDepth;
     }
 
     public void setCurationDepth(CurationDepth curationDepth) {
 
-        if (imexId != null && curationDepth != null && !curationDepth.equals(CurationDepth.IMEx)){
-            throw new IllegalArgumentException("The curationDepth " + curationDepth.toString() + " is not allowed because the publication has an IMEx id so it has IMEx curation depth.");
+        if (curationDepth == null && imexId != null) {
+            this.curationDepth = CurationDepth.IMEx;
         }
-        else if (imexId != null && curationDepth == null){
-            throw new IllegalArgumentException("The curationDepth cannot be null/not specified because the publication has an IMEx id so it has IMEx curation depth.");
-        }
-
-        if (curationDepth == null) {
+        else if (curationDepth == null) {
             this.curationDepth = CurationDepth.undefined;
         }
         else {
@@ -302,6 +315,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "released_date")
     public Date getReleasedDate() {
         return this.releasedDate;
     }
@@ -310,6 +325,9 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.releasedDate = released;
     }
 
+    @ManyToOne(targetEntity = IntactSource.class)
+    @JoinColumn( name = "owner_ac", nullable = false )
+    @Target(IntactSource.class)
     public Source getSource() {
         return this.source;
     }
@@ -376,13 +394,88 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
+    @OneToMany( mappedBy = "publication", orphanRemoval = true, cascade = CascadeType.ALL)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @OrderBy("when, created")
+    public List<LifecycleEvent> getLifecycleEvents() {
+        if (this.lifecycleEvents == null){
+            this.lifecycleEvents = new ArrayList<LifecycleEvent>();
+        }
+        return lifecycleEvents;
+    }
+
+    public void addLifecycleEvent( LifecycleEvent event ) {
+        if(  event.getPublication() != null && event.getPublication() != this ) {
+            throw new IllegalArgumentException( "You are trying to add an event to publication "+
+                    event.getPublication().getPubmedId() +" that already belong to an other " +
+                    "publication " + getAc() );
+        }
+        event.setPublication( this );
+        getLifecycleEvents().add(event);
+    }
+
+    public boolean removeLifecycleEvent(LifecycleEvent evt) {
+        return getLifecycleEvents().remove(evt);
+    }
+
+    @ManyToOne(targetEntity = IntactCvTerm.class)
+    @JoinColumn( name = "status_ac" )
+    @ForeignKey(name="FK_PUBLICATION_STATUS")
+    @Target(IntactCvTerm.class)
+    public CvTerm getStatus() {
+        return status;
+    }
+
+    public void setStatus( CvTerm status ) {
+        this.status = status;
+    }
+
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "owner_pk" )
+    @ForeignKey(name="FK_PUBLICATION_OWNER")
+    @Target(User.class)
+    public User getCurrentOwner() {
+        return currentOwner;
+    }
+
+    public void setCurrentOwner( User currentOwner ) {
+        this.currentOwner = currentOwner;
+    }
+
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "reviewer_pk" )
+    @ForeignKey(name="FK_PUBLICATION_REVIEWER")
+    @Target(User.class)
+    public User getCurrentReviewer() {
+        return currentReviewer;
+    }
+
+    public void setCurrentReviewer( User currentReviewer ) {
+        this.currentReviewer = currentReviewer;
+    }
+
     @Override
     public String toString() {
         return (imexId != null ? imexId.getId() : (pubmedId != null ? pubmedId.getId() : (doi != null ? doi.getId() : (title != null ? title : "-"))));
     }
 
     protected void initialiseXrefs(){
+        this.identifiers = new PublicationIdentifierList();
         this.xrefs = new PublicationXrefList();
+        if (this.persistentXrefs != null){
+            for (Xref ref : this.persistentXrefs){
+                if (XrefUtils.isXrefAnIdentifier(ref)){
+                    this.identifiers.addOnly(ref);
+                    processAddedIdentifierEvent(ref);
+                }
+                else{
+                    this.xrefs.addOnly(ref);
+                }
+            }
+        }
+        else{
+            this.persistentXrefs = new PersistentXrefList(null);
+        }
     }
 
     protected void initialiseAnnotations(){
@@ -391,10 +484,6 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     protected void initialiseExperiments(){
         this.experiments = new ArrayList<Experiment>();
-    }
-
-    protected void initialiseIdentifiers(){
-        this.identifiers = new PublicationIdentifierList();
     }
 
     protected void processAddedIdentifierEvent(Xref added) {
@@ -479,6 +568,25 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.authors = new ArrayList<String>();
     }
 
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationXref.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(PublicationXref.class)
+    private Collection<Xref> getPersistentXrefs() {
+        if (this.persistentXrefs == null){
+            this.persistentXrefs = new PersistentXrefList(null);
+        }
+        return this.persistentXrefs.getWrappedList();
+    }
+
+    private void setPersistentXrefs(Collection<Xref> persistentXrefs){
+        if (persistentXrefs instanceof PersistentXrefList){
+            this.persistentXrefs = (PersistentXrefList)persistentXrefs;
+        }
+        else{
+            this.persistentXrefs = new PersistentXrefList(persistentXrefs);
+        }
+    }
+
     @Column(name = "shortLabel", nullable = false, unique = true)
     @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
     @NotNull
@@ -487,6 +595,18 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
      */
     private String getShortLabel() {
         return shortLabel;
+    }
+
+    private void setAnnotations(Collection<Annotation> annotations) {
+        this.annotations = annotations;
+    }
+
+    private void setExperiments(Collection<Experiment> experiments) {
+        this.experiments = experiments;
+    }
+
+    private void setLifecycleEvents( List<LifecycleEvent> lifecycleEvents ) {
+        this.lifecycleEvents = lifecycleEvents;
     }
 
     private class PublicationIdentifierList extends AbstractListHavingProperties<Xref> {
@@ -498,16 +618,19 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         protected void processAddedObjectEvent(Xref added) {
 
             processAddedIdentifierEvent(added);
+            persistentXrefs.add(added);
         }
 
         @Override
         protected void processRemovedObjectEvent(Xref removed) {
             processRemovedIdentifierEvent(removed);
+            persistentXrefs.remove(removed);
         }
 
         @Override
         protected void clearProperties() {
             clearPropertiesLinkedToIdentifiers();
+            persistentXrefs.retainAll(getXrefs());
         }
     }
 
@@ -520,16 +643,45 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         protected void processAddedObjectEvent(Xref added) {
 
             processAddedXrefEvent(added);
+            persistentXrefs.add(added);
         }
 
         @Override
         protected void processRemovedObjectEvent(Xref removed) {
             processRemovedXrefEvent(removed);
+            persistentXrefs.remove(removed);
         }
 
         @Override
         protected void clearProperties() {
             clearPropertiesLinkedToXrefs();
+            persistentXrefs.retainAll(getIdentifiers());
+        }
+    }
+
+    private class PersistentXrefList extends AbstractCollectionWrapper<Xref> {
+
+        public PersistentXrefList(Collection<Xref> persistentBag){
+            super(persistentBag);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToAdd(Xref added) {
+            if (!(added instanceof PublicationXref)){
+                return true;
+            }
+            else{
+                PublicationXref termXref = (PublicationXref)added;
+                if (termXref.getParent() != null && termXref.getParent() != this){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        protected Xref processOrWrapElementToAdd(Xref added) {
+            return new PublicationXref(added.getDatabase(), added.getId(), added.getVersion(), added.getQualifier());
         }
     }
 }
