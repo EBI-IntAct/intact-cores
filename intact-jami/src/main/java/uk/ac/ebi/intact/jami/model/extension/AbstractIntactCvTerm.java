@@ -139,16 +139,25 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
     @Transient
     public String getMIIdentifier() {
+        if (this.identifiers == null){
+            initialiseXrefs();
+        }
         return this.miIdentifier != null ? this.miIdentifier.getId() : null;
     }
 
     @Transient
     public String getMODIdentifier() {
+        if (this.identifiers == null){
+            initialiseXrefs();
+        }
         return this.modIdentifier != null ? this.modIdentifier.getId() : null;
     }
 
     @Transient
     public String getPARIdentifier() {
+        if (this.identifiers == null){
+            initialiseXrefs();
+        }
         return this.parIdentifier != null ? this.parIdentifier.getId() : null;
     }
 
@@ -310,7 +319,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         else{
             this.persistentXrefs = new PersistentXrefList(persistentXrefs);
         }
-        initialiseXrefs();
     }
 
     protected void initialiseAnnotations(){

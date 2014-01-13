@@ -25,6 +25,9 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     private Annotation postalAddress;
     private Publication bibRef;
 
+    private String persistentURL;
+    private String persistentPostalAddress;
+
     public IntactSource(String shortName) {
         super(shortName);
     }
@@ -80,9 +83,9 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         this.bibRef = bibRef;
     }
 
-    @Column(name = "url")
+    @Transient
     public String getUrl() {
-        return this.url != null ? this.url.getValue() : null;
+        return this.persistentURL;
     }
 
     public void setUrl(String url) {
@@ -96,18 +99,20 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
                 sourceAnnotationList.remove(this.url);
             }
             this.url = new SourceAnnotation(urlTopic, url);
+            this.persistentURL = url;
             sourceAnnotationList.add(this.url);
         }
         // remove all url if the collection is not empty
         else if (!sourceAnnotationList.isEmpty()) {
             AnnotationUtils.removeAllAnnotationsWithTopic(sourceAnnotationList, Annotation.URL_MI, Annotation.URL);
             this.url = null;
+            this.persistentURL = null;
         }
     }
 
-    @Column(name = "postaladdress")
+    @Transient
     public String getPostalAddress() {
-        return this.postalAddress != null ? this.postalAddress.getValue() : null;
+        return this.persistentPostalAddress;
     }
 
     public void setPostalAddress(String address) {
@@ -122,11 +127,13 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
             }
             this.postalAddress = new SourceAnnotation(addressTopic, address);
             sourceAnnotationList.add(this.postalAddress);
+            this.persistentPostalAddress = address;
         }
         // remove all url if the collection is not empty
         else if (!sourceAnnotationList.isEmpty()) {
             AnnotationUtils.removeAllAnnotationsWithTopic(sourceAnnotationList, null, Annotation.POSTAL_ADDRESS);
             this.postalAddress = null;
+            this.persistentPostalAddress = null;
         }
     }
 
@@ -140,8 +147,22 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         this.bibRef = ref;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class,
-            fetch = FetchType.EAGER)
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAlias.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(SourceAlias.class)
+    public Collection<Alias> getSynonyms() {
+        return super.getSynonyms();
+    }
+
+    @Override
+    protected void initialiseAnnotations() {
+        super.initialiseAnnotations();
+        for (Annotation annot : getAnnotations()){
+            processAddedAnnotationEvent(annot);
+        }
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceXref.class)
     protected Collection<Xref> getPersistentXrefs() {
@@ -151,24 +172,29 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     protected void processAddedAnnotationEvent(Annotation added) {
         if (url == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.URL_MI, Annotation.URL)){
             url = added;
+            this.persistentURL = added.getValue();
         }
         else if (postalAddress == null && AnnotationUtils.doesAnnotationHaveTopic(added, null, Annotation.POSTAL_ADDRESS)){
             postalAddress = added;
+            this.persistentPostalAddress = added.getValue();
         }
     }
 
     protected void processRemovedAnnotationEvent(Annotation removed) {
         if (url != null && url.equals(removed)){
             url = null;
+            this.persistentURL = null;
         }
         else if (postalAddress != null && postalAddress.equals(removed)){
             postalAddress = null;
+            this.persistentPostalAddress = null;
         }
     }
 
     protected void clearPropertiesLinkedToAnnotations() {
         url = null;
         postalAddress = null;
+        this.postalAddress = null;
     }
 
     @Override
@@ -230,8 +256,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return true;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class,
-            fetch = FetchType.EAGER)
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceAnnotation.class)
     private Collection<Annotation> getPersistentAnnotations() {
@@ -240,16 +265,24 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     private void setPersistentAnnotations(Collection<Annotation> persistentAnnotations) {
         super.setAnnotations(new SourceAnnotationList(persistentAnnotations));
-        for (Annotation annot : getAnnotations()){
-            processAddedAnnotationEvent(annot);
-        }
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAlias.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(SourceAlias.class)
-    public Collection<Alias> getSynonyms() {
-        return super.getSynonyms();
+    @Column(name = "url")
+    public String getPersistentURL() {
+        return persistentURL;
+    }
+
+    public void setPersistentURL(String persistentURL) {
+        this.persistentURL = persistentURL;
+    }
+
+    @Column(name = "postaladdress")
+    public String getPersistentPostalAddress() {
+        return persistentPostalAddress;
+    }
+
+    public void setPersistentPostalAddress(String persistentPostalAddress) {
+        this.persistentPostalAddress = persistentPostalAddress;
     }
 
     private class SourceAnnotationList extends AbstractCollectionWrapper<Annotation> {

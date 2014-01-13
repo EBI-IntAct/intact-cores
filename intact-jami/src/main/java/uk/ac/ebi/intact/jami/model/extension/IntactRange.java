@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Any;
-import org.hibernate.annotations.AnyMetaDef;
-import org.hibernate.annotations.MetaValue;
+import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Type;
 import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.Position;
@@ -11,7 +9,10 @@ import psidev.psi.mi.jami.model.ResultingSequence;
 import psidev.psi.mi.jami.utils.comparator.range.UnambiguousRangeAndResultingSequenceComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  * Intact implementation of range
@@ -107,15 +108,9 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
         this.resultingSequence = resultingSequence;
     }
 
-    @Any( metaColumn = @Column( name = "participant_type" ), fetch= FetchType.EAGER )
-    @AnyMetaDef(
-            idType = "integer",
-            metaType = "string",
-            metaValues = {
-                    @MetaValue( value = "S", targetEntity = IntactParticipantEvicence.class ),
-                    @MetaValue( value = "I", targetEntity = IntactModelledParticipant.class )
-            } )
-    @JoinColumn( name = "participant_ac" )
+    @ManyToOne(targetEntity = AbstractIntactEntity.class)
+    @JoinColumn(name = "participant_ac")
+    @Target(AbstractIntactEntity.class)
     public Entity getParticipant() {
         return this.participant;
     }
