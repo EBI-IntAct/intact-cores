@@ -4,7 +4,6 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.annotation.UnambiguousAnnotationComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -63,17 +62,6 @@ public abstract class AbstractIntactAnnotation extends AbstractIntactPrimaryObje
     public AbstractIntactAnnotation(CvTerm topic, String value){
         this(topic);
         this.value = value;
-    }
-
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndUpdate(){
-        if (!(this.topic instanceof IntactCvTerm)){
-            IntactCvTerm clone = new IntactCvTerm(this.topic.getShortName());
-            clone.setObjClass(IntactUtils.TOPIC_OBJCLASS);
-            CvTermCloner.copyAndOverrideCvTermProperties(this.topic, clone);
-            this.topic = clone;
-        }
     }
 
     ///////////////////////////////////////

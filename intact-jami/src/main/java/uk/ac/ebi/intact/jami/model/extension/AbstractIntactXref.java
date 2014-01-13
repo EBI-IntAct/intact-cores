@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.xref.UnambiguousXrefComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -87,23 +86,6 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
             throw new IllegalArgumentException("The id is required and cannot be null or empty");
         }
         this.id = id;
-    }
-
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndUpdate(){
-        if (!(this.database instanceof IntactCvTerm)){
-            IntactCvTerm clone = new IntactCvTerm(this.database.getShortName());
-            clone.setObjClass(IntactUtils.DATABASE_OBJCLASS);
-            CvTermCloner.copyAndOverrideCvTermProperties(this.database, clone);
-            this.database = clone;
-        }
-        if (this.qualifier != null && !(this.qualifier instanceof IntactCvTerm)){
-            IntactCvTerm clone = new IntactCvTerm(this.qualifier.getShortName());
-            clone.setObjClass(IntactUtils.QUALIFIER_OBJCLASS);
-            CvTermCloner.copyAndOverrideCvTermProperties(this.qualifier, clone);
-            this.qualifier = clone;
-        }
     }
 
     ///////////////////////////////////////

@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.alias.UnambiguousAliasComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -40,17 +39,6 @@ public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject im
             throw new IllegalArgumentException("The alias name is required and cannot be null");
         }
         this.name = name;
-    }
-
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndUpdate(){
-        if (this.type != null && !(this.type instanceof IntactCvTerm)){
-            IntactCvTerm clone = new IntactCvTerm(this.type.getShortName());
-            clone.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-            CvTermCloner.copyAndOverrideCvTermProperties(this.type, clone);
-            this.type = clone;
-        }
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)

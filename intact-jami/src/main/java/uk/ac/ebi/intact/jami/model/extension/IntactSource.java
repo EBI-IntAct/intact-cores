@@ -8,6 +8,8 @@ import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -83,9 +85,40 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         this.bibRef = bibRef;
     }
 
+    @PrePersist
+    @PreUpdate
+    public void prePersistAndPreUpdate(){
+        if (this.url != null){
+            this.persistentURL = this.url.getValue();
+        }
+        else{
+            this.persistentURL = null;
+        }
+
+        if (this.postalAddress != null){
+            this.persistentPostalAddress = this.postalAddress.getValue();
+        }
+        else{
+            this.persistentPostalAddress = null;
+        }
+    }
+
+    @Column(name = "shortlabel", nullable = false, unique = true)
+    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
+    @NotNull
+    public String getShortName() {
+        return super.getShortName();
+    }
+
+    public void setShortName(String name) {
+        super.setShortName(name);
+    }
+
     @Transient
     public String getUrl() {
-        return this.persistentURL;
+        // initialise annotations if not done
+        getAnnotations();
+        return this.url != null ? this.url.getValue() : null;
     }
 
     public void setUrl(String url) {
@@ -112,7 +145,9 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     @Transient
     public String getPostalAddress() {
-        return this.persistentPostalAddress;
+        // initialise annotations if not done
+        getAnnotations();
+        return this.postalAddress != null ? this.postalAddress.getValue() : null;
     }
 
     public void setPostalAddress(String address) {
@@ -268,20 +303,20 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     }
 
     @Column(name = "url")
-    public String getPersistentURL() {
+    private String getPersistentURL() {
         return persistentURL;
     }
 
-    public void setPersistentURL(String persistentURL) {
+    private void setPersistentURL(String persistentURL) {
         this.persistentURL = persistentURL;
     }
 
     @Column(name = "postaladdress")
-    public String getPersistentPostalAddress() {
+    private String getPersistentPostalAddress() {
         return persistentPostalAddress;
     }
 
-    public void setPersistentPostalAddress(String persistentPostalAddress) {
+    private void setPersistentPostalAddress(String persistentPostalAddress) {
         this.persistentPostalAddress = persistentPostalAddress;
     }
 

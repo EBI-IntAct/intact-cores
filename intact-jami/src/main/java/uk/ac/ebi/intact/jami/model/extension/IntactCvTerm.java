@@ -13,6 +13,7 @@ import uk.ac.ebi.intact.jami.model.listener.CvIdentifierListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,6 +117,17 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
                 }
             }
         }
+    }
+
+    @Column(name = "shortlabel", nullable = false)
+    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
+    @NotNull
+    public String getShortName() {
+        return super.getShortName();
+    }
+
+    public void setShortName(String name) {
+        super.setShortName(name);
     }
 
     public boolean isIdentifierSet(){

@@ -6,8 +6,15 @@ import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import java.util.*;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * IntAct implementation of publication.
@@ -16,7 +23,8 @@ import java.util.*;
  * @version $Id$
  * @since <pre>13/01/14</pre>
  */
-
+@javax.persistence.Entity
+@Table( name = "ia_publication" )
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
     private String title;
     private String journal;
@@ -33,6 +41,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private Xref pubmedId;
     private Xref doi;
     private Xref imexId;
+
+    private String shortLabel;
 
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
@@ -100,71 +110,31 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         assignImexId(imexId);
     }
 
-    protected void initialiseAuthors(){
-        this.authors = new ArrayList<String>();
-    }
-
-    protected void initialiseXrefs(){
-        this.xrefs = new PublicationXrefList();
-    }
-
-    protected void initialiseAnnotations(){
-        this.annotations = new ArrayList<Annotation>();
-    }
-
-    protected void initialiseExperiments(){
-        this.experiments = new ArrayList<Experiment>();
-    }
-
-    protected void initialiseIdentifiers(){
-        this.identifiers = new PublicationIdentifierList();
-    }
-
-    protected void initialiseAuthorsWith(List<String> authors){
-        if (authors == null){
-            this.authors = Collections.EMPTY_LIST;
-        }
-        else {
-            this.authors = authors;
+    @PrePersist
+    @PreUpdate
+    public void prePersistAndUpdate() {
+        // set shortlabel if not done yet
+        if (this.shortLabel == null){
+            if (this.pubmedId != null){
+                this.shortLabel = this.pubmedId.getId().toLowerCase().trim();
+            }
+            else if (this.doi != null){
+                this.shortLabel = this.doi.getId().toLowerCase().trim();
+            }
+            else if (this.identifiers != null && !this.identifiers.isEmpty()){
+                this.shortLabel = this.identifiers.iterator().next().getId().toLowerCase().trim();
+            }
         }
     }
 
-    protected void initialiseXrefsWith(Collection<Xref> xrefs){
-        if (xrefs == null){
-            this.xrefs = Collections.EMPTY_LIST;
+    public void setShortLabel( String shortLabel ) {
+        if (shortLabel == null){
+            throw new IllegalArgumentException("The short name cannot be null");
         }
-        else {
-            this.xrefs = xrefs;
-        }
+        this.shortLabel = shortLabel.trim().toLowerCase();
     }
 
-    protected void initialiseAnnotationsWith(Collection<Annotation> annotations){
-        if (annotations == null){
-            this.annotations = Collections.EMPTY_LIST;
-        }
-        else {
-            this.annotations = annotations;
-        }
-    }
-
-    protected void initialiseExperimentsWith(Collection<Experiment> experiments){
-        if (experiments == null){
-            this.experiments = Collections.EMPTY_LIST;
-        }
-        else {
-            this.experiments = experiments;
-        }
-    }
-
-    protected void initialiseIdentifiersWith(Collection<Xref> identifiers){
-        if (identifiers == null){
-            this.identifiers = Collections.EMPTY_LIST;
-        }
-        else {
-            this.identifiers = identifiers;
-        }
-    }
-
+    @Transient
     public String getPubmedId() {
         return this.pubmedId != null ? this.pubmedId.getId() : null;
     }
@@ -190,6 +160,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
+    @Transient
     public String getDoi() {
         return this.doi != null ? this.doi.getId() : null;
     }
@@ -214,6 +185,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
+    @Transient
     public Collection<Xref> getIdentifiers() {
         if (identifiers == null){
             initialiseIdentifiers();
@@ -221,6 +193,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.identifiers;
     }
 
+    @Transient
     public String getImexId() {
         return this.imexId != null ? this.imexId.getId() : null;
     }
@@ -245,6 +218,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
+    @Column( name = "fullname", length = IntactUtils.MAX_FULL_NAME_LEN )
+    @Size( max = IntactUtils.MAX_FULL_NAME_LEN )
     public String getTitle() {
         return this.title;
     }
@@ -392,6 +367,27 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
+    @Override
+    public String toString() {
+        return (imexId != null ? imexId.getId() : (pubmedId != null ? pubmedId.getId() : (doi != null ? doi.getId() : (title != null ? title : "-"))));
+    }
+
+    protected void initialiseXrefs(){
+        this.xrefs = new PublicationXrefList();
+    }
+
+    protected void initialiseAnnotations(){
+        this.annotations = new ArrayList<Annotation>();
+    }
+
+    protected void initialiseExperiments(){
+        this.experiments = new ArrayList<Experiment>();
+    }
+
+    protected void initialiseIdentifiers(){
+        this.identifiers = new PublicationIdentifierList();
+    }
+
     protected void processAddedIdentifierEvent(Xref added) {
 
         // the added identifier is pubmed and it is not the current pubmed identifier
@@ -470,9 +466,18 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         imexId = null;
     }
 
-    @Override
-    public String toString() {
-        return (imexId != null ? imexId.getId() : (pubmedId != null ? pubmedId.getId() : (doi != null ? doi.getId() : (title != null ? title : "-"))));
+    protected void initialiseAuthors(){
+        this.authors = new ArrayList<String>();
+    }
+
+    @Column(name = "shortLabel", nullable = false, unique = true)
+    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
+    @NotNull
+    /**
+     * @deprecated the publication shortLabel is deprecated. We should use getPubmedId or getDoi or getIdentifiers
+     */
+    private String getShortLabel() {
+        return shortLabel;
     }
 
     private class PublicationIdentifierList extends AbstractListHavingProperties<Xref> {

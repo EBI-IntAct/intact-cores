@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.Hibernate;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
@@ -14,9 +13,6 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.beans.Transient;
 import java.util.ArrayList;
@@ -78,36 +74,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         this.fullName = fullName;
     }
 
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndUpdate() {
-        // check if all aliases are possible to persist
-        if (annotations != null && Hibernate.isInitialized(annotations) && !annotations.isEmpty()){
-            Collection<Annotation> newAnnots = new ArrayList<Annotation>(annotations);
-            for (Annotation annot : newAnnots){
-                if (needToWrapAnnotationForPersistence(annot)){
-                    Annotation clone = instantiateAnnotationFrom(annot);
-                    this.annotations.remove(annot);
-                    this.annotations.add(clone);
-                }
-            }
-        }
-        // check if all annotations are possible to persist
-        if(synonyms != null && Hibernate.isInitialized(synonyms) && !synonyms.isEmpty()){
-            Collection<Alias> newAliases = new ArrayList<Alias>(synonyms);
-            for (Alias alias : newAliases){
-                if (needToWrapAliasForPersistence(alias)){
-                    Alias clone = instantiateAliasFrom(alias);
-                    this.synonyms.remove(alias);
-                    this.synonyms.add(clone);
-                }
-            }
-        }
-    }
-
-    @Column(name = "shortlabel", nullable = false)
-    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
-    @NotNull
     public String getShortName() {
         return shortName;
     }

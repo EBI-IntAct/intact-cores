@@ -63,29 +63,6 @@ public class IntactVariableParameter extends AbstractAuditable implements Variab
         this.unit = unit;
     }
 
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndUpdate() {
-        // check if unit possible to persist
-        if (unit != null && !(unit instanceof IntactCvTerm)){
-            IntactCvTerm clone = new IntactCvTerm(this.unit.getShortName());
-            clone.setObjClass(IntactUtils.UNIT_OBJCLASS);
-            CvTermCloner.copyAndOverrideCvTermProperties(this.unit, clone);
-            this.unit = clone;
-        }
-        // check if all variable parameter values are possible to persist
-        if (this.variableValues != null && Hibernate.isInitialized(this.variableValues) && !this.variableValues.isEmpty()){
-            Collection<VariableParameterValue> values = new ArrayList<VariableParameterValue>(this.variableValues);
-            for (VariableParameterValue value : values){
-                if (!(value instanceof IntactVariableParameterValue) && value.getVariableParameter() != null && value.getVariableParameter() != this){
-                    IntactVariableParameterValue clone = new IntactVariableParameterValue(value.getValue(), value.getVariableParameter(), value.getOrder());
-                    this.variableValues.remove(value);
-                    this.variableValues.add(clone);
-                }
-            }
-        }
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idGenerator")
     @SequenceGenerator(name="idGenerator", sequenceName="DEFAULT_ID_SEQ", initialValue = 1)
