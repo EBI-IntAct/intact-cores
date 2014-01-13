@@ -5,6 +5,7 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
+import uk.ac.ebi.intact.jami.model.listener.SourceUrlAndPostalAddressListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -21,13 +22,13 @@ import java.util.List;
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
-
+@EntityListeners(value = {SourceUrlAndPostalAddressListener.class})
 public class IntactSource extends AbstractIntactCvTerm implements Source {
     private Annotation url;
     private Annotation postalAddress;
     private Publication bibRef;
 
-    private String persistentURL;
+    private String persistentUrl;
     private String persistentPostalAddress;
 
     public IntactSource(String shortName) {
@@ -85,24 +86,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         this.bibRef = bibRef;
     }
 
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndPreUpdate(){
-        if (this.url != null){
-            this.persistentURL = this.url.getValue();
-        }
-        else{
-            this.persistentURL = null;
-        }
-
-        if (this.postalAddress != null){
-            this.persistentPostalAddress = this.postalAddress.getValue();
-        }
-        else{
-            this.persistentPostalAddress = null;
-        }
-    }
-
     @Column(name = "shortlabel", nullable = false, unique = true)
     @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
     @NotNull
@@ -132,14 +115,12 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
                 sourceAnnotationList.remove(this.url);
             }
             this.url = new SourceAnnotation(urlTopic, url);
-            this.persistentURL = url;
             sourceAnnotationList.add(this.url);
         }
         // remove all url if the collection is not empty
         else if (!sourceAnnotationList.isEmpty()) {
             AnnotationUtils.removeAllAnnotationsWithTopic(sourceAnnotationList, Annotation.URL_MI, Annotation.URL);
             this.url = null;
-            this.persistentURL = null;
         }
     }
 
@@ -162,13 +143,11 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
             }
             this.postalAddress = new SourceAnnotation(addressTopic, address);
             sourceAnnotationList.add(this.postalAddress);
-            this.persistentPostalAddress = address;
         }
         // remove all url if the collection is not empty
         else if (!sourceAnnotationList.isEmpty()) {
             AnnotationUtils.removeAllAnnotationsWithTopic(sourceAnnotationList, null, Annotation.POSTAL_ADDRESS);
             this.postalAddress = null;
-            this.persistentPostalAddress = null;
         }
     }
 
@@ -189,11 +168,35 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return super.getSynonyms();
     }
 
+    /**
+     *
+     * @param persistentURL
+     * @deprecated this method is used only for backward compatibility with intact-core. Use setURL instead
+     */
+    public void setPersistentURL(String persistentURL) {
+        this.persistentUrl = persistentURL;
+    }
+
+    /**
+     *
+     * @param persistentPostalAddress
+     * @deprecated this method is used only for backward compatibility with intact-core. Use setPostalAddress instead
+     */
+    public void setPersistentPostalAddress(String persistentPostalAddress) {
+        this.persistentPostalAddress = persistentPostalAddress;
+    }
+
     @Override
     protected void initialiseAnnotations() {
         super.initialiseAnnotations();
         for (Annotation annot : getAnnotations()){
             processAddedAnnotationEvent(annot);
+        }
+        if (this.url == null && this.persistentUrl != null){
+            setUrl(this.persistentUrl);
+        }
+        if (this.postalAddress == null && this.persistentPostalAddress != null){
+            setPostalAddress(this.persistentPostalAddress);
         }
     }
 
@@ -207,22 +210,18 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     protected void processAddedAnnotationEvent(Annotation added) {
         if (url == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.URL_MI, Annotation.URL)){
             url = added;
-            this.persistentURL = added.getValue();
         }
         else if (postalAddress == null && AnnotationUtils.doesAnnotationHaveTopic(added, null, Annotation.POSTAL_ADDRESS)){
             postalAddress = added;
-            this.persistentPostalAddress = added.getValue();
         }
     }
 
     protected void processRemovedAnnotationEvent(Annotation removed) {
         if (url != null && url.equals(removed)){
             url = null;
-            this.persistentURL = null;
         }
         else if (postalAddress != null && postalAddress.equals(removed)){
             postalAddress = null;
-            this.persistentPostalAddress = null;
         }
     }
 
@@ -303,21 +302,19 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     }
 
     @Column(name = "url")
+    /**
+     * @deprecated use getURL instead
+     */
     private String getPersistentURL() {
         return persistentURL;
     }
 
-    private void setPersistentURL(String persistentURL) {
-        this.persistentURL = persistentURL;
-    }
-
     @Column(name = "postaladdress")
+    /**
+     * @deprecated use getPostalAdress instead
+     */
     private String getPersistentPostalAddress() {
         return persistentPostalAddress;
-    }
-
-    private void setPersistentPostalAddress(String persistentPostalAddress) {
-        this.persistentPostalAddress = persistentPostalAddress;
     }
 
     private class SourceAnnotationList extends AbstractCollectionWrapper<Annotation> {

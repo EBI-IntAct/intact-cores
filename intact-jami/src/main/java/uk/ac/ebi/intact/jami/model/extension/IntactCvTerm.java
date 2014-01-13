@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Target;
@@ -8,7 +7,6 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.OntologyTerm;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.model.listener.CvIdentifierListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -88,37 +86,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         this.definition = def;
     }
 
-    @Override
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndUpdate() {
-        super.prePersistAndUpdate();
-        // check if all parents are possible to persist
-        if (parents != null && Hibernate.isInitialized(parents) && !parents.isEmpty()){
-            Collection<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>(parents);
-            for (OntologyTerm parent : ontologyTerms){
-                if (!(parent instanceof IntactCvTerm)){
-                    IntactCvTerm clone = new IntactCvTerm(parent.getShortName());
-                    CvTermCloner.copyAndOverrideOntologyTermProperties(parent, clone);
-                    this.parents.remove(parent);
-                    this.parents.add(clone);
-                }
-            }
-        }
-        // check if all children are possible to persist
-        if (children != null && Hibernate.isInitialized(children) && !children.isEmpty()){
-            Collection<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>(children);
-            for (OntologyTerm child : ontologyTerms){
-                if (!(child instanceof IntactCvTerm)){
-                    IntactCvTerm clone = new IntactCvTerm(child.getShortName());
-                    CvTermCloner.copyAndOverrideOntologyTermProperties(child, clone);
-                    this.children.remove(child);
-                    this.children.add(clone);
-                }
-            }
-        }
-    }
-
     @Column(name = "shortlabel", nullable = false)
     @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
     @NotNull
@@ -130,6 +97,12 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         super.setShortName(name);
     }
 
+    /**
+     *
+     * @return true if old identifier is set
+     * @deprecated the identifier variable is deprecated and is only kept for backward compatibility with intact-core.
+     * Use getMIIdentifier, getMODIdentifier or getParIdentifier instead
+     */
     public boolean isIdentifierSet(){
         return this.identifier != null;
     }
@@ -137,6 +110,11 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     /////////////////////////////
     // Entity fields
 
+    /**
+     *
+     * @param objClass
+     * @deprecated the objclass is deprecated and only kept for backward compatibility with intact-core.
+     */
     public void setObjClass( String objClass ) {
         this.objClass = objClass;
     }
@@ -165,6 +143,11 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getSynonyms();
     }
 
+    /**
+     * Sets the old identifier
+     * @param identifier
+     * @deprecated only kept for backward compatibility with intact-core
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }

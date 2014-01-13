@@ -127,6 +127,11 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
+    /**
+     * Set the shortlabel
+     * @param shortLabel
+     * @deprecated the shortlabel is deprecated and getPubmedId/getDOI should be used instead
+     */
     public void setShortLabel( String shortLabel ) {
         if (shortLabel == null){
             throw new IllegalArgumentException("The short name cannot be null");
@@ -228,6 +233,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.title = title;
     }
 
+    @Column( name = "journal", length = IntactUtils.MAX_FULL_NAME_LEN )
+    @Size( max = IntactUtils.MAX_FULL_NAME_LEN )
     public String getJournal() {
         return this.journal;
     }
@@ -236,6 +243,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.journal = journal;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "publication_date")
     public Date getPublicationDate() {
         return this.publicationDate;
     }

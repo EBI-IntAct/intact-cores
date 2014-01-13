@@ -8,7 +8,6 @@ import uk.ac.ebi.intact.jami.model.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Entity;
-import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
@@ -25,7 +24,6 @@ import javax.persistence.PreUpdate;
 public class CvIdentifierListener {
 
     @PrePersist
-    @PostLoad
     @PreUpdate
     public void prePersist(IntactCvTerm intactCv) {
         if (!intactCv.isIdentifierSet()){

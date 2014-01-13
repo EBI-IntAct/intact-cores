@@ -57,10 +57,6 @@ public abstract class AbstractAuditable implements Auditable {
      */
     private Date updated;
 
-    /**
-     * Object version
-     */
-    private long version;
 
     public AbstractAuditable() {
     }
