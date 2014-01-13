@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
 import psidev.psi.mi.jami.model.*;
