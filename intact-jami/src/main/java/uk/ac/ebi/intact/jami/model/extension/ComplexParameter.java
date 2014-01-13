@@ -55,11 +55,11 @@ public class ComplexParameter extends AbstractIntactParameter implements Modelle
     @ManyToOne( targetEntity = IntactComplex.class )
     @JoinColumn( name = "complex_ac" )
     @Target(IntactComplex.class)
-    public Complex getInteraction() {
+    public Complex getComplex() {
         return complex;
     }
 
-    public void setInteraction(Complex interaction) {
+    public void setComplex(Complex interaction) {
         this.complex = interaction;
     }
 
