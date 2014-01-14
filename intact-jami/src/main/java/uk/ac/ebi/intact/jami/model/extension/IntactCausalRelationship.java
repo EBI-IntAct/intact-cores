@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "ia_causal_relationship")
-public class IntactCausalRelationship implements CausalRelationship {
+public class IntactCausalRelationship extends AbstractAuditable implements CausalRelationship {
 
     private CvTerm relationType;
     private psidev.psi.mi.jami.model.Entity target;
