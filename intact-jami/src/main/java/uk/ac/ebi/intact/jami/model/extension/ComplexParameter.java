@@ -6,11 +6,9 @@ import psidev.psi.mi.jami.exception.IllegalParameterException;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.listener.InteractionParameterListener;
 
-import javax.persistence.EntityListeners;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -24,6 +22,7 @@ import java.util.Collection;
 @Table( name = "ia_complex_parameter" )
 public class ComplexParameter extends AbstractIntactParameter implements ModelledParameter{
     private Complex complex;
+    private Collection<Publication> publications;
 
     protected ComplexParameter() {
         super();
@@ -64,7 +63,11 @@ public class ComplexParameter extends AbstractIntactParameter implements Modelle
         this.complex = interaction;
     }
 
-    public <P extends Publication> Collection<P> getPublications() {
-        return null;
+    @Transient
+    public Collection<Publication> getPublications() {
+        if (this.publications == null){
+            this.publications = new ArrayList<Publication>();
+        }
+        return this.publications;
     }
 }
