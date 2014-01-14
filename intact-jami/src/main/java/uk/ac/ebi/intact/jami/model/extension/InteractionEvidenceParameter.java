@@ -19,12 +19,8 @@ import java.math.BigDecimal;
  * @since <pre>13/01/14</pre>
  */
 @javax.persistence.Entity
-@Table( name = "ia_interaction_parameter" )
+@Table( name = "ia_interaction_evidence_parameter" )
 @EntityListeners(value = {InteractionParameterListener.class})
-@FilterDefs({
-        @FilterDef(name="complex_param", defaultCondition="interaction is null"),
-        @FilterDef(name="interaction_param", defaultCondition="interaction is not null")
-})
 public class InteractionEvidenceParameter extends AbstractIntactParameter{
 
     private InteractionEvidence interaction;
