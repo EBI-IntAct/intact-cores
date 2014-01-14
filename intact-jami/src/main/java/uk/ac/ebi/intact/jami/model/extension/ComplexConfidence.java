@@ -1,14 +1,12 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.Complex;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.InteractionEvidence;
+import psidev.psi.mi.jami.model.*;
 
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Intact implementation of complex confidence
@@ -19,9 +17,10 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "ia_complex_confidence")
-public class ComplexConfidence extends AbstractIntactConfidence{
+public class ComplexConfidence extends AbstractIntactConfidence implements ModelledConfidence{
 
     private Complex interaction;
+    private Collection<Publication> publications;
 
     public ComplexConfidence() {
     }
@@ -39,5 +38,13 @@ public class ComplexConfidence extends AbstractIntactConfidence{
 
     public void setInteraction(Complex interaction) {
         this.interaction = interaction;
+    }
+
+    @Transient
+    public Collection<Publication> getPublications() {
+        if (this.publications == null){
+            this.publications = new ArrayList<Publication>();
+        }
+        return this.publications;
     }
 }
