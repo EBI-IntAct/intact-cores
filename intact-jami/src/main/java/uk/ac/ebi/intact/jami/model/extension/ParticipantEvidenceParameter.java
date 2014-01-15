@@ -57,7 +57,7 @@ public class ParticipantEvidenceParameter extends AbstractIntactParameter{
     }
 
     @ManyToOne( targetEntity = IntactParticipantEvidence.class )
-    @JoinColumn( name = "component_ac" )
+    @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
     @Target(IntactParticipantEvidence.class)
     public ParticipantEvidence getParticipant() {
         return participant;
@@ -78,7 +78,7 @@ public class ParticipantEvidenceParameter extends AbstractIntactParameter{
     }
 
     @ManyToOne(targetEntity = IntactExperiment.class)
-    @JoinColumn( name = "experiment_ac" )
+    @JoinColumn( name = "experiment_ac", referencedColumnName = "ac" )
     @Target(IntactExperiment.class)
     /**
      * @deprecated we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment

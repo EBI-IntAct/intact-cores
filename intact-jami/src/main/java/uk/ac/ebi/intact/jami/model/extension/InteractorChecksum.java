@@ -31,7 +31,7 @@ public class InteractorChecksum extends AbstractIntactChecksum{
     }
 
     @ManyToOne( targetEntity = IntactInteractor.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac" , referencedColumnName = "ac")
     @Target(IntactInteractor.class)
     public Interactor getParent() {
         return parent;

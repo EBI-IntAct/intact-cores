@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.Organism;
 
 import javax.persistence.Entity;
@@ -35,7 +34,7 @@ public class OrganismAlias extends AbstractIntactAlias{
     }
 
     @ManyToOne( targetEntity = IntactOrganism.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(IntactOrganism.class)
     public Organism getParent() {
         return parent;

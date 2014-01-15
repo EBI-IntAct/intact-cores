@@ -22,6 +22,7 @@ import java.util.Collection;
 @Entity
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+@Table(name = "cooperative_effect")
 public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable implements CooperativeEffect{
 
     private Collection<CooperativityEvidence> cooperativityEvidences;
@@ -96,7 +97,7 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
     }
 
     @ManyToOne( targetEntity = IntactCvTerm.class, optional = false)
-    @JoinColumn( name = "outcome_ac" )
+    @JoinColumn( name = "outcome_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     @NotNull
     public CvTerm getOutCome() {
@@ -111,7 +112,7 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
     }
 
     @ManyToOne( targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "response_ac" )
+    @JoinColumn( name = "response_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     public CvTerm getResponse() {
         return this.response;

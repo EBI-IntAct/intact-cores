@@ -53,7 +53,7 @@ public class ComplexParameter extends AbstractIntactParameter implements Modelle
     }
 
     @ManyToOne( targetEntity = IntactComplex.class )
-    @JoinColumn( name = "complex_ac" )
+    @JoinColumn( name = "complex_ac", referencedColumnName = "ac" )
     @Target(IntactComplex.class)
     public Complex getComplex() {
         return complex;

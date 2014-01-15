@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.model.listener;
 
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.ParticipantEvidence;
-import uk.ac.ebi.intact.jami.model.extension.ParticipantParameter;
+import uk.ac.ebi.intact.jami.model.extension.ParticipantEvidenceParameter;
 
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
@@ -23,7 +23,7 @@ public class ParticipantParameterListener {
     @PrePersist
     @PreUpdate
     @PostLoad
-    public void prepareExperiment(ParticipantParameter param){
+    public void prepareExperiment(ParticipantEvidenceParameter param){
 
         ParticipantEvidence part = param.getParticipant();
         if (part != null){

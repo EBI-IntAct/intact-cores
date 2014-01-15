@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.jami.model.listener;
 
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
-import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
@@ -15,7 +14,6 @@ import javax.persistence.PreUpdate;
  * @version $Id$
  * @since <pre>07/01/14</pre>
  */
-@Entity
 public class SourceUrlAndPostalAddressListener {
 
     @PrePersist

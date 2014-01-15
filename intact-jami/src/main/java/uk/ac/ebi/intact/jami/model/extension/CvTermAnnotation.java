@@ -34,7 +34,7 @@ public class CvTermAnnotation extends AbstractIntactAnnotation{
     }
 
     @ManyToOne( targetEntity = IntactCvTerm.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(IntactCvTerm.class)
     public CvTerm getParent() {
         return parent;

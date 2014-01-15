@@ -42,7 +42,7 @@ public class ResultingSequenceXref extends AbstractIntactXref{
     }
 
     @ManyToOne( targetEntity = IntactResultingSequence.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac")
     @Target(IntactResultingSequence.class)
     public ResultingSequence getParent() {
         return parent;

@@ -51,7 +51,7 @@ public class IntactCooperativityEvidence extends AbstractAuditable implements Co
     }
 
     @ManyToOne( targetEntity = AbstractIntactCooperativeEffect.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(AbstractIntactCooperativeEffect.class)
     public CooperativeEffect getParent() {
         return parent;
@@ -62,7 +62,7 @@ public class IntactCooperativityEvidence extends AbstractAuditable implements Co
     }
 
     @ManyToOne( targetEntity = IntactPublication.class, optional = false)
-    @JoinColumn( name = "publication_ac" )
+    @JoinColumn( name = "publication_ac", referencedColumnName = "ac" )
     @Target(IntactPublication.class)
     @NotNull
     public Publication getPublication() {

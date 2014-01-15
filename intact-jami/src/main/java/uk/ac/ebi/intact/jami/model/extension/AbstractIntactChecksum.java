@@ -43,7 +43,7 @@ public abstract class AbstractIntactChecksum extends AbstractIntactPrimaryObject
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "method_ac" )
+    @JoinColumn( name = "method_ac", referencedColumnName = "ac")
     @ForeignKey(name = "FK_CHECKSUM$METHOD")
     @Target(IntactCvTerm.class)
     @NotNull

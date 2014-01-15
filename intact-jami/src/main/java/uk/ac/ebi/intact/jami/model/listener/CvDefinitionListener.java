@@ -4,7 +4,6 @@ import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
-import javax.persistence.Entity;
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -18,7 +17,6 @@ import javax.persistence.PreUpdate;
  * @version $Id$
  * @since <pre>07/01/14</pre>
  */
-@Entity
 public class CvDefinitionListener {
 
     @PrePersist

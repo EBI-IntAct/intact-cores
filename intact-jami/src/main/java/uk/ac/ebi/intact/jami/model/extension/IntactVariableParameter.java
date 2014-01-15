@@ -88,7 +88,7 @@ public class IntactVariableParameter extends AbstractAuditable implements Variab
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn(name = "unit_ac")
+    @JoinColumn(name = "unit_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     public CvTerm getUnit() {
         return this.unit;
@@ -109,7 +109,7 @@ public class IntactVariableParameter extends AbstractAuditable implements Variab
     }
 
     @ManyToOne(targetEntity = IntactExperiment.class)
-    @JoinColumn(name = "experiment_ac")
+    @JoinColumn(name = "experiment_ac", referencedColumnName = "ac")
     @Target(IntactExperiment.class)
     public Experiment getExperiment() {
         return this.experiment;

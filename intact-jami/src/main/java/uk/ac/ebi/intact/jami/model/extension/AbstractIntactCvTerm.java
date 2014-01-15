@@ -395,11 +395,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         @Override
         protected void processAddedObjectEvent(Xref added) {
             processAddedIdentifierEvent(added);
-            Xref persistentRef = added;
-            if (needToWrapXrefForPersistence(added)){
-                persistentRef = instantiateXrefFrom(added);
-            }
-            persistentXrefs.add(persistentRef);
+            persistentXrefs.add(added);
         }
 
         @Override
@@ -423,10 +419,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         @Override
         protected void processAddedObjectEvent(Xref added) {
             Xref persistentRef = added;
-            if (needToWrapXrefForPersistence(added)){
-                persistentRef = instantiateXrefFrom(added);
-            }
-            persistentXrefs.add(persistentRef);
+            persistentXrefs.add(added);
         }
 
         @Override

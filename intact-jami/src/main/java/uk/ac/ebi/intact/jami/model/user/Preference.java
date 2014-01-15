@@ -75,7 +75,7 @@ public class Preference extends AbstractIntactPrimaryObject {
     }
 
     @ManyToOne
-    @JoinColumn( name = "user_ac" )
+    @JoinColumn( name = "user_ac", referencedColumnName = "ac")
     @ForeignKey(name="FK_PREF_USER")
     public User getUser() {
         return user;

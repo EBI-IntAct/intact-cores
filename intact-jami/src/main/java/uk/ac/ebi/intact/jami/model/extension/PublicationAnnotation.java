@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.Publication;
 
 import javax.persistence.Entity;
@@ -36,7 +35,7 @@ public class PublicationAnnotation extends AbstractIntactAnnotation{
     }
 
     @ManyToOne( targetEntity = IntactPublication.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(IntactPublication.class)
     public Publication getParent() {
         return parent;

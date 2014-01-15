@@ -125,7 +125,7 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
     ///////////////////////////////////////
     // access methods for associations
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn(name = "qualifier_ac")
+    @JoinColumn(name = "qualifier_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     public CvTerm getQualifier() {
         return this.qualifier;
@@ -136,7 +136,7 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn(name = "database_ac")
+    @JoinColumn(name = "database_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     @NotNull
     public CvTerm getDatabase() {

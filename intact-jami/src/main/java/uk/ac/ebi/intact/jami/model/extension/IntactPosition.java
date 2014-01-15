@@ -94,7 +94,7 @@ public class IntactPosition implements Position{
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn(name = "status_ac")
+    @JoinColumn(name = "status_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     public CvTerm getStatus() {
         return this.status;

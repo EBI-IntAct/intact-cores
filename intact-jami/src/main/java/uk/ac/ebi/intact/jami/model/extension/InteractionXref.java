@@ -43,7 +43,7 @@ public class InteractionXref extends AbstractIntactXref{
     }
 
     @ManyToOne( targetEntity = IntactInteraction.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac" , referencedColumnName = "ac")
     @Target(IntactInteraction.class)
     public Interaction getParent() {
         return parent;

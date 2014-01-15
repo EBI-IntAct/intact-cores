@@ -42,7 +42,7 @@ public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject im
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "aliastype_ac" )
+    @JoinColumn( name = "aliastype_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     public CvTerm getType() {
         return this.type;

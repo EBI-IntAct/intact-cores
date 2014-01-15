@@ -53,7 +53,7 @@ public class LifecycleEvent extends AbstractIntactPrimaryObject {
     }
 
     @ManyToOne( targetEntity = IntactCvTerm.class, optional = false)
-    @JoinColumn( name = "event_ac" )
+    @JoinColumn( name = "event_ac", referencedColumnName = "ac")
     @ForeignKey(name="FK_LIFECYCLE_EVENT_EVENT")
     @Index( name = "idx_event_event" )
     @Target(IntactCvTerm.class)
@@ -66,7 +66,7 @@ public class LifecycleEvent extends AbstractIntactPrimaryObject {
     }
 
     @ManyToOne( optional = false, targetEntity = User.class)
-    @JoinColumn( name = "user_ac" )
+    @JoinColumn( name = "user_ac", referencedColumnName = "ac")
     @ForeignKey(name="FK_LIFECYCLE_EVENT_USER")
     @Index( name = "idx_event_who" )
     @Target(User.class)
@@ -98,7 +98,7 @@ public class LifecycleEvent extends AbstractIntactPrimaryObject {
     }
 
     @ManyToOne( targetEntity = IntactPublication.class, fetch = FetchType.LAZY, optional = false )
-    @JoinColumn( name = "publication_ac" )
+    @JoinColumn( name = "publication_ac", referencedColumnName = "ac")
     @ForeignKey(name="FK_LIFECYCLE_EVENT_PUBLICATION")
     @Target(IntactPublication.class)
     public Publication getPublication() {

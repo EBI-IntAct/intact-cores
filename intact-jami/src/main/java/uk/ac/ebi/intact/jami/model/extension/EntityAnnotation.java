@@ -34,7 +34,7 @@ public class EntityAnnotation extends AbstractIntactAnnotation{
     }
 
     @ManyToOne( targetEntity = IntactEntity.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(IntactEntity.class)
     public psidev.psi.mi.jami.model.Entity getParent() {
         return parent;

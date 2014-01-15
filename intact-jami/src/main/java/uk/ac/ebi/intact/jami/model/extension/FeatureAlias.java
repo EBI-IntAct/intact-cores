@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.NamedFeature;
+import psidev.psi.mi.jami.model.Feature;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Table( name = "ia_feature_alias" )
 public class FeatureAlias extends AbstractIntactAlias{
 
-    private NamedFeature parent;
+    private Feature parent;
 
     protected FeatureAlias() {
     }
@@ -33,14 +33,14 @@ public class FeatureAlias extends AbstractIntactAlias{
         super(name);
     }
 
-    @ManyToOne( targetEntity = IntactFeature.class )
-    @JoinColumn( name = "parent_ac" )
-    @Target(IntactFeature.class)
-    public NamedFeature getParent() {
+    @ManyToOne( targetEntity = AbstractIntactFeature.class )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
+    @Target(AbstractIntactFeature.class)
+    public Feature getParent() {
         return parent;
     }
 
-    public void setParent(NamedFeature parent) {
+    public void setParent(Feature parent) {
         this.parent = parent;
     }
 }

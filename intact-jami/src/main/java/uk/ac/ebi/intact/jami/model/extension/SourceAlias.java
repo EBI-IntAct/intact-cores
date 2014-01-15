@@ -34,7 +34,7 @@ public class SourceAlias extends AbstractIntactAlias{
     }
 
     @ManyToOne( targetEntity = IntactSource.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(IntactSource.class)
     public Source getParent() {
         return parent;

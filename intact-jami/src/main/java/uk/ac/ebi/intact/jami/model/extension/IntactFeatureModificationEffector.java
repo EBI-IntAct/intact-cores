@@ -4,7 +4,6 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.AllostericEffectorType;
 import psidev.psi.mi.jami.model.FeatureModificationEffector;
 import psidev.psi.mi.jami.model.ModelledFeature;
-import psidev.psi.mi.jami.model.MoleculeEffector;
 
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -35,7 +34,7 @@ public class IntactFeatureModificationEffector implements FeatureModificationEff
     }
 
     @ManyToOne( targetEntity = IntactModelledFeature.class )
-    @JoinColumn( name = "feature_effector_ac" )
+    @JoinColumn( name = "feature_effector_ac" , referencedColumnName = "ac")
     @Target(IntactModelledFeature.class)
     public ModelledFeature getFeatureModification() {
         return feature;

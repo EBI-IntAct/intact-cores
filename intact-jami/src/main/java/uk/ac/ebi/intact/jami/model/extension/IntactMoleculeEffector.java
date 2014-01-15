@@ -34,7 +34,7 @@ public class IntactMoleculeEffector implements MoleculeEffector {
     }
 
     @ManyToOne( targetEntity = IntactModelledParticipant.class )
-    @JoinColumn( name = "participant_effector_ac" )
+    @JoinColumn( name = "participant_effector_ac" , referencedColumnName = "ac")
     @Target(IntactModelledParticipant.class)
     public ModelledParticipant getMolecule() {
         return participant;

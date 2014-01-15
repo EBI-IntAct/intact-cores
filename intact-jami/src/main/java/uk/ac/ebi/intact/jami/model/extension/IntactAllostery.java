@@ -56,7 +56,7 @@ public class IntactAllostery<T extends AllostericEffector> extends AbstractIntac
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "mechanism_ac" )
+    @JoinColumn( name = "mechanism_ac", referencedColumnName = "ac" )
     @Target(IntactCvTerm.class)
     public CvTerm getAllostericMechanism() {
         return this.allostericMechanism;
@@ -67,7 +67,7 @@ public class IntactAllostery<T extends AllostericEffector> extends AbstractIntac
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "type_ac" )
+    @JoinColumn( name = "type_ac", referencedColumnName = "ac" )
     @Target(IntactCvTerm.class)
     public CvTerm getAllosteryType() {
         return this.allosteryType;
@@ -78,7 +78,7 @@ public class IntactAllostery<T extends AllostericEffector> extends AbstractIntac
     }
 
     @ManyToOne(targetEntity = IntactModelledParticipant.class, optional = false)
-    @JoinColumn( name = "participant_ac" )
+    @JoinColumn( name = "participant_ac", referencedColumnName = "ac" )
     @Target(IntactModelledParticipant.class)
     @NotNull
     public ModelledParticipant getAllostericMolecule() {

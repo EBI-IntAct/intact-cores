@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Feature;
 
 import javax.persistence.Entity;
@@ -42,9 +41,9 @@ public class FeatureXref extends AbstractIntactXref{
         super(database, id);
     }
 
-    @ManyToOne( targetEntity = IntactFeature.class )
-    @JoinColumn( name = "parent_ac" )
-    @Target(IntactFeature.class)
+    @ManyToOne( targetEntity = AbstractIntactFeature.class )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
+    @Target(AbstractIntactFeature.class)
     public Feature getParent() {
         return parent;
     }

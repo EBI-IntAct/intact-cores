@@ -145,7 +145,7 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "celltype_ac" )
+    @JoinColumn( name = "celltype_ac", referencedColumnName = "ac" )
     @ForeignKey(name = "FK_BIOSOURCE$CELLTYPE")
     @Target(IntactCvTerm.class)
     public CvTerm getCellType() {
@@ -157,7 +157,7 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "compartment_ac" )
+    @JoinColumn( name = "compartment_ac", referencedColumnName = "ac" )
     @ForeignKey(name = "FK_BIOSOURCE$COMPARTMENT")
     @Target(IntactCvTerm.class)
     public CvTerm getCompartment() {
@@ -169,7 +169,7 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "tissue_ac" )
+    @JoinColumn( name = "tissue_ac", referencedColumnName = "ac" )
     @ForeignKey(name = "FK_BIOSOURCE$TISSUE")
     @Target(IntactCvTerm.class)
     public CvTerm getTissue() {

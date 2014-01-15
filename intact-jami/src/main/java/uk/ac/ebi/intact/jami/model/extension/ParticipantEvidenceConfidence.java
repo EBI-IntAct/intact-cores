@@ -30,7 +30,7 @@ public class ParticipantEvidenceConfidence extends AbstractIntactConfidence{
     }
 
     @ManyToOne( targetEntity = IntactParticipantEvidence.class )
-    @JoinColumn( name = "component_ac" )
+    @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
     @Target(IntactParticipantEvidence.class)
     public ParticipantEvidence getParticipant() {
         return participant;

@@ -90,7 +90,7 @@ public class IntactVariableParameterValue extends AbstractAuditable implements V
     }
 
     @ManyToOne( targetEntity = IntactVariableParameter.class )
-    @JoinColumn( name = "parameter_ac" )
+    @JoinColumn( name = "parameter_id", referencedColumnName = "id" )
     @Target(IntactVariableParameter.class)
     public VariableParameter getVariableParameter() {
         return variableParameter;

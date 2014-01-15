@@ -42,7 +42,7 @@ public class ExperimentXref extends AbstractIntactXref{
     }
 
     @ManyToOne( targetEntity = IntactExperiment.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(IntactExperiment.class)
     public Experiment getParent() {
         return parent;

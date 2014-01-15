@@ -31,7 +31,7 @@ public class InteractionEvidenceConfidence extends AbstractIntactConfidence{
     }
 
     @ManyToOne( targetEntity = IntactInteractionEvidence.class )
-    @JoinColumn( name = "interaction_ac" )
+    @JoinColumn( name = "interaction_ac", referencedColumnName = "ac" )
     @Target(IntactInteractionEvidence.class)
     public InteractionEvidence getInteraction() {
         return interaction;

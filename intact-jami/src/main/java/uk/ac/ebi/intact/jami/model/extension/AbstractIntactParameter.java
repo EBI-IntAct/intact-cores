@@ -78,7 +78,7 @@ public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObjec
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class, optional = false)
-    @JoinColumn( name = "parametertype_ac" )
+    @JoinColumn( name = "parametertype_ac", referencedColumnName = "ac")
     @NotNull
     @Target(IntactCvTerm.class)
     public CvTerm getType() {
@@ -102,7 +102,7 @@ public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObjec
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "parameterunit_ac" )
+    @JoinColumn( name = "parameterunit_ac", referencedColumnName = "ac" )
     @Target(IntactCvTerm.class)
     public CvTerm getUnit() {
         return this.unit;

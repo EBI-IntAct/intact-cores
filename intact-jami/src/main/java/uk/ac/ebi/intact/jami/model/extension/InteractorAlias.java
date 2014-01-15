@@ -34,7 +34,7 @@ public class InteractorAlias extends AbstractIntactAlias{
     }
 
     @ManyToOne( targetEntity = IntactInteractor.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(IntactInteractor.class)
     public Interactor getParent() {
         return parent;

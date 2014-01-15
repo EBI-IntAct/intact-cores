@@ -149,13 +149,13 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
         // add new pubmed if not null
         if (pubmedId != null){
-            CvTerm pubmedDatabase = CvTermUtils.createPubmedDatabase();
-            CvTerm identityQualifier = CvTermUtils.createIdentityQualifier();
+            CvTerm pubmedDatabase = IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI);
+            CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI);
             // first remove old pubmed if not null
             if (this.pubmedId != null){
                 identifiers.remove(this.pubmedId);
             }
-            this.pubmedId = new DefaultXref(pubmedDatabase, pubmedId, identityQualifier);
+            this.pubmedId = new PublicationXref(pubmedDatabase, pubmedId, identityQualifier);
             identifiers.add(this.pubmedId);
         }
         // remove all pubmed if the collection is not empty
@@ -177,13 +177,13 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         PublicationIdentifierList identifiers = (PublicationIdentifierList)getIdentifiers();
         // add new doi if not null
         if (doi != null){
-            CvTerm doiDatabase = CvTermUtils.createDoiDatabase();
-            CvTerm identityQualifier = CvTermUtils.createIdentityQualifier();
+            CvTerm doiDatabase = IntactUtils.createMIDatabase(Xref.DOI, Xref.DOI_MI);
+            CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI);
             // first remove old doi if not null
             if (this.doi != null){
                 identifiers.remove(this.doi);
             }
-            this.doi = new DefaultXref(doiDatabase, doi, identityQualifier);
+            this.doi = new PublicationXref(doiDatabase, doi, identityQualifier);
             identifiers.add(this.doi);
         }
         // remove all doi if the collection is not empty
@@ -213,8 +213,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         PublicationXrefList xrefs = (PublicationXrefList)getXrefs();
         // add new imex if not null
         if (identifier != null){
-            CvTerm imexDatabase = CvTermUtils.createImexDatabase();
-            CvTerm imexPrimaryQualifier = CvTermUtils.createImexPrimaryQualifier();
+            CvTerm imexDatabase = IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI);
+            CvTerm imexPrimaryQualifier = IntactUtils.createMIQualifier(Xref.IMEX_PRIMARY, Xref.IMEX_PRIMARY_MI);
             // first remove old imex if not null
             if (this.imexId != null){
                 xrefs.remove(this.imexId);
@@ -326,7 +326,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @ManyToOne(targetEntity = IntactSource.class)
-    @JoinColumn( name = "owner_ac", nullable = false )
+    @JoinColumn( name = "owner_ac", nullable = false, referencedColumnName = "ac" )
     @Target(IntactSource.class)
     public Source getSource() {
         return this.source;
@@ -419,7 +419,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "status_ac" )
+    @JoinColumn( name = "status_ac", referencedColumnName = "ac" )
     @ForeignKey(name="FK_PUBLICATION_STATUS")
     @Target(IntactCvTerm.class)
     public CvTerm getStatus() {
@@ -431,7 +431,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "owner_pk" )
+    @JoinColumn( name = "owner_pk", referencedColumnName = "ac" )
     @ForeignKey(name="FK_PUBLICATION_OWNER")
     @Target(User.class)
     public User getCurrentOwner() {
@@ -443,7 +443,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "reviewer_pk" )
+    @JoinColumn( name = "reviewer_pk", referencedColumnName = "ac" )
     @ForeignKey(name="FK_PUBLICATION_REVIEWER")
     @Target(User.class)
     public User getCurrentReviewer() {
@@ -464,7 +464,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.xrefs = new PublicationXrefList();
         if (this.persistentXrefs != null){
             for (Xref ref : this.persistentXrefs){
-                if (XrefUtils.isXrefAnIdentifier(ref)){
+                if (XrefUtils.isXrefAnIdentifier(ref) || XrefUtils.doesXrefHaveQualifier(ref, Xref.PRIMARY_MI, Xref.PRIMARY)){
                     this.identifiers.addOnly(ref);
                     processAddedIdentifierEvent(ref);
                 }

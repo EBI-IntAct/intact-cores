@@ -79,7 +79,7 @@ public abstract class AbstractIntactAnnotation extends AbstractIntactPrimaryObje
     ///////////////////////////////////////
     // access methods for associations
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "topic_ac" )
+    @JoinColumn( name = "topic_ac", referencedColumnName = "ac")
     @ForeignKey(name = "FK_ANNOTATION$TOPIC")
     @Target(IntactCvTerm.class)
     @NotNull

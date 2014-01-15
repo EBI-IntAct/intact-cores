@@ -52,7 +52,7 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class, optional = false)
-    @JoinColumn( name = "relationtype_ac" )
+    @JoinColumn( name = "relationtype_ac", referencedColumnName = "ac" )
     @Target(IntactCvTerm.class)
     @NotNull
     public CvTerm getRelationType() {
@@ -60,7 +60,7 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
     }
 
     @ManyToOne(targetEntity = AbstractIntactEntity.class, optional = false)
-    @JoinColumn( name = "entity_ac" )
+    @JoinColumn( name = "entity_ac", referencedColumnName = "ac" )
     @Target(AbstractIntactEntity.class)
     @NotNull
     public psidev.psi.mi.jami.model.Entity getTarget() {
@@ -82,7 +82,7 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
     }
 
     @ManyToOne( targetEntity = AbstractIntactEntity.class )
-    @JoinColumn( name = "parent_ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
     @Target(AbstractIntactEntity.class)
     public psidev.psi.mi.jami.model.Entity getParent() {
         return parent;

@@ -2,10 +2,8 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Type;
+import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Entity;
-import psidev.psi.mi.jami.model.Position;
-import psidev.psi.mi.jami.model.Range;
-import psidev.psi.mi.jami.model.ResultingSequence;
 import psidev.psi.mi.jami.utils.comparator.range.UnambiguousRangeAndResultingSequenceComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 
@@ -27,6 +25,8 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
 
     private ResultingSequence resultingSequence;
     private Entity participant;
+
+    private Feature feature;
 
     protected IntactRange(){
 
@@ -115,8 +115,19 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
         this.resultingSequence = resultingSequence;
     }
 
+    @ManyToOne(targetEntity = AbstractIntactFeature.class)
+    @JoinColumn(name = "feature_ac", referencedColumnName = "ac")
+    @Target(AbstractIntactFeature.class)
+    public Feature getFeature() {
+        return this.feature;
+    }
+
+    public void setFeature(Feature feature) {
+        this.feature = feature;
+    }
+
     @ManyToOne(targetEntity = AbstractIntactEntity.class)
-    @JoinColumn(name = "participant_ac")
+    @JoinColumn(name = "participant_ac", referencedColumnName = "ac")
     @Target(AbstractIntactEntity.class)
     public Entity getParticipant() {
         return this.participant;

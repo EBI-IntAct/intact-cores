@@ -41,7 +41,7 @@ public abstract class AbstractIntactConfidence extends AbstractIntactPrimaryObje
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class, optional = false)
-    @JoinColumn( name = "confidencetype_ac" )
+    @JoinColumn( name = "confidencetype_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     @NotNull
     public CvTerm getType() {
