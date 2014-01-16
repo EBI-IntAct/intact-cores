@@ -144,7 +144,11 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
     @Target(IntactCvTerm.class)
     protected Collection<CvTerm> getPersistentIdentificationMethods() {
         if (persistentIdentificationMethods == null){
-            persistentIdentificationMethods = new ArrayList<CvTerm>();
+            persistentIdentificationMethods = new ArrayList<CvTerm>(getIdentificationMethods());
+            if (getInteraction() != null && getInteraction().getExperiment() instanceof IntactExperiment){
+                IntactExperiment intactExperiment = (IntactExperiment) getInteraction().getExperiment();
+                persistentIdentificationMethods.remove(intactExperiment.getParticipantIdentificationMethod());
+            }
         }
         return persistentIdentificationMethods;
     }
