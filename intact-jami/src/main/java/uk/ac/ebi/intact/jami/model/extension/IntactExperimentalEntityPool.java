@@ -22,11 +22,9 @@ import java.util.Iterator;
  */
 @javax.persistence.Entity
 @DiscriminatorValue("experimental_entity_pool")
-public class IntactExperimentalEntityPool extends AbstractIntactExperimentalEntity implements ExperimentalEntityPool, ParticipantInteractorChangeListener{
+public class IntactExperimentalEntityPool extends IntactParticipantEvidence implements ExperimentalEntityPool, ParticipantInteractorChangeListener{
 
     private Collection<ExperimentalEntity> components;
-    private InteractionEvidence interaction;
-    private String interactionAc;
 
     protected IntactExperimentalEntityPool() {
         super();
@@ -42,35 +40,6 @@ public class IntactExperimentalEntityPool extends AbstractIntactExperimentalEnti
 
     public IntactExperimentalEntityPool(InteractorPool interactor, Stoichiometry stoichiometry) {
         super(interactor, stoichiometry);
-    }
-
-    public void setInteractionAndAddParticipant(InteractionEvidence interaction) {
-
-        if (this.interaction != null){
-            this.interaction.removeParticipant(this);
-        }
-
-        if (interaction != null){
-            interaction.addParticipant(this);
-        }
-
-        if (interaction instanceof IntactPrimaryObject){
-            this.interactionAc = ((IntactPrimaryObject)interaction).getAc();
-        }
-    }
-
-    @ManyToOne( targetEntity = IntactInteractionEvidence.class )
-    @JoinColumn( name = "interaction_evidence_ac" )
-    @Target(IntactInteractionEvidence.class)
-    public InteractionEvidence getInteraction() {
-        return this.interaction;
-    }
-
-    public void setInteraction(InteractionEvidence interaction) {
-        this.interaction = interaction;
-        if (interaction instanceof IntactPrimaryObject){
-            this.interactionAc = ((IntactPrimaryObject)interaction).getAc();
-        }
     }
 
     @Override
@@ -240,22 +209,4 @@ public class IntactExperimentalEntityPool extends AbstractIntactExperimentalEnti
         this.components = components;
     }
 
-    /**
-     *
-     * @return
-     * @deprecated for intact backward compatibility only
-     */
-    @Column(name = "interaction_ac")
-    private String getInteractionAc(){
-        return this.interactionAc;
-    }
-
-    /**
-     *
-     * @param ac
-     * @deprecated for intact backward compatibility only
-     */
-    private void setInteractionAc(String ac){
-        this.interactionAc = ac;
-    }
 }

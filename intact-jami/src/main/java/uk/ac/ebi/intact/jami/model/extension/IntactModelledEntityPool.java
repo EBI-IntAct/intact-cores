@@ -23,8 +23,7 @@ import java.util.Iterator;
  */
 @Entity
 @DiscriminatorValue("modelled_entity_pool")
-public class IntactModelledEntityPool extends AbstractIntactParticipant<ModelledInteraction, ModelledFeature> implements ModelledEntityPool,, ParticipantInteractorChangeListener {
-    private String interactionAc;
+public class IntactModelledEntityPool extends IntactModelledParticipant implements ModelledEntityPool, ParticipantInteractorChangeListener {
     private Collection<ModelledEntity> components;
 
     protected IntactModelledEntityPool() {
@@ -45,30 +44,6 @@ public class IntactModelledEntityPool extends AbstractIntactParticipant<Modelled
 
     public IntactModelledEntityPool(InteractorPool interactor, CvTerm bioRole, Stoichiometry stoichiometry) {
         super(interactor, bioRole, stoichiometry);
-    }
-
-    @Override
-    @ManyToOne( targetEntity = IntactComplex.class )
-    @JoinColumn( name = "complex_ac" )
-    @Target(IntactComplex.class)
-    public ModelledInteraction getInteraction() {
-        return super.getInteraction();
-    }
-
-    @Override
-    public void setInteractionAndAddParticipant(ModelledInteraction interaction) {
-        super.setInteractionAndAddParticipant(interaction);
-        if (interaction instanceof IntactPrimaryObject){
-            this.interactionAc = ((IntactPrimaryObject)interaction).getAc();
-        }
-    }
-
-    @Override
-    public void setInteraction(ModelledInteraction interaction) {
-        super.setInteraction(interaction);
-        if (interaction instanceof IntactPrimaryObject){
-            this.interactionAc = ((IntactPrimaryObject)interaction).getAc();
-        }
     }
 
     @Override
@@ -244,24 +219,5 @@ public class IntactModelledEntityPool extends AbstractIntactParticipant<Modelled
 
     private void setComponents(Collection<ModelledEntity> components) {
         this.components = components;
-    }
-
-    /**
-     *
-     * @return
-     * @deprecated for intact backward compatibility only
-     */
-    @Column(name = "interaction_ac")
-    private String getInteractionAc(){
-        return this.interactionAc;
-    }
-
-    /**
-     *
-     * @param ac
-     * @deprecated for intact backward compatibility only
-     */
-    private void setInteractionAc(String ac){
-        this.interactionAc = ac;
     }
 }

@@ -2,12 +2,12 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Intact implementation of participant evidence
@@ -22,6 +22,8 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
 
     private InteractionEvidence interaction;
     private String interactionAc;
+
+    private Collection<CvTerm> persistentIdentificationMethods;
 
     protected IntactParticipantEvidence() {
     }
@@ -75,6 +77,7 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
         if (interaction instanceof IntactPrimaryObject){
             this.interactionAc = ((IntactPrimaryObject)interaction).getAc();
         }
+        initialiseIdentificationMethods();
     }
 
     @ManyToOne( targetEntity = IntactInteractionEvidence.class )
@@ -89,6 +92,24 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
         if (interaction instanceof IntactPrimaryObject){
             this.interactionAc = ((IntactPrimaryObject)interaction).getAc();
         }
+        initialiseIdentificationMethods();
+    }
+
+    @Transient
+    public Collection<CvTerm> getIdentificationMethods() {
+        return super.getIdentificationMethods();
+    }
+
+    @Override
+    protected void initialiseIdentificationMethods(){
+        setIdentificationMethods(new IdentificationMethodList());
+        ((IdentificationMethodList)getIdentificationMethods()).addAllOnly(getPersistentIdentificationMethods());
+        if (getInteraction() != null && getInteraction().getExperiment() instanceof IntactExperiment){
+            IntactExperiment intactExperiment = (IntactExperiment) getInteraction().getExperiment();
+            if (intactExperiment.getParticipantIdentificationMethod() != null){
+                ((IdentificationMethodList)getIdentificationMethods()).addOnly(intactExperiment.getParticipantIdentificationMethod());
+            }
+        }
     }
 
     /**
@@ -97,7 +118,7 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
      * @deprecated for intact backward compatibility only
      */
     @Column(name = "interaction_ac")
-    private String getInteractionAc(){
+    protected String getInteractionAc(){
         return this.interactionAc;
     }
 
@@ -106,7 +127,51 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
      * @param ac
      * @deprecated for intact backward compatibility only
      */
-    private void setInteractionAc(String ac){
+    protected void setInteractionAc(String ac){
         this.interactionAc = ac;
+    }
+
+    protected void setPersistentIdentificationMethods(Collection<CvTerm> persistentIdentificationMethods) {
+        this.persistentIdentificationMethods = persistentIdentificationMethods;
+    }
+
+    @ManyToMany(targetEntity = IntactCvTerm.class)
+    @JoinTable(
+            name = "ia_component2part_detect",
+            joinColumns = {@JoinColumn( name = "component_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "cvobject_ac" )}
+    )
+    @Target(IntactCvTerm.class)
+    protected Collection<CvTerm> getPersistentIdentificationMethods() {
+        if (persistentIdentificationMethods == null){
+            persistentIdentificationMethods = new ArrayList<CvTerm>();
+        }
+        return persistentIdentificationMethods;
+    }
+
+    private class IdentificationMethodList extends AbstractListHavingProperties<CvTerm> {
+        public IdentificationMethodList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(CvTerm added) {
+            if (getInteraction() != null && getInteraction().getExperiment() instanceof IntactExperiment){
+                IntactExperiment intactExperiment = (IntactExperiment) getInteraction().getExperiment();
+                if (intactExperiment.getParticipantIdentificationMethod() != null && !added.equals(intactExperiment.getParticipantIdentificationMethod())){
+                    getPersistentIdentificationMethods().add(added);
+                }
+            }
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(CvTerm removed) {
+            getPersistentIdentificationMethods().remove(removed);
+        }
+
+        @Override
+        protected void clearProperties() {
+            getPersistentIdentificationMethods().clear();
+        }
     }
 }
