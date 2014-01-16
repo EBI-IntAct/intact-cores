@@ -17,6 +17,7 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>15/01/14</pre>
  */
+@Entity
 @DiscriminatorValue("evidence")
 @EntityListeners(value = {LinkedFeatureListener.class})
 public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEntity,FeatureEvidence>{
@@ -60,7 +61,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
         super(shortName, fullName, type);
     }
 
-    @ManyToMany( targetEntity = IntactCvTerm.class)
+    @ManyToMany( targetEntity = IntactCvTerm.class, fetch = FetchType.EAGER)
     @JoinTable(
             name="ia_feature2method",
             joinColumns = @JoinColumn( name="feature_ac"),

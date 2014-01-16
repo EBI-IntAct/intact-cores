@@ -4,6 +4,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Preassembly;
 
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 /**
  * Intact implementation of preassembly
@@ -12,6 +13,7 @@ import javax.persistence.DiscriminatorValue;
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
+@Entity
 @DiscriminatorValue("pre-assembly")
 public class IntactPreassembly extends AbstractIntactCooperativeEffect implements Preassembly{
 

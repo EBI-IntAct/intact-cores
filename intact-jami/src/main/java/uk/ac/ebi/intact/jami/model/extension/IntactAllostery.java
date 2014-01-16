@@ -6,10 +6,7 @@ import psidev.psi.mi.jami.model.Allostery;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ModelledParticipant;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -19,6 +16,7 @@ import javax.validation.constraints.NotNull;
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
+@Entity
 @DiscriminatorValue("allostery")
 public class IntactAllostery<T extends AllostericEffector> extends AbstractIntactCooperativeEffect implements Allostery<T>{
 

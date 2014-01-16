@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.NamedEntity;
-import psidev.psi.mi.jami.model.NamedExperiment;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -34,9 +33,9 @@ public class EntityAlias extends AbstractIntactAlias{
         super(name);
     }
 
-    @ManyToOne( targetEntity = IntactEntity.class )
+    @ManyToOne( targetEntity = AbstractIntactEntity.class )
     @JoinColumn( name = "parent_ac", referencedColumnName = "ac")
-    @Target(IntactEntity.class)
+    @Target(AbstractIntactEntity.class)
     public NamedEntity getParent() {
         return parent;
     }

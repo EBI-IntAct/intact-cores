@@ -2,15 +2,13 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Experiment;
-import psidev.psi.mi.jami.model.ParameterValue;
-import psidev.psi.mi.jami.model.ParticipantEvidence;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.listener.CvDefinitionListener;
 import uk.ac.ebi.intact.jami.model.listener.CvIdentifierListener;
 import uk.ac.ebi.intact.jami.model.listener.ParticipantParameterListener;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.math.BigDecimal;
 
 /**
@@ -23,47 +21,47 @@ import java.math.BigDecimal;
 @Entity
 @Table( name = "ia_component_parameter" )
 @EntityListeners(value = {ParticipantParameterListener.class})
-public class ParticipantEvidenceParameter extends AbstractIntactParameter{
+public class ExperimentalEntityParameter extends AbstractIntactParameter{
 
-    private ParticipantEvidence participant;
+    private ExperimentalEntity participant;
     private Experiment experiment;
 
-    protected ParticipantEvidenceParameter() {
+    protected ExperimentalEntityParameter() {
         super();
     }
 
-    public ParticipantEvidenceParameter(CvTerm type, ParameterValue value) {
+    public ExperimentalEntityParameter(CvTerm type, ParameterValue value) {
         super(type, value);
     }
 
-    public ParticipantEvidenceParameter(CvTerm type, ParameterValue value, CvTerm unit) {
+    public ExperimentalEntityParameter(CvTerm type, ParameterValue value, CvTerm unit) {
         super(type, value, unit);
     }
 
-    public ParticipantEvidenceParameter(CvTerm type, ParameterValue value, CvTerm unit, BigDecimal uncertainty) {
+    public ExperimentalEntityParameter(CvTerm type, ParameterValue value, CvTerm unit, BigDecimal uncertainty) {
         super(type, value, unit, uncertainty);
     }
 
-    public ParticipantEvidenceParameter(CvTerm type, ParameterValue value, BigDecimal uncertainty) {
+    public ExperimentalEntityParameter(CvTerm type, ParameterValue value, BigDecimal uncertainty) {
         super(type, value, uncertainty);
     }
 
-    public ParticipantEvidenceParameter(CvTerm type, String value) throws IllegalParameterException {
+    public ExperimentalEntityParameter(CvTerm type, String value) throws IllegalParameterException {
         super(type, value);
     }
 
-    public ParticipantEvidenceParameter(CvTerm type, String value, CvTerm unit) throws IllegalParameterException {
+    public ExperimentalEntityParameter(CvTerm type, String value, CvTerm unit) throws IllegalParameterException {
         super(type, value, unit);
     }
 
-    @ManyToOne( targetEntity = IntactParticipantEvidence.class )
+    @ManyToOne( targetEntity = AbstractIntactExperimentalEntity.class )
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
-    @Target(IntactParticipantEvidence.class)
-    public ParticipantEvidence getParticipant() {
+    @Target(AbstractIntactExperimentalEntity.class)
+    public ExperimentalEntity getParticipant() {
         return participant;
     }
 
-    public void setParticipant(ParticipantEvidence participant) {
+    public void setParticipant(ExperimentalEntity participant) {
         this.participant = participant;
     }
 

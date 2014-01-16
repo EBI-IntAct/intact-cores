@@ -1,13 +1,11 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ModelledEntity;
-import psidev.psi.mi.jami.model.ModelledFeature;
-import psidev.psi.mi.jami.model.ModelledParticipant;
-import psidev.psi.mi.jami.utils.CvTermUtils;
+import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.util.Collection;
 
 /**
@@ -17,16 +15,17 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>15/01/14</pre>
  */
+@Entity
 @DiscriminatorValue("modelled")
 public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity, ModelledFeature> implements ModelledFeature{
 
     public IntactModelledFeature(ModelledParticipant participant) {
-        super(CvTermUtils.createBiologicalFeatureType());
+        super();
         setParticipant(participant);
     }
 
     public IntactModelledFeature(ModelledParticipant participant, String shortName, String fullName) {
-        super(shortName, fullName, CvTermUtils.createBiologicalFeatureType());
+        super(shortName, fullName);
         setParticipant(participant);
     }
 
@@ -41,11 +40,11 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity,
     }
 
     public IntactModelledFeature() {
-        super(CvTermUtils.createBiologicalFeatureType());
+        super();
     }
 
     public IntactModelledFeature(String shortName, String fullName) {
-        super(shortName, fullName, CvTermUtils.createBiologicalFeatureType());
+        super(shortName, fullName);
     }
 
     public IntactModelledFeature(CvTerm type) {
@@ -82,5 +81,16 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity,
     @Target(IntactModelledFeature.class)
     public ModelledFeature getBinds() {
         return super.getBinds();
+    }
+
+    @Override
+    @ManyToOne(targetEntity = IntactCvTerm.class)
+    @JoinColumn( name = "featuretype_ac", referencedColumnName = "ac")
+    @Target(IntactCvTerm.class)
+    public CvTerm getType() {
+        if (super.getType() == null){
+            super.setType(IntactUtils.createMIFeatureType(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI));
+        }
+        return super.getType();
     }
 }

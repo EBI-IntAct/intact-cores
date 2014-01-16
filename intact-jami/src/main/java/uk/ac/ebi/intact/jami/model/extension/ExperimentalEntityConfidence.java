@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ParticipantEvidence;
+import psidev.psi.mi.jami.model.ExperimentalEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -18,25 +18,25 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "ia_component_confidence")
-public class ParticipantEvidenceConfidence extends AbstractIntactConfidence{
+public class ExperimentalEntityConfidence extends AbstractIntactConfidence{
 
-    private ParticipantEvidence participant;
+    private ExperimentalEntity participant;
 
-    public ParticipantEvidenceConfidence() {
+    public ExperimentalEntityConfidence() {
     }
 
-    public ParticipantEvidenceConfidence(CvTerm type, String value) {
+    public ExperimentalEntityConfidence(CvTerm type, String value) {
         super(type, value);
     }
 
-    @ManyToOne( targetEntity = IntactParticipantEvidence.class )
+    @ManyToOne( targetEntity = AbstractIntactExperimentalEntity.class )
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
-    @Target(IntactParticipantEvidence.class)
-    public ParticipantEvidence getParticipant() {
+    @Target(AbstractIntactExperimentalEntity.class)
+    public ExperimentalEntity getParticipant() {
         return participant;
     }
 
-    public void setParticipant(ParticipantEvidence participant) {
+    public void setParticipant(ExperimentalEntity participant) {
         this.participant = participant;
     }
 }

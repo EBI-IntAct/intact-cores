@@ -33,6 +33,9 @@ public class IntactUtils {
     public static final String TOPIC_OBJCLASS="uk.ac.ebi.intact.model.CvTopic";
     public static final String ALIAS_TYPE_OBJCLASS="uk.ac.ebi.intact.model.CvAliasType";
     public static final String UNIT_OBJCLASS ="uk.ac.ebi.intact.model.CvUnit";
+    public static final String FEATURE_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvFeatureType";
+    public static final String EXPERIMENTAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvExperimentalRole";
+    public static final String BIOLOGICAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvBiologicalRole";
 
     public static final String RELEASED_STATUS = "released";
 
@@ -46,6 +49,18 @@ public class IntactUtils {
 
     public static IntactCvTerm createMITopic(String name, String MI){
         return createIntactMITerm(name, MI, TOPIC_OBJCLASS);
+    }
+
+    public static IntactCvTerm createMIFeatureType(String name, String MI){
+        return createIntactMITerm(name, MI, FEATURE_TYPE_OBJCLASS);
+    }
+
+    public static IntactCvTerm createMIBiologicalRole(String name, String MI){
+        return createIntactMITerm(name, MI, BIOLOGICAL_ROLE_OBJCLASS);
+    }
+
+    public static IntactCvTerm createMIExperimentalRole(String name, String MI){
+        return createIntactMITerm(name, MI, EXPERIMENTAL_ROLE_OBJCLASS);
     }
 
     public static IntactCvTerm createIntactMITerm(String name, String MI, String objclass){
