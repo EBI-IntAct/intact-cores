@@ -4,6 +4,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.impl.DefaultStoichiometry;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
@@ -26,7 +27,7 @@ import java.util.Collection;
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Table(name = "ia_component")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
-public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIntactPrimaryObject implements NamedEntity<F>{
+public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIntactPrimaryObject implements Entity<F> {
 
     private Interactor interactor;
     private CvTerm biologicalRole;
@@ -39,7 +40,6 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
     private ParticipantInteractorChangeListener changeListener;
 
     private String shortName;
-    private String fullName;
 
     protected AbstractIntactEntity(){
         super();
@@ -72,25 +72,13 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         this.stoichiometry = stoichiometry;
     }
 
-    @Column(name = "shortlabel", nullable = false)
-    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
-    @NotNull
-    public String getShortName() {
-        return shortName;
-    }
-
-    public void setShortName(String shortName) {
+    /**
+     *
+     * @param shortName
+     * @deprecated only for backward compatibility with intact core
+     */
+    public void setShortLabel(String shortName) {
         this.shortName = shortName;
-    }
-
-    @Column( length = IntactUtils.MAX_FULL_NAME_LEN )
-    @Size( max = IntactUtils.MAX_FULL_NAME_LEN )
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     @ManyToOne( targetEntity = AbstractIntactInteractor.class, optional = false)
@@ -299,5 +287,12 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
 
     protected void setFeatures(Collection<F> features) {
         this.features = features;
+    }
+
+    @Column(name = "shortlabel", nullable = false)
+    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
+    @NotNull
+    protected String getShortLabel() {
+        return shortName;
     }
 }

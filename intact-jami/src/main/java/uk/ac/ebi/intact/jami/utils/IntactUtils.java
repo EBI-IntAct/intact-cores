@@ -36,6 +36,7 @@ public class IntactUtils {
     public static final String FEATURE_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvFeatureType";
     public static final String EXPERIMENTAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvExperimentalRole";
     public static final String BIOLOGICAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvBiologicalRole";
+    public static final String INTERACTION_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvInteraction";
 
     public static final String RELEASED_STATUS = "released";
 
@@ -61,6 +62,10 @@ public class IntactUtils {
 
     public static IntactCvTerm createMIExperimentalRole(String name, String MI){
         return createIntactMITerm(name, MI, EXPERIMENTAL_ROLE_OBJCLASS);
+    }
+
+    public static IntactCvTerm createMIInteractionDetectionMethod(String name, String MI){
+        return createIntactMITerm(name, MI, INTERACTION_DETECTION_METHOD_OBJCLASS);
     }
 
     public static IntactCvTerm createIntactMITerm(String name, String MI, String objclass){
