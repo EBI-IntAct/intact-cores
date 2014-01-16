@@ -26,8 +26,8 @@ import java.util.Collection;
 @javax.persistence.Entity
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Table(name = "ia_molecule")
-@DiscriminatorColumn(name = "objclass", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue( "uk.ac.ebi.intact.model.InteractorImpl" )
+@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue( "interactor" )
 public class IntactInteractor extends AbstractIntactPrimaryObject implements Interactor{
 
     private String shortName;
@@ -246,6 +246,16 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     @Override
     public String toString() {
         return shortName + (organism != null ? ", " + organism.toString() : "") + (interactorType != null ? ", " + interactorType.toString() : "")  ;
+    }
+
+    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
+    @NotNull
+    protected String getObjClass(){
+        return "uk.ac.ebi.intact.model.InteractorImpl";
+    }
+
+    protected void setObjClass(){
+        // nothing to do
     }
 
     protected void initialiseAnnotations(){

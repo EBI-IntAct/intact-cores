@@ -21,7 +21,7 @@ import java.util.List;
  * @since <pre>16/01/14</pre>
  */
 @Entity
-@DiscriminatorValue( "uk.ac.ebi.intact.model.SmallMoleculeImpl" )
+@DiscriminatorValue( "bioactive_entity" )
 public class IntactBioactiveEntity extends IntactInteractor implements BioactiveEntity{
 
     private Xref chebi;
@@ -341,6 +341,11 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
     @Override
     protected void initialiseDefaultInteractorType() {
         super.setInteractorType(IntactUtils.createIntactMITerm(BioactiveEntity.BIOACTIVE_ENTITY, BioactiveEntity.BIOACTIVE_ENTITY_MI, IntactUtils.INTERACTOR_TYPE_OBJCLASS));
+    }
+
+    @Override
+    protected String getObjClass() {
+        return "uk.ac.ebi.intact.model.SmallMoleculeImpl";
     }
 
     protected class BioactiveEntityChecksumList extends AbstractCollectionWrapper<Checksum> {

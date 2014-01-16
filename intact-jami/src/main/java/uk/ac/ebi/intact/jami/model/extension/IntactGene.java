@@ -21,7 +21,7 @@ import java.util.Collection;
  * @since <pre>16/01/14</pre>
  */
 @Entity
-@DiscriminatorValue( "uk.ac.ebi.intact.model.Gene" )
+@DiscriminatorValue( "gene" )
 public class IntactGene extends IntactInteractor implements Gene{
 
     private Xref ensembl;
