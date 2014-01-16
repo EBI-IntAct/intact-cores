@@ -189,7 +189,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     @Override
     protected void initialiseAnnotations() {
         super.initialiseAnnotations();
-        for (Annotation annot : getAnnotations()){
+        for (Annotation annot : super.getAnnotations()){
             processAddedAnnotationEvent(annot);
         }
         if (this.url == null && this.persistentUrl != null){

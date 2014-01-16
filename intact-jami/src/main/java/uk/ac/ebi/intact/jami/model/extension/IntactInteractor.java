@@ -27,6 +27,7 @@ import java.util.Collection;
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Table(name = "ia_molecule")
 @DiscriminatorColumn(name = "objclass", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue( "uk.ac.ebi.intact.model.InteractorImpl" )
 public class IntactInteractor extends AbstractIntactPrimaryObject implements Interactor{
 
     private String shortName;

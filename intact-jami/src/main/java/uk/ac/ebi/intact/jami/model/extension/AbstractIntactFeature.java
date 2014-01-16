@@ -125,6 +125,8 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
 
     @Transient
     public String getInterpro() {
+        // initialise identifiers if not done yet
+        getIdentifiers();
         return this.interpro != null ? this.interpro.getId() : null;
     }
 
