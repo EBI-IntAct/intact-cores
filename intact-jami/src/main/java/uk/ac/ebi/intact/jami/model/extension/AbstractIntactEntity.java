@@ -6,7 +6,6 @@ import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.impl.DefaultStoichiometry;
-import psidev.psi.mi.jami.utils.CvTermUtils;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -81,9 +80,9 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         this.shortName = shortName;
     }
 
-    @ManyToOne( targetEntity = AbstractIntactInteractor.class, optional = false)
+    @ManyToOne( targetEntity = IntactInteractor.class, optional = false)
     @JoinColumn( name = "interactor_ac", referencedColumnName = "ac")
-    @Target(AbstractIntactInteractor.class)
+    @Target(IntactInteractor.class)
     @NotNull
     public Interactor getInteractor() {
         return this.interactor;

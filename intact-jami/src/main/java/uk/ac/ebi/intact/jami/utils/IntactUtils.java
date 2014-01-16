@@ -37,6 +37,7 @@ public class IntactUtils {
     public static final String EXPERIMENTAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvExperimentalRole";
     public static final String BIOLOGICAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvBiologicalRole";
     public static final String INTERACTION_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvInteraction";
+    public static final String INTERACTOR_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.InteractorImpl";
 
     public static final String RELEASED_STATUS = "released";
 
