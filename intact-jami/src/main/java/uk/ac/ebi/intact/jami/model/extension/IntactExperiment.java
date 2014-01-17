@@ -124,7 +124,7 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
     @Target(IntactCvTerm.class)
     public CvTerm getInteractionDetectionMethod() {
         if (this.interactionDetectionMethod == null){
-           this.interactionDetectionMethod = new IntactCvTerm(Experiment.UNSPECIFIED_METHOD, Experiment.UNSPECIFIED_METHOD_MI);
+           this.interactionDetectionMethod = IntactUtils.createMIInteractionDetectionMethod(Experiment.UNSPECIFIED_METHOD, Experiment.UNSPECIFIED_METHOD_MI);
         }
         return this.interactionDetectionMethod;
     }

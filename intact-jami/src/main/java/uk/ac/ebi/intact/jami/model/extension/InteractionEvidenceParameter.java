@@ -71,6 +71,7 @@ public class InteractionEvidenceParameter extends AbstractIntactParameter{
      * @deprecated Only kept for backward compatibility with intact core.
      * we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
      */
+    @Deprecated
     public void setExperiment( Experiment experiment ) {
         this.experiment = experiment;
     }
@@ -81,6 +82,7 @@ public class InteractionEvidenceParameter extends AbstractIntactParameter{
     /**
      * @deprecated we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
      */
+    @Deprecated
     protected Experiment getExperiment() {
         return this.experiment;
     }

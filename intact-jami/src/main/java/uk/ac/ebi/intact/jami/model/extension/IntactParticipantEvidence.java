@@ -118,6 +118,7 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
      * @deprecated for intact backward compatibility only
      */
     @Column(name = "interaction_ac")
+    @Deprecated
     protected String getInteractionAc(){
         return this.interactionAc;
     }
@@ -127,6 +128,7 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
      * @param ac
      * @deprecated for intact backward compatibility only
      */
+    @Deprecated
     protected void setInteractionAc(String ac){
         this.interactionAc = ac;
     }

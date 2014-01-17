@@ -106,6 +106,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
      * @param objClass
      * @deprecated the objclass is deprecated and only kept for backward compatibility with intact-core.
      */
+    @Deprecated
     public void setObjClass( String objClass ) {
         this.objClass = objClass;
     }
@@ -139,6 +140,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
      * @param identifier
      * @deprecated only kept for backward compatibility with intact-core
      */
+    @Deprecated
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
@@ -252,6 +254,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Column(name = "identifier", length = 30)
     @Size(max = 30)
     @Index(name = "cvobject_id_idx")
+    @Deprecated
     private String getIdentifier() {
         return this.identifier;
     }

@@ -267,6 +267,7 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
     /**
      * @deprecated for intact-core backward compatibility only. Use linkedFeatures instead
      */
+    @Deprecated
     public F getBinds() {
         return binds;
     }

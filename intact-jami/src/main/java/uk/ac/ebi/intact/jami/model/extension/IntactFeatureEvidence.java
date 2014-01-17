@@ -81,6 +81,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
     /**
      * @deprecated only for intact-core backward compatibility. Use detectionMethods instead
      */
+    @Deprecated
     public CvTerm getFeatureIdentification() {
         return identificationMethod;
     }
@@ -88,6 +89,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
     /**
      * @deprecated only for intact-core backward compatibility. Use detectionMethods instead
      */
+    @Deprecated
     public void setFeatureIdentification( CvTerm cvFeatureIdentification ) {
         this.identificationMethod = cvFeatureIdentification;
     }

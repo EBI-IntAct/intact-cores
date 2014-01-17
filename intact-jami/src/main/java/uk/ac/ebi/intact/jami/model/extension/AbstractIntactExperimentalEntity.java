@@ -193,6 +193,7 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
     /**
      * @deprecated this method is for backward compatibility only. Use experimentalRole instead
      */
+    @Deprecated
     public Collection<CvTerm> getExperimentalRoles() {
         if (this.experimentalRoles == null){
             this.experimentalRoles =  new ArrayList<CvTerm>();

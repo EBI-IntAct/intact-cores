@@ -4,10 +4,12 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
+import uk.ac.ebi.intact.jami.model.listener.BioactiveEntityAnnotationListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +24,7 @@ import java.util.List;
  */
 @Entity
 @DiscriminatorValue( "bioactive_entity" )
+@EntityListeners(value = {BioactiveEntityAnnotationListener.class})
 public class IntactBioactiveEntity extends IntactInteractor implements BioactiveEntity{
 
     private Xref chebi;

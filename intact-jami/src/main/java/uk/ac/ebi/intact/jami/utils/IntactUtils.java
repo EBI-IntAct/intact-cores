@@ -24,6 +24,12 @@ public class IntactUtils {
     public static final int MAX_ALIAS_NAME_LEN = 256;
     public static final int MAX_ID_LEN = 256;
     public static final int MAX_DB_RELEASE_LEN = 10;
+    /**
+     * As the maximum size of database objects is limited, the sequence is represented as
+     * an array of strings of maximum length.
+     */
+    public static final int MAX_SEQ_LENGTH_PER_CHUNK = 1000;
+
     public final static DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
 
     public static final String CV_LOCAL_SEQ = "cv_local_seq";
@@ -67,6 +73,10 @@ public class IntactUtils {
 
     public static IntactCvTerm createMIInteractionDetectionMethod(String name, String MI){
         return createIntactMITerm(name, MI, INTERACTION_DETECTION_METHOD_OBJCLASS);
+    }
+
+    public static IntactCvTerm createMIAliasType(String name, String MI){
+        return createIntactMITerm(name, MI, ALIAS_TYPE_OBJCLASS);
     }
 
     public static IntactCvTerm createIntactMITerm(String name, String MI, String objclass){

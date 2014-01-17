@@ -2,13 +2,13 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
-import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.model.listener.CvDefinitionListener;
-import uk.ac.ebi.intact.jami.model.listener.CvIdentifierListener;
+import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Experiment;
+import psidev.psi.mi.jami.model.ExperimentalEntity;
+import psidev.psi.mi.jami.model.ParameterValue;
 import uk.ac.ebi.intact.jami.model.listener.ParticipantParameterListener;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import java.math.BigDecimal;
 
 /**
@@ -81,6 +81,7 @@ public class ExperimentalEntityParameter extends AbstractIntactParameter{
     /**
      * @deprecated we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
      */
+    @Deprecated
     protected Experiment getExperiment() {
         return this.experiment;
     }

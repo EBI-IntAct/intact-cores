@@ -76,6 +76,7 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
      * @param shortName
      * @deprecated only for backward compatibility with intact core
      */
+    @Deprecated
     public void setShortLabel(String shortName) {
         this.shortName = shortName;
     }

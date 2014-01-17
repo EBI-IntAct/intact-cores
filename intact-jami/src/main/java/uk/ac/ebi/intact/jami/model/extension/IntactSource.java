@@ -173,6 +173,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
      * @param persistentURL
      * @deprecated this method is used only for backward compatibility with intact-core. Use setURL instead
      */
+    @Deprecated
     public void setPersistentURL(String persistentURL) {
         this.persistentUrl = persistentURL;
     }
@@ -182,6 +183,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
      * @param persistentPostalAddress
      * @deprecated this method is used only for backward compatibility with intact-core. Use setPostalAddress instead
      */
+    @Deprecated
     public void setPersistentPostalAddress(String persistentPostalAddress) {
         this.persistentPostalAddress = persistentPostalAddress;
     }
@@ -267,6 +269,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     /**
      * @deprecated use getURL instead
      */
+    @Deprecated
     private String getPersistentURL() {
         return persistentUrl;
     }
@@ -275,6 +278,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     /**
      * @deprecated use getPostalAdress instead
      */
+    @Deprecated
     private String getPersistentPostalAddress() {
         return persistentPostalAddress;
     }

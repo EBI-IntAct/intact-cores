@@ -5,8 +5,6 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
-import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
@@ -21,8 +19,10 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * IntAct implementation of publication.
@@ -129,6 +129,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
      * @param shortLabel
      * @deprecated the shortlabel is deprecated and getPubmedId/getDOI should be used instead
      */
+    @Deprecated
     public void setShortLabel( String shortLabel ) {
         if (shortLabel == null){
             throw new IllegalArgumentException("The short name cannot be null");
@@ -593,6 +594,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     /**
      * @deprecated the publication shortLabel is deprecated. We should use getPubmedId or getDoi or getIdentifiers
      */
+    @Deprecated
     private String getShortLabel() {
         return shortLabel;
     }
