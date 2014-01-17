@@ -33,7 +33,7 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
     private BigDecimal value;
     private Long id;
 
-    private Complex parent;
+    private Complex complex;
 
     protected AbstractIntactCooperativeEffect(){
 
@@ -129,6 +129,17 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
 
     public void setCooperativeEffectValue(BigDecimal value) {
         this.value = value;
+    }
+
+    @ManyToOne( targetEntity = IntactComplex.class )
+    @JoinColumn( name = "complex_ac", referencedColumnName = "ac" )
+    @Target(IntactComplex.class)
+    public Complex getComplex() {
+        return complex;
+    }
+
+    public void setComplex(Complex complex) {
+        this.complex = complex;
     }
 
     @Override
