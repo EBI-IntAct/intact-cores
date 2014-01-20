@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.model.ModelledParticipant;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
+@Entity
 @DiscriminatorValue("allostery_molecule_effector")
 public class IntactAllosteryWithMolecule extends IntactAllostery<IntactMoleculeEffector>{
 

@@ -158,6 +158,7 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
         return chebi != null ? chebi.getId() : null;
     }
 
+    //TODO fetch proper cv term
     public void setChebi(String id) {
         Collection<Xref> bioactiveEntityIdentifiers = getIdentifiers();
 
@@ -186,6 +187,7 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
         return smile != null ? smile.getValue() : null;
     }
 
+    //TODO fetch proper cv term
     public void setSmile(String smile) {
         Collection<Checksum> bioactiveEntityChecksums = getChecksums();
 
@@ -210,6 +212,7 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
         return standardInchiKey != null ? standardInchiKey.getValue() : null;
     }
 
+    //TODO fetch proper cv term
     public void setStandardInchiKey(String key) {
         Collection<Checksum> bioactiveEntityChecksums = getChecksums();
 
@@ -234,6 +237,7 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
         return standardInchi != null ? standardInchi.getValue() : null;
     }
 
+    //TODO fetch proper cv term
     public void setStandardInchi(String inchi) {
         Collection<Checksum> bioactiveEntityChecksums = getChecksums();
 
@@ -258,7 +262,7 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
         return chebi != null ? chebi.getId() : (standardInchiKey != null ? standardInchiKey.getValue() : (smile != null ? smile.getValue() : (standardInchi != null ? standardInchi.getValue() : super.toString())));
     }
 
-    protected void processAddedChecksumEvent(Checksum added) {
+    private void processAddedChecksumEvent(Checksum added) {
         // the added checksum is standard inchi key and it is not the current standard inchi key
         if (standardInchiKey == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY)){
             // the standard inchi key is not set, we can set the standard inchi key
@@ -274,7 +278,7 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
         }
     }
 
-    protected void processRemovedChecksumEvent(Checksum removed) {
+    private void processRemovedChecksumEvent(Checksum removed) {
         // the removed identifier is standard inchi key
         if (standardInchiKey != null && standardInchiKey.equals(removed)){
             standardInchiKey = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY);
@@ -287,7 +291,7 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
         }
     }
 
-    protected void clearPropertiesLinkedToChecksums() {
+    private void clearPropertiesLinkedToChecksums() {
         standardInchiKey = null;
         standardInchi = null;
         smile = null;

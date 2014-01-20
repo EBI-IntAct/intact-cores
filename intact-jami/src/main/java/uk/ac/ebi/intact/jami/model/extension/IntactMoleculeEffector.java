@@ -40,7 +40,7 @@ public class IntactMoleculeEffector implements MoleculeEffector {
         return participant;
     }
 
-    public void setParticipant(ModelledParticipant participant) {
+    public void setMolecule(ModelledParticipant participant) {
         if (participant == null){
             throw new IllegalArgumentException("The participant of a MoleculeEffector cannot be null.");
         }

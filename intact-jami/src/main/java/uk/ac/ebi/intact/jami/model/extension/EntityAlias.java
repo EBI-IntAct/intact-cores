@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.NamedEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -20,7 +19,7 @@ import javax.persistence.Table;
 @Table( name = "ia_component_alias" )
 public class EntityAlias extends AbstractIntactAlias{
 
-    private NamedEntity parent;
+    private psidev.psi.mi.jami.model.Entity parent;
 
     protected EntityAlias() {
     }
@@ -36,11 +35,11 @@ public class EntityAlias extends AbstractIntactAlias{
     @ManyToOne( targetEntity = AbstractIntactEntity.class )
     @JoinColumn( name = "parent_ac", referencedColumnName = "ac")
     @Target(AbstractIntactEntity.class)
-    public NamedEntity getParent() {
+    public psidev.psi.mi.jami.model.Entity getParent() {
         return parent;
     }
 
-    public void setParent(NamedEntity parent) {
+    public void setParent(psidev.psi.mi.jami.model.Entity parent) {
         this.parent = parent;
     }
 }

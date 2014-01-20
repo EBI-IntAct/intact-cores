@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.CvTermUtils;
@@ -36,6 +37,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
     private Collection<CooperativeEffect> cooperativeEffects;
     private Checksum rigid;
     private CvTerm interactionType;
+
+    private Alias recommendedName;
+    private Alias systematicName;
 
     protected IntactComplex(){
         super();
@@ -241,6 +245,62 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
+    @Transient
+    public String getRecommendedName() {
+        // initialise aliases if necessary
+        getAliases();
+        return this.recommendedName != null ? this.recommendedName.getName() : null;
+    }
+
+    public void setRecommendedName(String name) {
+        Collection<Alias> complexAliasList = getAliases();
+
+        // add new recommended name if not null
+        if (name != null){
+
+            CvTerm recommendedName = IntactUtils.createMIAliasType(Alias.COMPLEX_RECOMMENDED_NAME, Alias.COMPLEX_RECOMMENDED_NAME_MI);
+            // first remove old recommended name if not null
+            if (this.recommendedName != null){
+                complexAliasList.remove(this.recommendedName);
+            }
+            this.recommendedName = new InteractorAlias(recommendedName, name);
+            complexAliasList.add(this.recommendedName);
+        }
+        // remove all recommended name if the collection is not empty
+        else if (!complexAliasList.isEmpty()) {
+            AliasUtils.removeAllAliasesWithType(complexAliasList, Alias.COMPLEX_RECOMMENDED_NAME_MI, Alias.COMPLEX_RECOMMENDED_NAME);
+            recommendedName = null;
+        }
+    }
+
+    @Transient
+    public String getSystematicName() {
+        // initialise aliases if necessary
+        getAliases();
+        return this.systematicName != null ? this.systematicName.getName() : null;
+    }
+
+    public void setSystematicName(String name) {
+        Collection<Alias> complexAliasList = getAliases();
+
+        // add new systematic name if not null
+        if (name != null){
+
+            CvTerm systematicName = IntactUtils.createMIAliasType(Alias.COMPLEX_SYSTEMATIC_NAME, Alias.COMPLEX_SYSTEMATIC_NAME_MI);
+            // first remove systematic name  if not null
+            if (this.systematicName != null){
+                complexAliasList.remove(this.systematicName);
+            }
+            this.systematicName = new InteractorAlias(systematicName, name);
+            complexAliasList.add(this.systematicName);
+        }
+        // remove all systematic name  if the collection is not empty
+        else if (!complexAliasList.isEmpty()) {
+            AliasUtils.removeAllAliasesWithType(complexAliasList, Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME);
+            systematicName = null;
+        }
+    }
+
     protected void processAddedAnnotationEvent(Annotation added) {
         if (physicalProperties == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES)){
             physicalProperties = added;
@@ -255,6 +315,29 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     protected void clearPropertiesLinkedToAnnotations() {
         physicalProperties = null;
+    }
+
+    protected void processAddedAliasEvent(Alias added) {
+        if (recommendedName == null && AliasUtils.doesAliasHaveType(added, Alias.COMPLEX_RECOMMENDED_NAME_MI, Alias.COMPLEX_RECOMMENDED_NAME)){
+            recommendedName = added;
+        }
+        else if (systematicName == null && AliasUtils.doesAliasHaveType(added, Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME)){
+            systematicName = added;
+        }
+    }
+
+    protected void processRemovedAliasEvent(Alias removed) {
+        if (recommendedName != null && recommendedName.equals(removed)){
+            recommendedName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.COMPLEX_RECOMMENDED_NAME_MI, Alias.COMPLEX_RECOMMENDED_NAME);
+        }
+        else if (systematicName != null && systematicName.equals(removed)){
+            systematicName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME);
+        }
+    }
+
+    protected void clearPropertiesLinkedToAliases() {
+        this.recommendedName = null;
+        this.systematicName = null;
     }
 
     @Transient
@@ -351,43 +434,6 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return "uk.ac.ebi.intact.model.InteractionImpl";
     }
 
-    protected void processAddedChecksumEvent(Checksum added) {
-        if (rigid == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.RIGID_MI, Checksum.RIGID)){
-            // the rigid is not set, we can set the rigid
-            rigid = added;
-        }
-    }
-
-    protected void processRemovedChecksumEvent(Checksum removed) {
-        if (rigid == removed){
-            rigid = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.RIGID_MI, Checksum.RIGID);
-        }
-    }
-
-    protected void clearPropertiesLinkedToChecksums() {
-        rigid = null;
-    }
-
-    protected void initialiseInteractionEvidences(){
-        this.interactionEvidences = new ArrayList<InteractionEvidence>();
-    }
-
-    protected void initialiseCooperativeEffects(){
-        this.cooperativeEffects = new ArrayList<CooperativeEffect>();
-    }
-
-    protected void initialiseConfidences(){
-        this.confidences = new ArrayList<ModelledConfidence>();
-    }
-
-    protected void initialiseParameters(){
-        this.parameters = new ArrayList<ModelledParameter>();
-    }
-
-    protected void initialiseComponents(){
-        this.components = new ArrayList<ModelledParticipant>();
-    }
-
     @Override
     protected void initialiseAnnotations() {
         super.setAnnotations(new ComplexAnnotationList(null));
@@ -410,27 +456,77 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     @Override
+    protected void setAliases(Collection<Alias> aliases) {
+        super.setAliases(new ComplexAliasList(aliases));
+    }
+
+    @Override
+    protected void initialiseAliases(){
+        super.setAliases(new ComplexAliasList(null));
+        for (Alias alias : super.getAliases()){
+            processAddedAliasEvent(alias);
+        }
+    }
+
+    @Override
     protected void setChecksums(Collection<Checksum> checksums) {
         super.setChecksums(new ComplexChecksumList(checksums));
     }
 
-    protected void setParticipants(Collection<ModelledParticipant> components) {
+    private void processAddedChecksumEvent(Checksum added) {
+        if (rigid == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.RIGID_MI, Checksum.RIGID)){
+            // the rigid is not set, we can set the rigid
+            rigid = added;
+        }
+    }
+
+    private void processRemovedChecksumEvent(Checksum removed) {
+        if (rigid == removed){
+            rigid = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.RIGID_MI, Checksum.RIGID);
+        }
+    }
+
+    private void clearPropertiesLinkedToChecksums() {
+        rigid = null;
+    }
+
+    private void initialiseInteractionEvidences(){
+        this.interactionEvidences = new ArrayList<InteractionEvidence>();
+    }
+
+    private void initialiseCooperativeEffects(){
+        this.cooperativeEffects = new ArrayList<CooperativeEffect>();
+    }
+
+    private void initialiseConfidences(){
+        this.confidences = new ArrayList<ModelledConfidence>();
+    }
+
+    private void initialiseParameters(){
+        this.parameters = new ArrayList<ModelledParameter>();
+    }
+
+    private void initialiseComponents(){
+        this.components = new ArrayList<ModelledParticipant>();
+    }
+
+    private void setParticipants(Collection<ModelledParticipant> components) {
         this.components = components;
     }
 
-    protected void setModelledConfidences(Collection<ModelledConfidence> confidences) {
+    private void setModelledConfidences(Collection<ModelledConfidence> confidences) {
         this.confidences = confidences;
     }
 
-    protected void setModelledParameters(Collection<ModelledParameter> parameters) {
+    private void setModelledParameters(Collection<ModelledParameter> parameters) {
         this.parameters = parameters;
     }
 
-    protected void setCooperativeEffects(Collection<CooperativeEffect> cooperativeEffects) {
+    private void setCooperativeEffects(Collection<CooperativeEffect> cooperativeEffects) {
         this.cooperativeEffects = cooperativeEffects;
     }
 
-    protected class ComplexAnnotationList extends AbstractCollectionWrapper<Annotation> {
+    private class ComplexAnnotationList extends AbstractCollectionWrapper<Annotation> {
         public ComplexAnnotationList(Collection<Annotation> annot){
             super(annot);
         }
@@ -497,7 +593,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
-    protected class ComplexChecksumList extends AbstractCollectionWrapper<Checksum> {
+    private class ComplexChecksumList extends AbstractCollectionWrapper<Checksum> {
         public ComplexChecksumList(Collection<Checksum> checksums){
             super(checksums);
         }
@@ -560,6 +656,73 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
         @Override
         protected Checksum processOrWrapElementToAdd(Checksum added) {
+            return added;
+        }
+    }
+
+    private class ComplexAliasList extends AbstractCollectionWrapper<Alias> {
+        public ComplexAliasList(Collection<Alias> aliases){
+            super(aliases);
+        }
+
+        @Override
+        public boolean add(Alias xref) {
+            if(super.add(xref)){
+                processAddedAliasEvent(xref);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            if (super.remove(o)){
+                processRemovedAliasEvent((Alias) o);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            boolean hasChanged = false;
+            for (Object annot : c){
+                if (remove(annot)){
+                    hasChanged = true;
+                }
+            }
+            return hasChanged;
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            List<Alias> existingObject = new ArrayList<Alias>(this);
+
+            boolean removed = false;
+            for (Alias o : existingObject){
+                if (!c.contains(o)){
+                    if (remove(o)){
+                        removed = true;
+                    }
+                }
+            }
+
+            return removed;
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+            clearPropertiesLinkedToAliases();
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToAdd(Alias added) {
+            return false;
+        }
+
+        @Override
+        protected Alias processOrWrapElementToAdd(Alias added) {
             return added;
         }
     }

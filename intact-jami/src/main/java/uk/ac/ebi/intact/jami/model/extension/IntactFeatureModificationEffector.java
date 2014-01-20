@@ -40,7 +40,7 @@ public class IntactFeatureModificationEffector implements FeatureModificationEff
         return feature;
     }
 
-    public void setFeature(ModelledFeature feature) {
+    public void setFeatureModification(ModelledFeature feature) {
         if (feature == null){
             throw new IllegalArgumentException("The feature of a FeatureModificationEffector cannot be null.");
         }
