@@ -20,7 +20,7 @@ import java.util.Collection;
  */
 @MappedSuperclass
 @EntityListeners(value = {ExperimentalRolesListener.class})
-public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEntity<FeatureEvidence> {
+public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEntity<FeatureEvidence> implements ExperimentalEntity{
     private CvTerm experimentalRole;
     private Collection<CvTerm> identificationMethods;
     private Collection<CvTerm> experimentalPreparations;
