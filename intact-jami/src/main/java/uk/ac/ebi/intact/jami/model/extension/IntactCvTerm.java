@@ -119,14 +119,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(CvTermXref.class)
-    @Override
-    protected Collection<Xref> getPersistentXrefs() {
-        return super.getPersistentXrefs();
-    }
-
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAlias.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CvTermAlias.class)
@@ -215,6 +207,14 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     public void setDefinition(String def) {
         this.definition = def;
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(CvTermXref.class)
+    @Override
+    protected Collection<Xref> getPersistentXrefs() {
+        return super.getPersistentXrefs();
     }
 
     @Override

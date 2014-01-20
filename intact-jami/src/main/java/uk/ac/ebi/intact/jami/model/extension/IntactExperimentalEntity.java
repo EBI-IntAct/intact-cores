@@ -6,7 +6,6 @@ import psidev.psi.mi.jami.model.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.EntityListeners;
 import javax.persistence.OneToMany;
 import java.util.Collection;
 
@@ -19,7 +18,6 @@ import java.util.Collection;
  */
 @javax.persistence.Entity
 @DiscriminatorValue("experimental_entity")
-@EntityListeners(value = {IntactExperimentalEntity.class})
 public class IntactExperimentalEntity extends AbstractIntactExperimentalEntity implements ExperimentalEntity{
 
     protected IntactExperimentalEntity() {

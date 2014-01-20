@@ -20,7 +20,8 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
-
+@Entity
+@Table(name = "ia_cooperativity_evidence")
 public class IntactCooperativityEvidence extends AbstractAuditable implements CooperativityEvidence{
     private Publication publication;
     private Collection<CvTerm> evidenceMethods;
@@ -78,8 +79,8 @@ public class IntactCooperativityEvidence extends AbstractAuditable implements Co
 
     @ManyToMany(targetEntity=IntactCvTerm.class)
     @JoinTable(
-            name="coop_evidence2method",
-            joinColumns=@JoinColumn(name="coop_evidence_id"),
+            name="ia_cooperativity_evidence2method",
+            joinColumns=@JoinColumn(name="evidence_id"),
             inverseJoinColumns=@JoinColumn(name="method_ac")
     )
     @Target(IntactCvTerm.class)

@@ -4,7 +4,7 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.FeatureEvidence;
-import uk.ac.ebi.intact.jami.model.listener.LinkedFeatureListener;
+import uk.ac.ebi.intact.jami.model.listener.FeatureDetectionMethodListener;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Collection;
  */
 @Entity
 @DiscriminatorValue("evidence")
-@EntityListeners(value = {LinkedFeatureListener.class})
+@EntityListeners(value = {FeatureDetectionMethodListener.class})
 public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEntity,FeatureEvidence>{
 
     private Collection<CvTerm> detectionMethods;

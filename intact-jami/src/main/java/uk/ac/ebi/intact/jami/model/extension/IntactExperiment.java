@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
@@ -122,6 +120,7 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "detectmethod_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
+    // TODO fetch term
     public CvTerm getInteractionDetectionMethod() {
         if (this.interactionDetectionMethod == null){
            this.interactionDetectionMethod = IntactUtils.createMIInteractionDetectionMethod(Experiment.UNSPECIFIED_METHOD, Experiment.UNSPECIFIED_METHOD_MI);

@@ -281,7 +281,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
     @ManyToMany(targetEntity=IntactVariableParameterValueSet.class)
     @JoinTable(
-            name="interaction2variable_parameters",
+            name="ia_interaction2variable_parameters",
             joinColumns=@JoinColumn(name="interaction_ac"),
             inverseJoinColumns=@JoinColumn(name="variable_set_id")
     )

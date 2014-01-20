@@ -162,7 +162,7 @@ public class IntactGene extends IntactInteractor implements Gene{
         getIdentifiers();
         return this.ensembl != null ? this.ensembl.getId() : null;
     }
-
+    // TODO fetch proper cv term
     public void setEnsembl(String ac) {
         Collection<Xref> geneIdentifiers = getIdentifiers();
 
@@ -190,7 +190,7 @@ public class IntactGene extends IntactInteractor implements Gene{
         getIdentifiers();
         return this.ensemblGenome != null ? this.ensemblGenome.getId() : null;
     }
-
+    // TODO fetch proper cv term
     public void setEnsemblGenome(String ac) {
         Collection<Xref> geneIdentifiers = getIdentifiers();
 
@@ -218,7 +218,7 @@ public class IntactGene extends IntactInteractor implements Gene{
         getIdentifiers();
         return this.entrezGeneId != null ? this.entrezGeneId.getId() : null;
     }
-
+    // TODO fetch proper cv term
     public void setEntrezGeneId(String id) {
         Collection<Xref> geneIdentifiers = getIdentifiers();
 
@@ -246,7 +246,7 @@ public class IntactGene extends IntactInteractor implements Gene{
         getIdentifiers();
         return this.refseq != null ? this.refseq.getId() : null;
     }
-
+    // TODO fetch proper cv term
     public void setRefseq(String ac) {
         Collection<Xref> geneIdentifiers = getIdentifiers();
 
@@ -266,6 +266,11 @@ public class IntactGene extends IntactInteractor implements Gene{
             XrefUtils.removeAllXrefsWithDatabase(geneIdentifiers, Xref.REFSEQ_MI, Xref.REFSEQ);
             this.refseq = null;
         }
+    }
+
+    @Override
+    public String toString() {
+        return ensembl != null ? ensembl.getId() : (ensemblGenome != null ? ensemblGenome.getId() : (entrezGeneId != null ? entrezGeneId.getId() : (refseq != null ? refseq.getId() : super.toString())));
     }
 
     protected void processAddedIdentifierEvent(Xref added) {
@@ -363,11 +368,6 @@ public class IntactGene extends IntactInteractor implements Gene{
         ensemblGenome = null;
         entrezGeneId = null;
         refseq = null;
-    }
-
-    @Override
-    public String toString() {
-        return ensembl != null ? ensembl.getId() : (ensemblGenome != null ? ensemblGenome.getId() : (entrezGeneId != null ? entrezGeneId.getId() : (refseq != null ? refseq.getId() : super.toString())));
     }
 
     @Override
