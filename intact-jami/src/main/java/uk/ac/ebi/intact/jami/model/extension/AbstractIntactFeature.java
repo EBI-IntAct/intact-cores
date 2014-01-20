@@ -8,6 +8,7 @@ import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.model.listener.FeatureInteractionEffectAndDependencyListener;
 import uk.ac.ebi.intact.jami.model.listener.LinkedFeatureListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -29,7 +30,7 @@ import java.util.Collection;
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Table(name = "ia_feature")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
-@EntityListeners(value = {LinkedFeatureListener.class})
+@EntityListeners(value = {LinkedFeatureListener.class, FeatureInteractionEffectAndDependencyListener.class})
 public abstract class AbstractIntactFeature<P extends Entity, F extends Feature> extends AbstractIntactPrimaryObject implements Feature<P,F>{
 
     private String shortName;
