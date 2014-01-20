@@ -28,6 +28,7 @@ import java.util.Collection;
 @Table(name = "ia_molecule")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue( "interactor" )
+@Cacheable
 public class IntactInteractor extends AbstractIntactPrimaryObject implements Interactor{
 
     private String shortName;

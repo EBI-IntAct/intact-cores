@@ -29,9 +29,6 @@ public class IntactConfiguration {
     private String acPrefix;
     private IntactSource defaultInstitution;
     private String localCvPrefix;
-    private boolean autoUpdateExperimentLabel;
-    private boolean autoUpdateInteractionLabel;
-    private boolean skipSchemaCheck;
 
     public IntactConfiguration() {
         acPrefix = "UNK";
@@ -62,30 +59,6 @@ public class IntactConfiguration {
         this.localCvPrefix = localCvPrefix;
     }
 
-    public boolean isAutoUpdateExperimentLabel() {
-        return autoUpdateExperimentLabel;
-    }
-
-    public void setAutoUpdateExperimentLabel(boolean autoUpdateExperimentLabel) {
-        this.autoUpdateExperimentLabel = autoUpdateExperimentLabel;
-    }
-
-    public boolean isAutoUpdateInteractionLabel() {
-        return autoUpdateInteractionLabel;
-    }
-
-    public void setAutoUpdateInteractionLabel(boolean autoUpdateInteractionLabel) {
-        this.autoUpdateInteractionLabel = autoUpdateInteractionLabel;
-    }
-
-    public boolean isSkipSchemaCheck() {
-        return skipSchemaCheck;
-    }
-
-    public void setSkipSchemaCheck(boolean skipSchemaCheck) {
-        this.skipSchemaCheck = skipSchemaCheck;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder( 256 );
@@ -93,9 +66,6 @@ public class IntactConfiguration {
         sb.append( "{acPrefix='" ).append( acPrefix ).append( '\'' );
         sb.append( ", defaultInstitution=" ).append( defaultInstitution );
         sb.append( ", localCvPrefix='" ).append( localCvPrefix ).append( '\'' );
-        sb.append( ", autoUpdateExperimentLabel=" ).append( autoUpdateExperimentLabel );
-        sb.append( ", autoUpdateInteractionLabel=" ).append( autoUpdateInteractionLabel );
-        sb.append( ", skipSchemaCheck=" ).append( skipSchemaCheck );
         sb.append( '}' );
         return sb.toString();
     }

@@ -34,6 +34,7 @@ import java.util.List;
 @javax.persistence.Entity
 @Table( name = "ia_publication" )
 @EntityListeners(value = {PublicationShortLabelListener.class, PublicationPropertiesListener.class, PublicationLifecycleListener.class})
+@Cacheable
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
     private String title;
     private String journal;

@@ -25,6 +25,7 @@ import java.util.Collection;
  */
 @Entity
 @Table( name = "ia_biosource" )
+@Cacheable
 public class IntactOrganism extends AbstractIntactPrimaryObject implements Organism{
     private String commonName;
     private String scientificName;

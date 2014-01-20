@@ -28,6 +28,7 @@ import java.util.Collection;
 @Table( name = "ia_controlledvocab",
         uniqueConstraints = {@UniqueConstraint(columnNames={"objclass", "shortlabel"})})
 @EntityListeners(value = {CvIdentifierListener.class, CvDefinitionListener.class})
+@Cacheable
 public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     /**

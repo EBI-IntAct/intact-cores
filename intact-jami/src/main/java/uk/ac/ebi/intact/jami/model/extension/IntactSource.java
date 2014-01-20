@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.model.listener.SourceUrlAndPostalAddressListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ import java.util.List;
  * @since <pre>08/01/14</pre>
  */
 @EntityListeners(value = {SourceUrlAndPostalAddressListener.class})
+@Entity
+@Table(name = "ia_institution")
+@Cacheable
 public class IntactSource extends AbstractIntactCvTerm implements Source {
     private Annotation url;
     private Annotation postalAddress;
