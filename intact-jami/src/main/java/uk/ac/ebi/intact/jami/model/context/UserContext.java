@@ -6,6 +6,7 @@ import uk.ac.ebi.intact.jami.model.user.User;
 import javax.annotation.PostConstruct;
 
 /**
+ * The user context
  * @author Marine Dumousseau (baranda@ebi.ac.uk)
  */
 @Component
@@ -65,11 +66,7 @@ public class UserContext{
     }
 
     private void initialiseDefaultUser(String userId, String userPassword) {
-        user = new User();
-        user.setLogin(userId);
-        user.setFirstName(userId);
-        user.setLastName("N/A");
+        user = new User(userId, userId, "N/A", userId+"@example.com");
         user.setPassword(userPassword);
-        user.setEmail(userId+"@example.com");
     }
 }

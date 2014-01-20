@@ -16,10 +16,7 @@
 package uk.ac.ebi.intact.jami.model.context;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import uk.ac.ebi.intact.core.annotations.PersistentConfiguration;
-import uk.ac.ebi.intact.core.annotations.PersistentProperty;
-import uk.ac.ebi.intact.model.Institution;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
 /**
  * Intact Configuration.
@@ -30,7 +27,7 @@ import uk.ac.ebi.intact.model.Institution;
 public class IntactConfiguration {
 
     private String acPrefix;
-    private Institution defaultInstitution;
+    private IntactSource defaultInstitution;
     private String localCvPrefix;
     private boolean autoUpdateExperimentLabel;
     private boolean autoUpdateInteractionLabel;
@@ -49,11 +46,11 @@ public class IntactConfiguration {
         this.acPrefix = acPrefix;
     }
 
-    public Institution getDefaultInstitution() {
+    public IntactSource getDefaultInstitution() {
         return defaultInstitution;
     }
 
-    public void setDefaultInstitution(Institution defaultInstitution) {
+    public void setDefaultInstitution(IntactSource defaultInstitution) {
         this.defaultInstitution = defaultInstitution;
     }
 
