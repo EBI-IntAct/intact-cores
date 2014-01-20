@@ -14,6 +14,8 @@ import javax.validation.constraints.Size;
 
 /**
  * Abstract class for intact checksums
+ * Note: this implementation was chosen because checksum do not make sense without their parents and are not shared by different entities
+ * It is then better to have several checksum tables, one for each entity rather than one big checksum table and x join tables.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -51,8 +53,9 @@ public abstract class AbstractIntactChecksum extends AbstractIntactPrimaryObject
         return this.method;
     }
 
-    @Column( name = "value", length = IntactUtils.MAX_DESCRIPTION_LEN )
+    @Column( name = "value", length = IntactUtils.MAX_DESCRIPTION_LEN, nullable = false)
     @Size( max = IntactUtils.MAX_DESCRIPTION_LEN )
+    @NotNull
     public String getValue() {
         return this.value;
     }

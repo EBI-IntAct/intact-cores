@@ -130,6 +130,7 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         return this.interpro != null ? this.interpro.getId() : null;
     }
 
+    // TODO fetch proper cv term
     public void setInterpro(String interpro) {
         Collection<Xref> featureIdentifiers = getIdentifiers();
 

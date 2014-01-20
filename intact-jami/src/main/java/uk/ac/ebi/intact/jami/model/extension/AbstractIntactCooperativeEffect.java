@@ -15,6 +15,9 @@ import java.util.Collection;
 /**
  * Abstract class for cooperative effect
  *
+ * Note: we prefer to have all cooperative effects in same table as they are all attached to modelled interactions and make sense all together
+ * because we don't always need to know their specific fields
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>14/01/14</pre>
@@ -22,7 +25,7 @@ import java.util.Collection;
 @Entity
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
-@Table(name = "cooperative_effect")
+@Table(name = "ia_cooperative_effect")
 public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable implements CooperativeEffect{
 
     private Collection<CooperativityEvidence> cooperativityEvidences;
@@ -74,7 +77,7 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
 
     @ManyToMany(targetEntity=IntactComplex.class)
     @JoinTable(
-            name="cooperative_effect2affected_complex",
+            name="ia_cooperative_effect2affected_complex",
             joinColumns=@JoinColumn(name="cooperative_effect_id"),
             inverseJoinColumns=@JoinColumn(name="complex_ac")
     )
@@ -159,15 +162,15 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
         this.annotations = new ArrayList<Annotation>();
     }
 
-    private void setCooperativityEvidences(Collection<CooperativityEvidence> cooperativityEvidences) {
+    protected void setCooperativityEvidences(Collection<CooperativityEvidence> cooperativityEvidences) {
         this.cooperativityEvidences = cooperativityEvidences;
     }
 
-    private void setAffectedInteractions(Collection<ModelledInteraction> affectedInteractions) {
+    protected void setAffectedInteractions(Collection<ModelledInteraction> affectedInteractions) {
         this.affectedInteractions = affectedInteractions;
     }
 
-    private void setAnnotations(Collection<Annotation> annotations) {
+    protected void setAnnotations(Collection<Annotation> annotations) {
         this.annotations = annotations;
     }
 }

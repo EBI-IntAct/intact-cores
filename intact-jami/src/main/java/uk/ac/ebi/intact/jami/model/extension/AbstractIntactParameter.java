@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 
 /**
  * Abstract class for Intact parameters
+ * Note: this implementation was chosen because parameters do not make sense without their parents and are not shared by different entities
+ * It is then better to have several parameter tables, one for each entity rather than one big parameter table and x join tables.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

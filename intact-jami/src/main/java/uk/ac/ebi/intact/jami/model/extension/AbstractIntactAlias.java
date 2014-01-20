@@ -13,6 +13,7 @@ import javax.persistence.*;
  * Abstract IntAct implementation for alias
  *
  * Note: this implementation was chosen because aliases do not make sense without their parents and are not shared by different entities
+ * It is then better to have several alias tables, one for each entity rather than one big alias table and x join tables.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

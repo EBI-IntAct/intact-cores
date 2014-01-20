@@ -22,6 +22,8 @@ import java.util.Collection;
 /**
  * Abstract class for intact cv terms
  *
+ * Note: we don't want to mix source with other cv terms as IntAct institution need to be separate entities
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
@@ -128,6 +130,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return this.parIdentifier != null ? this.parIdentifier.getId() : null;
     }
 
+    // TODO fetch proper cv term here
     public void setMIIdentifier(String mi) {
         Collection<Xref> cvTermIdentifiers = getIdentifiers();
 
@@ -149,6 +152,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         }
     }
 
+    // TODO fetch proper cv term here
     public void setMODIdentifier(String mod) {
         Collection<Xref> cvTermIdentifiers = getIdentifiers();
 
@@ -171,6 +175,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         }
     }
 
+    // TODO fetch proper cv term here
     public void setPARIdentifier(String par) {
         Collection<Xref> cvTermIdentifiers = getIdentifiers();
 
@@ -248,7 +253,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return Hibernate.isInitialized(this.annotations);
     }
 
-    public boolean isAliasCollectionLoaded(){
+    public boolean isSynonymsCollectionLoaded(){
         return Hibernate.isInitialized(this.synonyms);
     }
 
@@ -418,7 +423,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
         @Override
         protected void processAddedObjectEvent(Xref added) {
-            Xref persistentRef = added;
             persistentXrefs.add(added);
         }
 

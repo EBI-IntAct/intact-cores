@@ -95,9 +95,9 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
     }
 
     @Override
-    @ManyToOne(targetEntity = IntactParticipantEvidence.class)
+    @ManyToOne(targetEntity = AbstractIntactExperimentalEntity.class)
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
-    @Target(IntactParticipantEvidence.class)
+    @Target(AbstractIntactExperimentalEntity.class)
     public ExperimentalEntity getParticipant() {
         return super.getParticipant();
     }

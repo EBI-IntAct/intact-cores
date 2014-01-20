@@ -18,6 +18,9 @@ import java.util.Collection;
 /**
  * Abstract class for intact entities
  *
+ * Note; all entities are in the same column because they can be referenced in many different places
+ * We distinguish entities from participant with interaction property in participants
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>15/01/14</pre>
@@ -103,6 +106,7 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "biologicalrole_ac" )
     @Target(IntactCvTerm.class)
+    // TODO fetch proper cv term
     public CvTerm getBiologicalRole() {
         if (this.biologicalRole == null){
             this.biologicalRole = IntactUtils.createMIBiologicalRole(Participant.UNSPECIFIED_ROLE, Participant.UNSPECIFIED_ROLE_MI);
@@ -292,7 +296,14 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
     @Column(name = "shortlabel", nullable = false)
     @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
     @NotNull
+    @Deprecated
+    /**
+     * @deprecated only for backward compatibility with intact core.
+     */
     protected String getShortLabel() {
+        if (this.shortName == null){
+            this.shortName = "N/A";
+        }
         return shortName;
     }
 }

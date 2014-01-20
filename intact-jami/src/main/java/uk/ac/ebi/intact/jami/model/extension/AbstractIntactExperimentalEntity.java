@@ -13,7 +13,7 @@ import java.util.Collection;
 
 /**
  * Abstract class for experimental entity
- *
+ * NOTE: this class allows to have a common parent for all experimental entities and experimental participants
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>16/01/14</pre>
@@ -111,6 +111,7 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn(name = "ia_experimentalrole_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
+    // TODO fetch proper cv term
     public CvTerm getExperimentalRole() {
         if (this.experimentalRole == null){
             this.experimentalRole = IntactUtils.createMIExperimentalRole(Participant.UNSPECIFIED_ROLE, Participant.UNSPECIFIED_ROLE_MI);
