@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.model.context;
+package uk.ac.ebi.intact.jami.context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

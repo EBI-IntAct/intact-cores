@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
-import uk.ac.ebi.intact.jami.model.context.UserContext;
+import uk.ac.ebi.intact.jami.context.UserContext;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;

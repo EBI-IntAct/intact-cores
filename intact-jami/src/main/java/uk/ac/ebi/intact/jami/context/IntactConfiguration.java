@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.jami.model.context;
+package uk.ac.ebi.intact.jami.context;
 
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;

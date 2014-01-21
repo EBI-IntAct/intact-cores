@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.model.context;
+package uk.ac.ebi.intact.jami.context;
 
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.model.user.User;

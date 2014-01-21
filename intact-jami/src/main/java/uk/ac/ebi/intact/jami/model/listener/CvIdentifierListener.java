@@ -2,9 +2,9 @@ package uk.ac.ebi.intact.jami.model.listener;
 
 import org.apache.commons.lang.StringUtils;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
-import uk.ac.ebi.intact.jami.model.context.IntactContext;
+import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.sequence.SequenceManager;
+import uk.ac.ebi.intact.jami.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.PrePersist;

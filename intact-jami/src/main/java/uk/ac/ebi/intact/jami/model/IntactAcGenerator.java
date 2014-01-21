@@ -17,7 +17,7 @@ import org.hibernate.id.SequenceGenerator;
 import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.type.Type;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
-import uk.ac.ebi.intact.jami.model.context.IntactContext;
+import uk.ac.ebi.intact.jami.context.IntactContext;
 
 
 import java.io.Serializable;

@@ -72,11 +72,11 @@
     </bean>
 
     <!-- INTACT more specific beans -->
-    <bean id="userContext" class="uk.ac.ebi.intact.jami.model.context.UserContext">
+    <bean id="userContext" class="uk.ac.ebi.intact.jami.context.UserContext">
         <property name="userId" value="${user.context.id}"/>
     </bean>
 
-    <bean id="intactConfig" class="uk.ac.ebi.intact.jami.model.context.IntactConfiguration">
+    <bean id="intactConfig" class="uk.ac.ebi.intact.jami.context.IntactConfiguration">
         <property name="acPrefix" value="${intact.ac.prefix}"/>
         <property name="defaultInstitution" ref="${default.institution}"/>
     </bean>
