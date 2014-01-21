@@ -67,4 +67,6 @@ public class IntactExperimentalEntity extends AbstractIntactExperimentalEntity i
     public Collection<FeatureEvidence> getFeatures() {
         return super.getFeatures();
     }
+
+
 }

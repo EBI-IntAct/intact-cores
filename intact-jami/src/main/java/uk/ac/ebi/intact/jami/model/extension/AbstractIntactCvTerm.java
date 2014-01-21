@@ -98,7 +98,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         this.fullName = name;
     }
 
-    @Transient
+    @javax.persistence.Transient
     public Collection<Xref> getIdentifiers() {
         if (identifiers == null){
             initialiseXrefs();
@@ -106,7 +106,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return identifiers;
     }
 
-    @Transient
+    @javax.persistence.Transient
     public String getMIIdentifier() {
         if (this.identifiers == null){
             initialiseXrefs();
@@ -114,7 +114,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return this.miIdentifier != null ? this.miIdentifier.getId() : null;
     }
 
-    @Transient
+    @javax.persistence.Transient
     public String getMODIdentifier() {
         if (this.identifiers == null){
             initialiseXrefs();
@@ -122,7 +122,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return this.modIdentifier != null ? this.modIdentifier.getId() : null;
     }
 
-    @Transient
+    @javax.persistence.Transient
     public String getPARIdentifier() {
         if (this.identifiers == null){
             initialiseXrefs();
@@ -198,7 +198,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         }
     }
 
-    @Transient
+    @javax.persistence.Transient
     public Collection<Xref> getXrefs() {
         if (xrefs == null){
             initialiseXrefs();
@@ -206,7 +206,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return this.xrefs;
     }
 
-    @Transient
+    @javax.persistence.Transient
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
             initialiseAnnotations();
@@ -214,7 +214,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return this.annotations;
     }
 
-    @Transient
+    @javax.persistence.Transient
     public Collection<Alias> getSynonyms() {
         if (synonyms == null){
             initialiseSynonyms();
@@ -280,7 +280,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
     protected abstract boolean needToWrapXrefForPersistence(Xref added);
 
-    @Transient
+    @javax.persistence.Transient
     protected Collection<Xref> getPersistentXrefs() {
         if (this.persistentXrefs == null){
             this.persistentXrefs = new PersistentXrefList(null);

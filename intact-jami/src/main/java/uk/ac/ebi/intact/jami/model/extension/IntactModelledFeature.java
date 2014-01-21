@@ -64,6 +64,11 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity,
     }
 
     @Override
+    public void setParticipant(ModelledEntity participant) {
+        super.setParticipant(participant);
+    }
+
+    @Override
     @ManyToMany( targetEntity = IntactModelledFeature.class)
     @JoinTable(
             name="ia_feature2linkedfeature",
@@ -84,6 +89,11 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity,
     }
 
     @Override
+    public void setBinds(ModelledFeature binds) {
+        super.setBinds(binds);
+    }
+
+    @Override
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "featuretype_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
@@ -92,5 +102,10 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity,
             super.setType(IntactUtils.createMIFeatureType(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI));
         }
         return super.getType();
+    }
+
+    @Override
+    protected void setLinkedFeatures(Collection<ModelledFeature> linkedFeatures) {
+        super.setLinkedFeatures(linkedFeatures);
     }
 }

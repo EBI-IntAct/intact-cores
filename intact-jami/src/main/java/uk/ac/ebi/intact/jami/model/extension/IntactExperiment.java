@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -19,7 +20,8 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>16/01/14</pre>
  */
-
+@Entity
+@Table(name = "ia_experiment")
 public class IntactExperiment extends AbstractIntactPrimaryObject implements Experiment{
     private String shortLabel;
     private Publication publication;

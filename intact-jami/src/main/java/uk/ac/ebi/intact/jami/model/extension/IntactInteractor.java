@@ -222,8 +222,9 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         this.organism = organism;
     }
 
-    @ManyToOne
+    @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "interactortype_ac" )
+    @Target(IntactCvTerm.class)
     public CvTerm getInteractorType() {
         if (this.interactorType == null){
             initialiseDefaultInteractorType();
@@ -255,7 +256,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return "uk.ac.ebi.intact.model.InteractorImpl";
     }
 
-    protected void setObjClass(){
+    protected void setObjClass(String objClass){
         // nothing to do
     }
 
@@ -305,14 +306,14 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorXref.class)
-    protected PersistentXrefList getPersistentXrefs() {
+    protected Collection<Xref> getPersistentXrefs() {
         if (persistentXrefs == null){
             persistentXrefs = new PersistentXrefList(null);
         }
         return persistentXrefs;
     }
 
-    protected void setPersistentXrefs(PersistentXrefList persistentXrefs) {
+    protected void setPersistentXrefs(Collection<Xref> persistentXrefs) {
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
         }

@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.jami.model.listener;
 
-import uk.ac.ebi.intact.jami.model.LifecycleEvent;
+import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -22,7 +22,7 @@ public class PublicationLifecycleListener {
     public void postLoad(IntactPublication pub){
 
         if (pub.getReleasedDate() == null && !pub.getLifecycleEvents().isEmpty()){
-            for (LifecycleEvent evt : pub.getLifecycleEvents()){
+            for (PublicationLifecycleEvent evt : pub.getLifecycleEvents()){
                 if (evt.getEvent().getShortName().equals(IntactUtils.RELEASED_STATUS)){
                     pub.setReleasedDate(evt.getWhen());
                     break;

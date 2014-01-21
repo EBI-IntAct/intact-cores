@@ -8,6 +8,9 @@ import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
+import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -40,6 +43,8 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     private Alias recommendedName;
     private Alias systematicName;
+    private Collection<Experiment> experiments;
+    private List<LifeCycleEvent> lifecycleEvents;
 
     protected IntactComplex(){
         super();
@@ -107,6 +112,17 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     public IntactComplex(String name, String fullName, Organism organism, Xref uniqueId) {
         super(name, fullName, CvTermUtils.createComplexInteractorType(), organism, uniqueId);
+    }
+
+    @OneToMany( mappedBy = "complex", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @OrderBy("when, created")
+    @Target(ComplexLifecycleEvent.class)
+    public List<LifeCycleEvent> getLifecycleEvents() {
+        if (this.lifecycleEvents == null){
+            this.lifecycleEvents = new ArrayList<LifeCycleEvent>();
+        }
+        return lifecycleEvents;
     }
 
     @ManyToOne(targetEntity = IntactSource.class)
@@ -301,6 +317,24 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
+    @ManyToMany(targetEntity = IntactExperiment.class)
+    @JoinTable(
+            name = "ia_int2exp",
+            joinColumns = {@JoinColumn( name = "interaction_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "experiment_ac" )}
+    )
+    @Target(IntactExperiment.class)
+    @Deprecated
+    /**
+     * @deprecated Only kept for backward compatibility with intact core. Complexes should not have experiments
+     */
+    public Collection<Experiment> getExperiments() {
+        if (experiments == null){
+            experiments = new ArrayList<Experiment>();
+        }
+        return experiments;
+    }
+
     protected void processAddedAnnotationEvent(Annotation added) {
         if (physicalProperties == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES)){
             physicalProperties = added;
@@ -394,10 +428,16 @@ public class IntactComplex extends IntactInteractor implements Complex{
         this.interactionType = term;
     }
 
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAnnotation.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(InteractorAnnotation.class)
     public Collection<Annotation> getAnnotations() {
         return super.getAnnotations();
     }
 
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorChecksum.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(InteractorChecksum.class)
     public Collection<Checksum> getChecksums() {
         return super.getChecksums();
     }
@@ -412,6 +452,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return super.getIdentifiers();
     }
 
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAlias.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(InteractorAlias.class)
     public Collection<Alias> getAliases() {
         return super.getAliases();
     }
@@ -524,6 +567,14 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     private void setCooperativeEffects(Collection<CooperativeEffect> cooperativeEffects) {
         this.cooperativeEffects = cooperativeEffects;
+    }
+
+    private void setExperiments(Collection<Experiment> experiments) {
+        this.experiments = experiments;
+    }
+
+    private void setLifecycleEvents( List<LifeCycleEvent> lifecycleEvents ) {
+        this.lifecycleEvents = lifecycleEvents;
     }
 
     private class ComplexAnnotationList extends AbstractCollectionWrapper<Annotation> {

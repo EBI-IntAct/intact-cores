@@ -37,4 +37,8 @@ public class IntactAllosteryWithMolecule extends IntactAllostery<IntactMoleculeE
     public IntactMoleculeEffector getAllostericEffector() {
         return super.getAllostericEffector();
     }
+
+    public void setAllostericEffector(IntactMoleculeEffector effector) {
+        super.setAllostericEffector(effector);
+    }
 }

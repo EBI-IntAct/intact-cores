@@ -45,4 +45,9 @@ public class IntactModelledEntity extends AbstractIntactEntity<ModelledFeature> 
     public Collection<ModelledFeature> getFeatures() {
         return super.getFeatures();
     }
+
+    @Override
+    protected void setFeatures(Collection<ModelledFeature> features) {
+        super.setFeatures(features);
+    }
 }

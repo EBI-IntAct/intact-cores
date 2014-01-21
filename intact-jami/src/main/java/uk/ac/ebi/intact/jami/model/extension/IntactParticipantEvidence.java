@@ -81,7 +81,7 @@ public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity 
     }
 
     @ManyToOne( targetEntity = IntactInteractionEvidence.class )
-    @JoinColumn( name = "interaction_evidence_ac" )
+    @JoinColumn( name = "interaction_evidence_ac", referencedColumnName = "ac")
     @Target(IntactInteractionEvidence.class)
     public InteractionEvidence getInteraction() {
         return this.interaction;

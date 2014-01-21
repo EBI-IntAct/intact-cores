@@ -95,6 +95,7 @@ public class IntactInteractorPool extends IntactInteractor implements Interactor
         return interactors.size();
     }
 
+    @Transient
     public boolean isEmpty() {
         return interactors.isEmpty();
     }

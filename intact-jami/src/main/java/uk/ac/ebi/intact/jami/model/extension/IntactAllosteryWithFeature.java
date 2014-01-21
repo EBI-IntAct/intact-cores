@@ -37,4 +37,8 @@ public class IntactAllosteryWithFeature extends IntactAllostery<IntactFeatureMod
     public IntactFeatureModificationEffector getAllostericEffector() {
         return super.getAllostericEffector();
     }
+
+    public void setAllostericEffector(IntactFeatureModificationEffector effector) {
+        super.setAllostericEffector(effector);
+    }
 }

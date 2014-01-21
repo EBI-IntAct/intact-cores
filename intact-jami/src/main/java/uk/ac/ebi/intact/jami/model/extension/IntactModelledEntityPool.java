@@ -63,6 +63,10 @@ public class IntactModelledEntityPool extends IntactModelledParticipant implemen
         return (InteractorPool) super.getInteractor();
     }
 
+    public void setInteractor(InteractorPool interactor) {
+        super.setInteractor(interactor);
+    }
+
     @Override
     public void setInteractor(Interactor interactor) {
         if (!(interactor instanceof InteractorPool)){
@@ -201,6 +205,11 @@ public class IntactModelledEntityPool extends IntactModelledParticipant implemen
             }
             getInteractor().add(entity.getInteractor());
         }
+    }
+
+    @Override
+    protected void setFeatures(Collection<ModelledFeature> features) {
+        super.setFeatures(features);
     }
 
     @ManyToMany(targetEntity=IntactModelledEntity.class)

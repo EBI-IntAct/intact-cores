@@ -32,6 +32,10 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
     private Checksum standardInchi;
     private Checksum standardInchiKey;
 
+    protected IntactBioactiveEntity(){
+        super();
+    }
+
     public IntactBioactiveEntity(String name, CvTerm type) {
         super(name, type);
     }

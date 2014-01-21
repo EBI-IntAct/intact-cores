@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.model.listener.ExperimentalRolesListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -19,6 +20,7 @@ import java.util.Collection;
  * @since <pre>16/01/14</pre>
  */
 @MappedSuperclass
+@Entity
 @EntityListeners(value = {ExperimentalRolesListener.class})
 public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEntity<FeatureEvidence> implements ExperimentalEntity{
     private CvTerm experimentalRole;
@@ -241,5 +243,10 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
 
     protected void setParameters(Collection<Parameter> parameters) {
         this.parameters = parameters;
+    }
+
+    @Override
+    protected void setFeatures(Collection<FeatureEvidence> features) {
+        super.setFeatures(features);
     }
 }

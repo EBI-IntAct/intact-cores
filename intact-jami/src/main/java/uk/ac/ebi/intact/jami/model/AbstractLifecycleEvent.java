@@ -4,23 +4,23 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Publication;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.user.User;
 
 import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Publication lifecycle event
+ * Abstract class for publication lifecycle
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  */
 @Entity
+@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Table( name = "ia_lifecycle_event" )
-public class LifecycleEvent extends AbstractIntactPrimaryObject {
+@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+public abstract class AbstractLifecycleEvent extends AbstractIntactPrimaryObject implements LifeCycleEvent {
 
     private CvTerm event;
 
@@ -30,12 +30,10 @@ public class LifecycleEvent extends AbstractIntactPrimaryObject {
 
     private String note;
 
-    private Publication publication;
-
-    public LifecycleEvent() {
+    public AbstractLifecycleEvent() {
     }
 
-    public LifecycleEvent(CvTerm event, User who, Date when, String note) {
+    public AbstractLifecycleEvent(CvTerm event, User who, Date when, String note) {
         this.event = event;
         this.who = who;
         this.when = when;
@@ -48,7 +46,7 @@ public class LifecycleEvent extends AbstractIntactPrimaryObject {
      * @param who
      * @param note
      */
-    public LifecycleEvent(CvTerm event, User who, String note) {
+    public AbstractLifecycleEvent(CvTerm event, User who, String note) {
         this( event, who, new Date(), note );
     }
 
@@ -95,17 +93,5 @@ public class LifecycleEvent extends AbstractIntactPrimaryObject {
 
     public void setNote( String note ) {
         this.note = note;
-    }
-
-    @ManyToOne( targetEntity = IntactPublication.class, fetch = FetchType.LAZY, optional = false )
-    @JoinColumn( name = "publication_ac", referencedColumnName = "ac")
-    @ForeignKey(name="FK_LIFECYCLE_EVENT_PUBLICATION")
-    @Target(IntactPublication.class)
-    public Publication getPublication() {
-        return publication;
-    }
-
-    public void setPublication( Publication publication ) {
-        this.publication = publication;
     }
 }

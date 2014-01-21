@@ -9,7 +9,8 @@ import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
-import uk.ac.ebi.intact.jami.model.LifecycleEvent;
+import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.listener.PublicationLifecycleListener;
 import uk.ac.ebi.intact.jami.model.listener.PublicationPropertiesListener;
 import uk.ac.ebi.intact.jami.model.listener.PublicationShortLabelListener;
@@ -54,7 +55,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     private String shortLabel;
     private PersistentXrefList persistentXrefs;
-    private List<LifecycleEvent> lifecycleEvents;
+    private List<LifeCycleEvent> lifecycleEvents;
     private CvTerm status;
     private User currentOwner;
     private User currentReviewer;
@@ -396,28 +397,15 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    @OneToMany( mappedBy = "publication", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany( mappedBy = "publication", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifecycleEvent.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @OrderBy("when, created")
-    public List<LifecycleEvent> getLifecycleEvents() {
+    @Target(PublicationLifecycleEvent.class)
+    public List<LifeCycleEvent> getLifecycleEvents() {
         if (this.lifecycleEvents == null){
-            this.lifecycleEvents = new ArrayList<LifecycleEvent>();
+            this.lifecycleEvents = new ArrayList<LifeCycleEvent>();
         }
         return lifecycleEvents;
-    }
-
-    public void addLifecycleEvent( LifecycleEvent event ) {
-        if(  event.getPublication() != null && event.getPublication() != this ) {
-            throw new IllegalArgumentException( "You are trying to add an event to publication "+
-                    event.getPublication().getPubmedId() +" that already belong to an other " +
-                    "publication " + getAc() );
-        }
-        event.setPublication( this );
-        getLifecycleEvents().add(event);
-    }
-
-    public boolean removeLifecycleEvent(LifecycleEvent evt) {
-        return getLifecycleEvents().remove(evt);
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
@@ -608,7 +596,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.experiments = experiments;
     }
 
-    private void setLifecycleEvents( List<LifecycleEvent> lifecycleEvents ) {
+    private void setLifecycleEvents( List<LifeCycleEvent> lifecycleEvents ) {
         this.lifecycleEvents = lifecycleEvents;
     }
 

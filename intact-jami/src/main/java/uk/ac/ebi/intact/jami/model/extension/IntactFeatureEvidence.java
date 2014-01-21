@@ -20,7 +20,7 @@ import java.util.Collection;
 @Entity
 @DiscriminatorValue("evidence")
 @EntityListeners(value = {FeatureDetectionMethodListener.class})
-public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEntity,FeatureEvidence>{
+public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEntity,FeatureEvidence> implements FeatureEvidence{
 
     private Collection<CvTerm> detectionMethods;
     private CvTerm identificationMethod;
@@ -103,6 +103,11 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
     }
 
     @Override
+    public void setParticipant(ExperimentalEntity participant) {
+        super.setParticipant(participant);
+    }
+
+    @Override
     @ManyToMany( targetEntity = IntactFeatureEvidence.class)
     @JoinTable(
             name="ia_feature2linkedfeature",
@@ -122,8 +127,18 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
         return super.getBinds();
     }
 
+    @Override
+    public void setBinds(FeatureEvidence binds) {
+        super.setBinds(binds);
+    }
+
     protected void initialiseDetectionMethods(){
         this.detectionMethods = new ArrayList<CvTerm>();
+    }
+
+    @Override
+    protected void setLinkedFeatures(Collection<FeatureEvidence> linkedFeatures) {
+        super.setLinkedFeatures(linkedFeatures);
     }
 
     private void setDetectionMethods(Collection<CvTerm> detectionMethods) {

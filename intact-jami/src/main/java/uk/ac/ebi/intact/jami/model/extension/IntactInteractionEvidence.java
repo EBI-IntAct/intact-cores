@@ -452,14 +452,14 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionXref.class)
-    private PersistentXrefList getPersistentXrefs() {
+    private Collection<Xref> getPersistentXrefs() {
         if (persistentXrefs == null){
             persistentXrefs = new PersistentXrefList(null);
         }
         return persistentXrefs;
     }
 
-    private void setPersistentXrefs(PersistentXrefList persistentXrefs) {
+    private void setPersistentXrefs(Collection<Xref> persistentXrefs) {
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
         }
@@ -476,7 +476,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         this.experiments = experiments;
     }
 
-    private void setVariableParameterValueSets(Collection<VariableParameterValueSet> variableParameterValueSets) {
+    private void setVariableParameterValues(Collection<VariableParameterValueSet> variableParameterValueSets) {
         this.variableParameterValueSets = variableParameterValueSets;
     }
 
@@ -486,6 +486,10 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
     private void setParameters(Collection<Parameter> parameters) {
         this.parameters = parameters;
+    }
+
+    private void setParticipants(Collection<ParticipantEvidence> participants) {
+        this.participants = participants;
     }
 
     /**

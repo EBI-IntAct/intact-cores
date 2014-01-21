@@ -104,7 +104,7 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "biologicalrole_ac" )
+    @JoinColumn( name = "biologicalrole_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     // TODO fetch proper cv term
     public CvTerm getBiologicalRole() {

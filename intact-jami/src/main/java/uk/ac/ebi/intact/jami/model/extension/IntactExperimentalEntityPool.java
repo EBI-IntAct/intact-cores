@@ -59,6 +59,10 @@ public class IntactExperimentalEntityPool extends IntactParticipantEvidence impl
         super.setInteractor(interactor);
     }
 
+    public void setInteractor(InteractorPool interactor) {
+        super.setInteractor(interactor);
+    }
+
     @Transient
     @NotNull
     public CvTerm getType() {

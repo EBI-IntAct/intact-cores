@@ -35,6 +35,10 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     private String persistentUrl;
     private String persistentPostalAddress;
 
+    protected IntactSource(){
+        super();
+    }
+
     public IntactSource(String shortName) {
         super(shortName);
     }

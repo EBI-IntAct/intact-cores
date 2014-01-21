@@ -75,6 +75,11 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
         return super.getFeatures();
     }
 
+    @Override
+    protected void setFeatures(Collection<ModelledFeature> features) {
+        super.setFeatures(features);
+    }
+
     /**
      *
      * @return

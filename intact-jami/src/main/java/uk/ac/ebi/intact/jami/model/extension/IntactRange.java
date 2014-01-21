@@ -16,7 +16,8 @@ import javax.persistence.*;
  * @version $Id$
  * @since <pre>10/01/14</pre>
  */
-
+@javax.persistence.Entity
+@Table(name = "ia_range")
 public class IntactRange extends AbstractIntactPrimaryObject implements Range{
 
     private Position start;
@@ -67,6 +68,7 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
             @AttributeOverride(name="end", column = @Column(name="fromintervalend") )
     } )
     @AssociationOverrides( { @AssociationOverride(name = "status", joinColumns = @JoinColumn(name = "fromfuzzytype_ac")) })
+    @Target(IntactPosition.class)
     public Position getStart() {
         return this.start;
     }
@@ -77,6 +79,7 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
             @AttributeOverride(name="end", column = @Column(name="tointervalend") )
     } )
     @AssociationOverrides( { @AssociationOverride(name = "status", joinColumns = @JoinColumn(name = "tofuzzytype_ac")) })
+    @Target(IntactPosition.class)
     public Position getEnd() {
         return this.end;
     }
@@ -107,6 +110,7 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
     }
 
     @Embedded
+    @Target(IntactResultingSequence.class)
     public ResultingSequence getResultingSequence() {
         return this.resultingSequence;
     }
