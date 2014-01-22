@@ -23,26 +23,35 @@ import java.util.Collection;
 public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<A> implements AnnotationDao<A> {
     private IntactDbFinderPersister<CvTerm> aliasTypeFinder;
 
-    public Collection<A> getByValue(String name) {
-        Query query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where a.name = :name");
-        query.setParameter("name",name);
-        return query.getResultList();
-    }
-
-    public Collection<A> getByValueLike(String name) {
-        Query query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where upper(a.name) like :name");
-        query.setParameter("name", "%" + name.toUpperCase() + "%");
-        return query.getResultList();
-    }
-
-    public Collection<A> getByTopic(String typeName, String typeMI) {
+    public Collection<A> getByValue(String value) {
         Query query;
-        if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a where a.type is null");
+        if (value == null){
+            query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where a.value is null");
         }
-        else if (typeMI != null){
+        else{
+            query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where a.value = :annotValue");
+            query.setParameter("annotValue",value);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<A> getByValueLike(String value) {
+        Query query;
+        if (value == null){
+            query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where a.value is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where upper(a.value) like :annotValue");
+            query.setParameter("annotValue", "%" + value.toUpperCase() + "%");
+        }
+        return query.getResultList();
+    }
+
+    public Collection<A> getByTopic(String topicName, String topicMI) {
+        Query query;
+        if (topicMI != null){
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
-                    "join a.type as t " +
+                    "join a.topic as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
@@ -52,13 +61,13 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", typeMI);
+            query.setParameter("mi", topicMI);
         }
         else{
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
-                    "join a.type as t " +
-                    "where t.shortName = :typeName");
-            query.setParameter("typeName", typeName);
+                    "join a.topic as t " +
+                    "where t.shortName = :topicName");
+            query.setParameter("topicName", topicName);
         }
         return query.getResultList();
     }
