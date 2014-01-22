@@ -1,42 +1,41 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.dao.AliasDao;
+import uk.ac.ebi.intact.jami.dao.AnnotationDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
 import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
 import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Query;
 import java.util.Collection;
 
 /**
- * Implementation of alias dao
+ * Implementation of annotation dao
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-
-public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactBaseDao<A> implements AliasDao<A>{
-
+public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<A> implements AnnotationDao<A> {
     private IntactDbFinderPersister<CvTerm> aliasTypeFinder;
 
-    public Collection<A> getByName(String name) {
+    public Collection<A> getByValue(String name) {
         Query query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where a.name = :name");
         query.setParameter("name",name);
         return query.getResultList();
     }
 
-    public Collection<A> getByNameLike(String name) {
+    public Collection<A> getByValueLike(String name) {
         Query query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where upper(a.name) like :name");
         query.setParameter("name", "%" + name.toUpperCase() + "%");
         return query.getResultList();
     }
 
-    public Collection<A> getByType(String typeName, String typeMI) {
+    public Collection<A> getByTopic(String typeName, String typeMI) {
         Query query;
         if (typeName == null && typeMI == null){
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a where a.type is null");
@@ -64,7 +63,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
         return query.getResultList();
     }
 
-    public Collection<A> getByTypeAndName(String name, String typeName, String typeMI) {
+    public Collection<A> getByTopicAndValue(String name, String typeName, String typeMI) {
         Query query;
         if (typeName == null && typeMI == null){
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
@@ -99,7 +98,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
         return query.getResultList();
     }
 
-    public Collection<A> getByTypeAndNameLike(String name, String typeName, String typeMI) {
+    public Collection<A> getByTopicAndValueLike(String name, String typeName, String typeMI) {
         Query query;
         if (typeName == null && typeMI == null){
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
