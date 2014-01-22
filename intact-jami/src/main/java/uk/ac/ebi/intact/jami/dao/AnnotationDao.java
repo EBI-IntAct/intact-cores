@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.dao;
 
-import psidev.psi.mi.jami.model.Annotation;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 
 import java.util.Collection;
@@ -18,5 +17,7 @@ public interface AnnotationDao<A extends AbstractIntactAnnotation> extends Intac
 
     public Collection<A> getByTopicAndValue(String topicName, String topicMI, String value);
 
-    public Collection<Annotation> getParentAc(String ac);
+    public Collection<A> getByTopicAndValueLike(String topicName, String topicMI, String value);
+
+    public Collection<A> getByParentAc(String ac);
 }

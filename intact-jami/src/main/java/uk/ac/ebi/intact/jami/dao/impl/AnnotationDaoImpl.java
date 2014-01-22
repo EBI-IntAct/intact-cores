@@ -21,7 +21,7 @@ import java.util.Collection;
  * @since <pre>21/01/14</pre>
  */
 public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<A> implements AnnotationDao<A> {
-    private IntactDbFinderPersister<CvTerm> aliasTypeFinder;
+    private IntactDbFinderPersister<CvTerm> annotationTopicFinder;
 
     public Collection<A> getByValue(String value) {
         Query query;
@@ -72,72 +72,68 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
         return query.getResultList();
     }
 
-    public Collection<A> getByTopicAndValue(String name, String typeName, String typeMI) {
+    public Collection<A> getByTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
-        if (typeName == null && typeMI == null){
+        if (topicMI != null){
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
-                    "where a.type is null " +
-                    "and a.name = :name");
-            query.setParameter("name", name);
-        }
-        else if (typeMI != null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
-                    "join a.type as t " +
+                    "join a.topic as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi " +
-                    "and a.name = :name");
+                    "and a.value"+(value != null ? " = :annotValue" : " is null"));
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", typeMI);
-            query.setParameter("name", name);
+            query.setParameter("mi", topicMI);
+            if (value != null){
+                query.setParameter("annotValue", value);
+            }
         }
         else{
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
                     "join a.type as t " +
-                    "where t.shortName = :typeName " +
-                    "and a.name = :name");
-            query.setParameter("typeName", typeName);
-            query.setParameter("name", name);
+                    "where t.shortName = :topicName " +
+                    "and a.value"+(value != null ? " = :annotValue" : " is null"));
+            query.setParameter("topicName", topicName);
+            if (value != null){
+                query.setParameter("annotValue", value);
+            }
         }
         return query.getResultList();
     }
 
-    public Collection<A> getByTopicAndValueLike(String name, String typeName, String typeMI) {
+    public Collection<A> getByTopicAndValueLike(String topicName, String topicMI, String value) {
         Query query;
-        if (typeName == null && typeMI == null){
+        if (topicMI != null){
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
-                    "where a.type is null " +
-                    "and upper(a.name) like :name");
-            query.setParameter("name", "%" + name.toUpperCase() + "%");
-        }
-        else if (typeMI != null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
-                    "join a.type as t " +
+                    "join a.topic as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi " +
-                    "and upper(a.name) like :name");
+                    "and "+(value != null ? "upper(a.value) like :annotValue" : "a.value is null"));
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", typeMI);
-            query.setParameter("name", "%" + name.toUpperCase() + "%");
+            query.setParameter("mi", topicMI);
+            if (value != null){
+                query.setParameter("annotValue", "%"+value.toUpperCase()+"%");
+            }
         }
         else{
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
                     "join a.type as t " +
-                    "where t.shortName = :typeName " +
-                    "and upper(a.name) like :name");
-            query.setParameter("typeName", typeName);
-            query.setParameter("name", "%" + name.toUpperCase() + "%");
+                    "where t.shortName = :topicName " +
+                    "and "+(value != null ? "upper(a.value) like :annotValue" : "a.value is null"));
+            query.setParameter("topicName", topicName);
+            if (value != null){
+                query.setParameter("annotValue", "%"+value.toUpperCase()+"%");
+            }
         }
         return query.getResultList();
     }
@@ -150,53 +146,52 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
         return query.getResultList();
     }
 
-    public IntactDbFinderPersister<CvTerm> getAliasTypeFinder() {
-        if (this.aliasTypeFinder == null){
-            this.aliasTypeFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
+    public IntactDbFinderPersister<CvTerm> getAnnotationTopicFinder() {
+        if (this.annotationTopicFinder == null){
+            this.annotationTopicFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
         }
-        return this.aliasTypeFinder;
+        return this.annotationTopicFinder;
     }
 
-    public void setAliasTypeFinder(IntactDbFinderPersister<CvTerm> aliasTypeFinder) {
-        this.aliasTypeFinder = aliasTypeFinder;
+    public void setAnnotationTopicFinder(IntactDbFinderPersister<CvTerm> annotationTopicFinder) {
+        this.annotationTopicFinder = annotationTopicFinder;
     }
 
     @Override
     public void merge(A objToReplicate) {
-        prepareAliasTypeAndName(objToReplicate);
+        prepareAnnotationTopicAndValue(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
     public void persist(A objToPersist) {
-        prepareAliasTypeAndName(objToPersist);
+        prepareAnnotationTopicAndValue(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
     public A update(A objToUpdate) {
-        prepareAliasTypeAndName(objToUpdate);
+        prepareAnnotationTopicAndValue(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareAliasTypeAndName(A objToPersist) {
-        if (objToPersist.getType() != null){
-            CvTerm type = objToPersist.getType();
-            IntactDbFinderPersister<CvTerm> typeFinder = getAliasTypeFinder();
-            typeFinder.clearCache();
-            try {
-                CvTerm existingType = typeFinder.find(type);
-                if (existingType == null){
-                    existingType = typeFinder.persist(type);
-                }
-                objToPersist.setType(existingType);
-            } catch (FinderException e) {
-                throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
+    protected void prepareAnnotationTopicAndValue(A objToPersist) {
+        // prepare topic
+        CvTerm topic = objToPersist.getTopic();
+        IntactDbFinderPersister<CvTerm> typeFinder = getAnnotationTopicFinder();
+        typeFinder.clearCache();
+        try {
+            CvTerm existingType = typeFinder.find(topic);
+            if (existingType == null){
+                existingType = typeFinder.persist(topic);
             }
+            objToPersist.setTopic(existingType);
+        } catch (FinderException e) {
+            throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
         }
-        // check alias name
-        if (objToPersist.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-            objToPersist.setName(objToPersist.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
+        // check annotation value
+        if (objToPersist.getValue() != null && objToPersist.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
+            objToPersist.setValue(objToPersist.getValue().substring(0,IntactUtils.MAX_DESCRIPTION_LEN));
         }
     }
 }
