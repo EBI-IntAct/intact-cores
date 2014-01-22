@@ -1,10 +1,7 @@
 package uk.ac.ebi.intact.jami.dao;
 
-import org.hibernate.Session;
-
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -17,19 +14,13 @@ import java.util.List;
 
 public interface IntactBaseDao<T> {
 
-    Session getSession();
+    public EntityManager getEntityManager();
 
-    void flushCurrentSession();
+    public void flush();
 
-    String getDbName() throws SQLException;
+    public List<T> getAll();
 
-    String getDbUserName() throws SQLException;
-
-    List<T> getAll();
-
-    Iterator<T> getAllIterator();
-
-    List<T> getAll(int firstResult, int maxResults);
+    public List<T> getAll(int firstResult, int maxResults);
 
     /**
      * Returns all the objects, sorted by the chosen property
@@ -40,50 +31,31 @@ public interface IntactBaseDao<T> {
      * @param ascendant    The order of the sort. If true, the sorting is ascendant
      * @return The objects, sorted
      */
-    List<T> getAllSorted(int firstResult, int maxResults, String sortProperty, boolean ascendant);
+    public List<T> getAllSorted(int firstResult, int maxResults, String sortProperty, boolean ascendant);
 
-    public int countAll();
+    public long countAll();
 
-    void update(T objToUpdate);
+    public T update(T objToUpdate);
 
-    void persist(T objToPersist);
+    public void persist(T objToPersist);
 
-    void persistAll(Collection<T> objsToPersist);
+    public void persistAll(Collection<T> objsToPersist);
 
-    void delete(T objToDelete);
+    public void delete(T objToDelete);
 
-    void deleteAll(Collection<T> objsToDelete);
+    public void deleteAll(Collection<T> objsToDelete);
 
-    int deleteAll();
+    public int deleteAll();
 
-    void saveOrUpdate(T objToPersist);
+    public void refresh(T obj);
 
-    void refresh(T obj);
+    public void detach(T objToEvict);
 
-    void evict(T objToEvict);
+    public void merge(T objToReplicate);
 
-    /**
-     * Persist the state of the given detached instance, reusing the current identifier value. This operation cascades
-     * to associated instances if the association is mapped with cascade="replicate".
-     *
-     * @param objToReplicate
-     */
-    void replicate(T objToReplicate);
+    public boolean isTransient(T object);
 
-    /**
-     * Persist the state of the given detached instance, reusing the current identifier value. This operation cascades
-     * to associated instances if the association is mapped with cascade="replicate".
-     *
-     * @param objToReplicate
-     * @param ignoreIfExisting
-     */
-    void replicate(T objToReplicate, boolean ignoreIfExisting);
+    public void setEntityClass(Class<T> entityClass);
 
-    void merge(T objToReplicate);
-
-    boolean isTransient(T object);
-
-    void setEntityClass(Class<T> entityClass);
-
-    Class<T> getEntityClass();
+    public Class<T> getEntityClass();
 }

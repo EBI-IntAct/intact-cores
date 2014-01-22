@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for intact classes and properties
@@ -31,6 +32,7 @@ public class IntactUtils {
     public static final int MAX_SEQ_LENGTH_PER_CHUNK = 1000;
 
     public final static DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
+    public static final Pattern decimalPattern = Pattern.compile("\\d");
 
     public static final String CV_LOCAL_SEQ = "cv_local_seq";
 
