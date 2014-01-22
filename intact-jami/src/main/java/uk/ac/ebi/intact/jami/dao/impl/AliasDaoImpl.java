@@ -155,23 +155,23 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
 
     @Override
     public void merge(A objToReplicate) {
-        prepareAliasType(objToReplicate);
+        prepareAliasTypeAndName(objToReplicate);
         update(objToReplicate);
     }
 
     @Override
     public void persist(A objToPersist) {
-        prepareAliasType(objToPersist);
+        prepareAliasTypeAndName(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
     public A update(A objToUpdate) {
-        prepareAliasType(objToUpdate);
+        prepareAliasTypeAndName(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareAliasType(A objToPersist) {
+    protected void prepareAliasTypeAndName(A objToPersist) {
         if (objToPersist.getType() != null){
             CvTerm type = objToPersist.getType();
             IntactDbFinderPersister<CvTerm> typeFinder = getAliasTypeFinder();
@@ -185,6 +185,10 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
             } catch (FinderException e) {
                 throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
             }
+        }
+        // check alias name
+        if (objToPersist.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
+            objToPersist.setName(objToPersist.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
         }
     }
 }

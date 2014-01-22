@@ -208,6 +208,16 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
             if (cvXref.getQualifier() != null){
                 cvXref.setQualifier(preparePreExistingCv(cvXref.getQualifier()));
             }
+
+            // check secondaryId value
+            if (cvXref.getSecondaryId() != null && cvXref.getSecondaryId().length() > IntactUtils.MAX_ID_LEN){
+                cvXref.setSecondaryId(cvXref.getSecondaryId().substring(0,IntactUtils.MAX_ID_LEN));
+            }
+
+            // check version value
+            if (cvXref.getVersion() != null && cvXref.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){
+                cvXref.setVersion(cvXref.getVersion().substring(0,IntactUtils.MAX_DB_RELEASE_LEN));
+            }
         }
     }
 
@@ -233,6 +243,11 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
 
             // pre persist annotation topic
             cvAnnot.setTopic(preparePreExistingCv(cvAnnot.getTopic()));
+
+            // check annotation value
+            if (cvAnnot.getValue() != null && cvAnnot.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
+                cvAnnot.setValue(cvAnnot.getValue().substring(0,IntactUtils.MAX_DESCRIPTION_LEN));
+            }
         }
     }
 
@@ -261,6 +276,11 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
             if (aliasType != null){
                 // pre persist alias type
                 cvAlias.setType(preparePreExistingCv(cvAlias.getType()));
+            }
+
+            // check alias name
+            if (cvAlias.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
+                 cvAlias.setName(cvAlias.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
             }
         }
     }
