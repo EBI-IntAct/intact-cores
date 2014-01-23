@@ -4,7 +4,6 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Gene;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -34,39 +33,39 @@ public class IntactGene extends IntactInteractor implements Gene{
     }
 
     public IntactGene(String name) {
-        super(name, CvTermUtils.createGeneInteractorType());
+        super(name);
     }
 
     public IntactGene(String name, String fullName) {
-        super(name, fullName, CvTermUtils.createGeneInteractorType());
+        super(name, fullName);
     }
 
     public IntactGene(String name, Organism organism) {
-        super(name, CvTermUtils.createGeneInteractorType(), organism);
+        super(name, organism);
     }
 
     public IntactGene(String name, String fullName, Organism organism) {
-        super(name, fullName, CvTermUtils.createGeneInteractorType(), organism);
+        super(name, fullName, organism);
     }
 
     public IntactGene(String name, Xref uniqueId) {
-        super(name, CvTermUtils.createGeneInteractorType(), uniqueId);
+        super(name, uniqueId);
     }
 
     public IntactGene(String name, String fullName, Xref uniqueId) {
-        super(name, fullName, CvTermUtils.createGeneInteractorType(), uniqueId);
+        super(name, fullName, uniqueId);
     }
 
     public IntactGene(String name, Organism organism, Xref uniqueId) {
-        super(name, CvTermUtils.createGeneInteractorType(), organism, uniqueId);
+        super(name, organism, uniqueId);
     }
 
     public IntactGene(String name, String fullName, Organism organism, Xref uniqueId) {
-        super(name, fullName, CvTermUtils.createGeneInteractorType(), organism, uniqueId);
+        super(name, fullName, organism, uniqueId);
     }
 
     public IntactGene(String name, String fullName, String ensembl) {
-        super(name, fullName, CvTermUtils.createGeneInteractorType());
+        super(name, fullName);
 
         if (ensembl != null){
             setEnsembl(ensembl);
@@ -74,73 +73,73 @@ public class IntactGene extends IntactInteractor implements Gene{
     }
 
     public IntactGene(String name, CvTerm type, Xref ensembl) {
-        super(name, type != null ? type : CvTermUtils.createGeneInteractorType());
+        super(name, type);
         this.ensembl = ensembl;
     }
 
     public IntactGene(String name, String fullName, CvTerm type, Xref ensembl) {
-        super(name, fullName, type != null ? type : CvTermUtils.createGeneInteractorType());
+        super(name, fullName, type);
         this.ensembl = ensembl;
     }
 
     public IntactGene(String name, CvTerm type, Organism organism, Xref ensembl) {
-        super(name, type != null ? type : CvTermUtils.createGeneInteractorType(), organism);
+        super(name, type, organism);
         this.ensembl = ensembl;
     }
 
     public IntactGene(String name, String fullName, CvTerm type, Organism organism, Xref ensembl) {
-        super(name, fullName, type != null ? type : CvTermUtils.createGeneInteractorType(), organism);
+        super(name, fullName, type, organism);
         this.ensembl = ensembl;
     }
 
     public IntactGene(String name, CvTerm type, Xref uniqueId, Xref ensembl) {
-        super(name, type != null ? type : CvTermUtils.createGeneInteractorType(), uniqueId);
+        super(name, type, uniqueId);
         this.ensembl = ensembl;
     }
 
     public IntactGene(String name, String fullName, CvTerm type, Xref uniqueId, Xref ensembl) {
-        super(name, fullName, type != null ? type : CvTermUtils.createGeneInteractorType(), uniqueId);
+        super(name, fullName, type, uniqueId);
         this.ensembl = ensembl;
     }
 
     public IntactGene(String name, CvTerm type, Organism organism, Xref uniqueId, Xref ensembl) {
-        super(name, type != null ? type : CvTermUtils.createGeneInteractorType(), organism, uniqueId);
+        super(name, type, organism, uniqueId);
         this.ensembl = ensembl;
     }
 
     public IntactGene(String name, String fullName, CvTerm type, Organism organism, Xref uniqueId, Xref ensembl) {
-        super(name, fullName, type != null ? type : CvTermUtils.createGeneInteractorType(), organism, uniqueId);
+        super(name, fullName, type, organism, uniqueId);
         this.ensembl = ensembl;
     }
 
     public IntactGene(String name, Organism organism, String ensembl) {
-        super(name, CvTermUtils.createGeneInteractorType(), organism);
+        super(name, organism);
         if (ensembl != null){
             setEnsembl(ensembl);
         }
     }
 
     public IntactGene(String name, String fullName, Organism organism, String ensembl) {
-        super(name, fullName, CvTermUtils.createGeneInteractorType(), organism);
+        super(name, fullName, organism);
         if (ensembl != null){
             setEnsembl(ensembl);
         }
     }
 
     public IntactGene(String name, CvTerm type) {
-        super(name, type != null ? type : CvTermUtils.createGeneInteractorType());
+        super(name, type);
     }
 
     public IntactGene(String name, String fullName, CvTerm type) {
-        super(name, fullName, type != null ? type : CvTermUtils.createGeneInteractorType());
+        super(name, fullName, type);
     }
 
     public IntactGene(String name, CvTerm type, Organism organism) {
-        super(name, type != null ? type : CvTermUtils.createGeneInteractorType(), organism);
+        super(name, type, organism);
     }
 
     public IntactGene(String name, String fullName, CvTerm type, Organism organism) {
-        super(name, fullName, type != null ? type : CvTermUtils.createGeneInteractorType(), organism);
+        super(name, fullName, type, organism);
     }
 
     @Override

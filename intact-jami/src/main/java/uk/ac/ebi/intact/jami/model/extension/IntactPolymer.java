@@ -67,47 +67,47 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
     }
 
     public IntactPolymer(String name, String fullName, CvTerm type, Xref uniqueId) {
-        super(name, fullName, type != null ? type : CvTermUtils.createPolymerInteractorType(), uniqueId);
+        super(name, fullName, type, uniqueId);
     }
 
     public IntactPolymer(String name, CvTerm type, Organism organism, Xref uniqueId) {
-        super(name, type != null ? type : CvTermUtils.createPolymerInteractorType(), organism, uniqueId);
+        super(name, type, organism, uniqueId);
     }
 
     public IntactPolymer(String name, String fullName, CvTerm type, Organism organism, Xref uniqueId) {
-        super(name, fullName, type != null ? type : CvTermUtils.createPolymerInteractorType(), organism, uniqueId);
+        super(name, fullName, type, organism, uniqueId);
     }
 
     public IntactPolymer(String name) {
-        super(name, CvTermUtils.createPolymerInteractorType());
+        super(name);
     }
 
     public IntactPolymer(String name, String fullName) {
-        super(name, fullName, CvTermUtils.createPolymerInteractorType());
+        super(name, fullName);
     }
 
     public IntactPolymer(String name, Organism organism) {
-        super(name, CvTermUtils.createPolymerInteractorType(), organism);
+        super(name, organism);
     }
 
     public IntactPolymer(String name, String fullName, Organism organism) {
-        super(name, fullName, CvTermUtils.createPolymerInteractorType(), organism);
+        super(name, fullName, organism);
     }
 
     public IntactPolymer(String name, Xref uniqueId) {
-        super(name, CvTermUtils.createPolymerInteractorType(), uniqueId);
+        super(name, uniqueId);
     }
 
     public IntactPolymer(String name, String fullName, Xref uniqueId) {
-        super(name, fullName, CvTermUtils.createPolymerInteractorType(), uniqueId);
+        super(name, fullName, uniqueId);
     }
 
     public IntactPolymer(String name, Organism organism, Xref uniqueId) {
-        super(name, CvTermUtils.createPolymerInteractorType(), organism, uniqueId);
+        super(name, organism, uniqueId);
     }
 
     public IntactPolymer(String name, String fullName, Organism organism, Xref uniqueId) {
-        super(name, fullName, CvTermUtils.createPolymerInteractorType(), organism, uniqueId);
+        super(name, fullName, organism, uniqueId);
     }
 
     @Lob

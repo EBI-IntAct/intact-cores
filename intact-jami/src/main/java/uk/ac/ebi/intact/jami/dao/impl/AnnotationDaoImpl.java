@@ -187,7 +187,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
             }
             objToPersist.setTopic(existingType);
         } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
+            throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation topic.");
         }
         // check annotation value
         if (objToPersist.getValue() != null && objToPersist.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){

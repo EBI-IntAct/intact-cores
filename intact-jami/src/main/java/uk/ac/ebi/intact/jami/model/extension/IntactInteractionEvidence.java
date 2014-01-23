@@ -5,7 +5,6 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
-import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
@@ -244,8 +243,8 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         // add new imex if not null
         if (identifier != null){
             Collection<Xref> interactionXrefs = getXrefs();
-            CvTerm imexDatabase = CvTermUtils.createImexDatabase();
-            CvTerm imexPrimaryQualifier = CvTermUtils.createImexPrimaryQualifier();
+            CvTerm imexDatabase = IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI);
+            CvTerm imexPrimaryQualifier = IntactUtils.createMIQualifier(Xref.IMEX_PRIMARY, Xref.IMEX_PRIMARY_MI);
             // first remove old doi if not null
             if (this.imexId != null){
                 interactionXrefs.remove(this.imexId);

@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.model.Position;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.PositionUtils;
 import psidev.psi.mi.jami.utils.comparator.range.UnambiguousPositionComparator;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -45,7 +46,7 @@ public class IntactPosition implements Position{
         }
         this.start = start;
         this.end = end;
-        this.status = CvTermUtils.createRangeStatus();
+        this.status = IntactUtils.createMIRangeStatus(Position.RANGE, Position.RANGE_MI);
         isPositionUndetermined = false;
     }
 
@@ -82,13 +83,13 @@ public class IntactPosition implements Position{
         if (position == 0){
             start = position;
             end = position;
-            this.status = CvTermUtils.createUndeterminedStatus();
+            this.status = IntactUtils.createMIRangeStatus(Position.UNDETERMINED, Position.UNDETERMINED_MI);
             isPositionUndetermined = true;
         }
         else {
             start = position;
             end = position;
-            this.status = CvTermUtils.createCertainStatus();
+            this.status = IntactUtils.createMIRangeStatus(Position.CERTAIN, Position.CERTAIN_MI);
             isPositionUndetermined = false;
         }
     }

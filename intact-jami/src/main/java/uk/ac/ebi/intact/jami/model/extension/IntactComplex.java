@@ -51,67 +51,67 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     public IntactComplex(String name, CvTerm interactorType) {
-        super(name, interactorType != null ? interactorType : CvTermUtils.createComplexInteractorType());
+        super(name, interactorType);
     }
 
     public IntactComplex(String name, String fullName, CvTerm interactorType) {
-        super(name, fullName, interactorType != null ? interactorType : CvTermUtils.createComplexInteractorType());
+        super(name, fullName, interactorType);
     }
 
     public IntactComplex(String name, CvTerm interactorType, Organism organism) {
-        super(name, interactorType != null ? interactorType : CvTermUtils.createComplexInteractorType(), organism);
+        super(name, interactorType, organism);
     }
 
     public IntactComplex(String name, String fullName, CvTerm interactorType, Organism organism) {
-        super(name, fullName, interactorType != null ? interactorType : CvTermUtils.createComplexInteractorType(), organism);
+        super(name, fullName, interactorType, organism);
     }
 
     public IntactComplex(String name, CvTerm interactorType, Xref uniqueId) {
-        super(name, interactorType != null ? interactorType : CvTermUtils.createComplexInteractorType(), uniqueId);
+        super(name, interactorType, uniqueId);
     }
 
     public IntactComplex(String name, String fullName, CvTerm interactorType, Xref uniqueId) {
-        super(name, fullName, interactorType != null ? interactorType : CvTermUtils.createComplexInteractorType(), uniqueId);
+        super(name, fullName, interactorType, uniqueId);
     }
 
     public IntactComplex(String name, CvTerm interactorType, Organism organism, Xref uniqueId) {
-        super(name, interactorType != null ? interactorType : CvTermUtils.createComplexInteractorType(), organism, uniqueId);
+        super(name, interactorType, organism, uniqueId);
     }
 
     public IntactComplex(String name, String fullName, CvTerm interactorType, Organism organism, Xref uniqueId) {
-        super(name, fullName, interactorType != null ? interactorType : CvTermUtils.createComplexInteractorType(), organism, uniqueId);
+        super(name, fullName, interactorType, organism, uniqueId);
     }
 
     public IntactComplex(String name) {
-        super(name, CvTermUtils.createComplexInteractorType());
+        super(name);
     }
 
     public IntactComplex(String name, String fullName) {
-        super(name, fullName, CvTermUtils.createComplexInteractorType());
+        super(name, fullName);
     }
 
     public IntactComplex(String name, Organism organism) {
-        super(name, CvTermUtils.createComplexInteractorType(), organism);
+        super(name, organism);
     }
 
     public IntactComplex(String name, String fullName, Organism organism) {
-        super(name, fullName, CvTermUtils.createComplexInteractorType(), organism);
+        super(name, fullName, organism);
     }
 
     public IntactComplex(String name, Xref uniqueId) {
-        super(name, CvTermUtils.createComplexInteractorType(), uniqueId);
+        super(name, uniqueId);
     }
 
     public IntactComplex(String name, String fullName, Xref uniqueId) {
-        super(name, fullName, CvTermUtils.createComplexInteractorType(), uniqueId);
+        super(name, fullName, uniqueId);
     }
 
     public IntactComplex(String name, Organism organism, Xref uniqueId) {
-        super(name, CvTermUtils.createComplexInteractorType(), organism, uniqueId);
+        super(name, organism, uniqueId);
     }
 
     public IntactComplex(String name, String fullName, Organism organism, Xref uniqueId) {
-        super(name, fullName, CvTermUtils.createComplexInteractorType(), organism, uniqueId);
+        super(name, fullName, organism, uniqueId);
     }
 
     @OneToMany( mappedBy = "complex", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)

@@ -5,53 +5,38 @@
  */
 package uk.ac.ebi.intact.jami.dao;
 
-import psidev.psi.mi.jami.model.Annotation;
-import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
-import uk.ac.ebi.intact.model.Xref;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 
 import java.util.Collection;
 
 /**
+ * Xref DAO
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  */
-public interface XrefDao extends IntactBaseDao<Xref> {
+public interface XrefDao<X extends AbstractIntactXref> extends IntactBaseDao<X> {
 
-    public Collection<T> getByPrimaryId(String primaryId);
+    public Collection<X> getByPrimaryId(String primaryId, String version);
 
-    public Collection<T> getByPrimaryId(String primaryId, boolean ignoreCase);
+    public Collection<X> getByPrimaryIdLike(String primaryId, String version);
 
-    public Collection<T> getByPrimaryIdLike(String primaryId);
+    public Collection<X> getByDatabase(String dbName, String dbMI);
 
-    public Collection<T> getByParentAc(String parentAc);
+    public Collection<X> getByQualifier(String qualifierName, String qualifierMI);
 
-    public Collection<T> getByParentAc(String parentAc, boolean ignoreCase);
+    public Collection<X> getByDatabaseAndQualifier(String dbName, String dbMI, String qualifierName, String qualifierMI);
 
-    public Collection<Xref> getByValue(String value);
+    public Collection<X> getByDatabaseAndPrimaryId(String dbName, String dbMI, String id, String version);
 
-    public Collection<Annotation> getByValueLike(String value);
+    public Collection<X> getByDatabaseAndPrimaryIdLike(String dbName, String dbMI, String id, String version);
 
-    public Collection<Annotation> getByTopic(String topicName, String topicMI);
+    public Collection<X> getByQualifierAndPrimaryId(String qualifierName, String qualifierMI, String id, String version);
 
-    public Collection<Annotation> getByTopicAndValue(String topicName, String topicMI, String value);
+    public Collection<X> getByQualifierAndPrimaryIdLike(String qualifierName, String qualifierMI, String id, String version);
 
-    public Collection<Annotation> getByValue(String value, Class<? extends AbstractIntactAnnotation> annotationClass);
+    public Collection<X> getByDatabasePrimaryIdAndQualifier(String dbName, String dbMI, String id, String version, String qualifierName, String qualifierMI);
 
-    public Collection<Annotation> getByValueLike(String value, Class<? extends AbstractIntactAnnotation> annotationClass);
+    public Collection<X> getByDatabasePrimaryIdLikeAndQualifier(String dbName, String dbMI, String id, String version, String qualifierName, String qualifierMI);
 
-    public Collection<Annotation> getByTopic(String topicName, String topicMI, Class<? extends AbstractIntactAnnotation> annotationClass);
-
-    public Collection<Annotation> getByTopicAndValue(String topicName, String topicMI, String value, Class<? extends AbstractIntactAnnotation> annotationClass);
-
-    public Collection<Annotation> getByParentAc(String parentAc, Class<? extends AbstractIntactAnnotation> annotationClass);
-
-    public Collection<Annotation> getByName(String name, Class<? extends AbstractIntactAnnotation> annotationClass);
-
-    public Collection<Annotation> getByNameLike(String name, Class<? extends AbstractIntactAnnotation> aliasClass);
-
-    public Collection<Annotation> getByType(String topicName, String topicMI, Class<? extends AbstractIntactAnnotation> aliasClass);
-
-    public Collection<Annotation> getByTypeAndName(String name, String topicName, String topicMI, Class<? extends AbstractIntactAnnotation> aliasClass);
+    public Collection<X> getByParentAc(String parentAc);
 
 }

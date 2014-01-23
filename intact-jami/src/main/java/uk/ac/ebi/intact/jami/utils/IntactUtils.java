@@ -46,8 +46,13 @@ public class IntactUtils {
     public static final String BIOLOGICAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvBiologicalRole";
     public static final String INTERACTION_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvInteraction";
     public static final String INTERACTOR_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractorType";
+    public static final String RANGE_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvFuzzyType";
 
     public static final String RELEASED_STATUS = "released";
+
+    public static IntactCvTerm createMIRangeStatus(String name, String MI){
+        return createIntactMITerm(name, MI, RANGE_STATUS_OBJCLASS);
+    }
 
     public static IntactCvTerm createMIDatabase(String name, String MI){
         return createIntactMITerm(name, MI, DATABASE_OBJCLASS);
