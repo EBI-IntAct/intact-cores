@@ -160,6 +160,15 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         this.persistedObjects.put(object, object);
 
         IntactCvTerm intactCv = (IntactCvTerm)object;
+        prepareCvTermProperties(intactCv);
+
+        // persist the cv
+        this.entityManager.persist(intactCv);
+
+        return intactCv;
+    }
+
+    public void prepareCvTermProperties(IntactCvTerm intactCv) throws FinderException {
         // first set objclass
         initialiseObjClass(intactCv);
         // then check shortlabel/synchronize
@@ -172,10 +181,6 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         prepareAnnotations(intactCv);
         // then check xrefs
         prepareXrefs(intactCv);
-        // persist the cv
-        this.entityManager.persist(intactCv);
-
-        return intactCv;
     }
 
     public void clearCache() {
@@ -331,7 +336,9 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
     }
 
     protected void initialiseObjClass(IntactCvTerm intactCv) {
-        intactCv.setObjClass(this.objClass);
+        if (this.objClass != null){
+            intactCv.setObjClass(this.objClass);
+        }
     }
 
     protected CvTerm findOrPersist(CvTerm cvType) throws FinderException {

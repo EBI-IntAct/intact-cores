@@ -48,7 +48,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi");
             query.setParameter("identity", Xref.IDENTITY);
@@ -79,7 +79,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi " +
                     "and a.name = :name");
@@ -114,7 +114,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi " +
                     "and upper(a.name) like :name");

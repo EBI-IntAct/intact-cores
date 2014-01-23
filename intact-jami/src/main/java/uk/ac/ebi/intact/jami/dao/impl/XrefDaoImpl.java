@@ -62,7 +62,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and xref.id = :mi");
             query.setParameter("identity", Xref.IDENTITY);
@@ -90,7 +90,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                     "join qual.persistentXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and xref.id = :mi");
             query.setParameter("identity", Xref.IDENTITY);
@@ -117,7 +117,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where x.qualifier is null " +
-                        "and (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "and (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi");
                 query.setParameter("identity", Xref.IDENTITY);
@@ -135,10 +135,10 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.qualifier as q " +
                         "join xref2.database as d2 " +
                         "join xref2.qualifier as q2 " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
-                        "and xref.id = :mi"+
-                        "and (q2.shortName = :identity or q2.shortName = :secondaryAc)" +
+                        "and xref.id = :mi "+
+                        "and (q2.shortName = :identity or q2.shortName = :secondaryAc) " +
                         "and d2.shortName = :psimi " +
                         "and xref2.id = :mi2");
                 query.setParameter("identity", Xref.IDENTITY);
@@ -154,7 +154,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi " +
                         "and qual.shortName = :qName");
@@ -181,7 +181,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where dat.shortName = :dbName " +
-                        "and (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "and (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi");
                 query.setParameter("dbName", dbName);
@@ -211,7 +211,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and xref.id = :mi " +
                     "and x.id = :primary"+(version != null ? " and x.version = :version" : ""));
@@ -246,7 +246,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and xref.id = :mi " +
                     "and upper(x.id) like :primary"+(version != null ? " and x.version = :version" : ""));
@@ -290,7 +290,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                     "join qua.persistentXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and xref.id = :mi " +
                     "and x.id = :primary"+(version != null ? " and x.version = :version" : ""));
@@ -334,7 +334,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                     "join qua.persistentXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and xref.id = :mi " +
                     "and upper(x.id) like :primary"+(version != null ? " and x.version = :version" : ""));
@@ -371,7 +371,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where x.qualifier is null " +
-                        "and (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "and (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi " +
                         "and x.id = :primary"+(version != null ? " and x.version = :version" : ""));
@@ -394,10 +394,10 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.qualifier as q " +
                         "join xref2.database as d2 " +
                         "join xref2.qualifier as q2 " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
-                        "and xref.id = :mi"+
-                        "and (q2.shortName = :identity or q2.shortName = :secondaryAc)" +
+                        "and xref.id = :mi "+
+                        "and (q2.shortName = :identity or q2.shortName = :secondaryAc) " +
                         "and d2.shortName = :psimi " +
                         "and xref2.id = :mi2 " +
                         "and x.id = :primary"+(version != null ? " and x.version = :version" : ""));
@@ -418,7 +418,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi " +
                         "and qual.shortName = :qName " +
@@ -455,7 +455,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where dat.shortName = :dbName " +
-                        "and (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "and (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi " +
                         "and x.id = :primary"+(version != null ? " and x.version = :version" : ""));
@@ -497,7 +497,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where x.qualifier is null " +
-                        "and (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "and (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi " +
                         "and upper(x.id) like :primary"+(version != null ? " and x.version = :version" : ""));
@@ -520,10 +520,10 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.qualifier as q " +
                         "join xref2.database as d2 " +
                         "join xref2.qualifier as q2 " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
-                        "and xref.id = :mi"+
-                        "and (q2.shortName = :identity or q2.shortName = :secondaryAc)" +
+                        "and xref.id = :mi "+
+                        "and (q2.shortName = :identity or q2.shortName = :secondaryAc) " +
                         "and d2.shortName = :psimi " +
                         "and xref2.id = :mi2 " +
                         "and upper(x.id) like :primary"+(version != null ? " and x.version = :version" : ""));
@@ -544,7 +544,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi " +
                         "and qual.shortName = :qName " +
@@ -581,7 +581,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where dat.shortName = :dbName " +
-                        "and (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "and (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :psimi " +
                         "and xref.id = :mi " +
                         "and upper(x.id) like :primary"+(version != null ? " and x.version = :version" : ""));

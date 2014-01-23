@@ -57,7 +57,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi");
             query.setParameter("identity", Xref.IDENTITY);
@@ -82,7 +82,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi " +
                     "and a.value"+(value != null ? " = :annotValue" : " is null"));
@@ -115,7 +115,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi " +
                     "and "+(value != null ? "upper(a.value) like :annotValue" : "a.value is null"));
