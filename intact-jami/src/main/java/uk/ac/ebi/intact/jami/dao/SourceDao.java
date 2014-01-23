@@ -16,13 +16,9 @@ public interface SourceDao extends IntactBaseDao<IntactSource>{
 
     public IntactSource getByAc(String ac);
 
-    public IntactSource getByShortLabel(String value);
+    public IntactSource getByShortName(String value);
 
-    public Collection<IntactSource> getByShortLabelLike(String value);
-
-    public Collection<IntactSource> getByShortLabelLike(String value, int firstResult, int maxResults);
-
-    public Collection<IntactSource> getByShortLabelLike(String value, int firstResult, int maxResults, boolean orderAsc);
+    public Collection<IntactSource> getByShortNameLike(String value);
 
     public Collection<IntactSource> getByXref(String primaryId);
 
@@ -43,6 +39,10 @@ public interface SourceDao extends IntactBaseDao<IntactSource>{
     public Collection<IntactSource> getByAliasName(String name);
 
     public Collection<IntactSource> getByAliasTypeAndName(String typeName, String typeMI, String name);
+
+    public Collection<IntactSource> getByAliasNameLike(String name);
+
+    public Collection<IntactSource> getByAliasTypeAndNameLike(String typeName, String typeMI, String name);
 
     public IntactSource getByMIIdentifier(String primaryId);
 

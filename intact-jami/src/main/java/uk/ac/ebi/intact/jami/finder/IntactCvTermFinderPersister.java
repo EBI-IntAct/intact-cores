@@ -59,7 +59,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
                     "join cv.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi"+(this.objClass != null ? " and cv.objClass = :objclass" : ""));
             query.setParameter("identity", Xref.IDENTITY);
@@ -75,7 +75,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
                     "join cv.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimod " +
                     "and x.id = :mod"+(this.objClass != null ? " and cv.objClass = :objclass" : ""));
             query.setParameter("identity", Xref.IDENTITY);
@@ -91,7 +91,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
                     "join cv.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psipar " +
                     "and x.id = :par"+(this.objClass != null ? " and cv.objClass = :objclass" : ""));
             query.setParameter("identity", Xref.IDENTITY);
@@ -109,7 +109,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
                         "join cv.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                         "and d.shortName = :db " +
                         "and x.id = :id"+(this.objClass != null ? " and cv.objClass = :objclass" : ""));
                 query.setParameter("identity", Xref.IDENTITY);
@@ -175,6 +175,8 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         prepareAndSynchronizeShortLabel(intactCv);
         // then check full name
         prepareFullName(intactCv);
+        // then check def
+        prepareDefinition(intactCv);
         // then check aliases
         prepareAliases(intactCv);
         // then check annotations
@@ -185,6 +187,13 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
 
     public void clearCache() {
         this.persistedObjects.clear();
+    }
+
+    protected void prepareDefinition(IntactCvTerm intactCv) {
+        // truncate if necessary
+        if (intactCv.getDefinition() != null && IntactUtils.MAX_DESCRIPTION_LEN < intactCv.getDefinition().length()){
+            intactCv.setDefinition(intactCv.getDefinition().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
+        }
     }
 
     protected void prepareXrefs(IntactCvTerm intactCv) throws FinderException {

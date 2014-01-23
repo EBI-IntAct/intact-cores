@@ -7,7 +7,6 @@ import uk.ac.ebi.intact.jami.finder.FinderException;
 import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
 import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
