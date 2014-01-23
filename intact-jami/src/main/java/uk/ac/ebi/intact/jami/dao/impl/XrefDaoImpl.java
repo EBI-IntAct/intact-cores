@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
@@ -19,7 +20,7 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-
+@Repository
 public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBaseDao<X> implements XrefDao<X>{
 
     private IntactDbFinderPersister<CvTerm> dbFinder;
@@ -691,11 +692,11 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         }
         // check secondaryId
         if (objToPersist.getSecondaryId() != null && objToPersist.getSecondaryId().length() > IntactUtils.MAX_ID_LEN){
-            objToPersist.setSecondaryId(objToPersist.getSecondaryId().substring(0,IntactUtils.MAX_ID_LEN));
+            objToPersist.setSecondaryId(objToPersist.getSecondaryId().substring(0, IntactUtils.MAX_ID_LEN));
         }
         // check version
         if (objToPersist.getVersion() != null && objToPersist.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){
-            objToPersist.setVersion(objToPersist.getVersion().substring(0,IntactUtils.MAX_DB_RELEASE_LEN));
+            objToPersist.setVersion(objToPersist.getVersion().substring(0, IntactUtils.MAX_DB_RELEASE_LEN));
         }
     }
 }

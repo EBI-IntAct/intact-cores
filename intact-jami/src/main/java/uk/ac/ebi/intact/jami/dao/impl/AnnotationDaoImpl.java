@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 
+import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AnnotationDao;
@@ -20,6 +21,7 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
+@Repository
 public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<A> implements AnnotationDao<A> {
     private IntactDbFinderPersister<CvTerm> annotationTopicFinder;
 
