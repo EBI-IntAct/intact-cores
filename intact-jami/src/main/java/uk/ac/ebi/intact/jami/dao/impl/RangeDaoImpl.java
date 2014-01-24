@@ -213,6 +213,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements 
     }
 
     protected void prepareRangeStatus(IntactRange objToPersist) {
+        IntactDbFinderPersister<CvTerm> statusFinder = getStatusFinder();
         statusFinder.clearCache();
 
         // prepare start position
@@ -225,34 +226,26 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements 
         }
         // prepare start status
         CvTerm startStatus = start.getStatus();
-        IntactDbFinderPersister<CvTerm> statusFinder = getStatusFinder();
-        if (!(startStatus instanceof IntactCvTerm)){
-            startStatus = new IntactPosition(objToPersist.getStart().getStatus(), objToPersist.getStart().getStart(), objToPersist.getStart().getEnd());
-        }
-        else{
-            start = (IntactPosition)objToPersist.getStart();
-        }
-
-        // prepare start position
-        IntactPosition start;
-        if (!(objToPersist.getStart() instanceof IntactPosition)){
-            start = new IntactPosition(objToPersist.getStart().getStatus(), objToPersist.getStart().getStart(), objToPersist.getStart().getEnd());
-        }
-        else{
-            start = (IntactPosition)objToPersist.getStart();
-        }
-        // prepare start status
-        CvTerm startStatus = start.getStatus();
-        IntactDbFinderPersister<CvTerm> statusFinder = getStatusFinder();
-        statusFinder.clearCache();
         try {
-            CvTerm existingType = statusFinder.find(startStatus);
-            if (existingType == null){
-                existingType = statusFinder.persist(startStatus);
-            }
-            objToPersist.getStart().setStatus(existingType);
+            start.setStatus(statusFinder.synchronize(startStatus));
         } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the parameter because could not synchronize its parameter type.");
+            throw new IllegalStateException("Cannot persist the range because could not synchronize its start status.");
+        }
+
+        // prepare end position
+        IntactPosition end;
+        if (!(objToPersist.getEnd() instanceof IntactPosition)){
+            end = new IntactPosition(objToPersist.getEnd().getStatus(), objToPersist.getEnd().getStart(), objToPersist.getEnd().getEnd());
+        }
+        else{
+            end = (IntactPosition)objToPersist.getEnd();
+        }
+        // prepare end status
+        CvTerm endStatus = end.getStatus();
+        try {
+            end.setStatus(statusFinder.synchronize(endStatus));
+        } catch (FinderException e) {
+            throw new IllegalStateException("Cannot persist the range because could not synchronize its start status.");
         }
 
         objToPersist.setPositions(start, end);
