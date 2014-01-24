@@ -2,9 +2,7 @@ package uk.ac.ebi.intact.jami.finder;
 
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -41,9 +39,9 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
     }
 
     public Alias persist(Alias object) throws FinderException, PersisterException, SynchronizerException {
-        AbstractIntactAlias intactAlias = synchronizeProperties((AbstractIntactAlias) object);
-        this.entityManager.persist(intactAlias);
-        return intactAlias;
+        synchronizeProperties((AbstractIntactAlias) object);
+        this.entityManager.persist(object);
+        return object;
     }
 
     public void synchronizeProperties(Alias object) throws FinderException, PersisterException, SynchronizerException {
@@ -52,36 +50,36 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
 
     public Alias synchronize(Alias object) throws FinderException, PersisterException, SynchronizerException {
         if (!object.getClass().isAssignableFrom(this.aliasClass)){
-            Alias newAlias = null;
+            AbstractIntactAlias newAlias = null;
             try {
                 newAlias = this.aliasClass.getConstructor(CvTerm.class, String.class).newInstance(object.getType(), object.getName());
             } catch (InstantiationException e) {
-                e.printStackTrace();
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.aliasClass, e);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.aliasClass, e);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.aliasClass, e);
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.aliasClass, e);
             }
 
+            // synchronize properties
+            synchronizeProperties(newAlias);
             return newAlias;
         }
         else{
             AbstractIntactAlias intactType = (AbstractIntactAlias)object;
             // detached existing instance
             if (intactType.getAc() != null && !this.entityManager.contains(intactType)){
+                // synchronize properties
+                synchronizeProperties(intactType);
+                // merge
                 return this.entityManager.merge(intactType);
             }
-            // retrieve and or persist transient instance
-            else if (intactType.getAc() == null){
-                CvTerm newTopic = findOrPersist(intactType, objClass);
-                this.persistedObjects.put(newTopic, newTopic);
-                return newTopic;
-            }
             else{
-                this.persistedObjects.put(cv, cv);
-                return cv;
+                // synchronize properties
+                synchronizeProperties(intactType);
+                return intactType;
             }
         }
     }
@@ -90,7 +88,7 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
         this.typeSynchronizer.clearCache();
     }
 
-    protected AbstractIntactAlias synchronizeProperties(AbstractIntactAlias object) throws PersisterException, SynchronizerException {
+    protected void synchronizeProperties(AbstractIntactAlias object) throws PersisterException, SynchronizerException {
         AbstractIntactAlias intactAlias = (AbstractIntactAlias)object;
         if (intactAlias.getType() != null){
             CvTerm type = intactAlias.getType();
@@ -104,6 +102,5 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
         if (intactAlias.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
             intactAlias.setName(intactAlias.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
         }
-        return intactAlias;
     }
 }
