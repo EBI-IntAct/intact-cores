@@ -321,7 +321,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         this.isNegative = negative;
     }
 
-    @OneToMany( mappedBy = "interaction", orphanRemoval = true,
+    @OneToMany( mappedBy = "parent", orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = InteractionEvidenceParameter.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionEvidenceParameter.class)

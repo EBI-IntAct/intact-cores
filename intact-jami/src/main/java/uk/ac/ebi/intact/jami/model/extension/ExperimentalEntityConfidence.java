@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Intact implementation of participant confidence
+ * Intact implementation of parent confidence
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "ia_component_confidence")
 public class ExperimentalEntityConfidence extends AbstractIntactConfidence{
 
-    private ExperimentalEntity participant;
+    private ExperimentalEntity parent;
 
     public ExperimentalEntityConfidence() {
     }
@@ -33,10 +33,10 @@ public class ExperimentalEntityConfidence extends AbstractIntactConfidence{
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
     @Target(AbstractIntactExperimentalEntity.class)
     public ExperimentalEntity getParent() {
-        return participant;
+        return parent;
     }
 
     public void setParent(ExperimentalEntity participant) {
-        this.participant = participant;
+        this.parent = participant;
     }
 }

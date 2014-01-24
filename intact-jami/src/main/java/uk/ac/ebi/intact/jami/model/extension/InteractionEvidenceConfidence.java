@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.InteractionEvidence;
-import psidev.psi.mi.jami.model.ParticipantEvidence;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -11,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * Intact implementation of interaction evidence confidence
+ * Intact implementation of parent evidence confidence
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -21,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "ia_interaction_evidence_confidence")
 public class InteractionEvidenceConfidence extends AbstractIntactConfidence{
 
-    private InteractionEvidence interaction;
+    private InteractionEvidence parent;
 
     public InteractionEvidenceConfidence() {
     }
@@ -34,10 +33,10 @@ public class InteractionEvidenceConfidence extends AbstractIntactConfidence{
     @JoinColumn( name = "interaction_ac", referencedColumnName = "ac" )
     @Target(IntactInteractionEvidence.class)
     public InteractionEvidence getParent() {
-        return interaction;
+        return parent;
     }
 
     public void setParent(InteractionEvidence interaction) {
-        this.interaction = interaction;
+        this.parent = interaction;
     }
 }

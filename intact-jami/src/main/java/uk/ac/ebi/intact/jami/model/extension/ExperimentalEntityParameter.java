@@ -23,7 +23,7 @@ import java.math.BigDecimal;
 @EntityListeners(value = {ParticipantParameterListener.class})
 public class ExperimentalEntityParameter extends AbstractIntactParameter{
 
-    private ExperimentalEntity participant;
+    private ExperimentalEntity parent;
     private Experiment experiment;
 
     protected ExperimentalEntityParameter() {
@@ -57,12 +57,12 @@ public class ExperimentalEntityParameter extends AbstractIntactParameter{
     @ManyToOne( targetEntity = AbstractIntactExperimentalEntity.class )
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
     @Target(AbstractIntactExperimentalEntity.class)
-    public ExperimentalEntity getParticipant() {
-        return participant;
+    public ExperimentalEntity getParent() {
+        return parent;
     }
 
-    public void setParticipant(ExperimentalEntity participant) {
-        this.participant = participant;
+    public void setParent(ExperimentalEntity participant) {
+        this.parent = participant;
     }
 
     /**

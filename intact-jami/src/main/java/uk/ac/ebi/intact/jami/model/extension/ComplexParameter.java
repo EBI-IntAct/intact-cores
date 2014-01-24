@@ -1,10 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.model.listener.InteractionParameterListener;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -21,7 +19,7 @@ import java.util.Collection;
 @javax.persistence.Entity
 @Table( name = "ia_complex_parameter" )
 public class ComplexParameter extends AbstractIntactParameter implements ModelledParameter{
-    private Complex complex;
+    private Complex parent;
     private Collection<Publication> publications;
 
     protected ComplexParameter() {
@@ -55,12 +53,12 @@ public class ComplexParameter extends AbstractIntactParameter implements Modelle
     @ManyToOne( targetEntity = IntactComplex.class )
     @JoinColumn( name = "complex_ac", referencedColumnName = "ac" )
     @Target(IntactComplex.class)
-    public Complex getComplex() {
-        return complex;
+    public Complex getParent() {
+        return parent;
     }
 
-    public void setComplex(Complex interaction) {
-        this.complex = interaction;
+    public void setParent(Complex interaction) {
+        this.parent = interaction;
     }
 
     @Transient

@@ -6,11 +6,9 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
-import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -211,7 +209,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return this.confidences;
     }
 
-    @OneToMany( mappedBy = "complex", orphanRemoval = true,
+    @OneToMany( mappedBy = "parent", orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ComplexParameter.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ComplexParameter.class)

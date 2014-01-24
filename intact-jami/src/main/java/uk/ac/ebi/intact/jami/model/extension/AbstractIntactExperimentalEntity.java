@@ -175,7 +175,7 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
         return this.confidences;
     }
 
-    @OneToMany( mappedBy = "participant", orphanRemoval = true,
+    @OneToMany( mappedBy = "parent", orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ExperimentalEntityParameter.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ExperimentalEntityParameter.class)

@@ -4,10 +4,8 @@ import org.hibernate.annotations.*;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.listener.InteractionParameterListener;
-import uk.ac.ebi.intact.jami.model.listener.ParticipantParameterListener;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
@@ -23,7 +21,7 @@ import java.math.BigDecimal;
 @EntityListeners(value = {InteractionParameterListener.class})
 public class InteractionEvidenceParameter extends AbstractIntactParameter{
 
-    private InteractionEvidence interaction;
+    private InteractionEvidence parent;
     private Experiment experiment;
 
     protected InteractionEvidenceParameter() {
@@ -57,12 +55,12 @@ public class InteractionEvidenceParameter extends AbstractIntactParameter{
     @ManyToOne( targetEntity = IntactInteractionEvidence.class )
     @JoinColumn( name = "interaction_ac", referencedColumnName = "ac" )
     @Target(IntactInteractionEvidence.class)
-    public InteractionEvidence getInteraction() {
-        return interaction;
+    public InteractionEvidence getParent() {
+        return parent;
     }
 
-    public void setInteraction(InteractionEvidence interaction) {
-        this.interaction = interaction;
+    public void setParent(InteractionEvidence interaction) {
+        this.parent = interaction;
     }
 
     /**

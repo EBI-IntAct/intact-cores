@@ -26,7 +26,7 @@ public class ParticipantParameterListener {
     @PostLoad
     public void prepareExperiment(ExperimentalEntityParameter param){
 
-        ExperimentalEntity part = param.getParticipant();
+        ExperimentalEntity part = param.getParent();
         if (part != null && part instanceof ParticipantEvidence){
             InteractionEvidence interaction = ((ParticipantEvidence)part).getInteraction();
             if (interaction != null){

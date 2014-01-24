@@ -19,7 +19,7 @@ import java.util.Collection;
 @Table(name = "ia_complex_confidence")
 public class ComplexConfidence extends AbstractIntactConfidence implements ModelledConfidence{
 
-    private Complex interaction;
+    private Complex parent;
     private Collection<Publication> publications;
 
     public ComplexConfidence() {
@@ -33,11 +33,11 @@ public class ComplexConfidence extends AbstractIntactConfidence implements Model
     @JoinColumn( name = "complex_ac", referencedColumnName = "ac" )
     @Target(IntactComplex.class)
     public Complex getParent() {
-        return interaction;
+        return parent;
     }
 
     public void setParent(Complex interaction) {
-        this.interaction = interaction;
+        this.parent = interaction;
     }
 
     @Transient

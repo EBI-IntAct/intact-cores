@@ -23,8 +23,8 @@ public class InteractionParameterListener {
     @PostLoad
     public void prepareExperiment(InteractionEvidenceParameter param){
 
-        if (param.getInteraction() != null){
-            param.setExperiment(param.getInteraction().getExperiment());
+        if (param.getParent() != null){
+            param.setExperiment(param.getParent().getExperiment());
         }
     }
 }
