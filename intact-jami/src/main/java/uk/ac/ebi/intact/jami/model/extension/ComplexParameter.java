@@ -3,6 +3,8 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.model.listener.ComplexParameterListener;
+import uk.ac.ebi.intact.jami.model.listener.ParticipantParameterListener;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -18,9 +20,12 @@ import java.util.Collection;
  */
 @javax.persistence.Entity
 @Table( name = "ia_complex_parameter" )
+@EntityListeners(value = {ComplexParameterListener.class})
 public class ComplexParameter extends AbstractIntactParameter implements ModelledParameter{
     private Complex parent;
     private Collection<Publication> publications;
+
+    private Experiment experiment;
 
     protected ComplexParameter() {
         super();
@@ -67,5 +72,27 @@ public class ComplexParameter extends AbstractIntactParameter implements Modelle
             this.publications = new ArrayList<Publication>();
         }
         return this.publications;
+    }
+
+    /**
+     *
+     * @param experiment
+     * @deprecated Only kept for backward compatibility with intact core.
+     * we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
+     */
+    @Deprecated
+    public void setExperiment( Experiment experiment ) {
+        this.experiment = experiment;
+    }
+
+    @ManyToOne(targetEntity = IntactExperiment.class)
+    @JoinColumn( name = "experiment_ac", referencedColumnName = "ac" )
+    @Target(IntactExperiment.class)
+    /**
+     * @deprecated we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
+     */
+    @Deprecated
+    private Experiment getExperiment() {
+        return this.experiment;
     }
 }

@@ -81,7 +81,7 @@ public class InteractionEvidenceParameter extends AbstractIntactParameter{
      * @deprecated we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
      */
     @Deprecated
-    protected Experiment getExperiment() {
+    private Experiment getExperiment() {
         return this.experiment;
     }
 }
