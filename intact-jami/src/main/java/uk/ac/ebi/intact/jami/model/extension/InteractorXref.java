@@ -18,7 +18,7 @@ import javax.persistence.Table;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_interactor_xref" )
+@Table( name = "ia_molecule_xref" )
 public class InteractorXref extends AbstractIntactXref{
 
     private Interactor parent;
