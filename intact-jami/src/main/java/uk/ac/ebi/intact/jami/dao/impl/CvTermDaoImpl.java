@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
 import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
 import javax.persistence.EntityManager;
@@ -20,7 +21,7 @@ import java.util.Collection;
  */
 
 public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implements CvTermDao{
-    private IntactCvTermFinderPersister cvFinder;
+    private IntactDbFinderPersister<CvTerm> cvFinder;
 
     public CvTermDaoImpl() {
         super(IntactCvTerm.class);
@@ -700,14 +701,14 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implement
         return (IntactCvTerm)query.getSingleResult();
     }
 
-    public IntactCvTermFinderPersister getCvFinder() {
+    public IntactDbFinderPersister<CvTerm> getCvFinder() {
         if (this.cvFinder == null){
             this.cvFinder = new IntactCvTermFinderPersister(getEntityManager());
         }
         return this.cvFinder;
     }
 
-    public void setCvFinder(IntactCvTermFinderPersister cvFinder) {
+    public void setCvFinder(IntactDbFinderPersister<CvTerm> cvFinder) {
         this.cvFinder = cvFinder;
     }
 

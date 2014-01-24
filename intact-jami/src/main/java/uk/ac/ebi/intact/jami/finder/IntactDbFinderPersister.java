@@ -18,5 +18,7 @@ public interface IntactDbFinderPersister<T> {
 
     public void synchronizeProperties(T object) throws FinderException;
 
+    public T synchronize(T object) throws FinderException;
+
     public void clearCache();
 }

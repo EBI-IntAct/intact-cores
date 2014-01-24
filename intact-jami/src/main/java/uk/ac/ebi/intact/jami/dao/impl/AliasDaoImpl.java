@@ -178,11 +178,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
             IntactDbFinderPersister<CvTerm> typeFinder = getAliasTypeFinder();
             typeFinder.clearCache();
             try {
-                CvTerm existingType = typeFinder.find(type);
-                if (existingType == null){
-                    existingType = typeFinder.persist(type);
-                }
-                objToPersist.setType(existingType);
+                objToPersist.setType(typeFinder.synchronize(type));
             } catch (FinderException e) {
                 throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
             }

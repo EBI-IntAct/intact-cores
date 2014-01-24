@@ -11,6 +11,7 @@ import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
+import uk.ac.ebi.intact.jami.utils.IntactCvTermComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -40,7 +41,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         this.entityManager = entityManager;
         this.objClass = null;
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<CvTerm, CvTerm>();
+        this.persistedObjects = new TreeMap<CvTerm, CvTerm>(new IntactCvTermComparator());
     }
 
     public IntactCvTermFinderPersister(EntityManager entityManager, String objClass){
@@ -178,7 +179,45 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
          synchronizeProperties((IntactCvTerm)object);
     }
 
-    public void synchronizeProperties(IntactCvTerm intactCv) throws FinderException {
+    public CvTerm synchronize(CvTerm cv) throws FinderException {
+         return synchronize(cv, this.objClass);
+    }
+
+    public CvTerm synchronize(CvTerm cv, String objClass) throws FinderException {
+        if (this.persistedObjects.containsKey(cv)){
+            return this.persistedObjects.get(cv);
+        }
+
+        if (!(cv instanceof IntactCvTerm)){
+            IntactCvTerm newTopic = new IntactCvTerm(cv.getShortName());
+            CvTermCloner.copyAndOverrideCvTermProperties(cv, newTopic);
+            newTopic.setObjClass(objClass);
+            this.persistedObjects.put(newTopic, newTopic);
+
+            return newTopic;
+        }
+        else{
+            IntactCvTerm intactType = (IntactCvTerm)cv;
+            // detached existing instance
+            if (intactType.getAc() != null && !this.entityManager.contains(intactType)){
+                CvTerm newTopic = this.entityManager.merge(intactType);
+                this.persistedObjects.put(newTopic, newTopic);
+                return newTopic;
+            }
+            // retrieve and or persist transient instance
+            else if (intactType.getAc() == null){
+                CvTerm newTopic = findOrPersist(intactType, objClass);
+                this.persistedObjects.put(newTopic, newTopic);
+                return newTopic;
+            }
+            else{
+                this.persistedObjects.put(cv, cv);
+                return cv;
+            }
+        }
+    }
+
+    protected void synchronizeProperties(IntactCvTerm intactCv) throws FinderException {
         // first set objclass
         initialiseObjClass(intactCv);
         // then check shortlabel/synchronize
@@ -286,10 +325,10 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
             }
 
             // pre persist database
-            cvXref.setDatabase(preparePreExistingCv(cvXref.getDatabase(), IntactUtils.DATABASE_OBJCLASS));
+            cvXref.setDatabase(synchronize(cvXref.getDatabase(), IntactUtils.DATABASE_OBJCLASS));
             // pre persist qualifier
             if (cvXref.getQualifier() != null){
-                cvXref.setQualifier(preparePreExistingCv(cvXref.getQualifier(), IntactUtils.QUALIFIER_OBJCLASS));
+                cvXref.setQualifier(synchronize(cvXref.getQualifier(), IntactUtils.QUALIFIER_OBJCLASS));
             }
 
             // check secondaryId value
@@ -325,7 +364,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
             }
 
             // pre persist annotation topic
-            cvAnnot.setTopic(preparePreExistingCv(cvAnnot.getTopic(), IntactUtils.TOPIC_OBJCLASS));
+            cvAnnot.setTopic(synchronize(cvAnnot.getTopic(), IntactUtils.TOPIC_OBJCLASS));
 
             // check annotation value
             if (cvAnnot.getValue() != null && cvAnnot.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -358,7 +397,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
             CvTerm aliasType = cvAlias.getType();
             if (aliasType != null){
                 // pre persist alias type
-                cvAlias.setType(preparePreExistingCv(cvAlias.getType(), IntactUtils.ALIAS_TYPE_OBJCLASS));
+                cvAlias.setType(synchronize(cvAlias.getType(), IntactUtils.ALIAS_TYPE_OBJCLASS));
             }
 
             // check alias name
@@ -427,40 +466,6 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         else{
             this.entityManager.persist(cvType);
             return cvType;
-        }
-    }
-
-    protected CvTerm preparePreExistingCv(CvTerm cv, String objClass) throws FinderException {
-        if (this.persistedObjects.containsKey(cv)){
-            return this.persistedObjects.get(cv);
-        }
-
-        if (!(cv instanceof IntactCvTerm)){
-            IntactCvTerm newTopic = new IntactCvTerm(cv.getShortName());
-            CvTermCloner.copyAndOverrideCvTermProperties(cv, newTopic);
-            newTopic.setObjClass(objClass);
-            this.persistedObjects.put(newTopic, newTopic);
-
-            return newTopic;
-        }
-        else{
-            IntactCvTerm intactType = (IntactCvTerm)cv;
-            // detached existing instance
-            if (intactType.getAc() != null && !this.entityManager.contains(intactType)){
-                CvTerm newTopic = this.entityManager.merge(intactType);
-                this.persistedObjects.put(newTopic, newTopic);
-                return newTopic;
-            }
-            // retrieve and or persist transient instance
-            else if (intactType.getAc() == null){
-                CvTerm newTopic = findOrPersist(intactType, objClass);
-                this.persistedObjects.put(newTopic, newTopic);
-                return newTopic;
-            }
-            else{
-                this.persistedObjects.put(cv, cv);
-                return cv;
-            }
         }
     }
 }

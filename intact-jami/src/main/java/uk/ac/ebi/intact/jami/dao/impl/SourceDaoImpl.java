@@ -1,9 +1,11 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
+import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
 import uk.ac.ebi.intact.jami.finder.IntactSourceFinderPersister;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
@@ -20,7 +22,7 @@ import java.util.Collection;
  */
 
 public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implements SourceDao{
-    private IntactSourceFinderPersister sourceFinder;
+    private IntactDbFinderPersister<Source> sourceFinder;
 
     public SourceDaoImpl() {
         super(IntactSource.class);
@@ -555,14 +557,14 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implement
         return (IntactSource)query.getSingleResult();
     }
 
-    public IntactSourceFinderPersister getSourceFinder() {
+    public IntactDbFinderPersister<Source> getSourceFinder() {
         if (this.sourceFinder == null){
             this.sourceFinder = new IntactSourceFinderPersister(getEntityManager());
         }
         return this.sourceFinder;
     }
 
-    public void setSourceFinder(IntactSourceFinderPersister sourceFinder) {
+    public void setSourceFinder(IntactDbFinderPersister<Source> sourceFinder) {
         this.sourceFinder = sourceFinder;
     }
 

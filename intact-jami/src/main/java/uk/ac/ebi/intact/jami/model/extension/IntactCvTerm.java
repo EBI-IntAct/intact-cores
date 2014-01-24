@@ -207,6 +207,11 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         this.definition = def;
     }
 
+    @Column( name = "objclass", nullable = false)
+    public String getObjClass() {
+        return objClass;
+    }
+
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CvTermXref.class)
@@ -257,8 +262,4 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return this.identifier;
     }
 
-    @Column( name = "objclass", nullable = false)
-    private String getObjClass() {
-        return objClass;
-    }
 }

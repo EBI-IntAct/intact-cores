@@ -183,11 +183,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
         IntactDbFinderPersister<CvTerm> typeFinder = getAnnotationTopicFinder();
         typeFinder.clearCache();
         try {
-            CvTerm existingType = typeFinder.find(topic);
-            if (existingType == null){
-                existingType = typeFinder.persist(topic);
-            }
-            objToPersist.setTopic(existingType);
+            objToPersist.setTopic(typeFinder.synchronize(topic));
         } catch (FinderException e) {
             throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation topic.");
         }

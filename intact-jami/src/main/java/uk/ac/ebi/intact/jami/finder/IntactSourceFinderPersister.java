@@ -1,10 +1,8 @@
 package uk.ac.ebi.intact.jami.finder;
 
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.model.extension.IntactSource;
-import uk.ac.ebi.intact.jami.model.extension.SourceAlias;
-import uk.ac.ebi.intact.jami.model.extension.SourceAnnotation;
-import uk.ac.ebi.intact.jami.model.extension.SourceXref;
+import psidev.psi.mi.jami.utils.clone.CvTermCloner;
+import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -130,6 +128,38 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         synchronizeProperties((IntactSource)object);
     }
 
+    public Source synchronize(Source object) throws FinderException {
+        if (this.persistedObjects.containsKey(object)){
+            return this.persistedObjects.get(object);
+        }
+
+        if (!(object instanceof IntactSource)){
+            IntactSource newSource = new IntactSource(object.getShortName());
+            CvTermCloner.copyAndOverrideCvTermProperties(object, newSource);
+            this.persistedObjects.put(newSource, newSource);
+            return newSource;
+        }
+        else{
+            IntactSource intactType = (IntactSource)object;
+            // detached existing instance
+            if (intactType.getAc() != null && !this.entityManager.contains(intactType)){
+                IntactSource newSource = this.entityManager.merge(intactType);
+                this.persistedObjects.put(newSource, newSource);
+                return newSource;
+            }
+            // retrieve and or persist transient instance
+            else if (intactType.getAc() == null){
+                Source newTopic = findOrPersist(intactType);
+                this.persistedObjects.put(newTopic, newTopic);
+                return newTopic;
+            }
+            else{
+                this.persistedObjects.put(object, object);
+                return object;
+            }
+        }
+    }
+
     public void synchronizeProperties(IntactSource intactSource) throws FinderException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactSource);
@@ -169,10 +199,10 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
             }
 
             // pre persist database
-            cvXref.setDatabase(this.cvFinderPersister.preparePreExistingCv(cvXref.getDatabase(), IntactUtils.DATABASE_OBJCLASS));
+            cvXref.setDatabase(this.cvFinderPersister.synchronize(cvXref.getDatabase(), IntactUtils.DATABASE_OBJCLASS));
             // pre persist qualifier
             if (cvXref.getQualifier() != null){
-                cvXref.setQualifier(this.cvFinderPersister.preparePreExistingCv(cvXref.getQualifier(), IntactUtils.QUALIFIER_OBJCLASS));
+                cvXref.setQualifier(this.cvFinderPersister.synchronize(cvXref.getQualifier(), IntactUtils.QUALIFIER_OBJCLASS));
             }
 
             // check secondaryId value
@@ -208,7 +238,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
             }
 
             // pre persist annotation topic
-            cvAnnot.setTopic(this.cvFinderPersister.preparePreExistingCv(cvAnnot.getTopic(), IntactUtils.TOPIC_OBJCLASS));
+            cvAnnot.setTopic(this.cvFinderPersister.synchronize(cvAnnot.getTopic(), IntactUtils.TOPIC_OBJCLASS));
 
             // check annotation value
             if (cvAnnot.getValue() != null && cvAnnot.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -241,7 +271,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
             CvTerm aliasType = cvAlias.getType();
             if (aliasType != null){
                 // pre persist alias type
-                cvAlias.setType(this.cvFinderPersister.preparePreExistingCv(cvAlias.getType(), IntactUtils.ALIAS_TYPE_OBJCLASS));
+                cvAlias.setType(this.cvFinderPersister.synchronize(cvAlias.getType(), IntactUtils.ALIAS_TYPE_OBJCLASS));
             }
 
             // check alias name
@@ -290,6 +320,17 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
             else{
                 intactSource.setShortName(intactSource.getShortName()+"-"+maxString);
             }
+        }
+    }
+
+    protected Source findOrPersist(Source cvType) throws FinderException {
+        Source existingInstance = find(cvType);
+        if (existingInstance != null){
+            return existingInstance;
+        }
+        else{
+            this.entityManager.persist(cvType);
+            return cvType;
         }
     }
 }

@@ -109,6 +109,11 @@ public class IntactPosition implements Position{
         return this.end;
     }
 
+    public void setStatus(CvTerm status) {
+        this.status = status;
+        isPositionUndetermined = (PositionUtils.isUndetermined(this) || PositionUtils.isCTerminalRange(this) || PositionUtils.isNTerminalRange(this));
+    }
+
     @Transient
     public boolean isPositionUndetermined() {
         return this.isPositionUndetermined;
@@ -135,11 +140,6 @@ public class IntactPosition implements Position{
     @Override
     public int hashCode() {
         return UnambiguousPositionComparator.hashCode(this);
-    }
-
-    private void setStatus(CvTerm status) {
-        this.status = status;
-        isPositionUndetermined = (PositionUtils.isUndetermined(this) || PositionUtils.isCTerminalRange(this) || PositionUtils.isNTerminalRange(this));
     }
 
     private void setStart(long start) {

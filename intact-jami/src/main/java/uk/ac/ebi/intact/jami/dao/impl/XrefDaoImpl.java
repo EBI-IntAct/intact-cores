@@ -667,11 +667,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         IntactDbFinderPersister<CvTerm> dbFinder = getDbFinder();
         dbFinder.clearCache();
         try {
-            CvTerm existingType = dbFinder.find(database);
-            if (existingType == null){
-                existingType = dbFinder.persist(database);
-            }
-            objToPersist.setDatabase(existingType);
+            objToPersist.setDatabase(dbFinder.synchronize(database));
         } catch (FinderException e) {
             throw new IllegalStateException("Cannot persist the database because could not synchronize its xref database.");
         }
@@ -681,11 +677,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
             IntactDbFinderPersister<CvTerm> qualifierFinder = getQualifierFinder();
             qualifierFinder.clearCache();
             try {
-                CvTerm existingType = qualifierFinder.find(qualifier);
-                if (existingType == null){
-                    existingType = qualifierFinder.persist(qualifier);
-                }
-                objToPersist.setQualifier(existingType);
+                objToPersist.setQualifier(qualifierFinder.synchronize(qualifier));
             } catch (FinderException e) {
                 throw new IllegalStateException("Cannot persist the database because could not synchronize its xref qualifier.");
             }

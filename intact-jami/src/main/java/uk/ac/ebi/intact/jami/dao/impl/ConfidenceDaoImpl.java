@@ -128,11 +128,7 @@ public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends Abstr
         IntactDbFinderPersister<CvTerm> typeFinder = getTypeFinder();
         typeFinder.clearCache();
         try {
-            CvTerm existingType = typeFinder.find(type);
-            if (existingType == null){
-                existingType = typeFinder.persist(type);
-            }
-            objToPersist.setType(existingType);
+            objToPersist.setType(typeFinder.synchronize(type));
         } catch (FinderException e) {
             throw new IllegalStateException("Cannot persist the confidence because could not synchronize its confidence type.");
         }

@@ -128,11 +128,7 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
         IntactDbFinderPersister<CvTerm> typeFinder = getMethodFinder();
         typeFinder.clearCache();
         try {
-            CvTerm existingType = typeFinder.find(method);
-            if (existingType == null){
-                existingType = typeFinder.persist(method);
-            }
-            objToPersist.setMethod(existingType);
+            objToPersist.setMethod(typeFinder.synchronize(method));
         } catch (FinderException e) {
             throw new IllegalStateException("Cannot persist the checksum because could not synchronize its method.");
         }
