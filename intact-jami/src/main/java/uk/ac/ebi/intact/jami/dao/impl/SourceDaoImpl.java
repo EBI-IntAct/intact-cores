@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
@@ -20,7 +21,7 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-
+@Repository
 public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implements SourceDao{
     private IntactDbFinderPersister<Source> sourceFinder;
 

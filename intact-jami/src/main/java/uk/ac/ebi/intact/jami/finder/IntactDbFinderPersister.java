@@ -14,11 +14,11 @@ public interface IntactDbFinderPersister<T> {
 
     public T find(T object) throws FinderException;
 
-    public T persist(T object) throws FinderException;
+    public T persist(T object) throws FinderException,PersisterException,SynchronizerException;
 
-    public void synchronizeProperties(T object) throws FinderException;
+    public void synchronizeProperties(T object) throws FinderException,PersisterException,SynchronizerException;
 
-    public T synchronize(T object) throws FinderException;
+    public T synchronize(T object) throws FinderException,PersisterException,SynchronizerException;
 
     public void clearCache();
 }

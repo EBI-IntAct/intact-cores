@@ -158,7 +158,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         return (CvTerm) query.getSingleResult();
     }
 
-    public CvTerm persist(CvTerm object) throws FinderException{
+    public CvTerm persist(CvTerm object) throws FinderException, PersisterException, SynchronizerException{
         // only persist if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
@@ -175,15 +175,15 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         return intactCv;
     }
 
-    public void synchronizeProperties(CvTerm object) throws FinderException {
+    public void synchronizeProperties(CvTerm object) throws FinderException, PersisterException, SynchronizerException {
          synchronizeProperties((IntactCvTerm)object);
     }
 
-    public CvTerm synchronize(CvTerm cv) throws FinderException {
+    public CvTerm synchronize(CvTerm cv) throws FinderException, PersisterException, SynchronizerException{
          return synchronize(cv, this.objClass);
     }
 
-    public CvTerm synchronize(CvTerm cv, String objClass) throws FinderException {
+    protected CvTerm synchronize(CvTerm cv, String objClass) throws FinderException, PersisterException, SynchronizerException {
         if (this.persistedObjects.containsKey(cv)){
             return this.persistedObjects.get(cv);
         }
@@ -217,7 +217,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         }
     }
 
-    protected void synchronizeProperties(IntactCvTerm intactCv) throws FinderException {
+    protected void synchronizeProperties(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         // first set objclass
         initialiseObjClass(intactCv);
         // then check shortlabel/synchronize
@@ -236,7 +236,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         prepareXrefs(intactCv);
     }
 
-    protected void initialiseIdentifier(IntactCvTerm intactCv) {
+    protected void initialiseIdentifier(IntactCvTerm intactCv) throws SynchronizerException {
         // first look at PSI-MI
         if (intactCv.getMIIdentifier() != null){
             intactCv.setIdentifier(intactCv.getMIIdentifier());
@@ -265,7 +265,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
             if (institution != null){
                 SequenceManager seqManager = ApplicationContextProvider.getBean(SequenceManager.class);
                 if (seqManager == null){
-                    throw new IllegalStateException("The Cv identifier listener needs a sequence manager to automatically generate a cv identifier for backward compatibility. No sequence manager bean " +
+                    throw new SynchronizerException("The Cv identifier listener needs a sequence manager to automatically generate a cv identifier for backward compatibility. No sequence manager bean " +
                             "was found in the spring context.");
                 }
                 seqManager.createSequenceIfNotExists(IntactUtils.CV_LOCAL_SEQ, 1);
@@ -304,7 +304,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         }
     }
 
-    protected void prepareXrefs(IntactCvTerm intactCv) throws FinderException {
+    protected void prepareXrefs(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getXrefs());
         for (Xref xref : xrefsToPersist){
             CvTermXref cvXref;
@@ -343,7 +343,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         }
     }
 
-    protected void prepareAnnotations(IntactCvTerm intactCv) throws FinderException {
+    protected void prepareAnnotations(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getAnnotations());
         for (Annotation annotation : annotationsToPersist){
             CvTermAnnotation cvAnnot;
@@ -373,7 +373,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         }
     }
 
-    protected void prepareAliases(IntactCvTerm intactCv) throws FinderException {
+    protected void prepareAliases(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
         for (Alias alias : aliasesToPersist){
             CvTermAlias cvAlias;
@@ -414,7 +414,7 @@ public class IntactCvTermFinderPersister implements IntactDbFinderPersister<CvTe
         }
     }
 
-    protected void prepareAndSynchronizeShortLabel(IntactCvTerm intactCv) {
+    protected void prepareAndSynchronizeShortLabel(CvTerm intactCv) {
         // truncate if necessary
         if (IntactUtils.MAX_SHORT_LABEL_LEN < intactCv.getShortName().length()){
             intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));

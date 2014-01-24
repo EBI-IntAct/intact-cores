@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
@@ -19,7 +20,7 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-
+@Repository
 public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implements CvTermDao{
     private IntactDbFinderPersister<CvTerm> cvFinder;
 

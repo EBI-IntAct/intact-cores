@@ -107,7 +107,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         return (Source) query.getSingleResult();
     }
 
-    public Source persist(Source object) throws FinderException{
+    public Source persist(Source object) throws FinderException, PersisterException, SynchronizerException{
         // only persist if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
@@ -124,11 +124,11 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         return intactSource;
     }
 
-    public void synchronizeProperties(Source object) throws FinderException {
+    public void synchronizeProperties(Source object) throws FinderException, PersisterException, SynchronizerException {
         synchronizeProperties((IntactSource)object);
     }
 
-    public Source synchronize(Source object) throws FinderException {
+    public Source synchronize(Source object) throws FinderException, PersisterException, SynchronizerException {
         if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
@@ -160,7 +160,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         }
     }
 
-    public void synchronizeProperties(IntactSource intactSource) throws FinderException {
+    protected void synchronizeProperties(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactSource);
         // then check full name
@@ -178,7 +178,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         this.cvFinderPersister.clearCache();
     }
 
-    protected void prepareXrefs(IntactSource intactSource) throws FinderException {
+    protected void prepareXrefs(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getXrefs());
         for (Xref xref : xrefsToPersist){
             SourceXref cvXref;
@@ -217,7 +217,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         }
     }
 
-    protected void prepareAnnotations(IntactSource intactSource) throws FinderException {
+    protected void prepareAnnotations(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getAnnotations());
         for (Annotation annotation : annotationsToPersist){
             SourceAnnotation cvAnnot;
@@ -247,7 +247,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         }
     }
 
-    protected void prepareAliases(IntactSource intactSource) throws FinderException {
+    protected void prepareAliases(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         List<Alias> aliasesToPersist = new ArrayList<Alias>(intactSource.getSynonyms());
         for (Alias alias : aliasesToPersist){
             SourceAlias cvAlias;
