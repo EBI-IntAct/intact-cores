@@ -5,10 +5,8 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.RangeDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
-import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.finder.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
 import uk.ac.ebi.intact.jami.model.extension.IntactRange;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -27,7 +25,7 @@ import java.util.Collection;
 @Repository
 public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements RangeDao{
 
-    private IntactDbFinderPersister<CvTerm> statusFinder;
+    private IntactDbSynchronizer<CvTerm> statusFinder;
 
     public RangeDaoImpl() {
         super(IntactRange.class);
@@ -184,14 +182,14 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements 
         return query.getResultList();
     }
 
-    public IntactDbFinderPersister<CvTerm> getStatusFinder() {
+    public IntactDbSynchronizer<CvTerm> getStatusFinder() {
         if (this.statusFinder == null){
-            this.statusFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
+            this.statusFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
         }
         return this.statusFinder;
     }
 
-    public void setStatusFinder(IntactDbFinderPersister<CvTerm> statusFinder) {
+    public void setStatusFinder(IntactDbSynchronizer<CvTerm> statusFinder) {
         this.statusFinder = statusFinder;
     }
 
@@ -214,7 +212,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements 
     }
 
     protected void prepareRangeStatus(IntactRange objToPersist) {
-        IntactDbFinderPersister<CvTerm> statusFinder = getStatusFinder();
+        IntactDbSynchronizer<CvTerm> statusFinder = getStatusFinder();
         statusFinder.clearCache();
 
         // prepare start position

@@ -4,8 +4,8 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -23,12 +23,12 @@ import java.util.List;
  */
 @Repository
 public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractIntactBaseDao<F> implements FeatureDao<F>{
-    private IntactDbFinderPersister<CvTerm> topicFinder;
-    private IntactDbFinderPersister<CvTerm> typeFinder;
-    private IntactDbFinderPersister<CvTerm> dbFinder;
-    private IntactDbFinderPersister<CvTerm> qualifierFinder;
-    private IntactDbFinderPersister<CvTerm> aliasTypeFinder;
-    private IntactDbFinderPersister<CvTerm> rangeStatusFinder;
+    private IntactDbSynchronizer<CvTerm> topicFinder;
+    private IntactDbSynchronizer<CvTerm> typeFinder;
+    private IntactDbSynchronizer<CvTerm> dbFinder;
+    private IntactDbSynchronizer<CvTerm> qualifierFinder;
+    private IntactDbSynchronizer<CvTerm> aliasTypeFinder;
+    private IntactDbSynchronizer<CvTerm> rangeStatusFinder;
 
     public F getByAc(String ac) {
         return getEntityManager().find(getEntityClass(), ac);
@@ -628,69 +628,69 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractInt
         return query.getResultList();
     }
 
-    public IntactDbFinderPersister<CvTerm> getTopicFinder() {
+    public IntactDbSynchronizer<CvTerm> getTopicFinder() {
         if (this.topicFinder == null){
-            this.topicFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+            this.topicFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
         }
         return this.topicFinder;
     }
 
-    public void setTopicFinder(IntactDbFinderPersister<CvTerm> topicFinder) {
+    public void setTopicFinder(IntactDbSynchronizer<CvTerm> topicFinder) {
         this.topicFinder = topicFinder;
     }
 
-    public IntactDbFinderPersister<CvTerm> getTypeFinder() {
+    public IntactDbSynchronizer<CvTerm> getTypeFinder() {
         if (this.typeFinder == null){
-            this.typeFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.FEATURE_TYPE_OBJCLASS);
+            this.typeFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_TYPE_OBJCLASS);
         }
         return this.typeFinder;
     }
 
-    public void setTypeFinder(IntactDbFinderPersister<CvTerm> cvFinder) {
+    public void setTypeFinder(IntactDbSynchronizer<CvTerm> cvFinder) {
         this.typeFinder = cvFinder;
     }
 
-    public IntactDbFinderPersister<CvTerm> getDbFinder() {
+    public IntactDbSynchronizer<CvTerm> getDbFinder() {
         if (this.dbFinder == null){
-            this.dbFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.DATABASE_OBJCLASS);
+            this.dbFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.DATABASE_OBJCLASS);
         }
         return dbFinder;
     }
 
-    public void setDbFinder(IntactDbFinderPersister<CvTerm> dbFinder) {
+    public void setDbFinder(IntactDbSynchronizer<CvTerm> dbFinder) {
         this.dbFinder = dbFinder;
     }
 
-    public IntactDbFinderPersister<CvTerm> getQualifierFinder() {
+    public IntactDbSynchronizer<CvTerm> getQualifierFinder() {
         if (this.qualifierFinder == null){
-            this.qualifierFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.QUALIFIER_OBJCLASS);
+            this.qualifierFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.QUALIFIER_OBJCLASS);
         }
         return qualifierFinder;
     }
 
-    public void setQualifierFinder(IntactDbFinderPersister<CvTerm> qualifierFinder) {
+    public void setQualifierFinder(IntactDbSynchronizer<CvTerm> qualifierFinder) {
         this.qualifierFinder = qualifierFinder;
     }
 
-    public IntactDbFinderPersister<CvTerm> getAliasTypeFinder() {
+    public IntactDbSynchronizer<CvTerm> getAliasTypeFinder() {
         if (this.aliasTypeFinder == null){
-            this.aliasTypeFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
+            this.aliasTypeFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
         }
         return aliasTypeFinder;
     }
 
-    public void setAliasTypeFinder(IntactDbFinderPersister<CvTerm> aliasTypeFinder) {
+    public void setAliasTypeFinder(IntactDbSynchronizer<CvTerm> aliasTypeFinder) {
         this.aliasTypeFinder = aliasTypeFinder;
     }
 
-    public IntactDbFinderPersister<CvTerm> getRangeStatusFinder() {
+    public IntactDbSynchronizer<CvTerm> getRangeStatusFinder() {
         if (this.rangeStatusFinder == null){
-            this.rangeStatusFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
+            this.rangeStatusFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
         }
         return rangeStatusFinder;
     }
 
-    public void setRangeStatusFinder(IntactDbFinderPersister<CvTerm> rangeStatusFinder) {
+    public void setRangeStatusFinder(IntactDbSynchronizer<CvTerm> rangeStatusFinder) {
         this.rangeStatusFinder = rangeStatusFinder;
     }
 
@@ -728,7 +728,7 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractInt
     }
 
     protected void prepareTypeAndInteractionEffects(F feature){
-        IntactDbFinderPersister<CvTerm> typeFinder = getTypeFinder();
+        IntactDbSynchronizer<CvTerm> typeFinder = getTypeFinder();
         typeFinder.clearCache();
         CvTerm type = feature.getType();
         try {
@@ -738,7 +738,7 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractInt
         }
 
         // then interaction effects and dependency
-        IntactDbFinderPersister<CvTerm> effectFinder = getTopicFinder();
+        IntactDbSynchronizer<CvTerm> effectFinder = getTopicFinder();
         effectFinder.clearCache();
         CvTerm effect = feature.getInteractionEffect();
         CvTerm dependency = feature.getInteractionDependency();
@@ -755,9 +755,9 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractInt
     }
 
     protected void prepareXrefs(F feature) throws FinderException {
-        IntactDbFinderPersister<CvTerm> dbFinder = getDbFinder();
+        IntactDbSynchronizer<CvTerm> dbFinder = getDbFinder();
         dbFinder.clearCache();
-        IntactDbFinderPersister<CvTerm> qualifierFinder = getQualifierFinder();
+        IntactDbSynchronizer<CvTerm> qualifierFinder = getQualifierFinder();
         qualifierFinder.clearCache();
 
         List<Xref> xrefsToPersist = new ArrayList<Xref>(feature.getXrefs());

@@ -5,8 +5,8 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AliasDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -23,7 +23,7 @@ import java.util.Collection;
 @Repository
 public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactBaseDao<A> implements AliasDao<A>{
 
-    private IntactDbFinderPersister<CvTerm> aliasTypeFinder;
+    private IntactDbSynchronizer<CvTerm> aliasTypeFinder;
 
     public Collection<A> getByName(String name) {
         Query query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where a.name = :name");
@@ -143,14 +143,14 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
         return query.getResultList();
     }
 
-    public IntactDbFinderPersister<CvTerm> getAliasTypeFinder() {
+    public IntactDbSynchronizer<CvTerm> getAliasTypeFinder() {
         if (this.aliasTypeFinder == null){
-            this.aliasTypeFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
+            this.aliasTypeFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
         }
         return this.aliasTypeFinder;
     }
 
-    public void setAliasTypeFinder(IntactDbFinderPersister<CvTerm> aliasTypeFinder) {
+    public void setAliasTypeFinder(IntactDbSynchronizer<CvTerm> aliasTypeFinder) {
         this.aliasTypeFinder = aliasTypeFinder;
     }
 
@@ -175,7 +175,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
     protected void prepareAliasTypeAndName(A objToPersist) {
         if (objToPersist.getType() != null){
             CvTerm type = objToPersist.getType();
-            IntactDbFinderPersister<CvTerm> typeFinder = getAliasTypeFinder();
+            IntactDbSynchronizer<CvTerm> typeFinder = getAliasTypeFinder();
             typeFinder.clearCache();
             try {
                 objToPersist.setType(typeFinder.synchronize(type));

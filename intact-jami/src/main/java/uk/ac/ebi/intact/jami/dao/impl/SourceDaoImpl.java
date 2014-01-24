@@ -6,8 +6,8 @@ import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
-import uk.ac.ebi.intact.jami.finder.IntactSourceFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.finder.IntactSourceSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
 import javax.persistence.EntityManager;
@@ -23,7 +23,7 @@ import java.util.Collection;
  */
 @Repository
 public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implements SourceDao{
-    private IntactDbFinderPersister<Source> sourceFinder;
+    private IntactDbSynchronizer<Source> sourceFinder;
 
     public SourceDaoImpl() {
         super(IntactSource.class);
@@ -558,14 +558,14 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implement
         return (IntactSource)query.getSingleResult();
     }
 
-    public IntactDbFinderPersister<Source> getSourceFinder() {
+    public IntactDbSynchronizer<Source> getSourceFinder() {
         if (this.sourceFinder == null){
-            this.sourceFinder = new IntactSourceFinderPersister(getEntityManager());
+            this.sourceFinder = new IntactSourceSynchronizer(getEntityManager());
         }
         return this.sourceFinder;
     }
 
-    public void setSourceFinder(IntactDbFinderPersister<Source> sourceFinder) {
+    public void setSourceFinder(IntactDbSynchronizer<Source> sourceFinder) {
         this.sourceFinder = sourceFinder;
     }
 

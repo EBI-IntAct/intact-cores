@@ -6,8 +6,8 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AnnotationDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -23,7 +23,7 @@ import java.util.Collection;
  */
 @Repository
 public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<A> implements AnnotationDao<A> {
-    private IntactDbFinderPersister<CvTerm> annotationTopicFinder;
+    private IntactDbSynchronizer<CvTerm> annotationTopicFinder;
 
     public Collection<A> getByValue(String value) {
         Query query;
@@ -148,14 +148,14 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
         return query.getResultList();
     }
 
-    public IntactDbFinderPersister<CvTerm> getAnnotationTopicFinder() {
+    public IntactDbSynchronizer<CvTerm> getAnnotationTopicFinder() {
         if (this.annotationTopicFinder == null){
-            this.annotationTopicFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+            this.annotationTopicFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
         }
         return this.annotationTopicFinder;
     }
 
-    public void setAnnotationTopicFinder(IntactDbFinderPersister<CvTerm> annotationTopicFinder) {
+    public void setAnnotationTopicFinder(IntactDbSynchronizer<CvTerm> annotationTopicFinder) {
         this.annotationTopicFinder = annotationTopicFinder;
     }
 
@@ -180,7 +180,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
     protected void prepareAnnotationTopicAndValue(A objToPersist) {
         // prepare topic
         CvTerm topic = objToPersist.getTopic();
-        IntactDbFinderPersister<CvTerm> typeFinder = getAnnotationTopicFinder();
+        IntactDbSynchronizer<CvTerm> typeFinder = getAnnotationTopicFinder();
         typeFinder.clearCache();
         try {
             objToPersist.setTopic(typeFinder.synchronize(topic));

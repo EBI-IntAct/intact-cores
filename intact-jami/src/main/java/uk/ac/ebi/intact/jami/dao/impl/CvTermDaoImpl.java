@@ -5,8 +5,8 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
 import javax.persistence.EntityManager;
@@ -22,7 +22,7 @@ import java.util.Collection;
  */
 @Repository
 public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implements CvTermDao{
-    private IntactDbFinderPersister<CvTerm> cvFinder;
+    private IntactDbSynchronizer<CvTerm> cvFinder;
 
     public CvTermDaoImpl() {
         super(IntactCvTerm.class);
@@ -702,14 +702,14 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implement
         return (IntactCvTerm)query.getSingleResult();
     }
 
-    public IntactDbFinderPersister<CvTerm> getCvFinder() {
+    public IntactDbSynchronizer<CvTerm> getCvFinder() {
         if (this.cvFinder == null){
-            this.cvFinder = new IntactCvTermFinderPersister(getEntityManager());
+            this.cvFinder = new IntactCvTermSynchronizer(getEntityManager());
         }
         return this.cvFinder;
     }
 
-    public void setCvFinder(IntactDbFinderPersister<CvTerm> cvFinder) {
+    public void setCvFinder(IntactDbSynchronizer<CvTerm> cvFinder) {
         this.cvFinder = cvFinder;
     }
 

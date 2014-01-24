@@ -5,8 +5,8 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -23,8 +23,8 @@ import java.util.Collection;
 @Repository
 public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBaseDao<X> implements XrefDao<X>{
 
-    private IntactDbFinderPersister<CvTerm> dbFinder;
-    private IntactDbFinderPersister<CvTerm> qualifierFinder;
+    private IntactDbSynchronizer<CvTerm> dbFinder;
+    private IntactDbSynchronizer<CvTerm> qualifierFinder;
 
     public Collection<X> getByPrimaryId(String value, String version) {
         Query query;
@@ -621,25 +621,25 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         return query.getResultList();
     }
 
-    public IntactDbFinderPersister<CvTerm> getDbFinder() {
+    public IntactDbSynchronizer<CvTerm> getDbFinder() {
         if (this.dbFinder == null){
-            this.dbFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.DATABASE_OBJCLASS);
+            this.dbFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.DATABASE_OBJCLASS);
         }
         return this.dbFinder;
     }
 
-    public void setDbFinder(IntactDbFinderPersister<CvTerm> dbFinder) {
+    public void setDbFinder(IntactDbSynchronizer<CvTerm> dbFinder) {
         this.dbFinder = dbFinder;
     }
 
-    public IntactDbFinderPersister<CvTerm> getQualifierFinder() {
+    public IntactDbSynchronizer<CvTerm> getQualifierFinder() {
         if (this.qualifierFinder == null){
-            this.qualifierFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.QUALIFIER_OBJCLASS);
+            this.qualifierFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.QUALIFIER_OBJCLASS);
         }
         return qualifierFinder;
     }
 
-    public void setQualifierFinder(IntactDbFinderPersister<CvTerm> qualifierFinder) {
+    public void setQualifierFinder(IntactDbSynchronizer<CvTerm> qualifierFinder) {
         this.qualifierFinder = qualifierFinder;
     }
 
@@ -664,7 +664,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
     protected void prepareXref(X objToPersist) {
         // prepare database
         CvTerm database = objToPersist.getDatabase();
-        IntactDbFinderPersister<CvTerm> dbFinder = getDbFinder();
+        IntactDbSynchronizer<CvTerm> dbFinder = getDbFinder();
         dbFinder.clearCache();
         try {
             objToPersist.setDatabase(dbFinder.synchronize(database));
@@ -674,7 +674,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         // prepare qualifier
         if (objToPersist.getQualifier() != null){
             CvTerm qualifier = objToPersist.getQualifier();
-            IntactDbFinderPersister<CvTerm> qualifierFinder = getQualifierFinder();
+            IntactDbSynchronizer<CvTerm> qualifierFinder = getQualifierFinder();
             qualifierFinder.clearCache();
             try {
                 objToPersist.setQualifier(qualifierFinder.synchronize(qualifier));

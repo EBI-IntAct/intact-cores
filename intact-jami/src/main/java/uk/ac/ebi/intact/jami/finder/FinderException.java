@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.jami.finder;
 
 /**
- * Exception thrown by IntactDbFinderPersister when an ambiguous object is found in the db
+ * Exception thrown by IntactDbSynchronizer when an ambiguous object is found in the db
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

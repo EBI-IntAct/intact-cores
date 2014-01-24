@@ -10,7 +10,7 @@ package uk.ac.ebi.intact.jami.finder;
  * @since <pre>21/01/14</pre>
  */
 
-public interface IntactDbFinderPersister<T> {
+public interface IntactDbSynchronizer<T> {
 
     public T find(T object) throws FinderException;
 

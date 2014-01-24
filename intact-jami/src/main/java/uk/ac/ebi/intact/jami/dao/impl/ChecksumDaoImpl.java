@@ -6,8 +6,8 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ChecksumDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -23,7 +23,7 @@ import java.util.Collection;
  */
 @Repository
 public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractIntactBaseDao<C> implements ChecksumDao<C> {
-    private IntactDbFinderPersister<CvTerm> methodFinder;
+    private IntactDbSynchronizer<CvTerm> methodFinder;
 
     public Collection<C> getByValue(String value) {
         Query query = getEntityManager().createQuery("select c from " + getEntityClass() + " c where c.value = :checksumValue");
@@ -93,14 +93,14 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
         return query.getResultList();
     }
 
-    public IntactDbFinderPersister<CvTerm> getMethodFinder() {
+    public IntactDbSynchronizer<CvTerm> getMethodFinder() {
         if (this.methodFinder == null){
-            this.methodFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+            this.methodFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
         }
         return this.methodFinder;
     }
 
-    public void setMethodFinder(IntactDbFinderPersister<CvTerm> methodFinder) {
+    public void setMethodFinder(IntactDbSynchronizer<CvTerm> methodFinder) {
         this.methodFinder = methodFinder;
     }
 
@@ -125,7 +125,7 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
     protected void prepareChecksumMethodAndValue(C objToPersist) {
         // prepare method
         CvTerm method = objToPersist.getMethod();
-        IntactDbFinderPersister<CvTerm> typeFinder = getMethodFinder();
+        IntactDbSynchronizer<CvTerm> typeFinder = getMethodFinder();
         typeFinder.clearCache();
         try {
             objToPersist.setMethod(typeFinder.synchronize(method));

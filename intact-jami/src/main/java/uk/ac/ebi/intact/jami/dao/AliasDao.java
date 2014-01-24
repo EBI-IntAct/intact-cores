@@ -6,7 +6,7 @@
 package uk.ac.ebi.intact.jami.dao;
 
 import psidev.psi.mi.jami.model.CvTerm;
-import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
+import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ public interface AliasDao<A extends AbstractIntactAlias> extends IntactBaseDao<A
 
     public Collection<A> getByParentAc(String parentAc);
 
-    public IntactDbFinderPersister<CvTerm> getAliasTypeFinder();
+    public IntactDbSynchronizer<CvTerm> getAliasTypeFinder();
 
-    public void setAliasTypeFinder(IntactDbFinderPersister<CvTerm> aliasTypeFinder);
+    public void setAliasTypeFinder(IntactDbSynchronizer<CvTerm> aliasTypeFinder);
 }

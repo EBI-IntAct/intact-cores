@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
@@ -194,6 +195,21 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     @Deprecated
     public void setPersistentPostalAddress(String persistentPostalAddress) {
         this.persistentPostalAddress = persistentPostalAddress;
+    }
+
+    @Transient
+    public boolean areXrefsInitialized(){
+        return Hibernate.isInitialized(getPersistentXrefs());
+    }
+
+    @Transient
+    public boolean areSynonymsInitialized(){
+        return Hibernate.isInitialized(getSynonyms());
+    }
+
+    @Transient
+    public boolean areAnnotationsInitialized(){
+        return Hibernate.isInitialized(getPersistentAnnotations());
     }
 
     @Override

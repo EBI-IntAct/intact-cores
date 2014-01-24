@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Target;
@@ -210,6 +211,21 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Column( name = "objclass", nullable = false)
     public String getObjClass() {
         return objClass;
+    }
+
+    @Transient
+    public boolean areXrefsInitialized(){
+        return Hibernate.isInitialized(getPersistentXrefs());
+    }
+
+    @Transient
+    public boolean areSynonymsInitialized(){
+        return Hibernate.isInitialized(getSynonyms());
+    }
+
+    @Transient
+    public boolean areAnnotationsInitialized(){
+        return Hibernate.isInitialized(getAnnotations());
     }
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
