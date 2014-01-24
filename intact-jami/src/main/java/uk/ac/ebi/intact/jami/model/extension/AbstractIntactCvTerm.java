@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.Hibernate;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
@@ -15,7 +14,6 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.Size;
-import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -243,18 +241,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     @Override
     public String toString() {
         return (miIdentifier != null ? miIdentifier.getId() : (modIdentifier != null ? modIdentifier.getId() : (parIdentifier != null ? parIdentifier.getId() : "-"))) + " ("+shortName+")";
-    }
-
-    public boolean isXrefCollectionLoaded(){
-        return Hibernate.isInitialized(this.persistentXrefs);
-    }
-
-    public boolean isAnnotationCollectionLoaded(){
-        return Hibernate.isInitialized(this.annotations);
-    }
-
-    public boolean isSynonymsCollectionLoaded(){
-        return Hibernate.isInitialized(this.synonyms);
     }
 
     protected void initialiseXrefs(){

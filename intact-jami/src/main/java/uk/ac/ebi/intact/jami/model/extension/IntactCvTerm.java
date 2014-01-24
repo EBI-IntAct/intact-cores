@@ -7,8 +7,6 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.OntologyTerm;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.model.listener.CvDefinitionListener;
-import uk.ac.ebi.intact.jami.model.listener.CvIdentifierListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -27,7 +25,6 @@ import java.util.Collection;
 @Entity
 @Table( name = "ia_controlledvocab",
         uniqueConstraints = {@UniqueConstraint(columnNames={"objclass", "shortlabel"})})
-@EntityListeners(value = {CvIdentifierListener.class, CvDefinitionListener.class})
 @Cacheable
 public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 

@@ -19,20 +19,18 @@ public class SourceUrlAndPostalAddressListener {
     @PrePersist
     @PreUpdate
     public void prePersist(IntactSource intactCv) {
-        if (intactCv.isAnnotationCollectionLoaded()){
-            if (intactCv.getUrl() != null){
-                intactCv.setPersistentURL(intactCv.getUrl());
-            }
-            else{
-                intactCv.setPersistentURL(null);
-            }
+        if (intactCv.getUrl() != null){
+            intactCv.setPersistentURL(intactCv.getUrl());
+        }
+        else{
+            intactCv.setPersistentURL(null);
+        }
 
-            if (intactCv.getPostalAddress() != null){
-                intactCv.setPersistentPostalAddress(intactCv.getPostalAddress());
-            }
-            else{
-                intactCv.setPersistentPostalAddress(null);
-            }
+        if (intactCv.getPostalAddress() != null){
+            intactCv.setPersistentPostalAddress(intactCv.getPostalAddress());
+        }
+        else{
+            intactCv.setPersistentPostalAddress(null);
         }
     }
 }

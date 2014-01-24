@@ -118,7 +118,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         this.persistedObjects.put(object, object);
 
         IntactSource intactSource = (IntactSource)object;
-        prepareSourceProperties(intactSource);
+        synchronizeProperties(intactSource);
 
         // persist the source
         this.entityManager.persist(intactSource);
@@ -126,7 +126,11 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
         return intactSource;
     }
 
-    public void prepareSourceProperties(IntactSource intactSource) throws FinderException {
+    public void synchronizeProperties(Source object) throws FinderException {
+        synchronizeProperties((IntactSource)object);
+    }
+
+    public void synchronizeProperties(IntactSource intactSource) throws FinderException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactSource);
         // then check full name
@@ -165,10 +169,10 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
             }
 
             // pre persist database
-            cvXref.setDatabase(this.cvFinderPersister.preparePreExistingCv(cvXref.getDatabase()));
+            cvXref.setDatabase(this.cvFinderPersister.preparePreExistingCv(cvXref.getDatabase(), IntactUtils.DATABASE_OBJCLASS));
             // pre persist qualifier
             if (cvXref.getQualifier() != null){
-                cvXref.setQualifier(this.cvFinderPersister.preparePreExistingCv(cvXref.getQualifier()));
+                cvXref.setQualifier(this.cvFinderPersister.preparePreExistingCv(cvXref.getQualifier(), IntactUtils.QUALIFIER_OBJCLASS));
             }
 
             // check secondaryId value
@@ -204,7 +208,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
             }
 
             // pre persist annotation topic
-            cvAnnot.setTopic(this.cvFinderPersister.preparePreExistingCv(cvAnnot.getTopic()));
+            cvAnnot.setTopic(this.cvFinderPersister.preparePreExistingCv(cvAnnot.getTopic(), IntactUtils.TOPIC_OBJCLASS));
 
             // check annotation value
             if (cvAnnot.getValue() != null && cvAnnot.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -237,7 +241,7 @@ public class IntactSourceFinderPersister implements IntactDbFinderPersister<Sour
             CvTerm aliasType = cvAlias.getType();
             if (aliasType != null){
                 // pre persist alias type
-                cvAlias.setType(this.cvFinderPersister.preparePreExistingCv(cvAlias.getType()));
+                cvAlias.setType(this.cvFinderPersister.preparePreExistingCv(cvAlias.getType(), IntactUtils.ALIAS_TYPE_OBJCLASS));
             }
 
             // check alias name

@@ -4,9 +4,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
 import uk.ac.ebi.intact.jami.finder.IntactSourceFinderPersister;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
 import javax.persistence.EntityManager;
@@ -572,7 +570,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implement
     public void merge(IntactSource objToReplicate) {
         this.sourceFinder.clearCache();
         try {
-            this.sourceFinder.prepareSourceProperties(objToReplicate);
+            this.sourceFinder.synchronizeProperties(objToReplicate);
         } catch (FinderException e) {
             throw new IllegalStateException("Cannot merge the institution because could not synchronize its xrefs, annotations and/or aliases.");
         }
@@ -593,7 +591,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implement
     public IntactSource update(IntactSource objToUpdate) {
         this.sourceFinder.clearCache();
         try {
-            this.sourceFinder.prepareSourceProperties(objToUpdate);
+            this.sourceFinder.synchronizeProperties(objToUpdate);
         } catch (FinderException e) {
             throw new IllegalStateException("Cannot update the institution because could not synchronize its xrefs, annotations and/or aliases.");
         }
