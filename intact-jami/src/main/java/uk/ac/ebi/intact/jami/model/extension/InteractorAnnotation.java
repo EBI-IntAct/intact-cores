@@ -18,7 +18,7 @@ import javax.persistence.Table;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_interactor_annot" )
+@Table( name = "ia_molecule_annot" )
 public class InteractorAnnotation extends AbstractIntactAnnotation{
 
     private Interactor parent;
