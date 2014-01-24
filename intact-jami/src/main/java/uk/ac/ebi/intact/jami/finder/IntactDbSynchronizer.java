@@ -47,7 +47,7 @@ public interface IntactDbSynchronizer<T> {
      * Synchronize the given instance and its properties with the database,
      * If the object is not annotated with hibernate annotations, a new persistable object may be created and synchronized with the database.
      * @param object
-     * @return the object synchronized. It may not be persisted as we don't call the entityManager.persist method. However, the object is ready for persistent/update
+     * @return the object synchronized and persisted.
      * @throws FinderException
      * @throws PersisterException
      * @throws SynchronizerException

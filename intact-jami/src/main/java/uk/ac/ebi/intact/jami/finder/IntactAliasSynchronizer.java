@@ -31,7 +31,7 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
             throw new IllegalArgumentException("Alias synchronizer needs a non null alias class");
         }
         this.aliasClass = aliasClass;
-        this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager);
+        this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.ALIAS_TYPE_OBJCLASS);
     }
 
     public Alias find(Alias object) throws FinderException {
@@ -65,6 +65,7 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
 
             // synchronize properties
             synchronizeProperties(newAlias);
+            this.entityManager.persist(newAlias);
             return newAlias;
         }
         else{
@@ -89,18 +90,17 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
     }
 
     protected void synchronizeProperties(AbstractIntactAlias object) throws PersisterException, SynchronizerException {
-        AbstractIntactAlias intactAlias = (AbstractIntactAlias)object;
-        if (intactAlias.getType() != null){
-            CvTerm type = intactAlias.getType();
+        if (object.getType() != null){
+            CvTerm type = object.getType();
             try {
-                intactAlias.setType(typeSynchronizer.synchronize(type));
+                object.setType(typeSynchronizer.synchronize(type));
             } catch (FinderException e) {
                 throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
             }
         }
         // check alias name
-        if (intactAlias.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-            intactAlias.setName(intactAlias.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
+        if (object.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
+            object.setName(object.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
         }
     }
 }
