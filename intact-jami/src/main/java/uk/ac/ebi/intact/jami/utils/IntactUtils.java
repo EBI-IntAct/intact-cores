@@ -47,8 +47,13 @@ public class IntactUtils {
     public static final String INTERACTION_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvInteraction";
     public static final String INTERACTOR_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractorType";
     public static final String RANGE_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvFuzzyType";
+    public static final String CONFIDENCE_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvConfidenceType";
 
     public static final String RELEASED_STATUS = "released";
+
+    public static IntactCvTerm createMIConfidenceType(String name, String MI){
+        return createIntactMITerm(name, MI, CONFIDENCE_TYPE_OBJCLASS);
+    }
 
     public static IntactCvTerm createMIRangeStatus(String name, String MI){
         return createIntactMITerm(name, MI, RANGE_STATUS_OBJCLASS);

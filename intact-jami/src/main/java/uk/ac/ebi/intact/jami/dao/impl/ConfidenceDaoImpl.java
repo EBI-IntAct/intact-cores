@@ -4,39 +4,39 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.dao.ChecksumDao;
+import uk.ac.ebi.intact.jami.dao.ConfidenceDao;
 import uk.ac.ebi.intact.jami.finder.FinderException;
 import uk.ac.ebi.intact.jami.finder.IntactCvTermFinderPersister;
 import uk.ac.ebi.intact.jami.finder.IntactDbFinderPersister;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Query;
 import java.util.Collection;
 
 /**
- * Implementation of checksum dao
+ * Implementation of confidence dao
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
 @Repository
-public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractIntactBaseDao<C> implements ChecksumDao<C> {
-    private IntactDbFinderPersister<CvTerm> methodFinder;
+public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends AbstractIntactBaseDao<C> implements ConfidenceDao<C> {
+    private IntactDbFinderPersister<CvTerm> typeFinder;
 
     public Collection<C> getByValue(String value) {
-        Query query = getEntityManager().createQuery("select c from " + getEntityClass() + " c where c.value = :checksumValue");
-        query.setParameter("checksumValue",value);
+        Query query = getEntityManager().createQuery("select c from " + getEntityClass() + " c where c.value = :confValue");
+        query.setParameter("confValue",value);
         return query.getResultList();
     }
 
-    public Collection<C> getByMethod(String methodName, String methodMI) {
+    public Collection<C> getByType(String typeName, String typeMI) {
         Query query;
-        if (methodMI != null){
+        if (typeMI != null){
             query = getEntityManager().createQuery("select c from "+getEntityClass()+" c " +
-                    "join c.method as m " +
-                    "join m.persistentXrefs as x " +
+                    "join c.type as t " +
+                    "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -45,42 +45,42 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", methodMI);
+            query.setParameter("mi", typeMI);
         }
         else{
             query = getEntityManager().createQuery("select c from "+getEntityClass()+" c " +
-                    "join c.method as m " +
-                    "where m.shortName = :methodName");
-            query.setParameter("methodName", methodName);
+                    "join c.type as t " +
+                    "where t.shortName = :confName");
+            query.setParameter("confName", typeName);
         }
         return query.getResultList();
     }
 
-    public Collection<C> getByMethodAndValue(String methodName, String methodMI, String value) {
+    public Collection<C> getByTypeAndValue(String typeName, String typeMI, String value) {
         Query query;
-        if (methodMI != null){
+        if (typeMI != null){
             query = getEntityManager().createQuery("select c from "+getEntityClass()+" c " +
-                    "join c.method as m " +
-                    "join m.persistentXrefs as x " +
+                    "join c.type as t " +
+                    "join t.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
                     "and x.id = :mi " +
-                    "and c.value = :checksumValue");
+                    "and c.value = :confValue");
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", methodMI);
-            query.setParameter("checksumValue", value);
+            query.setParameter("mi", typeMI);
+            query.setParameter("confValue", value);
         }
         else{
             query = getEntityManager().createQuery("select c from "+getEntityClass()+" c " +
-                    "join c.method as m " +
-                    "where m.shortName = :checksumName " +
-                    "and c.value = :checksumValue");
-            query.setParameter("checksumName", methodName);
-            query.setParameter("checksumValue", value);
+                    "join c.type as t " +
+                    "where t.shortName = :confName " +
+                    "and c.value = :confValue");
+            query.setParameter("confName", typeName);
+            query.setParameter("confValue", value);
         }
         return query.getResultList();
     }
@@ -93,50 +93,50 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
         return query.getResultList();
     }
 
-    public IntactDbFinderPersister<CvTerm> getMethodFinder() {
-        if (this.methodFinder == null){
-            this.methodFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+    public IntactDbFinderPersister<CvTerm> getTypeFinder() {
+        if (this.typeFinder == null){
+            this.typeFinder = new IntactCvTermFinderPersister(getEntityManager(), IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
         }
-        return this.methodFinder;
+        return this.typeFinder;
     }
 
-    public void setMethodFinder(IntactDbFinderPersister<CvTerm> methodFinder) {
-        this.methodFinder = methodFinder;
+    public void setTypeFinder(IntactDbFinderPersister<CvTerm> typeFinder) {
+        this.typeFinder = typeFinder;
     }
 
     @Override
     public void merge(C objToReplicate) {
-        prepareChecksumMethodAndValue(objToReplicate);
+        prepareConfidenceTypeAndValue(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
     public void persist(C  objToPersist) {
-        prepareChecksumMethodAndValue(objToPersist);
+        prepareConfidenceTypeAndValue(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
     public C update(C  objToUpdate) {
-        prepareChecksumMethodAndValue(objToUpdate);
+        prepareConfidenceTypeAndValue(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareChecksumMethodAndValue(C objToPersist) {
-        // prepare method
-        CvTerm method = objToPersist.getMethod();
-        IntactDbFinderPersister<CvTerm> typeFinder = getMethodFinder();
+    protected void prepareConfidenceTypeAndValue(C objToPersist) {
+        // prepare type
+        CvTerm type = objToPersist.getType();
+        IntactDbFinderPersister<CvTerm> typeFinder = getTypeFinder();
         typeFinder.clearCache();
         try {
-            CvTerm existingType = typeFinder.find(method);
+            CvTerm existingType = typeFinder.find(type);
             if (existingType == null){
-                existingType = typeFinder.persist(method);
+                existingType = typeFinder.persist(type);
             }
-            objToPersist.setMethod(existingType);
+            objToPersist.setType(existingType);
         } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its method.");
+            throw new IllegalStateException("Cannot persist the confidence because could not synchronize its confidence type.");
         }
-        // check checksum value
+        // check confidence value
         if (objToPersist.getValue() != null && objToPersist.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
             objToPersist.setValue(objToPersist.getValue().substring(0,IntactUtils.MAX_DESCRIPTION_LEN));
         }

@@ -164,7 +164,7 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
         this.expressedIn = organism;
     }
 
-    @OneToMany( mappedBy = "participant", orphanRemoval = true,
+    @OneToMany( mappedBy = "parent", orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ExperimentalEntityConfidence.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ExperimentalEntityConfidence.class)

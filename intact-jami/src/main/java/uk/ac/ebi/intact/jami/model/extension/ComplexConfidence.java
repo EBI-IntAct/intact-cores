@@ -32,11 +32,11 @@ public class ComplexConfidence extends AbstractIntactConfidence implements Model
     @ManyToOne( targetEntity = IntactComplex.class )
     @JoinColumn( name = "complex_ac", referencedColumnName = "ac" )
     @Target(IntactComplex.class)
-    public Complex getComplex() {
+    public Complex getParent() {
         return interaction;
     }
 
-    public void setComplex(Complex interaction) {
+    public void setParent(Complex interaction) {
         this.interaction = interaction;
     }
 

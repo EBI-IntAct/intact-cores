@@ -200,7 +200,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return removed;
     }
 
-    @OneToMany( mappedBy = "complex", orphanRemoval = true,
+    @OneToMany( mappedBy = "parent", orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ComplexConfidence.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ComplexConfidence.class)

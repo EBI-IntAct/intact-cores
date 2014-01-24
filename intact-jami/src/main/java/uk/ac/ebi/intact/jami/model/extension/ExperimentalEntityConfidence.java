@@ -32,11 +32,11 @@ public class ExperimentalEntityConfidence extends AbstractIntactConfidence{
     @ManyToOne( targetEntity = AbstractIntactExperimentalEntity.class )
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
     @Target(AbstractIntactExperimentalEntity.class)
-    public ExperimentalEntity getParticipant() {
+    public ExperimentalEntity getParent() {
         return participant;
     }
 
-    public void setParticipant(ExperimentalEntity participant) {
+    public void setParent(ExperimentalEntity participant) {
         this.participant = participant;
     }
 }

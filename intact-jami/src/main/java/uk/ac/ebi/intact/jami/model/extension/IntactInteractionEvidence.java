@@ -293,7 +293,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return this.variableParameterValueSets;
     }
 
-    @OneToMany( mappedBy = "interaction", orphanRemoval = true,
+    @OneToMany( mappedBy = "parent", orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = InteractionEvidenceConfidence.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionEvidenceConfidence.class)

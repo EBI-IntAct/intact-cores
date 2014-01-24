@@ -33,11 +33,11 @@ public class InteractionEvidenceConfidence extends AbstractIntactConfidence{
     @ManyToOne( targetEntity = IntactInteractionEvidence.class )
     @JoinColumn( name = "interaction_ac", referencedColumnName = "ac" )
     @Target(IntactInteractionEvidence.class)
-    public InteractionEvidence getInteraction() {
+    public InteractionEvidence getParent() {
         return interaction;
     }
 
-    public void setInteraction(InteractionEvidence interaction) {
+    public void setParent(InteractionEvidence interaction) {
         this.interaction = interaction;
     }
 }
