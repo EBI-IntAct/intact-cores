@@ -4,10 +4,10 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -21,7 +21,7 @@ import java.util.Collection;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implements CvTermDao{
+public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implements CvTermDao {
     private IntactDbSynchronizer<CvTerm> cvFinder;
 
     public CvTermDaoImpl() {

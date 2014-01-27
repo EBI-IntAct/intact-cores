@@ -6,8 +6,8 @@
 package uk.ac.ebi.intact.jami.dao;
 
 import psidev.psi.mi.jami.model.CvTerm;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import java.util.Collection;
 

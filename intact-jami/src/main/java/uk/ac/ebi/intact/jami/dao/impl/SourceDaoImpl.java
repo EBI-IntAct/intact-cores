@@ -5,10 +5,10 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactSourceSynchronizer;
-import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -22,7 +22,7 @@ import java.util.Collection;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implements SourceDao{
+public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implements SourceDao {
     private IntactDbSynchronizer<Source> sourceFinder;
 
     public SourceDaoImpl() {

@@ -4,10 +4,10 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AliasDao;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Query;
@@ -21,7 +21,7 @@ import java.util.Collection;
  * @since <pre>21/01/14</pre>
  */
 @Repository
-public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactBaseDao<A> implements AliasDao<A>{
+public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactBaseDao<A> implements AliasDao<A> {
 
     private IntactDbSynchronizer<CvTerm> aliasTypeFinder;
 
@@ -185,7 +185,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
         }
         // check alias name
         if (objToPersist.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-            objToPersist.setName(objToPersist.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
+            objToPersist.setName(objToPersist.getName().substring(0, IntactUtils.MAX_ALIAS_NAME_LEN));
         }
     }
 }

@@ -4,10 +4,10 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Query;
@@ -21,7 +21,7 @@ import java.util.Collection;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBaseDao<X> implements XrefDao<X>{
+public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBaseDao<X> implements XrefDao<X> {
 
     private IntactDbSynchronizer<CvTerm> dbFinder;
     private IntactDbSynchronizer<CvTerm> qualifierFinder;
@@ -683,8 +683,8 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
             }
         }
         // check secondaryId
-        if (objToPersist.getSecondaryId() != null && objToPersist.getSecondaryId().length() > IntactUtils.MAX_ID_LEN){
-            objToPersist.setSecondaryId(objToPersist.getSecondaryId().substring(0, IntactUtils.MAX_ID_LEN));
+        if (objToPersist.getSecondaryId() != null && objToPersist.getSecondaryId().length() > IntactUtils.MAX_SECONDARY_ID_LEN){
+            objToPersist.setSecondaryId(objToPersist.getSecondaryId().substring(0, IntactUtils.MAX_SECONDARY_ID_LEN));
         }
         // check version
         if (objToPersist.getVersion() != null && objToPersist.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){

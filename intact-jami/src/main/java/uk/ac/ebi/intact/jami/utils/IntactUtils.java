@@ -23,7 +23,8 @@ public class IntactUtils {
     public static final int MAX_FULL_NAME_LEN = 1000;
     public static final int MAX_DESCRIPTION_LEN = 4000;
     public static final int MAX_ALIAS_NAME_LEN = 256;
-    public static final int MAX_ID_LEN = 256;
+    public static final int MAX_SECONDARY_ID_LEN = 256;
+    public static final int MAX_ID_LEN = 50;
     public static final int MAX_DB_RELEASE_LEN = 10;
     /**
      * As the maximum size of database objects is limited, the sequence is represented as

@@ -1,12 +1,15 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
+import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Query;
@@ -22,7 +25,7 @@ import java.util.List;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractIntactBaseDao<F> implements FeatureDao<F>{
+public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractIntactBaseDao<F> implements FeatureDao<F> {
     private IntactDbSynchronizer<CvTerm> topicFinder;
     private IntactDbSynchronizer<CvTerm> typeFinder;
     private IntactDbSynchronizer<CvTerm> dbFinder;
@@ -787,13 +790,13 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractInt
             }
 
             // check secondaryId value
-            if (featureRef.getSecondaryId() != null && featureRef.getSecondaryId().length() > IntactUtils.MAX_ID_LEN){
-                featureRef.setSecondaryId(featureRef.getSecondaryId().substring(0,IntactUtils.MAX_ID_LEN));
+            if (featureRef.getSecondaryId() != null && featureRef.getSecondaryId().length() > IntactUtils.MAX_SECONDARY_ID_LEN){
+                featureRef.setSecondaryId(featureRef.getSecondaryId().substring(0, IntactUtils.MAX_SECONDARY_ID_LEN));
             }
 
             // check version value
             if (featureRef.getVersion() != null && featureRef.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){
-                featureRef.setVersion(featureRef.getVersion().substring(0,IntactUtils.MAX_DB_RELEASE_LEN));
+                featureRef.setVersion(featureRef.getVersion().substring(0, IntactUtils.MAX_DB_RELEASE_LEN));
             }
         }
     }
@@ -823,7 +826,7 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractInt
 
             // check annotation value
             if (featureAnnot.getValue() != null && featureAnnot.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-                featureAnnot.setValue(featureAnnot.getValue().substring(0,IntactUtils.MAX_DESCRIPTION_LEN));
+                featureAnnot.setValue(featureAnnot.getValue().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
             }
         }
     }
@@ -857,7 +860,7 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractInt
 
             // check alias name
             if (cvAlias.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-                cvAlias.setName(cvAlias.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
+                cvAlias.setName(cvAlias.getName().substring(0, IntactUtils.MAX_ALIAS_NAME_LEN));
             }
         }
     }

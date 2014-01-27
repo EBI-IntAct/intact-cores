@@ -4,11 +4,11 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.RangeDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
+import uk.ac.ebi.intact.jami.model.extension.IntactRange;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
-import uk.ac.ebi.intact.jami.model.extension.IntactRange;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -23,7 +23,7 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 @Repository
-public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements RangeDao{
+public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements RangeDao {
 
     private IntactDbSynchronizer<CvTerm> statusFinder;
 
@@ -200,13 +200,13 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements 
     }
 
     @Override
-    public void persist(IntactRange  objToPersist) {
+    public void persist(IntactRange objToPersist) {
         prepareRangeStatus(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public IntactRange update(IntactRange  objToUpdate) {
+    public IntactRange update(IntactRange objToUpdate) {
         prepareRangeStatus(objToUpdate);
         return super.update(objToUpdate);
     }
