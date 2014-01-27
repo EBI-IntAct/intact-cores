@@ -2,14 +2,12 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 
 import org.springframework.stereotype.Repository;
+import psidev.psi.mi.jami.model.Checksum;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ChecksumDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.Query;
 import java.util.Collection;
@@ -23,7 +21,7 @@ import java.util.Collection;
  */
 @Repository
 public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractIntactBaseDao<C> implements ChecksumDao<C> {
-    private IntactDbSynchronizer<CvTerm> methodFinder;
+    private IntactDbSynchronizer<Checksum> checksumSynchronizer;
 
     public Collection<C> getByValue(String value) {
         Query query = getEntityManager().createQuery("select c from " + getEntityClass() + " c where c.value = :checksumValue");
@@ -93,15 +91,15 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<CvTerm> getMethodFinder() {
-        if (this.methodFinder == null){
-            this.methodFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+    public IntactDbSynchronizer<Checksum> getChecksumSynchronizer() {
+        if (this.checksumSynchronizer == null){
+            this.checksumSynchronizer = new IntactChecksumSynchronizer(getEntityManager(), AbstractIntactChecksum.class);
         }
-        return this.methodFinder;
+        return this.checksumSynchronizer;
     }
 
-    public void setMethodFinder(IntactDbSynchronizer<CvTerm> methodFinder) {
-        this.methodFinder = methodFinder;
+    public void setChecksumSynchronizer(IntactDbSynchronizer<Checksum> checksumSynchronizer) {
+        this.checksumSynchronizer = checksumSynchronizer;
     }
 
     @Override
@@ -123,18 +121,15 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
     }
 
     protected void prepareChecksumMethodAndValue(C objToPersist) {
-        // prepare method
-        CvTerm method = objToPersist.getMethod();
-        IntactDbSynchronizer<CvTerm> typeFinder = getMethodFinder();
-        typeFinder.clearCache();
+        getChecksumSynchronizer().clearCache();
         try {
-            objToPersist.setMethod(typeFinder.synchronize(method));
+            getChecksumSynchronizer().synchronizeProperties(objToPersist);
         } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its method.");
-        }
-        // check checksum value
-        if (objToPersist.getValue() != null && objToPersist.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-            objToPersist.setValue(objToPersist.getValue().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
+            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its checksum method.");
+        } catch (SynchronizerException e) {
+            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its checksum method.");
+        } catch (PersisterException e) {
+            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its checksum method.");
         }
     }
 }
