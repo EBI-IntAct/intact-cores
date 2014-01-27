@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.finder;
+package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;

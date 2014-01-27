@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.finder;
+package uk.ac.ebi.intact.jami.synchronizer;
 
 import org.apache.commons.lang.StringUtils;
 import psidev.psi.mi.jami.model.*;
@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 /**
- * Default finder for cv terms
+ * Default synchronizer for cv terms
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -36,7 +36,7 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
 
     public IntactCvTermSynchronizer(EntityManager entityManager){
         if (entityManager == null){
-            throw new IllegalArgumentException("A Cv Term finder needs a non null entity manager");
+            throw new IllegalArgumentException("A Cv Term synchronizer needs a non null entity manager");
         }
         this.entityManager = entityManager;
         this.objClass = null;

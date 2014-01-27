@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.finder;
+package uk.ac.ebi.intact.jami.synchronizer;
 
 /**
  * Exception thrown when we cannot synchronize an object

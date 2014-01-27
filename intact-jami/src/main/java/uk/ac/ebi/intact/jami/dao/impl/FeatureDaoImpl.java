@@ -3,9 +3,9 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
-import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 

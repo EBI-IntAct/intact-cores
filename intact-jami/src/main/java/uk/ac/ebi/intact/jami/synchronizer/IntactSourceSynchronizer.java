@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.finder;
+package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 /**
- * Default finder for sources
+ * Default synchronizer for sources
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -25,7 +25,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
 
     public IntactSourceSynchronizer(EntityManager entityManager){
         if (entityManager == null){
-            throw new IllegalArgumentException("A Cv Term finder needs a non null entity manager");
+            throw new IllegalArgumentException("A Cv Term synchronizer needs a non null entity manager");
         }
         this.entityManager = entityManager;
         // to keep track of persisted cvs

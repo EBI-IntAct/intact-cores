@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.finder;
+package uk.ac.ebi.intact.jami.synchronizer;
 
 /**
  * Interface for finders that can retrieve existing instances in the DB given an object

@@ -5,9 +5,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
-import uk.ac.ebi.intact.jami.finder.FinderException;
-import uk.ac.ebi.intact.jami.finder.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.finder.IntactSourceSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.IntactSourceSynchronizer;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
 import javax.persistence.EntityManager;

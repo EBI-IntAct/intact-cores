@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.finder;
+package uk.ac.ebi.intact.jami.synchronizer;
 
 /**
  * Exception thrown by IntactDbSynchronizer when an ambiguous object is found in the db
