@@ -4,10 +4,15 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
+import psidev.psi.mi.jami.model.impl.DefaultXref;
+import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import psidev.psi.mi.jami.utils.comparator.cv.UnambiguousCvTermComparator;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
+import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -39,6 +44,8 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     private PersistentXrefList persistentXrefs;
     private Collection<Annotation> annotations;
     private Collection<Alias> synonyms;
+
+    private Xref acRef;
 
     protected AbstractIntactCvTerm() {
         //super call sets creation time data
@@ -84,6 +91,19 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             throw new IllegalArgumentException("The short name cannot be null");
         }
         this.shortName = name.trim().toLowerCase();
+    }
+
+    @Override
+    public void setAc(String ac) {
+        super.setAc(ac);
+        // only if identifiers are initialised
+        if (this.acRef != null && !this.acRef.getId().equals(ac)){
+            // we don't want to create a persistent xref
+            Xref newRef = new DefaultXref(this.acRef.getDatabase(), ac, this.acRef.getQualifier());
+            this.identifiers.removeOnly(acRef);
+            this.acRef = newRef;
+            this.identifiers.addOnly(acRef);
+        }
     }
 
     @Column( length = IntactUtils.MAX_FULL_NAME_LEN )
@@ -243,6 +263,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     protected void initialiseXrefs(){
         this.identifiers = new CvTermIdentifierList();
         this.xrefs = new CvTermXrefList();
+        // initialise persistent xref and content
         if (this.persistentXrefs != null){
             for (Xref ref : this.persistentXrefs){
                 if (XrefUtils.isXrefAnIdentifier(ref)){
@@ -257,11 +278,18 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         else{
             this.persistentXrefs = new PersistentXrefList(null);
         }
+        // initialise ac
+        if (getAc() != null){
+            IntactContext intactContext = ApplicationContextProvider.getBean(IntactContext.class);
+            if (intactContext != null){
+                this.acRef = new DefaultXref(intactContext.getConfig().getDefaultInstitution(), getAc(), CvTermUtils.createIdentityQualifier());
+            }
+            else{
+                this.acRef = new DefaultXref(new DefaultCvTerm("unknwon"), getAc(), CvTermUtils.createIdentityQualifier());
+            }
+            this.identifiers.addOnly(this.acRef);
+        }
     }
-
-    protected abstract Xref instantiateXrefFrom(Xref added);
-
-    protected abstract boolean needToWrapXrefForPersistence(Xref added);
 
     @javax.persistence.Transient
     protected Collection<Xref> getPersistentXrefs() {
@@ -382,20 +410,29 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
         @Override
         protected void processAddedObjectEvent(Xref added) {
-            processAddedIdentifierEvent(added);
-            persistentXrefs.add(added);
+            if (!added.equals(acRef)){
+                processAddedIdentifierEvent(added);
+                persistentXrefs.add(added);
+            }
         }
 
         @Override
         protected void processRemovedObjectEvent(Xref removed) {
-            processRemovedIdentifierEvent(removed);
-            persistentXrefs.remove(removed);
+            if (!removed.equals(acRef)){
+                processRemovedIdentifierEvent(removed);
+                persistentXrefs.remove(removed);
+            }
+            else{
+                super.addOnly(acRef);
+                throw new UnsupportedOperationException("Cannot remove the database accession of a Cv object from its list of identifiers.");
+            }
         }
 
         @Override
         protected void clearProperties() {
             clearPropertiesLinkedToIdentifiers();
             persistentXrefs.retainAll(getXrefs());
+            super.addOnly(acRef);
         }
     }
 
@@ -428,12 +465,12 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
         @Override
         protected boolean needToPreProcessElementToAdd(Xref added) {
-            return needToWrapXrefForPersistence(added);
+            return false;
         }
 
         @Override
         protected Xref processOrWrapElementToAdd(Xref added) {
-            return instantiateXrefFrom(added);
+            return added;
         }
     }
 }

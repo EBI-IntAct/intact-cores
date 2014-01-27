@@ -257,27 +257,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         this.postalAddress = null;
     }
 
-    @Override
-    protected Xref instantiateXrefFrom(Xref added) {
-        SourceXref persistentRef;
-        persistentRef = new SourceXref(added.getDatabase(), added.getId(), added.getVersion(), added.getQualifier());
-        return persistentRef;
-    }
-
-    @Override
-    protected boolean needToWrapXrefForPersistence(Xref added) {
-        if (!(added instanceof SourceXref)){
-            return true;
-        }
-        else{
-            SourceXref termXref = (SourceXref)added;
-            if (termXref.getParent() != null && termXref.getParent() != this){
-                return true;
-            }
-        }
-        return false;
-    }
-
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceAnnotation.class)

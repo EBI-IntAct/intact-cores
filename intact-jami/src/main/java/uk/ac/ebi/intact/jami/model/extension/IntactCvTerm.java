@@ -236,25 +236,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getPersistentXrefs();
     }
 
-    @Override
-    protected Xref instantiateXrefFrom(Xref added) {
-        return new CvTermXref(added.getDatabase(), added.getId(), added.getVersion(), added.getQualifier());
-    }
-
-    @Override
-    protected boolean needToWrapXrefForPersistence(Xref added) {
-        if (!(added instanceof CvTermXref)){
-            return true;
-        }
-        else{
-            CvTermXref termXref = (CvTermXref)added;
-            if (termXref.getParent() != null && termXref.getParent() != this){
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void setChildren( Collection<OntologyTerm> children ) {
         this.children = children;
     }
