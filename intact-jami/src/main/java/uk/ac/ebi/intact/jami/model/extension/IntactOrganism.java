@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Target;
@@ -97,6 +98,10 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
             else if (this.compartment != null){
                 this.commonName = this.commonName+"-"+this.compartment.getShortName();
             }
+
+            if (IntactUtils.MAX_SHORT_LABEL_LEN < commonName.length()){
+                setCommonName(this.commonName.substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
+            }
         }
     }
 
@@ -157,10 +162,7 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
         this.cellType = cellType;
     }
 
-    @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "compartment_ac", referencedColumnName = "ac" )
-    @ForeignKey(name = "FK_BIOSOURCE$COMPARTMENT")
-    @Target(IntactCvTerm.class)
+    @Transient
     public CvTerm getCompartment() {
         return this.compartment;
     }
@@ -202,6 +204,11 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
     @Override
     public String toString() {
         return taxId + "(" + (commonName != null ? commonName : "-" )+")";
+    }
+
+    @Transient
+    public boolean areAliasesInitialized(){
+        return Hibernate.isInitialized(getAliases());
     }
 
     @Column( name="taxid", length = 30, nullable = false)

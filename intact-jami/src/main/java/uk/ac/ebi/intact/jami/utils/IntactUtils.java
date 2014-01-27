@@ -50,6 +50,8 @@ public class IntactUtils {
     public static final String RANGE_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvFuzzyType";
     public static final String CONFIDENCE_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvConfidenceType";
     public static final String PARAMETER_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvParameterType";
+    public static final String CELL_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvCellType";
+    public static final String TISSUE_OBJCLASS ="uk.ac.ebi.intact.model.CvTissue";
 
     public static final String RELEASED_STATUS = "released";
 
