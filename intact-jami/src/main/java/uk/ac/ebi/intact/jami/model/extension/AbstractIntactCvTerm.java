@@ -128,7 +128,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return this.parIdentifier != null ? this.parIdentifier.getId() : null;
     }
 
-    // TODO fetch proper cv term here
     public void setMIIdentifier(String mi) {
         Collection<Xref> cvTermIdentifiers = getIdentifiers();
 
@@ -150,7 +149,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         }
     }
 
-    // TODO fetch proper cv term here
     public void setMODIdentifier(String mod) {
         Collection<Xref> cvTermIdentifiers = getIdentifiers();
 
@@ -173,7 +171,6 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         }
     }
 
-    // TODO fetch proper cv term here
     public void setPARIdentifier(String par) {
         Collection<Xref> cvTermIdentifiers = getIdentifiers();
 

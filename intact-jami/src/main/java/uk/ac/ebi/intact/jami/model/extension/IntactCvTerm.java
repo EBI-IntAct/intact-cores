@@ -232,7 +232,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CvTermXref.class)
     @Override
-    protected Collection<Xref> getPersistentXrefs() {
+    public Collection<Xref> getPersistentXrefs() {
         return super.getPersistentXrefs();
     }
 

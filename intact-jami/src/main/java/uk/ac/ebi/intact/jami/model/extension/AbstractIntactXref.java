@@ -93,7 +93,8 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
     ///////////////////////////////////////
     //access methods for attributes
 
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", nullable = false, length = IntactUtils.MAX_ID_LEN)
+    @Size(max = IntactUtils.MAX_ID_LEN)
     public String getId() {
         return id;
     }
@@ -105,8 +106,8 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
         this.id = aPrimaryId;
     }
 
-    @Column(name = "secondaryId")
-    @Size(max = IntactUtils.MAX_ID_LEN)
+    @Column(name = "secondaryId", length = IntactUtils.MAX_SECONDARY_ID_LEN)
+    @Size(max = IntactUtils.MAX_SECONDARY_ID_LEN)
     public String getSecondaryId() {
         return secondaryId;
     }
