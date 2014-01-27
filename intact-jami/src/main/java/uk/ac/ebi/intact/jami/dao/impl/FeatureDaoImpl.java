@@ -1,21 +1,15 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
-import psidev.psi.mi.jami.model.Alias;
-import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Feature;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.Query;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Implementation of feature dao
@@ -25,13 +19,8 @@ import java.util.List;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractIntactBaseDao<F> implements FeatureDao<F> {
-    private IntactDbSynchronizer<CvTerm> topicFinder;
-    private IntactDbSynchronizer<CvTerm> typeFinder;
-    private IntactDbSynchronizer<CvTerm> dbFinder;
-    private IntactDbSynchronizer<CvTerm> qualifierFinder;
-    private IntactDbSynchronizer<CvTerm> aliasTypeFinder;
-    private IntactDbSynchronizer<CvTerm> rangeStatusFinder;
+public class FeatureDaoImpl<F extends AbstractIntactFeature, T extends Feature> extends AbstractIntactBaseDao<F> implements FeatureDao<F> {
+    private IntactDbSynchronizer<T> featureSynchronizer;
 
     public F getByAc(String ac) {
         return getEntityManager().find(getEntityClass(), ac);
@@ -631,268 +620,37 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature> extends AbstractInt
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<CvTerm> getTopicFinder() {
-        if (this.topicFinder == null){
-            this.topicFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+    public IntactDbSynchronizer<T> getFeatureSynchronizer() {
+        if (this.featureSynchronizer == null){
+            this.featureSynchronizer = new IntactFeatureSynchronizer<T>(getEntityManager(), AbstractIntactFeature.class);
         }
-        return this.topicFinder;
+        return this.featureSynchronizer;
     }
 
-    public void setTopicFinder(IntactDbSynchronizer<CvTerm> topicFinder) {
-        this.topicFinder = topicFinder;
-    }
-
-    public IntactDbSynchronizer<CvTerm> getTypeFinder() {
-        if (this.typeFinder == null){
-            this.typeFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_TYPE_OBJCLASS);
-        }
-        return this.typeFinder;
-    }
-
-    public void setTypeFinder(IntactDbSynchronizer<CvTerm> cvFinder) {
-        this.typeFinder = cvFinder;
-    }
-
-    public IntactDbSynchronizer<CvTerm> getDbFinder() {
-        if (this.dbFinder == null){
-            this.dbFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.DATABASE_OBJCLASS);
-        }
-        return dbFinder;
-    }
-
-    public void setDbFinder(IntactDbSynchronizer<CvTerm> dbFinder) {
-        this.dbFinder = dbFinder;
-    }
-
-    public IntactDbSynchronizer<CvTerm> getQualifierFinder() {
-        if (this.qualifierFinder == null){
-            this.qualifierFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.QUALIFIER_OBJCLASS);
-        }
-        return qualifierFinder;
-    }
-
-    public void setQualifierFinder(IntactDbSynchronizer<CvTerm> qualifierFinder) {
-        this.qualifierFinder = qualifierFinder;
-    }
-
-    public IntactDbSynchronizer<CvTerm> getAliasTypeFinder() {
-        if (this.aliasTypeFinder == null){
-            this.aliasTypeFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
-        }
-        return aliasTypeFinder;
-    }
-
-    public void setAliasTypeFinder(IntactDbSynchronizer<CvTerm> aliasTypeFinder) {
-        this.aliasTypeFinder = aliasTypeFinder;
-    }
-
-    public IntactDbSynchronizer<CvTerm> getRangeStatusFinder() {
-        if (this.rangeStatusFinder == null){
-            this.rangeStatusFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
-        }
-        return rangeStatusFinder;
-    }
-
-    public void setRangeStatusFinder(IntactDbSynchronizer<CvTerm> rangeStatusFinder) {
-        this.rangeStatusFinder = rangeStatusFinder;
+    public void setFeatureSynchronizer(IntactDbSynchronizer<T> featureSynchronizer) {
+        this.featureSynchronizer = featureSynchronizer;
     }
 
     @Override
-    public void merge(F objToReplicate) {
+    public void merge(F objToReplicate) throws FinderException, PersisterException, SynchronizerException{
         synchronizeProperties(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(F  objToPersist) {
+    public void persist(F  objToPersist) throws FinderException, PersisterException, SynchronizerException{
         synchronizeProperties(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public F update(F  objToUpdate) {
+    public F update(F  objToUpdate) throws FinderException, PersisterException, SynchronizerException{
         synchronizeProperties(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void synchronizeProperties(F feature) throws FinderException {
-        // check shortlabel/synchronize
-        preparShortLabel(feature);
-        // then check full name
-        prepareFullName(feature);
-        // then check type
-        prepareTypeAndInteractionEffects(feature);
-        // then check aliases
-        prepareAliases(feature);
-        // then check annotations
-        prepareAnnotations(feature);
-        // then check xrefs
-        prepareXrefs(feature);
-    }
-
-    protected void prepareTypeAndInteractionEffects(F feature){
-        IntactDbSynchronizer<CvTerm> typeFinder = getTypeFinder();
-        typeFinder.clearCache();
-        CvTerm type = feature.getType();
-        try {
-            feature.setType(typeFinder.synchronize(type));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the feature because could not synchronize its feature type.");
-        }
-
-        // then interaction effects and dependency
-        IntactDbSynchronizer<CvTerm> effectFinder = getTopicFinder();
-        effectFinder.clearCache();
-        CvTerm effect = feature.getInteractionEffect();
-        CvTerm dependency = feature.getInteractionDependency();
-        try {
-            feature.setInteractionEffect(effectFinder.synchronize(effect));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the feature because could not synchronize its interaction effect.");
-        }
-        try {
-            feature.setInteractionDependency(effectFinder.synchronize(dependency));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the feature because could not synchronize its interaction dependency.");
-        }
-    }
-
-    protected void prepareXrefs(F feature) throws FinderException {
-        IntactDbSynchronizer<CvTerm> dbFinder = getDbFinder();
-        dbFinder.clearCache();
-        IntactDbSynchronizer<CvTerm> qualifierFinder = getQualifierFinder();
-        qualifierFinder.clearCache();
-
-        List<Xref> xrefsToPersist = new ArrayList<Xref>(feature.getXrefs());
-        for (Xref xref : xrefsToPersist){
-            FeatureXref featureRef;
-            // we have an instance of FeatureXref
-            if (xref instanceof FeatureXref){
-                featureRef = (FeatureXref) xref;
-                if (featureRef.getParent() != null && featureRef.getParent() != feature){
-                    feature.getXrefs().remove(featureRef);
-                    featureRef = new FeatureXref(xref.getDatabase(), xref.getId(), xref.getVersion(), xref.getQualifier());
-                    feature.getXrefs().add(featureRef);
-                }
-            }
-            // we create a brand new feature xref and persist
-            else{
-                featureRef = new FeatureXref(xref.getDatabase(), xref.getId(), xref.getVersion(), xref.getQualifier());
-                feature.getXrefs().remove(xref);
-                feature.getXrefs().add(featureRef);
-            }
-
-            // pre persist database
-            featureRef.setDatabase(dbFinder.synchronize(featureRef.getDatabase()));
-            // pre persist qualifier
-            if (featureRef.getQualifier() != null){
-                featureRef.setQualifier(qualifierFinder.synchronize(featureRef.getQualifier()));
-            }
-
-            // check secondaryId value
-            if (featureRef.getSecondaryId() != null && featureRef.getSecondaryId().length() > IntactUtils.MAX_SECONDARY_ID_LEN){
-                featureRef.setSecondaryId(featureRef.getSecondaryId().substring(0, IntactUtils.MAX_SECONDARY_ID_LEN));
-            }
-
-            // check version value
-            if (featureRef.getVersion() != null && featureRef.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){
-                featureRef.setVersion(featureRef.getVersion().substring(0, IntactUtils.MAX_DB_RELEASE_LEN));
-            }
-        }
-    }
-
-    protected void prepareAnnotations(F feature) throws FinderException {
-        List<Annotation> annotationsToPersist = new ArrayList<Annotation>(feature.getAnnotations());
-        for (Annotation annotation : annotationsToPersist){
-            FeatureAnnotation featureAnnot;
-            // we have an instance of FeatureAnnotation
-            if (annotation instanceof FeatureAnnotation){
-                featureAnnot = (FeatureAnnotation) annotation;
-                if (featureAnnot.getParent() != null && featureAnnot.getParent() != feature){
-                    feature.getAnnotations().remove(featureAnnot);
-                    featureAnnot = new FeatureAnnotation(annotation.getTopic(), annotation.getValue());
-                    feature.getAnnotations().add(featureAnnot);
-                }
-            }
-            // we create a brand new cv annotation and persist
-            else{
-                featureAnnot = new FeatureAnnotation(annotation.getTopic(), annotation.getValue());
-                feature.getAnnotations().remove(annotation);
-                feature.getAnnotations().add(featureAnnot);
-            }
-
-            // pre persist annotation topic
-            featureAnnot.setTopic(synchronize(featureAnnot.getTopic(), IntactUtils.TOPIC_OBJCLASS));
-
-            // check annotation value
-            if (featureAnnot.getValue() != null && featureAnnot.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-                featureAnnot.setValue(featureAnnot.getValue().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
-            }
-        }
-    }
-
-    protected void prepareAliases(IntactCvTerm intactCv) throws FinderException {
-        List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
-        for (Alias alias : aliasesToPersist){
-            CvTermAlias cvAlias;
-            // we have an instance of CvTermAlias
-            if (alias instanceof CvTermAlias){
-                cvAlias = (CvTermAlias) alias;
-                if (cvAlias.getParent() != null && cvAlias.getParent() != intactCv){
-                    intactCv.getSynonyms().remove(cvAlias);
-                    cvAlias = new CvTermAlias(alias.getType(), alias.getName());
-                    intactCv.getSynonyms().add(cvAlias);
-                }
-            }
-            // we create a brand new cv alias and persist
-            else{
-                cvAlias = new CvTermAlias(alias.getType(), alias.getName());
-                intactCv.getSynonyms().remove(alias);
-                intactCv.getSynonyms().add(cvAlias);
-            }
-
-            // check alias type
-            CvTerm aliasType = cvAlias.getType();
-            if (aliasType != null){
-                // pre persist alias type
-                cvAlias.setType(synchronize(cvAlias.getType(), IntactUtils.ALIAS_TYPE_OBJCLASS));
-            }
-
-            // check alias name
-            if (cvAlias.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-                cvAlias.setName(cvAlias.getName().substring(0, IntactUtils.MAX_ALIAS_NAME_LEN));
-            }
-        }
-    }
-
-    protected void prepareFullName(F feature) {
-        // truncate if necessary
-        if (feature.getFullName() != null && IntactUtils.MAX_FULL_NAME_LEN < feature.getFullName().length()){
-            feature.setFullName(feature.getFullName().substring(0, IntactUtils.MAX_FULL_NAME_LEN));
-        }
-    }
-
-    protected void preparShortLabel(F feature) {
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < feature.getShortName().length()){
-            feature.setShortName(feature.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
-    }
-
-    protected void initialiseObjClass(IntactCvTerm intactCv) {
-        if (this.objClass != null){
-            intactCv.setObjClass(this.objClass);
-        }
-    }
-
-    protected CvTerm findOrPersist(CvTerm cvType, String objClass) throws FinderException {
-        CvTerm existingInstance = find(cvType, objClass);
-        if (existingInstance != null){
-            return existingInstance;
-        }
-        else{
-            this.entityManager.persist(cvType);
-            return cvType;
-        }
+    protected void synchronizeProperties(F feature) throws FinderException, PersisterException, SynchronizerException {
+        getFeatureSynchronizer().clearCache();
+        getFeatureSynchronizer().synchronizeProperties((T)feature);
     }
 }
