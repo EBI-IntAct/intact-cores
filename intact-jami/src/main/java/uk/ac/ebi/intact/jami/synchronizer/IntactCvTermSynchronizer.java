@@ -217,6 +217,9 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
 
     public void clearCache() {
         this.persistedObjects.clear();
+        this.aliasSynchronizer.clearCache();
+        this.xrefSynchronizer.clearCache();
+        this.annotationSynchronizer.clearCache();
     }
 
     protected CvTerm synchronize(CvTerm cv, String objClass, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {

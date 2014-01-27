@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Default finder/persister of confidence
+ * Default finder/persister of confidenceClass
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -21,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 public class IntactConfidenceSynchronizer implements IntactDbSynchronizer<Confidence>{
     private IntactDbSynchronizer<CvTerm> typeSynchronizer;
     private EntityManager entityManager;
-    private Class<? extends AbstractIntactConfidence> confidence;
+    private Class<? extends AbstractIntactConfidence> confidenceClass;
 
     private static final Log log = LogFactory.getLog(IntactConfidenceSynchronizer.class);
 
@@ -33,7 +33,7 @@ public class IntactConfidenceSynchronizer implements IntactDbSynchronizer<Confid
         if (confClass == null){
             throw new IllegalArgumentException("Confidence synchronizer needs a non null confidence class");
         }
-        this.confidence = confClass;
+        this.confidenceClass = confClass;
         this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
     }
 
@@ -45,7 +45,7 @@ public class IntactConfidenceSynchronizer implements IntactDbSynchronizer<Confid
         if (confClass == null){
             throw new IllegalArgumentException("Confidence synchronizer needs a non null confidence class");
         }
-        this.confidence = confClass;
+        this.confidenceClass = confClass;
         this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
     }
 
@@ -64,18 +64,18 @@ public class IntactConfidenceSynchronizer implements IntactDbSynchronizer<Confid
     }
 
     public Confidence synchronize(Confidence object, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
-        if (!object.getClass().isAssignableFrom(this.confidence)){
+        if (!object.getClass().isAssignableFrom(this.confidenceClass)){
             AbstractIntactConfidence newConfidence = null;
             try {
-                newConfidence = this.confidence.getConstructor(CvTerm.class, String.class).newInstance(object.getType(), object.getValue());
+                newConfidence = this.confidenceClass.getConstructor(CvTerm.class, String.class).newInstance(object.getType(), object.getValue());
             } catch (InstantiationException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.confidence, e);
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.confidenceClass, e);
             } catch (IllegalAccessException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.confidence, e);
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.confidenceClass, e);
             } catch (InvocationTargetException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.confidence, e);
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.confidenceClass, e);
             } catch (NoSuchMethodException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.confidence, e);
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.confidenceClass, e);
             }
 
             // synchronize properties
@@ -121,15 +121,12 @@ public class IntactConfidenceSynchronizer implements IntactDbSynchronizer<Confid
         this.typeSynchronizer.clearCache();
     }
 
-    protected void synchronizeProperties(AbstractIntactConfidence object) throws PersisterException, SynchronizerException {
+    protected void synchronizeProperties(AbstractIntactConfidence object) throws PersisterException, SynchronizerException, FinderException {
         // type first
         CvTerm type = object.getType();
-        try {
-            object.setType(typeSynchronizer.synchronize(type, true, true));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the confidence because could not synchronize its confidence type.");
-        }
-        // check confidence value
+        object.setType(typeSynchronizer.synchronize(type, true, true));
+
+        // check confidenceClass value
         if (object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
             log.warn("Confidence value too long: "+object.getValue()+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");
             object.setValue(object.getValue().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));

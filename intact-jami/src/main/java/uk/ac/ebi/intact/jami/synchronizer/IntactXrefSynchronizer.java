@@ -128,14 +128,11 @@ public class IntactXrefSynchronizer implements IntactDbSynchronizer<Xref> {
         this.qualifierSynchronizer.clearCache();
     }
 
-    protected void synchronizeProperties(AbstractIntactXref object) throws PersisterException, SynchronizerException {
+    protected void synchronizeProperties(AbstractIntactXref object) throws PersisterException, SynchronizerException, FinderException {
         // database first
         CvTerm db = object.getDatabase();
-        try {
-            object.setDatabase(dbSynchronizer.synchronize(db, true, true));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the xref because could not synchronize its database.");
-        }
+        object.setDatabase(dbSynchronizer.synchronize(db, true, true));
+
         // check primaryId
         if (object.getId().length() > IntactUtils.MAX_ID_LEN){
             log.warn("Xref id too long: "+object.getId()+", will be truncated to "+ IntactUtils.MAX_ID_LEN+" characters.");
@@ -154,11 +151,7 @@ public class IntactXrefSynchronizer implements IntactDbSynchronizer<Xref> {
         // check qualifier
         if (object.getQualifier() != null){
             CvTerm qualifier = object.getQualifier();
-            try {
-                object.setQualifier(qualifierSynchronizer.synchronize(qualifier, true, true));
-            } catch (FinderException e) {
-                throw new IllegalStateException("Cannot persist the xref because could not synchronize its xref qualifier.");
-            }
+            object.setQualifier(qualifierSynchronizer.synchronize(qualifier, true, true));
         }
     }
 }

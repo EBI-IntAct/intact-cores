@@ -2,13 +2,11 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParameter;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.Query;
 import java.util.Collection;
@@ -22,7 +20,7 @@ import java.util.Collection;
  */
 @Repository
 public class ParameterDaoImpl<P extends AbstractIntactParameter> extends AbstractIntactBaseDao<P> implements ParameterDao<P> {
-    private IntactDbSynchronizer<CvTerm> typeFinder;
+    private IntactDbSynchronizer<Parameter> parameterSynchronizer;
 
     public Collection<P> getByType(String typeName, String typeMI) {
         Query query;
@@ -182,44 +180,37 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<CvTerm> getTypeFinder() {
-        if (this.typeFinder == null){
-            this.typeFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PARAMETER_TYPE_OBJCLASS);
+    public IntactDbSynchronizer<Parameter> getParameterSynchronizer() {
+        if (this.parameterSynchronizer == null){
+            this.parameterSynchronizer = new IntactParameterSynchronizer(getEntityManager(), AbstractIntactParameter.class);
         }
-        return this.typeFinder;
+        return this.parameterSynchronizer;
     }
 
-    public void setTypeFinder(IntactDbSynchronizer<CvTerm> typeFinder) {
-        this.typeFinder = typeFinder;
+    public void setParameterSynchronizer(IntactDbSynchronizer<Parameter> parameterSynchronizer) {
+        this.parameterSynchronizer = parameterSynchronizer;
     }
 
     @Override
-    public void merge(P objToReplicate) {
+    public void merge(P objToReplicate) throws SynchronizerException, PersisterException, FinderException {
         prepareParameterTypeAndValue(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(P  objToPersist) {
+    public void persist(P  objToPersist) throws SynchronizerException, PersisterException, FinderException {
         prepareParameterTypeAndValue(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public P update(P  objToUpdate) {
+    public P update(P  objToUpdate) throws SynchronizerException, PersisterException, FinderException {
         prepareParameterTypeAndValue(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareParameterTypeAndValue(P objToPersist) {
-        // prepare type
-        CvTerm type = objToPersist.getType();
-        IntactDbSynchronizer<CvTerm> typeFinder = getTypeFinder();
-        typeFinder.clearCache();
-        try {
-            objToPersist.setType(typeFinder.synchronize(type));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the parameter because could not synchronize its parameter type.");
-        }
+    protected void prepareParameterTypeAndValue(P objToPersist) throws PersisterException, FinderException, SynchronizerException {
+        getParameterSynchronizer().clearCache();
+        getParameterSynchronizer().synchronizeProperties(objToPersist);
     }
 }

@@ -208,7 +208,9 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
 
     public void clearCache() {
         this.persistedObjects.clear();
-        this.cvFinderPersister.clearCache();
+        this.aliasSynchronizer.clearCache();
+        this.xrefSynchronizer.clearCache();
+        this.annotationSynchronizer.clearCache();
     }
 
     protected void prepareXrefs(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {

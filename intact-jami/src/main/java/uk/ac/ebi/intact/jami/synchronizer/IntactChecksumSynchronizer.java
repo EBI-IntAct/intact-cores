@@ -121,14 +121,11 @@ public class IntactChecksumSynchronizer implements IntactDbSynchronizer<Checksum
         this.methodSynchronizer.clearCache();
     }
 
-    protected void synchronizeProperties(AbstractIntactChecksum object) throws PersisterException, SynchronizerException {
+    protected void synchronizeProperties(AbstractIntactChecksum object) throws PersisterException, SynchronizerException, FinderException {
         // method first
         CvTerm method = object.getMethod();
-        try {
-            object.setMethod(methodSynchronizer.synchronize(method, true, true));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its checksum type.");
-        }
+        object.setMethod(methodSynchronizer.synchronize(method, true, true));
+
         // check checksum value
         if (object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
             log.warn("Checksum value too long: "+object.getValue()+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");

@@ -124,14 +124,10 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias> {
         this.typeSynchronizer.clearCache();
     }
 
-    protected void synchronizeProperties(AbstractIntactAlias object) throws PersisterException, SynchronizerException {
+    protected void synchronizeProperties(AbstractIntactAlias object) throws PersisterException, SynchronizerException, FinderException {
         if (object.getType() != null){
             CvTerm type = object.getType();
-            try {
-                object.setType(typeSynchronizer.synchronize(type, true, true));
-            } catch (FinderException e) {
-                throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
-            }
+            object.setType(typeSynchronizer.synchronize(type, true, true));
         }
         // check alias name
         if (object.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){

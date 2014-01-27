@@ -124,14 +124,11 @@ public class IntactAnnotationsSynchronizer implements IntactDbSynchronizer<Annot
         this.topicSynchronizer.clearCache();
     }
 
-    protected void synchronizeProperties(AbstractIntactAnnotation object) throws PersisterException, SynchronizerException {
+    protected void synchronizeProperties(AbstractIntactAnnotation object) throws PersisterException, SynchronizerException, FinderException {
         // topic first
         CvTerm topic = object.getTopic();
-        try {
-            object.setTopic(topicSynchronizer.synchronize(topic, true, true));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation type.");
-        }
+        object.setTopic(topicSynchronizer.synchronize(topic, true, true));
+
         // check annotation value
         if (object.getValue() != null && object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
             log.warn("Annotation value too long: "+object.getValue()+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");
