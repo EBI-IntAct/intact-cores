@@ -712,33 +712,25 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implement
     }
 
     @Override
-    public void merge(IntactCvTerm objToReplicate) {
+    public void merge(IntactCvTerm objToReplicate) throws FinderException,PersisterException,SynchronizerException {
         prepareCv(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(IntactCvTerm objToPersist) {
+    public void persist(IntactCvTerm objToPersist) throws FinderException,PersisterException,SynchronizerException {
         prepareCv(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public IntactCvTerm update(IntactCvTerm objToUpdate) {
+    public IntactCvTerm update(IntactCvTerm objToUpdate) throws FinderException,PersisterException,SynchronizerException {
         prepareCv(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareCv(IntactCvTerm objToPersist) {
+    protected void prepareCv(IntactCvTerm objToPersist) throws FinderException,PersisterException,SynchronizerException{
         getCvSynchronizer().clearCache();
-        try {
-            getCvSynchronizer().synchronizeProperties(objToPersist);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the Cv because could not synchronize its properties.");
-        } catch (SynchronizerException e) {
-            throw new IllegalStateException("Cannot persist the Cv because could not synchronize its properties.");
-        } catch (PersisterException e) {
-            throw new IllegalStateException("Cannot persist the Cv because could not synchronize its properties.");
-        }
+        getCvSynchronizer().synchronizeProperties(objToPersist);
     }
 }

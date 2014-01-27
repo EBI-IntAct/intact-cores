@@ -629,33 +629,25 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
     }
 
     @Override
-    public void merge(X objToReplicate) {
+    public void merge(X objToReplicate) throws FinderException,PersisterException,SynchronizerException{
         prepareXref(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(X objToPersist) {
+    public void persist(X objToPersist) throws FinderException,PersisterException,SynchronizerException{
         prepareXref(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public X update(X objToUpdate) {
+    public X update(X objToUpdate) throws FinderException,PersisterException,SynchronizerException{
         prepareXref(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareXref(X objToPersist) {
+    protected void prepareXref(X objToPersist) throws FinderException,PersisterException,SynchronizerException{
         getXrefSynchronizer().clearCache();
-        try {
-            getXrefSynchronizer().synchronizeProperties(objToPersist);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the xref because could not synchronize its database and/or qualifier.");
-        } catch (SynchronizerException e) {
-            throw new IllegalStateException("Cannot persist the xref because could not synchronize its database and/or qualifier.");
-        } catch (PersisterException e) {
-            throw new IllegalStateException("Cannot persist the xref because could not synchronize its database and/or qualifier.");
-        }
+        getXrefSynchronizer().synchronizeProperties(objToPersist);
     }
 }

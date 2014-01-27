@@ -103,33 +103,25 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
     }
 
     @Override
-    public void merge(C objToReplicate) {
+    public void merge(C objToReplicate) throws FinderException,PersisterException,SynchronizerException{
         prepareChecksumMethodAndValue(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(C  objToPersist) {
+    public void persist(C  objToPersist) throws FinderException,PersisterException,SynchronizerException{
         prepareChecksumMethodAndValue(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public C update(C  objToUpdate) {
+    public C update(C  objToUpdate) throws FinderException,PersisterException,SynchronizerException{
         prepareChecksumMethodAndValue(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareChecksumMethodAndValue(C objToPersist) {
+    protected void prepareChecksumMethodAndValue(C objToPersist) throws FinderException,PersisterException,SynchronizerException{
         getChecksumSynchronizer().clearCache();
-        try {
-            getChecksumSynchronizer().synchronizeProperties(objToPersist);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its checksum method.");
-        } catch (SynchronizerException e) {
-            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its checksum method.");
-        } catch (PersisterException e) {
-            throw new IllegalStateException("Cannot persist the checksum because could not synchronize its checksum method.");
-        }
+        getChecksumSynchronizer().synchronizeProperties(objToPersist);
     }
 }

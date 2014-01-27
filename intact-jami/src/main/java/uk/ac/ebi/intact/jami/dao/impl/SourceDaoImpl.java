@@ -569,33 +569,25 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implement
     }
 
     @Override
-    public void merge(IntactSource objToReplicate) {
+    public void merge(IntactSource objToReplicate) throws FinderException,PersisterException,SynchronizerException{
         prepareSource(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(IntactSource objToPersist) {
+    public void persist(IntactSource objToPersist) throws FinderException,PersisterException,SynchronizerException{
         prepareSource(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public IntactSource update(IntactSource objToUpdate) {
+    public IntactSource update(IntactSource objToUpdate) throws FinderException,PersisterException,SynchronizerException{
         prepareSource(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareSource(IntactSource objToPersist) {
+    protected void prepareSource(IntactSource objToPersist) throws FinderException,PersisterException,SynchronizerException{
         getSourceSynchronizer().clearCache();
-        try {
-            getSourceSynchronizer().synchronizeProperties(objToPersist);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the source because could not synchronize its properties.");
-        } catch (SynchronizerException e) {
-            throw new IllegalStateException("Cannot persist the source because could not synchronize its properties.");
-        } catch (PersisterException e) {
-            throw new IllegalStateException("Cannot persist the source because could not synchronize its properties.");
-        }
+        getSourceSynchronizer().synchronizeProperties(objToPersist);
     }
 }

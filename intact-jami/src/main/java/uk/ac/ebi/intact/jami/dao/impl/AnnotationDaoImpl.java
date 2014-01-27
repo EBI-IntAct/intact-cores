@@ -158,33 +158,25 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
     }
 
     @Override
-    public void merge(A objToReplicate) {
+    public void merge(A objToReplicate) throws FinderException,PersisterException,SynchronizerException{
         prepareAnnotationTopicAndValue(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(A objToPersist) {
+    public void persist(A objToPersist) throws FinderException,PersisterException,SynchronizerException{
         prepareAnnotationTopicAndValue(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public A update(A objToUpdate) {
+    public A update(A objToUpdate) throws FinderException,PersisterException,SynchronizerException{
         prepareAnnotationTopicAndValue(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareAnnotationTopicAndValue(A objToPersist) {
+    protected void prepareAnnotationTopicAndValue(A objToPersist) throws FinderException,PersisterException,SynchronizerException{
         getAnnotationSynchronizer().clearCache();
-        try {
-            getAnnotationSynchronizer().synchronizeProperties(objToPersist);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation topic.");
-        } catch (SynchronizerException e) {
-            throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation topic.");
-        } catch (PersisterException e) {
-            throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation topic.");
-        }
+        getAnnotationSynchronizer().synchronizeProperties(objToPersist);
     }
 }

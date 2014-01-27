@@ -1,5 +1,9 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+
 import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.List;
@@ -35,23 +39,23 @@ public interface IntactBaseDao<T> {
 
     public long countAll();
 
-    public T update(T objToUpdate);
+    public T update(T objToUpdate) throws FinderException, SynchronizerException, PersisterException;
 
-    public void persist(T objToPersist);
+    public void persist(T objToPersist) throws FinderException, SynchronizerException, PersisterException;
 
-    public void persistAll(Collection<T> objsToPersist);
+    public void persistAll(Collection<T> objsToPersist) throws FinderException, SynchronizerException, PersisterException;
 
-    public void delete(T objToDelete);
+    public void delete(T objToDelete) throws FinderException, SynchronizerException, PersisterException;
 
-    public void deleteAll(Collection<T> objsToDelete);
+    public void deleteAll(Collection<T> objsToDelete) throws FinderException, SynchronizerException, PersisterException;
 
-    public int deleteAll();
+    public int deleteAll() throws FinderException, SynchronizerException, PersisterException;
 
     public void refresh(T obj);
 
     public void detach(T objToEvict);
 
-    public void merge(T objToReplicate);
+    public void merge(T objToReplicate) throws FinderException, SynchronizerException, PersisterException;
 
     public boolean isTransient(T object);
 

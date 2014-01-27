@@ -153,33 +153,25 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
     }
 
     @Override
-    public void merge(A objToReplicate) {
+    public void merge(A objToReplicate) throws FinderException,PersisterException,SynchronizerException{
         prepareAliasTypeAndName(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(A objToPersist) {
+    public void persist(A objToPersist) throws FinderException,PersisterException,SynchronizerException{
         prepareAliasTypeAndName(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public A update(A objToUpdate) {
+    public A update(A objToUpdate) throws FinderException,PersisterException,SynchronizerException{
         prepareAliasTypeAndName(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareAliasTypeAndName(A objToPersist) {
+    protected void prepareAliasTypeAndName(A objToPersist) throws FinderException,PersisterException,SynchronizerException{
         getAliasSynchronizer().clearCache();
-        try {
-            getAliasSynchronizer().synchronizeProperties(objToPersist);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
-        } catch (SynchronizerException e) {
-            throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
-        } catch (PersisterException e) {
-            throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
-        }
+        getAliasSynchronizer().synchronizeProperties(objToPersist);
     }
 }

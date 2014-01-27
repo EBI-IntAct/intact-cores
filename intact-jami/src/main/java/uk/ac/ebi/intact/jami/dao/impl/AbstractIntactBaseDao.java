@@ -2,6 +2,9 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.dao.IntactBaseDao;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -92,15 +95,15 @@ public abstract class AbstractIntactBaseDao<T> implements IntactBaseDao<T> {
                 .getSingleResult();
     }
 
-    public T update(T objToUpdate) {
+    public T update(T objToUpdate) throws FinderException,PersisterException,SynchronizerException{
         return getEntityManager().merge(objToUpdate);
     }
 
-    public void persist(T objToPersist) {
+    public void persist(T objToPersist) throws FinderException,PersisterException,SynchronizerException{
         getEntityManager().persist(objToPersist);
     }
 
-    public void persistAll(Collection<T> objsToPersist) {
+    public void persistAll(Collection<T> objsToPersist) throws FinderException,PersisterException,SynchronizerException{
         for (T obj : objsToPersist){
             persist(obj);
         }
@@ -128,7 +131,7 @@ public abstract class AbstractIntactBaseDao<T> implements IntactBaseDao<T> {
         getEntityManager().detach(objToEvict);
     }
 
-    public void merge(T objToReplicate) {
+    public void merge(T objToReplicate) throws FinderException,PersisterException,SynchronizerException{
         getEntityManager().merge(objToReplicate);
     }
 

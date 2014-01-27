@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.utils.comparator.confidence.UnambiguousConfidenceComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -57,7 +58,7 @@ public abstract class AbstractIntactConfidence extends AbstractIntactPrimaryObje
         this.type = type;
     }
 
-    @Size(max = 4000)
+    @Size(max = IntactUtils.MAX_DESCRIPTION_LEN)
     @NotNull
     public String getValue() {
         return this.value;

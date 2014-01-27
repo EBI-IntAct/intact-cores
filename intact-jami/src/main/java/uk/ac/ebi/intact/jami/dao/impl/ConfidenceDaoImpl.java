@@ -2,14 +2,12 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 
 import org.springframework.stereotype.Repository;
+import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ConfidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.Query;
 import java.util.Collection;
@@ -23,7 +21,7 @@ import java.util.Collection;
  */
 @Repository
 public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends AbstractIntactBaseDao<C> implements ConfidenceDao<C> {
-    private IntactDbSynchronizer<CvTerm> typeFinder;
+    private IntactDbSynchronizer<Confidence> confidenceSynchronizer;
 
     public Collection<C> getByValue(String value) {
         Query query = getEntityManager().createQuery("select c from " + getEntityClass() + " c where c.value = :confValue");
@@ -93,48 +91,37 @@ public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends Abstr
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<CvTerm> getTypeFinder() {
-        if (this.typeFinder == null){
-            this.typeFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+    public IntactDbSynchronizer<Confidence> getConfidenceSynchronizer() {
+        if (this.confidenceSynchronizer == null){
+            this.confidenceSynchronizer = new IntactConfidenceSynchronizer(getEntityManager(), AbstractIntactConfidence.class);
         }
-        return this.typeFinder;
+        return this.confidenceSynchronizer;
     }
 
-    public void setTypeFinder(IntactDbSynchronizer<CvTerm> typeFinder) {
-        this.typeFinder = typeFinder;
+    public void setConfidenceSynchronizer(IntactDbSynchronizer<Confidence> confidenceSynchronizer) {
+        this.confidenceSynchronizer = confidenceSynchronizer;
     }
 
     @Override
-    public void merge(C objToReplicate) {
+    public void merge(C objToReplicate) throws SynchronizerException, PersisterException, FinderException {
         prepareConfidenceTypeAndValue(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(C  objToPersist) {
+    public void persist(C  objToPersist) throws SynchronizerException, PersisterException, FinderException {
         prepareConfidenceTypeAndValue(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public C update(C  objToUpdate) {
+    public C update(C  objToUpdate) throws PersisterException, FinderException, SynchronizerException {
         prepareConfidenceTypeAndValue(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareConfidenceTypeAndValue(C objToPersist) {
-        // prepare type
-        CvTerm type = objToPersist.getType();
-        IntactDbSynchronizer<CvTerm> typeFinder = getTypeFinder();
-        typeFinder.clearCache();
-        try {
-            objToPersist.setType(typeFinder.synchronize(type));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the confidence because could not synchronize its confidence type.");
-        }
-        // check confidence value
-        if (objToPersist.getValue() != null && objToPersist.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-            objToPersist.setValue(objToPersist.getValue().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
-        }
+    protected void prepareConfidenceTypeAndValue(C objToPersist) throws PersisterException, FinderException, SynchronizerException {
+        getConfidenceSynchronizer().clearCache();
+        getConfidenceSynchronizer().synchronizeProperties(objToPersist);
     }
 }
