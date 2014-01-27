@@ -52,8 +52,13 @@ public class IntactUtils {
     public static final String PARAMETER_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvParameterType";
     public static final String CELL_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvCellType";
     public static final String TISSUE_OBJCLASS ="uk.ac.ebi.intact.model.CvTissue";
+    public static final String FEATURE_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvFeatureType";
 
     public static final String RELEASED_STATUS = "released";
+
+    public static IntactCvTerm createMIFeatureDetectionMethod(String name, String MI){
+        return createIntactMITerm(name, MI, FEATURE_METHOD_OBJCLASS);
+    }
 
     public static IntactCvTerm createMIParameterType(String name, String MI){
         return createIntactMITerm(name, MI, PARAMETER_TYPE_OBJCLASS);

@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
@@ -130,6 +131,11 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
     @Override
     public void setBinds(FeatureEvidence binds) {
         super.setBinds(binds);
+    }
+
+    @Transient
+    public boolean areDetectionMethodsInitialized(){
+        return Hibernate.isInitialized(getDetectionMethods());
     }
 
     protected void initialiseDetectionMethods(){

@@ -344,6 +344,16 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         return Hibernate.isInitialized(getAnnotations());
     }
 
+    @Transient
+    public boolean areRangesInitialized(){
+        return Hibernate.isInitialized(getRanges());
+    }
+
+    @Transient
+    public boolean areLinkedFeaturesInitialized(){
+        return Hibernate.isInitialized(getLinkedFeatures());
+    }
+
     protected void initialiseXrefs(){
         this.identifiers = new FeatureIdentifierList();
         this.xrefs = new FeatureXrefList();

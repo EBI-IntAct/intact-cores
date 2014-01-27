@@ -30,6 +30,7 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
 
     private IntactDbSynchronizer<CvTerm> effectSynchronizer;
     private IntactDbSynchronizer<CvTerm> typeSynchronizer;
+    private IntactDbSynchronizer<Range> rangeSynchronizer;
 
     private Class<? extends AbstractIntactFeature> featureClass;
 
@@ -51,12 +52,14 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
 
         this.effectSynchronizer = new IntactCvTermSynchronizer(this.entityManager, IntactUtils.TOPIC_OBJCLASS);
         this.typeSynchronizer = new IntactCvTermSynchronizer(this.entityManager, IntactUtils.FEATURE_TYPE_OBJCLASS);
+        this.rangeSynchronizer = new IntactRangeSynchronizer(this.entityManager);
     }
 
     public IntactFeatureSynchronizer(EntityManager entityManager, Class<? extends AbstractIntactFeature> featureClass,
                                      IntactDbSynchronizer<Alias> aliasSynchronizer,
                                     IntactDbSynchronizer<Annotation> annotationSynchronizer, IntactDbSynchronizer<Xref> xrefSynchronizer,
-                                    IntactDbSynchronizer<CvTerm> typeSynchronizer, IntactDbSynchronizer<CvTerm> effectSynchronizer){
+                                    IntactDbSynchronizer<CvTerm> typeSynchronizer, IntactDbSynchronizer<CvTerm> effectSynchronizer,
+                                    IntactDbSynchronizer<Range> rangeSynchronizer){
         if (entityManager == null){
             throw new IllegalArgumentException("A feature synchronizer needs a non null entity manager");
         }
@@ -71,6 +74,7 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
 
         this.effectSynchronizer = effectSynchronizer != null ? effectSynchronizer : new IntactCvTermSynchronizer(this.entityManager, IntactUtils.TOPIC_OBJCLASS);
         this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(this.entityManager, IntactUtils.FEATURE_TYPE_OBJCLASS);
+        this.rangeSynchronizer = rangeSynchronizer != null ? rangeSynchronizer : new IntactRangeSynchronizer(this.entityManager);
     }
 
     public F find(F feature) throws FinderException {
@@ -159,6 +163,23 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         prepareAnnotations(intactFeature);
         // then check xrefs
         prepareXrefs(intactFeature);
+        // then check ranges
+        prepareRanges(intactFeature);
+    }
+
+    protected void prepareRanges(AbstractIntactFeature intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        if (intactFeature.areRangesInitialized()){
+            List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
+            for (Range range : rangesToPersist){
+                // do not persist or merge ranges because of cascades
+                Range featureRange = this.rangeSynchronizer.synchronize(range, false, false);
+                // we have a different instance because needed to be synchronized
+                if (featureRange != range){
+                    intactFeature.getRanges().remove(range);
+                    intactFeature.getRanges().add(featureRange);
+                }
+            }
+        }
     }
 
     protected void prepareInteractionEffectAndDependencies(AbstractIntactFeature intactFeature) throws PersisterException, FinderException, SynchronizerException {
@@ -233,5 +254,9 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
             log.warn("Feature shortLabel too long: "+intactFeature.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactFeature.setShortName(intactFeature.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
+    }
+
+    protected EntityManager getEntityManager() {
+        return entityManager;
     }
 }
