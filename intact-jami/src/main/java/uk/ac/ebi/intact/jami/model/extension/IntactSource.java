@@ -212,6 +212,20 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return Hibernate.isInitialized(getPersistentAnnotations());
     }
 
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(SourceXref.class)
+    public Collection<Xref> getPersistentXrefs() {
+        return super.getXrefs();
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(SourceAnnotation.class)
+    public Collection<Annotation> getPersistentAnnotations() {
+        return ((SourceAnnotationList)super.getAnnotations()).getWrappedList();
+    }
+
     @Override
     protected void initialiseAnnotations() {
         super.initialiseAnnotations();
@@ -224,13 +238,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         if (this.postalAddress == null && this.persistentPostalAddress != null){
             setPostalAddress(this.persistentPostalAddress);
         }
-    }
-
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(SourceXref.class)
-    protected Collection<Xref> getPersistentXrefs() {
-        return super.getXrefs();
     }
 
     protected void processAddedAnnotationEvent(Annotation added) {
@@ -255,13 +262,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         url = null;
         postalAddress = null;
         this.postalAddress = null;
-    }
-
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(SourceAnnotation.class)
-    private Collection<Annotation> getPersistentAnnotations() {
-        return ((SourceAnnotationList)super.getAnnotations()).getWrappedList();
     }
 
     private void setPersistentAnnotations(Collection<Annotation> persistentAnnotations) {

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.utils.IntactCvTermComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -21,16 +22,34 @@ import java.util.regex.Matcher;
 public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
     private EntityManager entityManager;
     private Map<Source, Source> persistedObjects;
-    private IntactCvTermSynchronizer cvFinderPersister;
+
+    private IntactDbSynchronizer<Alias> aliasSynchronizer;
+    private IntactDbSynchronizer<Annotation> annotationSynchronizer;
+    private IntactDbSynchronizer<Xref> xrefSynchronizer;
 
     public IntactSourceSynchronizer(EntityManager entityManager){
         if (entityManager == null){
-            throw new IllegalArgumentException("A Cv Term synchronizer needs a non null entity manager");
+            throw new IllegalArgumentException("A Source synchronizer needs a non null entity manager");
         }
         this.entityManager = entityManager;
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Source, Source>();
-        this.cvFinderPersister = new IntactCvTermSynchronizer(this.entityManager);
+        this.aliasSynchronizer = new IntactAliasSynchronizer(this.entityManager, SourceAlias.class);
+        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(this.entityManager, SourceAnnotation.class);
+        this.xrefSynchronizer = new IntactXrefSynchronizer(this.entityManager, SourceXref.class);
+    }
+
+    public IntactSourceSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias> aliasSynchronizer,
+                                    IntactDbSynchronizer<Annotation> annotationSynchronizer, IntactDbSynchronizer<Xref> xrefSynchronizer){
+        if (entityManager == null){
+            throw new IllegalArgumentException("A Source synchronizer needs a non null entity manager");
+        }
+        this.entityManager = entityManager;
+        // to keep track of persisted cvs
+        this.persistedObjects = new HashMap<Source, Source>();
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(this.entityManager, SourceAlias.class);
+        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(this.entityManager, SourceAnnotation.class);
+        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(this.entityManager, SourceXref.class);
     }
 
     public Source find(Source term) throws FinderException{
@@ -129,7 +148,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
         synchronizeProperties((IntactSource)object);
     }
 
-    public Source synchronize(Source object) throws FinderException, PersisterException, SynchronizerException {
+    public Source synchronize(Source object, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
         if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
@@ -138,7 +157,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
             IntactSource newSource = new IntactSource(object.getShortName());
             CvTermCloner.copyAndOverrideCvTermProperties(object, newSource);
 
-            Source retrievedSource = findOrPersist(newSource);
+            Source retrievedSource = findOrPersist(newSource, persist);
             this.persistedObjects.put(retrievedSource, retrievedSource);
             return retrievedSource;
         }
@@ -149,13 +168,19 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
                 // first synchronize properties before merging
                 synchronizeProperties(intactType);
                 // then merge
-                IntactSource newSource = this.entityManager.merge(intactType);
-                this.persistedObjects.put(newSource, newSource);
-                return newSource;
+                if (merge){
+                    IntactSource newSource = this.entityManager.merge(intactType);
+                    this.persistedObjects.put(newSource, newSource);
+                    return newSource;
+                }
+                else{
+                    this.persistedObjects.put(intactType, intactType);
+                    return intactType;
+                }
             }
             // retrieve and or persist transient instance
             else if (intactType.getAc() == null){
-                Source newTopic = findOrPersist(intactType);
+                Source newTopic = findOrPersist(intactType, persist);
                 this.persistedObjects.put(newTopic, newTopic);
                 return newTopic;
             }
@@ -188,40 +213,14 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
 
     protected void prepareXrefs(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getXrefs());
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
-                SourceXref cvXref;
-                // we have an instance of CvTermXref
-                if (xref instanceof SourceXref){
-                    cvXref = (SourceXref) xref;
-                    if (cvXref.getParent() != null && cvXref.getParent() != intactSource){
-                        intactSource.getXrefs().remove(cvXref);
-                        cvXref = new SourceXref(xref.getDatabase(), xref.getId(), xref.getVersion(), xref.getQualifier());
-                        intactSource.getXrefs().add(cvXref);
-                    }
-                }
-                // we create a brand new source xref and persist
-                else{
-                    cvXref = new SourceXref(xref.getDatabase(), xref.getId(), xref.getVersion(), xref.getQualifier());
-                    intactSource.getXrefs().remove(xref);
-                    intactSource.getXrefs().add(cvXref);
-                }
-
-                // pre persist database
-                cvXref.setDatabase(this.cvFinderPersister.synchronize(cvXref.getDatabase(), IntactUtils.DATABASE_OBJCLASS));
-                // pre persist qualifier
-                if (cvXref.getQualifier() != null){
-                    cvXref.setQualifier(this.cvFinderPersister.synchronize(cvXref.getQualifier(), IntactUtils.QUALIFIER_OBJCLASS));
-                }
-
-                // check secondaryId value
-                if (cvXref.getSecondaryId() != null && cvXref.getSecondaryId().length() > IntactUtils.MAX_ID_LEN){
-                    cvXref.setSecondaryId(cvXref.getSecondaryId().substring(0,IntactUtils.MAX_ID_LEN));
-                }
-
-                // check version value
-                if (cvXref.getVersion() != null && cvXref.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){
-                    cvXref.setVersion(cvXref.getVersion().substring(0,IntactUtils.MAX_DB_RELEASE_LEN));
+                // do not persist or merge xrefs because of cascades
+                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false, false);
+                // we have a different instance because needed to be synchronized
+                if (cvXref != xref){
+                    intactSource.getPersistentXrefs().remove(xref);
+                    intactSource.getPersistentXrefs().add(cvXref);
                 }
             }
         }
@@ -229,31 +228,14 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
 
     protected void prepareAnnotations(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getAnnotations());
+            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getPersistentAnnotations());
             for (Annotation annotation : annotationsToPersist){
-                SourceAnnotation cvAnnot;
-                // we have an instance of CvTermAnnotation
-                if (annotation instanceof SourceAnnotation){
-                    cvAnnot = (SourceAnnotation) annotation;
-                    if (cvAnnot.getParent() != null && cvAnnot.getParent() != intactSource){
-                        intactSource.getAnnotations().remove(cvAnnot);
-                        cvAnnot = new SourceAnnotation(annotation.getTopic(), annotation.getValue());
-                        intactSource.getAnnotations().add(cvAnnot);
-                    }
-                }
-                // we create a brand new source annotation and persist
-                else{
-                    cvAnnot = new SourceAnnotation(annotation.getTopic(), annotation.getValue());
-                    intactSource.getAnnotations().remove(annotation);
-                    intactSource.getAnnotations().add(cvAnnot);
-                }
-
-                // pre persist annotation topic
-                cvAnnot.setTopic(this.cvFinderPersister.synchronize(cvAnnot.getTopic(), IntactUtils.TOPIC_OBJCLASS));
-
-                // check annotation value
-                if (cvAnnot.getValue() != null && cvAnnot.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-                    cvAnnot.setValue(cvAnnot.getValue().substring(0,IntactUtils.MAX_DESCRIPTION_LEN));
+                // do not persist or merge annotations because of cascades
+                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false, false);
+                // we have a different instance because needed to be synchronized
+                if (cvAnnotation != annotation){
+                    intactSource.getPersistentAnnotations().remove(annotation);
+                    intactSource.getPersistentAnnotations().add(cvAnnotation);
                 }
             }
         }
@@ -263,33 +245,12 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
         if (intactSource.areSynonymsInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactSource.getSynonyms());
             for (Alias alias : aliasesToPersist){
-                SourceAlias cvAlias;
-                // we have an instance of CvTermAlias
-                if (alias instanceof SourceAlias){
-                    cvAlias = (SourceAlias) alias;
-                    if (cvAlias.getParent() != null && cvAlias.getParent() != intactSource){
-                        intactSource.getSynonyms().remove(cvAlias);
-                        cvAlias = new SourceAlias(alias.getType(), alias.getName());
-                        intactSource.getSynonyms().add(cvAlias);
-                    }
-                }
-                // we create a brand new source alias and persist
-                else{
-                    cvAlias = new SourceAlias(alias.getType(), alias.getName());
+                // do not persist or merge alias because of cascades
+                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false, false);
+                // we have a different instance because needed to be synchronized
+                if (cvAlias != alias){
                     intactSource.getSynonyms().remove(alias);
                     intactSource.getSynonyms().add(cvAlias);
-                }
-
-                // check alias type
-                CvTerm aliasType = cvAlias.getType();
-                if (aliasType != null){
-                    // pre persist alias type
-                    cvAlias.setType(this.cvFinderPersister.synchronize(cvAlias.getType(), IntactUtils.ALIAS_TYPE_OBJCLASS));
-                }
-
-                // check alias name
-                if (cvAlias.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-                    cvAlias.setName(cvAlias.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
                 }
             }
         }
@@ -337,7 +298,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
         }
     }
 
-    protected Source findOrPersist(Source cvType) throws FinderException, PersisterException, SynchronizerException {
+    protected Source findOrPersist(Source cvType, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         Source existingInstance = find(cvType);
         if (existingInstance != null){
             return existingInstance;
@@ -345,7 +306,9 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
         else{
             // synchronize before persisting
             synchronizeProperties(cvType);
-            this.entityManager.persist(cvType);
+            if (persist){
+                this.entityManager.persist(cvType);
+            }
             return cvType;
         }
     }
