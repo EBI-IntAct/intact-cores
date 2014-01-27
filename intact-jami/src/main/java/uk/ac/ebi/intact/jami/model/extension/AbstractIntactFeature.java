@@ -1,14 +1,20 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Entity;
+import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
+import psidev.psi.mi.jami.model.impl.DefaultXref;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
+import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
+import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
-import uk.ac.ebi.intact.jami.model.listener.FeatureInteractionEffectAndDependencyListener;
 import uk.ac.ebi.intact.jami.model.listener.LinkedFeatureListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -30,7 +36,7 @@ import java.util.Collection;
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @Table(name = "ia_feature")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
-@EntityListeners(value = {LinkedFeatureListener.class, FeatureInteractionEffectAndDependencyListener.class})
+@EntityListeners(value = {LinkedFeatureListener.class})
 public abstract class AbstractIntactFeature<P extends Entity, F extends Feature> extends AbstractIntactPrimaryObject implements Feature<P,F>{
 
     private String shortName;
@@ -50,6 +56,8 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
     private Collection<F> linkedFeatures;
 
     private PersistentXrefList persistentXrefs;
+
+    private Xref acRef;
 
     /**
      * <p/>
@@ -103,6 +111,19 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         setInterpro(interpro);
     }
 
+    @Override
+    public void setAc(String ac) {
+        super.setAc(ac);
+        // only if identifiers are initialised
+        if (this.acRef != null && !this.acRef.getId().equals(ac)){
+            // we don't want to create a persistent xref
+            Xref newRef = new DefaultXref(this.acRef.getDatabase(), ac, this.acRef.getQualifier());
+            this.identifiers.removeOnly(acRef);
+            this.acRef = newRef;
+            this.identifiers.addOnly(acRef);
+        }
+    }
+
     @Column(name = "shortlabel", nullable = false)
     @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
     @NotNull
@@ -131,7 +152,6 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         return this.interpro != null ? this.interpro.getId() : null;
     }
 
-    // TODO fetch proper cv term
     public void setInterpro(String interpro) {
         Collection<Xref> featureIdentifiers = getIdentifiers();
 
@@ -219,7 +239,15 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
     }
 
     public void setInteractionEffect(CvTerm effect) {
-        this.interactionEffect = effect;
+        if (effect == null && this.interactionEffect != null){
+            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), this.interactionEffect.getMIIdentifier(), this.interactionEffect.getShortName());
+            this.interactionEffect = null;
+        }
+        else if (effect != null && effect != this.interactionEffect){
+            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), this.interactionEffect.getMIIdentifier(), this.interactionEffect.getShortName());
+            this.interactionEffect = effect;
+            getAnnotations().add(new FeatureAnnotation(this.interactionEffect));
+        }
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
@@ -230,7 +258,15 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
     }
 
     public void setInteractionDependency(CvTerm interactionDependency) {
-        this.interactionDependency = interactionDependency;
+        if (interactionDependency == null && this.interactionDependency != null){
+            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), this.interactionDependency.getMIIdentifier(), this.interactionDependency.getShortName());
+            this.interactionDependency = null;
+        }
+        else if (interactionDependency != null && interactionDependency != this.interactionDependency){
+            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), this.interactionDependency.getMIIdentifier(), this.interactionDependency.getShortName());
+            this.interactionDependency = interactionDependency;
+            getAnnotations().add(new FeatureAnnotation(this.interactionDependency));
+        }
     }
 
     @Transient
@@ -283,6 +319,31 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         this.binds = binds;
     }
 
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureXref.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(FeatureXref.class)
+    public Collection<Xref> getPersistentXrefs() {
+        if (this.persistentXrefs == null){
+            this.persistentXrefs = new PersistentXrefList(null);
+        }
+        return this.persistentXrefs.getWrappedList();
+    }
+
+    @Transient
+    public boolean areXrefsInitialized(){
+        return Hibernate.isInitialized(getPersistentXrefs());
+    }
+
+    @Transient
+    public boolean areAliasesInitialized(){
+        return Hibernate.isInitialized(getAliases());
+    }
+
+    @Transient
+    public boolean areAnnotationsInitialized(){
+        return Hibernate.isInitialized(getAnnotations());
+    }
+
     protected void initialiseXrefs(){
         this.identifiers = new FeatureIdentifierList();
         this.xrefs = new FeatureXrefList();
@@ -299,6 +360,17 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         }
         else{
             this.persistentXrefs = new PersistentXrefList(null);
+        }
+        // initialise ac
+        if (getAc() != null){
+            IntactContext intactContext = ApplicationContextProvider.getBean(IntactContext.class);
+            if (intactContext != null){
+                this.acRef = new DefaultXref(intactContext.getConfig().getDefaultInstitution(), getAc(), CvTermUtils.createIdentityQualifier());
+            }
+            else{
+                this.acRef = new DefaultXref(new DefaultCvTerm("unknwon"), getAc(), CvTermUtils.createIdentityQualifier());
+            }
+            this.identifiers.addOnly(this.acRef);
         }
     }
 
@@ -343,16 +415,6 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
 
     protected void initialiseLinkedFeatures(){
         this.linkedFeatures = new ArrayList<F>();
-    }
-
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureXref.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(FeatureXref.class)
-    protected Collection<Xref> getPersistentXrefs() {
-        if (this.persistentXrefs == null){
-            this.persistentXrefs = new PersistentXrefList(null);
-        }
-        return this.persistentXrefs.getWrappedList();
     }
 
     protected void setPersistentXrefs(Collection<Xref> persistentXrefs){
@@ -435,21 +497,12 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
 
         @Override
         protected boolean needToPreProcessElementToAdd(Xref added) {
-            if (!(added instanceof FeatureXref)){
-                return true;
-            }
-            else{
-                FeatureXref termXref = (FeatureXref)added;
-                if (termXref.getParent() != null && termXref.getParent() != this){
-                    return true;
-                }
-            }
             return false;
         }
 
         @Override
         protected Xref processOrWrapElementToAdd(Xref added) {
-            return new FeatureXref(added.getDatabase(), added.getId(), added.getVersion(), added.getQualifier());
+            return added;
         }
     }
 }
