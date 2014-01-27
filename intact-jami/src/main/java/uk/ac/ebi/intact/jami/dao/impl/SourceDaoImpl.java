@@ -5,10 +5,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactSourceSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -23,7 +22,7 @@ import java.util.Collection;
  */
 @Repository
 public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implements SourceDao {
-    private IntactDbSynchronizer<Source> sourceFinder;
+    private IntactDbSynchronizer<Source> sourceSynchronizer;
 
     public SourceDaoImpl() {
         super(IntactSource.class);
@@ -558,46 +557,45 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implement
         return (IntactSource)query.getSingleResult();
     }
 
-    public IntactDbSynchronizer<Source> getSourceFinder() {
-        if (this.sourceFinder == null){
-            this.sourceFinder = new IntactSourceSynchronizer(getEntityManager());
+    public IntactDbSynchronizer<Source> getSourceSynchronizer() {
+        if (this.sourceSynchronizer == null){
+            this.sourceSynchronizer = new IntactSourceSynchronizer(getEntityManager());
         }
-        return this.sourceFinder;
+        return this.sourceSynchronizer;
     }
 
-    public void setSourceFinder(IntactDbSynchronizer<Source> sourceFinder) {
-        this.sourceFinder = sourceFinder;
+    public void setSourceSynchronizer(IntactDbSynchronizer<Source> sourceSynchronizer) {
+        this.sourceSynchronizer = sourceSynchronizer;
     }
 
     @Override
     public void merge(IntactSource objToReplicate) {
-        this.sourceFinder.clearCache();
-        try {
-            this.sourceFinder.synchronizeProperties(objToReplicate);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot merge the institution because could not synchronize its xrefs, annotations and/or aliases.");
-        }
+        prepareSource(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
     public void persist(IntactSource objToPersist) {
-        this.sourceFinder.clearCache();
-        try {
-            this.sourceFinder.persist(objToPersist);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the institution because could not synchronize its xrefs, annotations and/or aliases.");
-        }
+        prepareSource(objToPersist);
+        super.persist(objToPersist);
     }
 
     @Override
     public IntactSource update(IntactSource objToUpdate) {
-        this.sourceFinder.clearCache();
-        try {
-            this.sourceFinder.synchronizeProperties(objToUpdate);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot update the institution because could not synchronize its xrefs, annotations and/or aliases.");
-        }
+        prepareSource(objToUpdate);
         return super.update(objToUpdate);
+    }
+
+    protected void prepareSource(IntactSource objToPersist) {
+        getSourceSynchronizer().clearCache();
+        try {
+            getSourceSynchronizer().synchronizeProperties(objToPersist);
+        } catch (FinderException e) {
+            throw new IllegalStateException("Cannot persist the source because could not synchronize its properties.");
+        } catch (SynchronizerException e) {
+            throw new IllegalStateException("Cannot persist the source because could not synchronize its properties.");
+        } catch (PersisterException e) {
+            throw new IllegalStateException("Cannot persist the source because could not synchronize its properties.");
+        }
     }
 }
