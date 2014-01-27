@@ -5,10 +5,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.Query;
 import java.util.Collection;
@@ -23,8 +20,7 @@ import java.util.Collection;
 @Repository
 public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBaseDao<X> implements XrefDao<X> {
 
-    private IntactDbSynchronizer<CvTerm> dbFinder;
-    private IntactDbSynchronizer<CvTerm> qualifierFinder;
+    private IntactDbSynchronizer<Xref> xrefSynchronizer;
 
     public Collection<X> getByPrimaryId(String value, String version) {
         Query query;
@@ -621,26 +617,15 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<CvTerm> getDbFinder() {
-        if (this.dbFinder == null){
-            this.dbFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.DATABASE_OBJCLASS);
+    public IntactDbSynchronizer<Xref> getXrefSynchronizer() {
+        if (this.xrefSynchronizer == null){
+            this.xrefSynchronizer = new IntactXrefSynchronizer(getEntityManager(), AbstractIntactXref.class);
         }
-        return this.dbFinder;
+        return this.xrefSynchronizer;
     }
 
-    public void setDbFinder(IntactDbSynchronizer<CvTerm> dbFinder) {
-        this.dbFinder = dbFinder;
-    }
-
-    public IntactDbSynchronizer<CvTerm> getQualifierFinder() {
-        if (this.qualifierFinder == null){
-            this.qualifierFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.QUALIFIER_OBJCLASS);
-        }
-        return qualifierFinder;
-    }
-
-    public void setQualifierFinder(IntactDbSynchronizer<CvTerm> qualifierFinder) {
-        this.qualifierFinder = qualifierFinder;
+    public void setXrefSynchronizer(IntactDbSynchronizer<Xref> dbFinder) {
+        this.xrefSynchronizer = dbFinder;
     }
 
     @Override
@@ -662,33 +647,15 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
     }
 
     protected void prepareXref(X objToPersist) {
-        // prepare database
-        CvTerm database = objToPersist.getDatabase();
-        IntactDbSynchronizer<CvTerm> dbFinder = getDbFinder();
-        dbFinder.clearCache();
+        getXrefSynchronizer().clearCache();
         try {
-            objToPersist.setDatabase(dbFinder.synchronize(database));
+            getXrefSynchronizer().synchronizeProperties(objToPersist);
         } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the database because could not synchronize its xref database.");
-        }
-        // prepare qualifier
-        if (objToPersist.getQualifier() != null){
-            CvTerm qualifier = objToPersist.getQualifier();
-            IntactDbSynchronizer<CvTerm> qualifierFinder = getQualifierFinder();
-            qualifierFinder.clearCache();
-            try {
-                objToPersist.setQualifier(qualifierFinder.synchronize(qualifier));
-            } catch (FinderException e) {
-                throw new IllegalStateException("Cannot persist the database because could not synchronize its xref qualifier.");
-            }
-        }
-        // check secondaryId
-        if (objToPersist.getSecondaryId() != null && objToPersist.getSecondaryId().length() > IntactUtils.MAX_SECONDARY_ID_LEN){
-            objToPersist.setSecondaryId(objToPersist.getSecondaryId().substring(0, IntactUtils.MAX_SECONDARY_ID_LEN));
-        }
-        // check version
-        if (objToPersist.getVersion() != null && objToPersist.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){
-            objToPersist.setVersion(objToPersist.getVersion().substring(0, IntactUtils.MAX_DB_RELEASE_LEN));
+            throw new IllegalStateException("Cannot persist the xref because could not synchronize its database and/or qualifier.");
+        } catch (SynchronizerException e) {
+            throw new IllegalStateException("Cannot persist the xref because could not synchronize its database and/or qualifier.");
+        } catch (PersisterException e) {
+            throw new IllegalStateException("Cannot persist the xref because could not synchronize its database and/or qualifier.");
         }
     }
 }

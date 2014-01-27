@@ -5,9 +5,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -22,7 +20,7 @@ import java.util.Collection;
  */
 @Repository
 public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implements CvTermDao {
-    private IntactDbSynchronizer<CvTerm> cvFinder;
+    private IntactDbSynchronizer<CvTerm> cvSynchronizer;
 
     public CvTermDaoImpl() {
         super(IntactCvTerm.class);
@@ -702,46 +700,45 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implement
         return (IntactCvTerm)query.getSingleResult();
     }
 
-    public IntactDbSynchronizer<CvTerm> getCvFinder() {
-        if (this.cvFinder == null){
-            this.cvFinder = new IntactCvTermSynchronizer(getEntityManager());
+    public IntactDbSynchronizer<CvTerm> getCvSynchronizer() {
+        if (this.cvSynchronizer == null){
+            this.cvSynchronizer = new IntactCvTermSynchronizer(getEntityManager());
         }
-        return this.cvFinder;
+        return this.cvSynchronizer;
     }
 
-    public void setCvFinder(IntactDbSynchronizer<CvTerm> cvFinder) {
-        this.cvFinder = cvFinder;
+    public void setCvSynchronizer(IntactDbSynchronizer<CvTerm> cvSynchronizer) {
+        this.cvSynchronizer = cvSynchronizer;
     }
 
     @Override
     public void merge(IntactCvTerm objToReplicate) {
-        this.cvFinder.clearCache();
-        try {
-            this.cvFinder.synchronizeProperties(objToReplicate);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot merge the cv term because could not synchronize its xrefs, annotations and/or aliases.");
-        }
+        prepareCv(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
     public void persist(IntactCvTerm objToPersist) {
-        this.cvFinder.clearCache();
-        try {
-            this.cvFinder.persist(objToPersist);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the cv term because could not synchronize its xrefs, annotations and/or aliases.");
-        }
+        prepareCv(objToPersist);
+        super.persist(objToPersist);
     }
 
     @Override
     public IntactCvTerm update(IntactCvTerm objToUpdate) {
-        this.cvFinder.clearCache();
-        try {
-            this.cvFinder.synchronizeProperties(objToUpdate);
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot update the cv term because could not synchronize its xrefs, annotations and/or aliases.");
-        }
+        prepareCv(objToUpdate);
         return super.update(objToUpdate);
+    }
+
+    protected void prepareCv(IntactCvTerm objToPersist) {
+        getCvSynchronizer().clearCache();
+        try {
+            getCvSynchronizer().synchronizeProperties(objToPersist);
+        } catch (FinderException e) {
+            throw new IllegalStateException("Cannot persist the Cv because could not synchronize its properties.");
+        } catch (SynchronizerException e) {
+            throw new IllegalStateException("Cannot persist the Cv because could not synchronize its properties.");
+        } catch (PersisterException e) {
+            throw new IllegalStateException("Cannot persist the Cv because could not synchronize its properties.");
+        }
     }
 }

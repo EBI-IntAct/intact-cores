@@ -1,14 +1,12 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
+import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AliasDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.Query;
 import java.util.Collection;
@@ -23,7 +21,7 @@ import java.util.Collection;
 @Repository
 public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactBaseDao<A> implements AliasDao<A> {
 
-    private IntactDbSynchronizer<CvTerm> aliasTypeFinder;
+    private IntactDbSynchronizer<Alias> aliasSynchronizer;
 
     public Collection<A> getByName(String name) {
         Query query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where a.name = :name");
@@ -143,15 +141,15 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<CvTerm> getAliasTypeFinder() {
-        if (this.aliasTypeFinder == null){
-            this.aliasTypeFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
+    public IntactDbSynchronizer<Alias> getAliasSynchronizer() {
+        if (this.aliasSynchronizer == null){
+            this.aliasSynchronizer = new IntactAliasSynchronizer(getEntityManager(), AbstractIntactAlias.class);
         }
-        return this.aliasTypeFinder;
+        return this.aliasSynchronizer;
     }
 
-    public void setAliasTypeFinder(IntactDbSynchronizer<CvTerm> aliasTypeFinder) {
-        this.aliasTypeFinder = aliasTypeFinder;
+    public void setAliasSynchronizer(IntactDbSynchronizer<Alias> aliasSynchronizer) {
+        this.aliasSynchronizer = aliasSynchronizer;
     }
 
     @Override
@@ -173,19 +171,15 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
     }
 
     protected void prepareAliasTypeAndName(A objToPersist) {
-        if (objToPersist.getType() != null){
-            CvTerm type = objToPersist.getType();
-            IntactDbSynchronizer<CvTerm> typeFinder = getAliasTypeFinder();
-            typeFinder.clearCache();
-            try {
-                objToPersist.setType(typeFinder.synchronize(type));
-            } catch (FinderException e) {
-                throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
-            }
-        }
-        // check alias name
-        if (objToPersist.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-            objToPersist.setName(objToPersist.getName().substring(0, IntactUtils.MAX_ALIAS_NAME_LEN));
+        getAliasSynchronizer().clearCache();
+        try {
+            getAliasSynchronizer().synchronizeProperties(objToPersist);
+        } catch (FinderException e) {
+            throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
+        } catch (SynchronizerException e) {
+            throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
+        } catch (PersisterException e) {
+            throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
         }
     }
 }

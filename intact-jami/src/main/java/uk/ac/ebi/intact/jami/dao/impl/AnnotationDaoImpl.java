@@ -2,14 +2,12 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 
 import org.springframework.stereotype.Repository;
+import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AnnotationDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.Query;
 import java.util.Collection;
@@ -23,7 +21,7 @@ import java.util.Collection;
  */
 @Repository
 public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<A> implements AnnotationDao<A> {
-    private IntactDbSynchronizer<CvTerm> annotationTopicFinder;
+    private IntactDbSynchronizer<Annotation> annotationSynchronizer;
 
     public Collection<A> getByValue(String value) {
         Query query;
@@ -148,15 +146,15 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<CvTerm> getAnnotationTopicFinder() {
-        if (this.annotationTopicFinder == null){
-            this.annotationTopicFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+    public IntactDbSynchronizer<Annotation> getAnnotationSynchronizer() {
+        if (this.annotationSynchronizer == null){
+            this.annotationSynchronizer = new IntactAnnotationsSynchronizer(getEntityManager(), AbstractIntactAnnotation.class);
         }
-        return this.annotationTopicFinder;
+        return this.annotationSynchronizer;
     }
 
-    public void setAnnotationTopicFinder(IntactDbSynchronizer<CvTerm> annotationTopicFinder) {
-        this.annotationTopicFinder = annotationTopicFinder;
+    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation> annotationSynchronizer) {
+        this.annotationSynchronizer = annotationSynchronizer;
     }
 
     @Override
@@ -178,18 +176,15 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
     }
 
     protected void prepareAnnotationTopicAndValue(A objToPersist) {
-        // prepare topic
-        CvTerm topic = objToPersist.getTopic();
-        IntactDbSynchronizer<CvTerm> typeFinder = getAnnotationTopicFinder();
-        typeFinder.clearCache();
+        getAnnotationSynchronizer().clearCache();
         try {
-            objToPersist.setTopic(typeFinder.synchronize(topic));
+            getAnnotationSynchronizer().synchronizeProperties(objToPersist);
         } catch (FinderException e) {
             throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation topic.");
-        }
-        // check annotation value
-        if (objToPersist.getValue() != null && objToPersist.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-            objToPersist.setValue(objToPersist.getValue().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
+        } catch (SynchronizerException e) {
+            throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation topic.");
+        } catch (PersisterException e) {
+            throw new IllegalStateException("Cannot persist the annotation because could not synchronize its annotation topic.");
         }
     }
 }
