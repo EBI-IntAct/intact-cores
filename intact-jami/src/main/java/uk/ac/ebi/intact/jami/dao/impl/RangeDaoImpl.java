@@ -2,13 +2,12 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Range;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.RangeDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
 import uk.ac.ebi.intact.jami.model.extension.IntactRange;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -25,7 +24,7 @@ import java.util.Collection;
 @Repository
 public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements RangeDao {
 
-    private IntactDbSynchronizer<CvTerm> statusFinder;
+    private IntactDbSynchronizer<Range> rangeSynchronizer;
 
     public RangeDaoImpl() {
         super(IntactRange.class);
@@ -182,71 +181,37 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements 
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<CvTerm> getStatusFinder() {
-        if (this.statusFinder == null){
-            this.statusFinder = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
+    public IntactDbSynchronizer<Range> getRangeSynchronizer() {
+        if (this.rangeSynchronizer == null){
+            this.rangeSynchronizer = new IntactRangeSynchronizer(getEntityManager());
         }
-        return this.statusFinder;
+        return this.rangeSynchronizer;
     }
 
-    public void setStatusFinder(IntactDbSynchronizer<CvTerm> statusFinder) {
-        this.statusFinder = statusFinder;
+    public void setRangeSynchronizer(IntactDbSynchronizer<Range> rangeSynchronizer) {
+        this.rangeSynchronizer = rangeSynchronizer;
     }
 
     @Override
-    public void merge(IntactRange objToReplicate) {
-        prepareRangeStatus(objToReplicate);
+    public void merge(IntactRange objToReplicate) throws SynchronizerException, PersisterException, FinderException {
+        prepareRange(objToReplicate);
         super.merge(objToReplicate);
     }
 
     @Override
-    public void persist(IntactRange objToPersist) {
-        prepareRangeStatus(objToPersist);
+    public void persist(IntactRange objToPersist) throws SynchronizerException, PersisterException, FinderException {
+        prepareRange(objToPersist);
         super.persist(objToPersist);
     }
 
     @Override
-    public IntactRange update(IntactRange objToUpdate) {
-        prepareRangeStatus(objToUpdate);
+    public IntactRange update(IntactRange objToUpdate) throws SynchronizerException, PersisterException, FinderException {
+        prepareRange(objToUpdate);
         return super.update(objToUpdate);
     }
 
-    protected void prepareRangeStatus(IntactRange objToPersist) {
-        IntactDbSynchronizer<CvTerm> statusFinder = getStatusFinder();
-        statusFinder.clearCache();
-
-        // prepare start position
-        IntactPosition start;
-        if (!(objToPersist.getStart() instanceof IntactPosition)){
-            start = new IntactPosition(objToPersist.getStart().getStatus(), objToPersist.getStart().getStart(), objToPersist.getStart().getEnd());
-        }
-        else{
-            start = (IntactPosition)objToPersist.getStart();
-        }
-        // prepare start status
-        CvTerm startStatus = start.getStatus();
-        try {
-            start.setStatus(statusFinder.synchronize(startStatus));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the range because could not synchronize its start status.");
-        }
-
-        // prepare end position
-        IntactPosition end;
-        if (!(objToPersist.getEnd() instanceof IntactPosition)){
-            end = new IntactPosition(objToPersist.getEnd().getStatus(), objToPersist.getEnd().getStart(), objToPersist.getEnd().getEnd());
-        }
-        else{
-            end = (IntactPosition)objToPersist.getEnd();
-        }
-        // prepare end status
-        CvTerm endStatus = end.getStatus();
-        try {
-            end.setStatus(statusFinder.synchronize(endStatus));
-        } catch (FinderException e) {
-            throw new IllegalStateException("Cannot persist the range because could not synchronize its start status.");
-        }
-
-        objToPersist.setPositions(start, end);
+    protected void prepareRange(IntactRange objToPersist) throws PersisterException, FinderException, SynchronizerException {
+        getRangeSynchronizer().clearCache();
+        getRangeSynchronizer().synchronizeProperties(objToPersist);
     }
 }
