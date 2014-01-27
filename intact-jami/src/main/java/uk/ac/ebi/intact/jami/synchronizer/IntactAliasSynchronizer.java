@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
@@ -16,11 +18,13 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
+public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias> {
 
     private IntactDbSynchronizer<CvTerm> typeSynchronizer;
     private EntityManager entityManager;
     private Class<? extends AbstractIntactAlias> aliasClass;
+
+    private static final Log log = LogFactory.getLog(IntactAliasSynchronizer.class);
 
     public IntactAliasSynchronizer(EntityManager entityManager, Class<? extends AbstractIntactAlias> aliasClass){
         if (entityManager == null){
@@ -31,7 +35,21 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
             throw new IllegalArgumentException("Alias synchronizer needs a non null alias class");
         }
         this.aliasClass = aliasClass;
-        this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.ALIAS_TYPE_OBJCLASS,
+                this, null, null);
+    }
+
+    public IntactAliasSynchronizer(EntityManager entityManager, Class<? extends AbstractIntactAlias> aliasClass, IntactDbSynchronizer<CvTerm> typeSynchronizer){
+        if (entityManager == null){
+            throw new IllegalArgumentException("Alias synchronizer needs a non null entityManager");
+        }
+        this.entityManager = entityManager;
+        if (aliasClass == null){
+            throw new IllegalArgumentException("Alias synchronizer needs a non null alias class");
+        }
+        this.aliasClass = aliasClass;
+        this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.ALIAS_TYPE_OBJCLASS,
+                this, null, null);
     }
 
     public Alias find(Alias object) throws FinderException {
@@ -48,7 +66,7 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
          synchronizeProperties((AbstractIntactAlias)object);
     }
 
-    public Alias synchronize(Alias object) throws FinderException, PersisterException, SynchronizerException {
+    public Alias synchronize(Alias object, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
         if (!object.getClass().isAssignableFrom(this.aliasClass)){
             AbstractIntactAlias newAlias = null;
             try {
@@ -65,7 +83,9 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
 
             // synchronize properties
             synchronizeProperties(newAlias);
-            this.entityManager.persist(newAlias);
+            if (persist){
+                this.entityManager.persist(newAlias);
+            }
             return newAlias;
         }
         else{
@@ -75,7 +95,22 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
                 // synchronize properties
                 synchronizeProperties(intactType);
                 // merge
-                return this.entityManager.merge(intactType);
+                if (merge){
+                    return this.entityManager.merge(intactType);
+                }
+                else{
+                    return intactType;
+                }
+            }
+            // retrieve and or persist transient instance
+            else if (intactType.getAc() == null){
+                // synchronize properties
+                synchronizeProperties(intactType);
+                // persist alias
+                if (persist){
+                    this.entityManager.persist(intactType);
+                }
+                return intactType;
             }
             else{
                 // synchronize properties
@@ -93,14 +128,15 @@ public class IntactAliasSynchronizer implements IntactDbSynchronizer<Alias>{
         if (object.getType() != null){
             CvTerm type = object.getType();
             try {
-                object.setType(typeSynchronizer.synchronize(type));
+                object.setType(typeSynchronizer.synchronize(type, true, true));
             } catch (FinderException e) {
                 throw new IllegalStateException("Cannot persist the alias because could not synchronize its alias type.");
             }
         }
         // check alias name
         if (object.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-            object.setName(object.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
+            log.warn("Alias name too long: "+object.getName()+", will be truncated to "+ IntactUtils.MAX_ALIAS_NAME_LEN+" characters.");
+            object.setName(object.getName().substring(0, IntactUtils.MAX_ALIAS_NAME_LEN));
         }
     }
 }

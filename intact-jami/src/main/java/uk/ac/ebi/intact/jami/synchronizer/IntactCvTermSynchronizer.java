@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
@@ -31,8 +33,13 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
 
     private EntityManager entityManager;
     private String objClass;
-
     private Map<CvTerm, CvTerm> persistedObjects;
+
+    private IntactDbSynchronizer<Alias> aliasSynchronizer;
+    private IntactDbSynchronizer<Annotation> annotationSynchronizer;
+    private IntactDbSynchronizer<Xref> xrefSynchronizer;
+
+    private static final Log log = LogFactory.getLog(IntactCvTermSynchronizer.class);
 
     public IntactCvTermSynchronizer(EntityManager entityManager){
         if (entityManager == null){
@@ -42,6 +49,9 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         this.objClass = null;
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<CvTerm, CvTerm>(new IntactCvTermComparator());
+        this.aliasSynchronizer = new IntactAliasSynchronizer(this.entityManager, CvTermAlias.class);
+        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(this.entityManager, CvTermAnnotation.class);
+        this.xrefSynchronizer = new IntactXrefSynchronizer(this.entityManager, CvTermXref.class);
     }
 
     public IntactCvTermSynchronizer(EntityManager entityManager, String objClass){
@@ -49,11 +59,32 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         this.objClass = objClass;
     }
 
-    public CvTerm find(CvTerm term) throws FinderException{
+    public IntactCvTermSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias> aliasSynchronizer,
+                                    IntactDbSynchronizer<Annotation> annotationSynchronizer, IntactDbSynchronizer<Xref> xrefSynchronizer){
+        if (entityManager == null){
+            throw new IllegalArgumentException("A Cv Term synchronizer needs a non null entity manager");
+        }
+        this.entityManager = entityManager;
+        this.objClass = null;
+        // to keep track of persisted cvs
+        this.persistedObjects = new TreeMap<CvTerm, CvTerm>(new IntactCvTermComparator());
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(this.entityManager, CvTermAlias.class);
+        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(this.entityManager, CvTermAnnotation.class);
+        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(this.entityManager, CvTermXref.class);
+    }
+
+    public IntactCvTermSynchronizer(EntityManager entityManager, String objClass,
+                                    IntactDbSynchronizer<Alias> aliasSynchronizer, IntactDbSynchronizer<Annotation> annotationSynchronizer,
+                                    IntactDbSynchronizer<Xref> xrefSynchronizer){
+        this(entityManager, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer);
+        this.objClass = objClass;
+    }
+
+    public CvTerm find(CvTerm term) throws FinderException {
         return find(term, this.objClass);
     }
 
-    public CvTerm find(CvTerm term, String objClass) throws FinderException{
+    public CvTerm find(CvTerm term, String objClass) throws FinderException {
         Query query;
         if (term == null){
             return null;
@@ -158,7 +189,7 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         return (CvTerm) query.getSingleResult();
     }
 
-    public CvTerm persist(CvTerm object) throws FinderException, PersisterException, SynchronizerException{
+    public CvTerm persist(CvTerm object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
@@ -180,11 +211,15 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
          synchronizeProperties((IntactCvTerm)object);
     }
 
-    public CvTerm synchronize(CvTerm cv) throws FinderException, PersisterException, SynchronizerException{
-         return synchronize(cv, this.objClass);
+    public CvTerm synchronize(CvTerm cv, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
+         return synchronize(cv, this.objClass, persist, merge);
     }
 
-    protected CvTerm synchronize(CvTerm cv, String objClass) throws FinderException, PersisterException, SynchronizerException {
+    public void clearCache() {
+        this.persistedObjects.clear();
+    }
+
+    protected CvTerm synchronize(CvTerm cv, String objClass, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
         if (this.persistedObjects.containsKey(cv)){
             return this.persistedObjects.get(cv);
         }
@@ -194,7 +229,7 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
             CvTermCloner.copyAndOverrideCvTermProperties(cv, newCv);
             newCv.setObjClass(objClass);
 
-            CvTerm retrievedCv = findOrPersist(newCv, objClass);
+            CvTerm retrievedCv = findOrPersist(newCv, objClass, persist);
             this.persistedObjects.put(retrievedCv, retrievedCv);
 
             return retrievedCv;
@@ -206,14 +241,20 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
                 // first synchronize properties before merging
                 synchronizeProperties(intactType);
                 // merge
-                CvTerm newTopic = this.entityManager.merge(intactType);
-                this.persistedObjects.put(newTopic, newTopic);
-                return newTopic;
+                if (merge){
+                    CvTerm newTopic = this.entityManager.merge(intactType);
+                    this.persistedObjects.put(newTopic, newTopic);
+                    return newTopic;
+                }
+                else{
+                    this.persistedObjects.put(intactType, intactType);
+                    return intactType;
+                }
             }
             // retrieve and or persist transient instance
             else if (intactType.getAc() == null){
                 // retrieves or persist cv
-                CvTerm newTopic = findOrPersist(intactType, objClass);
+                CvTerm newTopic = findOrPersist(intactType, objClass, persist);
                 this.persistedObjects.put(newTopic, newTopic);
                 return newTopic;
             }
@@ -291,10 +332,6 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         }
     }
 
-    public void clearCache() {
-        this.persistedObjects.clear();
-    }
-
     protected void prepareDefinition(IntactCvTerm intactCv) {
         if (intactCv.getDefinition() == null){
             AnnotationUtils.removeAllAnnotationsWithTopic(intactCv.getAnnotations(), null, "definition");
@@ -302,6 +339,7 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         else{
             // truncate if necessary
             if (IntactUtils.MAX_DESCRIPTION_LEN < intactCv.getDefinition().length()){
+                log.warn("Cv term definition too long: "+intactCv.getDefinition()+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");
                 intactCv.setDefinition(intactCv.getDefinition().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
             }
             Annotation def = AnnotationUtils.collectFirstAnnotationWithTopic(intactCv.getAnnotations(), null, "definition");
@@ -318,40 +356,14 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
 
     protected void prepareXrefs(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getXrefs());
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
-                CvTermXref cvXref;
-                // we have an instance of CvTermXref
-                if (xref instanceof CvTermXref){
-                    cvXref = (CvTermXref) xref;
-                    if (cvXref.getParent() != null && cvXref.getParent() != intactCv){
-                        intactCv.getXrefs().remove(cvXref);
-                        cvXref = new CvTermXref(xref.getDatabase(), xref.getId(), xref.getVersion(), xref.getQualifier());
-                        intactCv.getXrefs().add(cvXref);
-                    }
-                }
-                // we create a brand new cv xref and persist
-                else{
-                    cvXref = new CvTermXref(xref.getDatabase(), xref.getId(), xref.getVersion(), xref.getQualifier());
-                    intactCv.getXrefs().remove(xref);
-                    intactCv.getXrefs().add(cvXref);
-                }
-
-                // pre persist database
-                cvXref.setDatabase(synchronize(cvXref.getDatabase(), IntactUtils.DATABASE_OBJCLASS));
-                // pre persist qualifier
-                if (cvXref.getQualifier() != null){
-                    cvXref.setQualifier(synchronize(cvXref.getQualifier(), IntactUtils.QUALIFIER_OBJCLASS));
-                }
-
-                // check secondaryId value
-                if (cvXref.getSecondaryId() != null && cvXref.getSecondaryId().length() > IntactUtils.MAX_ID_LEN){
-                    cvXref.setSecondaryId(cvXref.getSecondaryId().substring(0,IntactUtils.MAX_ID_LEN));
-                }
-
-                // check version value
-                if (cvXref.getVersion() != null && cvXref.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){
-                    cvXref.setVersion(cvXref.getVersion().substring(0,IntactUtils.MAX_DB_RELEASE_LEN));
+                // do not persist or merge xrefs because of cascades
+                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false, false);
+                // we have a different instance because needed to be synchronized
+                if (cvXref != xref){
+                    intactCv.getPersistentXrefs().remove(xref);
+                    intactCv.getPersistentXrefs().add(cvXref);
                 }
             }
         }
@@ -361,29 +373,12 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         if (intactCv.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
-                CvTermAnnotation cvAnnot;
-                // we have an instance of CvTermAnnotation
-                if (annotation instanceof CvTermAnnotation){
-                    cvAnnot = (CvTermAnnotation) annotation;
-                    if (cvAnnot.getParent() != null && cvAnnot.getParent() != intactCv){
-                        intactCv.getAnnotations().remove(cvAnnot);
-                        cvAnnot = new CvTermAnnotation(annotation.getTopic(), annotation.getValue());
-                        intactCv.getAnnotations().add(cvAnnot);
-                    }
-                }
-                // we create a brand new cv annotation and persist
-                else{
-                    cvAnnot = new CvTermAnnotation(annotation.getTopic(), annotation.getValue());
+                // do not persist or merge annotations because of cascades
+                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false, false);
+                // we have a different instance because needed to be synchronized
+                if (cvAnnotation != annotation){
                     intactCv.getAnnotations().remove(annotation);
-                    intactCv.getAnnotations().add(cvAnnot);
-                }
-
-                // pre persist annotation topic
-                cvAnnot.setTopic(synchronize(cvAnnot.getTopic(), IntactUtils.TOPIC_OBJCLASS));
-
-                // check annotation value
-                if (cvAnnot.getValue() != null && cvAnnot.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-                    cvAnnot.setValue(cvAnnot.getValue().substring(0,IntactUtils.MAX_DESCRIPTION_LEN));
+                    intactCv.getAnnotations().add(cvAnnotation);
                 }
             }
         }
@@ -393,33 +388,12 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         if (intactCv.areSynonymsInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
             for (Alias alias : aliasesToPersist){
-                CvTermAlias cvAlias;
-                // we have an instance of CvTermAlias
-                if (alias instanceof CvTermAlias){
-                    cvAlias = (CvTermAlias) alias;
-                    if (cvAlias.getParent() != null && cvAlias.getParent() != intactCv){
-                        intactCv.getSynonyms().remove(cvAlias);
-                        cvAlias = new CvTermAlias(alias.getType(), alias.getName());
-                        intactCv.getSynonyms().add(cvAlias);
-                    }
-                }
-                // we create a brand new cv alias and persist
-                else{
-                    cvAlias = new CvTermAlias(alias.getType(), alias.getName());
+                // do not persist or merge alias because of cascades
+                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false, false);
+                // we have a different instance because needed to be synchronized
+                if (cvAlias != alias){
                     intactCv.getSynonyms().remove(alias);
                     intactCv.getSynonyms().add(cvAlias);
-                }
-
-                // check alias type
-                CvTerm aliasType = cvAlias.getType();
-                if (aliasType != null){
-                    // pre persist alias type
-                    cvAlias.setType(synchronize(cvAlias.getType(), IntactUtils.ALIAS_TYPE_OBJCLASS));
-                }
-
-                // check alias name
-                if (cvAlias.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-                    cvAlias.setName(cvAlias.getName().substring(0,IntactUtils.MAX_ALIAS_NAME_LEN));
                 }
             }
         }
@@ -428,6 +402,7 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
     protected void prepareFullName(IntactCvTerm intactCv) {
         // truncate if necessary
         if (intactCv.getFullName() != null && IntactUtils.MAX_FULL_NAME_LEN < intactCv.getFullName().length()){
+            log.warn("Cv term fullName too long: "+intactCv.getFullName()+", will be truncated to "+ IntactUtils.MAX_FULL_NAME_LEN+" characters.");
             intactCv.setFullName(intactCv.getFullName().substring(0, IntactUtils.MAX_FULL_NAME_LEN));
         }
     }
@@ -435,6 +410,7 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
     protected void prepareAndSynchronizeShortLabel(CvTerm intactCv) {
         // truncate if necessary
         if (IntactUtils.MAX_SHORT_LABEL_LEN < intactCv.getShortName().length()){
+            log.warn("Cv term shortLabel too long: "+intactCv.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
         // check if short name already exist, if yes, synchronize
@@ -461,7 +437,8 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
             String maxString = Integer.toString(max);
             // retruncate if necessary
             if (IntactUtils.MAX_SHORT_LABEL_LEN < intactCv.getShortName().length()+maxString.length()+1){
-                 intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN-(maxString.length()+1))
+                log.warn("Cv term shortLabel too long: "+intactCv.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
+                intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN-(maxString.length()+1))
                  +"-"+maxString);
             }
             else{
@@ -476,7 +453,7 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         }
     }
 
-    protected CvTerm findOrPersist(CvTerm cvType, String objClass) throws FinderException, PersisterException, SynchronizerException {
+    protected CvTerm findOrPersist(CvTerm cvType, String objClass, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         CvTerm existingInstance = find(cvType, objClass);
         if (existingInstance != null){
             return existingInstance;
@@ -484,7 +461,9 @@ public class IntactCvTermSynchronizer implements IntactDbSynchronizer<CvTerm> {
         else{
             // synchronize before persisting
             synchronizeProperties(cvType);
-            this.entityManager.persist(cvType);
+            if (persist){
+                this.entityManager.persist(cvType);
+            }
             return cvType;
         }
     }
