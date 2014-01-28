@@ -41,7 +41,7 @@ public class IntactConfidenceSynchronizer<C extends AbstractIntactConfidence> ex
     public void synchronizeProperties(C object) throws FinderException, PersisterException, SynchronizerException {
         // type first
         CvTerm type = object.getType();
-        object.setType(typeSynchronizer.synchronize(type, true, true));
+        object.setType(typeSynchronizer.synchronize(type, true));
 
         // check confidenceClass value
         if (object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -55,8 +55,8 @@ public class IntactConfidenceSynchronizer<C extends AbstractIntactConfidence> ex
     }
 
     @Override
-    protected boolean isTransient(C object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(C object) {
+        return object.getAc();
     }
 
     @Override

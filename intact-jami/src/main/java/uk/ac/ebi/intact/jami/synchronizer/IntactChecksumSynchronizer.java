@@ -41,7 +41,7 @@ public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extend
     public void synchronizeProperties(C object) throws FinderException, PersisterException, SynchronizerException {
         // method first
         CvTerm method = object.getMethod();
-        object.setMethod(methodSynchronizer.synchronize(method, true, true));
+        object.setMethod(methodSynchronizer.synchronize(method, true));
 
         // check checksum value
         if (object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -55,8 +55,8 @@ public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extend
     }
 
     @Override
-    protected boolean isTransient(C object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(C object) {
+        return object.getAc();
     }
 
     @Override

@@ -50,7 +50,7 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
             start = (IntactPosition)object.getStart();
         }
         // prepare start status
-        CvTerm startStatus = this.statusSynchronizer.synchronize(start.getStatus(), true, true);
+        CvTerm startStatus = this.statusSynchronizer.synchronize(start.getStatus(), true);
         start.setStatus(startStatus);
 
         // prepare end position
@@ -62,7 +62,7 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
             end = (IntactPosition)object.getEnd();
         }
         // prepare end status
-        CvTerm endStatus = this.statusSynchronizer.synchronize(end.getStatus(), true, true);
+        CvTerm endStatus = this.statusSynchronizer.synchronize(end.getStatus(), true);
         end.setStatus(endStatus);
         // reset positions
         object.setPositions(start, end);
@@ -73,8 +73,8 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
     }
 
     @Override
-    protected boolean isTransient(IntactRange object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(IntactRange object) {
+        return object.getAc();
     }
 
     @Override

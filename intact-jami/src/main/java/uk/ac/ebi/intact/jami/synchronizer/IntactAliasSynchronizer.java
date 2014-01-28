@@ -56,7 +56,7 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
     public void synchronizeProperties(AbstractIntactAlias object) throws FinderException, PersisterException, SynchronizerException {
         if (object.getType() != null){
             CvTerm type = object.getType();
-            object.setType(typeSynchronizer.synchronize(type, true, true));
+            object.setType(typeSynchronizer.synchronize(type, true));
         }
         // check alias name
         if (object.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
@@ -70,8 +70,8 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
     }
 
     @Override
-    protected boolean isTransient(AbstractIntactAlias object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(AbstractIntactAlias object) {
+        return object.getAc();
     }
 
     @Override

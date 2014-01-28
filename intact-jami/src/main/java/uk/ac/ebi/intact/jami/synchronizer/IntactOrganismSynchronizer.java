@@ -147,14 +147,6 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
         prepareCellTypeAndTissue(intactOrganism);
     }
 
-    public IntactOrganism synchronize(Organism organism, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
-        if (this.persistedObjects.containsKey(organism)){
-            return this.persistedObjects.get(organism);
-        }
-
-        return super.synchronize(organism, persist, merge);
-    }
-
     public void clearCache() {
         this.persistedObjects.clear();
         this.aliasSynchronizer.clearCache();
@@ -164,10 +156,10 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
 
     protected void prepareCellTypeAndTissue(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
         if (intactOrganism.getCellType() != null){
-            intactOrganism.setCellType(this.cellTypeSynchronizer.synchronize(intactOrganism.getCellType(), true, true));
+            intactOrganism.setCellType(this.cellTypeSynchronizer.synchronize(intactOrganism.getCellType(), true));
         }
         if (intactOrganism.getTissue() != null){
-            intactOrganism.setTissue(this.cellTypeSynchronizer.synchronize(intactOrganism.getTissue(), true, true));
+            intactOrganism.setTissue(this.cellTypeSynchronizer.synchronize(intactOrganism.getTissue(), true));
         }
     }
 
@@ -176,7 +168,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactOrganism.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias organismAlias = this.aliasSynchronizer.synchronize(alias, false, false);
+                Alias organismAlias = this.aliasSynchronizer.synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (organismAlias != alias){
                     intactOrganism.getAliases().remove(alias);
@@ -245,8 +237,8 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
     }
 
     @Override
-    protected boolean isTransient(IntactOrganism object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(IntactOrganism object) {
+        return object.getAc();
     }
 
     @Override

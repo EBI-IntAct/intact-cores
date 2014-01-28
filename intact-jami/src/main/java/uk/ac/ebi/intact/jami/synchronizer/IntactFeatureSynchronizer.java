@@ -93,7 +93,7 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
             List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
             for (Range range : rangesToPersist){
                 // do not persist or merge ranges because of cascades
-                Range featureRange = this.rangeSynchronizer.synchronize(range, false, false);
+                Range featureRange = this.rangeSynchronizer.synchronize(range, false);
                 // we have a different instance because needed to be synchronized
                 if (featureRange != range){
                     intactFeature.getRanges().remove(range);
@@ -105,11 +105,11 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
 
     protected void prepareInteractionEffectAndDependencies(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.getInteractionDependency() != null){
-            intactFeature.setInteractionDependency(this.effectSynchronizer.synchronize(intactFeature.getInteractionDependency(), true, true));
+            intactFeature.setInteractionDependency(this.effectSynchronizer.synchronize(intactFeature.getInteractionDependency(), true));
         }
 
         if (intactFeature.getInteractionEffect() != null){
-            intactFeature.setInteractionEffect(this.effectSynchronizer.synchronize(intactFeature.getInteractionEffect(), true, true));
+            intactFeature.setInteractionEffect(this.effectSynchronizer.synchronize(intactFeature.getInteractionEffect(), true));
         }
     }
 
@@ -118,7 +118,7 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref featureXref = this.xrefSynchronizer.synchronize(xref, false, false);
+                Xref featureXref = this.xrefSynchronizer.synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (featureXref != xref){
                     intactFeature.getPersistentXrefs().remove(xref);
@@ -133,7 +133,7 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation featureAnnotation = this.annotationSynchronizer.synchronize(annotation, false, false);
+                Annotation featureAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (featureAnnotation != annotation){
                     intactFeature.getAnnotations().remove(annotation);
@@ -148,7 +148,7 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias featureAlias = this.aliasSynchronizer.synchronize(alias, false, false);
+                Alias featureAlias = this.aliasSynchronizer.synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (featureAlias != alias){
                     intactFeature.getAliases().remove(alias);
@@ -183,7 +183,7 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
     }
 
     @Override
-    protected boolean isTransient(I object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(I object) {
+        return object.getAc();
     }
 }

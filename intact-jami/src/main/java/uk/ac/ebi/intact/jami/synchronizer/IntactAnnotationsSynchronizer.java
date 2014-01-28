@@ -55,7 +55,7 @@ public class IntactAnnotationsSynchronizer<A extends AbstractIntactAnnotation> e
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
         // topic first
         CvTerm topic = object.getTopic();
-        object.setTopic(topicSynchronizer.synchronize(topic, true, true));
+        object.setTopic(topicSynchronizer.synchronize(topic, true));
 
         // check annotation value
         if (object.getValue() != null && object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -69,8 +69,8 @@ public class IntactAnnotationsSynchronizer<A extends AbstractIntactAnnotation> e
     }
 
     @Override
-    protected boolean isTransient(A object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(A object) {
+        return object.getAc();
     }
 
     @Override

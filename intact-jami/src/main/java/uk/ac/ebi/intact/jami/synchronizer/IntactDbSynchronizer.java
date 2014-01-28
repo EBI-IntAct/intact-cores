@@ -34,8 +34,7 @@ public interface IntactDbSynchronizer<I, T> {
 
     /**
      * Synchronize all the properties of this object with the database.
-     * Th object instance does not have to be annotated with hibernate annotations as it does not persist this object, only
-     * synchronize its properties with what exist in the database
+     * It will persist transcient properties that are not managed with hibernate cascades.
      * @param object
      * @throws FinderException
      * @throws PersisterException
@@ -46,15 +45,16 @@ public interface IntactDbSynchronizer<I, T> {
     /**
      * Synchronize the given instance and its properties with the database,
      * If the object is not annotated with hibernate annotations, a new persistable object may be created and synchronized with the database.
+     * If the object is already persisted in the database, it will just reload the object from the database.
+     * This method is not aimed at updating the object so any change to a pre-existing instance is not taken into account
      * @param object
      * @param persist : if true, will persist the object if it is a transient object
-     * @param merger : if true, will merge this object to the current session with all its changes. Only for objects already persisted and detached from the session
      * @return the object synchronized and persisted.
      * @throws FinderException
      * @throws PersisterException
      * @throws SynchronizerException
      */
-    public T synchronize(I object, boolean persist, boolean merger) throws FinderException,PersisterException,SynchronizerException;
+    public T synchronize(I object, boolean persist) throws FinderException,PersisterException,SynchronizerException;
 
     /**
      * Clear cached objects

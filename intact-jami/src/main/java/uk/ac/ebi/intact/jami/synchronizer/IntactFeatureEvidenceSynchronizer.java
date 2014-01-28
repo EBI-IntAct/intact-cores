@@ -50,7 +50,7 @@ public class IntactFeatureEvidenceSynchronizer extends IntactFeatureSynchronizer
         if (intactFeature.areDetectionMethodsInitialized()){
             List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactFeature.getDetectionMethods());
             for (CvTerm method : methodsToPersist){
-                CvTerm featureTerm = this.methodSynchronizer.synchronize(method, true, true);
+                CvTerm featureTerm = this.methodSynchronizer.synchronize(method, true);
                 // we have a different instance because needed to be synchronized
                 if (featureTerm != method){
                     intactFeature.getDetectionMethods().remove(method);

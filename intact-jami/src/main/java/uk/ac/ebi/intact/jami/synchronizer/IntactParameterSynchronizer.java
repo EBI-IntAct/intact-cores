@@ -47,12 +47,12 @@ public class IntactParameterSynchronizer<P extends AbstractIntactParameter> exte
     public void synchronizeProperties(P object) throws FinderException, PersisterException, SynchronizerException {
         // type first
         CvTerm type = object.getType();
-        object.setType(typeSynchronizer.synchronize(type, true, true));
+        object.setType(typeSynchronizer.synchronize(type, true));
 
         // check unit
         if (object.getUnit() != null){
             CvTerm unit = object.getUnit();
-            object.setUnit(typeSynchronizer.synchronize(unit, true, true));
+            object.setUnit(typeSynchronizer.synchronize(unit, true));
         }
     }
 
@@ -62,8 +62,8 @@ public class IntactParameterSynchronizer<P extends AbstractIntactParameter> exte
     }
 
     @Override
-    protected boolean isTransient(P object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(P object) {
+        return object.getAc();
     }
 
     @Override

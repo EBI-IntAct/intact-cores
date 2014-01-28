@@ -210,16 +210,9 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         prepareXrefs(intactCv);
     }
 
-    public IntactCvTerm synchronize(CvTerm cv, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
-        if (this.persistedObjects.containsKey(cv)){
-            return this.persistedObjects.get(cv);
-        }
-        return super.synchronize(cv, persist, merge);
-    }
-
     @Override
-    protected boolean isTransient(IntactCvTerm object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(IntactCvTerm object) {
+        return object.getAc();
     }
 
     @Override
@@ -309,7 +302,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false, false);
+                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactCv.getPersistentXrefs().remove(xref);
@@ -324,7 +317,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false, false);
+                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactCv.getAnnotations().remove(annotation);
@@ -339,7 +332,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false, false);
+                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactCv.getSynonyms().remove(alias);

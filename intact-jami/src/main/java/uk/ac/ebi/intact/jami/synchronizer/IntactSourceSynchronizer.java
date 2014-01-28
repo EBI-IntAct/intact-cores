@@ -152,8 +152,8 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
     }
 
     @Override
-    protected boolean isTransient(IntactSource object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(IntactSource object) {
+        return object.getAc();
     }
 
     @Override
@@ -169,7 +169,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false, false);
+                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactSource.getPersistentXrefs().remove(xref);
@@ -184,7 +184,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getPersistentAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false, false);
+                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactSource.getPersistentAnnotations().remove(annotation);
@@ -199,7 +199,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactSource.getSynonyms());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false, false);
+                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactSource.getSynonyms().remove(alias);

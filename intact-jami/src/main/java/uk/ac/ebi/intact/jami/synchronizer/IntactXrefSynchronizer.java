@@ -60,7 +60,7 @@ public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends Abstra
     public void synchronizeProperties(X object) throws FinderException, PersisterException, SynchronizerException {
         // database first
         CvTerm db = object.getDatabase();
-        object.setDatabase(dbSynchronizer.synchronize(db, true, true));
+        object.setDatabase(dbSynchronizer.synchronize(db, true));
 
         // check primaryId
         if (object.getId().length() > IntactUtils.MAX_ID_LEN){
@@ -80,7 +80,7 @@ public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends Abstra
         // check qualifier
         if (object.getQualifier() != null){
             CvTerm qualifier = object.getQualifier();
-            object.setQualifier(qualifierSynchronizer.synchronize(qualifier, true, true));
+            object.setQualifier(qualifierSynchronizer.synchronize(qualifier, true));
         }
     }
 
@@ -90,8 +90,8 @@ public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends Abstra
     }
 
     @Override
-    protected boolean isTransient(X object) {
-        return object.getAc() == null;
+    protected Object extractIdentifier(X object) {
+        return object.getAc();
     }
 
     @Override

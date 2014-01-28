@@ -41,7 +41,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
         return object;
     }
 
-    public T synchronize(I object, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
+    public T synchronize(I object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
 
         if (!object.getClass().isAssignableFrom(this.intactClass)){
             T newObject = null;
@@ -61,21 +61,13 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
         }
         else{
             T intactObject = (T)object;
-            boolean hasIdentifier = !isTransient(intactObject);
+            Object identifier = extractIdentifier(intactObject);
             // detached existing instance or new transient instance
-            if (hasIdentifier && !this.entityManager.contains(intactObject)){
-                // synchronize properties
-                synchronizeProperties(intactObject);
-                // merge
-                if (merge){
-                    return this.entityManager.merge(intactObject);
-                }
-                else{
-                    return intactObject;
-                }
+            if (identifier != null && !this.entityManager.contains(intactObject)){
+                return this.entityManager.find(this.intactClass, identifier);
             }
             // retrieve and or persist transient instance
-            else if (!hasIdentifier){
+            else if (identifier == null){
                 return findOrPersist(intactObject, persist);
             }
             else{
@@ -86,7 +78,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
         }
     }
 
-    protected abstract boolean isTransient(T object);
+    protected abstract Object extractIdentifier(T object);
 
     protected abstract T instantiateNewPersistentInstance(I object, Class<? extends T> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException;
 
