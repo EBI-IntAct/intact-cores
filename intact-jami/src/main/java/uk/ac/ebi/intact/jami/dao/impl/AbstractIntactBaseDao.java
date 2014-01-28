@@ -145,7 +145,7 @@ public abstract class AbstractIntactBaseDao<I,T> implements IntactBaseDao<T> {
         return !getEntityManager().contains(object);
     }
 
-    public void setEntityClass(Class<T> entityClass) {
+    protected void setEntityClass(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 

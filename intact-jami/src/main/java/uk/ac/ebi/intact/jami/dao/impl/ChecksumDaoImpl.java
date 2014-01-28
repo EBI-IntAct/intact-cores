@@ -104,6 +104,12 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
     }
 
     @Override
+    public void setEntityClass(Class<C> entityClass) {
+        super.setEntityClass(entityClass);
+        initialiseDbSynchronizer();
+    }
+
+    @Override
     protected void initialiseDbSynchronizer() {
         super.setDbSynchronizer(new IntactChecksumSynchronizer<C>(getEntityManager(), getEntityClass()));
     }

@@ -104,6 +104,12 @@ public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends Abstr
     }
 
     @Override
+    public void setEntityClass(Class<C> entityClass) {
+        super.setEntityClass(entityClass);
+        initialiseDbSynchronizer();
+    }
+
+    @Override
     protected void initialiseDbSynchronizer() {
         super.setDbSynchronizer(new IntactConfidenceSynchronizer<C>(getEntityManager(), getEntityClass()));
     }

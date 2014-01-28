@@ -629,6 +629,12 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
     }
 
     @Override
+    public void setEntityClass(Class<X> entityClass) {
+        super.setEntityClass(entityClass);
+        initialiseDbSynchronizer();
+    }
+
+    @Override
     protected void initialiseDbSynchronizer() {
         super.setDbSynchronizer(new IntactXrefSynchronizer<X>(getEntityManager(), getEntityClass()));
     }

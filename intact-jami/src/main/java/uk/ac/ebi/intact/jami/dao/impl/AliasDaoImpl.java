@@ -153,6 +153,12 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
     }
 
     @Override
+    public void setEntityClass(Class<A> entityClass) {
+        super.setEntityClass(entityClass);
+        initialiseDbSynchronizer();
+    }
+
+    @Override
     protected void initialiseDbSynchronizer() {
         super.setDbSynchronizer(new IntactAliasSynchronizer<A>(getEntityManager(), getEntityClass()));
     }

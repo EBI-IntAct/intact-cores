@@ -193,6 +193,12 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
     }
 
     @Override
+    public void setEntityClass(Class<P> entityClass) {
+        super.setEntityClass(entityClass);
+        initialiseDbSynchronizer();
+    }
+
+    @Override
     protected void initialiseDbSynchronizer() {
         super.setDbSynchronizer(new IntactParameterSynchronizer<P>(getEntityManager(), getEntityClass()));
     }

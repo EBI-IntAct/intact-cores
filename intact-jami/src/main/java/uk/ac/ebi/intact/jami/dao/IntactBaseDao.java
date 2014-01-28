@@ -59,7 +59,5 @@ public interface IntactBaseDao<T> {
 
     public boolean isTransient(T object);
 
-    public void setEntityClass(Class<T> entityClass);
-
     public Class<T> getEntityClass();
 }

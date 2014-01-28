@@ -159,6 +159,12 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
     }
 
     @Override
+    public void setEntityClass(Class<A> entityClass) {
+        super.setEntityClass(entityClass);
+        initialiseDbSynchronizer();
+    }
+
+    @Override
     protected void initialiseDbSynchronizer() {
         super.setDbSynchronizer(new IntactAnnotationsSynchronizer<A>(getEntityManager(), getEntityClass()));
     }

@@ -636,4 +636,10 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     protected void initialiseDbSynchronizer() {
         super.setDbSynchronizer(new IntactFeatureSynchronizer<T, F>(getEntityManager(), getEntityClass()));
     }
+
+    @Override
+    public void setEntityClass(Class<F> entityClass) {
+        super.setEntityClass(entityClass);
+        initialiseDbSynchronizer();
+    }
 }
