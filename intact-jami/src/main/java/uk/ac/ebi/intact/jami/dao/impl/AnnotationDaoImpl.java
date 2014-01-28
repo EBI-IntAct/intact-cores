@@ -7,8 +7,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AnnotationDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.IntactAnnotationsSynchronizer;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collection;
 
@@ -20,8 +21,19 @@ import java.util.Collection;
  * @since <pre>21/01/14</pre>
  */
 @Repository
-public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<A> implements AnnotationDao<A> {
-    private IntactDbSynchronizer<Annotation> annotationSynchronizer;
+public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<Annotation, A> implements AnnotationDao<A> {
+
+    protected AnnotationDaoImpl() {
+        super((Class<A>)AbstractIntactAnnotation.class);
+    }
+
+    public AnnotationDaoImpl(Class<A> entityClass) {
+        super(entityClass);
+    }
+
+    public AnnotationDaoImpl(Class<A> entityClass, EntityManager entityManager) {
+        super(entityClass, entityManager);
+    }
 
     public Collection<A> getByValue(String value) {
         Query query;
@@ -146,37 +158,8 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<Annotation> getAnnotationSynchronizer() {
-        if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer(getEntityManager(), AbstractIntactAnnotation.class);
-        }
-        return this.annotationSynchronizer;
-    }
-
-    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation> annotationSynchronizer) {
-        this.annotationSynchronizer = annotationSynchronizer;
-    }
-
     @Override
-    public void merge(A objToReplicate) throws FinderException,PersisterException,SynchronizerException{
-        prepareAnnotationTopicAndValue(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(A objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        prepareAnnotationTopicAndValue(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public A update(A objToUpdate) throws FinderException,PersisterException,SynchronizerException{
-        prepareAnnotationTopicAndValue(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareAnnotationTopicAndValue(A objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        getAnnotationSynchronizer().clearCache();
-        getAnnotationSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactAnnotationsSynchronizer<A>(getEntityManager(), getEntityClass()));
     }
 }

@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.dao.XrefDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collection;
 
@@ -18,9 +19,19 @@ import java.util.Collection;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBaseDao<X> implements XrefDao<X> {
+public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBaseDao<Xref, X> implements XrefDao<X> {
 
-    private IntactDbSynchronizer<Xref> xrefSynchronizer;
+    public XrefDaoImpl() {
+        super((Class<X>)AbstractIntactXref.class);
+    }
+
+    public XrefDaoImpl(Class<X> entityClass) {
+        super(entityClass);
+    }
+
+    public XrefDaoImpl(Class<X> entityClass, EntityManager entityManager) {
+        super(entityClass, entityManager);
+    }
 
     public Collection<X> getByPrimaryId(String value, String version) {
         Query query;
@@ -617,37 +628,8 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<Xref> getXrefSynchronizer() {
-        if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new IntactXrefSynchronizer(getEntityManager(), AbstractIntactXref.class);
-        }
-        return this.xrefSynchronizer;
-    }
-
-    public void setXrefSynchronizer(IntactDbSynchronizer<Xref> dbFinder) {
-        this.xrefSynchronizer = dbFinder;
-    }
-
     @Override
-    public void merge(X objToReplicate) throws FinderException,PersisterException,SynchronizerException{
-        prepareXref(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(X objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        prepareXref(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public X update(X objToUpdate) throws FinderException,PersisterException,SynchronizerException{
-        prepareXref(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareXref(X objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        getXrefSynchronizer().clearCache();
-        getXrefSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactXrefSynchronizer<X>(getEntityManager(), getEntityClass()));
     }
 }

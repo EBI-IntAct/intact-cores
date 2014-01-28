@@ -6,8 +6,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AliasDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.IntactAliasSynchronizer;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collection;
 
@@ -19,9 +20,19 @@ import java.util.Collection;
  * @since <pre>21/01/14</pre>
  */
 @Repository
-public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactBaseDao<A> implements AliasDao<A> {
+public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactBaseDao<Alias, A> implements AliasDao<A> {
 
-    private IntactDbSynchronizer<Alias> aliasSynchronizer;
+    public AliasDaoImpl() {
+        super((Class<A>)AbstractIntactAlias.class);
+    }
+
+    public AliasDaoImpl(Class<A> entityClass) {
+        super(entityClass);
+    }
+
+    public AliasDaoImpl(Class<A> entityClass, EntityManager entityManager) {
+        super(entityClass, entityManager);
+    }
 
     public Collection<A> getByName(String name) {
         Query query = getEntityManager().createQuery("select a from " + getEntityClass() + " a where a.name = :name");
@@ -141,37 +152,8 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<Alias> getAliasSynchronizer() {
-        if (this.aliasSynchronizer == null){
-            this.aliasSynchronizer = new IntactAliasSynchronizer(getEntityManager(), AbstractIntactAlias.class);
-        }
-        return this.aliasSynchronizer;
-    }
-
-    public void setAliasSynchronizer(IntactDbSynchronizer<Alias> aliasSynchronizer) {
-        this.aliasSynchronizer = aliasSynchronizer;
-    }
-
     @Override
-    public void merge(A objToReplicate) throws FinderException,PersisterException,SynchronizerException{
-        prepareAliasTypeAndName(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(A objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        prepareAliasTypeAndName(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public A update(A objToUpdate) throws FinderException,PersisterException,SynchronizerException{
-        prepareAliasTypeAndName(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareAliasTypeAndName(A objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        getAliasSynchronizer().clearCache();
-        getAliasSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactAliasSynchronizer<A>(getEntityManager(), getEntityClass()));
     }
 }

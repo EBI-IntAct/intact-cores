@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 
@@ -25,42 +26,35 @@ import java.util.regex.Matcher;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism>{
-    private EntityManager entityManager;
-    private Map<Organism, Organism> persistedObjects;
+public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism>{
+    private Map<IntactOrganism, IntactOrganism> persistedObjects;
 
-    private IntactDbSynchronizer<Alias> aliasSynchronizer;
-    private IntactDbSynchronizer<CvTerm> cellTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm> tissueSynchronizer;
+    private IntactDbSynchronizer<Alias, OrganismAlias> aliasSynchronizer;
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> cellTypeSynchronizer;
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> tissueSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactCvTermSynchronizer.class);
 
     public IntactOrganismSynchronizer(EntityManager entityManager){
-        if (entityManager == null){
-            throw new IllegalArgumentException("An Organism synchronizer needs a non null entity manager");
-        }
-        this.entityManager = entityManager;
+        super(entityManager, IntactOrganism.class);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<Organism, Organism>();
-        this.aliasSynchronizer = new IntactAliasSynchronizer(this.entityManager, OrganismAlias.class);
-        this.cellTypeSynchronizer = new IntactCvTermSynchronizer(this.entityManager, IntactUtils.CELL_TYPE_OBJCLASS);
-        this.tissueSynchronizer = new IntactCvTermSynchronizer(this.entityManager, IntactUtils.TISSUE_OBJCLASS);
+        this.persistedObjects = new HashMap<IntactOrganism, IntactOrganism>();
+        this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, OrganismAlias.class);
+        this.cellTypeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.CELL_TYPE_OBJCLASS);
+        this.tissueSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TISSUE_OBJCLASS);
     }
 
-    public IntactOrganismSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias> aliasSynchronizer,
-                                      IntactDbSynchronizer<CvTerm> cellSynchronizer,IntactDbSynchronizer<CvTerm> tissueSynchronizer){
-        if (entityManager == null){
-            throw new IllegalArgumentException("An Organism synchronizer needs a non null entity manager");
-        }
-        this.entityManager = entityManager;
+    public IntactOrganismSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, OrganismAlias> aliasSynchronizer,
+                                      IntactDbSynchronizer<CvTerm, IntactCvTerm> cellSynchronizer,IntactDbSynchronizer<CvTerm, IntactCvTerm> tissueSynchronizer){
+        super(entityManager, IntactOrganism.class);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<Organism, Organism>();
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(this.entityManager, OrganismAlias.class);
-        this.cellTypeSynchronizer = cellSynchronizer != null ? cellSynchronizer : new IntactCvTermSynchronizer(this.entityManager, IntactUtils.CELL_TYPE_OBJCLASS);
-        this.tissueSynchronizer = tissueSynchronizer != null ? tissueSynchronizer : new IntactCvTermSynchronizer(this.entityManager, IntactUtils.TISSUE_OBJCLASS);    }
+        this.persistedObjects = new HashMap<IntactOrganism, IntactOrganism>();
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, OrganismAlias.class);
+        this.cellTypeSynchronizer = cellSynchronizer != null ? cellSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.CELL_TYPE_OBJCLASS);
+        this.tissueSynchronizer = tissueSynchronizer != null ? tissueSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TISSUE_OBJCLASS);    }
 
 
-    public Organism find(Organism term) throws FinderException {
+    public IntactOrganism find(Organism term) throws FinderException {
         Query query;
         if (term == null){
             return null;
@@ -70,7 +64,7 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
         }
         // we have a simple organism. Only check its taxid
         else if (term.getCellType() == null && term.getTissue() == null){
-            query = this.entityManager.createQuery("select o from IntactOrganism o " +
+            query = getEntityManager().createQuery("select o from IntactOrganism o " +
                     "where o.cellType is null " +
                     "and o.tissue is null " +
                     "and o.persistentTaxid = :taxid");
@@ -86,7 +80,7 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
                     return null;
                 }
                 else {
-                    query = this.entityManager.createQuery("select o from IntactOrganism o " +
+                    query = getEntityManager().createQuery("select o from IntactOrganism o " +
                             "join o.cellType as cell " +
                             "join o.tissue as t " +
                             "where cell.ac = :cellAc " +
@@ -104,7 +98,7 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
                     return null;
                 }
                 else {
-                    query = this.entityManager.createQuery("select o from IntactOrganism o " +
+                    query = getEntityManager().createQuery("select o from IntactOrganism o " +
                             "join o.cellType as cell " +
                             "where cell.ac = :cellAc " +
                             "and o.persistentTaxid = :taxid");
@@ -119,7 +113,7 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
                     return null;
                 }
                 else {
-                    query = this.entityManager.createQuery("select o from IntactOrganism o " +
+                    query = getEntityManager().createQuery("select o from IntactOrganism o " +
                             "join o.tissue as t " +
                             "where t.ac = :tissueAc " +
                             "and o.persistentTaxid = :taxid");
@@ -128,10 +122,10 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
                 }
             }
         }
-        return (Organism) query.getSingleResult();
+        return (IntactOrganism) query.getSingleResult();
     }
 
-    public Organism persist(Organism object) throws FinderException, PersisterException, SynchronizerException {
+    public IntactOrganism persist(IntactOrganism object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
@@ -139,75 +133,10 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
 
         this.persistedObjects.put(object, object);
 
-        IntactOrganism intactOrganism = (IntactOrganism)object;
-        // synchronize properties
-        synchronizeProperties(intactOrganism);
-
-        // persist the cv
-        this.entityManager.persist(intactOrganism);
-
-        return intactOrganism;
+        return super.persist(object);
     }
 
-    public void synchronizeProperties(Organism object) throws FinderException, PersisterException, SynchronizerException {
-        synchronizeProperties((IntactOrganism)object);
-    }
-
-    public Organism synchronize(Organism organism, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
-        if (this.persistedObjects.containsKey(organism)){
-            return this.persistedObjects.get(organism);
-        }
-
-        if (!(organism instanceof IntactOrganism)){
-            IntactOrganism newOrganism = new IntactOrganism(organism.getTaxId());
-            OrganismCloner.copyAndOverrideOrganismProperties(organism, newOrganism);
-
-            Organism retrievedOrganism = findOrPersist(newOrganism, persist);
-            this.persistedObjects.put(retrievedOrganism, retrievedOrganism);
-
-            return retrievedOrganism;
-        }
-        else{
-            IntactOrganism intactType = (IntactOrganism)organism;
-            // detached existing instance
-            if (intactType.getAc() != null && !this.entityManager.contains(intactType)){
-                // first synchronize properties before merging
-                synchronizeProperties(intactType);
-                // merge
-                if (merge){
-                    Organism newOrganism = this.entityManager.merge(intactType);
-                    this.persistedObjects.put(newOrganism, newOrganism);
-                    return newOrganism;
-                }
-                else{
-                    this.persistedObjects.put(intactType, intactType);
-                    return intactType;
-                }
-            }
-            // retrieve and or persist transient instance
-            else if (intactType.getAc() == null){
-                // retrieves or persist cv
-                Organism newOrganism = findOrPersist(intactType, persist);
-                this.persistedObjects.put(newOrganism, newOrganism);
-                return newOrganism;
-            }
-            else{
-                // only synchronize properties
-                synchronizeProperties(organism);
-                this.persistedObjects.put(organism, organism);
-                return organism;
-            }
-        }
-    }
-
-    public void clearCache() {
-        this.persistedObjects.clear();
-        this.aliasSynchronizer.clearCache();
-        this.cellTypeSynchronizer.clearCache();
-        this.tissueSynchronizer.clearCache();
-    }
-
-    protected void synchronizeProperties(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeCommonName(intactOrganism);
         // then check full name
@@ -216,6 +145,21 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
         prepareAliases(intactOrganism);
         // then check annotations
         prepareCellTypeAndTissue(intactOrganism);
+    }
+
+    public IntactOrganism synchronize(Organism organism, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
+        if (this.persistedObjects.containsKey(organism)){
+            return this.persistedObjects.get(organism);
+        }
+
+        return super.synchronize(organism, persist, merge);
+    }
+
+    public void clearCache() {
+        this.persistedObjects.clear();
+        this.aliasSynchronizer.clearCache();
+        this.cellTypeSynchronizer.clearCache();
+        this.tissueSynchronizer.clearCache();
     }
 
     protected void prepareCellTypeAndTissue(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
@@ -270,7 +214,7 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
             intactOrganism.setCommonName(intactOrganism.getCommonName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
         // check if short name already exist, if yes, synchronize
-        Query query = this.entityManager.createQuery("select o from IntactOrganism o " +
+        Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
                 "where o.commonName = :name");
         query.setParameter("name", intactOrganism.getCommonName().trim().toLowerCase());
         List<IntactOrganism> existingOrganisms = query.getResultList();
@@ -300,18 +244,13 @@ public class IntactOrganismSynchronizer implements IntactDbSynchronizer<Organism
         }
     }
 
-    protected Organism findOrPersist(Organism organism, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        Organism existingInstance = find(organism);
-        if (existingInstance != null){
-            return existingInstance;
-        }
-        else{
-            // synchronize before persisting
-            synchronizeProperties(organism);
-            if (persist){
-                this.entityManager.persist(organism);
-            }
-            return organism;
-        }
+    @Override
+    protected boolean isTransient(IntactOrganism object) {
+        return object.getAc() == null;
+    }
+
+    @Override
+    protected IntactOrganism instantiateNewPersistentInstance(Organism object, Class<? extends IntactOrganism> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        return intactClass.getConstructor(Integer.class).newInstance(object.getTaxId());
     }
 }

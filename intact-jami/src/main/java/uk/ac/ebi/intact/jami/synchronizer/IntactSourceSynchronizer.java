@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 
@@ -19,40 +20,33 @@ import java.util.regex.Matcher;
  * @since <pre>23/01/14</pre>
  */
 
-public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
-    private EntityManager entityManager;
-    private Map<Source, Source> persistedObjects;
+public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> {
+    private Map<IntactSource, IntactSource> persistedObjects;
 
-    private IntactDbSynchronizer<Alias> aliasSynchronizer;
-    private IntactDbSynchronizer<Annotation> annotationSynchronizer;
-    private IntactDbSynchronizer<Xref> xrefSynchronizer;
+    private IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer;
+    private IntactDbSynchronizer<Annotation, SourceAnnotation> annotationSynchronizer;
+    private IntactDbSynchronizer<Xref, SourceXref> xrefSynchronizer;
 
     public IntactSourceSynchronizer(EntityManager entityManager){
-        if (entityManager == null){
-            throw new IllegalArgumentException("A Source synchronizer needs a non null entity manager");
-        }
-        this.entityManager = entityManager;
+        super(entityManager, IntactSource.class);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<Source, Source>();
-        this.aliasSynchronizer = new IntactAliasSynchronizer(this.entityManager, SourceAlias.class);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(this.entityManager, SourceAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer(this.entityManager, SourceXref.class);
+        this.persistedObjects = new HashMap<IntactSource, IntactSource>();
+        this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, SourceAlias.class);
+        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, SourceAnnotation.class);
+        this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, SourceXref.class);
     }
 
-    public IntactSourceSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias> aliasSynchronizer,
-                                    IntactDbSynchronizer<Annotation> annotationSynchronizer, IntactDbSynchronizer<Xref> xrefSynchronizer){
-        if (entityManager == null){
-            throw new IllegalArgumentException("A Source synchronizer needs a non null entity manager");
-        }
-        this.entityManager = entityManager;
+    public IntactSourceSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer,
+                                    IntactDbSynchronizer<Annotation, SourceAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, SourceXref> xrefSynchronizer){
+        super(entityManager, IntactSource.class);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<Source, Source>();
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(this.entityManager, SourceAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(this.entityManager, SourceAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(this.entityManager, SourceXref.class);
+        this.persistedObjects = new HashMap<IntactSource, IntactSource>();
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, SourceAlias.class);
+        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, SourceAnnotation.class);
+        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, SourceXref.class);
     }
 
-    public Source find(Source term) throws FinderException{
+    public IntactSource find(Source term) throws FinderException{
         Query query;
         if (term == null){
             return null;
@@ -61,7 +55,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
             return this.persistedObjects.get(term);
         }
         else if (term.getMIIdentifier() != null){
-            query = this.entityManager.createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select s from IntactSource s " +
                     "join s.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
@@ -74,7 +68,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
             query.setParameter("mi", term.getMIIdentifier());
         }
         else if (term.getPARIdentifier() != null){
-            query = this.entityManager.createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select s from IntactSource s " +
                     "join s.persistentXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
@@ -89,7 +83,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
         else if (!term.getIdentifiers().isEmpty()){
             boolean foundSeveral = false;
             for (Xref ref : term.getIdentifiers()){
-                query = this.entityManager.createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -101,7 +95,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
                 query.setParameter("db", ref.getDatabase().getShortName());
                 query.setParameter("id", ref.getId());
 
-                Collection<Source> cvs = query.getResultList();
+                Collection<IntactSource> cvs = query.getResultList();
                 if (cvs.size() == 1){
                     return cvs.iterator().next();
                 }
@@ -113,20 +107,20 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
                 throw new FinderException("The source "+term.toString() + " has some identifiers that can match several institutions in the database and we cannot determine which one is valid.");
             }
             else{
-                query = this.entityManager.createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select s from IntactSource s " +
                         "where s.shortName = :name");
                 query.setParameter("name", term.getShortName().trim().toLowerCase());
             }
         }
         else{
-            query = this.entityManager.createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select s from IntactSource s " +
                     "where s.shortName = :name");
             query.setParameter("name", term.getShortName().trim().toLowerCase());
         }
-        return (Source) query.getSingleResult();
+        return (IntactSource) query.getSingleResult();
     }
 
-    public Source persist(Source object) throws FinderException, PersisterException, SynchronizerException{
+    public IntactSource persist(IntactSource object) throws FinderException, PersisterException, SynchronizerException{
         // only persist if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
@@ -134,66 +128,10 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
 
         this.persistedObjects.put(object, object);
 
-        IntactSource intactSource = (IntactSource)object;
-        // synchronize properties
-        synchronizeProperties(intactSource);
-
-        // persist the source
-        this.entityManager.persist(intactSource);
-
-        return intactSource;
+        return super.persist(object);
     }
 
-    public void synchronizeProperties(Source object) throws FinderException, PersisterException, SynchronizerException {
-        synchronizeProperties((IntactSource)object);
-    }
-
-    public Source synchronize(Source object, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        if (!(object instanceof IntactSource)){
-            IntactSource newSource = new IntactSource(object.getShortName());
-            CvTermCloner.copyAndOverrideCvTermProperties(object, newSource);
-
-            Source retrievedSource = findOrPersist(newSource, persist);
-            this.persistedObjects.put(retrievedSource, retrievedSource);
-            return retrievedSource;
-        }
-        else{
-            IntactSource intactType = (IntactSource)object;
-            // detached existing instance
-            if (intactType.getAc() != null && !this.entityManager.contains(intactType)){
-                // first synchronize properties before merging
-                synchronizeProperties(intactType);
-                // then merge
-                if (merge){
-                    IntactSource newSource = this.entityManager.merge(intactType);
-                    this.persistedObjects.put(newSource, newSource);
-                    return newSource;
-                }
-                else{
-                    this.persistedObjects.put(intactType, intactType);
-                    return intactType;
-                }
-            }
-            // retrieve and or persist transient instance
-            else if (intactType.getAc() == null){
-                Source newTopic = findOrPersist(intactType, persist);
-                this.persistedObjects.put(newTopic, newTopic);
-                return newTopic;
-            }
-            else{
-                // only synchronize properties
-                synchronizeProperties(intactType);
-                this.persistedObjects.put(intactType, intactType);
-                return object;
-            }
-        }
-    }
-
-    protected void synchronizeProperties(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactSource);
         // then check full name
@@ -212,6 +150,19 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
         this.xrefSynchronizer.clearCache();
         this.annotationSynchronizer.clearCache();
     }
+
+    @Override
+    protected boolean isTransient(IntactSource object) {
+        return object.getAc() == null;
+    }
+
+    @Override
+    protected IntactSource instantiateNewPersistentInstance(Source object, Class<? extends IntactSource> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        IntactSource cv = intactClass.getConstructor(String.class).newInstance(object.getShortName());
+        CvTermCloner.copyAndOverrideCvTermProperties(object, cv);
+        return cv;
+    }
+
 
     protected void prepareXrefs(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areXrefsInitialized()){
@@ -271,7 +222,7 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
             intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
         // check if short name already exist, if yes, synchronize
-        Query query = this.entityManager.createQuery("select s from IntactSource s " +
+        Query query = getEntityManager().createQuery("select s from IntactSource s " +
                 "where s.shortName = :name");
         query.setParameter("name", intactSource.getShortName().trim().toLowerCase());
         List<IntactSource> existingSources = query.getResultList();
@@ -297,21 +248,6 @@ public class IntactSourceSynchronizer implements IntactDbSynchronizer<Source> {
             else{
                 intactSource.setShortName(intactSource.getShortName()+"-"+maxString);
             }
-        }
-    }
-
-    protected Source findOrPersist(Source cvType, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        Source existingInstance = find(cvType);
-        if (existingInstance != null){
-            return existingInstance;
-        }
-        else{
-            // synchronize before persisting
-            synchronizeProperties(cvType);
-            if (persist){
-                this.entityManager.persist(cvType);
-            }
-            return cvType;
         }
     }
 }

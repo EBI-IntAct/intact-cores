@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.dao.ParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParameter;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collection;
 
@@ -19,8 +20,19 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 @Repository
-public class ParameterDaoImpl<P extends AbstractIntactParameter> extends AbstractIntactBaseDao<P> implements ParameterDao<P> {
-    private IntactDbSynchronizer<Parameter> parameterSynchronizer;
+public class ParameterDaoImpl<P extends AbstractIntactParameter> extends AbstractIntactBaseDao<Parameter, P> implements ParameterDao<P> {
+
+    public ParameterDaoImpl() {
+        super((Class<P>)AbstractIntactParameter.class);
+    }
+
+    public ParameterDaoImpl(Class<P> entityClass) {
+        super(entityClass);
+    }
+
+    public ParameterDaoImpl(Class<P> entityClass, EntityManager entityManager) {
+        super(entityClass, entityManager);
+    }
 
     public Collection<P> getByType(String typeName, String typeMI) {
         Query query;
@@ -180,37 +192,8 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<Parameter> getParameterSynchronizer() {
-        if (this.parameterSynchronizer == null){
-            this.parameterSynchronizer = new IntactParameterSynchronizer(getEntityManager(), AbstractIntactParameter.class);
-        }
-        return this.parameterSynchronizer;
-    }
-
-    public void setParameterSynchronizer(IntactDbSynchronizer<Parameter> parameterSynchronizer) {
-        this.parameterSynchronizer = parameterSynchronizer;
-    }
-
     @Override
-    public void merge(P objToReplicate) throws SynchronizerException, PersisterException, FinderException {
-        prepareParameterTypeAndValue(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(P  objToPersist) throws SynchronizerException, PersisterException, FinderException {
-        prepareParameterTypeAndValue(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public P update(P  objToUpdate) throws SynchronizerException, PersisterException, FinderException {
-        prepareParameterTypeAndValue(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareParameterTypeAndValue(P objToPersist) throws PersisterException, FinderException, SynchronizerException {
-        getParameterSynchronizer().clearCache();
-        getParameterSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactParameterSynchronizer<P>(getEntityManager(), getEntityClass()));
     }
 }

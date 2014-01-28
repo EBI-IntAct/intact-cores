@@ -7,8 +7,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ConfidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.IntactConfidenceSynchronizer;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collection;
 
@@ -20,8 +21,19 @@ import java.util.Collection;
  * @since <pre>21/01/14</pre>
  */
 @Repository
-public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends AbstractIntactBaseDao<C> implements ConfidenceDao<C> {
-    private IntactDbSynchronizer<Confidence> confidenceSynchronizer;
+public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends AbstractIntactBaseDao<Confidence, C> implements ConfidenceDao<C> {
+
+    public ConfidenceDaoImpl() {
+        super((Class<C>)AbstractIntactConfidence.class);
+    }
+
+    public ConfidenceDaoImpl(Class<C> entityClass) {
+        super(entityClass);
+    }
+
+    public ConfidenceDaoImpl(Class<C> entityClass, EntityManager entityManager) {
+        super(entityClass, entityManager);
+    }
 
     public Collection<C> getByValue(String value) {
         Query query = getEntityManager().createQuery("select c from " + getEntityClass() + " c where c.value = :confValue");
@@ -91,37 +103,8 @@ public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends Abstr
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<Confidence> getConfidenceSynchronizer() {
-        if (this.confidenceSynchronizer == null){
-            this.confidenceSynchronizer = new IntactConfidenceSynchronizer(getEntityManager(), AbstractIntactConfidence.class);
-        }
-        return this.confidenceSynchronizer;
-    }
-
-    public void setConfidenceSynchronizer(IntactDbSynchronizer<Confidence> confidenceSynchronizer) {
-        this.confidenceSynchronizer = confidenceSynchronizer;
-    }
-
     @Override
-    public void merge(C objToReplicate) throws SynchronizerException, PersisterException, FinderException {
-        prepareConfidenceTypeAndValue(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(C  objToPersist) throws SynchronizerException, PersisterException, FinderException {
-        prepareConfidenceTypeAndValue(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public C update(C  objToUpdate) throws PersisterException, FinderException, SynchronizerException {
-        prepareConfidenceTypeAndValue(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareConfidenceTypeAndValue(C objToPersist) throws PersisterException, FinderException, SynchronizerException {
-        getConfidenceSynchronizer().clearCache();
-        getConfidenceSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactConfidenceSynchronizer<C>(getEntityManager(), getEntityClass()));
     }
 }

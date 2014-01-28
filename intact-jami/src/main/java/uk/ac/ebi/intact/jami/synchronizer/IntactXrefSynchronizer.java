@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
+import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -18,117 +20,44 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactXrefSynchronizer implements IntactDbSynchronizer<Xref> {
+public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends AbstractIntactDbSynchronizer<Xref, X> {
 
-    private IntactDbSynchronizer<CvTerm> dbSynchronizer;
-    private IntactDbSynchronizer<CvTerm> qualifierSynchronizer;
-
-    private EntityManager entityManager;
-    private Class<? extends AbstractIntactXref> xrefClass;
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> dbSynchronizer;
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> qualifierSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactCvTermSynchronizer.class);
 
-    public IntactXrefSynchronizer(EntityManager entityManager, Class<? extends AbstractIntactXref> xrefClass){
-        if (entityManager == null){
-            throw new IllegalArgumentException("Xref synchronizer needs a non null entityManager");
+    public IntactXrefSynchronizer(EntityManager entityManager, Class<? extends X> xrefClass){
+        super(entityManager, xrefClass);
+        if (xrefClass.isAssignableFrom(CvTermXref.class)){
+            this.dbSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS, null, null, (IntactXrefSynchronizer<CvTermXref>)this);
+            this.qualifierSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS, null, null, (IntactXrefSynchronizer<CvTermXref>)this);
         }
-        this.entityManager = entityManager;
-        if (xrefClass == null){
-            throw new IllegalArgumentException("Xref synchronizer needs a non null xref class");
+        else{
+            this.dbSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS);
+            this.qualifierSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS);
         }
-        this.xrefClass = xrefClass;
-        this.dbSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS, null, null, this);
-        this.qualifierSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS, null, null, this);
+
     }
 
-    public IntactXrefSynchronizer(EntityManager entityManager, Class<? extends AbstractIntactXref> xrefClas,
-                                  IntactDbSynchronizer<CvTerm> dbSynchronizer, IntactDbSynchronizer<CvTerm> qualifierSynchronizer){
-        if (entityManager == null){
-            throw new IllegalArgumentException("Xref synchronizer needs a non null entityManager");
+    public IntactXrefSynchronizer(EntityManager entityManager, Class<? extends X> xrefClas,
+                                  IntactDbSynchronizer<CvTerm, IntactCvTerm> dbSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> qualifierSynchronizer){
+        super(entityManager, xrefClas);
+        if (xrefClas.isAssignableFrom(CvTermXref.class)){
+            this.dbSynchronizer = dbSynchronizer != null ? dbSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS, null, null, (IntactXrefSynchronizer<CvTermXref>)this);
+            this.qualifierSynchronizer = qualifierSynchronizer != null ? qualifierSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS, null, null, (IntactXrefSynchronizer<CvTermXref>)this);
         }
-        this.entityManager = entityManager;
-        if (xrefClas == null){
-            throw new IllegalArgumentException("Xref synchronizer needs a non null xref class");
+        else{
+            this.dbSynchronizer = dbSynchronizer != null ? dbSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS);
+            this.qualifierSynchronizer = qualifierSynchronizer != null ? qualifierSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS);
         }
-        this.xrefClass = xrefClas;
-        this.dbSynchronizer = dbSynchronizer != null ? dbSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS, null, null, this);
-        this.qualifierSynchronizer = qualifierSynchronizer != null ? qualifierSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS, null, null, this);
     }
 
-    public Xref find(Xref object) throws FinderException {
+    public X find(Xref object) throws FinderException {
         return null;
     }
 
-    public Xref persist(Xref object) throws FinderException, PersisterException, SynchronizerException {
-        synchronizeProperties((AbstractIntactXref) object);
-        this.entityManager.persist(object);
-        return object;
-    }
-
-    public void synchronizeProperties(Xref object) throws FinderException, PersisterException, SynchronizerException {
-        synchronizeProperties((AbstractIntactXref)object);
-    }
-
-    public Xref synchronize(Xref object, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
-        if (!object.getClass().isAssignableFrom(this.xrefClass)){
-            AbstractIntactXref newXref = null;
-            try {
-                newXref = this.xrefClass.getConstructor(CvTerm.class, String.class, String.class, CvTerm.class).newInstance(object.getDatabase(), object.getId(), object.getVersion(), object.getQualifier());
-            } catch (InstantiationException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.xrefClass, e);
-            } catch (IllegalAccessException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.xrefClass, e);
-            } catch (InvocationTargetException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.xrefClass, e);
-            } catch (NoSuchMethodException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.xrefClass, e);
-            }
-
-            // synchronize properties
-            synchronizeProperties(newXref);
-            if (persist){
-                this.entityManager.persist(newXref);
-            }
-            return newXref;
-        }
-        else{
-            AbstractIntactXref intactType = (AbstractIntactXref)object;
-            // detached existing instance
-            if (intactType.getAc() != null && !this.entityManager.contains(intactType)){
-                // synchronize properties
-                synchronizeProperties(intactType);
-                // merge
-                if (merge){
-                    return this.entityManager.merge(intactType);
-                }
-                else{
-                    return intactType;
-                }
-            }
-            // retrieve and or persist transient instance
-            else if (intactType.getAc() == null){
-                // synchronize properties
-                synchronizeProperties(intactType);
-                // persist alias
-                if (persist){
-                    this.entityManager.persist(intactType);
-                }
-                return intactType;
-            }
-            else{
-                // synchronize properties
-                synchronizeProperties(intactType);
-                return intactType;
-            }
-        }
-    }
-
-    public void clearCache() {
-        this.dbSynchronizer.clearCache();
-        this.qualifierSynchronizer.clearCache();
-    }
-
-    protected void synchronizeProperties(AbstractIntactXref object) throws PersisterException, SynchronizerException, FinderException {
+    public void synchronizeProperties(X object) throws FinderException, PersisterException, SynchronizerException {
         // database first
         CvTerm db = object.getDatabase();
         object.setDatabase(dbSynchronizer.synchronize(db, true, true));
@@ -153,5 +82,20 @@ public class IntactXrefSynchronizer implements IntactDbSynchronizer<Xref> {
             CvTerm qualifier = object.getQualifier();
             object.setQualifier(qualifierSynchronizer.synchronize(qualifier, true, true));
         }
+    }
+
+    public void clearCache() {
+        this.dbSynchronizer.clearCache();
+        this.qualifierSynchronizer.clearCache();
+    }
+
+    @Override
+    protected boolean isTransient(X object) {
+        return object.getAc() == null;
+    }
+
+    @Override
+    protected X instantiateNewPersistentInstance(Xref object, Class<? extends X> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        return intactClass.getConstructor(CvTerm.class, String.class, String.class, CvTerm.class).newInstance(object.getDatabase(), object.getId(), object.getVersion(), object.getQualifier());
     }
 }

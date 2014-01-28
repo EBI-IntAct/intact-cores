@@ -10,7 +10,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
  * @since <pre>21/01/14</pre>
  */
 
-public interface IntactDbSynchronizer<T> {
+public interface IntactDbSynchronizer<I, T> {
 
 
     /**
@@ -19,7 +19,7 @@ public interface IntactDbSynchronizer<T> {
      * @return
      * @throws FinderException
      */
-    public T find(T object) throws FinderException;
+    public T find(I object) throws FinderException;
 
     /**
      * Persist this object instance (MUST be an instance annotated with hibernate annotations) and
@@ -54,7 +54,7 @@ public interface IntactDbSynchronizer<T> {
      * @throws PersisterException
      * @throws SynchronizerException
      */
-    public T synchronize(T object, boolean persist, boolean merger) throws FinderException,PersisterException,SynchronizerException;
+    public T synchronize(I object, boolean persist, boolean merger) throws FinderException,PersisterException,SynchronizerException;
 
     /**
      * Clear cached objects

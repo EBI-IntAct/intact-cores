@@ -6,8 +6,9 @@ import psidev.psi.mi.jami.model.Feature;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.IntactFeatureSynchronizer;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collection;
 
@@ -19,8 +20,19 @@ import java.util.Collection;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class FeatureDaoImpl<F extends AbstractIntactFeature, T extends Feature> extends AbstractIntactBaseDao<F> implements FeatureDao<F> {
-    private IntactDbSynchronizer<T> featureSynchronizer;
+public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> extends AbstractIntactBaseDao<T, F> implements FeatureDao<F> {
+
+    protected FeatureDaoImpl() {
+        super((Class<F>)AbstractIntactFeature.class);
+    }
+
+    public FeatureDaoImpl(Class<F> entityClass) {
+        super(entityClass);
+    }
+
+    public FeatureDaoImpl(Class<F> entityClass, EntityManager entityManager) {
+        super(entityClass, entityManager);
+    }
 
     public F getByAc(String ac) {
         return getEntityManager().find(getEntityClass(), ac);
@@ -620,37 +632,8 @@ public class FeatureDaoImpl<F extends AbstractIntactFeature, T extends Feature> 
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<T> getFeatureSynchronizer() {
-        if (this.featureSynchronizer == null){
-            this.featureSynchronizer = new IntactFeatureSynchronizer<T>(getEntityManager(), AbstractIntactFeature.class);
-        }
-        return this.featureSynchronizer;
-    }
-
-    public void setFeatureSynchronizer(IntactDbSynchronizer<T> featureSynchronizer) {
-        this.featureSynchronizer = featureSynchronizer;
-    }
-
     @Override
-    public void merge(F objToReplicate) throws FinderException, PersisterException, SynchronizerException{
-        synchronizeProperties(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(F  objToPersist) throws FinderException, PersisterException, SynchronizerException{
-        synchronizeProperties(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public F update(F  objToUpdate) throws FinderException, PersisterException, SynchronizerException{
-        synchronizeProperties(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void synchronizeProperties(F feature) throws FinderException, PersisterException, SynchronizerException {
-        getFeatureSynchronizer().clearCache();
-        getFeatureSynchronizer().synchronizeProperties((T)feature);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactFeatureSynchronizer<T, F>(getEntityManager(), getEntityClass()));
     }
 }

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.dao.IntactBaseDao;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
@@ -25,7 +26,7 @@ import java.util.List;
  * @since <pre>21/01/14</pre>
  */
 @Repository
-public abstract class AbstractIntactBaseDao<T> implements IntactBaseDao<T> {
+public abstract class AbstractIntactBaseDao<I,T> implements IntactBaseDao<T> {
 
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;
@@ -34,6 +35,8 @@ public abstract class AbstractIntactBaseDao<T> implements IntactBaseDao<T> {
     private EntityManagerFactory entityManagerFactory;
 
     private Class<T> entityClass;
+
+    private IntactDbSynchronizer<I,T> dbSynchronizer;
 
     protected AbstractIntactBaseDao(){
 
@@ -96,10 +99,12 @@ public abstract class AbstractIntactBaseDao<T> implements IntactBaseDao<T> {
     }
 
     public T update(T objToUpdate) throws FinderException,PersisterException,SynchronizerException{
+        synchronizeObjectProperties(objToUpdate);
         return getEntityManager().merge(objToUpdate);
     }
 
     public void persist(T objToPersist) throws FinderException,PersisterException,SynchronizerException{
+        synchronizeObjectProperties(objToPersist);
         getEntityManager().persist(objToPersist);
     }
 
@@ -132,6 +137,7 @@ public abstract class AbstractIntactBaseDao<T> implements IntactBaseDao<T> {
     }
 
     public void merge(T objToReplicate) throws FinderException,PersisterException,SynchronizerException{
+        synchronizeObjectProperties(objToReplicate);
         getEntityManager().merge(objToReplicate);
     }
 
@@ -148,5 +154,23 @@ public abstract class AbstractIntactBaseDao<T> implements IntactBaseDao<T> {
             throw new IllegalArgumentException("Entity class is mandatory");
         }
         return this.entityClass;
+    }
+
+    public IntactDbSynchronizer<I,T> getDbSynchronizer() {
+        if (this.dbSynchronizer == null){
+            initialiseDbSynchronizer();
+        }
+        return this.dbSynchronizer;
+    }
+
+    public void setDbSynchronizer(IntactDbSynchronizer<I, T> dbSynchronizer) {
+        this.dbSynchronizer = dbSynchronizer;
+    }
+
+    protected abstract void initialiseDbSynchronizer();
+
+    protected void synchronizeObjectProperties(T objToUpdate) throws PersisterException, FinderException, SynchronizerException {
+        getDbSynchronizer().clearCache();
+        getDbSynchronizer().synchronizeProperties(objToUpdate);
     }
 }

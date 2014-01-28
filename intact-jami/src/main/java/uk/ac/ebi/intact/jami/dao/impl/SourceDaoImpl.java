@@ -21,8 +21,7 @@ import java.util.Collection;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implements SourceDao {
-    private IntactDbSynchronizer<Source> sourceSynchronizer;
+public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> implements SourceDao {
 
     public SourceDaoImpl() {
         super(IntactSource.class);
@@ -557,37 +556,8 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<IntactSource> implement
         return (IntactSource)query.getSingleResult();
     }
 
-    public IntactDbSynchronizer<Source> getSourceSynchronizer() {
-        if (this.sourceSynchronizer == null){
-            this.sourceSynchronizer = new IntactSourceSynchronizer(getEntityManager());
-        }
-        return this.sourceSynchronizer;
-    }
-
-    public void setSourceSynchronizer(IntactDbSynchronizer<Source> sourceSynchronizer) {
-        this.sourceSynchronizer = sourceSynchronizer;
-    }
-
     @Override
-    public void merge(IntactSource objToReplicate) throws FinderException,PersisterException,SynchronizerException{
-        prepareSource(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(IntactSource objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        prepareSource(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public IntactSource update(IntactSource objToUpdate) throws FinderException,PersisterException,SynchronizerException{
-        prepareSource(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareSource(IntactSource objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        getSourceSynchronizer().clearCache();
-        getSourceSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactSourceSynchronizer(getEntityManager()));
     }
 }

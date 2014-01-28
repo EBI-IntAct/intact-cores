@@ -23,9 +23,7 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 @Repository
-public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements RangeDao {
-
-    private IntactDbSynchronizer<Range> rangeSynchronizer;
+public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> implements RangeDao {
 
     public RangeDaoImpl() {
         super(IntactRange.class);
@@ -488,37 +486,8 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<IntactRange> implements 
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<Range> getRangeSynchronizer() {
-        if (this.rangeSynchronizer == null){
-            this.rangeSynchronizer = new IntactRangeSynchronizer(getEntityManager());
-        }
-        return this.rangeSynchronizer;
-    }
-
-    public void setRangeSynchronizer(IntactDbSynchronizer<Range> rangeSynchronizer) {
-        this.rangeSynchronizer = rangeSynchronizer;
-    }
-
     @Override
-    public void merge(IntactRange objToReplicate) throws SynchronizerException, PersisterException, FinderException {
-        prepareRange(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(IntactRange objToPersist) throws SynchronizerException, PersisterException, FinderException {
-        prepareRange(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public IntactRange update(IntactRange objToUpdate) throws SynchronizerException, PersisterException, FinderException {
-        prepareRange(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareRange(IntactRange objToPersist) throws PersisterException, FinderException, SynchronizerException {
-        getRangeSynchronizer().clearCache();
-        getRangeSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactRangeSynchronizer(getEntityManager()));
     }
 }

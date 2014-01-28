@@ -3,13 +3,11 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
-import uk.ac.ebi.intact.jami.model.extension.FeatureAlias;
-import uk.ac.ebi.intact.jami.model.extension.FeatureAnnotation;
-import uk.ac.ebi.intact.jami.model.extension.FeatureXref;
+import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,136 +19,50 @@ import java.util.List;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSynchronizer<F>{
-    private EntityManager entityManager;
+public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractIntactFeature> extends AbstractIntactDbSynchronizer<F,I>{
 
-    private IntactDbSynchronizer<Alias> aliasSynchronizer;
-    private IntactDbSynchronizer<Annotation> annotationSynchronizer;
-    private IntactDbSynchronizer<Xref> xrefSynchronizer;
+    private IntactDbSynchronizer<Alias, FeatureAlias> aliasSynchronizer;
+    private IntactDbSynchronizer<Annotation, FeatureAnnotation> annotationSynchronizer;
+    private IntactDbSynchronizer<Xref, FeatureXref> xrefSynchronizer;
 
-    private IntactDbSynchronizer<CvTerm> effectSynchronizer;
-    private IntactDbSynchronizer<CvTerm> typeSynchronizer;
-    private IntactDbSynchronizer<Range> rangeSynchronizer;
-
-    private Class<? extends AbstractIntactFeature> featureClass;
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> effectSynchronizer;
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer;
+    private IntactDbSynchronizer<Range, IntactRange> rangeSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactFeatureSynchronizer.class);
 
-    public IntactFeatureSynchronizer(EntityManager entityManager, Class<? extends AbstractIntactFeature> featureClass){
-        if (entityManager == null){
-            throw new IllegalArgumentException("A feature synchronizer needs a non null entity manager");
-        }
-        this.entityManager = entityManager;
-        if (featureClass == null){
-            throw new IllegalArgumentException("A feature synchronizer needs a non null feature class");
-        }
-        this.featureClass = featureClass;
+    public IntactFeatureSynchronizer(EntityManager entityManager, Class<? extends I> featureClass){
+        super(entityManager, featureClass);
 
-        this.aliasSynchronizer = new IntactAliasSynchronizer(this.entityManager, FeatureAlias.class);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(this.entityManager, FeatureAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer(this.entityManager, FeatureXref.class);
+        this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, FeatureAlias.class);
+        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, FeatureAnnotation.class);
+        this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, FeatureXref.class);
 
-        this.effectSynchronizer = new IntactCvTermSynchronizer(this.entityManager, IntactUtils.TOPIC_OBJCLASS);
-        this.typeSynchronizer = new IntactCvTermSynchronizer(this.entityManager, IntactUtils.FEATURE_TYPE_OBJCLASS);
-        this.rangeSynchronizer = new IntactRangeSynchronizer(this.entityManager);
+        this.effectSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
+        this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.FEATURE_TYPE_OBJCLASS);
+        this.rangeSynchronizer = new IntactRangeSynchronizer(entityManager);
     }
 
-    public IntactFeatureSynchronizer(EntityManager entityManager, Class<? extends AbstractIntactFeature> featureClass,
-                                     IntactDbSynchronizer<Alias> aliasSynchronizer,
-                                    IntactDbSynchronizer<Annotation> annotationSynchronizer, IntactDbSynchronizer<Xref> xrefSynchronizer,
-                                    IntactDbSynchronizer<CvTerm> typeSynchronizer, IntactDbSynchronizer<CvTerm> effectSynchronizer,
-                                    IntactDbSynchronizer<Range> rangeSynchronizer){
-        if (entityManager == null){
-            throw new IllegalArgumentException("A feature synchronizer needs a non null entity manager");
-        }
-        this.entityManager = entityManager;
-        if (featureClass == null){
-            throw new IllegalArgumentException("A feature synchronizer needs a non null feature class");
-        }
-        this.featureClass = featureClass;
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(this.entityManager, FeatureAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(this.entityManager, FeatureAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(this.entityManager, FeatureXref.class);
+    public IntactFeatureSynchronizer(EntityManager entityManager, Class<? extends I> featureClass,
+                                     IntactDbSynchronizer<Alias, FeatureAlias> aliasSynchronizer,
+                                    IntactDbSynchronizer<Annotation, FeatureAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, FeatureXref> xrefSynchronizer,
+                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> effectSynchronizer,
+                                    IntactDbSynchronizer<Range, IntactRange> rangeSynchronizer){
+        super(entityManager, featureClass);
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, FeatureAlias.class);
+        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, FeatureAnnotation.class);
+        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, FeatureXref.class);
 
-        this.effectSynchronizer = effectSynchronizer != null ? effectSynchronizer : new IntactCvTermSynchronizer(this.entityManager, IntactUtils.TOPIC_OBJCLASS);
-        this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(this.entityManager, IntactUtils.FEATURE_TYPE_OBJCLASS);
-        this.rangeSynchronizer = rangeSynchronizer != null ? rangeSynchronizer : new IntactRangeSynchronizer(this.entityManager);
+        this.effectSynchronizer = effectSynchronizer != null ? effectSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
+        this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.FEATURE_TYPE_OBJCLASS);
+        this.rangeSynchronizer = rangeSynchronizer != null ? rangeSynchronizer : new IntactRangeSynchronizer(entityManager);
     }
 
-    public F find(F feature) throws FinderException {
+    public I find(F feature) throws FinderException {
         return null;
     }
 
-    public F persist(F object) throws FinderException, PersisterException, SynchronizerException {
-        synchronizeProperties((AbstractIntactFeature) object);
-        this.entityManager.persist(object);
-        return object;
-    }
-
-    public void synchronizeProperties(F object) throws FinderException, PersisterException, SynchronizerException {
-        synchronizeProperties((AbstractIntactFeature)object);
-    }
-
-    public F synchronize(F object, boolean persist, boolean merge) throws FinderException, PersisterException, SynchronizerException {
-        if (!object.getClass().isAssignableFrom(this.featureClass)){
-            AbstractIntactFeature newFeature = null;
-            try {
-                newFeature = this.featureClass.newInstance();
-            } catch (InstantiationException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.featureClass, e);
-            } catch (IllegalAccessException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.featureClass, e);
-            }
-
-            // synchronize properties
-            synchronizeProperties(newFeature);
-            if (persist){
-                this.entityManager.persist(newFeature);
-            }
-            return (F)newFeature;
-        }
-        else{
-            AbstractIntactFeature intactType = (AbstractIntactFeature)object;
-            // detached existing instance
-            if (intactType.getAc() != null && !this.entityManager.contains(intactType)){
-                // synchronize properties
-                synchronizeProperties(intactType);
-                // merge
-                if (merge){
-                    return (F)this.entityManager.merge(intactType);
-                }
-                else{
-                    return (F)intactType;
-                }
-            }
-            // retrieve and or persist transient instance
-            else if (intactType.getAc() == null){
-                // synchronize properties
-                synchronizeProperties(intactType);
-                // persist alias
-                if (persist){
-                    this.entityManager.persist(intactType);
-                }
-                return (F)intactType;
-            }
-            else{
-                // synchronize properties
-                synchronizeProperties(intactType);
-                return (F)intactType;
-            }
-        }
-    }
-
-    public void clearCache() {
-        this.aliasSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
-
-        this.typeSynchronizer.clearCache();
-        this.effectSynchronizer.clearCache();
-    }
-
-    protected void synchronizeProperties(AbstractIntactFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactFeature);
         // then check full name
@@ -167,7 +79,16 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         prepareRanges(intactFeature);
     }
 
-    protected void prepareRanges(AbstractIntactFeature intactFeature) throws PersisterException, FinderException, SynchronizerException {
+    public void clearCache() {
+        this.aliasSynchronizer.clearCache();
+        this.xrefSynchronizer.clearCache();
+        this.annotationSynchronizer.clearCache();
+
+        this.typeSynchronizer.clearCache();
+        this.effectSynchronizer.clearCache();
+    }
+
+    protected void prepareRanges(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.areRangesInitialized()){
             List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
             for (Range range : rangesToPersist){
@@ -182,7 +103,7 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         }
     }
 
-    protected void prepareInteractionEffectAndDependencies(AbstractIntactFeature intactFeature) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareInteractionEffectAndDependencies(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.getInteractionDependency() != null){
             intactFeature.setInteractionDependency(this.effectSynchronizer.synchronize(intactFeature.getInteractionDependency(), true, true));
         }
@@ -192,7 +113,7 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         }
     }
 
-    protected void prepareXrefs(AbstractIntactFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
@@ -207,7 +128,7 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         }
     }
 
-    protected void prepareAnnotations(AbstractIntactFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
@@ -222,7 +143,7 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         }
     }
 
-    protected void prepareAliases(AbstractIntactFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
             for (Alias alias : aliasesToPersist){
@@ -237,7 +158,7 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         }
     }
 
-    protected void prepareFullName(AbstractIntactFeature intactFeature) {
+    protected void prepareFullName(I intactFeature) {
         // truncate if necessary
         if (intactFeature.getFullName() != null && IntactUtils.MAX_FULL_NAME_LEN < intactFeature.getFullName().length()){
             log.warn("Feature fullName too long: "+intactFeature.getFullName()+", will be truncated to "+ IntactUtils.MAX_FULL_NAME_LEN+" characters.");
@@ -245,7 +166,7 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         }
     }
 
-    protected void prepareAndSynchronizeShortLabel(AbstractIntactFeature intactFeature) {
+    protected void prepareAndSynchronizeShortLabel(I intactFeature) {
         // truncate if necessary
         if (intactFeature.getShortName() == null){
             intactFeature.setShortName("N/A");
@@ -256,7 +177,13 @@ public class IntactFeatureSynchronizer<F extends Feature> implements IntactDbSyn
         }
     }
 
-    protected EntityManager getEntityManager() {
-        return entityManager;
+    @Override
+    protected I instantiateNewPersistentInstance(F object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        return intactClass.newInstance();
+    }
+
+    @Override
+    protected boolean isTransient(I object) {
+        return object.getAc() == null;
     }
 }

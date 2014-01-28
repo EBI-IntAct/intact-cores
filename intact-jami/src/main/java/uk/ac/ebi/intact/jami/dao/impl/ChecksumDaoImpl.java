@@ -7,8 +7,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ChecksumDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.IntactChecksumSynchronizer;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collection;
 
@@ -20,8 +21,19 @@ import java.util.Collection;
  * @since <pre>21/01/14</pre>
  */
 @Repository
-public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractIntactBaseDao<C> implements ChecksumDao<C> {
-    private IntactDbSynchronizer<Checksum> checksumSynchronizer;
+public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractIntactBaseDao<Checksum, C> implements ChecksumDao<C> {
+
+    protected ChecksumDaoImpl() {
+        super((Class<C>)AbstractIntactChecksum.class);
+    }
+
+    public ChecksumDaoImpl(Class<C> entityClass) {
+        super(entityClass);
+    }
+
+    public ChecksumDaoImpl(Class<C> entityClass, EntityManager entityManager) {
+        super(entityClass, entityManager);
+    }
 
     public Collection<C> getByValue(String value) {
         Query query = getEntityManager().createQuery("select c from " + getEntityClass() + " c where c.value = :checksumValue");
@@ -91,37 +103,8 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
         return query.getResultList();
     }
 
-    public IntactDbSynchronizer<Checksum> getChecksumSynchronizer() {
-        if (this.checksumSynchronizer == null){
-            this.checksumSynchronizer = new IntactChecksumSynchronizer(getEntityManager(), AbstractIntactChecksum.class);
-        }
-        return this.checksumSynchronizer;
-    }
-
-    public void setChecksumSynchronizer(IntactDbSynchronizer<Checksum> checksumSynchronizer) {
-        this.checksumSynchronizer = checksumSynchronizer;
-    }
-
     @Override
-    public void merge(C objToReplicate) throws FinderException,PersisterException,SynchronizerException{
-        prepareChecksumMethodAndValue(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(C  objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        prepareChecksumMethodAndValue(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public C update(C  objToUpdate) throws FinderException,PersisterException,SynchronizerException{
-        prepareChecksumMethodAndValue(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareChecksumMethodAndValue(C objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        getChecksumSynchronizer().clearCache();
-        getChecksumSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactChecksumSynchronizer<C>(getEntityManager(), getEntityClass()));
     }
 }

@@ -20,8 +20,7 @@ import java.util.Collection;
  * @since <pre>27/01/14</pre>
  */
 
-public class OrganismDaoImpl extends AbstractIntactBaseDao<IntactOrganism> implements OrganismDao{
-    private IntactDbSynchronizer<Organism> organismSynchronizer;
+public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrganism> implements OrganismDao{
 
     public OrganismDaoImpl() {
         super(IntactOrganism.class);
@@ -219,38 +218,8 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<IntactOrganism> imple
         return query.getResultList();
     }
 
-
-    public IntactDbSynchronizer<Organism> getOrganismSynchronizer() {
-        if (this.organismSynchronizer == null){
-            this.organismSynchronizer = new IntactOrganismSynchronizer(getEntityManager());
-        }
-        return this.organismSynchronizer;
-    }
-
-    public void setOrganismSynchronizer(IntactDbSynchronizer<Organism> organismSynchronizer) {
-        this.organismSynchronizer = organismSynchronizer;
-    }
-
     @Override
-    public void merge(IntactOrganism objToReplicate) throws FinderException,PersisterException,SynchronizerException {
-        prepareOrganism(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(IntactOrganism objToPersist) throws FinderException,PersisterException,SynchronizerException {
-        prepareOrganism(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public IntactOrganism update(IntactOrganism objToUpdate) throws FinderException,PersisterException,SynchronizerException {
-        prepareOrganism(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareOrganism(IntactOrganism objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        getOrganismSynchronizer().clearCache();
-        getOrganismSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactOrganismSynchronizer(getEntityManager()));
     }
 }

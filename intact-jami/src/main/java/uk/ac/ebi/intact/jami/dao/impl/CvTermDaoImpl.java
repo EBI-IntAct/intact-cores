@@ -19,8 +19,7 @@ import java.util.Collection;
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implements CvTermDao {
-    private IntactDbSynchronizer<CvTerm> cvSynchronizer;
+public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> implements CvTermDao {
 
     public CvTermDaoImpl() {
         super(IntactCvTerm.class);
@@ -700,37 +699,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<IntactCvTerm> implement
         return (IntactCvTerm)query.getSingleResult();
     }
 
-    public IntactDbSynchronizer<CvTerm> getCvSynchronizer() {
-        if (this.cvSynchronizer == null){
-            this.cvSynchronizer = new IntactCvTermSynchronizer(getEntityManager());
-        }
-        return this.cvSynchronizer;
-    }
-
-    public void setCvSynchronizer(IntactDbSynchronizer<CvTerm> cvSynchronizer) {
-        this.cvSynchronizer = cvSynchronizer;
-    }
-
     @Override
-    public void merge(IntactCvTerm objToReplicate) throws FinderException,PersisterException,SynchronizerException {
-        prepareCv(objToReplicate);
-        super.merge(objToReplicate);
-    }
-
-    @Override
-    public void persist(IntactCvTerm objToPersist) throws FinderException,PersisterException,SynchronizerException {
-        prepareCv(objToPersist);
-        super.persist(objToPersist);
-    }
-
-    @Override
-    public IntactCvTerm update(IntactCvTerm objToUpdate) throws FinderException,PersisterException,SynchronizerException {
-        prepareCv(objToUpdate);
-        return super.update(objToUpdate);
-    }
-
-    protected void prepareCv(IntactCvTerm objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        getCvSynchronizer().clearCache();
-        getCvSynchronizer().synchronizeProperties(objToPersist);
+    protected void initialiseDbSynchronizer() {
+        super.setDbSynchronizer(new IntactCvTermSynchronizer(getEntityManager()));
     }
 }
