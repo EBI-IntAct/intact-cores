@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
+import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -34,7 +35,7 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
     public IntactInteractorSynchronizer(EntityManager entityManager, Class<I> intactClass){
         super(entityManager, intactClass);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<I, I>();
+        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorBaseComparator());
         this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
         this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
         this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, InteractorXref.class);
@@ -51,7 +52,7 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
                                     IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer){
         super(entityManager, intactClass);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<I, I>();
+        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorBaseComparator());
         this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
         this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
         this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, InteractorXref.class);
