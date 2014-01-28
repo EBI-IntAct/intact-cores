@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -20,7 +18,6 @@ import java.util.List;
 
 public class IntactFeatureEvidenceSynchronizer extends IntactFeatureSynchronizer<FeatureEvidence, IntactFeatureEvidence>{
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer;
-    private static final Log log = LogFactory.getLog(IntactFeatureEvidenceSynchronizer.class);
 
     public IntactFeatureEvidenceSynchronizer(EntityManager entityManager){
         super(entityManager, IntactFeatureEvidence.class);

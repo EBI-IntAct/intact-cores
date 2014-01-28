@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.ResultingSequence;
@@ -86,6 +87,11 @@ public class IntactResultingSequence implements ResultingSequence{
     public String toString() {
         return (originalSequence != null ? "original sequence: "+originalSequence : "") +
                 (newSequence != null ? "new sequence: "+newSequence : "");
+    }
+
+    @Transient
+    public boolean areXrefsInitialized(){
+        return Hibernate.isInitialized(getXrefs());
     }
 
     protected void initialiseXrefs(){
