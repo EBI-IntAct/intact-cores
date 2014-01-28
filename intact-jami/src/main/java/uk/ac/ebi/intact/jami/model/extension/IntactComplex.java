@@ -6,7 +6,6 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
-import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -477,41 +476,41 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     @Override
     protected void initialiseAnnotations() {
-        super.setAnnotations(new ComplexAnnotationList(null));
+        super.setPersistentAnnotations(new ComplexAnnotationList(null));
         for (Annotation check : super.getAnnotations()){
             processAddedAnnotationEvent(check);
         }
     }
 
     @Override
-    protected void setAnnotations(Collection<Annotation> annotations) {
-        super.setAnnotations(new ComplexAnnotationList(annotations));
+    protected void setPersistentAnnotations(Collection<Annotation> annotations) {
+        super.setPersistentAnnotations(new ComplexAnnotationList(annotations));
     }
 
     @Override
     protected void initialiseChecksums(){
-        super.setChecksums(new ComplexChecksumList(null));
+        super.setPersistentChecksums(new ComplexChecksumList(null));
         for (Checksum check : super.getChecksums()){
             processAddedChecksumEvent(check);
         }
     }
 
     @Override
-    protected void setAliases(Collection<Alias> aliases) {
-        super.setAliases(new ComplexAliasList(aliases));
+    protected void setPersistentAliases(Collection<Alias> aliases) {
+        super.setPersistentAliases(new ComplexAliasList(aliases));
     }
 
     @Override
     protected void initialiseAliases(){
-        super.setAliases(new ComplexAliasList(null));
+        super.setPersistentAliases(new ComplexAliasList(null));
         for (Alias alias : super.getAliases()){
             processAddedAliasEvent(alias);
         }
     }
 
     @Override
-    protected void setChecksums(Collection<Checksum> checksums) {
-        super.setChecksums(new ComplexChecksumList(checksums));
+    protected void setPersistentChecksums(Collection<Checksum> checksums) {
+        super.setPersistentChecksums(new ComplexChecksumList(checksums));
     }
 
     private void processAddedChecksumEvent(Checksum added) {
@@ -575,7 +574,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         this.lifecycleEvents = lifecycleEvents;
     }
 
-    private class ComplexAnnotationList extends AbstractCollectionWrapper<Annotation> {
+    private class ComplexAnnotationList extends PersistentAnnotationList {
         public ComplexAnnotationList(Collection<Annotation> annot){
             super(annot);
         }
@@ -642,7 +641,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
-    private class ComplexChecksumList extends AbstractCollectionWrapper<Checksum> {
+    private class ComplexChecksumList extends PersistentChecksumList {
         public ComplexChecksumList(Collection<Checksum> checksums){
             super(checksums);
         }
@@ -709,7 +708,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
-    private class ComplexAliasList extends AbstractCollectionWrapper<Alias> {
+    private class ComplexAliasList extends PersistentAliasList {
         public ComplexAliasList(Collection<Alias> aliases){
             super(aliases);
         }

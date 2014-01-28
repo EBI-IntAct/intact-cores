@@ -55,67 +55,58 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             return this.persistedObjects.get(term);
         }
         else if (term.getMIIdentifier() != null){
-            query = getEntityManager().createQuery("select s from IntactSource s " +
-                    "join s.persistentXrefs as x " +
-                    "join x.database as d " +
-                    "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psimi " +
-                    "and x.id = :mi");
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", term.getMIIdentifier());
+            query = createIdentifierQuery(CvTerm.PSI_MI, term.getMIIdentifier());
         }
         else if (term.getPARIdentifier() != null){
-            query = getEntityManager().createQuery("select s from IntactSource s " +
-                    "join s.persistentXrefs as x " +
-                    "join x.database as d " +
-                    "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
-                    "and d.shortName = :psipar " +
-                    "and x.id = :par");
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psipar", CvTerm.PSI_PAR);
-            query.setParameter("par", term.getPARIdentifier());
+            query = createIdentifierQuery(CvTerm.PSI_PAR, term.getPARIdentifier());
         }
         else if (!term.getIdentifiers().isEmpty()){
             boolean foundSeveral = false;
             for (Xref ref : term.getIdentifiers()){
                 query = getEntityManager().createQuery("select s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
-                        "join x.database as d " +
-                        "join x.qualifier as q " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
-                        "and d.shortName = :db " +
-                        "and x.id = :id");
-                query.setParameter("identity", Xref.IDENTITY);
-                query.setParameter("secondaryAc", Xref.SECONDARY);
-                query.setParameter("db", ref.getDatabase().getShortName());
+                        "where s.ac = :id");
                 query.setParameter("id", ref.getId());
-
                 Collection<IntactSource> cvs = query.getResultList();
                 if (cvs.size() == 1){
                     return cvs.iterator().next();
                 }
-                else if (cvs.size() > 1){
-                    foundSeveral = true;
+                else{
+                    query = getEntityManager().createQuery("select s from IntactSource s " +
+                            "join s.persistentXrefs as x " +
+                            "join x.database as d " +
+                            "join x.qualifier as q " +
+                            "where s.ac = :id " +
+                            "or ((q.shortName = :identity or q.shortName = :secondaryAc)" +
+                            "and d.shortName = :db " +
+                            "and x.id = :id)");
+                    query.setParameter("identity", Xref.IDENTITY);
+                    query.setParameter("secondaryAc", Xref.SECONDARY);
+                    query.setParameter("db", ref.getDatabase().getShortName());
+                    query.setParameter("id", ref.getId());
+
+                    cvs = query.getResultList();
+                    if (cvs.size() == 1){
+                        return cvs.iterator().next();
+                    }
+                    else if (cvs.size() > 1){
+                        foundSeveral = true;
+                    }
                 }
+
             }
             if (foundSeveral){
                 throw new FinderException("The source "+term.toString() + " has some identifiers that can match several institutions in the database and we cannot determine which one is valid.");
             }
             else{
                 query = getEntityManager().createQuery("select s from IntactSource s " +
-                        "where s.shortName = :name");
-                query.setParameter("name", term.getShortName().trim().toLowerCase());
+                        "where upper(s.shortName) = :name");
+                query.setParameter("name", term.getShortName().trim().toUpperCase());
             }
         }
         else{
             query = getEntityManager().createQuery("select s from IntactSource s " +
-                    "where s.shortName = :name");
-            query.setParameter("name", term.getShortName().trim().toLowerCase());
+                    "where upper(s.shortName) = :name");
+            query.setParameter("name", term.getShortName().trim().toUpperCase());
         }
         return (IntactSource) query.getSingleResult();
     }
@@ -249,5 +240,21 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
                 intactSource.setShortName(intactSource.getShortName()+"-"+maxString);
             }
         }
+    }
+
+    private Query createIdentifierQuery(String dbName, String psiId) {
+        Query query;
+        query = getEntityManager().createQuery("select s from IntactSource s " +
+                "join s.persistentXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and d.shortName = :psiName " +
+                "and x.id = :psiId");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("psiName", dbName);
+        query.setParameter("psiId", psiId);
+        return query;
     }
 }

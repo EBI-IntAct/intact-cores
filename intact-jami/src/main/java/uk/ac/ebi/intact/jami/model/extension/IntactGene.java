@@ -21,7 +21,7 @@ import java.util.Collection;
  */
 @Entity
 @DiscriminatorValue( "gene" )
-public class IntactGene extends IntactInteractor implements Gene{
+public class IntactGene extends IntactMolecule implements Gene{
 
     private Xref ensembl;
     private Xref ensemblGenome;

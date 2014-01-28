@@ -100,4 +100,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
     protected EntityManager getEntityManager() {
         return entityManager;
     }
+
+    protected Class<? extends T> getIntactClass() {
+        return intactClass;
+    }
 }

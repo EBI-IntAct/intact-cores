@@ -90,7 +90,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         if (name == null){
             throw new IllegalArgumentException("The short name cannot be null");
         }
-        this.shortName = name.trim().toLowerCase();
+        this.shortName = name.trim();
     }
 
     @Override

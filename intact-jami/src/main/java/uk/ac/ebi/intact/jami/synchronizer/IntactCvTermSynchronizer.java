@@ -84,77 +84,50 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             return this.persistedObjects.get(term);
         }
         else if (term.getMIIdentifier() != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.persistentXrefs as x " +
-                    "join x.database as d " +
-                    "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psimi " +
-                    "and x.id = :mi" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", term.getMIIdentifier());
-            if (objClass != null){
-                query.setParameter("objclass", objClass);
-            }
+            query = createIdentifierQuery(objClass, CvTerm.PSI_MI, term.getMIIdentifier());
         }
         else if (term.getMODIdentifier() != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.persistentXrefs as x " +
-                    "join x.database as d " +
-                    "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psimod " +
-                    "and x.id = :mod" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psimod", CvTerm.PSI_MOD);
-            query.setParameter("mod", term.getMODIdentifier());
-            if (objClass != null){
-                query.setParameter("objclass", objClass);
-            }
+            query = createIdentifierQuery(objClass, CvTerm.PSI_MOD, term.getMODIdentifier());
         }
         else if (term.getPARIdentifier() != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.persistentXrefs as x " +
-                    "join x.database as d " +
-                    "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psipar " +
-                    "and x.id = :par" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psipar", CvTerm.PSI_PAR);
-            query.setParameter("par", term.getPARIdentifier());
-            if (objClass != null){
-                query.setParameter("objclass", objClass);
-            }
+            query = createIdentifierQuery(objClass, CvTerm.PSI_PAR, term.getPARIdentifier());
         }
         else if (!term.getIdentifiers().isEmpty()){
             boolean foundSeveral = false;
             for (Xref ref : term.getIdentifiers()){
                 query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
-                        "join x.database as d " +
-                        "join x.qualifier as q " +
-                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                        "and d.shortName = :db " +
-                        "and x.id = :id" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
-                query.setParameter("identity", Xref.IDENTITY);
-                query.setParameter("secondaryAc", Xref.SECONDARY);
-                query.setParameter("db", ref.getDatabase().getShortName());
+                        "where cv.ac = :id" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
                 query.setParameter("id", ref.getId());
                 if (objClass != null){
                     query.setParameter("objclass", objClass);
                 }
-
                 Collection<IntactCvTerm> cvs = query.getResultList();
                 if (cvs.size() == 1){
                     return cvs.iterator().next();
                 }
-                else if (cvs.size() > 1){
-                    foundSeveral = true;
+                else{
+                    query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                            "join cv.persistentXrefs as x " +
+                            "join x.database as d " +
+                            "join x.qualifier as q " +
+                            "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                            "and d.shortName = :db " +
+                            "and x.id = :id" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
+                    query.setParameter("identity", Xref.IDENTITY);
+                    query.setParameter("secondaryAc", Xref.SECONDARY);
+                    query.setParameter("db", ref.getDatabase().getShortName());
+                    query.setParameter("id", ref.getId());
+                    if (objClass != null){
+                        query.setParameter("objclass", objClass);
+                    }
+
+                    cvs = query.getResultList();
+                    if (cvs.size() == 1){
+                        return cvs.iterator().next();
+                    }
+                    else if (cvs.size() > 1){
+                        foundSeveral = true;
+                    }
                 }
             }
             if (foundSeveral){
@@ -394,5 +367,24 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         if (this.objClass != null){
             intactCv.setObjClass(this.objClass);
         }
+    }
+
+    private Query createIdentifierQuery(String objClass, String dbName, String psiId) {
+        Query query;
+        query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                "join cv.persistentXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and d.shortName = :psiName " +
+                "and x.id = :psiId" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("psiName", dbName);
+        query.setParameter("psiId", psiId);
+        if (objClass != null){
+            query.setParameter("objclass", objClass);
+        }
+        return query;
     }
 }

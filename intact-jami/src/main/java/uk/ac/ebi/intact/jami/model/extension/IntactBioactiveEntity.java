@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
-import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import uk.ac.ebi.intact.jami.model.listener.BioactiveEntityAnnotationListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -25,7 +24,7 @@ import java.util.List;
 @Entity
 @DiscriminatorValue( "bioactive_entity" )
 @EntityListeners(value = {BioactiveEntityAnnotationListener.class})
-public class IntactBioactiveEntity extends IntactInteractor implements BioactiveEntity{
+public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEntity{
 
     private Xref chebi;
     private Checksum smile;
@@ -338,15 +337,15 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
 
     @Override
     protected void initialiseChecksums() {
-        super.setChecksums(new BioactiveEntityChecksumList(null));
+        super.setPersistentChecksums(new BioactiveEntityChecksumList(null));
         for (Checksum check : super.getChecksums()){
             processAddedChecksumEvent(check);
         }
     }
 
     @Override
-    protected void setChecksums(Collection<Checksum> checksums) {
-        super.setChecksums(new BioactiveEntityChecksumList(checksums));
+    protected void setPersistentChecksums(Collection<Checksum> checksums) {
+        super.setPersistentChecksums(new BioactiveEntityChecksumList(checksums));
     }
 
     @Override
@@ -359,7 +358,7 @@ public class IntactBioactiveEntity extends IntactInteractor implements Bioactive
         return "uk.ac.ebi.intact.model.SmallMoleculeImpl";
     }
 
-    protected class BioactiveEntityChecksumList extends AbstractCollectionWrapper<Checksum> {
+    protected class BioactiveEntityChecksumList extends PersistentChecksumList {
         public BioactiveEntityChecksumList(Collection<Checksum> checksums){
             super(checksums);
         }

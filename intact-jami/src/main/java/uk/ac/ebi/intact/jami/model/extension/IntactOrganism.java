@@ -88,7 +88,7 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
     @PreUpdate
     public void prePersistAndPreUpdate(){
         if (this.commonName == null){
-            this.commonName = this.scientificName != null ? this.scientificName.trim().toLowerCase() : Integer.toString(this.taxId);
+            this.commonName = this.scientificName != null ? this.scientificName : Integer.toString(this.taxId);
             if (this.cellType != null){
                 this.commonName = this.commonName+"-"+this.cellType.getShortName();
             }

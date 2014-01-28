@@ -94,7 +94,10 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     }
 
     public void setShortName(String name) {
-        super.setShortName(name);
+        if (name == null){
+            throw new IllegalArgumentException("The short name cannot be null");
+        }
+        super.setShortName(name.toLowerCase());
     }
 
     /////////////////////////////

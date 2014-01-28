@@ -4,7 +4,6 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
-import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.DiscriminatorValue;
@@ -230,25 +229,25 @@ public class IntactProtein extends IntactPolymer implements Protein{
 
     @Override
     protected void initialiseChecksums() {
-        super.setChecksums(new ProteinChecksumList(null));
+        super.setPersistentChecksums(new ProteinChecksumList(null));
     }
 
     @Override
     protected void initialiseAliases() {
-        super.setAliases(new ProteinAliasList(null));
+        super.setPersistentAliases(new ProteinAliasList(null));
     }
 
     @Override
-    protected void setAliases(Collection<Alias> aliases) {
-        super.setAliases(new ProteinAliasList(aliases));
+    protected void setPersistentAliases(Collection<Alias> aliases) {
+        super.setPersistentAliases(new ProteinAliasList(aliases));
         for (Alias alias : super.getAliases()){
             processAddedAliasEvent(alias);
         }
     }
 
     @Override
-    protected void setChecksums(Collection<Checksum> checksums) {
-        super.setChecksums(new ProteinChecksumList(checksums));
+    protected void setPersistentChecksums(Collection<Checksum> checksums) {
+        super.setPersistentChecksums(new ProteinChecksumList(checksums));
         for (Checksum check : super.getChecksums()){
             processAddedChecksumEvent(check);
         }
@@ -349,7 +348,7 @@ public class IntactProtein extends IntactPolymer implements Protein{
         return geneName != null ? geneName.getName() : (uniprotkb != null ? uniprotkb.getId() : (refseq != null ? refseq.getId() : super.toString()));
     }
 
-    protected class ProteinChecksumList extends AbstractCollectionWrapper<Checksum> {
+    protected class ProteinChecksumList extends PersistentChecksumList {
         public ProteinChecksumList(Collection<Checksum> checksums){
             super(checksums);
         }
@@ -416,7 +415,7 @@ public class IntactProtein extends IntactPolymer implements Protein{
         }
     }
 
-    protected class ProteinAliasList extends AbstractCollectionWrapper<Alias> {
+    protected class ProteinAliasList extends PersistentAliasList {
         public ProteinAliasList(Collection<Alias> aliases){
             super(aliases);
         }
