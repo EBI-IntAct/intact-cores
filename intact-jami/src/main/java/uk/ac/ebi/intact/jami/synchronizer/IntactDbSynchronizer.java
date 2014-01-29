@@ -45,8 +45,7 @@ public interface IntactDbSynchronizer<I, T> {
     /**
      * Synchronize the given instance and its properties with the database,
      * If the object is not annotated with hibernate annotations, a new persistable object may be created and synchronized with the database.
-     * If the object is already persisted in the database, it will just reload the object from the database.
-     * This method is not aimed at updating the object so any change to a pre-existing instance is not taken into account
+     * If the object is already persisted in the database, it will reload the object from the database and merge it.
      * @param object
      * @param persist : if true, will persist the object if it is a transient object
      * @return the object synchronized and persisted.

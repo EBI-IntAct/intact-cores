@@ -99,6 +99,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
 
     protected T findOrPersist(T object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         T existingInstance = find((I)object);
+        // synchronize before persisting
+        synchronizeProperties(object);
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
@@ -108,8 +110,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
             return existingInstance;
         }
         else{
-            // synchronize before persisting
-            synchronizeProperties(object);
             if (persist){
                 this.entityManager.persist(object);
             }

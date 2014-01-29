@@ -124,7 +124,14 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
                 }
             }
         }
-        return (IntactOrganism) query.getSingleResult();
+        Collection<IntactOrganism> organism = query.getResultList();
+        if (organism.size() == 1){
+            return organism.iterator().next();
+        }
+        else if (organism.size() > 1){
+            throw new FinderException("The organism "+term + " can match "+organism.size()+" organisms in the database and we cannot determine which one is valid.");
+        }
+        return null;
     }
 
     public IntactOrganism persist(IntactOrganism object) throws FinderException, PersisterException, SynchronizerException {

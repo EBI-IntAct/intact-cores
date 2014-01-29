@@ -4,6 +4,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
+import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorComparator;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -21,7 +22,7 @@ import java.util.regex.Matcher;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactInteractorSynchronizer<I extends IntactInteractor> extends AbstractIntactDbSynchronizer<Interactor, I>{
+public class IntactInteractorSynchronizer<T extends Interactor, I extends IntactInteractor> extends AbstractIntactDbSynchronizer<T, I>{
     private Map<I, I> persistedObjects;
 
     private IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer;
@@ -35,7 +36,7 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
     public IntactInteractorSynchronizer(EntityManager entityManager, Class<I> intactClass){
         super(entityManager, intactClass);
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorBaseComparator());
+        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorComparator());
         this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
         this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
         this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, InteractorXref.class);
@@ -62,7 +63,7 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
         this.checksumSynchronizer = checksumSynchronizer != null ? checksumSynchronizer : new IntactChecksumSynchronizer<InteractorChecksum>(entityManager, InteractorChecksum.class);
     }
 
-    public I find(Interactor term) throws FinderException{
+    public I find(T term) throws FinderException{
         Query query;
         if (term == null){
             return null;
@@ -86,35 +87,64 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
             }
 
             // try to fetch interactor using identifiers
-            I retrievedInstance = findByIdentifier(term, existingOrganism, existingType);
+            Collection<I> results = findByIdentifier(term, existingOrganism, existingType);
+            if (results.isEmpty()){
+                // fetch using other properties
+                results = findByOtherProperties(term, existingType, existingOrganism);
+                if (results.isEmpty()){
+                    // fetch using shortname
+                    query = findByName(term, existingType, existingOrganism);
+                    results = query.getResultList();
+                }
+            }
+
+            I retrievedInstance = postFilter(term, results);
             if (retrievedInstance != null){
                 return retrievedInstance;
             }
-
-            // fetch using shortname
-            if (existingOrganism == null){
-                query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
-                        "join i.interactorType as t " +
-                        "where i.shortName = :name " +
-                        "and i.organism is null " +
-                        "and t.ac = :typeAc");
-                query.setParameter("name", term.getShortName().trim().toLowerCase());
-                query.setParameter("typeAc", existingType.getAc());
+            else if (results.size() > 1){
+                throw new FinderException("The interactor "+term + " can match "+results.size()+" interactors in the database and we cannot determine which one is valid.");
             }
-            else{
-                query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
-                        "join i.interactorType as t " +
-                        "join i.organism as o " +
-                        "where i.shortName = :name " +
-                        "and o.ac = :orgAc " +
-                        "and t.ac = :typeAc");
-                query.setParameter("name", term.getShortName().trim().toLowerCase());
-                query.setParameter("orgAc", existingOrganism.getAc());
-                query.setParameter("typeAc", existingType.getAc());
-            }
+            return retrievedInstance;
         }
+    }
 
-        return (I) query.getSingleResult();
+    // nothing to do here
+    protected I postFilter(T term, Collection<I> results) {
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        return null;
+    }
+
+    // nothing to do here
+    protected Collection<I> findByOtherProperties(T term, IntactCvTerm existingType, IntactOrganism existingOrganism) {
+        return Collections.EMPTY_LIST;
+    }
+
+    protected Query findByName(T term, IntactCvTerm existingType, IntactOrganism existingOrganism) {
+        Query query;
+        if (existingOrganism == null){
+            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+                    "join i.interactorType as t " +
+                    "where i.shortName = :name " +
+                    "and i.organism is null " +
+                    "and t.ac = :typeAc");
+            query.setParameter("name", term.getShortName().trim().toLowerCase());
+            query.setParameter("typeAc", existingType.getAc());
+        }
+        else{
+            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+                    "join i.interactorType as t " +
+                    "join i.organism as o " +
+                    "where i.shortName = :name " +
+                    "and o.ac = :orgAc " +
+                    "and t.ac = :typeAc");
+            query.setParameter("name", term.getShortName().trim().toLowerCase());
+            query.setParameter("orgAc", existingOrganism.getAc());
+            query.setParameter("typeAc", existingType.getAc());
+        }
+        return query;
     }
 
     public I persist(I object) throws FinderException, PersisterException, SynchronizerException{
@@ -164,7 +194,7 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
     }
 
     @Override
-    protected I instantiateNewPersistentInstance(Interactor object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    protected I instantiateNewPersistentInstance(T object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         I newInteractor = intactClass.getConstructor(String.class).newInstance(object.getShortName());
         InteractorCloner.copyAndOverrideBasicInteractorProperties(object, newInteractor);
         return newInteractor;
@@ -273,12 +303,12 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
         }
     }
 
-    protected I findByIdentifier(Interactor term, IntactOrganism existingOrganism, IntactCvTerm existingType) throws FinderException {
+    protected Collection<I> findByIdentifier(T term, IntactOrganism existingOrganism, IntactCvTerm existingType) throws FinderException {
         if (term.getIdentifiers().isEmpty()){
              return null;
         }
         Query query=null;
-        boolean foundSeveral = false;
+        Collection<I> totalInteractors = new ArrayList<I>();
         // no organism for this interactor.
         if (existingOrganism == null){
             for (Xref ref : term.getIdentifiers()){
@@ -290,8 +320,8 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
                 query.setParameter("id", ref.getId());
                 query.setParameter("typeAc", existingType.getAc());
                 Collection<I> interactors = query.getResultList();
-                if (interactors.size() == 1){
-                    return interactors.iterator().next();
+                if (!interactors.isEmpty()){
+                    return interactors;
                 }
                 else{
                     query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
@@ -312,10 +342,10 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
 
                     interactors = query.getResultList();
                     if (interactors.size() == 1){
-                        return interactors.iterator().next();
+                        return interactors;
                     }
                     else if (interactors.size() > 1){
-                        foundSeveral = true;
+                        totalInteractors.addAll(interactors);
                     }
                 }
             }
@@ -334,8 +364,8 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
                 query.setParameter("typeAc", existingType.getAc());
                 query.setParameter("orgAc", existingOrganism.getAc());
                 Collection<I> interactors = query.getResultList();
-                if (interactors.size() == 1){
-                    return interactors.iterator().next();
+                if (!interactors.isEmpty()){
+                    return interactors;
                 }
                 else{
                     query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
@@ -358,19 +388,15 @@ public class IntactInteractorSynchronizer<I extends IntactInteractor> extends Ab
 
                     interactors = query.getResultList();
                     if (interactors.size() == 1){
-                        return interactors.iterator().next();
+                        return interactors;
                     }
                     else if (interactors.size() > 1){
-                        foundSeveral = true;
+                        totalInteractors.addAll(interactors);
                     }
                 }
             }
         }
 
-        if (foundSeveral){
-            throw new FinderException("The interactor "+term.toString() + " has some identifiers that can match several interactors in the database and we cannot determine which one is valid.");
-        }
-
-        return (I)query.getSingleResult();
+        return totalInteractors;
     }
 }
