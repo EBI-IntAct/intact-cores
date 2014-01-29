@@ -3,6 +3,8 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
+import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.OrganismCloner;
@@ -26,7 +28,7 @@ import java.util.regex.Matcher;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism>{
+public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism> implements OrganismFetcher{
     private Map<IntactOrganism, IntactOrganism> persistedObjects;
 
     private IntactDbSynchronizer<Alias, OrganismAlias> aliasSynchronizer;
@@ -152,6 +154,37 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
         this.aliasSynchronizer.clearCache();
         this.cellTypeSynchronizer.clearCache();
         this.tissueSynchronizer.clearCache();
+    }
+
+    public IntactOrganism fetchByTaxID(int taxID) throws BridgeFailedException {
+        Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
+                "where o.cellType is null " +
+                "and o.tissue is null " +
+                "and o.persistentTaxid = :taxid");
+        query.setParameter("taxid", Integer.toString(taxID));
+        Collection<IntactOrganism> organism = query.getResultList();
+        if (organism.size() == 1){
+            return organism.iterator().next();
+        }
+        else if (organism.size() > 1){
+            throw new BridgeFailedException("The organism "+taxID + " can match "+organism.size()+" organisms in the database and we cannot determine which one is valid.");
+        }
+        return null;
+    }
+
+    public Collection<Organism> fetchByTaxIDs(Collection<Integer> taxIDs) throws BridgeFailedException {
+        if (taxIDs == null){
+            throw new IllegalArgumentException("The taxids cannot be null.");
+        }
+
+        Collection<Organism> results = new ArrayList<Organism>(taxIDs.size());
+        for (int id : taxIDs){
+            Organism element = fetchByTaxID(id);
+            if (element != null){
+                results.add(element);
+            }
+        }
+        return results;
     }
 
     protected void prepareCellTypeAndTissue(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
