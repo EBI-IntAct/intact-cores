@@ -101,8 +101,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
         T existingInstance = find((I)object);
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
-            if (this.intactMerger != null){
-                this.intactMerger.merge(object, existingInstance);
+            if (getIntactMerger() != null){
+                getIntactMerger().merge(object, existingInstance);
             }
             // we only return the existing instance after merging
             return existingInstance;
