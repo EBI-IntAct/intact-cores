@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
@@ -19,6 +20,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
     private EntityManager entityManager;
     private Class<? extends T> intactClass;
     private static final Log log = LogFactory.getLog(AbstractIntactDbSynchronizer.class);
+
+    private IntactDbMerger<T> intactMerger;
 
     public AbstractIntactDbSynchronizer(EntityManager entityManager, Class<? extends T> intactClass){
         if (entityManager == null){
@@ -56,7 +59,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
             } catch (NoSuchMethodException e) {
                 throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
             }
-
+            // new object to synchronize with db
             return findOrPersist(newObject, persist);
         }
         else{
@@ -64,10 +67,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
             Object identifier = extractIdentifier(intactObject);
             // detached existing instance or new transient instance
             if (identifier != null && !this.entityManager.contains(intactObject)){
-                return this.entityManager.find(this.intactClass, identifier);
+                // synchronize properties first
+                synchronizeProperties(intactObject);
+                // merge
+                return this.entityManager.merge(intactObject);
             }
             // retrieve and or persist transient instance
             else if (identifier == null){
+                // new object to synchronize with db
                 return findOrPersist(intactObject, persist);
             }
             else{
@@ -78,6 +85,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
         }
     }
 
+    public IntactDbMerger<T> getIntactMerger() {
+        return intactMerger;
+    }
+
+    public void setIntactMerger(IntactDbMerger<T> intactMerger) {
+        this.intactMerger = intactMerger;
+    }
+
     protected abstract Object extractIdentifier(T object);
 
     protected abstract T instantiateNewPersistentInstance(I object, Class<? extends T> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException;
@@ -85,6 +100,11 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
     protected T findOrPersist(T object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         T existingInstance = find((I)object);
         if (existingInstance != null){
+            // we merge the existing instance with the new instance if possible
+            if (this.intactMerger != null){
+                this.intactMerger.merge(object, existingInstance);
+            }
+            // we only return the existing instance after merging
             return existingInstance;
         }
         else{
