@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
+import psidev.psi.mi.jami.bridges.fetcher.OntologyTermFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
@@ -29,7 +30,7 @@ import java.util.regex.Matcher;
  * @since <pre>21/01/14</pre>
  */
 
-public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, IntactCvTerm> implements CvTermFetcher<IntactCvTerm>{
+public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, IntactCvTerm> implements OntologyTermFetcher{
 
     private String objClass;
     private Map<IntactCvTerm, IntactCvTerm> persistedObjects;
@@ -108,11 +109,11 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
                     throw new FinderException("The cv "+term.toString() + " has some identifiers that can match several terms in the database and we cannot determine which one is valid.");
                 }
                 else{
-                    return fetchByName(term.getShortName(), null);
+                    return (IntactCvTerm)fetchByName(term.getShortName(), null);
                 }
             }
             else{
-                return fetchByName(term.getShortName(), null);
+                return (IntactCvTerm)fetchByName(term.getShortName(), null);
             }
         } catch (BridgeFailedException e) {
             throw new FinderException("Problem fetching cv term from the database", e);
@@ -149,7 +150,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         prepareXrefs(intactCv);
     }
 
-    public IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
+    public OntologyTerm fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
         if(termIdentifier == null)
             throw new IllegalArgumentException("Can not search for an identifier without a value.");
         if(miOntologyName == null)
@@ -157,7 +158,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         return fetchByIdentifier(termIdentifier, miOntologyName, true);
     }
 
-    public IntactCvTerm fetchByIdentifier(String termIdentifier, CvTerm ontologyDatabase) throws BridgeFailedException {
+    public OntologyTerm fetchByIdentifier(String termIdentifier, CvTerm ontologyDatabase) throws BridgeFailedException {
         if(termIdentifier == null)
             throw new IllegalArgumentException("Can not search for an identifier without a value.");
         if(ontologyDatabase == null)
@@ -165,7 +166,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         return fetchByIdentifier(termIdentifier, ontologyDatabase.getShortName(), true);
     }
 
-    public IntactCvTerm fetchByName(String searchName, String miOntologyName) throws BridgeFailedException {
+    public OntologyTerm fetchByName(String searchName, String miOntologyName) throws BridgeFailedException {
         if(searchName == null)
             throw new IllegalArgumentException("Can not search for a name without a value.");
         Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
@@ -184,7 +185,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         return null;
     }
 
-    public Collection<IntactCvTerm> fetchByName(String searchName) throws BridgeFailedException {
+    public Collection<OntologyTerm> fetchByName(String searchName) throws BridgeFailedException {
         if(searchName == null)
             throw new IllegalArgumentException("Can not search for a name without a value.");
         Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
@@ -196,15 +197,15 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> fetchByIdentifiers(Collection<String> termIdentifiers, String miOntologyName)
+    public Collection<OntologyTerm> fetchByIdentifiers(Collection<String> termIdentifiers, String miOntologyName)
             throws BridgeFailedException {
         if (termIdentifiers == null){
             throw new IllegalArgumentException("The term identifiers cannot be null.");
         }
 
-        Collection<IntactCvTerm> results = new ArrayList<IntactCvTerm>(termIdentifiers.size());
+        Collection<OntologyTerm> results = new ArrayList<OntologyTerm>(termIdentifiers.size());
         for (String id : termIdentifiers){
-            IntactCvTerm element = fetchByIdentifier(id, miOntologyName);
+            OntologyTerm element = fetchByIdentifier(id, miOntologyName);
             if (element != null){
                 results.add(element);
             }
@@ -212,15 +213,15 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         return results;
     }
 
-    public Collection<IntactCvTerm> fetchByIdentifiers(Collection<String> termIdentifiers, CvTerm ontologyDatabase)
+    public Collection<OntologyTerm> fetchByIdentifiers(Collection<String> termIdentifiers, CvTerm ontologyDatabase)
             throws BridgeFailedException {
         if (termIdentifiers == null){
             throw new IllegalArgumentException("The term identifiers cannot be null.");
         }
 
-        Collection<IntactCvTerm> results = new ArrayList<IntactCvTerm>(termIdentifiers.size());
+        Collection<OntologyTerm> results = new ArrayList<OntologyTerm>(termIdentifiers.size());
         for (String id : termIdentifiers){
-            IntactCvTerm element = fetchByIdentifier(id, ontologyDatabase);
+            OntologyTerm element = fetchByIdentifier(id, ontologyDatabase);
             if (element != null){
                 results.add(element);
             }
@@ -228,15 +229,15 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         return results;
     }
 
-    public Collection<IntactCvTerm> fetchByNames(Collection<String> searchNames, String miOntologyName)
+    public Collection<OntologyTerm> fetchByNames(Collection<String> searchNames, String miOntologyName)
             throws BridgeFailedException {
         if (searchNames == null){
             throw new IllegalArgumentException("The term identifiers cannot be null.");
         }
 
-        Collection<IntactCvTerm> results = new ArrayList<IntactCvTerm>(searchNames.size());
+        Collection<OntologyTerm> results = new ArrayList<OntologyTerm>(searchNames.size());
         for (String id : searchNames){
-            IntactCvTerm element = fetchByName(id, miOntologyName);
+            OntologyTerm element = fetchByName(id, miOntologyName);
             if (element != null){
                 results.add(element);
             }
@@ -244,13 +245,13 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         return results;
     }
 
-    public Collection<IntactCvTerm> fetchByNames(Collection<String> searchNames)
+    public Collection<OntologyTerm> fetchByNames(Collection<String> searchNames)
             throws BridgeFailedException {
         if (searchNames == null){
             throw new IllegalArgumentException("The term identifiers cannot be null.");
         }
 
-        Collection<IntactCvTerm> results = new ArrayList<IntactCvTerm>(searchNames.size());
+        Collection<OntologyTerm> results = new ArrayList<OntologyTerm>(searchNames.size());
         for (String id : searchNames){
             results.addAll(fetchByName(id));
 
