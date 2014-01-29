@@ -27,6 +27,13 @@
             <version>${jami.version}</version>
         </dependency>
 
+        <!-- JAMI enricher -->
+        <dependency>
+            <groupId>psidev.psi.mi.jami</groupId>
+            <artifactId>jami-enricher</artifactId>
+            <version>${jami.version}</version>
+        </dependency>
+
         <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
