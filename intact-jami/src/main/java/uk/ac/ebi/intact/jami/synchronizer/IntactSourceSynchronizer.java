@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
+import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
+import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -20,7 +22,7 @@ import java.util.regex.Matcher;
  * @since <pre>23/01/14</pre>
  */
 
-public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> {
+public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> implements CvTermFetcher<IntactSource> {
     private Map<IntactSource, IntactSource> persistedObjects;
 
     private IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer;
@@ -47,68 +49,46 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
     }
 
     public IntactSource find(Source term) throws FinderException{
-        Query query;
-        if (term == null){
-            return null;
-        }
-        else if (this.persistedObjects.containsKey(term)){
-            return this.persistedObjects.get(term);
-        }
-        else if (term.getMIIdentifier() != null){
-            query = createIdentifierQuery(CvTerm.PSI_MI, term.getMIIdentifier());
-        }
-        else if (term.getPARIdentifier() != null){
-            query = createIdentifierQuery(CvTerm.PSI_PAR, term.getPARIdentifier());
-        }
-        else if (!term.getIdentifiers().isEmpty()){
-            boolean foundSeveral = false;
-            for (Xref ref : term.getIdentifiers()){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
-                        "where s.ac = :id");
-                query.setParameter("id", ref.getId());
-                Collection<IntactSource> cvs = query.getResultList();
-                if (cvs.size() == 1){
-                    return cvs.iterator().next();
-                }
-                else{
-                    query = getEntityManager().createQuery("select s from IntactSource s " +
-                            "join s.persistentXrefs as x " +
-                            "join x.database as d " +
-                            "join x.qualifier as q " +
-                            "where s.ac = :id " +
-                            "or ((q.shortName = :identity or q.shortName = :secondaryAc)" +
-                            "and d.shortName = :db " +
-                            "and x.id = :id)");
-                    query.setParameter("identity", Xref.IDENTITY);
-                    query.setParameter("secondaryAc", Xref.SECONDARY);
-                    query.setParameter("db", ref.getDatabase().getShortName());
-                    query.setParameter("id", ref.getId());
-
-                    cvs = query.getResultList();
-                    if (cvs.size() == 1){
-                        return cvs.iterator().next();
+        try {
+            if (term == null){
+                return null;
+            }
+            else if (this.persistedObjects.containsKey(term)){
+                return this.persistedObjects.get(term);
+            }
+            else if (term.getMIIdentifier() != null){
+                return fetchByIdentifier(term.getMIIdentifier(), CvTerm.PSI_MI, false);
+            }
+            else if (term.getPARIdentifier() != null){
+                return fetchByIdentifier(term.getMIIdentifier(), CvTerm.PSI_PAR, false);
+            }
+            else if (!term.getIdentifiers().isEmpty()){
+                boolean foundSeveral = false;
+                for (Xref ref : term.getIdentifiers()){
+                    try{
+                        IntactSource fetchedTerm = fetchByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true);
+                        if (fetchedTerm != null){
+                            return fetchedTerm;
+                        }
                     }
-                    else if (cvs.size() > 1){
+                    catch (BridgeFailedException e){
                         foundSeveral = true;
                     }
                 }
 
-            }
-            if (foundSeveral){
-                throw new FinderException("The source "+term.toString() + " has some identifiers that can match several institutions in the database and we cannot determine which one is valid.");
+                if (foundSeveral){
+                    throw new FinderException("The source "+term.toString() + " has some identifiers that can match several sources in the database and we cannot determine which one is valid.");
+                }
+                else{
+                    return fetchByName(term.getShortName(), null);
+                }
             }
             else{
-                query = getEntityManager().createQuery("select s from IntactSource s " +
-                        "where upper(s.shortName) = :name");
-                query.setParameter("name", term.getShortName().trim().toUpperCase());
+                return fetchByName(term.getShortName(), null);
             }
+        } catch (BridgeFailedException e) {
+            throw new FinderException("Problem fetching source from the database", e);
         }
-        else{
-            query = getEntityManager().createQuery("select s from IntactSource s " +
-                    "where upper(s.shortName) = :name");
-            query.setParameter("name", term.getShortName().trim().toUpperCase());
-        }
-        return (IntactSource) query.getSingleResult();
     }
 
     public IntactSource persist(IntactSource object) throws FinderException, PersisterException, SynchronizerException{
@@ -140,6 +120,143 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         this.aliasSynchronizer.clearCache();
         this.xrefSynchronizer.clearCache();
         this.annotationSynchronizer.clearCache();
+    }
+
+    public IntactSource fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
+        if(termIdentifier == null)
+            throw new IllegalArgumentException("Can not search for an identifier without a value.");
+        if(miOntologyName == null)
+            throw new IllegalArgumentException("Can not search for an identifier in an ontology without a value.");
+        return fetchByIdentifier(termIdentifier, miOntologyName, true);
+    }
+
+    public IntactSource fetchByIdentifier(String termIdentifier, CvTerm ontologyDatabase) throws BridgeFailedException {
+        if(termIdentifier == null)
+            throw new IllegalArgumentException("Can not search for an identifier without a value.");
+        if(ontologyDatabase == null)
+            throw new IllegalArgumentException("Can not search for an identifier in an ontology without a value.");
+        return fetchByIdentifier(termIdentifier, ontologyDatabase.getShortName(), true);
+    }
+
+    public IntactSource fetchByName(String searchName, String miOntologyName) throws BridgeFailedException {
+        if(searchName == null)
+            throw new IllegalArgumentException("Can not search for a name without a value.");
+        Query query = getEntityManager().createQuery("select s from IntactSource s " +
+                "where s.shortName = :name");
+        query.setParameter("name", searchName.trim().toLowerCase());
+        Collection<IntactSource> cvs = query.getResultList();
+        if (cvs.size() == 1){
+            return cvs.iterator().next();
+        }
+        else if (cvs.size() > 1){
+            throw new BridgeFailedException("The source "+searchName + " can match "+cvs.size()+" sources in the database and we cannot determine which one is valid.");
+        }
+        return null;
+    }
+
+    public Collection<IntactSource> fetchByName(String searchName) throws BridgeFailedException {
+        if(searchName == null)
+            throw new IllegalArgumentException("Can not search for a name without a value.");
+        Query query = getEntityManager().createQuery("select s from IntactSource s " +
+                "where s.shortName like :name");
+        query.setParameter("name", "%"+searchName.trim().toLowerCase()+"%");
+        return query.getResultList();
+    }
+
+    public Collection<IntactSource> fetchByIdentifiers(Collection<String> termIdentifiers, String miOntologyName)
+            throws BridgeFailedException {
+        if (termIdentifiers == null){
+            throw new IllegalArgumentException("The term identifiers cannot be null.");
+        }
+
+        Collection<IntactSource> results = new ArrayList<IntactSource>(termIdentifiers.size());
+        for (String id : termIdentifiers){
+            IntactSource element = fetchByIdentifier(id, miOntologyName);
+            if (element != null){
+                results.add(element);
+            }
+        }
+        return results;
+    }
+
+    public Collection<IntactSource> fetchByIdentifiers(Collection<String> termIdentifiers, CvTerm ontologyDatabase)
+            throws BridgeFailedException {
+        if (termIdentifiers == null){
+            throw new IllegalArgumentException("The term identifiers cannot be null.");
+        }
+
+        Collection<IntactSource> results = new ArrayList<IntactSource>(termIdentifiers.size());
+        for (String id : termIdentifiers){
+            IntactSource element = fetchByIdentifier(id, ontologyDatabase);
+            if (element != null){
+                results.add(element);
+            }
+        }
+        return results;
+    }
+
+    public Collection<IntactSource> fetchByNames(Collection<String> searchNames, String miOntologyName)
+            throws BridgeFailedException {
+        if (searchNames == null){
+            throw new IllegalArgumentException("The term identifiers cannot be null.");
+        }
+
+        Collection<IntactSource> results = new ArrayList<IntactSource>(searchNames.size());
+        for (String id : searchNames){
+            IntactSource element = fetchByName(id, miOntologyName);
+            if (element != null){
+                results.add(element);
+            }
+        }
+        return results;
+    }
+
+    public Collection<IntactSource> fetchByNames(Collection<String> searchNames)
+            throws BridgeFailedException {
+        if (searchNames == null){
+            throw new IllegalArgumentException("The term identifiers cannot be null.");
+        }
+
+        Collection<IntactSource> results = new ArrayList<IntactSource>(searchNames.size());
+        for (String id : searchNames){
+            results.addAll(fetchByName(id));
+
+        }
+        return results;
+    }
+
+    protected IntactSource fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {
+        Query query;
+        if (checkAc){
+            query = getEntityManager().createQuery("select s from IntactSource s " +
+                    "where s.ac = :id");
+            query.setParameter("id", termIdentifier);
+            Collection<IntactSource> cvs = query.getResultList();
+            if (cvs.size() == 1){
+                return cvs.iterator().next();
+            }
+        }
+
+        query = getEntityManager().createQuery("select s from IntactSource s " +
+                "join s.persistentXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and d.shortName = :psiName " +
+                "and x.id = :psiId");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("psiName", miOntologyName.toLowerCase().trim());
+        query.setParameter("psiId", termIdentifier);
+
+        Collection<IntactSource> cvs = query.getResultList();
+        if (cvs.size() == 1){
+            return cvs.iterator().next();
+        }
+        else if (cvs.size() > 1){
+            throw new BridgeFailedException("The source "+termIdentifier + " can match "+cvs.size()+" sources in the database and we cannot determine which one is valid.");
+        }
+        return null;
     }
 
     @Override
@@ -213,48 +330,34 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
         // check if short name already exist, if yes, synchronize
-        Query query = getEntityManager().createQuery("select s from IntactSource s " +
-                "where s.shortName = :name");
-        query.setParameter("name", intactSource.getShortName().trim().toLowerCase());
-        List<IntactSource> existingSources = query.getResultList();
-        if (!existingSources.isEmpty()){
-            int max = 1;
-            for (IntactSource source : existingSources){
-                String name = source.getShortName();
-                if (name.contains("-")){
-                    String strSuffix = name.substring(name .lastIndexOf("-") + 1, name.length());
-                    Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
+        if (intactSource.getAc() == null){
+            Query query = getEntityManager().createQuery("select s from IntactSource s " +
+                    "where s.shortName = :name");
+            query.setParameter("name", intactSource.getShortName().trim().toLowerCase());
+            List<IntactSource> existingSources = query.getResultList();
+            if (!existingSources.isEmpty()){
+                int max = 1;
+                for (IntactSource source : existingSources){
+                    String name = source.getShortName();
+                    if (name.contains("-")){
+                        String strSuffix = name.substring(name .lastIndexOf("-") + 1, name.length());
+                        Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
 
-                    if (matcher.matches()){
-                        max = Math.max(max, Integer.parseInt(matcher.group()));
+                        if (matcher.matches()){
+                            max = Math.max(max, Integer.parseInt(matcher.group()));
+                        }
                     }
                 }
-            }
-            String maxString = Integer.toString(max);
-            // retruncate if necessary
-            if (IntactUtils.MAX_SHORT_LABEL_LEN < intactSource.getShortName().length()+maxString.length()+1){
-                intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN-(maxString.length()+1))
-                        +"-"+maxString);
-            }
-            else{
-                intactSource.setShortName(intactSource.getShortName()+"-"+maxString);
+                String maxString = Integer.toString(max);
+                // retruncate if necessary
+                if (IntactUtils.MAX_SHORT_LABEL_LEN < intactSource.getShortName().length()+maxString.length()+1){
+                    intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN-(maxString.length()+1))
+                            +"-"+maxString);
+                }
+                else{
+                    intactSource.setShortName(intactSource.getShortName()+"-"+maxString);
+                }
             }
         }
-    }
-
-    private Query createIdentifierQuery(String dbName, String psiId) {
-        Query query;
-        query = getEntityManager().createQuery("select s from IntactSource s " +
-                "join s.persistentXrefs as x " +
-                "join x.database as d " +
-                "join x.qualifier as q " +
-                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                "and d.shortName = :psiName " +
-                "and x.id = :psiId");
-        query.setParameter("identity", Xref.IDENTITY);
-        query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("psiName", dbName);
-        query.setParameter("psiId", psiId);
-        return query;
     }
 }
