@@ -8,5 +8,5 @@ package uk.ac.ebi.intact.jami.merger;
  * @since <pre>29/01/14</pre>
  */
 
-public class IntactSourceUpdater {
+public class IntactSourceMergerOverride {
 }

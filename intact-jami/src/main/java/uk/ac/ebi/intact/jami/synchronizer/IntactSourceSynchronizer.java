@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
+import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -22,7 +23,7 @@ import java.util.regex.Matcher;
  * @since <pre>23/01/14</pre>
  */
 
-public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> implements CvTermFetcher<IntactSource> {
+public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> implements SourceFetcher {
     private Map<IntactSource, IntactSource> persistedObjects;
 
     private IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer;
@@ -80,11 +81,11 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
                     throw new FinderException("The source "+term.toString() + " has some identifiers that can match several sources in the database and we cannot determine which one is valid.");
                 }
                 else{
-                    return fetchByName(term.getShortName(), null);
+                    return (IntactSource)fetchByName(term.getShortName(), null);
                 }
             }
             else{
-                return fetchByName(term.getShortName(), null);
+                return (IntactSource)fetchByName(term.getShortName(), null);
             }
         } catch (BridgeFailedException e) {
             throw new FinderException("Problem fetching source from the database", e);
@@ -122,7 +123,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         this.annotationSynchronizer.clearCache();
     }
 
-    public IntactSource fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
+    public Source fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
         if(termIdentifier == null)
             throw new IllegalArgumentException("Can not search for an identifier without a value.");
         if(miOntologyName == null)
@@ -130,7 +131,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         return fetchByIdentifier(termIdentifier, miOntologyName, true);
     }
 
-    public IntactSource fetchByIdentifier(String termIdentifier, CvTerm ontologyDatabase) throws BridgeFailedException {
+    public Source fetchByIdentifier(String termIdentifier, CvTerm ontologyDatabase) throws BridgeFailedException {
         if(termIdentifier == null)
             throw new IllegalArgumentException("Can not search for an identifier without a value.");
         if(ontologyDatabase == null)
@@ -138,13 +139,13 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         return fetchByIdentifier(termIdentifier, ontologyDatabase.getShortName(), true);
     }
 
-    public IntactSource fetchByName(String searchName, String miOntologyName) throws BridgeFailedException {
+    public Source fetchByName(String searchName, String miOntologyName) throws BridgeFailedException {
         if(searchName == null)
             throw new IllegalArgumentException("Can not search for a name without a value.");
         Query query = getEntityManager().createQuery("select s from IntactSource s " +
                 "where s.shortName = :name");
         query.setParameter("name", searchName.trim().toLowerCase());
-        Collection<IntactSource> cvs = query.getResultList();
+        Collection<Source> cvs = query.getResultList();
         if (cvs.size() == 1){
             return cvs.iterator().next();
         }
@@ -154,7 +155,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         return null;
     }
 
-    public Collection<IntactSource> fetchByName(String searchName) throws BridgeFailedException {
+    public Collection<Source> fetchByName(String searchName) throws BridgeFailedException {
         if(searchName == null)
             throw new IllegalArgumentException("Can not search for a name without a value.");
         Query query = getEntityManager().createQuery("select s from IntactSource s " +
@@ -163,15 +164,15 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         return query.getResultList();
     }
 
-    public Collection<IntactSource> fetchByIdentifiers(Collection<String> termIdentifiers, String miOntologyName)
+    public Collection<Source> fetchByIdentifiers(Collection<String> termIdentifiers, String miOntologyName)
             throws BridgeFailedException {
         if (termIdentifiers == null){
             throw new IllegalArgumentException("The term identifiers cannot be null.");
         }
 
-        Collection<IntactSource> results = new ArrayList<IntactSource>(termIdentifiers.size());
+        Collection<Source> results = new ArrayList<Source>(termIdentifiers.size());
         for (String id : termIdentifiers){
-            IntactSource element = fetchByIdentifier(id, miOntologyName);
+            Source element = fetchByIdentifier(id, miOntologyName);
             if (element != null){
                 results.add(element);
             }
@@ -179,15 +180,15 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         return results;
     }
 
-    public Collection<IntactSource> fetchByIdentifiers(Collection<String> termIdentifiers, CvTerm ontologyDatabase)
+    public Collection<Source> fetchByIdentifiers(Collection<String> termIdentifiers, CvTerm ontologyDatabase)
             throws BridgeFailedException {
         if (termIdentifiers == null){
             throw new IllegalArgumentException("The term identifiers cannot be null.");
         }
 
-        Collection<IntactSource> results = new ArrayList<IntactSource>(termIdentifiers.size());
+        Collection<Source> results = new ArrayList<Source>(termIdentifiers.size());
         for (String id : termIdentifiers){
-            IntactSource element = fetchByIdentifier(id, ontologyDatabase);
+            Source element = fetchByIdentifier(id, ontologyDatabase);
             if (element != null){
                 results.add(element);
             }
@@ -195,15 +196,15 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         return results;
     }
 
-    public Collection<IntactSource> fetchByNames(Collection<String> searchNames, String miOntologyName)
+    public Collection<Source> fetchByNames(Collection<String> searchNames, String miOntologyName)
             throws BridgeFailedException {
         if (searchNames == null){
             throw new IllegalArgumentException("The term identifiers cannot be null.");
         }
 
-        Collection<IntactSource> results = new ArrayList<IntactSource>(searchNames.size());
+        Collection<Source> results = new ArrayList<Source>(searchNames.size());
         for (String id : searchNames){
-            IntactSource element = fetchByName(id, miOntologyName);
+            Source element = fetchByName(id, miOntologyName);
             if (element != null){
                 results.add(element);
             }
@@ -211,13 +212,13 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         return results;
     }
 
-    public Collection<IntactSource> fetchByNames(Collection<String> searchNames)
+    public Collection<Source> fetchByNames(Collection<String> searchNames)
             throws BridgeFailedException {
         if (searchNames == null){
             throw new IllegalArgumentException("The term identifiers cannot be null.");
         }
 
-        Collection<IntactSource> results = new ArrayList<IntactSource>(searchNames.size());
+        Collection<Source> results = new ArrayList<Source>(searchNames.size());
         for (String id : searchNames){
             results.addAll(fetchByName(id));
 
