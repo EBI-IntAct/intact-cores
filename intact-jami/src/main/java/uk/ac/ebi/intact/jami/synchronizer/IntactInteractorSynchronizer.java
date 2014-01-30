@@ -182,6 +182,42 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         return ((InteractorFetcher<Interactor>)this.interactorBaseSynchronizer).fetchByIdentifiers(identifiers);
     }
 
+    public IntactDbSynchronizer<Polymer, IntactPolymer> getPolymerSynchronizer() {
+        return polymerSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Protein, IntactProtein> getProteinSynchronizer() {
+        return proteinSynchronizer;
+    }
+
+    public IntactDbSynchronizer<NucleicAcid, IntactNucleicAcid> getNucleicAcidSynchronizer() {
+        return nucleicAcidSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Interactor, IntactInteractor> getInteractorBaseSynchronizer() {
+        return interactorBaseSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Molecule, IntactMolecule> getMoleculeSynchronizer() {
+        return moleculeSynchronizer;
+    }
+
+    public IntactDbSynchronizer<BioactiveEntity, IntactBioactiveEntity> getBioactiveEntitySynchronizer() {
+        return bioactiveEntitySynchronizer;
+    }
+
+    public IntactDbSynchronizer<Gene, IntactGene> getGeneSynchronizer() {
+        return geneSynchronizer;
+    }
+
+    public IntactDbSynchronizer<InteractorPool, IntactInteractorPool> getInteractorPoolSynchronizer() {
+        return interactorPoolSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Complex, IntactComplex> getComplexSynchronizer() {
+        return complexSynchronizer;
+    }
+
     @Override
     protected Object extractIdentifier(IntactInteractor object) {
         return object.getAc();
