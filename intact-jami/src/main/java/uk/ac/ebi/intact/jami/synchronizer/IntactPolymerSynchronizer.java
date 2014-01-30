@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactPolymerComparator;
+import uk.ac.ebi.intact.jami.merger.IntactPolymerMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
@@ -83,5 +84,10 @@ public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolyme
     @Override
     protected void initialisePersistedObjectMap() {
         super.setPersistedObjects(new TreeMap<P, P>(new UnambiguousExactPolymerComparator()));
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactPolymerMergerEnrichOnly(this));
     }
 }

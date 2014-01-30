@@ -14,10 +14,10 @@ import uk.ac.ebi.intact.jami.synchronizer.IntactPolymerSynchronizer;
  * @since <pre>30/01/14</pre>
  */
 
-public class IntactPolymerMergerEnrichOnly extends IntactInteractorBaseMergerEnrichOnly<Polymer, IntactPolymer>{
+public class IntactPolymerMergerEnrichOnly<P extends Polymer, T extends IntactPolymer> extends IntactInteractorBaseMergerEnrichOnly<P, T>{
 
-    public IntactPolymerMergerEnrichOnly(IntactPolymerSynchronizer intactSynchronizer){
-        super(new FullPolymerEnricher<Polymer>(intactSynchronizer));
+    public IntactPolymerMergerEnrichOnly(IntactPolymerSynchronizer<P,T> intactSynchronizer){
+        super(new FullPolymerEnricher<P>(intactSynchronizer));
     }
 }
 

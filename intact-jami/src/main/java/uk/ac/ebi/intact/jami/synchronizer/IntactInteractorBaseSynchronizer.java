@@ -10,6 +10,7 @@ import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorComparator;
+import uk.ac.ebi.intact.jami.merger.IntactInteractorBaseMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -449,5 +450,10 @@ implements InteractorFetcher<T>{
             }
         }
         return results;
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactInteractorBaseMergerEnrichOnly<T,I>(this));
     }
 }

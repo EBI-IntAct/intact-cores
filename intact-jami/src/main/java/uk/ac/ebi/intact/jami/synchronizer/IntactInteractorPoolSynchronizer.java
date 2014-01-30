@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.InteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousInteractorPoolComparator;
+import uk.ac.ebi.intact.jami.merger.IntactInteractorBaseMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
@@ -81,5 +82,10 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
     @Override
     protected void initialisePersistedObjectMap() {
         super.setPersistedObjects(new TreeMap<IntactInteractorPool, IntactInteractorPool>(new UnambiguousExactInteractorPoolComparator()));
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactInteractorBaseMergerEnrichOnly<InteractorPool,IntactInteractorPool>(this));
     }
 }
