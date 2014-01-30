@@ -11,6 +11,7 @@ import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
+import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.utils.IntactCvTermComparator;
@@ -479,5 +480,10 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         if (this.objClass != null){
             intactCv.setObjClass(this.objClass);
         }
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactCvTermMergerEnrichOnly(this));
     }
 }

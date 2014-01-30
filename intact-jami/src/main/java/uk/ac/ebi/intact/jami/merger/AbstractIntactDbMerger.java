@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.jami.merger;
 
-import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 /**
  * Abstract class for IntAct merger of Auditable objects in IntAct
@@ -10,7 +10,7 @@ import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
  * @since <pre>29/01/14</pre>
  */
 
-public abstract class AbstractIntactDbMerger<A extends AbstractAuditable> implements IntactDbMerger<A> {
+public abstract class AbstractIntactDbMerger<A extends Auditable> implements IntactDbMerger<A> {
 
     public A merge(A obj1, A obj2) {
         if (obj2 == null){

@@ -15,7 +15,7 @@ import java.util.Collection;
 
 /**
  * Interactor merger based on the jami interactor enricher.
- * It will override all the properties of the cv loaded from the database with the properties of the source
+ * It will override all the properties of the interactor loaded from the database with the properties of the source
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

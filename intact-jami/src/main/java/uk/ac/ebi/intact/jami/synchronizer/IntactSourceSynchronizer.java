@@ -7,6 +7,8 @@ import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
+import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactSourceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactCvTermComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -359,5 +361,10 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             intactSource.setShortName(nameInSync);
         }
         while(name.length() > 1 && !existingSource.isEmpty());
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactSourceMergerEnrichOnly(this));
     }
 }

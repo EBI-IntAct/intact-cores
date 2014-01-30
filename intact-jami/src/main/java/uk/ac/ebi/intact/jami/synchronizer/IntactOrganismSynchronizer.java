@@ -10,6 +10,8 @@ import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.OrganismCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
+import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactOrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -279,5 +281,10 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
     @Override
     protected IntactOrganism instantiateNewPersistentInstance(Organism object, Class<? extends IntactOrganism> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return intactClass.getConstructor(Integer.class).newInstance(object.getTaxId());
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactOrganismMergerEnrichOnly(this));
     }
 }

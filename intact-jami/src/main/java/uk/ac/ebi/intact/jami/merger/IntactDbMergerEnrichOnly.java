@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.jami.merger;
 
-import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 /**
  * This IntAct merger, only enrich properties of object loaded from the database and
@@ -11,7 +11,7 @@ import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
  * @since <pre>29/01/14</pre>
  */
 
-public class IntactDbMergerEnrichOnly<A extends AbstractAuditable> extends AbstractIntactDbMerger<A> {
+public class IntactDbMergerEnrichOnly<A extends Auditable> extends AbstractIntactDbMerger<A> {
     @Override
     protected void mergeOtherProperties(A obj1, A obj2) {
         // nothing to do

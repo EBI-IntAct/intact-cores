@@ -3,6 +3,8 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +17,7 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>21/01/14</pre>
  */
 
-public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSynchronizer<I,T> {
+public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> implements IntactDbSynchronizer<I,T> {
 
     private EntityManager entityManager;
     private Class<? extends T> intactClass;
@@ -86,11 +88,18 @@ public abstract class AbstractIntactDbSynchronizer<I, T> implements IntactDbSync
     }
 
     public IntactDbMerger<T> getIntactMerger() {
+        if (this.intactMerger == null){
+            initialiseDefaultMerger();
+        }
         return intactMerger;
     }
 
     public void setIntactMerger(IntactDbMerger<T> intactMerger) {
         this.intactMerger = intactMerger;
+    }
+
+    protected void initialiseDefaultMerger() {
+        this.intactMerger = new IntactDbMergerEnrichOnly<T>();
     }
 
     protected abstract Object extractIdentifier(T object);
