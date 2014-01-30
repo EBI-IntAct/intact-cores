@@ -2,6 +2,8 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
+import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
 import psidev.psi.mi.jami.factory.InteractorFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
@@ -25,7 +27,8 @@ import java.util.regex.Matcher;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactInteractorBaseSynchronizer<T extends Interactor, I extends IntactInteractor> extends AbstractIntactDbSynchronizer<T, I> {
+public class IntactInteractorBaseSynchronizer<T extends Interactor, I extends IntactInteractor> extends AbstractIntactDbSynchronizer<T, I>
+implements InteractorFetcher<T>{
     private Map<I, I> persistedObjects;
 
     private IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer;
@@ -367,7 +370,6 @@ public class IntactInteractorBaseSynchronizer<T extends Interactor, I extends In
                         "join i.organism as o " +
                         "join i.interactorType as t " +
                         "where i.ac = :id " +
-                        "and i.organism is null " +
                         "and t.ac = :typeAc " +
                         "and o.ac = :orgAc");
                 query.setParameter("id", ref.getId());
@@ -408,5 +410,44 @@ public class IntactInteractorBaseSynchronizer<T extends Interactor, I extends In
         }
 
         return totalInteractors;
+    }
+
+    public Collection<T> fetchByIdentifier(String identifier) throws BridgeFailedException {
+        if (identifier == null){
+            throw new IllegalArgumentException("The identifier cannot be null.");
+        }
+        Query query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+                "where i.ac = :id");
+        query.setParameter("id", identifier);
+        Collection<T> interactors = query.getResultList();
+        if (!interactors.isEmpty()){
+            return interactors;
+        }
+        else{
+            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+                    "join i.persistentXrefs as x " +
+                    "join x.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                    "and x.id = :id");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("id", identifier);
+            return query.getResultList();
+        }
+    }
+
+    public Collection<T> fetchByIdentifiers(Collection<String> identifiers) throws BridgeFailedException {
+        if (identifiers == null){
+            throw new IllegalArgumentException("The identifiers cannot be null.");
+        }
+
+        Collection<T> results = new ArrayList<T>(identifiers.size());
+        for (String id : identifiers){
+            Collection<T> element = fetchByIdentifier(id);
+            if (element != null){
+                results.addAll(element);
+            }
+        }
+        return results;
     }
 }

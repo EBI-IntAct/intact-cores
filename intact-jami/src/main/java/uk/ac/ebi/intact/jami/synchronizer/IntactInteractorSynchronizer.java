@@ -1,11 +1,14 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
+import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
+import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 
 /**
  * Synchronizer for interactors
@@ -15,7 +18,7 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<Interactor, IntactInteractor>{
+public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<Interactor, IntactInteractor> implements InteractorFetcher<Interactor>{
 
     private IntactDbSynchronizer<Polymer, IntactPolymer> polymerSynchronizer;
     private IntactDbSynchronizer<Protein, IntactProtein> proteinSynchronizer;
@@ -169,6 +172,14 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         this.geneSynchronizer.clearCache();
         this.complexSynchronizer.clearCache();
         this.interactorPoolSynchronizer.clearCache();
+    }
+
+    public Collection<Interactor> fetchByIdentifier(String identifier) throws BridgeFailedException {
+        return ((InteractorFetcher<Interactor>)this.interactorBaseSynchronizer).fetchByIdentifier(identifier);
+    }
+
+    public Collection<Interactor> fetchByIdentifiers(Collection<String> identifiers) throws BridgeFailedException {
+        return ((InteractorFetcher<Interactor>)this.interactorBaseSynchronizer).fetchByIdentifiers(identifiers);
     }
 
     @Override
