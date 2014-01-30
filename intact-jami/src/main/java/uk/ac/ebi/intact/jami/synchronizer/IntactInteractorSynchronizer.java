@@ -2,16 +2,10 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorComparator;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.regex.Matcher;
 
 /**
  * Synchronizer for interactors
@@ -42,7 +36,7 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         this.moleculeSynchronizer = new IntactInteractorBaseSynchronizer<Molecule, IntactMolecule>(entityManager, IntactMolecule.class);
         this.bioactiveEntitySynchronizer = new IntactInteractorBaseSynchronizer<BioactiveEntity, IntactBioactiveEntity>(entityManager, IntactBioactiveEntity.class);
         this.geneSynchronizer = new IntactInteractorBaseSynchronizer<Gene, IntactGene>(entityManager, IntactGene.class);
-        this.interactorPoolSynchronizer = new IntactInteractorBaseSynchronizer<InteractorPool, IntactInteractorPool>(entityManager, IntactInteractorPool.class);
+        this.interactorPoolSynchronizer = new IntactInteractorPoolSynchronizer(entityManager);
         this.complexSynchronizer = new IntactInteractorBaseSynchronizer<Complex, IntactComplex>(entityManager, IntactComplex.class);
 
     }
@@ -60,7 +54,7 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         this.moleculeSynchronizer = moleculeBaseSynchronizer != null ? moleculeBaseSynchronizer : new IntactInteractorBaseSynchronizer<Molecule, IntactMolecule>(entityManager, IntactMolecule.class);
         this.bioactiveEntitySynchronizer = bioactiveEntitySynchronizer != null ? bioactiveEntitySynchronizer : new IntactInteractorBaseSynchronizer<BioactiveEntity, IntactBioactiveEntity>(entityManager, IntactBioactiveEntity.class);
         this.geneSynchronizer = geneSynchronizer != null ? geneSynchronizer : new IntactInteractorBaseSynchronizer<Gene, IntactGene>(entityManager, IntactGene.class);
-        this.interactorPoolSynchronizer = interactorPoolSynchronizer != null ? interactorPoolSynchronizer : new IntactInteractorBaseSynchronizer<InteractorPool, IntactInteractorPool>(entityManager, IntactInteractorPool.class);
+        this.interactorPoolSynchronizer = interactorPoolSynchronizer != null ? interactorPoolSynchronizer : new IntactInteractorPoolSynchronizer(entityManager);
         this.complexSynchronizer = complexSynchronizer != null ? complexSynchronizer : new IntactInteractorBaseSynchronizer<Complex, IntactComplex>(entityManager, IntactComplex.class);
     }
 

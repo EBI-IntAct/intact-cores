@@ -37,7 +37,7 @@ public class IntactInteractorBaseSynchronizer<T extends Interactor, I extends In
     public IntactInteractorBaseSynchronizer(EntityManager entityManager, Class<I> intactClass){
         super(entityManager, intactClass);
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorComparator());
+        initialisePersistedObjectMap();
         this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
         this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
         this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, InteractorXref.class);
@@ -54,7 +54,7 @@ public class IntactInteractorBaseSynchronizer<T extends Interactor, I extends In
                                     IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer){
         super(entityManager, intactClass);
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorBaseComparator());
+        initialisePersistedObjectMap();
         this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
         this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
         this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, InteractorXref.class);
@@ -187,6 +187,14 @@ public class IntactInteractorBaseSynchronizer<T extends Interactor, I extends In
         this.annotationSynchronizer.clearCache();
         this.organismSynchronizer.clearCache();
         this.interactorTypeSynchronizer.clearCache();
+    }
+
+    protected void initialisePersistedObjectMap() {
+        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorBaseComparator());
+    }
+
+    protected void setPersistedObjects(Map<I, I> persistedObjects) {
+        this.persistedObjects = persistedObjects;
     }
 
     @Override

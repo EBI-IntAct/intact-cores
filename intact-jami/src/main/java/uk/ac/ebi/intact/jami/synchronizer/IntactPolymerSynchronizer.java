@@ -1,12 +1,14 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactPolymerComparator;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.TreeMap;
 
 /**
  * Synchronizer for IntAct polymers
@@ -27,7 +29,7 @@ public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolyme
 
     @Override
     protected P postFilter(T term, Collection<P> results) {
-        Collection<P> filteredResults = new ArrayList<P>(results);
+        Collection<P> filteredResults = new ArrayList<P>(results.size());
         for (P interactor : results){
             if (term.getSequence() != null && term.getSequence().equalsIgnoreCase(interactor.getSequence())){
                 filteredResults.add(interactor);
@@ -76,5 +78,10 @@ public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolyme
             }
         }
         return query.getResultList();
+    }
+
+    @Override
+    protected void initialisePersistedObjectMap() {
+        super.setPersistedObjects(new TreeMap<P, P>(new UnambiguousExactPolymerComparator()));
     }
 }

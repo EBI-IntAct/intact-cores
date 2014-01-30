@@ -465,7 +465,6 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
         @Override
         protected void processAddedObjectEvent(Xref added) {
-            Xref persistentRef = added;
             persistentXrefs.add(added);
         }
 
