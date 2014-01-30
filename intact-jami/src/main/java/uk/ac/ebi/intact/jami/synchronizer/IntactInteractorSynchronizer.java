@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorComparator;
@@ -22,381 +21,171 @@ import java.util.regex.Matcher;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactInteractorSynchronizer<T extends Interactor, I extends IntactInteractor> extends AbstractIntactDbSynchronizer<T, I>{
-    private Map<I, I> persistedObjects;
+public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<Interactor, IntactInteractor>{
 
-    private IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer;
-    private IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer;
-    private IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer;
-    private IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer;
+    private IntactDbSynchronizer<Polymer, IntactPolymer> polymerSynchronizer;
+    private IntactDbSynchronizer<Protein, IntactProtein> proteinSynchronizer;
+    private IntactDbSynchronizer<NucleicAcid, IntactNucleicAcid> nucleicAcidSynchronizer;
+    private IntactDbSynchronizer<Interactor, IntactInteractor> interactorBaseSynchronizer;
+    private IntactDbSynchronizer<Molecule, IntactMolecule> moleculeSynchronizer;
+    private IntactDbSynchronizer<BioactiveEntity, IntactBioactiveEntity> bioactiveEntitySynchronizer;
+    private IntactDbSynchronizer<Gene, IntactGene> geneSynchronizer;
+    private IntactDbSynchronizer<InteractorPool, IntactInteractorPool> interactorPoolSynchronizer;
+    private IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer;
 
-    private IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> interactorTypeSynchronizer;
+    public IntactInteractorSynchronizer(EntityManager entityManager){
+        super(entityManager, IntactInteractor.class);
+        this.polymerSynchronizer = new IntactPolymerSynchronizer<Polymer, IntactPolymer>(entityManager, IntactPolymer.class);
+        this.proteinSynchronizer = new IntactPolymerSynchronizer<Protein, IntactProtein>(entityManager, IntactProtein.class);
+        this.nucleicAcidSynchronizer = new IntactPolymerSynchronizer<NucleicAcid, IntactNucleicAcid>(entityManager, IntactNucleicAcid.class);
+        this.interactorBaseSynchronizer = new IntactInteractorBaseSynchronizer<Interactor, IntactInteractor>(entityManager, IntactInteractor.class);
+        this.moleculeSynchronizer = new IntactInteractorBaseSynchronizer<Molecule, IntactMolecule>(entityManager, IntactMolecule.class);
+        this.bioactiveEntitySynchronizer = new IntactInteractorBaseSynchronizer<BioactiveEntity, IntactBioactiveEntity>(entityManager, IntactBioactiveEntity.class);
+        this.geneSynchronizer = new IntactInteractorBaseSynchronizer<Gene, IntactGene>(entityManager, IntactGene.class);
+        this.interactorPoolSynchronizer = new IntactInteractorBaseSynchronizer<InteractorPool, IntactInteractorPool>(entityManager, IntactInteractorPool.class);
+        this.complexSynchronizer = new IntactInteractorBaseSynchronizer<Complex, IntactComplex>(entityManager, IntactComplex.class);
 
-    public IntactInteractorSynchronizer(EntityManager entityManager, Class<I> intactClass){
-        super(entityManager, intactClass);
-        // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorComparator());
-        this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, InteractorXref.class);
-
-        this.organismSynchronizer = new IntactOrganismSynchronizer(entityManager);
-        this.interactorTypeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTOR_TYPE_OBJCLASS);
-        this.checksumSynchronizer = new IntactChecksumSynchronizer<InteractorChecksum>(entityManager, InteractorChecksum.class);
     }
 
-    public IntactInteractorSynchronizer(EntityManager entityManager, Class<I> intactClass,
-                                        IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer,
-                                    IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer,
-                                    IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
-                                    IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer){
-        super(entityManager, intactClass);
-        // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorBaseComparator());
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, InteractorXref.class);
-
-        this.organismSynchronizer = organismSynchronizer != null ? organismSynchronizer : new IntactOrganismSynchronizer(entityManager);
-        this.interactorTypeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTOR_TYPE_OBJCLASS);
-        this.checksumSynchronizer = checksumSynchronizer != null ? checksumSynchronizer : new IntactChecksumSynchronizer<InteractorChecksum>(entityManager, InteractorChecksum.class);
+    public IntactInteractorSynchronizer(EntityManager entityManager,IntactDbSynchronizer<Protein, IntactProtein> proteinSynchronizer,
+                                        IntactDbSynchronizer<NucleicAcid, IntactNucleicAcid> nucleicAcidSynchronizer, IntactDbSynchronizer<Polymer, IntactPolymer> polymerSynchronizer,
+                                        IntactDbSynchronizer<Molecule, IntactMolecule> moleculeBaseSynchronizer, IntactDbSynchronizer<BioactiveEntity, IntactBioactiveEntity> bioactiveEntitySynchronizer,
+                                        IntactDbSynchronizer<Gene, IntactGene> geneSynchronizer, IntactDbSynchronizer<InteractorPool, IntactInteractorPool> interactorPoolSynchronizer,
+                                        IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer, IntactDbSynchronizer<Interactor, IntactInteractor> interactorBaseSynchronizer){
+        super(entityManager, IntactInteractor.class);
+        this.polymerSynchronizer = polymerSynchronizer != null ? polymerSynchronizer : new IntactPolymerSynchronizer<Polymer, IntactPolymer>(entityManager, IntactPolymer.class);
+        this.proteinSynchronizer = proteinSynchronizer != null ? proteinSynchronizer : new IntactPolymerSynchronizer<Protein, IntactProtein>(entityManager, IntactProtein.class);
+        this.nucleicAcidSynchronizer = nucleicAcidSynchronizer != null ? nucleicAcidSynchronizer : new IntactPolymerSynchronizer<NucleicAcid, IntactNucleicAcid>(entityManager, IntactNucleicAcid.class);
+        this.interactorBaseSynchronizer = interactorBaseSynchronizer != null ? interactorBaseSynchronizer : new IntactInteractorBaseSynchronizer<Interactor, IntactInteractor>(entityManager, IntactInteractor.class);
+        this.moleculeSynchronizer = moleculeBaseSynchronizer != null ? moleculeBaseSynchronizer : new IntactInteractorBaseSynchronizer<Molecule, IntactMolecule>(entityManager, IntactMolecule.class);
+        this.bioactiveEntitySynchronizer = bioactiveEntitySynchronizer != null ? bioactiveEntitySynchronizer : new IntactInteractorBaseSynchronizer<BioactiveEntity, IntactBioactiveEntity>(entityManager, IntactBioactiveEntity.class);
+        this.geneSynchronizer = geneSynchronizer != null ? geneSynchronizer : new IntactInteractorBaseSynchronizer<Gene, IntactGene>(entityManager, IntactGene.class);
+        this.interactorPoolSynchronizer = interactorPoolSynchronizer != null ? interactorPoolSynchronizer : new IntactInteractorBaseSynchronizer<InteractorPool, IntactInteractorPool>(entityManager, IntactInteractorPool.class);
+        this.complexSynchronizer = complexSynchronizer != null ? complexSynchronizer : new IntactInteractorBaseSynchronizer<Complex, IntactComplex>(entityManager, IntactComplex.class);
     }
 
-    public I find(T term) throws FinderException{
-        Query query;
-        if (term == null){
-            return null;
-        }
-        else if (this.persistedObjects.containsKey(term)){
-            return this.persistedObjects.get(term);
-        }
-        else{
-            IntactCvTerm existingType = this.interactorTypeSynchronizer.find(term.getInteractorType());
-            // could not retrieve the interactor type so this interactor does not exist in IntAct
-            if (existingType == null){
-                return null;
-            }
-            IntactOrganism existingOrganism = null;
-            if (term.getOrganism() != null){
-                existingOrganism = this.organismSynchronizer.find(term.getOrganism());
-                // could not retrieve the organism so this interactor does not exist in IntAct
-                if (existingOrganism == null){
-                    return null;
+    public IntactInteractor find(Interactor term) throws FinderException{
+        if (term instanceof Molecule){
+            if (term instanceof Polymer){
+                if (term instanceof Protein){
+                    return this.proteinSynchronizer.find((Protein)term);
+                }
+                else if (term instanceof NucleicAcid){
+                    return this.nucleicAcidSynchronizer.find((NucleicAcid)term);
+                }
+                else{
+                    return this.polymerSynchronizer.find((Polymer)term);
                 }
             }
+            else if (term instanceof BioactiveEntity){
+                return this.bioactiveEntitySynchronizer.find((BioactiveEntity)term);
+            }
+            else if (term instanceof Gene){
+                return this.geneSynchronizer.find((Gene)term);
+            }
+            else{
+                return this.moleculeSynchronizer.find((Molecule)term);
+            }
+        }
+        else if (term instanceof Complex){
+            return this.complexSynchronizer.find((Complex)term);
+        }
+        else if (term instanceof InteractorPool){
+            return this.interactorPoolSynchronizer.find((InteractorPool)term);
+        }
+        else {
+            return this.interactorBaseSynchronizer.find(term);
+        }
+    }
 
-            // try to fetch interactor using identifiers
-            Collection<I> results = findByIdentifier(term, existingOrganism, existingType);
-            if (results.isEmpty()){
-                // fetch using other properties
-                results = findByOtherProperties(term, existingType, existingOrganism);
-                if (results.isEmpty()){
-                    // fetch using shortname
-                    query = findByName(term, existingType, existingOrganism);
-                    results = query.getResultList();
+    public IntactInteractor persist(IntactInteractor term) throws FinderException, PersisterException, SynchronizerException{
+        if (term instanceof IntactMolecule){
+            if (term instanceof IntactPolymer){
+                if (term instanceof IntactProtein){
+                    return this.proteinSynchronizer.persist((IntactProtein)term);
+                }
+                else if (term instanceof IntactNucleicAcid){
+                    return this.nucleicAcidSynchronizer.persist((IntactNucleicAcid)term);
+                }
+                else{
+                    return this.polymerSynchronizer.persist((IntactPolymer)term);
                 }
             }
-
-            I retrievedInstance = postFilter(term, results);
-            if (retrievedInstance != null){
-                return retrievedInstance;
+            else if (term instanceof IntactBioactiveEntity){
+                return this.bioactiveEntitySynchronizer.persist((IntactBioactiveEntity)term);
             }
-            else if (results.size() > 1){
-                throw new FinderException("The interactor "+term + " can match "+results.size()+" interactors in the database and we cannot determine which one is valid.");
+            else if (term instanceof IntactGene){
+                return this.geneSynchronizer.persist((IntactGene)term);
             }
-            return retrievedInstance;
+            else{
+                return this.moleculeSynchronizer.persist((IntactMolecule)term);
+            }
+        }
+        else if (term instanceof IntactComplex){
+            return this.complexSynchronizer.persist((IntactComplex)term);
+        }
+        else if (term instanceof IntactInteractorPool){
+            return this.interactorPoolSynchronizer.persist((IntactInteractorPool)term);
+        }
+        else {
+            return this.interactorBaseSynchronizer.persist(term);
         }
     }
 
-    // nothing to do here
-    protected I postFilter(T term, Collection<I> results) {
-        if (results.size() == 1){
-            return results.iterator().next();
+    public void synchronizeProperties(IntactInteractor term) throws FinderException, PersisterException, SynchronizerException {
+        if (term instanceof IntactMolecule){
+            if (term instanceof IntactPolymer){
+                if (term instanceof IntactProtein){
+                    this.proteinSynchronizer.synchronizeProperties((IntactProtein)term);
+                }
+                else if (term instanceof IntactNucleicAcid){
+                    this.nucleicAcidSynchronizer.synchronizeProperties((IntactNucleicAcid)term);
+                }
+                else{
+                    this.polymerSynchronizer.synchronizeProperties((IntactPolymer)term);
+                }
+            }
+            else if (term instanceof IntactBioactiveEntity){
+                this.bioactiveEntitySynchronizer.synchronizeProperties((IntactBioactiveEntity)term);
+            }
+            else if (term instanceof IntactGene){
+                this.geneSynchronizer.synchronizeProperties((IntactGene)term);
+            }
+            else{
+                this.moleculeSynchronizer.synchronizeProperties((IntactMolecule)term);
+            }
         }
-        return null;
-    }
-
-    // nothing to do here
-    protected Collection<I> findByOtherProperties(T term, IntactCvTerm existingType, IntactOrganism existingOrganism) {
-        return Collections.EMPTY_LIST;
-    }
-
-    protected Query findByName(T term, IntactCvTerm existingType, IntactOrganism existingOrganism) {
-        Query query;
-        if (existingOrganism == null){
-            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
-                    "join i.interactorType as t " +
-                    "where i.shortName = :name " +
-                    "and i.organism is null " +
-                    "and t.ac = :typeAc");
-            query.setParameter("name", term.getShortName().trim().toLowerCase());
-            query.setParameter("typeAc", existingType.getAc());
+        else if (term instanceof IntactComplex){
+            this.complexSynchronizer.synchronizeProperties((IntactComplex)term);
         }
-        else{
-            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
-                    "join i.interactorType as t " +
-                    "join i.organism as o " +
-                    "where i.shortName = :name " +
-                    "and o.ac = :orgAc " +
-                    "and t.ac = :typeAc");
-            query.setParameter("name", term.getShortName().trim().toLowerCase());
-            query.setParameter("orgAc", existingOrganism.getAc());
-            query.setParameter("typeAc", existingType.getAc());
+        else if (term instanceof IntactInteractorPool){
+            this.interactorPoolSynchronizer.synchronizeProperties((IntactInteractorPool)term);
         }
-        return query;
-    }
-
-    public I persist(I object) throws FinderException, PersisterException, SynchronizerException{
-        // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
+        else {
+            this.interactorBaseSynchronizer.synchronizeProperties(term);
         }
-
-        this.persistedObjects.put(object, object);
-
-        return super.persist(object);
-    }
-
-    public void synchronizeProperties(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
-        // then check shortlabel/synchronize
-        prepareAndSynchronizeShortLabel(intactInteractor);
-        // then check full name
-        prepareFullName(intactInteractor);
-        // then check organism
-        if (intactInteractor.getOrganism() != null){
-            intactInteractor.setOrganism(this.organismSynchronizer.synchronize(intactInteractor.getOrganism(), true));
-        }
-        // then check interactor type
-        intactInteractor.setInteractorType(this.interactorTypeSynchronizer.synchronize(intactInteractor.getInteractorType(), true));
-        // then check checksums
-        prepareChecksums(intactInteractor);
-        // then check aliases
-        prepareAliases(intactInteractor);
-        // then check annotations
-        prepareAnnotations(intactInteractor);
-        // then check xrefs
-        prepareXrefs(intactInteractor);
     }
 
     public void clearCache() {
-        this.persistedObjects.clear();
-        this.aliasSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
-        this.organismSynchronizer.clearCache();
-        this.interactorTypeSynchronizer.clearCache();
+        this.proteinSynchronizer.clearCache();
+        this.nucleicAcidSynchronizer.clearCache();
+        this.moleculeSynchronizer.clearCache();
+        this.polymerSynchronizer.clearCache();
+        this.bioactiveEntitySynchronizer.clearCache();
+        this.geneSynchronizer.clearCache();
+        this.complexSynchronizer.clearCache();
+        this.interactorPoolSynchronizer.clearCache();
     }
 
     @Override
-    protected Object extractIdentifier(I object) {
+    protected Object extractIdentifier(IntactInteractor object) {
         return object.getAc();
     }
 
     @Override
-    protected I instantiateNewPersistentInstance(T object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        I newInteractor = intactClass.getConstructor(String.class).newInstance(object.getShortName());
+    protected IntactInteractor instantiateNewPersistentInstance(Interactor object, Class<? extends IntactInteractor> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        IntactInteractor newInteractor = intactClass.getConstructor(String.class).newInstance(object.getShortName());
         InteractorCloner.copyAndOverrideBasicInteractorProperties(object, newInteractor);
         return newInteractor;
-    }
-
-    protected void prepareChecksums(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
-        if (intactInteractor.areChecksumsInitialized()){
-            List<Checksum> checksumToPersist = new ArrayList<Checksum>(intactInteractor.getPersistentChecksums());
-            for (Checksum checksum : checksumToPersist){
-                // do not persist or merge checksum because of cascades
-                Checksum interactorCheck = this.checksumSynchronizer.synchronize(checksum, false);
-                // we have a different instance because needed to be synchronized
-                if (interactorCheck != checksum){
-                    intactInteractor.getPersistentChecksums().remove(checksum);
-                    intactInteractor.getPersistentChecksums().add(interactorCheck);
-                }
-            }
-        }
-    }
-
-
-    protected void prepareXrefs(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
-        if (intactInteractor.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getPersistentXrefs());
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false);
-                // we have a different instance because needed to be synchronized
-                if (cvXref != xref){
-                    intactInteractor.getPersistentXrefs().remove(xref);
-                    intactInteractor.getPersistentXrefs().add(cvXref);
-                }
-            }
-        }
-    }
-
-    protected void prepareAnnotations(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
-        if (intactInteractor.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteractor.getPersistentAnnotations());
-            for (Annotation annotation : annotationsToPersist){
-                // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
-                // we have a different instance because needed to be synchronized
-                if (cvAnnotation != annotation){
-                    intactInteractor.getPersistentAnnotations().remove(annotation);
-                    intactInteractor.getPersistentAnnotations().add(cvAnnotation);
-                }
-            }
-        }
-    }
-
-    protected void prepareAliases(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
-        if (intactInteractor.areAliasesInitialized()){
-            List<Alias> aliasesToPersist = new ArrayList<Alias>(intactInteractor.getPersistentAliases());
-            for (Alias alias : aliasesToPersist){
-                // do not persist or merge alias because of cascades
-                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false);
-                // we have a different instance because needed to be synchronized
-                if (cvAlias != alias){
-                    intactInteractor.getPersistentAliases().remove(alias);
-                    intactInteractor.getPersistentAliases().add(cvAlias);
-                }
-            }
-        }
-    }
-
-    protected void prepareFullName(I intactInteractor) {
-        // truncate if necessary
-        if (intactInteractor.getFullName() != null && IntactUtils.MAX_FULL_NAME_LEN < intactInteractor.getFullName().length()){
-            intactInteractor.setFullName(intactInteractor.getFullName().substring(0, IntactUtils.MAX_FULL_NAME_LEN));
-        }
-    }
-
-    protected void prepareAndSynchronizeShortLabel(I intactInteractor) {
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < intactInteractor.getShortName().length()){
-            intactInteractor.setShortName(intactInteractor.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
-        // check if short name already exist, if yes, synchronize
-        Query query = getEntityManager().createQuery("select i from IntactInteractor i " +
-                "where i.shortName = :name");
-        query.setParameter("name", intactInteractor.getShortName().trim().toLowerCase());
-        List<IntactInteractor> existingSources = query.getResultList();
-        if (!existingSources.isEmpty()){
-            int max = 1;
-            for (IntactInteractor interactor : existingSources){
-                String name = interactor.getShortName();
-                if (name.contains("-")){
-                    String strSuffix = name.substring(name .lastIndexOf("-") + 1, name.length());
-                    Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
-
-                    if (matcher.matches()){
-                        max = Math.max(max, Integer.parseInt(matcher.group()));
-                    }
-                }
-            }
-            String maxString = Integer.toString(max);
-            // retruncate if necessary
-            if (IntactUtils.MAX_SHORT_LABEL_LEN < intactInteractor.getShortName().length()+maxString.length()+1){
-                intactInteractor.setShortName(intactInteractor.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN - (maxString.length() + 1))
-                        + "-" + maxString);
-            }
-            else{
-                intactInteractor.setShortName(intactInteractor.getShortName() + "-" + maxString);
-            }
-        }
-    }
-
-    protected Collection<I> findByIdentifier(T term, IntactOrganism existingOrganism, IntactCvTerm existingType) throws FinderException {
-        if (term.getIdentifiers().isEmpty()){
-             return null;
-        }
-        Query query=null;
-        Collection<I> totalInteractors = new ArrayList<I>();
-        // no organism for this interactor.
-        if (existingOrganism == null){
-            for (Xref ref : term.getIdentifiers()){
-                query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
-                        "join i.interactorType as t " +
-                        "where i.ac = :id " +
-                        "and i.organism is null " +
-                        "and t.ac = :typeAc");
-                query.setParameter("id", ref.getId());
-                query.setParameter("typeAc", existingType.getAc());
-                Collection<I> interactors = query.getResultList();
-                if (!interactors.isEmpty()){
-                    return interactors;
-                }
-                else{
-                    query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
-                            "join i.persistentXrefs as x " +
-                            "join x.database as d " +
-                            "join x.qualifier as q " +
-                            "join i.interactorType as t " +
-                            "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
-                            "and d.shortName = :db " +
-                            "and x.id = :id " +
-                            "and t.ac = :typeAc " +
-                            "and i.organism is null");
-                    query.setParameter("identity", Xref.IDENTITY);
-                    query.setParameter("secondaryAc", Xref.SECONDARY);
-                    query.setParameter("db", ref.getDatabase().getShortName());
-                    query.setParameter("id", ref.getId());
-                    query.setParameter("typeAc", existingType.getAc());
-
-                    interactors = query.getResultList();
-                    if (interactors.size() == 1){
-                        return interactors;
-                    }
-                    else if (interactors.size() > 1){
-                        totalInteractors.addAll(interactors);
-                    }
-                }
-            }
-        }
-        // organism for this interactor
-        else{
-            for (Xref ref : term.getIdentifiers()){
-                query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
-                        "join i.organism as o " +
-                        "join i.interactorType as t " +
-                        "where i.ac = :id " +
-                        "and i.organism is null " +
-                        "and t.ac = :typeAc " +
-                        "and o.ac = :orgAc");
-                query.setParameter("id", ref.getId());
-                query.setParameter("typeAc", existingType.getAc());
-                query.setParameter("orgAc", existingOrganism.getAc());
-                Collection<I> interactors = query.getResultList();
-                if (!interactors.isEmpty()){
-                    return interactors;
-                }
-                else{
-                    query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
-                            "join i.persistentXrefs as x " +
-                            "join x.database as d " +
-                            "join x.qualifier as q " +
-                            "join i.organism as o " +
-                            "join i.interactorType as t " +
-                            "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
-                            "and d.shortName = :db " +
-                            "and x.id = :id " +
-                            "and t.ac = :typeAc " +
-                            "and o.ac = :orgAc");
-                    query.setParameter("identity", Xref.IDENTITY);
-                    query.setParameter("secondaryAc", Xref.SECONDARY);
-                    query.setParameter("db", ref.getDatabase().getShortName());
-                    query.setParameter("id", ref.getId());
-                    query.setParameter("typeAc", existingType.getAc());
-                    query.setParameter("orgAc", existingOrganism.getAc());
-
-                    interactors = query.getResultList();
-                    if (interactors.size() == 1){
-                        return interactors;
-                    }
-                    else if (interactors.size() > 1){
-                        totalInteractors.addAll(interactors);
-                    }
-                }
-            }
-        }
-
-        return totalInteractors;
     }
 }

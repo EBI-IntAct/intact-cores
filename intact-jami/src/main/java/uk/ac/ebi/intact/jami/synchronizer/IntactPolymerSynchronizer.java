@@ -16,7 +16,7 @@ import java.util.Collection;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolymer> extends IntactInteractorSynchronizer<T,P>{
+public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolymer> extends IntactInteractorBaseSynchronizer<T,P>{
     public IntactPolymerSynchronizer(EntityManager entityManager, Class<P> intactClass) {
         super(entityManager, intactClass);
     }
