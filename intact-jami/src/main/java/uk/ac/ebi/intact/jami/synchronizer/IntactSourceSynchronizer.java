@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
@@ -29,6 +31,8 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
     private IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer;
     private IntactDbSynchronizer<Annotation, SourceAnnotation> annotationSynchronizer;
     private IntactDbSynchronizer<Xref, SourceXref> xrefSynchronizer;
+
+    private static final Log log = LogFactory.getLog(IntactSourceSynchronizer.class);
 
     public IntactSourceSynchronizer(EntityManager entityManager){
         super(entityManager, IntactSource.class);
@@ -328,37 +332,32 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
     protected void prepareAndSynchronizeShortLabel(IntactSource intactSource) {
         // truncate if necessary
         if (IntactUtils.MAX_SHORT_LABEL_LEN < intactSource.getShortName().length()){
+            log.warn("Source shortLabel too long: "+intactSource.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        // check if short name already exist, if yes, synchronize
-        if (intactSource.getAc() == null){
-            Query query = getEntityManager().createQuery("select s from IntactSource s " +
-                    "where s.shortName = :name");
-            query.setParameter("name", intactSource.getShortName().trim().toLowerCase());
-            List<IntactSource> existingSources = query.getResultList();
-            if (!existingSources.isEmpty()){
-                int max = 1;
-                for (IntactSource source : existingSources){
-                    String name = source.getShortName();
-                    if (name.contains("-")){
-                        String strSuffix = name.substring(name .lastIndexOf("-") + 1, name.length());
-                        Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
-
-                        if (matcher.matches()){
-                            max = Math.max(max, Integer.parseInt(matcher.group()));
-                        }
-                    }
-                }
-                String maxString = Integer.toString(max);
-                // retruncate if necessary
-                if (IntactUtils.MAX_SHORT_LABEL_LEN < intactSource.getShortName().length()+maxString.length()+1){
-                    intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN-(maxString.length()+1))
-                            +"-"+maxString);
-                }
-                else{
-                    intactSource.setShortName(intactSource.getShortName()+"-"+maxString);
-                }
+        String name = intactSource.getShortName().trim().toLowerCase();
+        List<String> existingSource = Collections.EMPTY_LIST;
+        boolean first = true;
+        do{
+            if (first){
+                first = false;
             }
+            else if (name.length() > 2){
+                name = name.substring(0, name.length() - 1);
+            }
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = getEntityManager().createQuery("select s.shortName from IntactSource s " +
+                    "where s.shortName = :name or s.shortName like :nameWithSuffix"
+                    + (intactSource.getAc() != null ? "and s.ac <> :sourceAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (intactSource.getAc() != null){
+                query.setParameter("sourceAc", intactSource.getAc());
+            }
+            existingSource = query.getResultList();
+            String nameInSync = IntactUtils.synchronizeShortlabel(intactSource.getShortName(), existingSource, IntactUtils.MAX_SHORT_LABEL_LEN);
+            intactSource.setShortName(nameInSync);
         }
+        while(name.length() > 1 && !existingSource.isEmpty());
     }
 }

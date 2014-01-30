@@ -445,40 +445,34 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             log.warn("Cv term shortLabel too long: "+intactCv.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        // check if short name already exist, if yes, synchronize with existing label
-        if (intactCv.getAc() == null){
-            Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where cv.shortName = :name" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
-            query.setParameter("name", intactCv.getShortName().trim().toLowerCase());
+        String name = intactCv.getShortName().trim().toLowerCase();
+        List<String> existingCvs = Collections.EMPTY_LIST;
+        boolean first = true;
+        do{
+            if (first){
+                first = false;
+            }
+            else if (name.length() > 2){
+                name = name.substring(0, name.length() - 1);
+            }
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = getEntityManager().createQuery("select cv.shortName from IntactCvTerm cv " +
+                    "where cv.shortName = :name or cv.shortName like :nameWithSuffix"
+                    + (this.objClass != null ? " and cv.objClass = :objclass" : " ")
+                    + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
             if (this.objClass != null){
                 query.setParameter("objclass", this.objClass);
             }
-            List<IntactCvTerm> existingCvs = query.getResultList();
-            if (!existingCvs.isEmpty()){
-                int max = 1;
-                for (IntactCvTerm cv : existingCvs){
-                    String name = cv.getShortName();
-                    if (name.contains("-")){
-                        String strSuffix = name.substring(name .lastIndexOf("-") + 1, name.length());
-                        Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
-
-                        if (matcher.matches()){
-                            max = Math.max(max, Integer.parseInt(matcher.group()));
-                        }
-                    }
-                }
-                String maxString = Integer.toString(max);
-                // retruncate if necessary
-                if (IntactUtils.MAX_SHORT_LABEL_LEN < intactCv.getShortName().length()+maxString.length()+1){
-                    log.warn("Cv term shortLabel too long: "+intactCv.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-                    intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN-(maxString.length()+1))
-                            +"-"+maxString);
-                }
-                else{
-                    intactCv.setShortName(intactCv.getShortName()+"-"+maxString);
-                }
+            if (intactCv.getAc() != null){
+                query.setParameter("cvAc", intactCv.getAc());
             }
+            existingCvs = query.getResultList();
+            String nameInSync = IntactUtils.synchronizeShortlabel(intactCv.getShortName(), existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN);
+            intactCv.setShortName(nameInSync);
         }
+        while(name.length() > 1 && !existingCvs.isEmpty());
     }
 
     protected void initialiseObjClass(IntactCvTerm intactCv) {

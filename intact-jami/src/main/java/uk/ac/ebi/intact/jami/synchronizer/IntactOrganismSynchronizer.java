@@ -241,39 +241,34 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
             }
         }
         // truncate if necessary
-        if (intactOrganism.getCommonName() != null && IntactUtils.MAX_SHORT_LABEL_LEN < intactOrganism.getCommonName().length()){
-            log.warn("Organism common name too long: "+intactOrganism.getCommonName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
+        if (IntactUtils.MAX_SHORT_LABEL_LEN < intactOrganism.getCommonName().length()){
+            log.warn("Organism shortLabel too long: "+intactOrganism.getCommonName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactOrganism.setCommonName(intactOrganism.getCommonName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        // check if short name already exist, if yes, synchronize
-        Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
-                "where o.commonName = :name");
-        query.setParameter("name", intactOrganism.getCommonName().trim().toLowerCase());
-        List<IntactOrganism> existingOrganisms = query.getResultList();
-        if (!existingOrganisms.isEmpty()){
-            int max = 1;
-            for (IntactOrganism organism : existingOrganisms){
-                String name = organism.getCommonName();
-                if (name.contains("-")){
-                    String strSuffix = name.substring(name .lastIndexOf("-") + 1, name.length());
-                    Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
-
-                    if (matcher.matches()){
-                        max = Math.max(max, Integer.parseInt(matcher.group()));
-                    }
-                }
+        String name = intactOrganism.getCommonName().trim().toLowerCase();
+        List<String> existingOrganism = Collections.EMPTY_LIST;
+        boolean first = true;
+        do{
+            if (first){
+                first = false;
             }
-            String maxString = Integer.toString(max);
-            // retruncate if necessary
-            if (IntactUtils.MAX_SHORT_LABEL_LEN < intactOrganism.getCommonName().length()+maxString.length()+1){
-                log.warn("Organism common name too long: "+intactOrganism.getCommonName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-                intactOrganism.setCommonName(intactOrganism.getCommonName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN-(maxString.length()+1))
-                        +"-"+maxString);
+            else if (name.length() > 2){
+                name = name.substring(0, name.length() - 1);
             }
-            else{
-                intactOrganism.setCommonName(intactOrganism.getCommonName()+"-"+maxString);
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = getEntityManager().createQuery("select o.shortName from IntactOrganism o " +
+                    "where o.commonName = :name or o.commonName like :nameWithSuffix"
+                    + (intactOrganism.getAc() != null ? "and o.ac <> :organismAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (intactOrganism.getAc() != null){
+                query.setParameter("interactorAc", intactOrganism.getAc());
             }
+            existingOrganism = query.getResultList();
+            String nameInSync = IntactUtils.synchronizeShortlabel(intactOrganism.getCommonName(), existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN);
+            intactOrganism.setCommonName(nameInSync);
         }
+        while(name.length() > 1 && !existingOrganism.isEmpty());
     }
 
     @Override

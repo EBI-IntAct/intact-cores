@@ -2,11 +2,16 @@ package uk.ac.ebi.intact.jami.utils;
 
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.utils.comparator.IntegerComparator;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -56,6 +61,51 @@ public class IntactUtils {
     public static final String INTERAQCTOR_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractorType";
 
     public static final String RELEASED_STATUS = "released";
+
+    public static String synchronizeShortlabel(String currentLabel, Collection<String> exitingLabels, int maxLength){
+        String nameInSync = currentLabel;
+        String indexAsString = "";
+        if (!exitingLabels.isEmpty()){
+            IntegerComparator comparator = new IntegerComparator();
+            SortedSet<Integer> existingIndexes = new TreeSet<Integer>(comparator);
+            for (String exitingLabel : exitingLabels){
+                existingIndexes.add(extractLastNumberInShortLabel(exitingLabel));
+            }
+
+            int freeIndex = 0;
+            for (Integer existingLabel : existingIndexes){
+                // index already exist, increment free index
+                if (freeIndex==existingLabel){
+                    freeIndex++;
+                }
+                // index does not exist, break the loop
+                else{
+                    break;
+                }
+            }
+            indexAsString = freeIndex > 0 ? "-"+freeIndex : "";
+            nameInSync = currentLabel+indexAsString;
+        }
+        // retruncate if necessary
+        if (maxLength < nameInSync.length()){
+            nameInSync = nameInSync.substring(0, Math.max(1, maxLength-(indexAsString.length())))
+                    +indexAsString;
+        }
+
+        return nameInSync;
+    }
+
+    public static int extractLastNumberInShortLabel(String currentLabel) {
+        if (currentLabel.contains("-")){
+            String strSuffix = currentLabel.substring(currentLabel .lastIndexOf("-") + 1, currentLabel.length());
+            Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
+
+            if (matcher.matches()){
+                return Integer.parseInt(matcher.group());
+            }
+        }
+        return 0;
+    }
 
     public static IntactCvTerm createMIInteractorType(String name, String MI){
         return createIntactMITerm(name, MI, INTERACTOR_TYPE_OBJCLASS);
