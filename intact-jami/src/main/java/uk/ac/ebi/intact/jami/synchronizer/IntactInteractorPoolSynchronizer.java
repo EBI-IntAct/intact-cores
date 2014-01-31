@@ -4,6 +4,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousInteractorPoolComparator;
 import uk.ac.ebi.intact.jami.merger.IntactInteractorBaseMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactInteractorPoolMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
@@ -90,6 +91,6 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactInteractorBaseMergerEnrichOnly<InteractorPool,IntactInteractorPool>(this));
+        super.setIntactMerger(new IntactInteractorPoolMergerEnrichOnly(this));
     }
 }
