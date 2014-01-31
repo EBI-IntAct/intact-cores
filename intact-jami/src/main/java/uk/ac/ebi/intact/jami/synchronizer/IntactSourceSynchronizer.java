@@ -274,7 +274,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
     @Override
     protected IntactSource instantiateNewPersistentInstance(Source object, Class<? extends IntactSource> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         IntactSource cv = intactClass.getConstructor(String.class).newInstance(object.getShortName());
-        CvTermCloner.copyAndOverrideCvTermProperties(object, cv);
+        CvTermCloner.copyAndOverrideSourceProperties(object, cv);
         return cv;
     }
 

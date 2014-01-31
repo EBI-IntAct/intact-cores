@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousInteractorPoolComparator;
 import uk.ac.ebi.intact.jami.merger.IntactInteractorBaseMergerEnrichOnly;
@@ -9,8 +10,10 @@ import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -23,8 +26,11 @@ import java.util.TreeMap;
 
 public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchronizer<InteractorPool,IntactInteractorPool> {
 
+    private IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer;
+
     public IntactInteractorPoolSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactInteractorPool.class);
+        this.interactorSynchronizer = new IntactInteractorSynchronizer(entityManager);
     }
 
     public IntactInteractorPoolSynchronizer(EntityManager entityManager,
@@ -33,8 +39,32 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
                                             IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer,
                                             IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer,
                                             IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
-                                            IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer) {
+                                            IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer,
+                                            IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer) {
         super(entityManager, IntactInteractorPool.class, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, organismSynchronizer, typeSynchronizer, checksumSynchronizer);
+        this.interactorSynchronizer = interactorSynchronizer != null ? interactorSynchronizer : new IntactInteractorSynchronizer(entityManager);
+    }
+
+    @Override
+    public void synchronizeProperties(IntactInteractorPool intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizeProperties(intactInteractor);
+
+        // then synchronize subInteractors if not done
+        prepareInteractors(intactInteractor);
+    }
+
+    protected void prepareInteractors(IntactInteractorPool intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+        if (intactInteractor.areInteractorsInitialized()){
+            List<Interactor> interactorToPersist = new ArrayList<Interactor>(intactInteractor);
+            for (Interactor interactor : interactorToPersist){
+                Interactor interactorCheck = this.interactorSynchronizer.synchronize(interactor, false);
+                // we have a different instance because needed to be synchronized
+                if (interactorCheck != interactor){
+                    intactInteractor.remove(interactor);
+                    intactInteractor.add(interactorCheck);
+                }
+            }
+        }
     }
 
     @Override
@@ -92,5 +122,12 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
     @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactInteractorPoolMergerEnrichOnly(this));
+    }
+
+    @Override
+    protected IntactInteractorPool instantiateNewPersistentInstance(InteractorPool object, Class<? extends IntactInteractorPool> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        IntactInteractorPool newInteractor = new IntactInteractorPool(object.getShortName());
+        InteractorCloner.copyAndOverrideBasicInteractorPoolProperties(object, newInteractor);
+        return newInteractor;
     }
 }

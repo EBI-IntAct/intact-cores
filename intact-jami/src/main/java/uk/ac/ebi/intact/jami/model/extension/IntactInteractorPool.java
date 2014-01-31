@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -91,6 +93,11 @@ public class IntactInteractorPool extends IntactInteractor implements Interactor
         super(name, fullName, organism, uniqueId);
     }
 
+    @Transient
+    public boolean areInteractorsInitialized(){
+        return Hibernate.isInitialized(getInteractors());
+    }
+
     public int size() {
         return interactors.size();
     }
@@ -144,12 +151,13 @@ public class IntactInteractorPool extends IntactInteractor implements Interactor
         interactors.clear();
     }
 
-    @ManyToMany(targetEntity=IntactInteractor.class)
+    @ManyToMany(targetEntity=IntactInteractor.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinTable(
             name="interactor_pool2interactor",
             joinColumns=@JoinColumn(name="pool_ac"),
             inverseJoinColumns=@JoinColumn(name="interactor_ac")
     )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactInteractor.class)
     private Collection<Interactor> getInteractors() {
         if (interactors == null){

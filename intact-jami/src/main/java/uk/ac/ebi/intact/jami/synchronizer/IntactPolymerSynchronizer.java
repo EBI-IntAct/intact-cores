@@ -1,12 +1,14 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactPolymerComparator;
 import uk.ac.ebi.intact.jami.merger.IntactPolymerMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
@@ -89,5 +91,12 @@ public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolyme
     @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactPolymerMergerEnrichOnly(this));
+    }
+
+    @Override
+    protected P instantiateNewPersistentInstance(T object, Class<? extends P> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        P newInteractor = intactClass.getConstructor(String.class).newInstance(object.getShortName());
+        InteractorCloner.copyAndOverrideBasicPolymerProperties(object, newInteractor);
+        return newInteractor;
     }
 }
