@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.merger;
 
+import psidev.psi.mi.jami.enricher.MIEnricher;
 import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 /**
  * This IntAct merger, override all properties of object loaded from the database with properties of object source
@@ -10,7 +12,24 @@ import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
  * @since <pre>29/01/14</pre>
  */
 
-public class IntactDbMergerOverride<A extends AbstractAuditable> extends AbstractIntactDbMerger<A> {
+public class IntactDbMergerOverride<I, A extends AbstractAuditable> extends AbstractIntactDbMerger<I, A> {
+
+    public IntactDbMergerOverride() {
+        super((Class<A>)Auditable.class);
+    }
+
+    public IntactDbMergerOverride(MIEnricher<I> basicEnricher) {
+        super((Class<A>)Auditable.class, basicEnricher);
+    }
+
+    public IntactDbMergerOverride(Class<A> intactClass) {
+        super(intactClass);
+    }
+
+    public IntactDbMergerOverride(Class<A> intactClass, MIEnricher<I> basicEnricher) {
+        super(intactClass, basicEnricher);
+    }
+
     @Override
     protected void mergeOtherProperties(A obj1, A obj2) {
         // nothing to do

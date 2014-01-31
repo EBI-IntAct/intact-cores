@@ -1,5 +1,8 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
+
 /**
  * Interface for finders that can retrieve existing instances in the DB given an object
  * that can be transient.
@@ -10,7 +13,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
  * @since <pre>21/01/14</pre>
  */
 
-public interface IntactDbSynchronizer<I, T> {
+public interface IntactDbSynchronizer<I, T extends Auditable> {
 
 
     /**
@@ -59,4 +62,8 @@ public interface IntactDbSynchronizer<I, T> {
      * Clear cached objects
      */
     public void clearCache();
+
+    public IntactDbMerger<I,T> getIntactMerger();
+
+    public void setIntactMerger(IntactDbMerger<I,T> intactMerger);
 }

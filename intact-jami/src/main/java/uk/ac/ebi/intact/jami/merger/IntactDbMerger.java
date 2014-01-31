@@ -1,5 +1,8 @@
 package uk.ac.ebi.intact.jami.merger;
 
+import psidev.psi.mi.jami.enricher.MIEnricher;
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
+
 /**
  * Interface for merging two IntAct objects :
  * - obj1 containing some updates
@@ -10,7 +13,7 @@ package uk.ac.ebi.intact.jami.merger;
  * @since <pre>29/01/14</pre>
  */
 
-public interface IntactDbMerger<T extends Object> {
+public interface IntactDbMerger<I,T extends Auditable> extends MIEnricher<I>{
 
     /**
      * Merge obj1 with obj2 and return the resulting object.

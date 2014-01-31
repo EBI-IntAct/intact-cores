@@ -23,7 +23,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     private Class<? extends T> intactClass;
     private static final Log log = LogFactory.getLog(AbstractIntactDbSynchronizer.class);
 
-    private IntactDbMerger<T> intactMerger;
+    private IntactDbMerger<I,T> intactMerger;
 
     public AbstractIntactDbSynchronizer(EntityManager entityManager, Class<? extends T> intactClass){
         if (entityManager == null){
@@ -87,19 +87,19 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         }
     }
 
-    public IntactDbMerger<T> getIntactMerger() {
+    public IntactDbMerger<I,T> getIntactMerger() {
         if (this.intactMerger == null){
             initialiseDefaultMerger();
         }
         return intactMerger;
     }
 
-    public void setIntactMerger(IntactDbMerger<T> intactMerger) {
+    public void setIntactMerger(IntactDbMerger<I,T> intactMerger) {
         this.intactMerger = intactMerger;
     }
 
     protected void initialiseDefaultMerger() {
-        this.intactMerger = new IntactDbMergerEnrichOnly<T>();
+        this.intactMerger = new IntactDbMergerEnrichOnly<I,T>();
     }
 
     protected abstract Object extractIdentifier(T object);

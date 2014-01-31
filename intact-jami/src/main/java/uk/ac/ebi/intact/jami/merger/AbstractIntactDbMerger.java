@@ -1,16 +1,37 @@
 package uk.ac.ebi.intact.jami.merger;
 
+import psidev.psi.mi.jami.enricher.MIEnricher;
+import psidev.psi.mi.jami.enricher.exception.EnricherException;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
+import java.util.Collection;
+
 /**
- * Abstract class for IntAct merger of Auditable objects in IntAct
+ * Abstract class for IntAct merger of Auditable objects in IntAct.
+ *
+ * It will use a basic enricher to enrich basic properties
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>29/01/14</pre>
  */
 
-public abstract class AbstractIntactDbMerger<A extends Auditable> implements IntactDbMerger<A> {
+public abstract class AbstractIntactDbMerger<I extends Object, A extends Auditable> implements IntactDbMerger<I,A> {
+
+    private MIEnricher<I> basicEnricher;
+    private Class<A> intactClass;
+
+    public AbstractIntactDbMerger(Class<A> intactClass) {
+        if (intactClass == null){
+            throw new IllegalArgumentException("The intact class must be provided");
+        }
+        this.intactClass = intactClass;
+    }
+
+    public AbstractIntactDbMerger(Class<A> intactClass, MIEnricher<I> basicEnricher) {
+        this(intactClass);
+        this.basicEnricher = basicEnricher;
+    }
 
     public A merge(A obj1, A obj2) {
         if (obj2 == null){
@@ -27,7 +48,38 @@ public abstract class AbstractIntactDbMerger<A extends Auditable> implements Int
 
             mergeOtherProperties(obj1, obj2);
 
+            if (this.basicEnricher != null){
+                // then merge general properties
+                try {
+                    // WARNING: we enrich the object loaded from the database, not the object source!
+                    this.basicEnricher.enrich((I)obj2, (I)obj2);
+                } catch (EnricherException e) {
+                    throw new IllegalStateException("Cannot merge "+obj1 + " with "+obj2, e);
+                }
+            }
+
             return obj2;
+        }
+    }
+
+    public void enrich(I object) throws EnricherException {
+        if (this.basicEnricher != null){
+            this.basicEnricher.enrich(object);
+        }
+    }
+
+    public void enrich(Collection<I> objects) throws EnricherException {
+        if (this.basicEnricher != null){
+            this.basicEnricher.enrich(objects);
+        }
+    }
+
+    public void enrich(I objectToEnrich, I objectSource) throws EnricherException {
+        if (intactClass.isAssignableFrom(objectToEnrich.getClass()) && intactClass.isAssignableFrom(objectSource.getClass())){
+            merge((A) objectToEnrich, (A) objectSource);
+        }
+        else if (this.basicEnricher != null){
+            this.basicEnricher.enrich(objectToEnrich, objectSource);
         }
     }
 
@@ -40,4 +92,8 @@ public abstract class AbstractIntactDbMerger<A extends Auditable> implements Int
     protected abstract void mergeUpdateDate(A obj1, A obj2);
 
     protected abstract void mergeUpdator(A obj1, A obj2);
+
+    protected MIEnricher<I> getBasicEnricher() {
+        return basicEnricher;
+    }
 }

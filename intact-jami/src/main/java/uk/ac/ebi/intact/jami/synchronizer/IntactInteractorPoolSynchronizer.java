@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
-import psidev.psi.mi.jami.utils.comparator.interactor.InteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousInteractorPoolComparator;
 import uk.ac.ebi.intact.jami.merger.IntactInteractorBaseMergerEnrichOnly;
@@ -22,13 +20,19 @@ import java.util.TreeMap;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchronizer<InteractorPool,IntactInteractorPool>{
+public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchronizer<InteractorPool,IntactInteractorPool> {
 
     public IntactInteractorPoolSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactInteractorPool.class);
     }
 
-    public IntactInteractorPoolSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer, IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer, IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer, IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer) {
+    public IntactInteractorPoolSynchronizer(EntityManager entityManager,
+                                            IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer,
+                                            IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer,
+                                            IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer,
+                                            IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer,
+                                            IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
+                                            IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer) {
         super(entityManager, IntactInteractorPool.class, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, organismSynchronizer, typeSynchronizer, checksumSynchronizer);
     }
 

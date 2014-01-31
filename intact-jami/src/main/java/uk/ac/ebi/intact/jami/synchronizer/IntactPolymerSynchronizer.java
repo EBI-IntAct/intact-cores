@@ -19,7 +19,7 @@ import java.util.TreeMap;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolymer> extends IntactInteractorBaseSynchronizer<T,P>{
+public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolymer> extends IntactInteractorBaseSynchronizer<T,P> {
     public IntactPolymerSynchronizer(EntityManager entityManager, Class<P> intactClass) {
         super(entityManager, intactClass);
     }
