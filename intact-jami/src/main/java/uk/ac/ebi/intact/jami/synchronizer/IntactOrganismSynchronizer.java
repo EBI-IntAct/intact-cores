@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
  */
 
 public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism> implements OrganismFetcher{
-    private Map<IntactOrganism, IntactOrganism> persistedObjects;
+    private Map<Organism, IntactOrganism> persistedObjects;
 
     private IntactDbSynchronizer<Alias, OrganismAlias> aliasSynchronizer;
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> cellTypeSynchronizer;
@@ -42,7 +42,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
     public IntactOrganismSynchronizer(EntityManager entityManager){
         super(entityManager, IntactOrganism.class);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<IntactOrganism, IntactOrganism>();
+        this.persistedObjects = new HashMap<Organism, IntactOrganism>();
         this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, OrganismAlias.class);
         this.cellTypeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.CELL_TYPE_OBJCLASS);
         this.tissueSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TISSUE_OBJCLASS);
@@ -52,7 +52,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
                                       IntactDbSynchronizer<CvTerm, IntactCvTerm> cellSynchronizer,IntactDbSynchronizer<CvTerm, IntactCvTerm> tissueSynchronizer){
         super(entityManager, IntactOrganism.class);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<IntactOrganism, IntactOrganism>();
+        this.persistedObjects = new HashMap<Organism, IntactOrganism>();
         this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, OrganismAlias.class);
         this.cellTypeSynchronizer = cellSynchronizer != null ? cellSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.CELL_TYPE_OBJCLASS);
         this.tissueSynchronizer = tissueSynchronizer != null ? tissueSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TISSUE_OBJCLASS);    }
@@ -142,9 +142,22 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
             return this.persistedObjects.get(object);
         }
 
-        this.persistedObjects.put(object, object);
+        IntactOrganism persisted = super.persist(object);
+        this.persistedObjects.put(object, persisted);
 
-        return super.persist(object);
+        return persisted;
+    }
+
+    @Override
+    public IntactOrganism synchronize(Organism object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+        // only synchronize if not already done
+        if (!this.persistedObjects.containsKey(object)){
+            return this.persistedObjects.get(object);
+        }
+
+        IntactOrganism org = super.synchronize(object, persist);
+        this.persistedObjects.put(object, org);
+        return org;
     }
 
     public void synchronizeProperties(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {

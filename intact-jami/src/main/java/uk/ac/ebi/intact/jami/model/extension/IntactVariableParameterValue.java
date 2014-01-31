@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.utils.comparator.experiment.VariableParameterValueComparator;
 import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -64,7 +65,7 @@ public class IntactVariableParameterValue extends AbstractAuditable implements V
         this.id = id;
     }
 
-    @Size(max = 4000)
+    @Size(max = IntactUtils.MAX_DESCRIPTION_LEN)
     @NotNull
     public String getValue() {
         return value;

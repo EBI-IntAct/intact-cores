@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
  */
 
 public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> implements SourceFetcher {
-    private Map<IntactSource, IntactSource> persistedObjects;
+    private Map<Source, IntactSource> persistedObjects;
 
     private IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer;
     private IntactDbSynchronizer<Annotation, SourceAnnotation> annotationSynchronizer;
@@ -39,7 +39,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
     public IntactSourceSynchronizer(EntityManager entityManager){
         super(entityManager, IntactSource.class);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<IntactSource, IntactSource>();
+        this.persistedObjects = new HashMap<Source, IntactSource>();
         this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, SourceAlias.class);
         this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, SourceAnnotation.class);
         this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, SourceXref.class);
@@ -49,7 +49,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
                                     IntactDbSynchronizer<Annotation, SourceAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, SourceXref> xrefSynchronizer){
         super(entityManager, IntactSource.class);
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<IntactSource, IntactSource>();
+        this.persistedObjects = new HashMap<Source, IntactSource>();
         this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, SourceAlias.class);
         this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, SourceAnnotation.class);
         this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, SourceXref.class);
@@ -98,15 +98,29 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         }
     }
 
-    public IntactSource persist(IntactSource object) throws FinderException, PersisterException, SynchronizerException{
+    public IntactSource persist(IntactSource object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
-        this.persistedObjects.put(object, object);
+        IntactSource persisted = super.persist(object);
+        this.persistedObjects.put(object, persisted);
 
-        return super.persist(object);
+        return persisted;
+    }
+
+    @Override
+    public IntactSource synchronize(Source object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+        // only synchronize if not already done
+        if (!this.persistedObjects.containsKey(object)){
+            return this.persistedObjects.get(object);
+        }
+
+        IntactSource persisted = super.synchronize(object, persist);
+        this.persistedObjects.put(object, persisted);
+
+        return persisted;
     }
 
     public void synchronizeProperties(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {

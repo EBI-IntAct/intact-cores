@@ -85,7 +85,7 @@ public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolyme
 
     @Override
     protected void initialisePersistedObjectMap() {
-        super.setPersistedObjects(new TreeMap<P, P>(new UnambiguousExactPolymerComparator()));
+        super.setPersistedObjects(new TreeMap<T, P>(new UnambiguousExactPolymerComparator()));
     }
 
     @Override

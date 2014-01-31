@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 
 public class IntactInteractorBaseSynchronizer<T extends Interactor, I extends IntactInteractor> extends AbstractIntactDbSynchronizer<T, I>
 implements InteractorFetcher<T>{
-    private Map<I, I> persistedObjects;
+    private Map<T, I> persistedObjects;
 
     private IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer;
     private IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer;
@@ -156,15 +156,28 @@ implements InteractorFetcher<T>{
         return query;
     }
 
-    public I persist(I object) throws FinderException, PersisterException, SynchronizerException{
+    public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
-        this.persistedObjects.put(object, object);
+        I persisted = super.persist(object);
+        this.persistedObjects.put((T)object, persisted);
 
-        return super.persist(object);
+        return persisted;
+    }
+
+    @Override
+    public I synchronize(T object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+        // only synchronize if not already done
+        if (!this.persistedObjects.containsKey(object)){
+            return this.persistedObjects.get(object);
+        }
+
+        I org = super.synchronize(object, persist);
+        this.persistedObjects.put(object, org);
+        return org;
     }
 
     public void synchronizeProperties(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
@@ -198,10 +211,10 @@ implements InteractorFetcher<T>{
     }
 
     protected void initialisePersistedObjectMap() {
-        this.persistedObjects = new TreeMap<I, I>(new UnambiguousExactInteractorBaseComparator());
+        this.persistedObjects = new TreeMap<T, I>(new UnambiguousExactInteractorBaseComparator());
     }
 
-    protected void setPersistedObjects(Map<I, I> persistedObjects) {
+    protected void setPersistedObjects(Map<T, I> persistedObjects) {
         this.persistedObjects = persistedObjects;
     }
 

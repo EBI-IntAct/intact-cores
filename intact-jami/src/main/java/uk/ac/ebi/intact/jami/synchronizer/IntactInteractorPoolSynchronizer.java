@@ -116,7 +116,7 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
 
     @Override
     protected void initialisePersistedObjectMap() {
-        super.setPersistedObjects(new TreeMap<IntactInteractorPool, IntactInteractorPool>(new UnambiguousExactInteractorPoolComparator()));
+        super.setPersistedObjects(new TreeMap<InteractorPool, IntactInteractorPool>(new UnambiguousExactInteractorPoolComparator()));
     }
 
     @Override

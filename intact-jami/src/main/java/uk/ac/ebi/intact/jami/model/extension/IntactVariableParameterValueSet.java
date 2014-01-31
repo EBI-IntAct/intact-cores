@@ -8,7 +8,10 @@ import psidev.psi.mi.jami.utils.comparator.experiment.VariableParameterValueSetC
 import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Intact implementation of VariableParameterValueSet
@@ -27,20 +30,8 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
     public IntactVariableParameterValueSet(){
     }
 
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndUpdate() {
-        // check if all variable parameter values are possible to persist
-        if (variableParameterValues != null && Hibernate.isInitialized(variableParameterValues) && !variableParameterValues.isEmpty()){
-            Collection<VariableParameterValue> values = new ArrayList<VariableParameterValue>(variableParameterValues);
-            for (VariableParameterValue value : values){
-                if (!(value instanceof IntactVariableParameterValue)){
-                    IntactVariableParameterValue clone = new IntactVariableParameterValue(value.getValue(), value.getVariableParameter(), value.getOrder());
-                    this.variableParameterValues.remove(value);
-                    this.variableParameterValues.add(clone);
-                }
-            }
-        }
+    public IntactVariableParameterValueSet(Set<VariableParameterValue> values){
+        getVariableParameterValues().addAll(values);
     }
 
     @Id
@@ -107,6 +98,11 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
         getVariableParameterValues().clear();
     }
 
+    @Transient
+    public boolean areVariableParameterValuesInitialized(){
+        return Hibernate.isInitialized(getVariableParameterValues());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o){
@@ -125,7 +121,7 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
         return VariableParameterValueSetComparator.hashCode(this);
     }
 
-    @ManyToMany( targetEntity = IntactVariableParameterValue.class, fetch = FetchType.EAGER)
+    @ManyToMany( targetEntity = IntactVariableParameterValue.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name="ia_varset2parametervalue",
             joinColumns = @JoinColumn( name="varset_id"),

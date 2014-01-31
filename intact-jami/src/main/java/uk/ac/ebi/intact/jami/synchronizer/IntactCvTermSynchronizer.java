@@ -35,7 +35,7 @@ import java.util.regex.Matcher;
 public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, IntactCvTerm> implements CvTermFetcher<CvTerm>{
 
     private String objClass;
-    private Map<IntactCvTerm, IntactCvTerm> persistedObjects;
+    private Map<CvTerm, IntactCvTerm> persistedObjects;
 
     private IntactDbSynchronizer<Alias, CvTermAlias> aliasSynchronizer;
     private IntactDbSynchronizer<Annotation, CvTermAnnotation> annotationSynchronizer;
@@ -47,7 +47,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         super(entityManager, IntactCvTerm.class);
         this.objClass = null;
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<IntactCvTerm, IntactCvTerm>(new IntactCvTermComparator());
+        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
         this.aliasSynchronizer = new IntactAliasSynchronizer<CvTermAlias>(entityManager, CvTermAlias.class);
         this.annotationSynchronizer = new IntactAnnotationsSynchronizer<CvTermAnnotation>(entityManager, CvTermAnnotation.class);
         this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, CvTermXref.class);
@@ -63,7 +63,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         super(entityManager, IntactCvTerm.class);
         this.objClass = null;
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<IntactCvTerm, IntactCvTerm>(new IntactCvTermComparator());
+        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
         this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, CvTermAlias.class);
         this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, CvTermAnnotation.class);
         this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, CvTermXref.class);
@@ -128,9 +128,23 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             return this.persistedObjects.get(object);
         }
 
-        this.persistedObjects.put(object, object);
+        IntactCvTerm persisted = super.persist(object);
+        this.persistedObjects.put(object, persisted);
 
-        return super.persist(object);
+        return persisted;
+    }
+
+    @Override
+    public IntactCvTerm synchronize(CvTerm object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+        // only synchronize if not already done
+        if (!this.persistedObjects.containsKey(object)){
+            return this.persistedObjects.get(object);
+        }
+
+        IntactCvTerm persisted = super.synchronize(object, persist);
+        this.persistedObjects.put(object, persisted);
+
+        return persisted;
     }
 
     public void synchronizeProperties(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {

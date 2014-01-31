@@ -7,7 +7,6 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValue;
-import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousVariableParameterComparator;
 import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -63,6 +62,11 @@ public class IntactVariableParameter extends AbstractAuditable implements Variab
         this.unit = unit;
     }
 
+    @Transient
+    public boolean areVariableParameterValuesInitialized(){
+        return Hibernate.isInitialized(getVariableValues());
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idGenerator")
     @SequenceGenerator(name="idGenerator", sequenceName="DEFAULT_ID_SEQ", initialValue = 1)
@@ -74,7 +78,7 @@ public class IntactVariableParameter extends AbstractAuditable implements Variab
         this.id = id;
     }
 
-    @Size(max = 4000)
+    @Size(max = IntactUtils.MAX_DESCRIPTION_LEN)
     @NotNull
     public String getDescription() {
         return this.description;
@@ -98,9 +102,9 @@ public class IntactVariableParameter extends AbstractAuditable implements Variab
         this.unit = unit;
     }
 
-    @OneToMany( mappedBy = "variableParameter", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},targetEntity = CvTermAlias.class)
+    @OneToMany( mappedBy = "variableParameter", cascade = {CascadeType.ALL},targetEntity = IntactVariableParameterValue.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(CvTermAlias.class)
+    @Target(IntactVariableParameterValue.class)
     public Collection<VariableParameterValue> getVariableValues() {
         if (variableValues == null){
             initialiseVatiableParameterValues();
