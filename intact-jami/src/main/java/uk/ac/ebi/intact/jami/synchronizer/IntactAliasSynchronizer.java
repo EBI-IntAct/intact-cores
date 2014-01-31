@@ -53,7 +53,7 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
         return null;
     }
 
-    public void synchronizeProperties(AbstractIntactAlias object) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
         if (object.getType() != null){
             CvTerm type = object.getType();
             object.setType(typeSynchronizer.synchronize(type, true));
@@ -70,7 +70,7 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
     }
 
     @Override
-    protected Object extractIdentifier(AbstractIntactAlias object) {
+    protected Object extractIdentifier(A object) {
         return object.getAc();
     }
 
