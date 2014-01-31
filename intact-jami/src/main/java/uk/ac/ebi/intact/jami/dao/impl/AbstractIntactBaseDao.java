@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.dao.IntactBaseDao;
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -26,7 +27,7 @@ import java.util.List;
  * @since <pre>21/01/14</pre>
  */
 @Repository
-public abstract class AbstractIntactBaseDao<I,T> implements IntactBaseDao<T> {
+public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements IntactBaseDao<T> {
 
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;

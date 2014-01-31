@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -16,7 +17,7 @@ import java.util.List;
  * @since <pre>20/01/14</pre>
  */
 
-public interface IntactBaseDao<T> {
+public interface IntactBaseDao<T extends Auditable> {
 
     public EntityManager getEntityManager();
 
