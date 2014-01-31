@@ -19,19 +19,19 @@ import java.util.Map;
  * @since <pre>31/01/14</pre>
  */
 
-public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue>{
+public class IntactVariableParameterValueSynchronizer extends AbstractIntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue>{
     private IntactDbSynchronizer<VariableParameter, IntactVariableParameter> parameterSynchronizer;
     private Map<VariableParameterValue, IntactVariableParameterValue> persistedObjects;
 
-    public VariableParameterValueSynchronizer(EntityManager entityManager) {
+    public IntactVariableParameterValueSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactVariableParameterValue.class);
-        this.parameterSynchronizer = new VariableParameterSynchronizer(entityManager);
+        this.parameterSynchronizer = new IntactVariableParameterSynchronizer(entityManager);
         this.persistedObjects = new IdentityMap();
     }
 
-    public VariableParameterValueSynchronizer(EntityManager entityManager, IntactDbSynchronizer<VariableParameter, IntactVariableParameter> parameterSynchronizer) {
+    public IntactVariableParameterValueSynchronizer(EntityManager entityManager, IntactDbSynchronizer<VariableParameter, IntactVariableParameter> parameterSynchronizer) {
         super(entityManager, IntactVariableParameterValue.class);
-        this.parameterSynchronizer = parameterSynchronizer != null ? parameterSynchronizer : new VariableParameterSynchronizer(entityManager);
+        this.parameterSynchronizer = parameterSynchronizer != null ? parameterSynchronizer : new IntactVariableParameterSynchronizer(entityManager);
         this.persistedObjects = new IdentityMap();
     }
 

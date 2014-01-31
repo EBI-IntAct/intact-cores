@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
+import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.model.VariableParameterValueSet;
 import psidev.psi.mi.jami.utils.comparator.experiment.VariableParameterValueSetComparator;
@@ -26,6 +27,8 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
 
     private Long id;
     private Set<VariableParameterValue> variableParameterValues;
+
+    private InteractionEvidence parent;
 
     public IntactVariableParameterValueSet(){
     }
@@ -119,6 +122,17 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
     @Override
     public int hashCode() {
         return VariableParameterValueSetComparator.hashCode(this);
+    }
+
+    @ManyToOne( targetEntity = IntactInteractionEvidence.class )
+    @JoinColumn( name = "interaction_ac", referencedColumnName = "ac" )
+    @Target(IntactInteractionEvidence.class)
+    public InteractionEvidence getParent() {
+        return parent;
+    }
+
+    public void setParent(InteractionEvidence interaction) {
+        this.parent = interaction;
     }
 
     @ManyToMany( targetEntity = IntactVariableParameterValue.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE)

@@ -278,12 +278,8 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
-    @ManyToMany(targetEntity=IntactVariableParameterValueSet.class)
-    @JoinTable(
-            name="ia_interaction2variable_parameters",
-            joinColumns=@JoinColumn(name="interaction_ac"),
-            inverseJoinColumns=@JoinColumn(name="variable_set_id")
-    )
+    @OneToMany(mappedBy = "parent", targetEntity=IntactVariableParameterValueSet.class, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactVariableParameterValueSet.class)
     public Collection<VariableParameterValueSet> getVariableParameterValues() {
 

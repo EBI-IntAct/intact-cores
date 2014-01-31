@@ -22,21 +22,21 @@ import java.util.List;
  * @since <pre>31/01/14</pre>
  */
 
-public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<VariableParameter, IntactVariableParameter>{
+public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchronizer<VariableParameter, IntactVariableParameter>{
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer;
     private IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer;
 
-    public VariableParameterSynchronizer(EntityManager entityManager) {
+    public IntactVariableParameterSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactVariableParameter.class);
         this.unitSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.UNIT_OBJCLASS);
-        this.parameterValueSynchronizer = new VariableParameterValueSynchronizer(entityManager);
+        this.parameterValueSynchronizer = new IntactVariableParameterValueSynchronizer(entityManager);
     }
 
-    public VariableParameterSynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer,
-                                         IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
+    public IntactVariableParameterSynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer,
+                                               IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
         super(entityManager, IntactVariableParameter.class);
         this.unitSynchronizer = unitSynchronizer != null ? unitSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.UNIT_OBJCLASS);
-        this.parameterValueSynchronizer = parameterValueSynchronizer != null ? parameterValueSynchronizer : new VariableParameterValueSynchronizer(entityManager);
+        this.parameterValueSynchronizer = parameterValueSynchronizer != null ? parameterValueSynchronizer : new IntactVariableParameterValueSynchronizer(entityManager);
     }
 
     @Override

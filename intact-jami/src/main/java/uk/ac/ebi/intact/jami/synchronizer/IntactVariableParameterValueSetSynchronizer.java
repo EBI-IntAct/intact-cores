@@ -24,12 +24,12 @@ public class IntactVariableParameterValueSetSynchronizer extends AbstractIntactD
 
     public IntactVariableParameterValueSetSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactVariableParameterValueSet.class);
-        this.parameterValueSynchronizer = new VariableParameterValueSynchronizer(entityManager);
+        this.parameterValueSynchronizer = new IntactVariableParameterValueSynchronizer(entityManager);
     }
 
     public IntactVariableParameterValueSetSynchronizer(EntityManager entityManager, IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
         super(entityManager, IntactVariableParameterValueSet.class);
-        this.parameterValueSynchronizer = parameterValueSynchronizer != null ? parameterValueSynchronizer : new VariableParameterValueSynchronizer(entityManager);
+        this.parameterValueSynchronizer = parameterValueSynchronizer != null ? parameterValueSynchronizer : new IntactVariableParameterValueSynchronizer(entityManager);
     }
 
     @Override
