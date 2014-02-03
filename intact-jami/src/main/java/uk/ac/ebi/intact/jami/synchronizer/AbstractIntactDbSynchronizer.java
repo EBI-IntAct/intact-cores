@@ -110,6 +110,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         T existingInstance = find((I)object);
         // synchronize before persisting
         synchronizeProperties(object);
+        // merge existing instance with the other instance
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){

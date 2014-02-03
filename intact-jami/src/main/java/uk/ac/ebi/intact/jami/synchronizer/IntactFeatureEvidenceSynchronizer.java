@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.merger.IntactFeatureEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -55,5 +56,10 @@ public class IntactFeatureEvidenceSynchronizer extends IntactFeatureSynchronizer
                 }
             }
         }
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactFeatureEvidenceMergerEnrichOnly());
     }
 }

@@ -1,8 +1,10 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
+import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.merger.IntactFeatureMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -10,6 +12,7 @@ import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Default finder/synchronizer for features
@@ -28,6 +31,7 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> effectSynchronizer;
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer;
     private IntactDbSynchronizer<Range, IntactRange> rangeSynchronizer;
+    private Map<F, I> persistedObjects;
 
     private static final Log log = LogFactory.getLog(IntactFeatureSynchronizer.class);
 
@@ -41,6 +45,8 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
         this.effectSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
         this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.FEATURE_TYPE_OBJCLASS);
         this.rangeSynchronizer = new IntactRangeSynchronizer(entityManager);
+
+        this.persistedObjects = new IdentityMap();
     }
 
     public IntactFeatureSynchronizer(EntityManager entityManager, Class<? extends I> featureClass,
@@ -56,10 +62,42 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
         this.effectSynchronizer = effectSynchronizer != null ? effectSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
         this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.FEATURE_TYPE_OBJCLASS);
         this.rangeSynchronizer = rangeSynchronizer != null ? rangeSynchronizer : new IntactRangeSynchronizer(entityManager);
+        this.persistedObjects = new IdentityMap();
     }
 
     public I find(F feature) throws FinderException {
-        return null;
+        if (this.persistedObjects.containsKey(feature)){
+            return this.persistedObjects.get(feature);
+        }
+        // only retrieve an object in the cache, otherwise return null
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
+        // only persist if not already done
+        if (!this.persistedObjects.containsKey(object)){
+            return this.persistedObjects.get(object);
+        }
+
+        I persisted = super.persist(object);
+        this.persistedObjects.put((F)object, persisted);
+
+        return persisted;
+    }
+
+    @Override
+    public I synchronize(F object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+        // only synchronize if not already done
+        if (!this.persistedObjects.containsKey(object)){
+            return this.persistedObjects.get(object);
+        }
+
+        I org = super.synchronize(object, persist);
+        this.persistedObjects.put(object, org);
+        return org;
     }
 
     public void synchronizeProperties(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
@@ -77,6 +115,8 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
         prepareXrefs(intactFeature);
         // then check ranges
         prepareRanges(intactFeature);
+        // then check linkedFeatures
+        prepareLinkedFeatures(intactFeature);
     }
 
     public void clearCache() {
@@ -86,6 +126,22 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
 
         this.typeSynchronizer.clearCache();
         this.effectSynchronizer.clearCache();
+        this.persistedObjects.clear();
+    }
+
+    protected void prepareLinkedFeatures(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        if (intactFeature.areLinkedFeaturesInitialized()){
+            List<I> featureToSynchronize = new ArrayList<I>(intactFeature.getLinkedFeatures());
+            for (I feature : featureToSynchronize){
+                // do not persist or merge features because of cascades
+                I linkedFeature = synchronize((F) feature, false);
+                // we have a different instance because needed to be synchronized
+                if (linkedFeature != feature){
+                    intactFeature.getLinkedFeatures().remove(feature);
+                    intactFeature.getLinkedFeatures().add(linkedFeature);
+                }
+            }
+        }
     }
 
     protected void prepareRanges(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
@@ -185,5 +241,10 @@ public class IntactFeatureSynchronizer<F extends Feature, I extends AbstractInta
     @Override
     protected Object extractIdentifier(I object) {
         return object.getAc();
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactFeatureMergerEnrichOnly<F, I>());
     }
 }
