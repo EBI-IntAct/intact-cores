@@ -231,6 +231,16 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return Hibernate.isInitialized(getAnnotations());
     }
 
+    @Transient
+    public boolean areChildrenInitialized(){
+        return Hibernate.isInitialized(getChildren());
+    }
+
+    @Transient
+    public boolean areParentsInitialized(){
+        return Hibernate.isInitialized(getParents());
+    }
+
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CvTermXref.class)

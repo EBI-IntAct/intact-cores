@@ -164,6 +164,8 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         initialiseIdentifier(intactCv);
         // then check xrefs
         prepareXrefs(intactCv);
+        // synchronize children
+        prepareChildren(intactCv);
     }
 
     public OntologyTerm fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
@@ -398,6 +400,21 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             }
             else{
                 intactCv.getAnnotations().add(new CvTermAnnotation(IntactUtils.createMITopic("definition", null), intactCv.getDefinition()));
+            }
+        }
+    }
+
+    protected void prepareChildren(IntactCvTerm intactCv) throws PersisterException, FinderException, SynchronizerException {
+
+        if (intactCv.areChildrenInitialized()){
+            List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getChildren());
+            for (OntologyTerm term : termsToPersist){
+                OntologyTerm cvChild = synchronize(term, true);
+                // we have a different instance because needed to be synchronized
+                if (cvChild != term){
+                    intactCv.getChildren().remove(term);
+                    intactCv.getChildren().add(cvChild);
+                }
             }
         }
     }
