@@ -3,12 +3,10 @@ package uk.ac.ebi.intact.jami.model.extension;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
-import uk.ac.ebi.intact.jami.model.listener.BioactiveEntityAnnotationListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +21,6 @@ import java.util.List;
  */
 @Entity
 @DiscriminatorValue( "bioactive_entity" )
-@EntityListeners(value = {BioactiveEntityAnnotationListener.class})
 public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEntity{
 
     private Xref chebi;
@@ -161,7 +158,6 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         return chebi != null ? chebi.getId() : null;
     }
 
-    //TODO fetch proper cv term
     public void setChebi(String id) {
         Collection<Xref> bioactiveEntityIdentifiers = getIdentifiers();
 
@@ -190,7 +186,6 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         return smile != null ? smile.getValue() : null;
     }
 
-    //TODO fetch proper cv term
     public void setSmile(String smile) {
         Collection<Checksum> bioactiveEntityChecksums = getChecksums();
 
@@ -215,7 +210,6 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         return standardInchiKey != null ? standardInchiKey.getValue() : null;
     }
 
-    //TODO fetch proper cv term
     public void setStandardInchiKey(String key) {
         Collection<Checksum> bioactiveEntityChecksums = getChecksums();
 
@@ -240,7 +234,6 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         return standardInchi != null ? standardInchi.getValue() : null;
     }
 
-    //TODO fetch proper cv term
     public void setStandardInchi(String inchi) {
         Collection<Checksum> bioactiveEntityChecksums = getChecksums();
 

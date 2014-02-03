@@ -4,10 +4,14 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
+import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
+import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
@@ -59,6 +63,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private CvTerm status;
     private User currentOwner;
     private User currentReviewer;
+
+    private Xref acRef;
 
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
@@ -124,6 +130,19 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     public IntactPublication(String title, String journal, Date publicationDate, String imexId, Source source){
         this(title, journal, publicationDate, CurationDepth.IMEx, source);
         assignImexId(imexId);
+    }
+
+    @Override
+    public void setAc(String ac) {
+        super.setAc(ac);
+        // only if identifiers are initialised
+        if (this.acRef != null && !this.acRef.getId().equals(ac)){
+            // we don't want to create a persistent xref
+            Xref newRef = new DefaultXref(this.acRef.getDatabase(), ac, this.acRef.getQualifier());
+            this.identifiers.removeOnly(acRef);
+            this.acRef = newRef;
+            this.identifiers.addOnly(acRef);
+        }
     }
 
     /**
@@ -465,6 +484,18 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
         else{
             this.persistentXrefs = new PersistentXrefList(null);
+        }
+
+        // initialise ac
+        if (getAc() != null){
+            IntactContext intactContext = ApplicationContextProvider.getBean(IntactContext.class);
+            if (intactContext != null){
+                this.acRef = new DefaultXref(intactContext.getConfig().getDefaultInstitution(), getAc(), CvTermUtils.createIdentityQualifier());
+            }
+            else{
+                this.acRef = new DefaultXref(new DefaultCvTerm("unknwon"), getAc(), CvTermUtils.createIdentityQualifier());
+            }
+            this.identifiers.addOnly(this.acRef);
         }
     }
 

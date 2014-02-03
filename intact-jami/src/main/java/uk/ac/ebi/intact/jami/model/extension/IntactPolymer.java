@@ -2,17 +2,14 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Organism;
-import psidev.psi.mi.jami.model.Polymer;
-import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.utils.CvTermUtils;
+import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.ChecksumUtils;
 import uk.ac.ebi.intact.jami.model.SequenceChunk;
-import uk.ac.ebi.intact.jami.model.listener.PolymerCrc64Listener;
 import uk.ac.ebi.intact.jami.model.listener.PolymerSequenceListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.util.List;
 
 /**
@@ -24,17 +21,10 @@ import java.util.List;
  */
 @Entity
 @DiscriminatorValue( "polymer" )
-@EntityListeners(value = {PolymerCrc64Listener.class, PolymerSequenceListener.class})
+@EntityListeners(value = {PolymerSequenceListener.class})
 public class IntactPolymer extends IntactMolecule implements Polymer{
 
     private String sequence;
-    /**
-     * Represents the CRC64 checksum. This checksum is used to
-     * detect potential inconsistencies between the sequence the object
-     * refers to and the external sequence object, for example when the external
-     * object has been updated.
-     */
-    private String crc64;
 
     /**
      * The protein sequence. If the protein is present in a public database,
@@ -125,7 +115,8 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
      * @deprecated look at checksums instead
      */
     public String getCrc64() {
-        return crc64;
+        Checksum checksum = ChecksumUtils.collectFirstChecksumWithMethod(getPersistentChecksums(), null, "crc64");
+        return checksum != null ? checksum.getValue() : null;
     }
 
     @Deprecated
@@ -133,7 +124,19 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
      * @deprecated look at checksums instead. Only kept for bacward compatibility with intact-core
      */
     public void setCrc64( String crc64 ) {
-        this.crc64 = crc64;
+        if (crc64 == null){
+           ChecksumUtils.removeAllChecksumWithMethod(getPersistentChecksums(), null, "crc64");
+        }
+        else{
+            Checksum checksum = ChecksumUtils.collectFirstChecksumWithMethod(getPersistentChecksums(), null, "crc64");
+            if (checksum == null){
+                InteractorChecksum crc64Checksum = new InteractorChecksum(IntactUtils.createMITopic("crc64", null), crc64);
+                getPersistentChecksums().add(crc64Checksum);
+            }
+            else if (checksum instanceof InteractorChecksum){
+                ((InteractorChecksum)checksum).setValue(crc64);
+            }
+        }
     }
 
     @OneToMany( mappedBy = "parent", orphanRemoval = true, fetch = FetchType.EAGER, cascade = {CascadeType.ALL})

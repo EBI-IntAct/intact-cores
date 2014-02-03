@@ -161,7 +161,6 @@ public class IntactGene extends IntactMolecule implements Gene{
         getIdentifiers();
         return this.ensembl != null ? this.ensembl.getId() : null;
     }
-    // TODO fetch proper cv term
     public void setEnsembl(String ac) {
         Collection<Xref> geneIdentifiers = getIdentifiers();
 
@@ -189,7 +188,6 @@ public class IntactGene extends IntactMolecule implements Gene{
         getIdentifiers();
         return this.ensemblGenome != null ? this.ensemblGenome.getId() : null;
     }
-    // TODO fetch proper cv term
     public void setEnsemblGenome(String ac) {
         Collection<Xref> geneIdentifiers = getIdentifiers();
 
@@ -217,7 +215,6 @@ public class IntactGene extends IntactMolecule implements Gene{
         getIdentifiers();
         return this.entrezGeneId != null ? this.entrezGeneId.getId() : null;
     }
-    // TODO fetch proper cv term
     public void setEntrezGeneId(String id) {
         Collection<Xref> geneIdentifiers = getIdentifiers();
 
@@ -245,7 +242,6 @@ public class IntactGene extends IntactMolecule implements Gene{
         getIdentifiers();
         return this.refseq != null ? this.refseq.getId() : null;
     }
-    // TODO fetch proper cv term
     public void setRefseq(String ac) {
         Collection<Xref> geneIdentifiers = getIdentifiers();
 
