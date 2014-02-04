@@ -12,6 +12,7 @@ import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationCom
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactPublicationMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -306,7 +307,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
     @Override
     protected IntactPublication instantiateNewPersistentInstance(Publication object, Class<? extends IntactPublication> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         IntactPublication pub = new IntactPublication();
-        PublicationCloner.copyAndOverridePublicationProperties(object, pub);
+        PublicationCloner.copyAndOverridePublicationPropertiesAndExperiments(object, pub);
         return pub;
     }
 
@@ -479,6 +480,6 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactCvTermMergerEnrichOnly(this));
+        super.setIntactMerger(new IntactPublicationMergerEnrichOnly(this));
     }
 }
