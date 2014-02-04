@@ -8,8 +8,10 @@ import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Implementation of Cv dao
@@ -38,7 +40,17 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 "where cv.shortName = :name and cv.objClass = :objclass ");
         query.setParameter("name",value);
         query.setParameter("objclass",objClass);
-        return (IntactCvTerm) query.getSingleResult();
+
+        List<IntactCvTerm> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" cv terms matching shortlabel "+value+", objclass "+objClass);
+        }
     }
 
     public Collection<IntactCvTerm> getByShortName(String value) {
@@ -643,7 +655,16 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         query.setParameter("mi2", Xref.IDENTITY_MI);
         query.setParameter("primary", primaryId);
         query.setParameter("objclass", objClass);
-        return (IntactCvTerm)query.getSingleResult();
+        List<IntactCvTerm> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" cv terms matching MI identifier "+primaryId+", objclass "+objClass);
+        }
     }
 
     public IntactCvTerm getByMODIdentifier(String primaryId, String objClass) {
@@ -672,7 +693,16 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         query.setParameter("mi2", Xref.IDENTITY_MI);
         query.setParameter("primary", primaryId);
         query.setParameter("objclass", objClass);
-        return (IntactCvTerm)query.getSingleResult();
+        List<IntactCvTerm> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" cv terms matching MOD identifier "+primaryId+", objclass "+objClass);
+        }
     }
 
     public IntactCvTerm getByPARIdentifier(String primaryId, String objClass) {
@@ -696,7 +726,16 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         query.setParameter("mi2", Xref.IDENTITY_MI);
         query.setParameter("primary", primaryId);
         query.setParameter("objclass", objClass);
-        return (IntactCvTerm)query.getSingleResult();
+        List<IntactCvTerm> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" cv terms matching PAR identifier "+primaryId+", objclass "+objClass);
+        }
     }
 
     @Override

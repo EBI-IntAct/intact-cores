@@ -16,7 +16,7 @@ public interface FeatureDao<F extends AbstractIntactFeature> extends IntactBaseD
 
     public F getByAc(String ac);
 
-    public F getByShortName(String value);
+    public Collection<F> getByShortName(String value);
 
     public Collection<F> getByShortNameLike(String value);
 

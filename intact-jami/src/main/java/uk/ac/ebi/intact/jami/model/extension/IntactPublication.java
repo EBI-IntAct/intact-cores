@@ -19,8 +19,6 @@ import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.listener.PublicationLifecycleListener;
-import uk.ac.ebi.intact.jami.model.listener.PublicationPropertiesListener;
-import uk.ac.ebi.intact.jami.model.listener.PublicationShortLabelListener;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -38,7 +36,7 @@ import java.util.*;
  */
 @javax.persistence.Entity
 @Table( name = "ia_publication" )
-@EntityListeners(value = {PublicationShortLabelListener.class, PublicationPropertiesListener.class, PublicationLifecycleListener.class})
+@EntityListeners(value = {PublicationLifecycleListener.class})
 @Cacheable
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
     private String title;

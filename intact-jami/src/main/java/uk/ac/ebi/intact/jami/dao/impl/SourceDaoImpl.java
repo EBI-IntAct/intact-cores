@@ -5,13 +5,14 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.IntactSourceSynchronizer;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Implementation of source Dao
@@ -39,7 +40,16 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         Query query = getEntityManager().createQuery("select s from IntactSource s " +
                 "where s.shortName = :name");
         query.setParameter("name",value);
-        return (IntactSource) query.getSingleResult();
+        List<IntactSource> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" sources matching shortlabel "+value);
+        }
     }
 
     public Collection<IntactSource> getByShortNameLike(String value) {
@@ -531,7 +541,16 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         query.setParameter("mi", CvTerm.PSI_MI_MI);
         query.setParameter("mi2", Xref.IDENTITY_MI);
         query.setParameter("primary", primaryId);
-        return (IntactSource)query.getSingleResult();
+        List<IntactSource> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" sources matching MI identifier "+primaryId);
+        }
     }
 
     public IntactSource getByPARIdentifier(String primaryId) {
@@ -553,7 +572,16 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         query.setParameter("par", CvTerm.PSI_PAR);
         query.setParameter("mi2", Xref.IDENTITY_MI);
         query.setParameter("primary", primaryId);
-        return (IntactSource)query.getSingleResult();
+        List<IntactSource> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" sources matching PAR identifier "+primaryId);
+        }
     }
 
     @Override

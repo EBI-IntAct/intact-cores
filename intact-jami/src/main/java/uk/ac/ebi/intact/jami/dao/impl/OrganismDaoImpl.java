@@ -9,8 +9,10 @@ import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Implementation of DAO for Organism
@@ -38,7 +40,16 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
         Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
                 "where o.commonName = :name ");
         query.setParameter("name",value);
-        return (IntactOrganism) query.getSingleResult();
+        List<IntactOrganism> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" organisms matching shortlabel "+value);
+        }
     }
 
     public Collection<IntactOrganism> getByShortNameLike(String value) {
@@ -75,7 +86,16 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
                 "and o.cellType is null " +
                 "and o.tissue is null");
         query.setParameter("taxid",Integer.toString(taxid));
-        return (IntactOrganism)query.getSingleResult();
+        List<IntactOrganism> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" organisms matching taxid "+taxid);
+        }
     }
 
     public Collection<IntactOrganism> getByAliasName(String name) {

@@ -38,11 +38,11 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         return getEntityManager().find(getEntityClass(), ac);
     }
 
-    public F getByShortName(String value) {
+    public Collection<F> getByShortName(String value) {
         Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
                 "where f.shortName = :name");
         query.setParameter("name",value);
-        return (F) query.getSingleResult();
+        return query.getResultList();
     }
 
     public Collection<F> getByShortNameLike(String value) {

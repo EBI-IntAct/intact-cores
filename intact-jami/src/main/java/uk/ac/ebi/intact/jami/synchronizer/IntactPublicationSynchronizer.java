@@ -149,6 +149,8 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         preparePublicationDate(intactPublication);
         // then check authors
         preparePublicationAuthors(intactPublication);
+        // then check curation depth
+        prepareCurationDepth(intactPublication);
         // then check annotations
         prepareAnnotations(intactPublication);
         // then check xrefs
@@ -379,6 +381,45 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
             else{
                 intactPublication.getAnnotations().add(new CvTermAnnotation(IntactUtils.createMITopic(Annotation.PUBLICATION_JOURNAL, Annotation.PUBLICATION_JOURNAL_MI), intactPublication.getJournal()));
             }
+        }
+    }
+
+    protected void prepareCurationDepth(IntactPublication intactPublication) {
+        Annotation depth = AnnotationUtils.collectFirstAnnotationWithTopic(intactPublication.getAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
+        switch (intactPublication.getCurationDepth()){
+            case IMEx:
+                if (depth != null){
+                    if (!Annotation.IMEX_CURATION.equalsIgnoreCase(depth.getValue())){
+                        depth.setValue(Annotation.IMEX_CURATION);
+                    }
+                }
+                else{
+                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.IMEX_CURATION));
+                }
+                break;
+            case MIMIx:
+                if (depth != null){
+                    if (!Annotation.MIMIX_CURATION.equalsIgnoreCase(depth.getValue())){
+                        depth.setValue(Annotation.MIMIX_CURATION);
+                    }
+                }
+                else{
+                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.MIMIX_CURATION));
+                }
+                break;
+            case rapid_curation:
+                if (depth != null){
+                    if (!Annotation.RAPID_CURATION.equalsIgnoreCase(depth.getValue())){
+                        depth.setValue(Annotation.RAPID_CURATION);
+                    }
+                }
+                else{
+                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.RAPID_CURATION));
+                }
+                break;
+            default:
+                AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
+                break;
         }
     }
 

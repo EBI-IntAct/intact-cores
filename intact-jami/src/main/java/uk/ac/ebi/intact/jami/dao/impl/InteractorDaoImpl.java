@@ -6,11 +6,14 @@ import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.InteractorDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.IntactInteractorBaseSynchronizer;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Implementation of interactor dao
@@ -42,7 +45,16 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
         Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
                 "where f.shortName = :name");
         query.setParameter("name",value);
-        return (F) query.getSingleResult();
+        List<F> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" interactors matching shortlabel "+value);
+        }
     }
 
     public Collection<F> getByShortNameLike(String value) {
