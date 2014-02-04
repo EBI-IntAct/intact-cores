@@ -40,9 +40,9 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         super(entityManager, IntactSource.class);
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Source, IntactSource>();
-        this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, SourceAlias.class);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, SourceAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, SourceXref.class);
+        this.aliasSynchronizer = new IntactAliasSynchronizer<SourceAlias>(entityManager, SourceAlias.class);
+        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<SourceAnnotation>(entityManager, SourceAnnotation.class);
+        this.xrefSynchronizer = new IntactXrefSynchronizer<SourceXref>(entityManager, SourceXref.class);
     }
 
     public IntactSourceSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer,
@@ -50,9 +50,9 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         super(entityManager, IntactSource.class);
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Source, IntactSource>();
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, SourceAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, SourceAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, SourceXref.class);
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer<SourceAlias>(entityManager, SourceAlias.class);
+        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<SourceAnnotation>(entityManager, SourceAnnotation.class);
+        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<SourceXref>(entityManager, SourceXref.class);
     }
 
     public IntactSource find(Source term) throws FinderException{

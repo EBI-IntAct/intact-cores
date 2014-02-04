@@ -58,26 +58,4 @@ public class IntactBioactiveEntitySynchronizer extends IntactInteractorBaseSynch
             }
         }
     }
-
-
-    protected void prepareAnnotations(IntactBioactiveEntity intactInteractor) throws FinderException, PersisterException, SynchronizerException {
-        super.prepareAnnotations(intactInteractor);
-        if (intactInteractor.areAnnotationsInitialized()){
-            for (Annotation annot : intactInteractor.getAnnotations()){
-                // we have a checksum
-                if (AnnotationUtils.doesAnnotationHaveTopic(annot, Checksum.SMILE_MI, Checksum.SMILE)
-                        && annot.getValue() != null && intactInteractor.getSmile() == null){
-                     intactInteractor.getChecksums().add(new InteractorChecksum(annot.getTopic(), annot.getValue()));
-                }
-                else if (AnnotationUtils.doesAnnotationHaveTopic(annot, Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY)
-                        && annot.getValue() != null && intactInteractor.getStandardInchiKey() == null){
-                    intactInteractor.getChecksums().add(new InteractorChecksum(annot.getTopic(), annot.getValue()));
-                }
-                else if (AnnotationUtils.doesAnnotationHaveTopic(annot, Checksum.INCHI_MI, Checksum.INCHI)
-                        && annot.getValue() != null && intactInteractor.getStandardInchi() == null){
-                    intactInteractor.getChecksums().add(new InteractorChecksum(annot.getTopic(), annot.getValue()));
-                }
-            }
-        }
-    }
 }

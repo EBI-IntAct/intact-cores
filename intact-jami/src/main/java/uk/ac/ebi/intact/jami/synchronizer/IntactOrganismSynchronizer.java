@@ -43,7 +43,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
         super(entityManager, IntactOrganism.class);
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Organism, IntactOrganism>();
-        this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, OrganismAlias.class);
+        this.aliasSynchronizer = new IntactAliasSynchronizer<OrganismAlias>(entityManager, OrganismAlias.class);
         this.cellTypeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.CELL_TYPE_OBJCLASS);
         this.tissueSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TISSUE_OBJCLASS);
     }
@@ -53,7 +53,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
         super(entityManager, IntactOrganism.class);
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Organism, IntactOrganism>();
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, OrganismAlias.class);
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer<OrganismAlias>(entityManager, OrganismAlias.class);
         this.cellTypeSynchronizer = cellSynchronizer != null ? cellSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.CELL_TYPE_OBJCLASS);
         this.tissueSynchronizer = tissueSynchronizer != null ? tissueSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TISSUE_OBJCLASS);    }
 

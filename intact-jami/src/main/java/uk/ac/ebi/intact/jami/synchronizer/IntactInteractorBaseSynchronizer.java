@@ -48,9 +48,9 @@ implements InteractorFetcher<T>{
         super(entityManager, intactClass);
         // to keep track of persisted cvs
         initialisePersistedObjectMap();
-        this.aliasSynchronizer = new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, InteractorXref.class);
+        this.aliasSynchronizer = new IntactAliasSynchronizer<InteractorAlias>(entityManager, InteractorAlias.class);
+        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<InteractorAnnotation>(entityManager, InteractorAnnotation.class);
+        this.xrefSynchronizer = new IntactXrefSynchronizer<InteractorXref>(entityManager, InteractorXref.class);
 
         this.organismSynchronizer = new IntactOrganismSynchronizer(entityManager);
         this.interactorTypeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTOR_TYPE_OBJCLASS);
@@ -65,9 +65,9 @@ implements InteractorFetcher<T>{
         super(entityManager, intactClass);
         // to keep track of persisted cvs
         initialisePersistedObjectMap();
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, InteractorAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, InteractorAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, InteractorXref.class);
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer<InteractorAlias>(entityManager, InteractorAlias.class);
+        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<InteractorAnnotation>(entityManager, InteractorAnnotation.class);
+        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<InteractorXref>(entityManager, InteractorXref.class);
 
         this.organismSynchronizer = organismSynchronizer != null ? organismSynchronizer : new IntactOrganismSynchronizer(entityManager);
         this.interactorTypeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTOR_TYPE_OBJCLASS);

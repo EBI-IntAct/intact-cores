@@ -1,11 +1,14 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
@@ -24,10 +27,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * IntAct implementation of publication.
@@ -47,7 +47,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private List<String> authors;
     private PublicationIdentifierList identifiers;
     private PublicationXrefList xrefs;
-    private Collection<Annotation> annotations;
+    private PublicationAnnotationList annotations;
     private Collection<Experiment> experiments;
     private CurationDepth curationDepth;
     private Date releasedDate;
@@ -143,6 +143,17 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             this.acRef = newRef;
             this.identifiers.addOnly(acRef);
         }
+    }
+
+    @Column(name = "shortLabel", nullable = false, unique = true)
+    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
+    @NotNull
+    /**
+     * @deprecated the publication shortLabel is deprecated. We should use getPubmedId or getDoi or getIdentifiers
+     */
+    @Deprecated
+    public String getShortLabel() {
+        return shortLabel;
     }
 
     /**
@@ -289,9 +300,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.authors;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationAnnotation.class, fetch = FetchType.EAGER)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(PublicationAnnotation.class)
+    @Transient
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
             initialiseAnnotations();
@@ -468,7 +477,47 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return (imexId != null ? imexId.getId() : (pubmedId != null ? pubmedId.getId() : (doi != null ? doi.getId() : (title != null ? title : "-"))));
     }
 
-    protected void initialiseXrefs(){
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationAnnotation.class, fetch = FetchType.EAGER)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(PublicationAnnotation.class)
+    public Collection<Annotation> getPersistentAnnotations() {
+        if (this.annotations == null){
+            this.annotations = new PublicationAnnotationList(null);
+        }
+        return this.annotations.getWrappedList();
+    }
+
+    @Transient
+    public boolean areXrefsInitialized(){
+        return Hibernate.isInitialized(getPersistentXrefs());
+    }
+
+    @Transient
+    public boolean areAnnotationsInitialized(){
+        return Hibernate.isInitialized(getPersistentAnnotations());
+    }
+
+    @Transient
+    public boolean areExperimentsInitialized(){
+        return Hibernate.isInitialized(getExperiments());
+    }
+
+    @Transient
+    public boolean areLifecycleEventsInitialized(){
+        return Hibernate.isInitialized(getLifecycleEvents());
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationXref.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(PublicationXref.class)
+    public Collection<Xref> getPersistentXrefs() {
+        if (this.persistentXrefs == null){
+            this.persistentXrefs = new PersistentXrefList(null);
+        }
+        return this.persistentXrefs.getWrappedList();
+    }
+
+    private void initialiseXrefs(){
         this.identifiers = new PublicationIdentifierList();
         this.xrefs = new PublicationXrefList();
         if (this.persistentXrefs != null){
@@ -499,15 +548,11 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    protected void initialiseAnnotations(){
-        this.annotations = new ArrayList<Annotation>();
-    }
-
-    protected void initialiseExperiments(){
+    private void initialiseExperiments(){
         this.experiments = new ArrayList<Experiment>();
     }
 
-    protected void processAddedIdentifierEvent(Xref added) {
+    private void processAddedIdentifierEvent(Xref added) {
 
         // the added identifier is pubmed and it is not the current pubmed identifier
         if (pubmedId != added && XrefUtils.isXrefFromDatabase(added, Xref.PUBMED_MI, Xref.PUBMED)){
@@ -547,7 +592,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    protected void processRemovedIdentifierEvent(Xref removed) {
+    private void processRemovedIdentifierEvent(Xref removed) {
         // the removed identifier is pubmed
         if (pubmedId != null && pubmedId.equals(removed)){
             pubmedId = XrefUtils.collectFirstIdentifierWithDatabase(getIdentifiers(), Xref.PUBMED_MI, Xref.PUBMED);
@@ -558,12 +603,12 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    protected void clearPropertiesLinkedToIdentifiers() {
+    private void clearPropertiesLinkedToIdentifiers() {
         pubmedId = null;
         doi = null;
     }
 
-    protected void processAddedXrefEvent(Xref added) {
+    private void processAddedXrefEvent(Xref added) {
 
         // the added identifier is imex and the current imex is not set
         if (imexId == null && XrefUtils.isXrefFromDatabase(added, Xref.IMEX_MI, Xref.IMEX)){
@@ -574,29 +619,19 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    protected void processRemovedXrefEvent(Xref removed) {
+    private void processRemovedXrefEvent(Xref removed) {
         // the removed identifier is pubmed
         if (imexId != null && imexId.equals(removed)){
             imexId = null;
         }
     }
 
-    protected void clearPropertiesLinkedToXrefs() {
+    private void clearPropertiesLinkedToXrefs() {
         imexId = null;
     }
 
     protected void initialiseAuthors(){
         this.authors = new ArrayList<String>();
-    }
-
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationXref.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(PublicationXref.class)
-    private Collection<Xref> getPersistentXrefs() {
-        if (this.persistentXrefs == null){
-            this.persistentXrefs = new PersistentXrefList(null);
-        }
-        return this.persistentXrefs.getWrappedList();
     }
 
     private void setPersistentXrefs(Collection<Xref> persistentXrefs){
@@ -608,19 +643,39 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    @Column(name = "shortLabel", nullable = false, unique = true)
-    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
-    @NotNull
-    /**
-     * @deprecated the publication shortLabel is deprecated. We should use getPubmedId or getDoi or getIdentifiers
-     */
-    @Deprecated
-    private String getShortLabel() {
-        return shortLabel;
+    private void initialiseAnnotations() {
+        this.annotations = new PublicationAnnotationList(null);
+        for (Annotation annot : this.annotations){
+            processAddedAnnotationEvent(annot);
+        }
     }
 
-    private void setAnnotations(Collection<Annotation> annotations) {
-        this.annotations = annotations;
+    private void processAddedAnnotationEvent(Annotation added) {
+        if (added.getValue() != null && getAuthors().isEmpty() && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.AUTHOR_MI, Annotation.AUTHOR)){
+            if (added.getValue().contains(", ")){
+                getAuthors().addAll(Arrays.asList(added.getValue().split(", ")));
+            }
+            else{
+                getAuthors().add(added.getValue());
+            }
+        }
+    }
+
+    private void processRemovedAnnotationEvent(Annotation removed) {
+        if (!getAuthors().isEmpty() && AnnotationUtils.doesAnnotationHaveTopic(removed, Annotation.AUTHOR_MI, Annotation.AUTHOR)){
+            String author = StringUtils.join(getAuthors(), ", ");
+            if (author.equalsIgnoreCase(removed.getValue())){
+                getAuthors().clear();
+            }
+        }
+    }
+
+    protected void clearPropertiesLinkedToAnnotations() {
+        getAuthors().clear();
+    }
+
+    private void setPersistentAnnotations(Collection<Annotation> annotations) {
+        this.annotations = new PublicationAnnotationList(annotations);
     }
 
     private void setExperiments(Collection<Experiment> experiments) {
@@ -689,21 +744,79 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
         @Override
         protected boolean needToPreProcessElementToAdd(Xref added) {
-            if (!(added instanceof PublicationXref)){
-                return true;
-            }
-            else{
-                PublicationXref termXref = (PublicationXref)added;
-                if (termXref.getParent() != null && termXref.getParent() != this){
-                    return true;
-                }
-            }
             return false;
         }
 
         @Override
         protected Xref processOrWrapElementToAdd(Xref added) {
-            return new PublicationXref(added.getDatabase(), added.getId(), added.getVersion(), added.getQualifier());
+            return added;
+        }
+    }
+
+    private class PublicationAnnotationList extends AbstractCollectionWrapper<Annotation> {
+        public PublicationAnnotationList(Collection<Annotation> annots){
+            super(annots);
+        }
+
+        @Override
+        public boolean add(Annotation xref) {
+            if(super.add(xref)){
+                processAddedAnnotationEvent(xref);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            if (super.remove(o)){
+                processRemovedAnnotationEvent((Annotation)o);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            boolean hasChanged = false;
+            for (Object annot : c){
+                if (remove(annot)){
+                    hasChanged = true;
+                }
+            }
+            return hasChanged;
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            List<Annotation> existingObject = new ArrayList<Annotation>(this);
+
+            boolean removed = false;
+            for (Annotation o : existingObject){
+                if (!c.contains(o)){
+                    if (remove(o)){
+                        removed = true;
+                    }
+                }
+            }
+
+            return removed;
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+            clearPropertiesLinkedToAnnotations();
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToAdd(Annotation added) {
+            return false;
+        }
+
+        @Override
+        protected Annotation processOrWrapElementToAdd(Annotation added) {
+            return added;
         }
     }
 }

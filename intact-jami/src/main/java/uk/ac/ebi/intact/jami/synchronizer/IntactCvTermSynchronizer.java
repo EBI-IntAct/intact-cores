@@ -5,15 +5,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
-import psidev.psi.mi.jami.bridges.fetcher.OntologyTermFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
-import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
+import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
+import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.utils.IntactCvTermComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -22,7 +23,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.regex.Matcher;
 
 /**
  * Default synchronizer for cv terms
@@ -64,9 +64,9 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         this.objClass = null;
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer(entityManager, CvTermAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer(entityManager, CvTermAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer(entityManager, CvTermXref.class);
+        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer<CvTermAlias>(entityManager, CvTermAlias.class);
+        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<CvTermAnnotation>(entityManager, CvTermAnnotation.class);
+        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<CvTermXref>(entityManager, CvTermXref.class);
     }
 
     public IntactCvTermSynchronizer(EntityManager entityManager, String objClass,
@@ -367,7 +367,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
                 if (institution != null){
                     SequenceManager seqManager = ApplicationContextProvider.getBean(SequenceManager.class);
                     if (seqManager == null){
-                        throw new SynchronizerException("The Cv identifier listener needs a sequence manager to automatically generate a cv identifier for backward compatibility. No sequence manager bean " +
+                        throw new SynchronizerException("The Cv identifier synchronizer needs a sequence manager to automatically generate a cv identifier for backward compatibility. No sequence manager bean " +
                                 "was found in the spring context.");
                     }
                     seqManager.createSequenceIfNotExists(IntactUtils.CV_LOCAL_SEQ, 1);
