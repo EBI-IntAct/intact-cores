@@ -5,7 +5,6 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
-import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.user.User;
 
 import javax.persistence.*;
@@ -44,11 +43,11 @@ public class ComplexLifecycleEvent extends AbstractLifecycleEvent {
     @JoinColumn( name = "complex_ac", referencedColumnName = "ac")
     @ForeignKey(name="FK_LIFECYCLE_EVENT_COMPLEX")
     @Target(IntactComplex.class)
-    public Complex getComplex() {
+    public Complex getParent() {
         return complex;
     }
 
-    public void setComplex(Complex complex) {
+    public void setParent(Complex complex) {
         this.complex = complex;
     }
 }

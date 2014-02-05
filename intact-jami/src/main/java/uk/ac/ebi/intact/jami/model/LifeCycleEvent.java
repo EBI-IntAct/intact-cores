@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.model;
 
 import psidev.psi.mi.jami.model.CvTerm;
+import uk.ac.ebi.intact.jami.model.audit.Auditable;
 import uk.ac.ebi.intact.jami.model.user.User;
 
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.Date;
  * @since <pre>21/01/14</pre>
  */
 
-public interface LifeCycleEvent {
+public interface LifeCycleEvent extends Auditable{
 
     public static String NEW_STATUS = "new";
 

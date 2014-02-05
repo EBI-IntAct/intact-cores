@@ -1,11 +1,9 @@
 package uk.ac.ebi.intact.jami.model;
 
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Publication;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.user.User;
 
@@ -45,11 +43,11 @@ public class PublicationLifecycleEvent extends AbstractLifecycleEvent {
     @JoinColumn( name = "publication_ac", referencedColumnName = "ac")
     @ForeignKey(name="FK_LIFECYCLE_EVENT_PUBLICATION")
     @Target(IntactPublication.class)
-    public Publication getPublication() {
+    public Publication getParent() {
         return publication;
     }
 
-    public void setPublication( Publication publication ) {
+    public void setParent( Publication publication ) {
         this.publication = publication;
     }
 }
