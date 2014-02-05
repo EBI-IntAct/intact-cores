@@ -1,16 +1,14 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Interactor;
-import psidev.psi.mi.jami.model.Publication;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.dao.InteractorDao;
 import uk.ac.ebi.intact.jami.dao.PublicationDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.IntactInteractorBaseSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.IntactPublicationSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -198,27 +196,27 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         return query.getResultList();
     }
 
-    public Collection<F> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                "join f.persistentXrefs as x " +
+    public Collection<IntactPublication> getByXref(String primaryId) {
+        Query query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                "join p.persistentXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
         return query.getResultList();
     }
 
-    public Collection<F> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                "join f.persistentXrefs as x " +
+    public Collection<IntactPublication> getByXrefLike(String primaryId) {
+        Query query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                "join p.persistentXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
         return query.getResultList();
     }
 
-    public Collection<F> getByXref(String dbName, String dbMI, String primaryId) {
+    public Collection<IntactPublication> getByXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -234,8 +232,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and x.id = :primary");
@@ -245,11 +243,11 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         return query.getResultList();
     }
 
-    public Collection<F> getByXrefLike(String dbName, String dbMI, String primaryId) {
+    public Collection<IntactPublication> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -265,8 +263,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and upper(x.id) like :primary");
@@ -276,12 +274,12 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         return query.getResultList();
     }
 
-    public Collection<F> getByXref(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
+    public Collection<IntactPublication> getByXref(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -298,8 +296,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -323,8 +321,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -345,8 +343,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
                         "and x.qualifier is null " +
@@ -355,8 +353,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -375,8 +373,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +
@@ -390,12 +388,12 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         return query.getResultList();
     }
 
-    public Collection<F> getByXrefLike(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
+    public Collection<IntactPublication> getByXrefLike(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -412,8 +410,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -437,8 +435,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -459,8 +457,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p " +
+                        "join p.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
                         "and x.qualifier is null " +
@@ -469,8 +467,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -489,8 +487,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                        "join p.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +
@@ -504,11 +502,11 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         return query.getResultList();
     }
 
-    public Collection<F> getByAnnotationTopic(String topicName, String topicMI) {
+    public Collection<IntactPublication> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentAnnotations as a " +
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -522,8 +520,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentAnnotations as a " +
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
             query.setParameter("topicName", topicName);
@@ -531,11 +529,11 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         return query.getResultList();
     }
 
-    public Collection<F> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
+    public Collection<IntactPublication> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentAnnotations as a " +
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -552,8 +550,8 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
             }
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentAnnotations as a " +
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
             query.setParameter("topicName", topicName);
@@ -564,139 +562,111 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         return query.getResultList();
     }
 
-    public Collection<F> getByAliasName(String name) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                "join f.persistentAliases as s " +
-                "where s.name = :name");
-        query.setParameter("name", name);
-        return query.getResultList();
-    }
-
-    public Collection<F> getByAliasNameLike(String name) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
-                "join f.persistentAliases as s " +
-                "where upper(s.name) = :name");
-        query.setParameter("name", "%"+name.toUpperCase()+"%");
-        return query.getResultList();
-    }
-
-    public Collection<F> getByAliasTypeAndName(String typeName, String typeMI, String name) {
+    public Collection<IntactPublication> getByCurationDepth(CurationDepth depth, int first, int max){
         Query query;
-        if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
-                    "join f.persistentAliases as s " +
-                    "where s.type is null " +
-                    "and s.name = :name");
-            query.setParameter("name", name);
-        }
-        else if (typeMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
-                    "join f.persistentAliases as s " +
-                    "join s.type as t " +
-                    "join t.persistentXrefs as xref " +
-                    "join xref.database as d " +
-                    "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psimi " +
-                    "and xref.id = :mi " +
-                    "and s.name = :name");
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", typeMI);
-            query.setParameter("name", name);
+        if (depth != null){
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "where p.curationDepth is null or p.curationDepth = :unspecified");
+            query.setParameter("unspecified", CurationDepth.undefined);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
-                    "join f.persistentAliases as s " +
-                    "join s.type as t " +
-                    "where t.shortName = :typeName " +
-                    "and s.name = :name");
-            query.setParameter("typeName", typeName);
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "where p.curationDepth = :depth");
+            query.setParameter("depth", depth);
+        }
+        query.setFirstResult(first);
+        query.setMaxResults(max);
+        return query.getResultList();
+    }
+
+    public Collection<IntactPublication> getByLifecycleEvent(String evtName, int first, int max){
+        Query query;
+        if (evtName != null){
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "where p.lifecycleEvents is empty");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.lifecycleEvents as l "  +
+                    "join l.event as e "  +
+                    "where e.shortName = :name");
+            query.setParameter("name", evtName);
+        }
+        query.setFirstResult(first);
+        query.setMaxResults(max);
+        return query.getResultList();
+    }
+
+    public Collection<IntactPublication> getByStatus(String statusName, int first, int max){
+        Query query;
+        if (statusName != null){
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "where p.status is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.status as s "  +
+                    "where s.shortName = :name");
+            query.setParameter("name", statusName);
+        }
+        query.setFirstResult(first);
+        query.setMaxResults(max);
+        return query.getResultList();
+    }
+
+    public Collection<IntactPublication> getByCurator(String login, int first, int max){
+        Query query;
+        if (login != null){
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "where p.currentOwner is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.currentOwner as o "  +
+                    "where o.login = :name");
+            query.setParameter("name", login);
+        }
+        query.setFirstResult(first);
+        query.setMaxResults(max);
+        return query.getResultList();
+    }
+
+    public Collection<IntactPublication> getByReviewer(String login, int first, int max){
+        Query query;
+        if (login != null){
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "where p.currentReviewer is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.currentReviewer as c "  +
+                    "where c.login = :name");
+            query.setParameter("name", login);
+        }
+        query.setFirstResult(first);
+        query.setMaxResults(max);
+        return query.getResultList();
+    }
+
+    public Collection<IntactPublication> getBySource(String name, int first, int max){
+        Query query;
+        if (name != null){
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "where p.source is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p "  +
+                    "join p.source as s "  +
+                    "where s.shortName = :name");
             query.setParameter("name", name);
         }
-        return query.getResultList();
-    }
-
-    public Collection<F> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
-        Query query;
-        if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
-                    "join f.persistentAliases as s " +
-                    "where s.type is null " +
-                    "and upper(s.name) like :name");
-            query.setParameter("name", "%"+name.toUpperCase()+"%");
-        }
-        else if (typeMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
-                    "join f.persistentAliases as s " +
-                    "join s.type as t " +
-                    "join t.persistentXrefs as xref " +
-                    "join xref.database as d " +
-                    "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psimi " +
-                    "and xref.id = :mi " +
-                    "and upper(s.name) like :name");
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", typeMI);
-            query.setParameter("name", "%"+name.toUpperCase()+"%");
-        }
-        else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.persistentAliases as s " +
-                    "join s.type as t " +
-                    "where t.shortName = :typeName " +
-                    "and upper(s.name) like :name");
-            query.setParameter("typeName", typeName);
-            query.setParameter("name", "%"+name.toUpperCase()+"%");
-        }
-        return query.getResultList();
-    }
-
-    public Collection<F> getByInteractorType(String typeName, String typeMI) {
-        Query query;
-        if (typeMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.interactorType as t " +
-                    "join t.persistentXrefs as xref " +
-                    "join xref.database as d " +
-                    "join xref.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psimi " +
-                    "and xref.id = :mi");
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", typeMI);
-        }
-        else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.interactorType as t " +
-                    "where t.shortName = :typeName");
-            query.setParameter("typeName", typeName);
-        }
-        return query.getResultList();
-    }
-
-    public Collection<F> getByTaxId(int taxid) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                "join f.organism as o " +
-                "where o.persistentTaxid = :taxid");
-        query.setParameter("taxid",Integer.toString(taxid));
+        query.setFirstResult(first);
+        query.setMaxResults(max);
         return query.getResultList();
     }
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactInteractorBaseSynchronizer<T, F>(getEntityManager(), getEntityClass()));
-    }
-
-    @Override
-    public void setEntityClass(Class<F> entityClass) {
-        super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        super.setDbSynchronizer(new IntactPublicationSynchronizer(getEntityManager()));
     }
 }

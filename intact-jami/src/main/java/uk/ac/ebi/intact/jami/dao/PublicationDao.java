@@ -35,8 +35,6 @@ public interface PublicationDao extends IntactBaseDao<IntactPublication> {
 
     public Collection<IntactPublication> getByReleasedDate(Date value);
 
-    public Collection<IntactPublication> getByAuthor(String author);
-
     public Collection<IntactPublication> getByXref(String primaryId);
 
     public Collection<IntactPublication> getByXrefLike(String primaryId);
@@ -53,5 +51,15 @@ public interface PublicationDao extends IntactBaseDao<IntactPublication> {
 
     public Collection<IntactPublication> getByAnnotationTopicAndValue(String topicName, String topicMI, String value);
 
-    public Collection<IntactPublication> getByCurationDepth(CurationDepth depth, int firs, int max);
+    public Collection<IntactPublication> getByCurationDepth(CurationDepth depth, int first, int max);
+
+    public Collection<IntactPublication> getByLifecycleEvent(String evtName, int first, int max);
+
+    public Collection<IntactPublication> getByStatus(String statusName, int first, int max);
+
+    public Collection<IntactPublication> getByCurator(String login, int first, int max);
+
+    public Collection<IntactPublication> getByReviewer(String login, int first, int max);
+
+    public Collection<IntactPublication> getBySource(String name, int first, int max);
 }
