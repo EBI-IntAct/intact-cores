@@ -4,6 +4,7 @@ import psidev.psi.mi.jami.model.CurationDepth;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Publication DAO
@@ -20,6 +21,8 @@ public interface PublicationDao extends IntactBaseDao<IntactPublication> {
 
     public IntactPublication getByDOI(String value);
 
+    public IntactPublication getByIMEx(String value);
+
     public Collection<IntactPublication> getByTitle(String value);
 
     public Collection<IntactPublication> getByTitleLike(String value);
@@ -28,11 +31,11 @@ public interface PublicationDao extends IntactBaseDao<IntactPublication> {
 
     public Collection<IntactPublication> getByJournalLike(String value);
 
-    public Collection<IntactPublication> getByPublicationDate(String value);
+    public Collection<IntactPublication> getByPublicationDate(Date value);
+
+    public Collection<IntactPublication> getByReleasedDate(Date value);
 
     public Collection<IntactPublication> getByAuthor(String author);
-
-    public Collection<IntactPublication> getByAuthorLike(String author);
 
     public Collection<IntactPublication> getByXref(String primaryId);
 

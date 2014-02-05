@@ -2,46 +2,59 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Interactor;
+import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.dao.CvTermDao;
+import uk.ac.ebi.intact.jami.dao.InteractorDao;
+import uk.ac.ebi.intact.jami.dao.PublicationDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.synchronizer.IntactInteractorBaseSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Implementation of Cv dao
+ * Implementation of publication dao
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
 @Repository
-public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> implements CvTermDao {
+public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, IntactPublication> implements PublicationDao {
 
-    public CvTermDaoImpl() {
-        super(IntactCvTerm.class);
+    public PublicationDaoImpl() {
+        super(IntactPublication.class);
     }
 
-    public CvTermDaoImpl(EntityManager entityManager) {
-        super(IntactCvTerm.class, entityManager);
+    public PublicationDaoImpl(EntityManager entityManager) {
+        super(IntactPublication.class, entityManager);
     }
 
-    public IntactCvTerm getByAc(String ac) {
+    public IntactPublication getByAc(String ac) {
         return getEntityManager().find(getEntityClass(), ac);
     }
 
-    public IntactCvTerm getByShortName(String value, String objClass) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "where cv.shortName = :name and cv.objClass = :objclass ");
-        query.setParameter("name",value);
-        query.setParameter("objclass",objClass);
-
-        List<IntactCvTerm> results = query.getResultList();
+    public IntactPublication getByPubmedId(String value) {
+        Query query = getEntityManager().createQuery("select p from IntactPublication p " +
+                "join p.persistentXrefs as x " +
+                "join x.database as dat " +
+                "join x.qualifier as qual " +
+                "where dat.shortName = :pubmed "+
+                "and (qual.shortName = :identity or qual.shortName = :secondaryAc or qual.shortName = :primary) " +
+                "and x.id = :id");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("primary", Xref.PRIMARY_MI);
+        query.setParameter("pubmed", Xref.PUBMED);
+        query.setParameter("id", value);
+        List<IntactPublication> results = query.getResultList();
         if (results.size() == 1){
             return results.iterator().next();
         }
@@ -49,45 +62,163 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             return null;
         }
         else{
-            throw new NonUniqueResultException("We found "+results.size()+" cv terms matching shortlabel "+value+", objclass "+objClass);
+            throw new NonUniqueResultException("We found "+results.size()+" publications matching pubmed identifier "+value);
         }
     }
 
-    public Collection<IntactCvTerm> getByShortName(String value) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "where cv.shortName = :name");
-        query.setParameter("name",value);
+    public IntactPublication getByDOI(String value) {
+        Query query = getEntityManager().createQuery("select p from IntactPublication p " +
+                "join p.persistentXrefs as x " +
+                "join x.database as dat " +
+                "join x.qualifier as qual " +
+                "where dat.shortName = :doi "+
+                "and (qual.shortName = :identity or qual.shortName = :secondaryAc or qual.shortName = :primary) " +
+                "and x.id = :id");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("primary", Xref.PRIMARY_MI);
+        query.setParameter("doi", Xref.DOI);
+        query.setParameter("id", value);
+        List<IntactPublication> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" publications matching DOI "+value);
+        }
+    }
+
+    public IntactPublication getByIMEx(String value) {
+        Query query = getEntityManager().createQuery("select p from IntactPublication p " +
+                "join p.persistentXrefs as x " +
+                "join x.database as dat " +
+                "join x.qualifier as qual " +
+                "where dat.shortName = :imex "+
+                "and qual.shortName = :primary " +
+                "and x.id = :id");
+        query.setParameter("primary", Xref.IMEX_PRIMARY);
+        query.setParameter("imex", Xref.IMEX);
+        query.setParameter("id", value);
+        List<IntactPublication> results = query.getResultList();
+        if (results.size() == 1){
+            return results.iterator().next();
+        }
+        else if (results.isEmpty()){
+            return null;
+        }
+        else{
+            throw new NonUniqueResultException("We found "+results.size()+" publications matching IMEx "+value);
+        }
+    }
+
+    public Collection<IntactPublication> getByTitle(String value) {
+        Query query;
+        if (value == null){
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.title is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.title = :title");
+            query.setParameter("title",value);
+        }
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByShortNameLike(String value) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "where upper(cv.shortName) like :name");
-        query.setParameter("name","%"+value.toUpperCase()+"%");
+    public Collection<IntactPublication> getByTitleLike(String value) {
+        Query query;
+        if (value == null){
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.title is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p  " +
+                    "where upper(p.title) like :title");
+            query.setParameter("title","%"+value.toUpperCase()+"%");
+        }
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
+    public Collection<IntactPublication> getByJournal(String value) {
+        Query query;
+        if (value == null){
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.journal is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.journal = :journal");
+            query.setParameter("journal",value);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactPublication> getByJournalLike(String value) {
+        Query query;
+        if (value == null){
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.journal is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p  " +
+                    "where upper(p.journal) like :journal");
+            query.setParameter("journal","%"+value.toUpperCase()+"%");
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactPublication> getByPublicationDate(Date date) {
+        Query query;
+        if (date == null){
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.publicationDate is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.publicationDate = :datePub");
+            query.setParameter("datePub",date);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactPublication> getByReleasedDate(Date date) {
+        Query query;
+        if (date == null){
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.releasedDate is null");
+        }
+        else{
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.releasedDate = :datePub");
+            query.setParameter("datePub",date);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<F> getByXref(String primaryId) {
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                "join f.persistentXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
+    public Collection<F> getByXrefLike(String primaryId) {
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                "join f.persistentXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByXref(String dbName, String dbMI, String primaryId) {
+    public Collection<F> getByXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -103,8 +234,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and x.id = :primary");
@@ -114,11 +245,11 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByXrefLike(String dbName, String dbMI, String primaryId) {
+    public Collection<F> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -134,8 +265,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and upper(x.id) like :primary");
@@ -145,12 +276,12 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByXref(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
+    public Collection<F> getByXref(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -167,8 +298,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -192,8 +323,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -214,8 +345,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
                         "and x.qualifier is null " +
@@ -224,8 +355,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -244,8 +375,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +
@@ -259,12 +390,12 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByXrefLike(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
+    public Collection<F> getByXrefLike(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -281,8 +412,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -306,8 +437,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -328,8 +459,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+                        "join f.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
                         "and x.qualifier is null " +
@@ -338,8 +469,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -358,8 +489,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                        "join cv.persistentXrefs as x " +
+                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                        "join f.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +
@@ -373,11 +504,11 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByAnnotationTopic(String topicName, String topicMI) {
+    public Collection<F> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.annotations as a " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -391,8 +522,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.annotations as a " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
             query.setParameter("topicName", topicName);
@@ -400,11 +531,11 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
+    public Collection<F> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.annotations as a " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -421,8 +552,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             }
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.annotations as a " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
             query.setParameter("topicName", topicName);
@@ -433,34 +564,34 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByAliasName(String name) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.synonyms as s " +
+    public Collection<F> getByAliasName(String name) {
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                "join f.persistentAliases as s " +
                 "where s.name = :name");
         query.setParameter("name", name);
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByAliasNameLike(String name) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.synonyms as s " +
+    public Collection<F> getByAliasNameLike(String name) {
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+                "join f.persistentAliases as s " +
                 "where upper(s.name) = :name");
         query.setParameter("name", "%"+name.toUpperCase()+"%");
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByAliasTypeAndName(String typeName, String typeMI, String name) {
+    public Collection<F> getByAliasTypeAndName(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.synonyms as s " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+                    "join f.persistentAliases as s " +
                     "where s.type is null " +
                     "and s.name = :name");
             query.setParameter("name", name);
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.synonyms as s " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+                    "join f.persistentAliases as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -476,8 +607,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("name", name);
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.synonyms as s " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+                    "join f.persistentAliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
                     "and s.name = :name");
@@ -487,18 +618,18 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
+    public Collection<F> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.synonyms as s " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+                    "join f.persistentAliases as s " +
                     "where s.type is null " +
                     "and upper(s.name) like :name");
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.synonyms as s " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+                    "join f.persistentAliases as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -514,8 +645,8 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "join cv.synonyms as s " +
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.persistentAliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
                     "and upper(s.name) like :name");
@@ -525,159 +656,47 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByDefinition(String des) {
+    public Collection<F> getByInteractorType(String typeName, String typeMI) {
         Query query;
-        if (des == null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where cv.definition is null");
+        if (typeMI != null){
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.interactorType as t " +
+                    "join t.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", typeMI);
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where cv.definition = :def ");
-            query.setParameter("def", des);
+            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                    "join f.interactorType as t " +
+                    "where t.shortName = :typeName");
+            query.setParameter("typeName", typeName);
         }
         return query.getResultList();
     }
 
-    public Collection<IntactCvTerm> getByDescriptionLike(String des) {
-        Query query;
-        if (des == null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where cv.definition is null");
-        }
-        else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where upper(cv.definition) like :def ");
-            query.setParameter("def", "%"+des.toUpperCase()+"%");
-        }
+    public Collection<F> getByTaxId(int taxid) {
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                "join f.organism as o " +
+                "where o.persistentTaxid = :taxid");
+        query.setParameter("taxid",Integer.toString(taxid));
         return query.getResultList();
-    }
-
-    public Collection<IntactCvTerm> getByMIIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
-                "join x.database as dat " +
-                "join x.qualifier as qual " +
-                "where (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
-                "and dat.shortName = :psimi " +
-                "and x.id = :primary");
-        query.setParameter("identity", Xref.IDENTITY);
-        query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("psimi", CvTerm.PSI_MI);
-        query.setParameter("primary", primaryId);
-        return query.getResultList();
-    }
-
-    public Collection<IntactCvTerm> getByMODIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
-                "join x.database as dat " +
-                "join x.qualifier as qual " +
-                "where (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
-                "and dat.shortName = :psimod " +
-                "and x.id = :primary");
-        query.setParameter("identity", Xref.IDENTITY);
-        query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("psimod", CvTerm.PSI_MOD);
-        query.setParameter("primary", primaryId);
-        return query.getResultList();
-    }
-
-    public Collection<IntactCvTerm> getByPARIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
-                "join x.database as dat " +
-                "join x.qualifier as qual " +
-                "where dat.shortName = :par "+
-                "and (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
-                "and x.id = :primary");
-        query.setParameter("identity", Xref.IDENTITY);
-        query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("par", CvTerm.PSI_PAR);
-        query.setParameter("primary", primaryId);
-        return query.getResultList();
-    }
-
-    public IntactCvTerm getByMIIdentifier(String primaryId, String objClass) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
-                "join x.database as dat " +
-                "join x.qualifier as qual " +
-                "where (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
-                "and dat.shortName = :psimi " +
-                "and x.id = :primary " +
-                "and cv.objClass = :objclass");
-        query.setParameter("identity", Xref.IDENTITY);
-        query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("psimi", CvTerm.PSI_MI);
-        query.setParameter("primary", primaryId);
-        query.setParameter("objclass", objClass);
-        List<IntactCvTerm> results = query.getResultList();
-        if (results.size() == 1){
-            return results.iterator().next();
-        }
-        else if (results.isEmpty()){
-            return null;
-        }
-        else{
-            throw new NonUniqueResultException("We found "+results.size()+" cv terms matching MI identifier "+primaryId+", objclass "+objClass);
-        }
-    }
-
-    public IntactCvTerm getByMODIdentifier(String primaryId, String objClass) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
-                "join x.database as dat " +
-                "join x.qualifier as qual " +
-                "where (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
-                "and dat.shortName = :psimod " +
-                "and x.id = :primary " +
-                "and cv.objClass = :objclass");
-        query.setParameter("identity", Xref.IDENTITY);
-        query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("psimod", CvTerm.PSI_MOD);
-        query.setParameter("primary", primaryId);
-        query.setParameter("objclass", objClass);
-        List<IntactCvTerm> results = query.getResultList();
-        if (results.size() == 1){
-            return results.iterator().next();
-        }
-        else if (results.isEmpty()){
-            return null;
-        }
-        else{
-            throw new NonUniqueResultException("We found "+results.size()+" cv terms matching MOD identifier "+primaryId+", objclass "+objClass);
-        }
-    }
-
-    public IntactCvTerm getByPARIdentifier(String primaryId, String objClass) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
-                "join x.database as dat " +
-                "join x.qualifier as qual " +
-                "where dat.shortName = :par "+
-                "and (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
-                "and x.id = :primary " +
-                "and cv.objClass = :objclass");
-        query.setParameter("identity", Xref.IDENTITY);
-        query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("par", CvTerm.PSI_PAR);
-        query.setParameter("primary", primaryId);
-        query.setParameter("objclass", objClass);
-        List<IntactCvTerm> results = query.getResultList();
-        if (results.size() == 1){
-            return results.iterator().next();
-        }
-        else if (results.isEmpty()){
-            return null;
-        }
-        else{
-            throw new NonUniqueResultException("We found "+results.size()+" cv terms matching PAR identifier "+primaryId+", objclass "+objClass);
-        }
     }
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactCvTermSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new IntactInteractorBaseSynchronizer<T, F>(getEntityManager(), getEntityClass()));
+    }
+
+    @Override
+    public void setEntityClass(Class<F> entityClass) {
+        super.setEntityClass(entityClass);
+        initialiseDbSynchronizer();
     }
 }

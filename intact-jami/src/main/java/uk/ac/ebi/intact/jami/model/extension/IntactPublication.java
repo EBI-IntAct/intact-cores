@@ -328,6 +328,9 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     @Enumerated(EnumType.STRING)
     @Column(name = "curation_depth", length = IntactUtils.MAX_SHORT_LABEL_LEN)
     public CurationDepth getCurationDepth() {
+        if (this.curationDepth == null){
+            this.curationDepth = CurationDepth.undefined;
+        }
         return this.curationDepth;
     }
 

@@ -14,6 +14,9 @@ import java.util.Date;
  */
 
 public interface LifeCycleEvent {
+
+    public static String NEW_STATUS = "new";
+
     public CvTerm getEvent();
 
     public void setEvent( CvTerm event );

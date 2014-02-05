@@ -59,7 +59,7 @@ public class IntactUtils {
     public static final String CELL_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvCellType";
     public static final String TISSUE_OBJCLASS ="uk.ac.ebi.intact.model.CvTissue";
     public static final String FEATURE_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvFeatureType";
-    public static final String INTERAQCTOR_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractorType";
+    public static final String PUBLICATION_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvPublicationStatus";
 
     public static final String RELEASED_STATUS = "released";
 
@@ -106,6 +106,10 @@ public class IntactUtils {
             }
         }
         return 0;
+    }
+
+    public static IntactCvTerm createLifecycleStatus(String name){
+        return new IntactCvTerm(name, (String)null, (String)null, PUBLICATION_STATUS_OBJCLASS);
     }
 
     public static IntactCvTerm createMIInteractorType(String name, String MI){

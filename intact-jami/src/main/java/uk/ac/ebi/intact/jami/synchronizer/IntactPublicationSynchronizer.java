@@ -16,6 +16,7 @@ import uk.ac.ebi.intact.jami.merger.IntactPublicationMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -38,6 +39,9 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     private IntactDbSynchronizer<Annotation, PublicationAnnotation> annotationSynchronizer;
     private IntactDbSynchronizer<Xref, PublicationXref> xrefSynchronizer;
+    private IntactDbSynchronizer<Source, IntactSource> sourceSynchronizer;
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer;
+    private IntactDbSynchronizer<User, User> userSynchronizer;
 
     private IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer;
     private IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> lifecycleEventSynchronizer;
@@ -50,21 +54,29 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         this.persistedObjects = new TreeMap<Publication, IntactPublication>(new UnambiguousPublicationComparator());
         this.annotationSynchronizer = new IntactAnnotationsSynchronizer<PublicationAnnotation>(entityManager, PublicationAnnotation.class);
         this.xrefSynchronizer = new IntactXrefSynchronizer<PublicationXref>(entityManager, PublicationXref.class);
+        this.sourceSynchronizer = new IntactSourceSynchronizer(entityManager);
+        this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
 
         // TODO experiment synchronizer
         // TODO lifecycle synchronizer
+        // TODO user synchronizer
     }
 
     public IntactPublicationSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Experiment, IntactExperiment> expSynchronizer,
-                                         IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> lifecycleEventSynchronizer,
+                                         IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer, IntactDbSynchronizer<User, User> userSynchronizer,
+                                         IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> lifecycleEventSynchronizer, IntactDbSynchronizer<Source, IntactSource> sourceSynchronizer,
                                          IntactDbSynchronizer<Annotation, PublicationAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, PublicationXref> xrefSynchronizer){
         super(entityManager, IntactPublication.class);
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<Publication, IntactPublication>(new UnambiguousPublicationComparator());
         this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<PublicationAnnotation>(entityManager, PublicationAnnotation.class);
         this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<PublicationXref>(entityManager, PublicationXref.class);
+        this.sourceSynchronizer = sourceSynchronizer != null ? sourceSynchronizer : new IntactSourceSynchronizer(entityManager);
+        this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
+
         // TODO experiment synchronizer
         // TODO lifecycle synchronizer
+        // TODO user synchronizer
     }
 
     public IntactPublication find(Publication publication) throws FinderException {
@@ -151,14 +163,37 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         preparePublicationAuthors(intactPublication);
         // then check curation depth
         prepareCurationDepth(intactPublication);
+        // then check source
+        prepareSource(intactPublication);
         // then check annotations
         prepareAnnotations(intactPublication);
         // then check xrefs
         prepareXrefs(intactPublication);
         // then check experiments
         prepareExperiments(intactPublication);
+        // then prepare users
+        prepareStatusAndCurators(intactPublication);
         // then check publication lifecycle
         prepareLifeCycleEvents(intactPublication);
+    }
+
+    private void prepareStatusAndCurators(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
+        // first the status
+        CvTerm status = intactPublication.getStatus() != null ? intactPublication.getStatus() : IntactUtils.createLifecycleStatus(LifeCycleEvent.NEW_STATUS);
+        intactPublication.setStatus(this.statusSynchronizer.synchronize(status, true));
+
+        // then curator
+        User curator = intactPublication.getCurrentOwner();
+        // do not persist user if not there
+        if (curator != null){
+            intactPublication.setCurrentOwner(this.userSynchronizer.synchronize(curator, false));
+        }
+
+        // then reviewer
+        User reviewer = intactPublication.getCurrentReviewer();
+        if (reviewer != null){
+            intactPublication.setCurrentReviewer(this.userSynchronizer.synchronize(reviewer, false));
+        }
     }
 
     public Publication fetchByIdentifier(String identifier, String source) throws BridgeFailedException {
@@ -311,6 +346,13 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         IntactPublication pub = new IntactPublication();
         PublicationCloner.copyAndOverridePublicationPropertiesAndExperiments(object, pub);
         return pub;
+    }
+
+    protected void prepareSource(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
+        Source source = intactPublication.getSource();
+        if (source != null){
+            intactPublication.setSource(this.sourceSynchronizer.synchronize(source, true));
+        }
     }
 
     protected void prepareLifeCycleEvents(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {

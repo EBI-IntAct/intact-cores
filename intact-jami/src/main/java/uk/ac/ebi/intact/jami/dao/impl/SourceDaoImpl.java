@@ -521,25 +521,13 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         Query query = getEntityManager().createQuery("select s from IntactSource s " +
                 "join s.persistentXrefs as x " +
                 "join x.database as dat " +
-                "join dat.persistentXrefs as xref " +
                 "join x.qualifier as qual " +
-                "join qual.persistentXrefs as xref2 " +
-                "join xref.database as d " +
-                "join xref.qualifier as q " +
-                "join xref2.database as d2 " +
-                "join xref2.qualifier as q2 " +
-                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                "and d.shortName = :psimi " +
-                "and xref.id = :mi "+
-                "and (q2.shortName = :identity or q2.shortName = :secondaryAc) " +
-                "and d2.shortName = :psimi " +
-                "and xref2.id = :mi2 " +
+                "where (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
+                "and dat.shortName = :psimi " +
                 "and x.id = :primary");
         query.setParameter("identity", Xref.IDENTITY);
         query.setParameter("secondaryAc", Xref.SECONDARY);
         query.setParameter("psimi", CvTerm.PSI_MI);
-        query.setParameter("mi", CvTerm.PSI_MI_MI);
-        query.setParameter("mi2", Xref.IDENTITY_MI);
         query.setParameter("primary", primaryId);
         List<IntactSource> results = query.getResultList();
         if (results.size() == 1){
@@ -558,19 +546,12 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 "join s.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
-                "join qual.persistentXrefs as xref2 " +
-                "join xref2.database as d2 " +
-                "join xref2.qualifier as q2 " +
                 "where dat.shortName = :par "+
-                "and (q2.shortName = :identity or q2.shortName = :secondaryAc) " +
-                "and d2.shortName = :psimi " +
-                "and xref2.id = :mi2 " +
+                "and (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
                 "and x.id = :primary");
         query.setParameter("identity", Xref.IDENTITY);
         query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("psimi", CvTerm.PSI_MI);
         query.setParameter("par", CvTerm.PSI_PAR);
-        query.setParameter("mi2", Xref.IDENTITY_MI);
         query.setParameter("primary", primaryId);
         List<IntactSource> results = query.getResultList();
         if (results.size() == 1){
