@@ -1,11 +1,14 @@
 package uk.ac.ebi.intact.jami.model.user;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.*;
 
 /**
@@ -53,8 +56,9 @@ public class User extends AbstractIntactPrimaryObject {
     ///////////////////////////
     // Getters and Setters
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = IntactUtils.MAX_SHORT_LABEL_LEN)
     @Index(name = "idx_user_login")
+    @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
     public String getLogin() {
         return login;
     }
@@ -66,6 +70,7 @@ public class User extends AbstractIntactPrimaryObject {
         this.login = login.trim();
     }
 
+    @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
     public String getPassword() {
         return password;
     }
@@ -74,7 +79,8 @@ public class User extends AbstractIntactPrimaryObject {
         this.password = password;
     }
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = IntactUtils.MAX_SHORT_LABEL_LEN)
+    @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
     public String getFirstName() {
         return firstName;
     }
@@ -86,7 +92,8 @@ public class User extends AbstractIntactPrimaryObject {
         this.firstName = firstName;
     }
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = IntactUtils.MAX_SHORT_LABEL_LEN)
+    @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
     public String getLastName() {
         return lastName;
     }
@@ -98,8 +105,9 @@ public class User extends AbstractIntactPrimaryObject {
         this.lastName = lastName;
     }
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = IntactUtils.MAX_SHORT_LABEL_LEN)
     @Index(name = "idx_user_email")
+    @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
     public String getEmail() {
         return email;
     }
@@ -175,6 +183,16 @@ public class User extends AbstractIntactPrimaryObject {
     @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
     public Collection<Preference> getPreferences() {
         return preferences;
+    }
+
+    @Transient
+    public boolean areRolesInitialized(){
+        return Hibernate.isInitialized(getRoles());
+    }
+
+    @Transient
+    public boolean arePreferencesInitialized(){
+        return Hibernate.isInitialized(getPreferences());
     }
 
     private void setPreferences(Collection<Preference> preferences) {

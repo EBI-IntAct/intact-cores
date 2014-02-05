@@ -58,8 +58,8 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
 
         // TODO experiment synchronizer
-        // TODO lifecycle synchronizer
-        // TODO user synchronizer
+        this.lifecycleEventSynchronizer = new IntactLifeCycleSynchronizer<PublicationLifecycleEvent>(entityManager, PublicationLifecycleEvent.class);
+        this.userSynchronizer = new IntactUserSynchronizer(entityManager);
     }
 
     public IntactPublicationSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Experiment, IntactExperiment> expSynchronizer,
@@ -75,8 +75,8 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
 
         // TODO experiment synchronizer
-        // TODO lifecycle synchronizer
-        // TODO user synchronizer
+        this.lifecycleEventSynchronizer = lifecycleEventSynchronizer != null ? lifecycleEventSynchronizer : new IntactLifeCycleSynchronizer<PublicationLifecycleEvent>(entityManager, PublicationLifecycleEvent.class);
+        this.userSynchronizer = userSynchronizer != null ? userSynchronizer : new IntactUserSynchronizer(entityManager);
     }
 
     public IntactPublication find(Publication publication) throws FinderException {

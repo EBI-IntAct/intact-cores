@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringSource;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 import javax.persistence.EntityManager;
@@ -69,10 +70,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             Object identifier = extractIdentifier(intactObject);
             // detached existing instance or new transient instance
             if (identifier != null && !this.entityManager.contains(intactObject)){
-                // synchronize properties first
-                synchronizeProperties(intactObject);
-                // merge
-                return this.entityManager.merge(intactObject);
+                return mergeExistingInstanceToCurrentSession(intactObject, identifier);
+
             }
             // retrieve and or persist transient instance
             else if (identifier == null){
@@ -96,6 +95,28 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     public void setIntactMerger(IntactDbMerger<I,T> intactMerger) {
         this.intactMerger = intactMerger;
+    }
+
+    protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier) throws FinderException, PersisterException, SynchronizerException {
+        // do not merge existing instance if the merger is a merger ignoring source
+        if (getIntactMerger() instanceof IntactMergerIgnoringSource){
+            T reloaded = getEntityManager().find(getIntactClass(), identifier);
+            if (reloaded != null){
+                return reloaded;
+            }
+            else{
+                // synchronize properties first
+                synchronizeProperties(intactObject);
+                // merge
+                return this.entityManager.merge(intactObject);
+            }
+        }
+        else{
+            // synchronize properties first
+            synchronizeProperties(intactObject);
+            // merge
+            return this.entityManager.merge(intactObject);
+        }
     }
 
     protected void initialiseDefaultMerger() {

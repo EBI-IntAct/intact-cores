@@ -30,7 +30,7 @@ public abstract class AbstractLifecycleEvent extends AbstractIntactPrimaryObject
 
     private String note;
 
-    public AbstractLifecycleEvent() {
+    protected AbstractLifecycleEvent() {
     }
 
     public AbstractLifecycleEvent(CvTerm event, User who, Date when, String note) {

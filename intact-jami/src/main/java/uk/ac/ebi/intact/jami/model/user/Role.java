@@ -2,10 +2,13 @@ package uk.ac.ebi.intact.jami.model.user;
 
 import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * A role that can be assigned to a user.
@@ -41,8 +44,10 @@ public class Role extends AbstractIntactPrimaryObject {
     ///////////////////////////
     // Getters and Setters
 
-    @Column( unique = true, nullable = false )
+    @Column( unique = true, nullable = false, length = IntactUtils.MAX_SHORT_LABEL_LEN)
     @Index( name = "idx_role_name" )
+    @NotNull
+    @Size(max = IntactUtils.MAX_SHORT_LABEL_LEN)
     public String getName() {
         return name;
     }

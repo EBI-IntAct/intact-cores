@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class IntactUtils {
 
-    public static final int MAX_SHORT_LABEL_LEN = 256;
+    public static final int MAX_SHORT_LABEL_LEN = 255;
     public static final int MAX_FULL_NAME_LEN = 1000;
     public static final int MAX_DESCRIPTION_LEN = 4000;
     public static final int MAX_ALIAS_NAME_LEN = 256;
@@ -60,6 +60,7 @@ public class IntactUtils {
     public static final String TISSUE_OBJCLASS ="uk.ac.ebi.intact.model.CvTissue";
     public static final String FEATURE_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvFeatureType";
     public static final String PUBLICATION_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvPublicationStatus";
+    public static final String LIFECYCLE_EVENT_OBJCLASS ="uk.ac.ebi.intact.model.CvLifecycleEvent";
 
     public static final String RELEASED_STATUS = "released";
 
@@ -106,6 +107,10 @@ public class IntactUtils {
             }
         }
         return 0;
+    }
+
+    public static IntactCvTerm createLifecycleEvent(String name){
+        return new IntactCvTerm(name, (String)null, (String)null, LIFECYCLE_EVENT_OBJCLASS);
     }
 
     public static IntactCvTerm createLifecycleStatus(String name){

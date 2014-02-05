@@ -173,5 +173,6 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
     protected void synchronizeObjectProperties(T objToUpdate) throws PersisterException, FinderException, SynchronizerException {
         getDbSynchronizer().clearCache();
         getDbSynchronizer().synchronizeProperties(objToUpdate);
+        getDbSynchronizer().clearCache();
     }
 }

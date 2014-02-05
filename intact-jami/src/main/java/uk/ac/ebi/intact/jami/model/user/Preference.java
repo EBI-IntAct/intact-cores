@@ -3,8 +3,11 @@ package uk.ac.ebi.intact.jami.model.user;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * A user preference.
@@ -52,7 +55,9 @@ public class Preference extends AbstractIntactPrimaryObject {
     // Getters and Setters
 
     @Index( name = "idx_preference_key")
-    @Column(nullable = false)
+    @Column(nullable = false, length = IntactUtils.MAX_SHORT_LABEL_LEN)
+    @NotNull
+    @Size(max = IntactUtils.MAX_SHORT_LABEL_LEN)
     public String getKey() {
         return key;
     }
