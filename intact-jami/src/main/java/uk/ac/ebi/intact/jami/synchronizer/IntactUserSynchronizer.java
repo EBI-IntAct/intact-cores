@@ -108,8 +108,8 @@ public class IntactUserSynchronizer extends AbstractIntactDbSynchronizer<User, U
                 Role userRole = this.roleSynchronizer.synchronize(role, true);
                 // we have a different instance because needed to be synchronized
                 if (userRole != role){
-                    intactUser.getRoles().remove(role);
-                    intactUser.getRoles().add(userRole);
+                    intactUser.removeRole(role);
+                    intactUser.addRole(userRole);
                 }
             }
         }
@@ -123,8 +123,8 @@ public class IntactUserSynchronizer extends AbstractIntactDbSynchronizer<User, U
                 Preference userPref = this.preferenceSynchronizer.synchronize(pref, false);
                 // we have a different instance because needed to be synchronized
                 if (userPref != pref){
-                    intactUser.getPreferences().remove(pref);
-                    intactUser.getPreferences().add(userPref);
+                    intactUser.removePreference(pref);
+                    intactUser.addPreference(userPref);
                 }
             }
         }

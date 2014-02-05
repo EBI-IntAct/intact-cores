@@ -379,8 +379,8 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
                 Experiment pubExperiment = this.experimentSynchronizer.synchronize(experiment, false);
                 // we have a different instance because needed to be synchronized
                 if (pubExperiment != experiment){
-                    intactPublication.getExperiments().remove(experiment);
-                    intactPublication.getExperiments().add(pubExperiment);
+                    intactPublication.removeExperiment(experiment);
+                    intactPublication.addExperiment(pubExperiment);
                 }
             }
         }
