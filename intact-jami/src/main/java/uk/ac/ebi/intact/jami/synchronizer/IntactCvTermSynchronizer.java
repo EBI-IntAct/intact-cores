@@ -8,6 +8,7 @@ import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
+import psidev.psi.mi.jami.utils.comparator.cv.UnambiguousCvTermComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
@@ -47,7 +48,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         super(entityManager, IntactCvTerm.class);
         this.objClass = null;
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
+        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new UnambiguousCvTermComparator());
         this.aliasSynchronizer = new IntactAliasSynchronizer<CvTermAlias>(entityManager, CvTermAlias.class);
         this.annotationSynchronizer = new IntactAnnotationsSynchronizer<CvTermAnnotation>(entityManager, CvTermAnnotation.class);
         this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, CvTermXref.class);
@@ -63,7 +64,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         super(entityManager, IntactCvTerm.class);
         this.objClass = null;
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
+        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new UnambiguousCvTermComparator());
         this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer<CvTermAlias>(entityManager, CvTermAlias.class);
         this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<CvTermAnnotation>(entityManager, CvTermAnnotation.class);
         this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<CvTermXref>(entityManager, CvTermXref.class);
@@ -485,7 +486,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             if (first){
                 first = false;
             }
-            else if (name.length() > 2){
+            else if (name.length() > 1){
                 name = name.substring(0, name.length() - 1);
             }
             // check if short name already exist, if yes, synchronize with existing label
@@ -502,7 +503,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
                 query.setParameter("cvAc", intactCv.getAc());
             }
             existingCvs = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(intactCv.getShortName(), existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN);
+            String nameInSync = IntactUtils.synchronizeShortlabel(intactCv.getShortName(), existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
             intactCv.setShortName(nameInSync);
         }
         while(name.length() > 1 && !existingCvs.isEmpty());

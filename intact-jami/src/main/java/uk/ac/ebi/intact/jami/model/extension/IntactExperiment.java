@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
@@ -122,7 +123,6 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "detectmethod_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
-    // TODO fetch term
     public CvTerm getInteractionDetectionMethod() {
         if (this.interactionDetectionMethod == null){
            this.interactionDetectionMethod = IntactUtils.createMIInteractionDetectionMethod(Experiment.UNSPECIFIED_METHOD, Experiment.UNSPECIFIED_METHOD_MI);
@@ -284,6 +284,26 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
     @Override
     public String toString() {
         return publication.toString() + "( " + interactionDetectionMethod.toString() + (hostOrganism != null ? ", " + hostOrganism.toString():"") + " )";
+    }
+
+    @Transient
+    public boolean areXrefsInitialized(){
+        return Hibernate.isInitialized(getXrefs());
+    }
+
+    @Transient
+    public boolean areAnnotationsInitialized(){
+        return Hibernate.isInitialized(getAnnotations());
+    }
+
+    @Transient
+    public boolean areInteractionEvidencesInitialized(){
+        return Hibernate.isInitialized(getInteractionEvidences());
+    }
+
+    @Transient
+    public boolean areVariableParametersInitialized(){
+        return Hibernate.isInitialized(getVariableParameters());
     }
 
     protected void initialiseXrefs(){

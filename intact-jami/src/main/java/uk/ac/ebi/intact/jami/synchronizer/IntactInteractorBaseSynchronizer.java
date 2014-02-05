@@ -313,7 +313,7 @@ implements InteractorFetcher<T>{
             if (first){
                 first = false;
             }
-            else if (name.length() > 2){
+            else if (name.length() > 1){
                 name = name.substring(0, name.length() - 1);
             }
             // check if short name already exist, if yes, synchronize with existing label
@@ -326,7 +326,7 @@ implements InteractorFetcher<T>{
                 query.setParameter("interactorAc", intactInteractor.getAc());
             }
             existingInteractors = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(intactInteractor.getShortName(), existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN);
+            String nameInSync = IntactUtils.synchronizeShortlabel(intactInteractor.getShortName(), existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
             intactInteractor.setShortName(nameInSync);
         }
         while(name.length() > 1 && !existingInteractors.isEmpty());

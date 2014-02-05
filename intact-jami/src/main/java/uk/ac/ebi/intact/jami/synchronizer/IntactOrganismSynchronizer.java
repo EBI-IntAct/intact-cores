@@ -267,7 +267,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
             if (first){
                 first = false;
             }
-            else if (name.length() > 2){
+            else if (name.length() > 1){
                 name = name.substring(0, name.length() - 1);
             }
             // check if short name already exist, if yes, synchronize with existing label
@@ -280,7 +280,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
                 query.setParameter("interactorAc", intactOrganism.getAc());
             }
             existingOrganism = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(intactOrganism.getCommonName(), existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN);
+            String nameInSync = IntactUtils.synchronizeShortlabel(intactOrganism.getCommonName(), existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN, false);
             intactOrganism.setCommonName(nameInSync);
         }
         while(name.length() > 1 && !existingOrganism.isEmpty());

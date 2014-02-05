@@ -57,7 +57,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         this.sourceSynchronizer = new IntactSourceSynchronizer(entityManager);
         this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
 
-        // TODO experiment synchronizer
+        this.experimentSynchronizer = new IntactExperimentSynchronizer(entityManager);
         this.lifecycleEventSynchronizer = new IntactLifeCycleSynchronizer<PublicationLifecycleEvent>(entityManager, PublicationLifecycleEvent.class);
         this.userSynchronizer = new IntactUserSynchronizer(entityManager);
     }
@@ -74,7 +74,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         this.sourceSynchronizer = sourceSynchronizer != null ? sourceSynchronizer : new IntactSourceSynchronizer(entityManager);
         this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
 
-        // TODO experiment synchronizer
+        this.experimentSynchronizer = expSynchronizer != null ? expSynchronizer : new IntactExperimentSynchronizer(entityManager);
         this.lifecycleEventSynchronizer = lifecycleEventSynchronizer != null ? lifecycleEventSynchronizer : new IntactLifeCycleSynchronizer<PublicationLifecycleEvent>(entityManager, PublicationLifecycleEvent.class);
         this.userSynchronizer = userSynchronizer != null ? userSynchronizer : new IntactUserSynchronizer(entityManager);
     }
@@ -534,7 +534,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
             intactPublication.setShortLabel(pubmed);
         }
         else if (doi != null){
-            intactPublication.setDoi(doi);
+            intactPublication.setShortLabel(doi);
         }
         else if (!intactPublication.getIdentifiers().isEmpty()){
             intactPublication.setShortLabel(intactPublication.getIdentifiers().iterator().next().getId());

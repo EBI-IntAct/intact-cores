@@ -358,7 +358,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             if (first){
                 first = false;
             }
-            else if (name.length() > 2){
+            else if (name.length() > 1){
                 name = name.substring(0, name.length() - 1);
             }
             // check if short name already exist, if yes, synchronize with existing label
@@ -371,7 +371,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
                 query.setParameter("sourceAc", intactSource.getAc());
             }
             existingSource = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(intactSource.getShortName(), existingSource, IntactUtils.MAX_SHORT_LABEL_LEN);
+            String nameInSync = IntactUtils.synchronizeShortlabel(intactSource.getShortName(), existingSource, IntactUtils.MAX_SHORT_LABEL_LEN, false);
             intactSource.setShortName(nameInSync);
         }
         while(name.length() > 1 && !existingSource.isEmpty());

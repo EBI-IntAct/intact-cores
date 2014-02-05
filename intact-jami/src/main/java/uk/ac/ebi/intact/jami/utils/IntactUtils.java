@@ -1,13 +1,16 @@
 package uk.ac.ebi.intact.jami.utils;
 
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.comparator.IntegerComparator;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -52,19 +55,58 @@ public class IntactUtils {
     public static final String EXPERIMENTAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvExperimentalRole";
     public static final String BIOLOGICAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvBiologicalRole";
     public static final String INTERACTION_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvInteraction";
+    public static final String PARTICIPANT_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvIdentification";
     public static final String INTERACTOR_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractorType";
     public static final String RANGE_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvFuzzyType";
     public static final String CONFIDENCE_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvConfidenceType";
     public static final String PARAMETER_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvParameterType";
     public static final String CELL_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvCellType";
     public static final String TISSUE_OBJCLASS ="uk.ac.ebi.intact.model.CvTissue";
-    public static final String FEATURE_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvFeatureType";
+    public static final String FEATURE_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvFeatureIdentification";
     public static final String PUBLICATION_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvPublicationStatus";
     public static final String LIFECYCLE_EVENT_OBJCLASS ="uk.ac.ebi.intact.model.CvLifecycleEvent";
 
     public static final String RELEASED_STATUS = "released";
 
-    public static String synchronizeShortlabel(String currentLabel, Collection<String> exitingLabels, int maxLength){
+    public static String generateAutomaticExperimentShortlabelFor(IntactExperiment intactExperiment, int maxLength){
+        String label = null;
+        String yearString = null;
+        String finalLabel = null;
+
+        Publication pub = intactExperiment.getPublication();
+        if (pub == null){
+            Calendar now = Calendar.getInstance();
+            yearString = Integer.toString(now.get(Calendar.YEAR));
+            label = "unknown";
+            finalLabel = "unknown-"+yearString;
+        }
+        else if (!pub.getAuthors().isEmpty() && pub.getPublicationDate() != null){
+            yearString = IntactUtils.YEAR_FORMAT.format(pub.getPublicationDate());
+            label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_");
+            finalLabel = label+"-"+yearString;
+        }
+        else if (!pub.getAuthors().isEmpty()){
+            Calendar now = Calendar.getInstance();
+            yearString = Integer.toString(now.get(Calendar.YEAR));
+            label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_");
+            finalLabel = label+"-"+yearString;
+        }
+        else{
+            label = "unknown";
+            yearString = IntactUtils.YEAR_FORMAT.format(pub.getPublicationDate());
+            finalLabel = "unknown-"+yearString;
+        }
+
+        // retruncate if necessary
+        if (maxLength < label.length()){
+            finalLabel = label.substring(0, Math.max(1, maxLength-(yearString.length()+1)))
+                    +"-"+yearString;
+        }
+
+        return finalLabel;
+    }
+
+    public static String synchronizeShortlabel(String currentLabel, Collection<String> exitingLabels, int maxLength, boolean alwaysAppendSuffix){
         String nameInSync = currentLabel;
         String indexAsString = "";
         if (!exitingLabels.isEmpty()){
@@ -74,10 +116,14 @@ public class IntactUtils {
                 existingIndexes.add(extractLastNumberInShortLabel(exitingLabel));
             }
 
-            int freeIndex = 0;
+            int freeIndex = alwaysAppendSuffix ? 1 : 0;
             for (Integer existingLabel : existingIndexes){
                 // index already exist, increment free index
                 if (freeIndex==existingLabel){
+                    freeIndex++;
+                }
+                // even if the label without any suffix is available, we force to use a suffix here
+                else if (existingLabel == 0 && alwaysAppendSuffix){
                     freeIndex++;
                 }
                 // index does not exist, break the loop
@@ -117,6 +163,10 @@ public class IntactUtils {
         return new IntactCvTerm(name, (String)null, (String)null, PUBLICATION_STATUS_OBJCLASS);
     }
 
+    public static IntactCvTerm createMIParticipantIdentificationMethod(String name, String MI){
+        return createIntactMITerm(name, MI, PARTICIPANT_DETECTION_METHOD_OBJCLASS);
+    }
+
     public static IntactCvTerm createMIInteractorType(String name, String MI){
         return createIntactMITerm(name, MI, INTERACTOR_TYPE_OBJCLASS);
     }
@@ -153,6 +203,10 @@ public class IntactUtils {
         return createIntactMITerm(name, MI, FEATURE_TYPE_OBJCLASS);
     }
 
+    public static IntactCvTerm createMODFeatureType(String name, String MOD){
+        return createIntactMODTerm(name, MOD, FEATURE_TYPE_OBJCLASS);
+    }
+
     public static IntactCvTerm createMIBiologicalRole(String name, String MI){
         return createIntactMITerm(name, MI, BIOLOGICAL_ROLE_OBJCLASS);
     }
@@ -172,6 +226,15 @@ public class IntactUtils {
     public static IntactCvTerm createIntactMITerm(String name, String MI, String objclass){
         if (MI != null){
             return new IntactCvTerm(name, new CvTermXref(new IntactCvTerm(CvTerm.PSI_MI, null, CvTerm.PSI_MI_MI, DATABASE_OBJCLASS), MI, new IntactCvTerm(Xref.IDENTITY, null, Xref.IDENTITY_MI, QUALIFIER_OBJCLASS)), objclass);
+        }
+        else {
+            return new IntactCvTerm(name, (String)null, (String)null, objclass);
+        }
+    }
+
+    public static IntactCvTerm createIntactMODTerm(String name, String MOD, String objclass){
+        if (MOD != null){
+            return new IntactCvTerm(name, new CvTermXref(new IntactCvTerm(CvTerm.PSI_MOD, null, CvTerm.PSI_MOD_MI, DATABASE_OBJCLASS), MOD, new IntactCvTerm(Xref.IDENTITY, null, Xref.IDENTITY_MI, QUALIFIER_OBJCLASS)), objclass);
         }
         else {
             return new IntactCvTerm(name, (String)null, (String)null, objclass);
