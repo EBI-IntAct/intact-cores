@@ -60,6 +60,10 @@ public class IntactPublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<
         // obj2 is mergedPub
         IntactPublication mergedPub = super.merge(obj1, obj2);
 
+        // merge shortLabel
+        if (mergedPub.getShortLabel() == null){
+            mergedPub.setShortLabel(obj1.getShortLabel());
+        }
         // merge curator
         if (mergedPub.getCurrentOwner() == null && obj1.getCurrentOwner() != null){
             mergedPub.setCurrentOwner(obj1.getCurrentOwner());
@@ -78,12 +82,12 @@ public class IntactPublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<
         }
         //merge experiments
         if (obj1.areExperimentsInitialized()){
-            mergeExperiments(mergedPub.getExperiments(), obj1.getExperiments());
+            mergeExperiments(mergedPub, mergedPub.getExperiments(), obj1.getExperiments());
         }
         return mergedPub;
     }
 
-    private void mergeExperiments(Collection<Experiment> toEnrichExperiments, Collection<Experiment> sourceExperiments) {
+    private void mergeExperiments(Publication pubToEnrich, Collection<Experiment> toEnrichExperiments, Collection<Experiment> sourceExperiments) {
 
         Iterator<Experiment> experimentIterator = sourceExperiments.iterator();
         while(experimentIterator.hasNext()){
@@ -98,7 +102,7 @@ public class IntactPublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<
             }
             // add missing xref not in second list
             if (!containsExperiment){
-                toEnrichExperiments.add(experiment);
+                pubToEnrich.addExperiment(experiment);
             }
         }
     }

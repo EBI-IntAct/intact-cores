@@ -77,13 +77,13 @@ public class IntactPublicationMergerOverride extends IntactDbMergerOverride<Publ
         }
         //merge experiments
         if (obj1.areExperimentsInitialized()){
-            mergeExperiments(mergedPub.getExperiments(), obj1.getExperiments());
+            mergeExperiments(mergedPub, mergedPub.getExperiments(), obj1.getExperiments());
         }
 
         return mergedPub;
     }
 
-    private void mergeExperiments(Collection<Experiment> toEnrichExperiments, Collection<Experiment> sourceExperiments) {
+    private void mergeExperiments(Publication mergedPub, Collection<Experiment> toEnrichExperiments, Collection<Experiment> sourceExperiments) {
 
         Iterator<Experiment> experimentIterator = toEnrichExperiments.iterator();
         while(experimentIterator.hasNext()){
@@ -113,7 +113,7 @@ public class IntactPublicationMergerOverride extends IntactDbMergerOverride<Publ
             }
             // add missing xref not in second list
             if (!containsExperiment){
-                toEnrichExperiments.add(experiment);
+                mergedPub.addExperiment(experiment);
             }
         }
     }

@@ -11,6 +11,7 @@ import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
+import uk.ac.ebi.intact.jami.merger.IntactExperimentMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.IntactPublicationMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -46,6 +47,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
     private IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer;
 
     private CollectionComparator<Annotation> annotationCollectionComparator;
+    private CollectionComparator<VariableParameter> variableParameterComparator;
 
     private static final Log log = LogFactory.getLog(IntactExperimentSynchronizer.class);
 
@@ -54,6 +56,8 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
         // to keep track of persisted cvs
         IntactExperimentComparator comp = new IntactExperimentComparator();
         this.annotationCollectionComparator = comp.getAnnotationCollectionComparator();
+        this.variableParameterComparator = comp.getVariableParameterCollectionComparator();
+
         this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(comp);
         this.annotationSynchronizer = new IntactAnnotationsSynchronizer<ExperimentAnnotation>(entityManager, ExperimentAnnotation.class);
         this.xrefSynchronizer = new IntactXrefSynchronizer<ExperimentXref>(entityManager, ExperimentXref.class);
@@ -75,6 +79,8 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
         // to keep track of persisted cvs
         IntactExperimentComparator comp = new IntactExperimentComparator();
         this.annotationCollectionComparator = comp.getAnnotationCollectionComparator();
+        this.variableParameterComparator = comp.getVariableParameterCollectionComparator();
+
         this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(comp);
         this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<ExperimentAnnotation>(entityManager, ExperimentAnnotation.class);
         this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<ExperimentXref>(entityManager, ExperimentXref.class);
@@ -156,7 +162,8 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
             if (!results.isEmpty()){
                 Collection<IntactExperiment> filteredResults = new ArrayList<IntactExperiment>(results.size());
                 for (IntactExperiment exp : filteredResults){
-                    if (this.annotationCollectionComparator.compare(experiment.getAnnotations(), exp.getAnnotations()) == 0){
+                    if (this.annotationCollectionComparator.compare(experiment.getAnnotations(), exp.getAnnotations()) == 0
+                            && this.variableParameterComparator.compare(experiment.getVariableParameters(), exp.getVariableParameters()) == 0){
                         filteredResults.add(exp);
                     }
                 }
@@ -362,6 +369,6 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactPublicationMergerEnrichOnly(this));
+        super.setIntactMerger(new IntactExperimentMergerEnrichOnly());
     }
 }
