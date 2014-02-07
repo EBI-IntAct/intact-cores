@@ -67,6 +67,9 @@ public class IntactExperimentMergerEnrichOnly extends IntactDbMergerEnrichOnly<E
 
     @Override
     public IntactExperiment merge(IntactExperiment exp1, IntactExperiment exp2) {
+        // reset parent to source parent
+        exp2.setPublication(exp1.getPublication());
+
         // obj2 is mergedExp
         IntactExperiment mergedExp = super.merge(exp1, exp2);
 
@@ -82,6 +85,7 @@ public class IntactExperimentMergerEnrichOnly extends IntactDbMergerEnrichOnly<E
         if (exp1.areInteractionEvidencesInitialized()){
             mergeInteractions(mergedExp, mergedExp.getInteractionEvidences(), exp1.getInteractionEvidences());
         }
+
         return mergedExp;
     }
 

@@ -67,7 +67,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
         this.variableParameterSynchronizer = new IntactVariableParameterSynchronizer(entityManager);
         this.organismSynchronizer = new IntactOrganismSynchronizer(entityManager);
 
-        // TODO interaction evidence synchronizer
+        this.interactionSynchronizer = new IntactInteractionEvidenceSynchronizer(entityManager);
     }
 
     public IntactExperimentSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Annotation, ExperimentAnnotation> annotationSynchronizer,
@@ -90,7 +90,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
         this.variableParameterSynchronizer = variableParameterSynchronizer != null ? variableParameterSynchronizer : new IntactVariableParameterSynchronizer(entityManager);
         this.organismSynchronizer = organismSynchronizer != null ? organismSynchronizer : new IntactOrganismSynchronizer(entityManager);
 
-        // TODO interaction evidence synchronizer
+        this.interactionSynchronizer = interactionSynchronizer != null ? interactionSynchronizer : new IntactInteractionEvidenceSynchronizer(entityManager);
     }
 
     public IntactExperiment find(Experiment experiment) throws FinderException {
@@ -126,7 +126,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
                 }
             }
             IntactCvTerm fetchedParticipantDetectionMethod = null;
-            CvTerm commonMethod = ExperimentUtils.extractCommonParticipantDetectionMethodFrom(experiment);
+            CvTerm commonMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(experiment);
             if (commonMethod != null){
                 fetchedParticipantDetectionMethod = this.participantDetectionMethodSynchronizer.find(commonMethod);
                 // the participant detection method does not exist so the experiment does not exist
@@ -244,7 +244,6 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
     protected IntactExperiment instantiateNewPersistentInstance(Experiment object, Class<? extends IntactExperiment> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         IntactExperiment exp = new IntactExperiment(object.getPublication());
         ExperimentCloner.copyAndOverrideExperimentPropertiesAndInteractionEvidences(object, exp);
-        exp.setParticipantIdentificationMethod(ExperimentUtils.extractCommonParticipantDetectionMethodFrom(object));
         return exp;
     }
 
@@ -328,6 +327,9 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
         if (detectionMethod != null){
             intactExperiment.setParticipantIdentificationMethod(this.participantDetectionMethodSynchronizer.synchronize(detectionMethod, true));
         }
+        else{
+            intactExperiment.setParticipantIdentificationMethod(ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(intactExperiment));
+        }
     }
 
     protected void prepareAndSynchronizeShortLabel(IntactExperiment intactExperiment) throws SynchronizerException {
@@ -337,20 +339,25 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
         }
 
         // then synchronize with database
-        String name = intactExperiment.getShortLabel().trim().toLowerCase();
-        List<String> existingExperiments = Collections.EMPTY_LIST;
         boolean first = true;
+        String name;
+        List<String> existingExperiments;
         do{
+            name = intactExperiment.getShortLabel().trim().toLowerCase();
+            existingExperiments = Collections.EMPTY_LIST;
+            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
+
             if (first){
                 first = false;
             }
             // don't truncate year so we remove year (4 characters + 1 for the '-') in addition to the last character of the author (total remove 6 characters)
-            else if (name.length() > 6){
-                name = name.substring(0, name.length() - 6);
+            else if (originalName.length() > 6){
+                name = originalName.substring(0, name.length() - 6);
             }
             else {
                 break;
             }
+
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select e.shortLabel from IntactExperiment e " +
                     "where e.shortLabel = :name or e.shortLabel like :nameWithSuffix"
@@ -361,7 +368,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
                 query.setParameter("expAc", intactExperiment.getAc());
             }
             existingExperiments = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(intactExperiment.getShortLabel(), existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
+            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
             intactExperiment.setShortLabel(nameInSync);
         }
         while(name.length() > 6 && !existingExperiments.isEmpty());

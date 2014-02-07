@@ -17,7 +17,6 @@ import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
-import uk.ac.ebi.intact.jami.utils.IntactCvTermComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -479,15 +478,19 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             log.warn("Cv term shortLabel too long: "+intactCv.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        String name = intactCv.getShortName().trim().toLowerCase();
-        List<String> existingCvs = Collections.EMPTY_LIST;
         boolean first = true;
+        String name;
+        List<String> existingCvs;
         do{
+            name = intactCv.getShortName().trim().toLowerCase();
+            existingCvs = Collections.EMPTY_LIST;
+            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
+
             if (first){
                 first = false;
             }
-            else if (name.length() > 1){
-                name = name.substring(0, name.length() - 1);
+            else if (originalName.length() > 1){
+                name = originalName.substring(0, originalName.length() - 1);
             }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select cv.shortName from IntactCvTerm cv " +
@@ -503,7 +506,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
                 query.setParameter("cvAc", intactCv.getAc());
             }
             existingCvs = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(intactCv.getShortName(), existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
             intactCv.setShortName(nameInSync);
         }
         while(name.length() > 1 && !existingCvs.isEmpty());

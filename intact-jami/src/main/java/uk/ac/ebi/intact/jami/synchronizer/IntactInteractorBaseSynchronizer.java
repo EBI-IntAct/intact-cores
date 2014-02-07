@@ -306,15 +306,19 @@ implements InteractorFetcher<T>{
             log.warn("Interactor shortLabel too long: "+intactInteractor.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactInteractor.setShortName(intactInteractor.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        String name = intactInteractor.getShortName().trim().toLowerCase();
-        List<String> existingInteractors = Collections.EMPTY_LIST;
         boolean first = true;
+        String name;
+        List<String> existingInteractors;
         do{
+            name = intactInteractor.getShortName().trim().toLowerCase();
+            existingInteractors = Collections.EMPTY_LIST;
+            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
+
             if (first){
                 first = false;
             }
-            else if (name.length() > 1){
-                name = name.substring(0, name.length() - 1);
+            else if (originalName.length() > 1){
+                name = originalName.substring(0, originalName.length() - 1);
             }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select i.shortName from IntactInteractor i " +
@@ -326,7 +330,7 @@ implements InteractorFetcher<T>{
                 query.setParameter("interactorAc", intactInteractor.getAc());
             }
             existingInteractors = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(intactInteractor.getShortName(), existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
             intactInteractor.setShortName(nameInSync);
         }
         while(name.length() > 1 && !existingInteractors.isEmpty());

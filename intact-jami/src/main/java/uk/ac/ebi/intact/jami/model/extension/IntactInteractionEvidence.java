@@ -1,13 +1,19 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Parameter;
+import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
+import psidev.psi.mi.jami.model.impl.DefaultXref;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
+import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
+import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.listener.InteractionExperimentListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -53,6 +59,8 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     private PersistentXrefList persistentXrefs;
     private Collection<Experiment> experiments;
 
+    private Xref acRef;
+
     public IntactInteractionEvidence(){
     }
 
@@ -65,6 +73,19 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         this.interactionType = type;
     }
 
+    @Override
+    public void setAc(String ac) {
+        super.setAc(ac);
+        // only if identifiers are initialised
+        if (this.acRef != null && !this.acRef.getId().equals(ac)){
+            // we don't want to create a persistent xref
+            Xref newRef = new DefaultXref(this.acRef.getDatabase(), ac, this.acRef.getQualifier());
+            this.identifiers.removeOnly(acRef);
+            this.acRef = newRef;
+            this.identifiers.addOnly(acRef);
+        }
+    }
+
     @Column(name = "shortlabel", nullable = false, unique = true)
     @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
     @NotNull
@@ -73,7 +94,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     }
 
     public void setShortName(String name) {
-        this.shortName = name;
+        this.shortName = name != null ? name.toLowerCase().trim() : name;
     }
 
     @Transient
@@ -117,9 +138,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return this.xrefs;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionChecksum.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractionChecksum.class)
+    @Transient
     public Collection<Checksum> getChecksums() {
         if (checksums == null){
             initialiseChecksums();
@@ -355,6 +374,61 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return experiments;
     }
 
+    @Transient
+    public boolean areVariableParameterValuesInitialized(){
+        return Hibernate.isInitialized(getVariableParameterValues());
+    }
+
+    @Transient
+    public boolean areConfidencesInitialized(){
+        return Hibernate.isInitialized(getConfidences());
+    }
+
+    @Transient
+    public boolean areParametersInitialized(){
+        return Hibernate.isInitialized(getParameters());
+    }
+
+    @Transient
+    public boolean areXrefsInitialized(){
+        return Hibernate.isInitialized(getPersistentXrefs());
+    }
+
+    @Transient
+    public boolean areAnnotationsInitialized(){
+        return Hibernate.isInitialized(getAnnotations());
+    }
+
+    @Transient
+    public boolean areChecksumsInitialized(){
+        return Hibernate.isInitialized(getPersistentChecksums());
+    }
+
+    @Transient
+    public boolean areParticipantsInitialized(){
+        return Hibernate.isInitialized(getParticipants());
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionXref.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(InteractionXref.class)
+    public Collection<Xref> getPersistentXrefs() {
+        if (persistentXrefs == null){
+            persistentXrefs = new PersistentXrefList(null);
+        }
+        return persistentXrefs.getWrappedList();
+    }
+
+    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionChecksum.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(InteractionChecksum.class)
+    public Collection<Checksum> getPersistentChecksums() {
+        if (checksums == null){
+            checksums = new InteractionChecksumList(null);
+        }
+        return this.checksums.getWrappedList();
+    }
+
     protected void processAddedChecksumEvent(Checksum added) {
         if (rigid == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.RIGID_MI, Checksum.RIGID)){
             // the rigid is not set, we can set the rigid
@@ -421,7 +495,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
-    private void setChecksums(Collection<Checksum> checksums) {
+    private void setPersistentChecksums(Collection<Checksum> checksums) {
         this.checksums = new InteractionChecksumList(checksums);
     }
 
@@ -442,25 +516,22 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         else{
             this.persistentXrefs = new PersistentXrefList(null);
         }
-    }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionXref.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractionXref.class)
-    private Collection<Xref> getPersistentXrefs() {
-        if (persistentXrefs == null){
-            persistentXrefs = new PersistentXrefList(null);
+        // initialise ac
+        if (getAc() != null){
+            IntactContext intactContext = ApplicationContextProvider.getBean(IntactContext.class);
+            if (intactContext != null){
+                this.acRef = new DefaultXref(intactContext.getConfig().getDefaultInstitution(), getAc(), CvTermUtils.createIdentityQualifier());
+            }
+            else{
+                this.acRef = new DefaultXref(new DefaultCvTerm("unknwon"), getAc(), CvTermUtils.createIdentityQualifier());
+            }
+            this.identifiers.addOnly(this.acRef);
         }
-        return persistentXrefs;
     }
 
     private void setPersistentXrefs(Collection<Xref> persistentXrefs) {
-        if (persistentXrefs instanceof PersistentXrefList){
-            this.persistentXrefs = (PersistentXrefList)persistentXrefs;
-        }
-        else{
-            this.persistentXrefs = new PersistentXrefList(persistentXrefs);
-        }
+        this.persistentXrefs = new PersistentXrefList(persistentXrefs);
     }
 
     private void setAnnotations(Collection<Annotation> annotations) {

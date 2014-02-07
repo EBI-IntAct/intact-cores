@@ -1,12 +1,13 @@
 package uk.ac.ebi.intact.jami.utils;
 
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Publication;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.AliasUtils;
+import psidev.psi.mi.jami.utils.ParticipantUtils;
 import psidev.psi.mi.jami.utils.comparator.IntegerComparator;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,6 +56,7 @@ public class IntactUtils {
     public static final String EXPERIMENTAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvExperimentalRole";
     public static final String BIOLOGICAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvBiologicalRole";
     public static final String INTERACTION_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvInteraction";
+    public static final String INTERACTION_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractionType";
     public static final String PARTICIPANT_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvIdentification";
     public static final String INTERACTOR_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractorType";
     public static final String RANGE_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvFuzzyType";
@@ -67,6 +69,104 @@ public class IntactUtils {
     public static final String LIFECYCLE_EVENT_OBJCLASS ="uk.ac.ebi.intact.model.CvLifecycleEvent";
 
     public static final String RELEASED_STATUS = "released";
+
+    public static String generateAutomaticInteractionEvidenceShortlabelFor(IntactInteractionEvidence intactInteraction, int maxLength){
+        if (intactInteraction.getParticipants().isEmpty()){
+            return "unknown";
+        }
+        String label1=null;
+        String label2=null;
+        String alternateLabel=null;
+        String firstAlphabetical=null;
+        String secondAlphabetical=null;
+
+        // collect different names from the collection of participants
+        // bait -> alternative bait -> prey -> first alphabetical -> second alphabetical
+        for (ParticipantEvidence participant : intactInteraction.getParticipants()){
+            // extract participant name (gene name or shortlabel if no gene names)
+            Alias geneName = AliasUtils.collectFirstAliasWithType(participant.getInteractor().getAliases(), Alias.GENE_NAME_MI, Alias.GENE_NAME);
+            String name = (geneName != null ? geneName.getName() : participant.getInteractor().getShortName()).trim().toLowerCase().replaceAll("-", "_"); 
+            // bait should be first label
+            if (ParticipantUtils.doesParticipantHaveExperimentalRole(participant, Participant.BAIT_ROLE_MI, Participant.BAIT_ROLE_MI)){
+                if (label1 == null){
+                    label1 = name;
+                }
+                else if (name.compareTo(label1) < 0){
+                    label1 = name;
+                }
+            }
+            // alternative baits
+            else if (ParticipantUtils.isParticipantEvidenceAnAlternativeBaitForSpokeExpansion(participant)){
+                if (alternateLabel == null){
+                    alternateLabel = name;
+                }
+                else if (name.compareTo(alternateLabel) < 0){
+                    alternateLabel = name;
+                }
+            }
+            // preys should be label2
+            else if (ParticipantUtils.doesParticipantHaveExperimentalRole(participant, Participant.PREY_MI, Participant.PREY)){
+                if (label2 == null){
+                    label2 = name;
+                }
+                else if (name.compareTo(label2) < 0){
+                    label2 = name;
+                }
+            }
+            else if (firstAlphabetical == null){
+                 firstAlphabetical = name;
+            }
+            else if (name.compareTo(firstAlphabetical) < 0){
+                firstAlphabetical = name;
+            }
+            else if (secondAlphabetical == null){
+                secondAlphabetical = name;
+            }
+            else if (name.compareTo(secondAlphabetical) < 0){
+                secondAlphabetical = name;
+            }
+        }
+
+        // set label 1 from existing names if not set : label1 is bait or alternative bait or prey or first alphabetical
+        if (label1 == null){
+            if (alternateLabel != null){
+                label1 = alternateLabel;
+            }
+            else if (label2 != null){
+                label1 = label2;
+                // reset label2
+                label2 = null;
+            }
+            else {
+                label1 = firstAlphabetical;
+            }
+        }
+        // set label 2 from existing names if not set : label2 is prey or second alphabetical or null if no other names
+        if (label2 == null){
+            if (!label1.equals(firstAlphabetical) && firstAlphabetical != null){
+                label2 = firstAlphabetical;
+            }
+            else if (secondAlphabetical != null){
+                label2 = secondAlphabetical;
+            }
+        }
+        // retruncate if necessary (label1 + label2 + 1 (for the '-' between label1 and label2) > maxSize)
+        if (maxLength < label1.length() + 1 + (label2 == null ? 0 : label2.length())){
+            int label1Size = label1.length();
+            int label2Size = label2 != null ? label2.length() : 0;
+            int maxSize1 = Math.min(label1Size, maxLength / 2 - 1);
+            int maxSize2 = Math.min(label2Size, maxLength/2 - 1);
+            int remainingSize = (maxLength - 1) - (maxSize1 + maxSize2);
+
+            int rest1 = Math.min(remainingSize, Math.max(0, label1Size - (maxSize1+maxSize2)));
+            int rest2 = Math.min(Math.max(0, remainingSize-rest1), Math.max(0, label2Size - (maxSize1+maxSize2)));
+
+            return label1.substring(0, maxSize1 + rest1)
+                    +(label2Size > 0 ? "-"+label2.substring(0, maxSize2 + rest2) : "");
+        }
+
+        return label1 + (label2 != null ? "-"+label2 : "");
+    }
 
     public static String generateAutomaticExperimentShortlabelFor(IntactExperiment intactExperiment, int maxLength){
         String label = null;
@@ -155,12 +255,29 @@ public class IntactUtils {
         return 0;
     }
 
+    public static String excludeLastNumberInShortLabel(String currentLabel) {
+        if (currentLabel.contains("-")){
+            int index = currentLabel .lastIndexOf("-");
+            String strSuffix = currentLabel.substring(index + 1, currentLabel.length());
+            Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
+
+            if (matcher.matches()){
+                return currentLabel.substring(0, index);
+            }
+        }
+        return currentLabel;
+    }
+
     public static IntactCvTerm createLifecycleEvent(String name){
         return new IntactCvTerm(name, (String)null, (String)null, LIFECYCLE_EVENT_OBJCLASS);
     }
 
     public static IntactCvTerm createLifecycleStatus(String name){
         return new IntactCvTerm(name, (String)null, (String)null, PUBLICATION_STATUS_OBJCLASS);
+    }
+
+    public static IntactCvTerm createMIInteractionType(String name, String MI){
+        return createIntactMITerm(name, MI, INTERACTION_TYPE_OBJCLASS);
     }
 
     public static IntactCvTerm createMIParticipantIdentificationMethod(String name, String MI){

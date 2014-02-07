@@ -260,15 +260,19 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
             log.warn("Organism shortLabel too long: "+intactOrganism.getCommonName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactOrganism.setCommonName(intactOrganism.getCommonName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        String name = intactOrganism.getCommonName().trim().toLowerCase();
-        List<String> existingOrganism = Collections.EMPTY_LIST;
         boolean first = true;
+        String name;
+        List<String> existingOrganism;
         do{
+            name = intactOrganism.getCommonName().trim().toLowerCase();
+            existingOrganism = Collections.EMPTY_LIST;
+            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
+
             if (first){
                 first = false;
             }
-            else if (name.length() > 1){
-                name = name.substring(0, name.length() - 1);
+            else if (originalName.length() > 1){
+                name = originalName.substring(0, originalName.length() - 1);
             }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select o.shortName from IntactOrganism o " +
@@ -280,7 +284,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
                 query.setParameter("interactorAc", intactOrganism.getAc());
             }
             existingOrganism = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(intactOrganism.getCommonName(), existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN, false);
             intactOrganism.setCommonName(nameInSync);
         }
         while(name.length() > 1 && !existingOrganism.isEmpty());
