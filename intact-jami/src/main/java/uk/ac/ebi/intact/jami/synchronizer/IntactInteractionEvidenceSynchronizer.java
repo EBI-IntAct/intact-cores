@@ -4,8 +4,10 @@ import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.InteractionCloner;
 import uk.ac.ebi.intact.jami.merger.IntactExperimentMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactInteractionEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -304,6 +306,6 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactExperimentMergerEnrichOnly());
+        super.setIntactMerger(new IntactInteractionEvidenceMergerEnrichOnly());
     }
 }

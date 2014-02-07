@@ -7,6 +7,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
@@ -334,6 +335,13 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
     public void setNegative(boolean negative) {
         this.isNegative = negative;
+
+        if (!isNegative()){
+            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "negative");
+        }
+        else{
+            getAnnotations().add(new InteractionAnnotation(IntactUtils.createMITopic("negative", null)));
+        }
     }
 
     @OneToMany( mappedBy = "parent", orphanRemoval = true,
