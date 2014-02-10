@@ -3,10 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringSource;
-import uk.ac.ebi.intact.jami.model.extension.IntactSource;
+import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringLocalObject;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -147,6 +144,6 @@ public class IntactUserSynchronizer extends AbstractIntactDbSynchronizer<User, U
     @Override
     protected void initialiseDefaultMerger() {
         // never update a user that exist in the database!!! If it exists, use the existing instance
-        super.setIntactMerger(new IntactMergerIgnoringSource<User, User>(this));
+        super.setIntactMerger(new IntactMergerIgnoringLocalObject<User, User>(this));
     }
 }

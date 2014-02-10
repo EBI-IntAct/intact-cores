@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.Checksum;
 import psidev.psi.mi.jami.model.CvTerm;
+import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -62,5 +63,10 @@ public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extend
     @Override
     protected C instantiateNewPersistentInstance(Checksum object, Class<? extends C> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return intactClass.getConstructor(CvTerm.class, String.class).newInstance(object.getMethod(), object.getValue());
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<Checksum, C>(this));
     }
 }

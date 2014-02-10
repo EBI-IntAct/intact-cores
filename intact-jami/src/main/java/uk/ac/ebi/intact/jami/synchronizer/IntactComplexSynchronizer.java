@@ -191,7 +191,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     intactInteraction.getCooperativeEffects().remove(param);
-                    intactInteraction.getCooperativeEffects().add(param);
+                    intactInteraction.getCooperativeEffects().add(expParam);
                 }
             }
         }
@@ -208,7 +208,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);
-                    intactInteraction.addParticipant(participant);
+                    intactInteraction.addParticipant(expPart);
                 }
             }
         }
@@ -237,11 +237,11 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
             Collection<ModelledParameter> parametersToPersist = new ArrayList<ModelledParameter>(intactInteraction.getModelledParameters());
             for (ModelledParameter param : parametersToPersist){
                 // do not persist or merge parameters because of cascades
-                Parameter expPar = this.parameterSynchronizer.synchronize(param, false);
+                ModelledParameter expPar = this.parameterSynchronizer.synchronize(param, false);
                 // we have a different instance because needed to be synchronized
                 if (expPar != param){
                     intactInteraction.getModelledParameters().remove(param);
-                    intactInteraction.getModelledParameters().add(param);
+                    intactInteraction.getModelledParameters().add(expPar);
                 }
             }
         }

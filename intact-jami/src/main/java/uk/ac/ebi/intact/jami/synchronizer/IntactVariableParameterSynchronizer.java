@@ -4,6 +4,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.utils.clone.VariableParameterCloner;
+import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
@@ -92,5 +93,10 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
 
     public void clearCache() {
         this.unitSynchronizer.clearCache();
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<VariableParameter, IntactVariableParameter>(this));
     }
 }

@@ -257,7 +257,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     intactExperiment.getVariableParameters().remove(param);
-                    intactExperiment.addVariableParameter(param);
+                    intactExperiment.addVariableParameter(expParam);
                 }
             }
         }
@@ -272,7 +272,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
                 // we have a different instance because needed to be synchronized
                 if (expInter != interaction){
                     intactExperiment.getInteractionEvidences().remove(interaction);
-                    intactExperiment.addInteractionEvidence(interaction);
+                    intactExperiment.addInteractionEvidence(expInter);
                 }
             }
         }

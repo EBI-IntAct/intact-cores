@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CooperativityEvidenceCloner;
+import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -67,7 +68,7 @@ public class IntactCooperativityEvidenceSynchronizer extends AbstractIntactDbSyn
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     object.getEvidenceMethods().remove(param);
-                    object.getEvidenceMethods().add(param);
+                    object.getEvidenceMethods().add(expParam);
                 }
             }
         }
@@ -83,5 +84,10 @@ public class IntactCooperativityEvidenceSynchronizer extends AbstractIntactDbSyn
         IntactCooperativityEvidence ev = new IntactCooperativityEvidence(object.getPublication());
         CooperativityEvidenceCloner.copyAndOverrideCooperativityEvidenceProperties(object, ev);
         return ev;
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<CooperativityEvidence, IntactCooperativityEvidence>(this));
     }
 }

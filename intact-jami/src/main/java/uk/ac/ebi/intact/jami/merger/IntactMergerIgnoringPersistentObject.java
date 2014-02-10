@@ -7,19 +7,19 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 /**
- * This merger will always ignore the updates in obj1 and keep the loaded object from the database.
- * If the object loaded from the database is null, it will return the firs object.
+ * This merger will always ignore the existing object in the database and keep the local object.
+ * If the local object is null, it will return the object loaded from the database.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>29/01/14</pre>
  */
 
-public class IntactMergerIgnoringSource<I,T extends Auditable> extends AbstractMIEnricher<I> implements IntactDbMerger<I,T>{
+public class IntactMergerIgnoringPersistentObject<I,T extends Auditable> extends AbstractMIEnricher<I> implements IntactDbMerger<I,T>{
 
     private IntactDbSynchronizer<I,T> dbSynchronizer;
 
-    public IntactMergerIgnoringSource(IntactDbSynchronizer<I,T> dbSynchronizer){
+    public IntactMergerIgnoringPersistentObject(IntactDbSynchronizer<I, T> dbSynchronizer){
         if (dbSynchronizer == null){
             throw new IllegalArgumentException("The db synchronizer is required.");
         }
@@ -34,7 +34,7 @@ public class IntactMergerIgnoringSource<I,T extends Auditable> extends AbstractM
      * @return
      */
     public T merge(T obj1, T obj2) {
-        return obj2 != null ? obj2 : obj1;
+        return obj1 != null ? obj1 : obj2;
     }
 
     public IntactDbSynchronizer<I, T> getDbSynchronizer() {

@@ -161,7 +161,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     intactInteraction.getVariableParameterValues().remove(param);
-                    intactInteraction.getVariableParameterValues().add(param);
+                    intactInteraction.getVariableParameterValues().add(expParam);
                 }
             }
         }
@@ -178,7 +178,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);
-                    intactInteraction.addParticipant(participant);
+                    intactInteraction.addParticipant(expPart);
                 }
             }
         }
@@ -193,7 +193,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
                 // we have a different instance because needed to be synchronized
                 if (expPar != param){
                     intactInteraction.getParameters().remove(param);
-                    intactInteraction.getParameters().add(param);
+                    intactInteraction.getParameters().add(expPar);
                 }
             }
         }

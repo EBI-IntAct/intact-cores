@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
@@ -148,6 +149,21 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
     @Override
     public String toString() {
         return "Outcome: "+(outcome != null ? outcome.toString() : "") + (response != null ? ", response: " + response.toString() : "");
+    }
+
+    @Transient
+    public boolean areCooperativityEvidencesInitialized(){
+        return Hibernate.isInitialized(getCooperativityEvidences());
+    }
+
+    @Transient
+    public boolean areAffectedInteractionsInitialized(){
+        return Hibernate.isInitialized(getAffectedInteractions());
+    }
+
+    @Transient
+    public boolean areAnnotationsInitialized(){
+        return Hibernate.isInitialized(getAnnotations());
     }
 
     protected void initialiseCooperativityEvidences(){

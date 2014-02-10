@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.CvTerm;
+import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -71,5 +72,10 @@ public class IntactLifeCycleSynchronizer<A extends AbstractLifecycleEvent> exten
     @Override
     protected A instantiateNewPersistentInstance(LifeCycleEvent object, Class<? extends A> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return intactClass.getConstructor(CvTerm.class, User.class, Date.class, String.class).newInstance(object.getEvent(), object.getWho(), object.getWhen(), object.getNote());
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<LifeCycleEvent, A>(this));
     }
 }

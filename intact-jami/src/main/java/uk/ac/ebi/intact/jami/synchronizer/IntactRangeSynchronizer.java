@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -107,5 +108,10 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
                 }
             }
         }
+    }
+
+    @Override
+    protected void initialiseDefaultMerger() {
+        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<Range, IntactRange>(this));
     }
 }
