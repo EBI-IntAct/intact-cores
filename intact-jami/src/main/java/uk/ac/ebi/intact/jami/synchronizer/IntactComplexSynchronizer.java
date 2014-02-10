@@ -44,9 +44,9 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         this.experimentSynchronizer = new IntactExperimentSynchronizer(entityManager);
         this.lifeCycleEventSynchronizer = new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
         this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
+        this.cooperativeEffectSynchronizer = new IntactCooperativeEffectSynchronizer(entityManager);
 
         // TODO initialise participant synchronizer
-        // TODO initialise cooperative effect synchronizer
     }
 
     public IntactComplexSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer,
@@ -70,9 +70,9 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         this.experimentSynchronizer = experimentSynchronizer != null ? experimentSynchronizer : new IntactExperimentSynchronizer(entityManager);
         this.lifeCycleEventSynchronizer = lifeCycleEventSynchronizer != null ? lifeCycleEventSynchronizer : new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
         this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
+        this.cooperativeEffectSynchronizer = cooperativeEffectSynchronizer != null ? cooperativeEffectSynchronizer : new IntactCooperativeEffectSynchronizer(entityManager);
 
         // TODO initialise participant synchronizer
-        // TODO initialise cooperative effect synchronizer
     }
 
     @Override
