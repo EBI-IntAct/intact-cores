@@ -3,7 +3,8 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.clone.CooperativityEvidenceCloner;
+import psidev.psi.mi.jami.utils.clone.CooperativeEffectCloner;
+import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -25,7 +26,7 @@ public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCoo
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> cvSynchronizer;
     private IntactDbSynchronizer<Annotation, CooperativeEffectAnnotation> annotationSynchronizer;
     private IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> evidenceSynchronizer;
-    private IntactDbSynchronizer<ModelledInteraction, IntactComplex> complexSynchronizer;
+    private IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactCooperativeEffectBaseSynchronizer.class);
 
@@ -49,11 +50,11 @@ public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCoo
         this.complexSynchronizer = complexSynchronizer != null ? complexSynchronizer : new IntactComplexSynchronizer(entityManager);
     }
 
-    public IntactCooperativityEvidence find(CooperativityEvidence object) throws FinderException {
+    public C find(CooperativeEffect object) throws FinderException {
         return null;
     }
 
-    public void synchronizeProperties(IntactCooperativityEvidence object) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(C object) throws FinderException, PersisterException, SynchronizerException {
         // outcome first
         prepareOutcome(object);
         // response
@@ -77,7 +78,7 @@ public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCoo
         if (object.areAnnotationsInitialized()){
             Collection<Annotation> annotsToPersist = new ArrayList<Annotation>(object.getAnnotations());
             for (Annotation annot : annotsToPersist){
-                Annotation persistentAnnot = this.annotationSynchronizer.synchronize(annot, true);
+                Annotation persistentAnnot = this.annotationSynchronizer.synchronize(annot, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentAnnot != annot){
                     object.getAnnotations().remove(annot);
@@ -87,41 +88,53 @@ public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCoo
         }
     }
 
-    protected void prepareAffectedInteractions(C object) {
+    protected void prepareAffectedInteractions(C object) throws PersisterException, FinderException, SynchronizerException {
         if (object.areAffectedInteractionsInitialized()){
             Collection<ModelledInteraction> interactionsToPersist = new ArrayList<ModelledInteraction>(object.getAffectedInteractions());
             for (ModelledInteraction interaction : interactionsToPersist){
-                Complex persistentInteraction = this.annotationSynchronizer.synchronize(interaction, true);
+                // first convert to complex as we import modelled interactions as complexes in intact
+                Complex convertedComplex = null;
+                if (!(interaction instanceof Complex)){
+                    convertedComplex = new IntactComplex(interaction.getShortName() != null ? interaction.getShortName() : IntactUtils.generateAutomaticShortlabelForModelledInteraction(interaction, IntactUtils.MAX_SHORT_LABEL_LEN));
+                    InteractorCloner.copyAndOverrideBasicComplexPropertiesWithModelledInteractionProperties(interaction, convertedComplex);
+                }
+                else{
+                    convertedComplex = (Complex)interaction;
+                }
+
+                Complex persistentInteraction = this.complexSynchronizer.synchronize(convertedComplex, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentInteraction != interaction){
-                    object.getAnnotations().remove(interaction);
-                    object.getAnnotations().add(persistentInteraction);
+                    object.getAffectedInteractions().remove(interaction);
+                    object.getAffectedInteractions().add(persistentInteraction);
                 }
             }
         }
     }
 
-    protected void prepareCooperativityEvidences(IntactCooperativityEvidence object) {
-        if (object.areEvidenceMethodsInitialized()){
-            Collection<CvTerm> parametersToPersist = new ArrayList<CvTerm>(object.getEvidenceMethods());
-            for (CvTerm param : parametersToPersist){
-                CvTerm expParam = this.cvSynchronizer.synchronize(param, true);
+    protected void prepareCooperativityEvidences(C object) throws PersisterException, FinderException, SynchronizerException {
+        if (object.areCooperativityEvidencesInitialized()){
+            Collection<CooperativityEvidence> parametersToPersist = new ArrayList<CooperativityEvidence>(object.getCooperativityEvidences());
+            for (CooperativityEvidence param : parametersToPersist){
+                CooperativityEvidence expParam = this.evidenceSynchronizer.synchronize(param, false);
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
-                    object.getEvidenceMethods().remove(param);
-                    object.getEvidenceMethods().add(param);
+                    object.getCooperativityEvidences().remove(param);
+                    object.getCooperativityEvidences().add(expParam);
                 }
             }
         }
     }
 
-    protected void prepareResponse(IntactCooperativityEvidence object) {
-
+    protected void prepareResponse(C object) throws PersisterException, FinderException, SynchronizerException {
+       CvTerm outcome = object.getOutCome();
+       object.setOutCome(this.cvSynchronizer.synchronize(outcome, true));
     }
 
-    protected void prepareOutcome(IntactCooperativityEvidence object) {
+    protected void prepareOutcome(C object) throws PersisterException, FinderException, SynchronizerException {
 
-
+        CvTerm response = object.getResponse();
+        object.setResponse(this.cvSynchronizer.synchronize(response, true));
     }
 
     @Override
@@ -131,9 +144,9 @@ public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCoo
 
     @Override
     protected C instantiateNewPersistentInstance(CooperativeEffect object, Class<? extends C> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        IntactCooperativityEvidence ev = new IntactCooperativityEvidence(object.getPublication());
-        CooperativityEvidenceCloner.copyAndOverrideCooperativityEvidenceProperties(object, ev);
-        return ev;
+        C newEffect = intactClass.getConstructor(CvTerm.class).newInstance(object.getOutCome());
+        CooperativeEffectCloner.copyAndOverrideBasicCooperativeEffectProperties(object, newEffect);
+        return newEffect;
     }
 
     @Override
