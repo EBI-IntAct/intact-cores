@@ -6,6 +6,8 @@ import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactComplexComparator;
 import psidev.psi.mi.jami.utils.comparator.participant.UnambiguousModelledParticipantComparator;
 import uk.ac.ebi.intact.jami.merger.IntactComplexMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -29,6 +31,8 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
     private IntactDbSynchronizer<ModelledConfidence, ComplexConfidence> confidenceSynchronizer;
     private IntactDbSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect> cooperativeEffectSynchronizer;
     private IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer;
+    private IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> lifeCycleEventSynchronizer;
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer;
 
     private CollectionComparator<ModelledEntity> participantsComparator;
 
@@ -38,6 +42,8 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         this.parameterSynchronizer = new IntactParameterSynchronizer<ModelledParameter, ComplexParameter>(entityManager, ComplexParameter.class);
         this.confidenceSynchronizer = new IntactConfidenceSynchronizer<ModelledConfidence, ComplexConfidence>(entityManager, ComplexConfidence.class);
         this.experimentSynchronizer = new IntactExperimentSynchronizer(entityManager);
+        this.lifeCycleEventSynchronizer = new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
+        this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
 
         // TODO initialise participant synchronizer
         // TODO initialise cooperative effect synchronizer
@@ -53,13 +59,17 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
                                      IntactDbSynchronizer<ModelledParameter, ComplexParameter> parameterSynchronizer,
                                      IntactDbSynchronizer<ModelledConfidence, ComplexConfidence> confidenceSynchronizer,
                                      IntactDbSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect> cooperativeEffectSynchronizer,
-                                     IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer) {
+                                     IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer,
+                                     IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> lifeCycleEventSynchronizer,
+                                     IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer) {
         super(entityManager, IntactComplex.class, aliasSynchronizer, annotationSynchronizer,
                 xrefSynchronizer, organismSynchronizer, typeSynchronizer, checksumSynchronizer);
         this.participantsComparator = new CollectionComparator<ModelledEntity>(new UnambiguousModelledParticipantComparator());
         this.parameterSynchronizer = parameterSynchronizer != null ? parameterSynchronizer : new IntactParameterSynchronizer<ModelledParameter, ComplexParameter>(entityManager, ComplexParameter.class);
         this.confidenceSynchronizer = confidenceSynchronizer != null ? confidenceSynchronizer : new IntactConfidenceSynchronizer<ModelledConfidence, ComplexConfidence>(entityManager, ComplexConfidence.class);
         this.experimentSynchronizer = experimentSynchronizer != null ? experimentSynchronizer : new IntactExperimentSynchronizer(entityManager);
+        this.lifeCycleEventSynchronizer = lifeCycleEventSynchronizer != null ? lifeCycleEventSynchronizer : new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
+        this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
 
         // TODO initialise participant synchronizer
         // TODO initialise cooperative effect synchronizer
@@ -129,6 +139,10 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         prepareParticipants(intactComplex);
         // then check cooperative effects
         prepareCooperativeEffects(intactComplex);
+        // prepare status
+        prepareStatus(intactComplex);
+        // prepare lifecycle
+        prepareLifeCycleEvents(intactComplex);
 
         // then prepare experiment for backward compatibility
         prepareExperiments(intactComplex);
@@ -140,6 +154,31 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         this.confidenceSynchronizer.clearCache();
         this.participantSynchronizer.clearCache();
         this.cooperativeEffectSynchronizer.clearCache();
+        this.lifeCycleEventSynchronizer.clearCache();
+        this.statusSynchronizer.clearCache();
+    }
+
+    protected void prepareStatus(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+
+        // first the status
+        CvTerm status = intactComplex.getStatus() != null ? intactComplex.getStatus() : IntactUtils.createLifecycleStatus(LifeCycleEvent.NEW_STATUS);
+        intactComplex.setStatus(this.statusSynchronizer.synchronize(status, true));
+    }
+
+    protected void prepareLifeCycleEvents(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+
+        if (intactComplex.areLifeCycleEventsInitialized()){
+            List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactComplex.getLifecycleEvents());
+            for (LifeCycleEvent event : eventsToPersist){
+                // do not persist or merge events because of cascades
+                LifeCycleEvent evt = this.lifeCycleEventSynchronizer.synchronize(event, false);
+                // we have a different instance because needed to be synchronized
+                if (evt != event){
+                    intactComplex.getLifecycleEvents().add(intactComplex.getLifecycleEvents().indexOf(event), evt);
+                    intactComplex.getLifecycleEvents().remove(event);
+                }
+            }
+        }
     }
 
     protected void prepareCooperativeEffects(IntactComplex intactInteraction) throws PersisterException, FinderException, SynchronizerException {

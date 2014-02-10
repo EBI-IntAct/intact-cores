@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CooperativeEffect;
 import psidev.psi.mi.jami.model.CooperativityEvidence;
@@ -115,7 +116,12 @@ public class IntactCooperativityEvidence extends AbstractAuditable implements Co
         return publication != null ? publication.toString() : super.toString();
     }
 
-    protected void initialiseEvidenceMethods(){
+    @Transient
+    public boolean areEvidenceMethodsInitialized(){
+        return Hibernate.isInitialized(getEvidenceMethods());
+    }
+
+    private void initialiseEvidenceMethods(){
         this.evidenceMethods = new ArrayList<CvTerm>();
     }
 

@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AliasUtils;
@@ -43,6 +44,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
     private Alias systematicName;
     private Collection<Experiment> experiments;
     private List<LifeCycleEvent> lifecycleEvents;
+    private CvTerm status;
 
     protected IntactComplex(){
         super();
@@ -110,6 +112,18 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     public IntactComplex(String name, String fullName, Organism organism, Xref uniqueId) {
         super(name, fullName, organism, uniqueId);
+    }
+
+    @ManyToOne(targetEntity = IntactCvTerm.class)
+    @JoinColumn( name = "status_ac", referencedColumnName = "ac" )
+    @ForeignKey(name="FK_COMPLEX_STATUS")
+    @Target(IntactCvTerm.class)
+    public CvTerm getStatus() {
+        return status;
+    }
+
+    public void setStatus( CvTerm status ) {
+        this.status = status;
     }
 
     @OneToMany( mappedBy = "complex", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)
@@ -437,6 +451,11 @@ public class IntactComplex extends IntactInteractor implements Complex{
     @Transient
     public boolean areParticipantsInitialized(){
         return Hibernate.isInitialized(getParticipants());
+    }
+
+    @Transient
+    public boolean areLifeCycleEventsInitialized(){
+        return Hibernate.isInitialized(getLifecycleEvents());
     }
 
     @Transient

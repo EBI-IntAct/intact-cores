@@ -9,7 +9,11 @@ import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ModelledFeature;
 import psidev.psi.mi.jami.model.ModelledParticipant;
+import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Complex merger based on the jami interaction evidence enricher.
@@ -86,6 +90,45 @@ public class IntactComplexMergerEnrichOnly extends IntactInteractorBaseMergerEnr
 
     public void setSourceEnricher(SourceEnricher sourceEnricher) {
         getBasicEnricher().setSourceEnricher(sourceEnricher);
+    }
+
+    @Override
+    public IntactComplex merge(IntactComplex obj1, IntactComplex obj2) {
+        // obj2 is mergedComplex
+        IntactComplex mergedComplex = super.merge(obj1, obj2);
+
+        // merge status
+        if (mergedComplex.getStatus() == null && obj1.getStatus() != null){
+            mergedComplex.setStatus(obj1.getStatus());
+        }
+        // merge lifecycle
+        if (obj1.areLifeCycleEventsInitialized()){
+            mergeLifeCycleEvents(mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
+        }
+
+        return mergedComplex;
+    }
+
+    private void mergeLifeCycleEvents(List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){
+
+        Iterator<LifeCycleEvent> eventIterator = sourceEvents.iterator();
+        int index = 0;
+        while(eventIterator.hasNext()){
+            LifeCycleEvent event = eventIterator.next();
+            boolean containsEvent = false;
+            for (LifeCycleEvent event2 : toEnrichEvents){
+                // identical terms
+                if (event == event2){
+                    containsEvent = true;
+                    break;
+                }
+            }
+            // add missing xref not in second list
+            if (!containsEvent){
+                toEnrichEvents.add(index, event);
+            }
+            index++;
+        }
     }
 }
 
