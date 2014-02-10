@@ -129,6 +129,41 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         }
     }
 
+    @Override
+    public IntactInteractor synchronize(Interactor term, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+            if (term instanceof IntactMolecule){
+                if (term instanceof IntactPolymer){
+                    if (term instanceof IntactProtein){
+                        return this.proteinSynchronizer.synchronize((IntactProtein)term, persist);
+                    }
+                    else if (term instanceof IntactNucleicAcid){
+                        return this.nucleicAcidSynchronizer.synchronize((IntactNucleicAcid)term, persist);
+                    }
+                    else{
+                        return this.polymerSynchronizer.synchronize((IntactPolymer)term, persist);
+                    }
+                }
+                else if (term instanceof IntactBioactiveEntity){
+                    return this.bioactiveEntitySynchronizer.synchronize((IntactBioactiveEntity)term, persist);
+                }
+                else if (term instanceof IntactGene){
+                    return this.geneSynchronizer.synchronize((IntactGene)term, persist);
+                }
+                else{
+                    return this.moleculeSynchronizer.synchronize((IntactMolecule)term, persist);
+                }
+            }
+            else if (term instanceof IntactComplex){
+                return this.complexSynchronizer.synchronize((IntactComplex)term, persist);
+            }
+            else if (term instanceof IntactInteractorPool){
+                return this.interactorPoolSynchronizer.synchronize((IntactInteractorPool)term, persist);
+            }
+            else {
+                return this.interactorBaseSynchronizer.synchronize(term, persist);
+            }
+    }
+
     public void synchronizeProperties(IntactInteractor term) throws FinderException, PersisterException, SynchronizerException {
         if (term instanceof IntactMolecule){
             if (term instanceof IntactPolymer){

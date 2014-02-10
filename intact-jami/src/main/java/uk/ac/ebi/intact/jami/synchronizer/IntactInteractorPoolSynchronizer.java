@@ -126,4 +126,10 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
         InteractorCloner.copyAndOverrideBasicInteractorPoolProperties(object, newInteractor);
         return newInteractor;
     }
+
+    @Override
+    public void clearCache() {
+        super.clearCache();
+        this.interactorSynchronizer.clearCache();
+    }
 }

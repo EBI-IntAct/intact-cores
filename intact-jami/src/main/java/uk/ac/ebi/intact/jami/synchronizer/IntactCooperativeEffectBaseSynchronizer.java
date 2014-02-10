@@ -22,7 +22,7 @@ import java.util.Collection;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCooperativeEffect> extends AbstractIntactDbSynchronizer<CooperativeEffect, C>{
+public class IntactCooperativeEffectBaseSynchronizer<T extends CooperativeEffect, C extends AbstractIntactCooperativeEffect> extends AbstractIntactDbSynchronizer<T, C>{
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> cvSynchronizer;
     private IntactDbSynchronizer<Annotation, CooperativeEffectAnnotation> annotationSynchronizer;
     private IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> evidenceSynchronizer;
@@ -50,7 +50,7 @@ public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCoo
         this.complexSynchronizer = complexSynchronizer != null ? complexSynchronizer : new IntactComplexSynchronizer(entityManager);
     }
 
-    public C find(CooperativeEffect object) throws FinderException {
+    public C find(T object) throws FinderException {
         return null;
     }
 
@@ -143,7 +143,7 @@ public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCoo
     }
 
     @Override
-    protected C instantiateNewPersistentInstance(CooperativeEffect object, Class<? extends C> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    protected C instantiateNewPersistentInstance(T object, Class<? extends C> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         C newEffect = intactClass.getConstructor(CvTerm.class).newInstance(object.getOutCome());
         CooperativeEffectCloner.copyAndOverrideBasicCooperativeEffectProperties(object, newEffect);
         return newEffect;
@@ -151,6 +151,10 @@ public class IntactCooperativeEffectBaseSynchronizer<C extends AbstractIntactCoo
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<CooperativeEffect, C>(this));
+        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<T, C>(this));
+    }
+
+    protected IntactDbSynchronizer<CvTerm, IntactCvTerm> getCvSynchronizer() {
+        return cvSynchronizer;
     }
 }
