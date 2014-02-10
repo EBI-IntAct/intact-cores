@@ -4,10 +4,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.ParticipantUtils;
 import psidev.psi.mi.jami.utils.comparator.IntegerComparator;
-import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
-import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
+import uk.ac.ebi.intact.jami.model.extension.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -151,7 +148,7 @@ public class IntactUtils {
             }
         }
         // retruncate if necessary (label1 + label2 + 1 (for the '-' between label1 and label2) > maxSize)
-        if (maxLength < label1.length() + 1 + (label2 == null ? 0 : label2.length())){
+        if (maxLength < label1.length() + (label2 == null ? 0 : 1 + label2.length())){
             int label1Size = label1.length();
             int label2Size = label2 != null ? label2.length() : 0;
             int maxSize1 = Math.min(label1Size, maxLength / 2 - 1);
@@ -166,6 +163,59 @@ public class IntactUtils {
         }
 
         return label1 + (label2 != null ? "-"+label2 : "");
+    }
+
+    public static String generateAutomaticComplexShortlabelFor(IntactComplex intactInteraction, int maxLength){
+        String organismName = null;
+        if (intactInteraction.getOrganism() != null){
+            organismName=(intactInteraction.getOrganism().getCommonName() != null ? intactInteraction.getOrganism().getCommonName().trim().toLowerCase() : Integer.toString(intactInteraction.getOrganism().getTaxId()));
+        }
+        if (intactInteraction.getParticipants().isEmpty()){
+            String unknownLabel = "unknown"+(organismName != null ? "_"+organismName : "");
+            // retruncate if necessary
+            if (maxLength < unknownLabel.length()){
+                return unknownLabel.substring(0, maxLength);
+            }
+            else{
+                return unknownLabel;
+            }
+        }
+        String label1=null;
+        String firstAlphabetical=null;
+
+        // collect different names from the collection of participants
+        // alternative bait -> first alphabetical
+        for (ModelledParticipant participant : intactInteraction.getParticipants()){
+            // extract participant name (gene name or shortlabel if no gene names)
+            Alias geneName = AliasUtils.collectFirstAliasWithType(participant.getInteractor().getAliases(), Alias.GENE_NAME_MI, Alias.GENE_NAME);
+            String name = (geneName != null ? geneName.getName() : participant.getInteractor().getShortName()).trim().toLowerCase().replaceAll("-", "_");
+            // alternative baits
+            if (ParticipantUtils.isParticipantAnAlternativeBaitForSpokeExpansion(participant)){
+                if (label1 == null){
+                    label1 = name;
+                }
+                else if (name.compareTo(label1) < 0){
+                    label1 = name;
+                }
+            }
+            else if (firstAlphabetical == null){
+                firstAlphabetical = name;
+            }
+            else if (name.compareTo(firstAlphabetical) < 0){
+                firstAlphabetical = name;
+            }
+        }
+
+        // set label 1 from existing names if not set : label1 is bait or alternative bait or prey or first alphabetical
+        if (label1 == null){
+            label1 = firstAlphabetical;
+        }
+
+        // retruncate if necessary
+        if (maxLength < label1.length()+(organismName != null ? organismName.length()+1 : 0)){
+            return label1+(organismName != null ? "_"+organismName : "").substring(0, maxLength);
+        }
+        return label1+(organismName != null ? "_"+organismName : "");
     }
 
     public static String generateAutomaticExperimentShortlabelFor(IntactExperiment intactExperiment, int maxLength){

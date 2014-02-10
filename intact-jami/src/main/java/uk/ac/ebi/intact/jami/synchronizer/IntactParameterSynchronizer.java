@@ -21,7 +21,7 @@ import java.math.BigDecimal;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactParameterSynchronizer<P extends AbstractIntactParameter> extends AbstractIntactDbSynchronizer<Parameter, P>{
+public class IntactParameterSynchronizer<T extends Parameter, P extends AbstractIntactParameter> extends AbstractIntactDbSynchronizer<T, P>{
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer;
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer;
 
@@ -40,7 +40,7 @@ public class IntactParameterSynchronizer<P extends AbstractIntactParameter> exte
         this.unitSynchronizer = unitSynchronizer != null ? unitSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.UNIT_OBJCLASS);
     }
 
-    public P find(Parameter object) throws FinderException {
+    public P find(T object) throws FinderException {
         return null;
     }
 
@@ -67,7 +67,7 @@ public class IntactParameterSynchronizer<P extends AbstractIntactParameter> exte
     }
 
     @Override
-    protected P instantiateNewPersistentInstance(Parameter object, Class<? extends P> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    protected P instantiateNewPersistentInstance(T object, Class<? extends P> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return intactClass.getConstructor(CvTerm.class, ParameterValue.class, CvTerm.class, BigDecimal.class).newInstance(object.getType(), object.getValue(), object.getUnit(), object.getUncertainty());
     }
 }

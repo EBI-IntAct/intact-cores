@@ -90,11 +90,9 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
         if (existingOrganism == null){
             query = getEntityManager().createQuery("select i from IntactInteractorPool i " +
                     "join i.interactorType as t " +
-                    "where i.shortName = :name " +
-                    "and i.organism is null " +
+                    "where i.organism is null " +
                     "and t.ac = :typeAc " +
                     "and size(i.interactors) =:interactorSize");
-            query.setParameter("name", term.getShortName().trim().toLowerCase());
             query.setParameter("typeAc", existingType.getAc());
             query.setParameter("interactorSize", term.size());
         }
@@ -102,11 +100,9 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
             query = getEntityManager().createQuery("select i from IntactInteractorPool i " +
                     "join i.interactorType as t " +
                     "join i.organism as o " +
-                    "where i.shortName = :name " +
-                    "and o.ac = :orgAc " +
+                    "where o.ac = :orgAc " +
                     "and t.ac = :typeAc " +
                     "and size(i.interactors) =:interactorSize");
-            query.setParameter("name", term.getShortName().trim().toLowerCase());
             query.setParameter("orgAc", existingOrganism.getAc());
             query.setParameter("typeAc", existingType.getAc());
             query.setParameter("interactorSize", term.size());

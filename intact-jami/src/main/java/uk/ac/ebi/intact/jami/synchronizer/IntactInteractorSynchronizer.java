@@ -40,7 +40,7 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         this.bioactiveEntitySynchronizer = new IntactBioactiveEntitySynchronizer(entityManager);
         this.geneSynchronizer = new IntactInteractorBaseSynchronizer<Gene, IntactGene>(entityManager, IntactGene.class);
         this.interactorPoolSynchronizer = new IntactInteractorPoolSynchronizer(entityManager);
-        this.complexSynchronizer = new IntactInteractorBaseSynchronizer<Complex, IntactComplex>(entityManager, IntactComplex.class);
+        this.complexSynchronizer = new IntactComplexSynchronizer(entityManager);
 
     }
 
@@ -58,7 +58,7 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         this.bioactiveEntitySynchronizer = bioactiveEntitySynchronizer != null ? bioactiveEntitySynchronizer : new IntactBioactiveEntitySynchronizer(entityManager);
         this.geneSynchronizer = geneSynchronizer != null ? geneSynchronizer : new IntactInteractorBaseSynchronizer<Gene, IntactGene>(entityManager, IntactGene.class);
         this.interactorPoolSynchronizer = interactorPoolSynchronizer != null ? interactorPoolSynchronizer : new IntactInteractorPoolSynchronizer(entityManager);
-        this.complexSynchronizer = complexSynchronizer != null ? complexSynchronizer : new IntactInteractorBaseSynchronizer<Complex, IntactComplex>(entityManager, IntactComplex.class);
+        this.complexSynchronizer = complexSynchronizer != null ? complexSynchronizer : new IntactComplexSynchronizer(entityManager);
     }
 
     public IntactInteractor find(Interactor term) throws FinderException{

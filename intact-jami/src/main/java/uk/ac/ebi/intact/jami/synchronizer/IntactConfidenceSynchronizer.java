@@ -19,7 +19,7 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactConfidenceSynchronizer<C extends AbstractIntactConfidence> extends AbstractIntactDbSynchronizer<Confidence, C>{
+public class IntactConfidenceSynchronizer<T extends Confidence, C extends AbstractIntactConfidence> extends AbstractIntactDbSynchronizer<T, C>{
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactConfidenceSynchronizer.class);
@@ -34,7 +34,7 @@ public class IntactConfidenceSynchronizer<C extends AbstractIntactConfidence> ex
         this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
     }
 
-    public C find(Confidence object) throws FinderException {
+    public C find(T object) throws FinderException {
         return null;
     }
 
@@ -60,7 +60,7 @@ public class IntactConfidenceSynchronizer<C extends AbstractIntactConfidence> ex
     }
 
     @Override
-    protected C instantiateNewPersistentInstance(Confidence object, Class<? extends C> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    protected C instantiateNewPersistentInstance(T object, Class<? extends C> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return intactClass.getConstructor(CvTerm.class, String.class).newInstance(object.getType(), object.getValue());
     }
 }

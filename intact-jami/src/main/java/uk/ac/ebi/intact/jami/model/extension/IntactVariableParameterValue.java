@@ -125,7 +125,7 @@ public class IntactVariableParameterValue extends AbstractAuditable implements V
     }
 
     @Column(name = "variableorder")
-    @Size(max = 4000)
+    @Size(max = IntactUtils.MAX_DESCRIPTION_LEN)
     private int getPersistentOrder() {
         return this.order;
     }

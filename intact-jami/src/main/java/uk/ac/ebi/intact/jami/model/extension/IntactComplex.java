@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
@@ -425,43 +426,37 @@ public class IntactComplex extends IntactInteractor implements Complex{
         this.interactionType = term;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAnnotation.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractorAnnotation.class)
-    public Collection<Annotation> getAnnotations() {
-        return super.getAnnotations();
-    }
-
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorChecksum.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractorChecksum.class)
-    public Collection<Checksum> getChecksums() {
-        return super.getChecksums();
-    }
-
-    @Transient
-    public Collection<Xref> getXrefs() {
-        return super.getXrefs();
-    }
-
-    @Transient
-    public Collection<Xref> getIdentifiers() {
-        return super.getIdentifiers();
-    }
-
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAlias.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractorAlias.class)
-    public Collection<Alias> getAliases() {
-        return super.getAliases();
-    }
-
     @Transient
     public Collection<InteractionEvidence> getInteractionEvidences() {
         if (interactionEvidences == null){
             initialiseInteractionEvidences();
         }
         return this.interactionEvidences;
+    }
+
+    @Transient
+    public boolean areParticipantsInitialized(){
+        return Hibernate.isInitialized(getParticipants());
+    }
+
+    @Transient
+    public boolean areCooperativeEffectsInitialized(){
+        return Hibernate.isInitialized(getCooperativeEffects());
+    }
+
+    @Transient
+    public boolean areParametersInitialized(){
+        return Hibernate.isInitialized(getModelledParameters());
+    }
+
+    @Transient
+    public boolean areConfidencesInitialized(){
+        return Hibernate.isInitialized(getModelledConfidences());
+    }
+
+    @Transient
+    public boolean areExperimentsInitialized(){
+        return Hibernate.isInitialized(getExperiments());
     }
 
     @Override

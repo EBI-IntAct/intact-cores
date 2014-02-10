@@ -57,10 +57,8 @@ public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolyme
         if (existingOrganism == null){
             query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
                     "join i.interactorType as t " +
-                    "where i.shortName = :name " +
-                    "and i.organism is null " +
+                    "where i.organism is null " +
                     "and t.ac = :typeAc" + (term.getSequence() != null ? " and i.sequence = :seq" : ""));
-            query.setParameter("name", term.getShortName().trim().toLowerCase());
             query.setParameter("typeAc", existingType.getAc());
             if (term.getSequence() != null){
                 query.setParameter("seq", term.getSequence());
@@ -70,10 +68,8 @@ public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolyme
             query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
                     "join i.interactorType as t " +
                     "join i.organism as o " +
-                    "where i.shortName = :name " +
-                    "and o.ac = :orgAc " +
+                    "where o.ac = :orgAc " +
                     "and t.ac = :typeAc"+ (term.getSequence() != null ? " and i.sequence = :seq" : ""));
-            query.setParameter("name", term.getShortName().trim().toLowerCase());
             query.setParameter("orgAc", existingOrganism.getAc());
             query.setParameter("typeAc", existingType.getAc());
             if (term.getSequence() != null){
