@@ -31,7 +31,7 @@ public class IntactCooperativeEffectSynchronizer extends AbstractIntactDbSynchro
     public IntactCooperativeEffectSynchronizer(EntityManager entityManager) {
         super(entityManager, AbstractIntactCooperativeEffect.class);
         this.preAssemblySynchronizer = new IntactCooperativeEffectBaseSynchronizer<Preassembly, IntactPreassembly>(entityManager, IntactPreassembly.class);
-        this.allosterySynchronizer = new IntactAllosteryBaseSynchronizer(entityManager);
+        this.allosterySynchronizer = new IntactAllosterySynchronizer(entityManager);
     }
 
     public IntactCooperativeEffectSynchronizer(EntityManager entityManager,
@@ -39,7 +39,7 @@ public class IntactCooperativeEffectSynchronizer extends AbstractIntactDbSynchro
                                                IntactDbSynchronizer<Allostery, IntactAllostery> allosterySynchronizer) {
         super(entityManager, AbstractIntactCooperativeEffect.class);
         this.preAssemblySynchronizer = preAssemblySynchronizer != null ? preAssemblySynchronizer : new IntactCooperativeEffectBaseSynchronizer<Preassembly, IntactPreassembly>(entityManager, IntactPreassembly.class);
-        this.allosterySynchronizer = allosterySynchronizer != null ? allosterySynchronizer : new IntactAllosteryBaseSynchronizer(entityManager);
+        this.allosterySynchronizer = allosterySynchronizer != null ? allosterySynchronizer : new IntactAllosterySynchronizer(entityManager);
     }
 
     public AbstractIntactCooperativeEffect find(CooperativeEffect object) throws FinderException {

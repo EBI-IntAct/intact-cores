@@ -1,11 +1,13 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.merger.IntactFeatureEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import java.util.List;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactFeatureEvidenceSynchronizer extends IntactFeatureSynchronizer<FeatureEvidence, IntactFeatureEvidence>{
+public class IntactFeatureEvidenceSynchronizer extends IntactFeatureBaseSynchronizer<FeatureEvidence, IntactFeatureEvidence> {
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer;
 
     public IntactFeatureEvidenceSynchronizer(EntityManager entityManager){
@@ -61,5 +63,13 @@ public class IntactFeatureEvidenceSynchronizer extends IntactFeatureSynchronizer
     @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactFeatureEvidenceMergerEnrichOnly());
+    }
+
+    @Override
+    protected IntactFeatureEvidence instantiateNewPersistentInstance(FeatureEvidence object, Class<? extends IntactFeatureEvidence> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        IntactFeatureEvidence newFeature = new IntactFeatureEvidence();
+        FeatureCloner.copyAndOverrideFeatureEvidenceProperties(object, newFeature);
+        newFeature.setParticipant(object.getParticipant());
+        return newFeature;
     }
 }

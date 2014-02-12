@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
@@ -253,6 +254,45 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         return interactor.toString() + " ( " + biologicalRole.toString() + ")" + (stoichiometry != null ? ", stoichiometry: " + stoichiometry.toString() : "");
     }
 
+    @Transient
+    public boolean areXrefsInitialized(){
+        return Hibernate.isInitialized(getXrefs());
+    }
+
+    @Transient
+    public boolean areAliasesInitialized(){
+        return Hibernate.isInitialized(getAliases());
+    }
+
+    @Transient
+    public boolean areAnnotationsInitialized(){
+        return Hibernate.isInitialized(getAnnotations());
+    }
+
+    @Transient
+    public boolean areFeaturesInitialized(){
+        return Hibernate.isInitialized(getFeatures());
+    }
+
+    @Transient
+    public boolean areCausalRelationshipsInitialized(){
+        return Hibernate.isInitialized(getCausalRelationships());
+    }
+
+    @Column(name = "shortlabel", nullable = false)
+    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
+    @NotNull
+    @Deprecated
+    /**
+     * @deprecated only for backward compatibility with intact core.
+     */
+    public String getShortLabel() {
+        if (this.shortName == null){
+            this.shortName = "N/A";
+        }
+        return shortName;
+    }
+
     protected void initialiseXrefs() {
         this.xrefs = new ArrayList<Xref>();
     }
@@ -291,19 +331,5 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
 
     protected void setFeatures(Collection<F> features) {
         this.features = features;
-    }
-
-    @Column(name = "shortlabel", nullable = false)
-    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
-    @NotNull
-    @Deprecated
-    /**
-     * @deprecated only for backward compatibility with intact core.
-     */
-    protected String getShortLabel() {
-        if (this.shortName == null){
-            this.shortName = "N/A";
-        }
-        return shortName;
     }
 }

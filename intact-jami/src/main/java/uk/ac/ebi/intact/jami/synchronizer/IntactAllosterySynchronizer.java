@@ -17,27 +17,27 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactAllosteryBaseSynchronizer extends IntactCooperativeEffectBaseSynchronizer<Allostery, IntactAllostery>{
+public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSynchronizer<Allostery, IntactAllostery>{
     private IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> participantSynchronizer;
     private IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer;
 
-    private static final Log log = LogFactory.getLog(IntactAllosteryBaseSynchronizer.class);
+    private static final Log log = LogFactory.getLog(IntactAllosterySynchronizer.class);
 
-    public IntactAllosteryBaseSynchronizer(EntityManager entityManager) {
+    public IntactAllosterySynchronizer(EntityManager entityManager) {
         super(entityManager, IntactAllostery.class);
-        this.featureSynchronizer = new IntactFeatureSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
+        this.featureSynchronizer = new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
 
         // TODO initialise participant synchronizer
     }
 
-    public IntactAllosteryBaseSynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> cvSynchronizer,
-                                           IntactDbSynchronizer<Annotation, CooperativeEffectAnnotation> annotationSynchronizer,
-                                           IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> evidenceSynchronizer,
-                                           IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer,
-                                           IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer,
-                                           IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> participantSynchronizer) {
+    public IntactAllosterySynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> cvSynchronizer,
+                                       IntactDbSynchronizer<Annotation, CooperativeEffectAnnotation> annotationSynchronizer,
+                                       IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> evidenceSynchronizer,
+                                       IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer,
+                                       IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer,
+                                       IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> participantSynchronizer) {
         super(entityManager, IntactAllostery.class);
-        this.featureSynchronizer = featureSynchronizer != null ? featureSynchronizer : new IntactFeatureSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
+        this.featureSynchronizer = featureSynchronizer != null ? featureSynchronizer : new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
 
         // TODO initialise participant synchronizer
     }
