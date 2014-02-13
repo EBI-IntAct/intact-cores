@@ -45,8 +45,10 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         this.lifeCycleEventSynchronizer = new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
         this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
         this.cooperativeEffectSynchronizer = new IntactCooperativeEffectSynchronizer(entityManager);
-
-        // TODO initialise participant synchronizer
+        this.participantSynchronizer = new IntActEntitySynchronizer<ModelledParticipant, IntactModelledParticipant, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
+                IntactModelledParticipant.class, IntactModelledEntityPool.class,
+                new IntactEntityBaseSynchronizer<ModelledParticipant, IntactModelledParticipant>(entityManager, IntactModelledParticipant.class),
+                new IntactModelledEntityPoolSynchronizer(entityManager));
     }
 
     public IntactComplexSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer,
@@ -71,8 +73,10 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         this.lifeCycleEventSynchronizer = lifeCycleEventSynchronizer != null ? lifeCycleEventSynchronizer : new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
         this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
         this.cooperativeEffectSynchronizer = cooperativeEffectSynchronizer != null ? cooperativeEffectSynchronizer : new IntactCooperativeEffectSynchronizer(entityManager);
-
-        // TODO initialise participant synchronizer
+        this.participantSynchronizer = participantSynchronizer != null ? participantSynchronizer : new IntActEntitySynchronizer<ModelledParticipant, IntactModelledParticipant, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
+                IntactModelledParticipant.class, IntactModelledEntityPool.class,
+                new IntactEntityBaseSynchronizer<ModelledParticipant, IntactModelledParticipant>(entityManager, IntactModelledParticipant.class),
+                new IntactModelledEntityPoolSynchronizer(entityManager));
     }
 
     @Override

@@ -55,6 +55,7 @@ public class IntactUtils {
     public static final String INTERACTION_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvInteraction";
     public static final String INTERACTION_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractionType";
     public static final String PARTICIPANT_DETECTION_METHOD_OBJCLASS ="uk.ac.ebi.intact.model.CvIdentification";
+    public static final String PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS ="uk.ac.ebi.intact.model.CvExperimentalPreparation";
     public static final String INTERACTOR_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvInteractorType";
     public static final String RANGE_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvFuzzyType";
     public static final String CONFIDENCE_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvConfidenceType";
@@ -365,6 +366,10 @@ public class IntactUtils {
             }
         }
         return currentLabel;
+    }
+
+    public static IntactCvTerm createExperimentalPreparation(String name, String MI){
+        return createIntactMITerm(name, MI, PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS);
     }
 
     public static IntactCvTerm createLifecycleEvent(String name){

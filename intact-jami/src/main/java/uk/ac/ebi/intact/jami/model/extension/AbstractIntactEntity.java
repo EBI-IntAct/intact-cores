@@ -107,7 +107,6 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "biologicalrole_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
-    // TODO fetch proper cv term
     public CvTerm getBiologicalRole() {
         if (this.biologicalRole == null){
             this.biologicalRole = IntactUtils.createMIBiologicalRole(Participant.UNSPECIFIED_ROLE, Participant.UNSPECIFIED_ROLE_MI);

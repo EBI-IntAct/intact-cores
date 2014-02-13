@@ -1,17 +1,16 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -205,6 +204,11 @@ public class IntactModelledEntityPool extends IntactModelledParticipant implemen
             }
             getInteractor().add(entity.getInteractor());
         }
+    }
+
+    @Transient
+    public boolean areEntitiesInitialized(){
+        return Hibernate.isInitialized(getComponents());
     }
 
     @Override

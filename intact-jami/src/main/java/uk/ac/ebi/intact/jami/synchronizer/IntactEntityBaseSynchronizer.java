@@ -112,11 +112,9 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public void synchronizeProperties(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
-        prepareAndSynchronizeShortLabel(intactEntity);
+        prepareShortLabel(intactEntity);
         // then check interactor
         prepareInteractor(intactEntity);
-        // then check organism
-        prepareBiologicalRole(intactEntity);
         // then check stoichiometry
         prepareStoichiometry(intactEntity);
         // then check features
@@ -173,14 +171,14 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
         }
     }
 
-    protected void prepareStoichiometry(I intactEntity) {
+    protected void prepareStoichiometry(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
         Stoichiometry stc = intactEntity.getStoichiometry();
         if (stc != null && !(stc instanceof IntactStoichiometry)){
             intactEntity.setStoichiometry(new IntactStoichiometry(stc.getMinValue(), stc.getMaxValue()));
         }
     }
 
-    protected void prepareBiologicalRole(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareExperimentalPreparations(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
        CvTerm bioRole = intactEntity.getBiologicalRole();
        intactEntity.setBiologicalRole(this.biologicalRoleSynchronizer.synchronize(bioRole, true));
     }
@@ -253,7 +251,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
         intactEntity.setInteractor(this.interactorSynchronizer.synchronize(interactor, true));
     }
 
-    protected void prepareAndSynchronizeShortLabel(I intactParticipant) {
+    protected void prepareShortLabel(I intactParticipant) {
         // truncate if necessary
         if (IntactUtils.MAX_SHORT_LABEL_LEN < intactParticipant.getShortLabel().length()){
             log.warn("Participant shortLabel too long: "+intactParticipant.getShortLabel()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");

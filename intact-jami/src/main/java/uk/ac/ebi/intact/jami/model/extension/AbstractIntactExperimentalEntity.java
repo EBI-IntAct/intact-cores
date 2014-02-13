@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
@@ -207,6 +208,26 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
     @Override
     public String toString() {
         return super.toString() + (experimentalRole != null ? ", " + experimentalRole.toString() : "") + (expressedIn != null ? ", " + expressedIn.toString() : "");
+    }
+
+    @Transient
+    public boolean areConfidencesInitialized(){
+        return Hibernate.isInitialized(getConfidences());
+    }
+
+    @Transient
+    public boolean areParametersInitialized(){
+        return Hibernate.isInitialized(getParameters());
+    }
+
+    @Transient
+    public boolean areIdentificationMethodsInitialized(){
+        return Hibernate.isInitialized(getIdentificationMethods());
+    }
+
+    @Transient
+    public boolean areExperimentalPreparationsInitialized(){
+        return Hibernate.isInitialized(getExperimentalPreparations());
     }
 
     protected void initialiseExperimentalPreparations() {

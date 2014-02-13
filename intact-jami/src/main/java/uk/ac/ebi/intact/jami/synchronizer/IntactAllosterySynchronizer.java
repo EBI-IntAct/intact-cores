@@ -27,7 +27,10 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
         super(entityManager, IntactAllostery.class);
         this.featureSynchronizer = new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
 
-        // TODO initialise participant synchronizer
+        this.participantSynchronizer = new IntActEntitySynchronizer<ModelledParticipant, IntactModelledParticipant, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
+                IntactModelledParticipant.class, IntactModelledEntityPool.class,
+                new IntactEntityBaseSynchronizer<ModelledParticipant, IntactModelledParticipant>(entityManager, IntactModelledParticipant.class),
+                new IntactModelledEntityPoolSynchronizer(entityManager));
     }
 
     public IntactAllosterySynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> cvSynchronizer,
@@ -39,7 +42,10 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
         super(entityManager, IntactAllostery.class);
         this.featureSynchronizer = featureSynchronizer != null ? featureSynchronizer : new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
 
-        // TODO initialise participant synchronizer
+        this.participantSynchronizer = participantSynchronizer != null ? participantSynchronizer : new IntActEntitySynchronizer<ModelledParticipant, IntactModelledParticipant, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
+                IntactModelledParticipant.class, IntactModelledEntityPool.class,
+                new IntactEntityBaseSynchronizer<ModelledParticipant, IntactModelledParticipant>(entityManager, IntactModelledParticipant.class),
+                new IntactModelledEntityPoolSynchronizer(entityManager));
     }
 
     public void synchronizeProperties(IntactAllostery object) throws FinderException, PersisterException, SynchronizerException {
