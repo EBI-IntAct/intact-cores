@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
-import uk.ac.ebi.intact.jami.merger.IntactEntityMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactExperimentalEntityMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -169,6 +169,6 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactEntityMergerEnrichOnly<T,I,Feature>());
+        super.setIntactMerger(new IntactExperimentalEntityMergerEnrichOnly<T, I>());
     }
 }

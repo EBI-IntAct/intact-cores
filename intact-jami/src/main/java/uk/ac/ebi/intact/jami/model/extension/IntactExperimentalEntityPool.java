@@ -5,6 +5,7 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Entity;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,45 +25,44 @@ import java.util.Iterator;
 public class IntactExperimentalEntityPool extends IntactParticipantEvidence implements ExperimentalEntityPool, ParticipantInteractorChangeListener{
 
     private Collection<ExperimentalEntity> components;
+    private CvTerm type;
 
     protected IntactExperimentalEntityPool() {
-        super();
+        super(new IntactInteractorPool("auto_generated_pool"));
     }
 
-    public IntactExperimentalEntityPool(InteractorPool interactor) {
-        super(interactor);
+    public IntactExperimentalEntityPool(String name) {
+        super(new IntactInteractorPool(name));
     }
 
-    public IntactExperimentalEntityPool(InteractorPool interactor, CvTerm bioRole) {
-        super(interactor, bioRole);
+    public IntactExperimentalEntityPool(String name, CvTerm bioRole) {
+        super(new IntactInteractorPool(name), bioRole);
     }
 
-    public IntactExperimentalEntityPool(InteractorPool interactor, Stoichiometry stoichiometry) {
-        super(interactor, stoichiometry);
+    public IntactExperimentalEntityPool(String name, Stoichiometry stoichiometry) {
+        super(new IntactInteractorPool(name), stoichiometry);
     }
 
     @Override
-    @ManyToOne( targetEntity = IntactInteractorPool.class, optional = false)
-    @JoinColumn( name = "interactor_ac", referencedColumnName = "ac")
-    @Target(IntactInteractorPool.class)
-    @NotNull
+    public void setShortLabel(String shortName) {
+        super.setShortLabel(shortName);
+        getInteractor().setShortName(shortName);
+    }
+
+    @Override
+    @Transient
     public InteractorPool getInteractor() {
         return (InteractorPool) super.getInteractor();
     }
 
     @Override
     public void setInteractor(Interactor interactor) {
-        if (!(interactor instanceof InteractorPool)){
-            throw new UnsupportedOperationException("Cannot set the interactor of an EntityPool as it is an interactorPool that is related to the interactors in the set of entities");
-        }
-        super.setInteractor(interactor);
+        throw new UnsupportedOperationException("Cannot set the interactor of an EntityPool as it is an interactorSet that is related to the interactors in the set of entities");
     }
 
-    public void setInteractor(InteractorPool interactor) {
-        super.setInteractor(interactor);
-    }
-
-    @Transient
+    @ManyToOne(targetEntity = IntactCvTerm.class, optional = false)
+    @JoinColumn( name = "entitytype_ac" )
+    @Target(IntactCvTerm.class)
     @NotNull
     public CvTerm getType() {
         return getInteractor().getInteractorType();
@@ -73,7 +73,13 @@ public class IntactExperimentalEntityPool extends IntactParticipantEvidence impl
      * Sets the type to molecule set (MI:1304) if the given type is null
      */
     public void setType(CvTerm type) {
-        getInteractor().setInteractorType(type);
+        if (type == null){
+            this.type = IntactUtils.createMIInteractorType(InteractorPool.MOLECULE_SET, InteractorPool.MOLECULE_SET_MI);
+        }
+        else {
+            this.type = type;
+        }
+        getInteractor().setInteractorType(this.type);
     }
 
     public int size() {
