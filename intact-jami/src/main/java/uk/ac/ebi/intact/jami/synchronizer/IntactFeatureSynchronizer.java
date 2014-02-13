@@ -1,16 +1,14 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
-import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
-import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.clone.CooperativeEffectCloner;
-import psidev.psi.mi.jami.utils.clone.FeatureCloner;
-import psidev.psi.mi.jami.utils.clone.InteractorCloner;
-import uk.ac.ebi.intact.jami.model.extension.*;
+import psidev.psi.mi.jami.model.Feature;
+import psidev.psi.mi.jami.model.FeatureEvidence;
+import psidev.psi.mi.jami.model.ModelledFeature;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
+import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
+import uk.ac.ebi.intact.jami.model.extension.IntactModelledFeature;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 
 /**
  * Synchronizer for features
@@ -65,22 +63,8 @@ public class IntactFeatureSynchronizer extends AbstractIntactDbSynchronizer<Feat
         if (term instanceof FeatureEvidence){
             return this.featureEvidenceSynchronizer.synchronize((FeatureEvidence)term, persist);
         }
-        else if (term instanceof ModelledFeature){
-            return this.modelledFeatureSynchronizer.synchronize((ModelledFeature)term, persist);
-        }
         else {
-            try {
-                IntactFeatureEvidence featureEvidence = (IntactFeatureEvidence)instantiateNewPersistentInstance(term, getIntactClass());
-                return this.featureEvidenceSynchronizer.synchronize(featureEvidence, persist);
-            } catch (InstantiationException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+IntactFeatureEvidence.class, e);
-            } catch (IllegalAccessException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+IntactFeatureEvidence.class, e);
-            } catch (InvocationTargetException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+IntactFeatureEvidence.class, e);
-            } catch (NoSuchMethodException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+IntactFeatureEvidence.class, e);
-            }
+            return this.modelledFeatureSynchronizer.synchronize((ModelledFeature)term, persist);
         }
     }
 
@@ -113,8 +97,6 @@ public class IntactFeatureSynchronizer extends AbstractIntactDbSynchronizer<Feat
 
     @Override
     protected AbstractIntactFeature instantiateNewPersistentInstance(Feature object, Class<? extends AbstractIntactFeature> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        IntactFeatureEvidence newFeature = new IntactFeatureEvidence();
-        FeatureCloner.copyAndOverrideBasicFeaturesProperties(object, newFeature);
-        return newFeature;
+        throw new UnsupportedOperationException("This synchronizer relies on delegate synchronizers and cannot be used this way");
     }
 }

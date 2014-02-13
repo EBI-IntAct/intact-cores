@@ -32,7 +32,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
     private IntactDbSynchronizer<Xref, InteractionXref> xrefSynchronizer;
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> interactionTypeSynchronizer;
     private IntactDbSynchronizer<Checksum, InteractionChecksum> checksumSynchronizer;
-    private IntactDbSynchronizer<ParticipantEvidence, IntactParticipantEvidence> participantEvidenceSynchronizer;
+    private IntactDbSynchronizer<Entity, AbstractIntactEntity> participantEvidenceSynchronizer;
     private IntactDbSynchronizer<Parameter, InteractionEvidenceParameter> parameterSynchronizer;
     private IntactDbSynchronizer<Confidence, InteractionEvidenceConfidence> confidenceSynchronizer;
     private IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> variableValueSetSynchronizer;
@@ -51,15 +51,12 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
         this.parameterSynchronizer = new IntactParameterSynchronizer<Parameter, InteractionEvidenceParameter>(entityManager, InteractionEvidenceParameter.class);
         this.confidenceSynchronizer = new IntactConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence>(entityManager, InteractionEvidenceConfidence.class);
         this.variableValueSetSynchronizer = new IntactVariableParameterValueSetSynchronizer(entityManager);
-        this.participantEvidenceSynchronizer = new IntActEntitySynchronizer<ParticipantEvidence, IntactParticipantEvidence, ExperimentalEntityPool, IntactExperimentalEntityPool>(entityManager,
-                IntactParticipantEvidence.class, IntactExperimentalEntityPool.class,
-                new IntactExperimentalEntityBaseSynchronizer<ParticipantEvidence, IntactParticipantEvidence>(entityManager, IntactParticipantEvidence.class),
-                new IntactExperimentalEntityPoolSynchronizer(entityManager));
+        this.participantEvidenceSynchronizer = new IntActEntitySynchronizer(entityManager);
     }
 
     public IntactInteractionEvidenceSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Annotation, InteractionAnnotation> annotationSynchronizer,
                                                  IntactDbSynchronizer<Xref, InteractionXref> xrefSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
-                                                 IntactDbSynchronizer<Checksum, InteractionChecksum> checksumSynchronizer, IntactDbSynchronizer<ParticipantEvidence, IntactParticipantEvidence> participantEvidenceSynchronizer,
+                                                 IntactDbSynchronizer<Checksum, InteractionChecksum> checksumSynchronizer, IntactDbSynchronizer<Entity, AbstractIntactEntity> participantEvidenceSynchronizer,
                                                  IntactDbSynchronizer<Parameter, InteractionEvidenceParameter> parameterSynchronizer, IntactDbSynchronizer<Confidence, InteractionEvidenceConfidence> confidenceSynchronizer,
                                                  IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> variableValueSetSynchronizer){
         super(entityManager, IntactInteractionEvidence.class);
@@ -73,10 +70,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
         this.parameterSynchronizer = parameterSynchronizer != null ? parameterSynchronizer : new IntactParameterSynchronizer<Parameter, InteractionEvidenceParameter>(entityManager, InteractionEvidenceParameter.class);
         this.confidenceSynchronizer = confidenceSynchronizer != null ? confidenceSynchronizer : new IntactConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence>(entityManager, InteractionEvidenceConfidence.class);
         this.variableValueSetSynchronizer = variableValueSetSynchronizer != null ? variableValueSetSynchronizer : new IntactVariableParameterValueSetSynchronizer(entityManager);
-        this.participantEvidenceSynchronizer = participantEvidenceSynchronizer != null ? participantEvidenceSynchronizer : new IntActEntitySynchronizer<ParticipantEvidence, IntactParticipantEvidence, ExperimentalEntityPool, IntactExperimentalEntityPool>(entityManager,
-                IntactParticipantEvidence.class, IntactExperimentalEntityPool.class,
-                new IntactExperimentalEntityBaseSynchronizer<ParticipantEvidence, IntactParticipantEvidence>(entityManager, IntactParticipantEvidence.class),
-                new IntactExperimentalEntityPoolSynchronizer(entityManager));
+        this.participantEvidenceSynchronizer = participantEvidenceSynchronizer != null ? participantEvidenceSynchronizer : new IntActEntitySynchronizer(entityManager);
     }
 
     public IntactInteractionEvidence find(InteractionEvidence interaction) throws FinderException {
@@ -179,7 +173,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
                 // reinit parent
                 participant.setInteraction(intactInteraction);
                 // do not persist or merge participants because of cascades
-                ParticipantEvidence expPart = this.participantEvidenceSynchronizer.synchronize(participant, false);
+                ParticipantEvidence expPart = (ParticipantEvidence)this.participantEvidenceSynchronizer.synchronize(participant, false);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);

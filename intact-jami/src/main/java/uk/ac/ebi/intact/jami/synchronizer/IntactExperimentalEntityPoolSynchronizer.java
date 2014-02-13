@@ -20,14 +20,11 @@ import java.util.List;
 
 public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimentalEntityBaseSynchronizer<ExperimentalEntityPool,IntactExperimentalEntityPool> {
 
-    private IntactDbSynchronizer<ExperimentalEntity, IntactExperimentalEntity> entitySynchronizer;
+    private IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer;
 
     public IntactExperimentalEntityPoolSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactExperimentalEntityPool.class);
-        this.entitySynchronizer = new IntActEntitySynchronizer<ExperimentalEntity, IntactExperimentalEntity, ExperimentalEntityPool, IntactExperimentalEntityPool>(entityManager,
-                IntactExperimentalEntity.class, IntactExperimentalEntityPool.class,
-                new IntactExperimentalEntityBaseSynchronizer<ExperimentalEntity, IntactExperimentalEntity>(entityManager, IntactExperimentalEntity.class),
-                this);
+        this.entitySynchronizer = new IntActEntitySynchronizer(entityManager, null, null, null, null, null, this);
     }
 
     public IntactExperimentalEntityPoolSynchronizer(EntityManager entityManager,
@@ -39,20 +36,17 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
                                                     IntactDbSynchronizer<CausalRelationship,
                                                     IntactCausalRelationship> causalRelationshipSynchronizer,
                                                     IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer,
-                                                    IntactDbSynchronizer<ExperimentalEntity, IntactExperimentalEntity> entitySynchronizer,
                                                     IntactDbSynchronizer<Parameter, ExperimentalEntityParameter> parameterSynchronizer,
                                                     IntactDbSynchronizer<Confidence, ExperimentalEntityConfidence> confidenceSynchronizer,
                                                     IntactDbSynchronizer<CvTerm, IntactCvTerm> identificationMethodSynchronizer,
                                                     IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalPreparationSynchronizer,
                                                     IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalRoleSynchronizer,
-                                                    IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer) {
+                                                    IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer,
+                                                    IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer) {
         super(entityManager, IntactExperimentalEntityPool.class, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, biologicalRoleSynchronizer,
                 featureSynchronizer, causalRelationshipSynchronizer, interactorSynchronizer, parameterSynchronizer, confidenceSynchronizer, identificationMethodSynchronizer, experimentalPreparationSynchronizer,
                 experimentalRoleSynchronizer, organismSynchronizer);
-        this.entitySynchronizer = entitySynchronizer != null ? entitySynchronizer : new IntActEntitySynchronizer<ExperimentalEntity, IntactExperimentalEntity, ExperimentalEntityPool, IntactExperimentalEntityPool>(entityManager,
-                IntactExperimentalEntity.class, IntactExperimentalEntityPool.class,
-                new IntactExperimentalEntityBaseSynchronizer<ExperimentalEntity, IntactExperimentalEntity>(entityManager, IntactExperimentalEntity.class),
-                this);
+        this.entitySynchronizer = entitySynchronizer != null ? entitySynchronizer : new IntActEntitySynchronizer(entityManager, null, null, null, null, null, this);
     }
 
     @Override
@@ -67,7 +61,7 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
         if (intactEntity.areEntitiesInitialized()){
             List<ExperimentalEntity> entitiesToPersist = new ArrayList<ExperimentalEntity>(intactEntity);
             for (ExperimentalEntity entity : entitiesToPersist){
-                IntactExperimentalEntity persistentEntity = this.entitySynchronizer.synchronize(entity, true);
+                ExperimentalEntity persistentEntity = (ExperimentalEntity)this.entitySynchronizer.synchronize(entity, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentEntity != entity){
                     intactEntity.remove(entity);

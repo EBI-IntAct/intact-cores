@@ -23,28 +23,22 @@ import java.util.List;
 public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range, IntactRange>{
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer;
     private IntactDbSynchronizer<Xref, ResultingSequenceXref> xrefSynchronizer;
-    private IntactDbSynchronizer<ModelledEntity, IntactModelledEntity> entitySynchronizer;
+    private IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer;
     private static final Log log = LogFactory.getLog(IntactRangeSynchronizer.class);
 
     public IntactRangeSynchronizer(EntityManager entityManager){
         super(entityManager, IntactRange.class);
         this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.RANGE_STATUS_OBJCLASS);
         this.xrefSynchronizer = new IntactXrefSynchronizer<ResultingSequenceXref>(entityManager, ResultingSequenceXref.class);
-        this.entitySynchronizer = new IntActEntitySynchronizer<ModelledEntity, IntactModelledEntity, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
-                IntactModelledEntity.class, IntactModelledEntityPool.class,
-                new IntactEntityBaseSynchronizer<ModelledEntity, IntactModelledEntity>(entityManager, IntactModelledEntity.class),
-                new IntactModelledEntityPoolSynchronizer(entityManager));
+        this.entitySynchronizer = new IntActEntitySynchronizer(entityManager);
     }
 
     public IntactRangeSynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer,
-                                   IntactDbSynchronizer<Xref, ResultingSequenceXref> xrefSynchronizer, IntactDbSynchronizer<ModelledEntity, IntactModelledEntity> entitySynchronizer){
+                                   IntactDbSynchronizer<Xref, ResultingSequenceXref> xrefSynchronizer, IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer){
         super(entityManager, IntactRange.class);
         this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.RANGE_STATUS_OBJCLASS);
         this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<ResultingSequenceXref>(entityManager, ResultingSequenceXref.class);
-        this.entitySynchronizer = entitySynchronizer != null ? entitySynchronizer : new IntActEntitySynchronizer<ModelledEntity, IntactModelledEntity, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
-                IntactModelledEntity.class, IntactModelledEntityPool.class,
-                new IntactEntityBaseSynchronizer<ModelledEntity, IntactModelledEntity>(entityManager, IntactModelledEntity.class),
-                new IntactModelledEntityPoolSynchronizer(entityManager));
+        this.entitySynchronizer = entitySynchronizer != null ? entitySynchronizer : new IntActEntitySynchronizer(entityManager);
     }
 
     public IntactRange find(Range object) throws FinderException {
@@ -98,6 +92,8 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
 
     public void clearCache() {
         this.statusSynchronizer.clearCache();
+        this.xrefSynchronizer.clearCache();
+        this.entitySynchronizer.clearCache();
     }
 
     @Override

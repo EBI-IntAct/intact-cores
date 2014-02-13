@@ -18,7 +18,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 
 public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSynchronizer<Allostery, IntactAllostery>{
-    private IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> participantSynchronizer;
+    private IntactDbSynchronizer<Entity, AbstractIntactEntity> participantSynchronizer;
     private IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactAllosterySynchronizer.class);
@@ -27,10 +27,7 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
         super(entityManager, IntactAllostery.class);
         this.featureSynchronizer = new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
 
-        this.participantSynchronizer = new IntActEntitySynchronizer<ModelledParticipant, IntactModelledParticipant, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
-                IntactModelledParticipant.class, IntactModelledEntityPool.class,
-                new IntactEntityBaseSynchronizer<ModelledParticipant, IntactModelledParticipant>(entityManager, IntactModelledParticipant.class),
-                new IntactModelledEntityPoolSynchronizer(entityManager));
+        this.participantSynchronizer = new IntActEntitySynchronizer(entityManager);
     }
 
     public IntactAllosterySynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> cvSynchronizer,
@@ -38,14 +35,11 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
                                        IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> evidenceSynchronizer,
                                        IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer,
                                        IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer,
-                                       IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> participantSynchronizer) {
+                                       IntactDbSynchronizer<Entity, AbstractIntactEntity> participantSynchronizer) {
         super(entityManager, IntactAllostery.class);
         this.featureSynchronizer = featureSynchronizer != null ? featureSynchronizer : new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
 
-        this.participantSynchronizer = participantSynchronizer != null ? participantSynchronizer : new IntActEntitySynchronizer<ModelledParticipant, IntactModelledParticipant, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
-                IntactModelledParticipant.class, IntactModelledEntityPool.class,
-                new IntactEntityBaseSynchronizer<ModelledParticipant, IntactModelledParticipant>(entityManager, IntactModelledParticipant.class),
-                new IntactModelledEntityPoolSynchronizer(entityManager));
+        this.participantSynchronizer = participantSynchronizer != null ? participantSynchronizer : new IntActEntitySynchronizer(entityManager);
     }
 
     public void synchronizeProperties(IntactAllostery object) throws FinderException, PersisterException, SynchronizerException {
@@ -80,7 +74,7 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
                 }
 
                 ModelledParticipant participant = moleculeEffector.getMolecule();
-                ((IntactMoleculeEffector) moleculeEffector).setMolecule(this.participantSynchronizer.synchronize(participant, false));
+                ((IntactMoleculeEffector) moleculeEffector).setMolecule((ModelledParticipant)this.participantSynchronizer.synchronize(participant, false));
                 break;
             case feature_modification:
                 FeatureModificationEffector featureEffector = (FeatureModificationEffector)object.getAllostericEffector();
@@ -115,7 +109,7 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
 
     protected void prepareAllostericMolecule(IntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
         ModelledParticipant participant = object.getAllostericMolecule();
-        object.setAllostericMolecule(this.participantSynchronizer.synchronize(participant, false));
+        object.setAllostericMolecule((ModelledParticipant)this.participantSynchronizer.synchronize(participant, false));
 
     }
 

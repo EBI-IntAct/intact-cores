@@ -26,7 +26,7 @@ import java.util.*;
 
 public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<Complex, IntactComplex> {
 
-    private IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> participantSynchronizer;
+    private IntactDbSynchronizer<Entity, AbstractIntactEntity> participantSynchronizer;
     private IntactDbSynchronizer<ModelledParameter, ComplexParameter> parameterSynchronizer;
     private IntactDbSynchronizer<ModelledConfidence, ComplexConfidence> confidenceSynchronizer;
     private IntactDbSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect> cooperativeEffectSynchronizer;
@@ -45,10 +45,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         this.lifeCycleEventSynchronizer = new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
         this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
         this.cooperativeEffectSynchronizer = new IntactCooperativeEffectSynchronizer(entityManager);
-        this.participantSynchronizer = new IntActEntitySynchronizer<ModelledParticipant, IntactModelledParticipant, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
-                IntactModelledParticipant.class, IntactModelledEntityPool.class,
-                new IntactEntityBaseSynchronizer<ModelledParticipant, IntactModelledParticipant>(entityManager, IntactModelledParticipant.class),
-                new IntactModelledEntityPoolSynchronizer(entityManager));
+        this.participantSynchronizer = new IntActEntitySynchronizer(entityManager);
     }
 
     public IntactComplexSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer,
@@ -57,7 +54,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
                                      IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer,
                                      IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
                                      IntactDbSynchronizer<Checksum,InteractorChecksum> checksumSynchronizer,
-                                     IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> participantSynchronizer,
+                                     IntactDbSynchronizer<Entity, AbstractIntactEntity> participantSynchronizer,
                                      IntactDbSynchronizer<ModelledParameter, ComplexParameter> parameterSynchronizer,
                                      IntactDbSynchronizer<ModelledConfidence, ComplexConfidence> confidenceSynchronizer,
                                      IntactDbSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect> cooperativeEffectSynchronizer,
@@ -73,10 +70,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
         this.lifeCycleEventSynchronizer = lifeCycleEventSynchronizer != null ? lifeCycleEventSynchronizer : new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
         this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
         this.cooperativeEffectSynchronizer = cooperativeEffectSynchronizer != null ? cooperativeEffectSynchronizer : new IntactCooperativeEffectSynchronizer(entityManager);
-        this.participantSynchronizer = participantSynchronizer != null ? participantSynchronizer : new IntActEntitySynchronizer<ModelledParticipant, IntactModelledParticipant, ModelledEntityPool, IntactModelledEntityPool>(entityManager,
-                IntactModelledParticipant.class, IntactModelledEntityPool.class,
-                new IntactEntityBaseSynchronizer<ModelledParticipant, IntactModelledParticipant>(entityManager, IntactModelledParticipant.class),
-                new IntactModelledEntityPoolSynchronizer(entityManager));
+        this.participantSynchronizer = participantSynchronizer != null ? participantSynchronizer : new IntActEntitySynchronizer(entityManager);
     }
 
     @Override
