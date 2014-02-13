@@ -21,7 +21,7 @@ import java.util.List;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEntity, I extends AbstractIntactExperimentalEntity> extends IntactEntityBaseSynchronizer<T, I>{
+public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEntity, I extends IntactParticipantEvidence> extends IntactEntityBaseSynchronizer<T, I>{
 
     private static final Log log = LogFactory.getLog(IntactExperimentalEntityBaseSynchronizer.class);
     private IntactDbSynchronizer<Parameter, ExperimentalEntityParameter> parameterSynchronizer;

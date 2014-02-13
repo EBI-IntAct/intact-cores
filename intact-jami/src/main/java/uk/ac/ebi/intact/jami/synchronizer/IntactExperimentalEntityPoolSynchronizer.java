@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
-import uk.ac.ebi.intact.jami.merger.IntactEntityMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactExperimentalEntityMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
@@ -73,7 +73,7 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
 
     @Override
     protected IntactExperimentalEntityPool instantiateNewPersistentInstance( ExperimentalEntityPool object, Class<? extends IntactExperimentalEntityPool> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        IntactExperimentalEntityPool newParticipant = new IntactExperimentalEntityPool((InteractorPool)object.getInteractor());
+        IntactExperimentalEntityPool newParticipant = new IntactExperimentalEntityPool(object.getInteractor().getShortName());
         ParticipantCloner.copyAndOverrideExperimentalEntityPoolProperties(object, newParticipant, false);
         return newParticipant;
     }
@@ -86,6 +86,6 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactEntityMergerEnrichOnly<T,I,Feature>());
+        super.setIntactMerger(new IntactExperimentalEntityMergerEnrichOnly<ExperimentalEntityPool, IntactExperimentalEntityPool>());
     }
 }
