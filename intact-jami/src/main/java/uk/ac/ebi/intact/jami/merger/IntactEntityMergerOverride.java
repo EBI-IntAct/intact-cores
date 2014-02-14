@@ -4,7 +4,7 @@ import psidev.psi.mi.jami.enricher.CvTermEnricher;
 import psidev.psi.mi.jami.enricher.FeatureEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEnricher;
 import psidev.psi.mi.jami.enricher.impl.CompositeInteractorEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullParticipantEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullParticipantEnricher;
 import psidev.psi.mi.jami.enricher.listener.ParticipantEnricherListener;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Entity;
@@ -43,36 +43,20 @@ public class IntactEntityMergerOverride<E extends Entity, I extends AbstractInta
         return (ParticipantEnricher<E,F>)super.getBasicEnricher();
     }
 
-    public void setInteractorEnricher(CompositeInteractorEnricher proteinEnricher) {
-        getBasicEnricher().setInteractorEnricher(proteinEnricher);
-    }
-
     public CompositeInteractorEnricher getInteractorEnricher() {
-        return getBasicEnricher().getInteractorEnricher();
-    }
-
-    public void setCvTermEnricher(CvTermEnricher<CvTerm> cvTermEnricher) {
-        getBasicEnricher().setCvTermEnricher(cvTermEnricher);
+        return null;
     }
 
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
-        return getBasicEnricher().getCvTermEnricher();
-    }
-
-    public void setFeatureEnricher(FeatureEnricher<F> featureEnricher) {
-        getBasicEnricher().setFeatureEnricher(featureEnricher);
+        return null;
     }
 
     public FeatureEnricher getFeatureEnricher() {
-        return getBasicEnricher().getFeatureEnricher();
-    }
-
-    public void setParticipantListener(ParticipantEnricherListener listener) {
-        getBasicEnricher().setParticipantListener(listener);
+        return null;
     }
 
     public ParticipantEnricherListener getParticipantEnricherListener() {
-        return getBasicEnricher().getParticipantEnricherListener();
+        return null;
     }
 
     @Override

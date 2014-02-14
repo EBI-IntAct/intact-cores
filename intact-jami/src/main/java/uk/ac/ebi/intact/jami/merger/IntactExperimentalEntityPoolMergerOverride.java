@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.jami.merger;
 import psidev.psi.mi.jami.enricher.EntityPoolEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEvidenceEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullExperimentalEntityPoolUpdater;
+import psidev.psi.mi.jami.enricher.impl.full.FullExperimentalEntityPoolUpdater;
 import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.ExperimentalEntityPool;
 import psidev.psi.mi.jami.model.FeatureEvidence;
@@ -21,22 +21,18 @@ import java.util.Comparator;
  */
 
 public class IntactExperimentalEntityPoolMergerOverride
-        extends IntactParticipantEvidenceMergerOverride<ExperimentalEntityPool, IntactExperimentalEntityPool> implements EntityPoolEnricher<ExperimentalEntityPool, FeatureEvidence>, ParticipantEvidenceEnricher<ExperimentalEntityPool, FeatureEvidence>{
+        extends IntactParticipantEvidenceMergerOverride<ExperimentalEntityPool, IntactExperimentalEntityPool> implements EntityPoolEnricher<ExperimentalEntityPool, FeatureEvidence>, ParticipantEvidenceEnricher<ExperimentalEntityPool>{
 
     public IntactExperimentalEntityPoolMergerOverride() {
         super(IntactExperimentalEntityPool.class, new FullExperimentalEntityPoolUpdater());
     }
 
-    public IntactExperimentalEntityPoolMergerOverride(ParticipantEvidenceEnricher<ExperimentalEntityPool, FeatureEvidence> basicEnricher) {
+    public IntactExperimentalEntityPoolMergerOverride(ParticipantEvidenceEnricher<ExperimentalEntityPool> basicEnricher) {
         super(IntactExperimentalEntityPool.class, basicEnricher);
     }
 
-    public void setParticipantEnricher(ParticipantEnricher interactorEnricher) {
-        ((EntityPoolEnricher)getBasicEnricher()).setParticipantEnricher(interactorEnricher);
-    }
-
     public ParticipantEnricher getParticipantEnricher() {
-        return ((EntityPoolEnricher)getBasicEnricher()).getParticipantEnricher();
+        return null;
     }
 
     public void setParticipantComparator(Comparator<Entity> interactorComparator) {

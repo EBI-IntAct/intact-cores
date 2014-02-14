@@ -1,9 +1,10 @@
 package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.bridges.fetcher.PublicationFetcher;
+import psidev.psi.mi.jami.enricher.CuratedPublicationEnricher;
 import psidev.psi.mi.jami.enricher.PublicationEnricher;
 import psidev.psi.mi.jami.enricher.SourceEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullPublicationEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullCuratedPublicationEnricher;
 import psidev.psi.mi.jami.enricher.listener.PublicationEnricherListener;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
@@ -24,10 +25,10 @@ import java.util.List;
  * @since <pre>29/01/14</pre>
  */
 
-public class IntactPublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Publication, IntactPublication> implements PublicationEnricher {
+public class IntactPublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Publication, IntactPublication> implements CuratedPublicationEnricher {
 
     public IntactPublicationMergerEnrichOnly(IntactPublicationSynchronizer intactSynchronizer){
-        super(IntactPublication.class, new FullPublicationEnricher(intactSynchronizer));
+        super(IntactPublication.class, new FullCuratedPublicationEnricher(intactSynchronizer));
     }
 
     @Override
@@ -39,22 +40,9 @@ public class IntactPublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<
         return getBasicEnricher().getPublicationFetcher();
     }
 
-    public void setSourceEnricher(SourceEnricher cvTermEnricher) {
-        getBasicEnricher().setSourceEnricher(cvTermEnricher);
-    }
-
-    public SourceEnricher getSourceEnricher() {
-        return getBasicEnricher().getSourceEnricher();
-    }
-
-    public void setPublicationEnricherListener(PublicationEnricherListener listener) {
-        getBasicEnricher().setPublicationEnricherListener(listener);
-    }
-
     public PublicationEnricherListener getPublicationEnricherListener() {
-        return getBasicEnricher().getPublicationEnricherListener();
+        return null;
     }
-
     @Override
     public IntactPublication merge(IntactPublication obj1, IntactPublication obj2) {
         // obj2 is mergedPub
@@ -133,5 +121,9 @@ public class IntactPublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<
             }
             index++;
         }
+    }
+
+    public SourceEnricher getSourceEnricher() {
+        return null;
     }
 }

@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.jami.merger;
 import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.enricher.PublicationEnricher;
 import psidev.psi.mi.jami.enricher.SourceEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullSourceUpdater;
+import psidev.psi.mi.jami.enricher.impl.full.FullSourceUpdater;
 import psidev.psi.mi.jami.enricher.listener.CvTermEnricherListener;
 import psidev.psi.mi.jami.model.Source;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
@@ -23,12 +23,8 @@ public class IntactSourceMergerOverride extends IntactDbMergerOverride<Source, I
         super(IntactSource.class, new FullSourceUpdater(intactSynchronizer));
     }
 
-    public void setPublicationEnricher(PublicationEnricher enricher) {
-        getBasicEnricher().setPublicationEnricher(enricher);
-    }
-
     public PublicationEnricher getPublicationEnricher() {
-        return getBasicEnricher().getPublicationEnricher();
+        return null;
     }
 
     @Override
@@ -40,11 +36,7 @@ public class IntactSourceMergerOverride extends IntactDbMergerOverride<Source, I
         return getBasicEnricher().getCvTermFetcher();
     }
 
-    public void setCvTermEnricherListener(CvTermEnricherListener<Source> listener) {
-        getBasicEnricher().setCvTermEnricherListener(listener);
-    }
-
     public CvTermEnricherListener<Source> getCvTermEnricherListener() {
-        return getBasicEnricher().getCvTermEnricherListener();
+        return null;
     }
 }

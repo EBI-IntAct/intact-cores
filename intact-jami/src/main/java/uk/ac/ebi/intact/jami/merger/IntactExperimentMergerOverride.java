@@ -4,8 +4,9 @@ import psidev.psi.mi.jami.enricher.CvTermEnricher;
 import psidev.psi.mi.jami.enricher.ExperimentEnricher;
 import psidev.psi.mi.jami.enricher.OrganismEnricher;
 import psidev.psi.mi.jami.enricher.PublicationEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullExperimentUpdater;
+import psidev.psi.mi.jami.enricher.impl.full.FullExperimentUpdater;
 import psidev.psi.mi.jami.enricher.listener.ExperimentEnricherListener;
+import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
@@ -33,36 +34,20 @@ public class IntactExperimentMergerOverride extends IntactDbMergerOverride<Exper
         return (ExperimentEnricher)super.getBasicEnricher();
     }
 
-    public void setOrganismEnricher(OrganismEnricher organismEnricher) {
-        getBasicEnricher().setOrganismEnricher(organismEnricher);
-    }
-
     public OrganismEnricher getOrganismEnricher() {
-        return getBasicEnricher().getOrganismEnricher();
+        return null;
     }
 
-    public void setCvTermEnricher(CvTermEnricher cvTermEnricher) {
-        getBasicEnricher().setCvTermEnricher(cvTermEnricher);
-    }
-
-    public CvTermEnricher getCvTermEnricher() {
-        return getBasicEnricher().getCvTermEnricher();
-    }
-
-    public void setPublicationEnricher(PublicationEnricher publicationEnricher) {
-        getBasicEnricher().setPublicationEnricher(publicationEnricher);
+    public CvTermEnricher<CvTerm> getCvTermEnricher() {
+        return null;
     }
 
     public PublicationEnricher getPublicationEnricher() {
-        return getBasicEnricher().getPublicationEnricher();
+        return null;
     }
 
     public ExperimentEnricherListener getExperimentEnricherListener() {
-        return getBasicEnricher().getExperimentEnricherListener();
-    }
-
-    public void setExperimentEnricherListener(ExperimentEnricherListener listener) {
-        getBasicEnricher().setExperimentEnricherListener(listener);
+        return null;
     }
 
     @Override

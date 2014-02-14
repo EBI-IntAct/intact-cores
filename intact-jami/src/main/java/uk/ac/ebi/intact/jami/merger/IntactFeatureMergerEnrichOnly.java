@@ -2,8 +2,9 @@ package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.enricher.CvTermEnricher;
 import psidev.psi.mi.jami.enricher.FeatureEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullFeatureEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullFeatureEnricher;
 import psidev.psi.mi.jami.enricher.listener.FeatureEnricherListener;
+import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Feature;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 
@@ -45,19 +46,11 @@ public class IntactFeatureMergerEnrichOnly<F extends Feature, I extends Abstract
         getBasicEnricher().setFeaturesWithRangesToUpdate(features);
     }
 
-    public void setFeatureEnricherListener(FeatureEnricherListener<F> featureEnricherListener) {
-        getBasicEnricher().setFeatureEnricherListener(featureEnricherListener);
-    }
-
     public FeatureEnricherListener<F> getFeatureEnricherListener() {
-        return getBasicEnricher().getFeatureEnricherListener();
+        return null;
     }
 
-    public void setCvTermEnricher(CvTermEnricher cvTermEnricher) {
-        getBasicEnricher().setCvTermEnricher(cvTermEnricher);
-    }
-
-    public CvTermEnricher getCvTermEnricher() {
-        return getBasicEnricher().getCvTermEnricher();
+    public CvTermEnricher<CvTerm> getCvTermEnricher() {
+        return null;
     }
 }

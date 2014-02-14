@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.jami.merger;
 
-import psidev.psi.mi.jami.enricher.impl.FullFeatureEvidenceEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullFeatureEvidenceEnricher;
 import psidev.psi.mi.jami.model.FeatureEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 

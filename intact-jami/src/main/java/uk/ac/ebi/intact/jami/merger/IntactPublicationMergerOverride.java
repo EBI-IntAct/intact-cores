@@ -1,9 +1,10 @@
 package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.bridges.fetcher.PublicationFetcher;
+import psidev.psi.mi.jami.enricher.CuratedPublicationEnricher;
 import psidev.psi.mi.jami.enricher.PublicationEnricher;
 import psidev.psi.mi.jami.enricher.SourceEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullPublicationUpdater;
+import psidev.psi.mi.jami.enricher.impl.full.FullCuratedPublicationUpdater;
 import psidev.psi.mi.jami.enricher.listener.PublicationEnricherListener;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
@@ -24,10 +25,10 @@ import java.util.List;
  * @since <pre>29/01/14</pre>
  */
 
-public class IntactPublicationMergerOverride extends IntactDbMergerOverride<Publication, IntactPublication> implements PublicationEnricher {
+public class IntactPublicationMergerOverride extends IntactDbMergerOverride<Publication, IntactPublication> implements CuratedPublicationEnricher {
 
     public IntactPublicationMergerOverride(IntactPublicationSynchronizer intactSynchronizer){
-        super(IntactPublication.class, new FullPublicationUpdater(intactSynchronizer));
+        super(IntactPublication.class, new FullCuratedPublicationUpdater(intactSynchronizer));
     }
 
     @Override
@@ -39,20 +40,12 @@ public class IntactPublicationMergerOverride extends IntactDbMergerOverride<Publ
         return getBasicEnricher().getPublicationFetcher();
     }
 
-    public void setSourceEnricher(SourceEnricher cvTermEnricher) {
-        getBasicEnricher().setSourceEnricher(cvTermEnricher);
-    }
-
     public SourceEnricher getSourceEnricher() {
-        return getBasicEnricher().getSourceEnricher();
-    }
-
-    public void setPublicationEnricherListener(PublicationEnricherListener listener) {
-        getBasicEnricher().setPublicationEnricherListener(listener);
+        return null;
     }
 
     public PublicationEnricherListener getPublicationEnricherListener() {
-        return getBasicEnricher().getPublicationEnricherListener();
+        return null;
     }
 
     @Override

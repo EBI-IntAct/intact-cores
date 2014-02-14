@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.enricher.OrganismEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEvidenceEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullParticipantEvidenceEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullParticipantEvidenceEnricher;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.FeatureEvidence;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactExperimentalEntity;
@@ -17,34 +17,30 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactExperimentalEntity;
  */
 
 public class IntactExperimentalEntityMergerEnrichOnly<E extends ExperimentalEntity, I extends AbstractIntactExperimentalEntity>
-        extends IntactEntityMergerEnrichOnly<E, I, FeatureEvidence> implements ParticipantEvidenceEnricher<E,FeatureEvidence> {
+        extends IntactEntityMergerEnrichOnly<E, I, FeatureEvidence> implements ParticipantEvidenceEnricher<E> {
 
     public IntactExperimentalEntityMergerEnrichOnly() {
-        super((Class<I>)AbstractIntactExperimentalEntity.class, new FullParticipantEvidenceEnricher<E, FeatureEvidence>());
+        super((Class<I>)AbstractIntactExperimentalEntity.class, new FullParticipantEvidenceEnricher<E>());
     }
 
-    public IntactExperimentalEntityMergerEnrichOnly(ParticipantEvidenceEnricher<E,FeatureEvidence> basicEnricher) {
+    public IntactExperimentalEntityMergerEnrichOnly(ParticipantEvidenceEnricher<E> basicEnricher) {
         super((Class<I>)AbstractIntactExperimentalEntity.class, basicEnricher);
     }
 
     public IntactExperimentalEntityMergerEnrichOnly(Class<I> intactClass) {
-        super(intactClass, new FullParticipantEvidenceEnricher<E, FeatureEvidence>());
+        super(intactClass, new FullParticipantEvidenceEnricher<E>());
     }
 
-    public IntactExperimentalEntityMergerEnrichOnly(Class<I> intactClass, ParticipantEvidenceEnricher<E,FeatureEvidence> basicEnricher) {
+    public IntactExperimentalEntityMergerEnrichOnly(Class<I> intactClass, ParticipantEvidenceEnricher<E> basicEnricher) {
         super(intactClass, basicEnricher);
     }
 
     @Override
-    protected ParticipantEvidenceEnricher<E,FeatureEvidence> getBasicEnricher() {
-        return (ParticipantEvidenceEnricher<E,FeatureEvidence>)super.getBasicEnricher();
-    }
-
-    public void setOrganismEnricher(OrganismEnricher organismEnricher) {
-        getBasicEnricher().setOrganismEnricher(organismEnricher);
+    protected ParticipantEvidenceEnricher<E> getBasicEnricher() {
+        return (ParticipantEvidenceEnricher<E>)super.getBasicEnricher();
     }
 
     public OrganismEnricher getOrganismEnricher() {
-        return getBasicEnricher().getOrganismEnricher();
+        return null;
     }
 }

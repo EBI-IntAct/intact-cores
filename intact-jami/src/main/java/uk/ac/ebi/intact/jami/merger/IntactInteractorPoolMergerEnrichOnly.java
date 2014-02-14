@@ -1,8 +1,8 @@
 package uk.ac.ebi.intact.jami.merger;
 
-import psidev.psi.mi.jami.enricher.InteractorEnricher;
 import psidev.psi.mi.jami.enricher.InteractorPoolEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullInteractorPoolEnricher;
+import psidev.psi.mi.jami.enricher.impl.CompositeInteractorEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullInteractorPoolEnricher;
 import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.InteractorPool;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
@@ -31,16 +31,8 @@ implements InteractorPoolEnricher{
         return (InteractorPoolEnricher)super.getBasicEnricher();
     }
 
-    public void setInteractorEnricher(InteractorEnricher<Interactor> interactorEnricher) {
-        getBasicEnricher().setInteractorEnricher(interactorEnricher);
-    }
-
-    public InteractorEnricher<Interactor> getInteractorEnricher() {
-        return getBasicEnricher().getInteractorEnricher();
-    }
-
-    public void setInteractorComparator(Comparator<Interactor> interactorComparator) {
-        getBasicEnricher().setInteractorComparator(interactorComparator);
+    public CompositeInteractorEnricher getInteractorEnricher() {
+        return null;
     }
 
     public Comparator<Interactor> getInteractorComparator() {

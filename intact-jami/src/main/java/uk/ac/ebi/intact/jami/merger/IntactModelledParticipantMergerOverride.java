@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.enricher.ParticipantEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullParticipantEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullParticipantEnricher;
 import psidev.psi.mi.jami.model.ModelledFeature;
 import psidev.psi.mi.jami.model.ModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;

@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.enricher.EntityPoolEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullEntityPoolUpdater;
+import psidev.psi.mi.jami.enricher.impl.full.FullEntityPoolUpdater;
 import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.ModelledEntityPool;
 import psidev.psi.mi.jami.model.ModelledFeature;
@@ -35,12 +35,8 @@ public class IntactModelledEntityPoolMergerOverride
         return (EntityPoolEnricher<ModelledEntityPool, ModelledFeature>)super.getBasicEnricher();
     }
 
-    public void setParticipantEnricher(ParticipantEnricher interactorEnricher) {
-         getBasicEnricher().setParticipantEnricher(interactorEnricher);
-    }
-
     public ParticipantEnricher getParticipantEnricher() {
-        return getBasicEnricher().getParticipantEnricher();
+        return null;
     }
 
     public void setParticipantComparator(Comparator<Entity> interactorComparator) {

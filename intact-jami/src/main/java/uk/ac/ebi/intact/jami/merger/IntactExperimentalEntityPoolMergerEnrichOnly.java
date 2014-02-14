@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.jami.merger;
 import psidev.psi.mi.jami.enricher.EntityPoolEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEvidenceEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullExperimentalEntityPoolEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullExperimentalEntityPoolEnricher;
 import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.ExperimentalEntityPool;
 import psidev.psi.mi.jami.model.FeatureEvidence;
@@ -21,22 +21,18 @@ import java.util.Comparator;
  */
 
 public class IntactExperimentalEntityPoolMergerEnrichOnly
-        extends IntactParticipantEvidenceMergerEnrichOnly<ExperimentalEntityPool, IntactExperimentalEntityPool> implements EntityPoolEnricher<ExperimentalEntityPool, FeatureEvidence>, ParticipantEvidenceEnricher<ExperimentalEntityPool, FeatureEvidence>{
+        extends IntactParticipantEvidenceMergerEnrichOnly<ExperimentalEntityPool, IntactExperimentalEntityPool> implements EntityPoolEnricher<ExperimentalEntityPool, FeatureEvidence>, ParticipantEvidenceEnricher<ExperimentalEntityPool>{
 
     public IntactExperimentalEntityPoolMergerEnrichOnly() {
         super(IntactExperimentalEntityPool.class, new FullExperimentalEntityPoolEnricher());
     }
 
-    public IntactExperimentalEntityPoolMergerEnrichOnly(ParticipantEvidenceEnricher<ExperimentalEntityPool, FeatureEvidence> basicEnricher) {
+    public IntactExperimentalEntityPoolMergerEnrichOnly(ParticipantEvidenceEnricher<ExperimentalEntityPool> basicEnricher) {
         super(IntactExperimentalEntityPool.class, basicEnricher);
     }
 
-    public void setParticipantEnricher(ParticipantEnricher interactorEnricher) {
-        ((EntityPoolEnricher)getBasicEnricher()).setParticipantEnricher(interactorEnricher);
-    }
-
     public ParticipantEnricher getParticipantEnricher() {
-        return ((EntityPoolEnricher)getBasicEnricher()).getParticipantEnricher();
+        return null;
     }
 
     public void setParticipantComparator(Comparator<Entity> interactorComparator) {

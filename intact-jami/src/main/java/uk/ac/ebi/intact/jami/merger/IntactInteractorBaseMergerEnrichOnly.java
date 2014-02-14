@@ -4,8 +4,9 @@ import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
 import psidev.psi.mi.jami.enricher.CvTermEnricher;
 import psidev.psi.mi.jami.enricher.InteractorEnricher;
 import psidev.psi.mi.jami.enricher.OrganismEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullInteractorEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullInteractorBaseEnricher;
 import psidev.psi.mi.jami.enricher.listener.InteractorEnricherListener;
+import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Interactor;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.synchronizer.IntactInteractorBaseSynchronizer;
@@ -22,7 +23,7 @@ import uk.ac.ebi.intact.jami.synchronizer.IntactInteractorBaseSynchronizer;
 public class IntactInteractorBaseMergerEnrichOnly<I extends Interactor, T extends IntactInteractor> extends IntactDbMergerEnrichOnly<I,T> implements InteractorEnricher<I> {
 
     public IntactInteractorBaseMergerEnrichOnly(IntactInteractorBaseSynchronizer<I,T> intactSynchronizer){
-        super(new FullInteractorEnricher<I>(intactSynchronizer));
+        super(new FullInteractorBaseEnricher<I>(intactSynchronizer));
     }
 
     protected IntactInteractorBaseMergerEnrichOnly(InteractorEnricher<I> interactorEnricher){
@@ -38,28 +39,16 @@ public class IntactInteractorBaseMergerEnrichOnly<I extends Interactor, T extend
         return getBasicEnricher().getInteractorFetcher();
     }
 
-    public void setListener(InteractorEnricherListener<I> listener) {
-        getBasicEnricher().setListener(listener);
-    }
-
     public InteractorEnricherListener<I> getListener() {
-        return getBasicEnricher().getListener();
+        return null;
     }
 
-    public void setCvTermEnricher(CvTermEnricher cvTermEnricher) {
-        getBasicEnricher().setCvTermEnricher(cvTermEnricher);
-    }
-
-    public CvTermEnricher getCvTermEnricher() {
-        return getBasicEnricher().getCvTermEnricher();
-    }
-
-    public void setOrganismEnricher(OrganismEnricher organismEnricher) {
-        getBasicEnricher().setOrganismEnricher(organismEnricher);
+    public CvTermEnricher<CvTerm> getCvTermEnricher() {
+        return null;
     }
 
     public OrganismEnricher getOrganismEnricher() {
-        return getBasicEnricher().getOrganismEnricher();
+        return null;
     }
 }
 

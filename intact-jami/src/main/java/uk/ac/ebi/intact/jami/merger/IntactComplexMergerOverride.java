@@ -1,14 +1,16 @@
 package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
-import psidev.psi.mi.jami.enricher.*;
-import psidev.psi.mi.jami.enricher.impl.FullComplexUpdater;
+import psidev.psi.mi.jami.enricher.ComplexEnricher;
+import psidev.psi.mi.jami.enricher.CvTermEnricher;
+import psidev.psi.mi.jami.enricher.OrganismEnricher;
+import psidev.psi.mi.jami.enricher.SourceEnricher;
+import psidev.psi.mi.jami.enricher.impl.CompositeEntityEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullComplexUpdater;
 import psidev.psi.mi.jami.enricher.listener.InteractionEnricherListener;
 import psidev.psi.mi.jami.enricher.listener.InteractorEnricherListener;
 import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ModelledFeature;
-import psidev.psi.mi.jami.model.ModelledParticipant;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 
@@ -39,57 +41,32 @@ public class IntactComplexMergerOverride extends IntactInteractorBaseMergerOverr
         return (ComplexEnricher)super.getBasicEnricher();
     }
 
-
-    public ParticipantEnricher<ModelledParticipant, ModelledFeature> getParticipantEnricher() {
-        return getBasicEnricher().getParticipantEnricher();
-    }
-
-    public void setParticipantEnricher(ParticipantEnricher<ModelledParticipant, ModelledFeature> participantEnricher) {
-        getBasicEnricher().setParticipantEnricher(participantEnricher);
+    public CompositeEntityEnricher getParticipantEnricher() {
+        return null;
     }
 
     public InteractorFetcher<Complex> getInteractorFetcher() {
-        return getBasicEnricher().getInteractorFetcher();
-    }
-
-    public void setListener(InteractorEnricherListener<Complex> listener) {
-        getBasicEnricher().setListener(listener);
+        return null;
     }
 
     public InteractorEnricherListener<Complex> getListener() {
-        return getBasicEnricher().getListener();
-    }
-
-    public void setCvTermEnricher(CvTermEnricher cvTermEnricher) {
-        getBasicEnricher().setCvTermEnricher(cvTermEnricher);
+        return null;
     }
 
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
-        return getBasicEnricher().getCvTermEnricher();
-    }
-
-    public void setOrganismEnricher(OrganismEnricher organismEnricher) {
-        getBasicEnricher().setOrganismEnricher(organismEnricher);
+        return null;
     }
 
     public OrganismEnricher getOrganismEnricher() {
-        return getBasicEnricher().getOrganismEnricher();
+        return null;
     }
 
     public InteractionEnricherListener<Complex> getInteractionEnricherListener() {
-        return getBasicEnricher().getInteractionEnricherListener();
-    }
-
-    public void setInteractionEnricherListener(InteractionEnricherListener<Complex> listener) {
-        getBasicEnricher().setInteractionEnricherListener(listener);
+        return null;
     }
 
     public SourceEnricher getSourceEnricher() {
-        return getBasicEnricher().getSourceEnricher();
-    }
-
-    public void setSourceEnricher(SourceEnricher sourceEnricher) {
-        getBasicEnricher().setSourceEnricher(sourceEnricher);
+        return null;
     }
 
     @Override

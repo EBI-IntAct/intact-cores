@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.enricher.CvTermEnricher;
-import psidev.psi.mi.jami.enricher.impl.FullCvTermEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullCvTermEnricher;
 import psidev.psi.mi.jami.enricher.listener.CvTermEnricherListener;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -32,11 +32,7 @@ public class IntactCvTermMergerOverride extends IntactDbMergerOverride<CvTerm, I
         return getBasicEnricher().getCvTermFetcher();
     }
 
-    public void setCvTermEnricherListener(CvTermEnricherListener<CvTerm> listener) {
-        getBasicEnricher().setCvTermEnricherListener(listener);
-    }
-
     public CvTermEnricherListener<CvTerm> getCvTermEnricherListener() {
-        return getBasicEnricher().getCvTermEnricherListener();
+        return null;
     }
 }
