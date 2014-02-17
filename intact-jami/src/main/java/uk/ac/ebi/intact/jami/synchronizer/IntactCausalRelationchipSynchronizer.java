@@ -28,12 +28,6 @@ public class IntactCausalRelationchipSynchronizer extends AbstractIntactDbSynchr
 
     public IntactCausalRelationchipSynchronizer(EntityManager entityManager){
         super(entityManager, IntactCausalRelationship.class);
-        this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
-    }
-
-    public IntactCausalRelationchipSynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer){
-        super(entityManager, IntactCausalRelationship.class);
-        this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
     }
 
     public IntactCausalRelationship find(CausalRelationship object) throws FinderException {
@@ -43,11 +37,22 @@ public class IntactCausalRelationchipSynchronizer extends AbstractIntactDbSynchr
     public void synchronizeProperties(IntactCausalRelationship object) throws FinderException, PersisterException, SynchronizerException {
         // synchronize relation type
         CvTerm type = object.getRelationType();
-        object.setRelationType(typeSynchronizer.synchronize(type, true));
+        object.setRelationType(getTypeSynchronizer().synchronize(type, true));
     }
 
     public void clearCache() {
-        this.typeSynchronizer.clearCache();
+        getTypeSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTypeSynchronizer() {
+        if (this.typeSynchronizer == null){
+            this.typeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+        }
+        return typeSynchronizer;
+    }
+
+    public void setTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer) {
+        this.typeSynchronizer = typeSynchronizer;
     }
 
     @Override

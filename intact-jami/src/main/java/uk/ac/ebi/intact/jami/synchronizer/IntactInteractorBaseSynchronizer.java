@@ -48,30 +48,6 @@ implements InteractorFetcher<T>{
         super(entityManager, intactClass);
         // to keep track of persisted cvs
         initialisePersistedObjectMap();
-        this.aliasSynchronizer = new IntactAliasSynchronizer<InteractorAlias>(entityManager, InteractorAlias.class);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<InteractorAnnotation>(entityManager, InteractorAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer<InteractorXref>(entityManager, InteractorXref.class);
-
-        this.organismSynchronizer = new IntactOrganismSynchronizer(entityManager);
-        this.interactorTypeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTOR_TYPE_OBJCLASS);
-        this.checksumSynchronizer = new IntactChecksumSynchronizer<InteractorChecksum>(entityManager, InteractorChecksum.class);
-    }
-
-    public IntactInteractorBaseSynchronizer(EntityManager entityManager, Class<I> intactClass,
-                                        IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer,
-                                    IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer,
-                                    IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
-                                    IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer){
-        super(entityManager, intactClass);
-        // to keep track of persisted cvs
-        initialisePersistedObjectMap();
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer<InteractorAlias>(entityManager, InteractorAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<InteractorAnnotation>(entityManager, InteractorAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<InteractorXref>(entityManager, InteractorXref.class);
-
-        this.organismSynchronizer = organismSynchronizer != null ? organismSynchronizer : new IntactOrganismSynchronizer(entityManager);
-        this.interactorTypeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTOR_TYPE_OBJCLASS);
-        this.checksumSynchronizer = checksumSynchronizer != null ? checksumSynchronizer : new IntactChecksumSynchronizer<InteractorChecksum>(entityManager, InteractorChecksum.class);
     }
 
     public I find(T term) throws FinderException{
@@ -210,6 +186,72 @@ implements InteractorFetcher<T>{
         this.annotationSynchronizer.clearCache();
         this.organismSynchronizer.clearCache();
         this.interactorTypeSynchronizer.clearCache();
+    }
+
+    public IntactDbSynchronizer<Alias, InteractorAlias> getAliasSynchronizer() {
+        if (this.aliasSynchronizer == null){
+            this.aliasSynchronizer = new IntactAliasSynchronizer<InteractorAlias>(getEntityManager(), InteractorAlias.class);
+        }
+        return aliasSynchronizer;
+    }
+
+    public void setAliasSynchronizer(IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer) {
+        this.aliasSynchronizer = aliasSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Annotation, InteractorAnnotation> getAnnotationSynchronizer() {
+        if (this.annotationSynchronizer == null){
+            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<InteractorAnnotation>(getEntityManager(), InteractorAnnotation.class);
+        }
+        return annotationSynchronizer;
+    }
+
+    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer) {
+        this.annotationSynchronizer = annotationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Xref, InteractorXref> getXrefSynchronizer() {
+        if (this.xrefSynchronizer == null){
+            this.xrefSynchronizer = new IntactXrefSynchronizer<InteractorXref>(getEntityManager(), InteractorXref.class);
+        }
+        return xrefSynchronizer;
+    }
+
+    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer) {
+        this.xrefSynchronizer = xrefSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Checksum, InteractorChecksum> getChecksumSynchronizer() {
+        if (this.checksumSynchronizer == null){
+            this.checksumSynchronizer = new IntactChecksumSynchronizer<InteractorChecksum>(getEntityManager(), InteractorChecksum.class);
+        }
+        return checksumSynchronizer;
+    }
+
+    public void setChecksumSynchronizer(IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer) {
+        this.checksumSynchronizer = checksumSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer() {
+        if (this.organismSynchronizer == null){
+            this.organismSynchronizer = new IntactOrganismSynchronizer(getEntityManager());
+        }
+        return organismSynchronizer;
+    }
+
+    public void setOrganismSynchronizer(IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer) {
+        this.organismSynchronizer = organismSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractorTypeSynchronizer() {
+        if (this.interactorTypeSynchronizer == null){
+            this.interactorTypeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.INTERACTOR_TYPE_OBJCLASS);
+        }
+        return interactorTypeSynchronizer;
+    }
+
+    public void setInteractorTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> interactorTypeSynchronizer) {
+        this.interactorTypeSynchronizer = interactorTypeSynchronizer;
     }
 
     protected void initialisePersistedObjectMap() {

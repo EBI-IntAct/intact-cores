@@ -17,6 +17,8 @@ import java.util.Date;
 public interface LifeCycleEvent extends Auditable{
 
     public static String NEW_STATUS = "new";
+    public static String RELEASED = "released";
+    public static String READY_FOR_RELEASE = "ready for release";
 
     public CvTerm getEvent();
 

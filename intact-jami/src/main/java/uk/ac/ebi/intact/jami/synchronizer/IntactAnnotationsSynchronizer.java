@@ -29,24 +29,6 @@ public class IntactAnnotationsSynchronizer<A extends AbstractIntactAnnotation> e
 
     public IntactAnnotationsSynchronizer(EntityManager entityManager, Class<? extends A> annotationClass){
         super(entityManager, annotationClass);
-        if (annotationClass.isAssignableFrom(CvTermAnnotation.class)){
-            this.topicSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS,
-                    null, (IntactAnnotationsSynchronizer<CvTermAnnotation>)this, null);
-        }
-        else{
-            this.topicSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
-        }
-    }
-
-    public IntactAnnotationsSynchronizer(EntityManager entityManager, Class<? extends A> annotationClass, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer){
-        super(entityManager, annotationClass);
-        if (annotationClass.isAssignableFrom(CvTermAnnotation.class)){
-            this.topicSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS,
-                    null, (IntactAnnotationsSynchronizer<CvTermAnnotation>)this, null);
-        }
-        else{
-            this.topicSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
-        }
     }
 
     public A find(Annotation object) throws FinderException {
@@ -56,7 +38,7 @@ public class IntactAnnotationsSynchronizer<A extends AbstractIntactAnnotation> e
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
         // topic first
         CvTerm topic = object.getTopic();
-        object.setTopic(topicSynchronizer.synchronize(topic, true));
+        object.setTopic(getTopicSynchronizer().synchronize(topic, true));
 
         // check annotation value
         if (object.getValue() != null && object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -66,7 +48,22 @@ public class IntactAnnotationsSynchronizer<A extends AbstractIntactAnnotation> e
     }
 
     public void clearCache() {
-        this.topicSynchronizer.clearCache();
+        this.getTopicSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTopicSynchronizer() {
+        if (this.topicSynchronizer == null){
+            this.topicSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+
+            if (getIntactClass().isAssignableFrom(CvTermAnnotation.class)){
+                ((IntactCvTermSynchronizer)this.topicSynchronizer).setAnnotationSynchronizer((IntactDbSynchronizer<Annotation, CvTermAnnotation>) this);
+            }
+        }
+        return topicSynchronizer;
+    }
+
+    public void setTopicSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> topicSynchronizer) {
+        this.topicSynchronizer = topicSynchronizer;
     }
 
     @Override

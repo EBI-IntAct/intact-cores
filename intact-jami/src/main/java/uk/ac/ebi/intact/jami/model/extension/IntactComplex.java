@@ -329,7 +329,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
-    @ManyToMany(targetEntity = IntactExperiment.class)
+    @ManyToMany(targetEntity = IntactExperiment.class, fetch = FetchType.EAGER)
     @JoinTable(
             name = "ia_int2exp",
             joinColumns = {@JoinColumn( name = "interaction_ac" )},

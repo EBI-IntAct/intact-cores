@@ -39,38 +39,84 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
     public IntactComplexSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactComplex.class);
         this.participantsComparator = new CollectionComparator<ModelledEntity>(new UnambiguousModelledParticipantComparator());
-        this.parameterSynchronizer = new IntactParameterSynchronizer<ModelledParameter, ComplexParameter>(entityManager, ComplexParameter.class);
-        this.confidenceSynchronizer = new IntactConfidenceSynchronizer<ModelledConfidence, ComplexConfidence>(entityManager, ComplexConfidence.class);
-        this.experimentSynchronizer = new IntactExperimentSynchronizer(entityManager);
-        this.lifeCycleEventSynchronizer = new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
-        this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
-        this.cooperativeEffectSynchronizer = new IntactCooperativeEffectSynchronizer(entityManager);
-        this.participantSynchronizer = new IntActEntitySynchronizer(entityManager);
     }
 
-    public IntactComplexSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer,
-                                     IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer,
-                                     IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer,
-                                     IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer,
-                                     IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
-                                     IntactDbSynchronizer<Checksum,InteractorChecksum> checksumSynchronizer,
-                                     IntactDbSynchronizer<Entity, AbstractIntactEntity> participantSynchronizer,
-                                     IntactDbSynchronizer<ModelledParameter, ComplexParameter> parameterSynchronizer,
-                                     IntactDbSynchronizer<ModelledConfidence, ComplexConfidence> confidenceSynchronizer,
-                                     IntactDbSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect> cooperativeEffectSynchronizer,
-                                     IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer,
-                                     IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> lifeCycleEventSynchronizer,
-                                     IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer) {
-        super(entityManager, IntactComplex.class, aliasSynchronizer, annotationSynchronizer,
-                xrefSynchronizer, organismSynchronizer, typeSynchronizer, checksumSynchronizer);
-        this.participantsComparator = new CollectionComparator<ModelledEntity>(new UnambiguousModelledParticipantComparator());
-        this.parameterSynchronizer = parameterSynchronizer != null ? parameterSynchronizer : new IntactParameterSynchronizer<ModelledParameter, ComplexParameter>(entityManager, ComplexParameter.class);
-        this.confidenceSynchronizer = confidenceSynchronizer != null ? confidenceSynchronizer : new IntactConfidenceSynchronizer<ModelledConfidence, ComplexConfidence>(entityManager, ComplexConfidence.class);
-        this.experimentSynchronizer = experimentSynchronizer != null ? experimentSynchronizer : new IntactExperimentSynchronizer(entityManager);
-        this.lifeCycleEventSynchronizer = lifeCycleEventSynchronizer != null ? lifeCycleEventSynchronizer : new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(entityManager, ComplexLifecycleEvent.class);
-        this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
-        this.cooperativeEffectSynchronizer = cooperativeEffectSynchronizer != null ? cooperativeEffectSynchronizer : new IntactCooperativeEffectSynchronizer(entityManager);
-        this.participantSynchronizer = participantSynchronizer != null ? participantSynchronizer : new IntActEntitySynchronizer(entityManager);
+    public IntactDbSynchronizer<Entity, AbstractIntactEntity> getParticipantSynchronizer() {
+        if (this.participantSynchronizer == null){
+            this.participantSynchronizer = new IntActEntitySynchronizer(getEntityManager());
+        }
+        return participantSynchronizer;
+    }
+
+    public void setParticipantSynchronizer(IntactDbSynchronizer<Entity, AbstractIntactEntity> participantSynchronizer) {
+        this.participantSynchronizer = participantSynchronizer;
+    }
+
+    public IntactDbSynchronizer<ModelledParameter, ComplexParameter> getParameterSynchronizer() {
+        if (this.parameterSynchronizer == null){
+            this.parameterSynchronizer = new IntactParameterSynchronizer<ModelledParameter, ComplexParameter>(getEntityManager(), ComplexParameter.class);
+        }
+        return parameterSynchronizer;
+    }
+
+    public void setParameterSynchronizer(IntactDbSynchronizer<ModelledParameter, ComplexParameter> parameterSynchronizer) {
+        this.parameterSynchronizer = parameterSynchronizer;
+    }
+
+    public IntactDbSynchronizer<ModelledConfidence, ComplexConfidence> getConfidenceSynchronizer() {
+        if (this.confidenceSynchronizer == null){
+            this.confidenceSynchronizer = new IntactConfidenceSynchronizer<ModelledConfidence, ComplexConfidence>(getEntityManager(), ComplexConfidence.class);
+        }
+        return confidenceSynchronizer;
+    }
+
+    public void setConfidenceSynchronizer(IntactDbSynchronizer<ModelledConfidence, ComplexConfidence> confidenceSynchronizer) {
+        this.confidenceSynchronizer = confidenceSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect> getCooperativeEffectSynchronizer() {
+        if (this.cooperativeEffectSynchronizer == null){
+            this.cooperativeEffectSynchronizer = new IntactCooperativeEffectSynchronizer(getEntityManager());
+        }
+        return cooperativeEffectSynchronizer;
+    }
+
+    public void setCooperativeEffectSynchronizer(IntactDbSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect> cooperativeEffectSynchronizer) {
+        this.cooperativeEffectSynchronizer = cooperativeEffectSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer() {
+        if (this.experimentSynchronizer == null){
+            this.experimentSynchronizer = new IntactExperimentSynchronizer(getEntityManager());
+        }
+        return experimentSynchronizer;
+    }
+
+    public void setExperimentSynchronizer(IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer) {
+        this.experimentSynchronizer = experimentSynchronizer;
+    }
+
+    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getLifeCycleEventSynchronizer() {
+        if (this.lifeCycleEventSynchronizer == null){
+            this.lifeCycleEventSynchronizer = new IntactLifeCycleSynchronizer<ComplexLifecycleEvent>(getEntityManager(), ComplexLifecycleEvent.class);
+        }
+        return lifeCycleEventSynchronizer;
+    }
+
+    public void setLifeCycleEventSynchronizer(IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> lifeCycleEventSynchronizer) {
+        this.lifeCycleEventSynchronizer = lifeCycleEventSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getStatusSynchronizer() {
+        if (this.statusSynchronizer == null){
+            this.statusSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PUBLICATION_STATUS_OBJCLASS);
+
+        }
+        return statusSynchronizer;
+    }
+
+    public void setStatusSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer) {
+        this.statusSynchronizer = statusSynchronizer;
     }
 
     @Override
@@ -148,19 +194,38 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
 
     public void clearCache() {
         super.clearCache();
-        this.parameterSynchronizer.clearCache();
-        this.confidenceSynchronizer.clearCache();
-        this.participantSynchronizer.clearCache();
-        this.cooperativeEffectSynchronizer.clearCache();
-        this.lifeCycleEventSynchronizer.clearCache();
-        this.statusSynchronizer.clearCache();
+        getParameterSynchronizer().clearCache();
+        getConfidenceSynchronizer().clearCache();
+        getParticipantSynchronizer().clearCache();
+        getCooperativeEffectSynchronizer().clearCache();
+        getLifeCycleEventSynchronizer().clearCache();
+        getStatusSynchronizer().clearCache();
     }
 
     protected void prepareStatus(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
 
         // first the status
         CvTerm status = intactComplex.getStatus() != null ? intactComplex.getStatus() : IntactUtils.createLifecycleStatus(LifeCycleEvent.NEW_STATUS);
-        intactComplex.setStatus(this.statusSynchronizer.synchronize(status, true));
+        intactComplex.setStatus(getStatusSynchronizer().synchronize(status, true));
+
+        // if the publication is released or ready for release, we move the experiment to another publication which should be released
+        if (LifeCycleEvent.RELEASED.equals(status.getShortName()) ||
+                LifeCycleEvent.READY_FOR_RELEASE.equals(status.getShortName())){
+            Experiment exp = intactComplex.getExperiments().isEmpty() ? intactComplex.getExperiments().iterator().next() : null;
+            if (exp == null){
+                createExperiment(intactComplex, "14681455");
+                exp = intactComplex.getExperiments().iterator().next();
+                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+            }
+            else if (exp.getPublication() == null){
+                exp.setPublication(new IntactPublication("14681455"));
+                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+            }
+            else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("14681455")){
+                exp.setPublication(new IntactPublication("14681455"));
+                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+            }
+        }
     }
 
     protected void prepareLifeCycleEvents(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
@@ -169,7 +234,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
             List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactComplex.getLifecycleEvents());
             for (LifeCycleEvent event : eventsToPersist){
                 // do not persist or merge events because of cascades
-                LifeCycleEvent evt = this.lifeCycleEventSynchronizer.synchronize(event, false);
+                LifeCycleEvent evt = getLifeCycleEventSynchronizer().synchronize(event, false);
                 // we have a different instance because needed to be synchronized
                 if (evt != event){
                     intactComplex.getLifecycleEvents().add(intactComplex.getLifecycleEvents().indexOf(event), evt);
@@ -185,7 +250,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
             Collection<CooperativeEffect> parametersToPersist = new ArrayList<CooperativeEffect>(intactInteraction.getCooperativeEffects());
             for (CooperativeEffect param : parametersToPersist){
                 // do not persist or merge parameters because of cascades
-                CooperativeEffect expParam = this.cooperativeEffectSynchronizer.synchronize(param, false);
+                CooperativeEffect expParam = getCooperativeEffectSynchronizer().synchronize(param, false);
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     intactInteraction.getCooperativeEffects().remove(param);
@@ -202,7 +267,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
                 // reinit parent
                 participant.setInteraction(intactInteraction);
                 // do not persist or merge participants because of cascades
-                ModelledParticipant expPart = this.participantSynchronizer.synchronize(participant, false);
+                ModelledParticipant expPart = (ModelledParticipant) getParticipantSynchronizer().synchronize(participant, false);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);
@@ -216,18 +281,22 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
 
         if (intactComplex.areExperimentsInitialized()){
             if (intactComplex.getExperiments().isEmpty()){
-                // create default experiment with publication unassigned for complexes
-                IntactExperiment defaultExperiment = new IntactExperiment(new IntactPublication("unassigned638"));
-                // inferred by curator
-                defaultExperiment.setInteractionDetectionMethod(IntactUtils.createMIInteractionDetectionMethod(Experiment.INFERRED_BY_CURATOR, Experiment.INFERRED_BY_CURATOR_MI));
-                // use host organism of interaction
-                defaultExperiment.setHostOrganism(intactComplex.getOrganism());
-                // persist this experiment
-                this.experimentSynchronizer.persist(defaultExperiment);
-                // then add this complex
-                intactComplex.getExperiments().add(defaultExperiment);
+                createExperiment(intactComplex, "unassigned638");
             }
         }
+    }
+
+    private void createExperiment(IntactComplex intactComplex, String pubmed) throws FinderException, PersisterException, SynchronizerException {
+        // create default experiment with publication unassigned for complexes
+        IntactExperiment defaultExperiment = new IntactExperiment(new IntactPublication(pubmed));
+        // inferred by curator
+        defaultExperiment.setInteractionDetectionMethod(IntactUtils.createMIInteractionDetectionMethod(Experiment.INFERRED_BY_CURATOR, Experiment.INFERRED_BY_CURATOR_MI));
+        // use host organism of interaction
+        defaultExperiment.setHostOrganism(intactComplex.getOrganism());
+        // persist this experiment
+        getExperimentSynchronizer().persist(defaultExperiment);
+        // then add this complex
+        intactComplex.getExperiments().add(defaultExperiment);
     }
 
     protected void prepareParameters(IntactComplex intactInteraction) throws PersisterException, FinderException, SynchronizerException {
@@ -235,7 +304,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
             Collection<ModelledParameter> parametersToPersist = new ArrayList<ModelledParameter>(intactInteraction.getModelledParameters());
             for (ModelledParameter param : parametersToPersist){
                 // do not persist or merge parameters because of cascades
-                ModelledParameter expPar = this.parameterSynchronizer.synchronize(param, false);
+                ModelledParameter expPar = getParameterSynchronizer().synchronize(param, false);
                 // we have a different instance because needed to be synchronized
                 if (expPar != param){
                     intactInteraction.getModelledParameters().remove(param);
@@ -250,7 +319,7 @@ public class IntactComplexSynchronizer extends IntactInteractorBaseSynchronizer<
             List<ModelledConfidence> confsToPersist = new ArrayList<ModelledConfidence>(intactInteraction.getModelledConfidences());
             for (ModelledConfidence confidence : confsToPersist){
                 // do not persist or merge confidences because of cascades
-                ModelledConfidence expConf = this.confidenceSynchronizer.synchronize(confidence, false);
+                ModelledConfidence expConf = getConfidenceSynchronizer().synchronize(confidence, false);
                 // we have a different instance because needed to be synchronized
                 if (expConf != confidence){
                     intactInteraction.getModelledConfidences().remove(confidence);

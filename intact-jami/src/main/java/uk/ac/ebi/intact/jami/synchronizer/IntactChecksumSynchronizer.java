@@ -27,12 +27,6 @@ public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extend
 
     public IntactChecksumSynchronizer(EntityManager entityManager, Class<? extends C> checksumClass){
         super(entityManager, checksumClass);
-        this.methodSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
-    }
-
-    public IntactChecksumSynchronizer(EntityManager entityManager, Class<? extends C> checksumClass, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer){
-        super(entityManager, checksumClass);
-        this.methodSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
     }
 
     public C find(Checksum object) throws FinderException {
@@ -42,7 +36,7 @@ public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extend
     public void synchronizeProperties(C object) throws FinderException, PersisterException, SynchronizerException {
         // method first
         CvTerm method = object.getMethod();
-        object.setMethod(methodSynchronizer.synchronize(method, true));
+        object.setMethod(getMethodSynchronizer().synchronize(method, true));
 
         // check checksum value
         if (object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -52,7 +46,18 @@ public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extend
     }
 
     public void clearCache() {
-        this.methodSynchronizer.clearCache();
+        getMethodSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getMethodSynchronizer() {
+        if (this.methodSynchronizer == null){
+            this.methodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+        }
+        return methodSynchronizer;
+    }
+
+    public void setMethodSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer) {
+        this.methodSynchronizer = methodSynchronizer;
     }
 
     @Override

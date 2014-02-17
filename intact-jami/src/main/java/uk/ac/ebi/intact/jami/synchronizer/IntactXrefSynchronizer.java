@@ -30,28 +30,7 @@ public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends Abstra
 
     public IntactXrefSynchronizer(EntityManager entityManager, Class<? extends X> xrefClass){
         super(entityManager, xrefClass);
-        if (xrefClass.isAssignableFrom(CvTermXref.class)){
-            this.dbSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS, null, null, (IntactXrefSynchronizer<CvTermXref>)this);
-            this.qualifierSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS, null, null, (IntactXrefSynchronizer<CvTermXref>)this);
-        }
-        else{
-            this.dbSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS);
-            this.qualifierSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS);
-        }
 
-    }
-
-    public IntactXrefSynchronizer(EntityManager entityManager, Class<? extends X> xrefClas,
-                                  IntactDbSynchronizer<CvTerm, IntactCvTerm> dbSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> qualifierSynchronizer){
-        super(entityManager, xrefClas);
-        if (xrefClas.isAssignableFrom(CvTermXref.class)){
-            this.dbSynchronizer = dbSynchronizer != null ? dbSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS, null, null, (IntactXrefSynchronizer<CvTermXref>)this);
-            this.qualifierSynchronizer = qualifierSynchronizer != null ? qualifierSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS, null, null, (IntactXrefSynchronizer<CvTermXref>)this);
-        }
-        else{
-            this.dbSynchronizer = dbSynchronizer != null ? dbSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.DATABASE_OBJCLASS);
-            this.qualifierSynchronizer = qualifierSynchronizer != null ? qualifierSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.QUALIFIER_OBJCLASS);
-        }
     }
 
     public X find(Xref object) throws FinderException {
@@ -61,7 +40,7 @@ public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends Abstra
     public void synchronizeProperties(X object) throws FinderException, PersisterException, SynchronizerException {
         // database first
         CvTerm db = object.getDatabase();
-        object.setDatabase(dbSynchronizer.synchronize(db, true));
+        object.setDatabase(getDbSynchronizer().synchronize(db, true));
 
         // check primaryId
         if (object.getId().length() > IntactUtils.MAX_ID_LEN){
@@ -81,13 +60,43 @@ public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends Abstra
         // check qualifier
         if (object.getQualifier() != null){
             CvTerm qualifier = object.getQualifier();
-            object.setQualifier(qualifierSynchronizer.synchronize(qualifier, true));
+            object.setQualifier(getQualifierSynchronizer().synchronize(qualifier, true));
         }
     }
 
     public void clearCache() {
-        this.dbSynchronizer.clearCache();
-        this.qualifierSynchronizer.clearCache();
+        getDbSynchronizer().clearCache();
+        getQualifierSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDbSynchronizer() {
+        if (this.dbSynchronizer == null){
+            this.dbSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.DATABASE_OBJCLASS);
+
+            if (getIntactClass().isAssignableFrom(CvTermXref.class)){
+                ((IntactCvTermSynchronizer)this.dbSynchronizer).setXrefSynchronizer((IntactDbSynchronizer<Xref, CvTermXref>)this);
+            }
+        }
+        return dbSynchronizer;
+    }
+
+    public void setDbSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> dbSynchronizer) {
+        this.dbSynchronizer = dbSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getQualifierSynchronizer() {
+        if (this.qualifierSynchronizer == null){
+            this.qualifierSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.QUALIFIER_OBJCLASS);
+
+            if (getIntactClass().isAssignableFrom(CvTermXref.class)){
+                ((IntactCvTermSynchronizer)this.qualifierSynchronizer).setXrefSynchronizer((IntactDbSynchronizer<Xref, CvTermXref>)this);
+            }
+        }
+        return this.qualifierSynchronizer;
+    }
+
+    public void setQualifierSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> qualifierSynchronizer) {
+        this.qualifierSynchronizer = qualifierSynchronizer;
     }
 
     @Override

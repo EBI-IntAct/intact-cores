@@ -29,25 +29,6 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
 
     public IntactAliasSynchronizer(EntityManager entityManager, Class<? extends A> aliasClass){
         super(entityManager, aliasClass);
-        if (aliasClass.isAssignableFrom(CvTermAlias.class)){
-            this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.ALIAS_TYPE_OBJCLASS,
-                    (IntactAliasSynchronizer<CvTermAlias>)this, null, null);
-        }
-        else{
-            this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.ALIAS_TYPE_OBJCLASS);
-        }
-    }
-
-    public IntactAliasSynchronizer(EntityManager entityManager, Class<? extends A> aliasClass, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer){
-        super(entityManager, aliasClass);
-        if (aliasClass.isAssignableFrom(CvTermAlias.class)){
-            this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.ALIAS_TYPE_OBJCLASS,
-                    (IntactAliasSynchronizer<CvTermAlias>)this, null, null);
-        }
-        else{
-            this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.ALIAS_TYPE_OBJCLASS);
-        }
-
     }
 
     public A find(Alias object) throws FinderException {
@@ -57,7 +38,7 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
         if (object.getType() != null){
             CvTerm type = object.getType();
-            object.setType(typeSynchronizer.synchronize(type, true));
+            object.setType(getTypeSynchronizer().synchronize(type, true));
         }
         // check alias name
         if (object.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
@@ -67,7 +48,22 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
     }
 
     public void clearCache() {
-        this.typeSynchronizer.clearCache();
+        getTypeSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTypeSynchronizer() {
+        if (typeSynchronizer == null){
+            this.typeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
+
+            if (getIntactClass().isAssignableFrom(CvTermAlias.class)){
+                ((IntactCvTermSynchronizer)this.typeSynchronizer).setAliasSynchronizer((IntactDbSynchronizer<Alias, CvTermAlias>)this);
+            }
+        }
+        return typeSynchronizer;
+    }
+
+    public void setTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer) {
+        this.typeSynchronizer = typeSynchronizer;
     }
 
     @Override

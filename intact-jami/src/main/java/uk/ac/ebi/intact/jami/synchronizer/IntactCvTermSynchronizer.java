@@ -48,31 +48,10 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         this.objClass = null;
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new UnambiguousCvTermComparator());
-        this.aliasSynchronizer = new IntactAliasSynchronizer<CvTermAlias>(entityManager, CvTermAlias.class);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<CvTermAnnotation>(entityManager, CvTermAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer(entityManager, CvTermXref.class);
     }
 
     public IntactCvTermSynchronizer(EntityManager entityManager, String objClass){
         this(entityManager);
-        this.objClass = objClass;
-    }
-
-    public IntactCvTermSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, CvTermAlias> aliasSynchronizer,
-                                    IntactDbSynchronizer<Annotation, CvTermAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, CvTermXref> xrefSynchronizer){
-        super(entityManager, IntactCvTerm.class);
-        this.objClass = null;
-        // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new UnambiguousCvTermComparator());
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer<CvTermAlias>(entityManager, CvTermAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<CvTermAnnotation>(entityManager, CvTermAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<CvTermXref>(entityManager, CvTermXref.class);
-    }
-
-    public IntactCvTermSynchronizer(EntityManager entityManager, String objClass,
-                                    IntactDbSynchronizer<Alias, CvTermAlias> aliasSynchronizer, IntactDbSynchronizer<Annotation, CvTermAnnotation> annotationSynchronizer,
-                                    IntactDbSynchronizer<Xref, CvTermXref> xrefSynchronizer){
-        this(entityManager, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer);
         this.objClass = objClass;
     }
 
@@ -279,9 +258,54 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
 
     public void clearCache() {
         this.persistedObjects.clear();
-        this.aliasSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
+        getAnnotationSynchronizer().clearCache();
+        getXrefSynchronizer().clearCache();
+        getAliasSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<Alias, CvTermAlias> getAliasSynchronizer() {
+        if (aliasSynchronizer == null){
+            aliasSynchronizer = new IntactAliasSynchronizer<CvTermAlias>(getEntityManager(), CvTermAlias.class);
+            if (this.objClass != null && this.objClass.equals(IntactUtils.ALIAS_TYPE_OBJCLASS)){
+                ((IntactAliasSynchronizer)aliasSynchronizer).setTypeSynchronizer(this);
+            }
+        }
+        return aliasSynchronizer;
+    }
+
+    public void setAliasSynchronizer(IntactDbSynchronizer<Alias, CvTermAlias> aliasSynchronizer) {
+        this.aliasSynchronizer = aliasSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Annotation, CvTermAnnotation> getAnnotationSynchronizer() {
+        if (annotationSynchronizer == null){
+            annotationSynchronizer = new IntactAnnotationsSynchronizer<CvTermAnnotation>(getEntityManager(), CvTermAnnotation.class);
+            if (this.objClass != null && this.objClass.equals(IntactUtils.TOPIC_OBJCLASS)){
+                ((IntactAnnotationsSynchronizer)annotationSynchronizer).setTopicSynchronizer(this);
+            }
+        }
+        return annotationSynchronizer;
+    }
+
+    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, CvTermAnnotation> annotationSynchronizer) {
+        this.annotationSynchronizer = annotationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Xref, CvTermXref> getXrefSynchronizer() {
+        if (xrefSynchronizer == null){
+            xrefSynchronizer = new IntactXrefSynchronizer<CvTermXref>(getEntityManager(), CvTermXref.class);
+            if (this.objClass != null && this.objClass.equals(IntactUtils.DATABASE_OBJCLASS)){
+                ((IntactXrefSynchronizer)xrefSynchronizer).setDbSynchronizer(this);
+            }
+            else if (this.objClass != null && this.objClass.equals(IntactUtils.QUALIFIER_OBJCLASS)){
+                ((IntactXrefSynchronizer)xrefSynchronizer).setQualifierSynchronizer(this);
+            }
+        }
+        return xrefSynchronizer;
+    }
+
+    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, CvTermXref> xrefSynchronizer) {
+        this.xrefSynchronizer = xrefSynchronizer;
     }
 
     protected IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {
@@ -424,7 +448,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false);
+                Xref cvXref = getXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactCv.getPersistentXrefs().remove(xref);
@@ -439,7 +463,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
+                Annotation cvAnnotation = getAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactCv.getAnnotations().remove(annotation);
@@ -454,7 +478,7 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false);
+                Alias cvAlias = getAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactCv.getSynonyms().remove(alias);

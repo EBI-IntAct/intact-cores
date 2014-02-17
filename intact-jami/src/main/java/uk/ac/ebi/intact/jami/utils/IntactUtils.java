@@ -66,8 +66,6 @@ public class IntactUtils {
     public static final String PUBLICATION_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvPublicationStatus";
     public static final String LIFECYCLE_EVENT_OBJCLASS ="uk.ac.ebi.intact.model.CvLifecycleEvent";
 
-    public static final String RELEASED_STATUS = "released";
-
     public static String generateAutomaticInteractionEvidenceShortlabelFor(IntactInteractionEvidence intactInteraction, int maxLength){
         if (intactInteraction.getParticipants().isEmpty()){
             return "unknown";

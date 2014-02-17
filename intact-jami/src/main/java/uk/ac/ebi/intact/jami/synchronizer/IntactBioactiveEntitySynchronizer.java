@@ -21,10 +21,6 @@ public class IntactBioactiveEntitySynchronizer extends IntactInteractorBaseSynch
         super(entityManager, IntactBioactiveEntity.class);
     }
 
-    public IntactBioactiveEntitySynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer, IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer, IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer, IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer) {
-        super(entityManager, IntactBioactiveEntity.class, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, organismSynchronizer, typeSynchronizer, checksumSynchronizer);
-    }
-
     @Override
     protected void prepareChecksums(IntactBioactiveEntity intactInteractor) throws FinderException, PersisterException, SynchronizerException {
         super.prepareChecksums(intactInteractor);
