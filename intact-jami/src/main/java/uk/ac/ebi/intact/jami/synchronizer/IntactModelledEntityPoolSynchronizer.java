@@ -49,6 +49,14 @@ public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchr
         prepareEntities(intactEntity);
     }
 
+    public IntactDbSynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer() {
+        return entitySynchronizer;
+    }
+
+    public void setEntitySynchronizer(IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer) {
+        this.entitySynchronizer = entitySynchronizer;
+    }
+
     protected void prepareEntities(IntactModelledEntityPool intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areEntitiesInitialized()){
             List<ModelledEntity> entitiesToPersist = new ArrayList<ModelledEntity>(intactEntity);

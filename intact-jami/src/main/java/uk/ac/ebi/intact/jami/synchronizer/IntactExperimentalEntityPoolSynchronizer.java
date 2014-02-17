@@ -24,29 +24,18 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
 
     public IntactExperimentalEntityPoolSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactExperimentalEntityPool.class);
-        this.entitySynchronizer = new IntActEntitySynchronizer(entityManager, null, null, null, null, null, this);
     }
 
-    public IntactExperimentalEntityPoolSynchronizer(EntityManager entityManager,
-                                                    IntactDbSynchronizer<Alias, EntityAlias> aliasSynchronizer,
-                                                    IntactDbSynchronizer<Annotation, EntityAnnotation> annotationSynchronizer,
-                                                    IntactDbSynchronizer<Xref, EntityXref> xrefSynchronizer,
-                                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> biologicalRoleSynchronizer,
-                                                    IntactDbSynchronizer<Feature, AbstractIntactFeature> featureSynchronizer,
-                                                    IntactDbSynchronizer<CausalRelationship,
-                                                    IntactCausalRelationship> causalRelationshipSynchronizer,
-                                                    IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer,
-                                                    IntactDbSynchronizer<Parameter, ExperimentalEntityParameter> parameterSynchronizer,
-                                                    IntactDbSynchronizer<Confidence, ExperimentalEntityConfidence> confidenceSynchronizer,
-                                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> identificationMethodSynchronizer,
-                                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalPreparationSynchronizer,
-                                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalRoleSynchronizer,
-                                                    IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer,
-                                                    IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer) {
-        super(entityManager, IntactExperimentalEntityPool.class, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, biologicalRoleSynchronizer,
-                featureSynchronizer, causalRelationshipSynchronizer, interactorSynchronizer, parameterSynchronizer, confidenceSynchronizer, identificationMethodSynchronizer, experimentalPreparationSynchronizer,
-                experimentalRoleSynchronizer, organismSynchronizer);
-        this.entitySynchronizer = entitySynchronizer != null ? entitySynchronizer : new IntActEntitySynchronizer(entityManager, null, null, null, null, null, this);
+    public IntactDbSynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer() {
+        if (this.entitySynchronizer == null){
+            this.entitySynchronizer = new IntActEntitySynchronizer(getEntityManager());
+            ((IntActEntitySynchronizer)this.entitySynchronizer).setExperimentalEntityPoolSynchronizer(this);
+        }
+        return entitySynchronizer;
+    }
+
+    public void setEntitySynchronizer(IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer) {
+        this.entitySynchronizer = entitySynchronizer;
     }
 
     @Override
@@ -61,7 +50,7 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
         if (intactEntity.areEntitiesInitialized()){
             List<ExperimentalEntity> entitiesToPersist = new ArrayList<ExperimentalEntity>(intactEntity);
             for (ExperimentalEntity entity : entitiesToPersist){
-                ExperimentalEntity persistentEntity = (ExperimentalEntity)this.entitySynchronizer.synchronize(entity, true);
+                ExperimentalEntity persistentEntity = (ExperimentalEntity)getEntitySynchronizer().synchronize(entity, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentEntity != entity){
                     intactEntity.remove(entity);
@@ -81,7 +70,7 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
     @Override
     public void clearCache() {
         super.clearCache();
-        this.entitySynchronizer.clearCache();
+        getEntitySynchronizer().clearCache();
     }
 
     @Override

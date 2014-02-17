@@ -59,38 +59,6 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
         this.variableParameterComparator = comp.getVariableParameterCollectionComparator();
 
         this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(comp);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<ExperimentAnnotation>(entityManager, ExperimentAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer<ExperimentXref>(entityManager, ExperimentXref.class);
-        this.detectionMethodSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTION_DETECTION_METHOD_OBJCLASS);
-        this.participantDetectionMethodSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
-        this.publicationSynchronizer = new IntactPublicationSynchronizer(entityManager);
-        this.variableParameterSynchronizer = new IntactVariableParameterSynchronizer(entityManager);
-        this.organismSynchronizer = new IntactOrganismSynchronizer(entityManager);
-
-        this.interactionSynchronizer = new IntactInteractionEvidenceSynchronizer(entityManager);
-    }
-
-    public IntactExperimentSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Annotation, ExperimentAnnotation> annotationSynchronizer,
-                                        IntactDbSynchronizer<Xref, ExperimentXref> xrefSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> detectionMethodSynchronizer,
-                                        IntactDbSynchronizer<CvTerm, IntactCvTerm> participantDetectionMethodSynchronizer, IntactDbSynchronizer<Publication, IntactPublication> publicationSynchronizer,
-                                        IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> interactionSynchronizer, IntactDbSynchronizer<VariableParameter, IntactVariableParameter> variableParameterSynchronizer,
-                                        IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer){
-        super(entityManager, IntactExperiment.class);
-        // to keep track of persisted cvs
-        IntactExperimentComparator comp = new IntactExperimentComparator();
-        this.annotationCollectionComparator = comp.getAnnotationCollectionComparator();
-        this.variableParameterComparator = comp.getVariableParameterCollectionComparator();
-
-        this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(comp);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<ExperimentAnnotation>(entityManager, ExperimentAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<ExperimentXref>(entityManager, ExperimentXref.class);
-        this.detectionMethodSynchronizer = detectionMethodSynchronizer != null ? detectionMethodSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTION_DETECTION_METHOD_OBJCLASS);
-        this.participantDetectionMethodSynchronizer = participantDetectionMethodSynchronizer != null ? participantDetectionMethodSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
-        this.publicationSynchronizer = publicationSynchronizer != null ? publicationSynchronizer : new IntactPublicationSynchronizer(entityManager);
-        this.variableParameterSynchronizer = variableParameterSynchronizer != null ? variableParameterSynchronizer : new IntactVariableParameterSynchronizer(entityManager);
-        this.organismSynchronizer = organismSynchronizer != null ? organismSynchronizer : new IntactOrganismSynchronizer(entityManager);
-
-        this.interactionSynchronizer = interactionSynchronizer != null ? interactionSynchronizer : new IntactInteractionEvidenceSynchronizer(entityManager);
     }
 
     public IntactExperiment find(Experiment experiment) throws FinderException {
@@ -225,14 +193,103 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     public void clearCache() {
         this.persistedObjects.clear();
-        this.interactionSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
-        this.variableParameterSynchronizer.clearCache();
-        this.organismSynchronizer.clearCache();
-        this.detectionMethodSynchronizer.clearCache();
-        this.participantDetectionMethodSynchronizer.clearCache();
-        this.publicationSynchronizer.clearCache();
+        getInteractionSynchronizer().clearCache();
+        getXrefSynchronizer().clearCache();
+        getAnnotationSynchronizer().clearCache();
+        getVariableParameterSynchronizer().clearCache();
+        getOrganismSynchronizer().clearCache();
+        getDetectionMethodSynchronizer().clearCache();
+        getParticipantDetectionMethodSynchronizer().clearCache();
+        getPublicationSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<Annotation, ExperimentAnnotation> getAnnotationSynchronizer() {
+        if (this.annotationSynchronizer == null){
+            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<ExperimentAnnotation>(getEntityManager(), ExperimentAnnotation.class);
+        }
+        return annotationSynchronizer;
+    }
+
+    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, ExperimentAnnotation> annotationSynchronizer) {
+        this.annotationSynchronizer = annotationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Xref, ExperimentXref> getXrefSynchronizer() {
+        if (this.xrefSynchronizer == null){
+            this.xrefSynchronizer = new IntactXrefSynchronizer<ExperimentXref>(getEntityManager(), ExperimentXref.class);
+        }
+        return xrefSynchronizer;
+    }
+
+    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, ExperimentXref> xrefSynchronizer) {
+        this.xrefSynchronizer = xrefSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDetectionMethodSynchronizer() {
+        if (this.detectionMethodSynchronizer == null){
+            this.detectionMethodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.INTERACTION_DETECTION_METHOD_OBJCLASS);
+        }
+        return detectionMethodSynchronizer;
+    }
+
+    public void setDetectionMethodSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> detectionMethodSynchronizer) {
+        this.detectionMethodSynchronizer = detectionMethodSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getParticipantDetectionMethodSynchronizer() {
+        if (this.participantDetectionMethodSynchronizer == null){
+            this.participantDetectionMethodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
+        }
+        return participantDetectionMethodSynchronizer;
+    }
+
+    public void setParticipantDetectionMethodSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> participantDetectionMethodSynchronizer) {
+        this.participantDetectionMethodSynchronizer = participantDetectionMethodSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer() {
+        if (this.publicationSynchronizer == null){
+            this.publicationSynchronizer = new IntactPublicationSynchronizer(getEntityManager());
+
+        }
+        return publicationSynchronizer;
+    }
+
+    public void setPublicationSynchronizer(IntactDbSynchronizer<Publication, IntactPublication> publicationSynchronizer) {
+        this.publicationSynchronizer = publicationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> getInteractionSynchronizer() {
+        if (this.interactionSynchronizer == null){
+            this.interactionSynchronizer = new IntactInteractionEvidenceSynchronizer(getEntityManager());
+        }
+        return interactionSynchronizer;
+    }
+
+    public void setInteractionSynchronizer(IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> interactionSynchronizer) {
+        this.interactionSynchronizer = interactionSynchronizer;
+    }
+
+    public IntactDbSynchronizer<VariableParameter, IntactVariableParameter> getVariableParameterSynchronizer() {
+        if (this.variableParameterSynchronizer == null){
+            this.variableParameterSynchronizer = new IntactVariableParameterSynchronizer(getEntityManager());
+        }
+        return variableParameterSynchronizer;
+    }
+
+    public void setVariableParameterSynchronizer(IntactDbSynchronizer<VariableParameter, IntactVariableParameter> variableParameterSynchronizer) {
+        this.variableParameterSynchronizer = variableParameterSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer() {
+        if (this.organismSynchronizer == null){
+            this.organismSynchronizer = new IntactOrganismSynchronizer(getEntityManager());
+        }
+        return organismSynchronizer;
+    }
+
+    public void setOrganismSynchronizer(IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer) {
+        this.organismSynchronizer = organismSynchronizer;
     }
 
     @Override
@@ -253,7 +310,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
             Collection<VariableParameter> parametersToPersist = new ArrayList<VariableParameter>(intactExperiment.getVariableParameters());
             for (VariableParameter param : parametersToPersist){
                 // do not persist or merge parameters because of cascades
-                VariableParameter expParam = this.variableParameterSynchronizer.synchronize(param, false);
+                VariableParameter expParam = getVariableParameterSynchronizer().synchronize(param, false);
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     intactExperiment.getVariableParameters().remove(param);
@@ -268,7 +325,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
             Collection<InteractionEvidence> interactionsToPersist = new ArrayList<InteractionEvidence>(intactExperiment.getInteractionEvidences());
             for (InteractionEvidence interaction : interactionsToPersist){
                 // do not persist or merge interactions because of cascades
-                InteractionEvidence expInter = this.interactionSynchronizer.synchronize(interaction, false);
+                InteractionEvidence expInter = getInteractionSynchronizer().synchronize(interaction, false);
                 // we have a different instance because needed to be synchronized
                 if (expInter != interaction){
                     intactExperiment.getInteractionEvidences().remove(interaction);
@@ -281,14 +338,14 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
     protected void prepareHostOrganism(IntactExperiment intactExperiment) throws PersisterException, FinderException, SynchronizerException {
         Organism host = intactExperiment.getHostOrganism();
         if (host != null){
-            intactExperiment.setHostOrganism(this.organismSynchronizer.synchronize(host, true));
+            intactExperiment.setHostOrganism(getOrganismSynchronizer().synchronize(host, true));
         }
     }
 
     protected void prepareInteractionDetectionMethod(IntactExperiment intactExperiment) throws PersisterException, FinderException, SynchronizerException {
         CvTerm detectionMethod = intactExperiment.getInteractionDetectionMethod();
         if (detectionMethod != null){
-            intactExperiment.setInteractionDetectionMethod(this.detectionMethodSynchronizer.synchronize(detectionMethod, true));
+            intactExperiment.setInteractionDetectionMethod(getDetectionMethodSynchronizer().synchronize(detectionMethod, true));
         }
     }
 
@@ -297,7 +354,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactExperiment.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref expRef = this.xrefSynchronizer.synchronize(xref, false);
+                Xref expRef = getXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (expRef != xref){
                     intactExperiment.getXrefs().remove(xref);
@@ -312,7 +369,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactExperiment.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation expAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
+                Annotation expAnnotation = getAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (expAnnotation != annotation){
                     intactExperiment.getAnnotations().remove(annotation);
@@ -325,7 +382,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
     protected void prepareParticipantIdentificationMethod(IntactExperiment intactExperiment) throws FinderException, PersisterException, SynchronizerException {
         CvTerm detectionMethod = intactExperiment.getParticipantIdentificationMethod();
         if (detectionMethod != null){
-            intactExperiment.setParticipantIdentificationMethod(this.participantDetectionMethodSynchronizer.synchronize(detectionMethod, true));
+            intactExperiment.setParticipantIdentificationMethod(getParticipantDetectionMethodSynchronizer().synchronize(detectionMethod, true));
         }
         else{
             intactExperiment.setParticipantIdentificationMethod(ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(intactExperiment));

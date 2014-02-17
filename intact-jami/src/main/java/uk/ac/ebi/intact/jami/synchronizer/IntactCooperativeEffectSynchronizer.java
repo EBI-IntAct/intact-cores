@@ -30,16 +30,6 @@ public class IntactCooperativeEffectSynchronizer extends AbstractIntactDbSynchro
 
     public IntactCooperativeEffectSynchronizer(EntityManager entityManager) {
         super(entityManager, AbstractIntactCooperativeEffect.class);
-        this.preAssemblySynchronizer = new IntactCooperativeEffectBaseSynchronizer<Preassembly, IntactPreassembly>(entityManager, IntactPreassembly.class);
-        this.allosterySynchronizer = new IntactAllosterySynchronizer(entityManager);
-    }
-
-    public IntactCooperativeEffectSynchronizer(EntityManager entityManager,
-                                               IntactDbSynchronizer<Preassembly, IntactPreassembly> preAssemblySynchronizer,
-                                               IntactDbSynchronizer<Allostery, IntactAllostery> allosterySynchronizer) {
-        super(entityManager, AbstractIntactCooperativeEffect.class);
-        this.preAssemblySynchronizer = preAssemblySynchronizer != null ? preAssemblySynchronizer : new IntactCooperativeEffectBaseSynchronizer<Preassembly, IntactPreassembly>(entityManager, IntactPreassembly.class);
-        this.allosterySynchronizer = allosterySynchronizer != null ? allosterySynchronizer : new IntactAllosterySynchronizer(entityManager);
     }
 
     public AbstractIntactCooperativeEffect find(CooperativeEffect object) throws FinderException {
@@ -49,11 +39,11 @@ public class IntactCooperativeEffectSynchronizer extends AbstractIntactDbSynchro
     public void synchronizeProperties(AbstractIntactCooperativeEffect object) throws FinderException, PersisterException, SynchronizerException {
         // preassembly
         if (object instanceof IntactPreassembly){
-            this.preAssemblySynchronizer.synchronizeProperties((IntactPreassembly)object);
+            getPreAssemblySynchronizer().synchronizeProperties((IntactPreassembly)object);
         }
         // allostery
         else {
-            this.allosterySynchronizer.synchronizeProperties((IntactAllostery)object);
+            getAllosterySynchronizer().synchronizeProperties((IntactAllostery)object);
         }
     }
 
@@ -61,11 +51,11 @@ public class IntactCooperativeEffectSynchronizer extends AbstractIntactDbSynchro
     public AbstractIntactCooperativeEffect persist(AbstractIntactCooperativeEffect object) throws FinderException, PersisterException, SynchronizerException {
         // preassembly
         if (object instanceof IntactPreassembly){
-            return this.preAssemblySynchronizer.persist((IntactPreassembly)object);
+            return getPreAssemblySynchronizer().persist((IntactPreassembly)object);
         }
         // allostery
         else {
-            return this.allosterySynchronizer.persist((IntactAllostery)object);
+            return getAllosterySynchronizer().persist((IntactAllostery)object);
         }
     }
 
@@ -73,17 +63,17 @@ public class IntactCooperativeEffectSynchronizer extends AbstractIntactDbSynchro
     public AbstractIntactCooperativeEffect synchronize(CooperativeEffect object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // preassembly
         if (object instanceof Preassembly){
-            return this.preAssemblySynchronizer.synchronize((IntactPreassembly) object, persist);
+            return getPreAssemblySynchronizer().synchronize((IntactPreassembly) object, persist);
         }
         // allostery
         else if (object instanceof Allostery){
-            return this.allosterySynchronizer.synchronize((IntactAllostery) object, persist);
+            return getAllosterySynchronizer().synchronize((IntactAllostery) object, persist);
         }
         // consider that as preassembly in intact
         else{
             try {
                 IntactPreassembly preassembly = (IntactPreassembly)instantiateNewPersistentInstance(object, getIntactClass());
-                return this.preAssemblySynchronizer.synchronize(preassembly, persist);
+                return getPreAssemblySynchronizer().synchronize(preassembly, persist);
             } catch (InstantiationException e) {
                 throw new SynchronizerException("Impossible to create a new instance of type "+IntactPreassembly.class, e);
             } catch (IllegalAccessException e) {
@@ -97,8 +87,30 @@ public class IntactCooperativeEffectSynchronizer extends AbstractIntactDbSynchro
     }
 
     public void clearCache() {
-        this.preAssemblySynchronizer.clearCache();
-        this.allosterySynchronizer.clearCache();
+        getPreAssemblySynchronizer().clearCache();
+        getAllosterySynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<Preassembly, IntactPreassembly> getPreAssemblySynchronizer() {
+        if (this.preAssemblySynchronizer == null){
+            this.preAssemblySynchronizer = new IntactCooperativeEffectBaseSynchronizer<Preassembly, IntactPreassembly>(getEntityManager(), IntactPreassembly.class);
+        }
+        return preAssemblySynchronizer;
+    }
+
+    public void setPreAssemblySynchronizer(IntactDbSynchronizer<Preassembly, IntactPreassembly> preAssemblySynchronizer) {
+        this.preAssemblySynchronizer = preAssemblySynchronizer;
+    }
+
+    public IntactDbSynchronizer<Allostery, IntactAllostery> getAllosterySynchronizer() {
+        if (this.allosterySynchronizer == null){
+            this.allosterySynchronizer = new IntactAllosterySynchronizer(getEntityManager());
+        }
+        return allosterySynchronizer;
+    }
+
+    public void setAllosterySynchronizer(IntactDbSynchronizer<Allostery, IntactAllostery> allosterySynchronizer) {
+        this.allosterySynchronizer = allosterySynchronizer;
     }
 
     @Override

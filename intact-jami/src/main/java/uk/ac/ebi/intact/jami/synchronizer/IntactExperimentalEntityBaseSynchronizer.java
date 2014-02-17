@@ -33,35 +33,6 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     public IntactExperimentalEntityBaseSynchronizer(EntityManager entityManager, Class<I> intactClass){
         super(entityManager, intactClass);
-        this.parameterSynchronizer = new IntactParameterSynchronizer<Parameter, ExperimentalEntityParameter>(entityManager, ExperimentalEntityParameter.class);
-        this.confidenceSynchronizer = new IntactConfidenceSynchronizer<Confidence, ExperimentalEntityConfidence>(entityManager, ExperimentalEntityConfidence.class);
-        this.identificationMethodSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
-        this.experimentalPreparationSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS);
-        this.experimentalRoleSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.EXPERIMENTAL_ROLE_OBJCLASS);
-        this.organismSynchronizer = new IntactOrganismSynchronizer(entityManager);
-    }
-
-    public IntactExperimentalEntityBaseSynchronizer(EntityManager entityManager, Class<I> intactClass,
-                                                    IntactDbSynchronizer<Alias, EntityAlias> aliasSynchronizer,
-                                                    IntactDbSynchronizer<Annotation, EntityAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, EntityXref> xrefSynchronizer,
-                                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> biologicalRoleSynchronizer,
-                                                    IntactDbSynchronizer<Feature, AbstractIntactFeature> featureSynchronizer,
-                                                    IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> causalRelationshipSynchronizer,
-                                                    IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer,
-                                                    IntactDbSynchronizer<Parameter, ExperimentalEntityParameter> parameterSynchronizer,
-                                                    IntactDbSynchronizer<Confidence, ExperimentalEntityConfidence> confidenceSynchronizer,
-                                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> identificationMethodSynchronizer,
-                                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalPreparationSynchronizer,
-                                                    IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalRoleSynchronizer,
-                                                    IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer){
-        super(entityManager, intactClass, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, biologicalRoleSynchronizer, featureSynchronizer,
-                causalRelationshipSynchronizer, interactorSynchronizer);
-        this.parameterSynchronizer = parameterSynchronizer != null ? parameterSynchronizer : new IntactParameterSynchronizer<Parameter, ExperimentalEntityParameter>(entityManager, ExperimentalEntityParameter.class);
-        this.confidenceSynchronizer = confidenceSynchronizer != null ? confidenceSynchronizer : new IntactConfidenceSynchronizer<Confidence, ExperimentalEntityConfidence>(entityManager, ExperimentalEntityConfidence.class);
-        this.identificationMethodSynchronizer = identificationMethodSynchronizer != null ? identificationMethodSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
-        this.experimentalPreparationSynchronizer = experimentalPreparationSynchronizer != null ? experimentalPreparationSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS);
-        this.experimentalRoleSynchronizer = experimentalRoleSynchronizer != null ? experimentalRoleSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.EXPERIMENTAL_ROLE_OBJCLASS);
-        this.organismSynchronizer = organismSynchronizer != null ? organismSynchronizer : new IntactOrganismSynchronizer(entityManager);
     }
 
     public void synchronizeProperties(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
@@ -83,12 +54,78 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
     @Override
     public void clearCache() {
         super.clearCache();
-        this.confidenceSynchronizer.clearCache();
-        this.parameterSynchronizer.clearCache();
-        this.experimentalPreparationSynchronizer.clearCache();
-        this.experimentalRoleSynchronizer.clearCache();
-        this.identificationMethodSynchronizer.clearCache();
-        this.organismSynchronizer.clearCache();
+        getConfidenceSynchronizer().clearCache();
+        getParameterSynchronizer().clearCache();
+        getExperimentalPreparationSynchronizer().clearCache();
+        getExperimentalRoleSynchronizer().clearCache();
+        getIdentificationMethodSynchronizer().clearCache();
+        getOrganismSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<Parameter, ExperimentalEntityParameter> getParameterSynchronizer() {
+        if (this.parameterSynchronizer == null){
+            this.parameterSynchronizer = new IntactParameterSynchronizer<Parameter, ExperimentalEntityParameter>(getEntityManager(), ExperimentalEntityParameter.class);
+        }
+        return parameterSynchronizer;
+    }
+
+    public void setParameterSynchronizer(IntactDbSynchronizer<Parameter, ExperimentalEntityParameter> parameterSynchronizer) {
+        this.parameterSynchronizer = parameterSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Confidence, ExperimentalEntityConfidence> getConfidenceSynchronizer() {
+        if (this.confidenceSynchronizer == null){
+            this.confidenceSynchronizer = new IntactConfidenceSynchronizer<Confidence, ExperimentalEntityConfidence>(getEntityManager(), ExperimentalEntityConfidence.class);
+        }
+        return confidenceSynchronizer;
+    }
+
+    public void setConfidenceSynchronizer(IntactDbSynchronizer<Confidence, ExperimentalEntityConfidence> confidenceSynchronizer) {
+        this.confidenceSynchronizer = confidenceSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getIdentificationMethodSynchronizer() {
+        if (this.identificationMethodSynchronizer == null){
+            this.identificationMethodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
+        }
+        return identificationMethodSynchronizer;
+    }
+
+    public void setIdentificationMethodSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> identificationMethodSynchronizer) {
+        this.identificationMethodSynchronizer = identificationMethodSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getExperimentalPreparationSynchronizer() {
+        if (this.experimentalPreparationSynchronizer == null){
+            this.experimentalPreparationSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS);
+        }
+        return experimentalPreparationSynchronizer;
+    }
+
+    public void setExperimentalPreparationSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalPreparationSynchronizer) {
+        this.experimentalPreparationSynchronizer = experimentalPreparationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getExperimentalRoleSynchronizer() {
+        if (this.experimentalRoleSynchronizer == null){
+            this.experimentalRoleSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.EXPERIMENTAL_ROLE_OBJCLASS);
+        }
+        return experimentalRoleSynchronizer;
+    }
+
+    public void setExperimentalRoleSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalRoleSynchronizer) {
+        this.experimentalRoleSynchronizer = experimentalRoleSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer() {
+        if (this.organismSynchronizer == null){
+            this.organismSynchronizer = new IntactOrganismSynchronizer(getEntityManager());
+        }
+        return organismSynchronizer;
+    }
+
+    public void setOrganismSynchronizer(IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer) {
+        this.organismSynchronizer = organismSynchronizer;
     }
 
     @Override
@@ -101,7 +138,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
     protected void prepareOrganism(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
         Organism organism = intactEntity.getExpressedInOrganism();
         if (organism != null){
-            intactEntity.setExpressedInOrganism(organismSynchronizer.synchronize(organism, true));
+            intactEntity.setExpressedInOrganism(getOrganismSynchronizer().synchronize(organism, true));
         }
     }
 
@@ -110,7 +147,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
             List<Confidence> confidencesToPersist = new ArrayList<Confidence>(intactEntity.getConfidences());
             for (Confidence confidence : confidencesToPersist){
                 // do not persist or merge confidences because of cascades
-                Confidence persistentConfidence = this.confidenceSynchronizer.synchronize(confidence, false);
+                Confidence persistentConfidence = getConfidenceSynchronizer().synchronize(confidence, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentConfidence != confidence){
                     intactEntity.getConfidences().remove(confidence);
@@ -124,7 +161,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
         if (intactEntity.areExperimentalPreparationsInitialized()){
             List<CvTerm> preparationsToPersist = new ArrayList<CvTerm>(intactEntity.getExperimentalPreparations());
             for (CvTerm preparation : preparationsToPersist){
-                CvTerm persistentPreparation = this.experimentalPreparationSynchronizer.synchronize(preparation, true);
+                CvTerm persistentPreparation = getExperimentalPreparationSynchronizer().synchronize(preparation, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentPreparation != preparation){
                     intactEntity.getExperimentalPreparations().remove(preparation);
@@ -138,7 +175,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
         if (intactEntity.areParametersInitialized()){
             List<Parameter> parametersToPersist = new ArrayList<Parameter>(intactEntity.getParameters());
             for (Parameter parameter : parametersToPersist){
-                Parameter persistentParameter = this.parameterSynchronizer.synchronize(parameter, false);
+                Parameter persistentParameter = getParameterSynchronizer().synchronize(parameter, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentParameter != parameter){
                     intactEntity.getParameters().remove(parameter);
@@ -152,7 +189,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
         if (intactEntity.areIdentificationMethodsInitialized()){
             List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactEntity.getIdentificationMethods());
             for (CvTerm term : methodsToPersist){
-                CvTerm persistentTerm = this.identificationMethodSynchronizer.synchronize(term, true);
+                CvTerm persistentTerm = getIdentificationMethodSynchronizer().synchronize(term, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentTerm != term){
                     intactEntity.getIdentificationMethods().remove(term);
@@ -164,7 +201,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     protected void prepareExperimentalRole(I intactParticipant) throws PersisterException, FinderException, SynchronizerException {
         CvTerm role = intactParticipant.getExperimentalRole();
-        intactParticipant.setExperimentalRole(this.experimentalRoleSynchronizer.synchronize(role, true));
+        intactParticipant.setExperimentalRole(getExperimentalRoleSynchronizer().synchronize(role, true));
     }
 
     @Override

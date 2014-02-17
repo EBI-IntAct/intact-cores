@@ -32,22 +32,6 @@ public class IntactCooperativeEffectBaseSynchronizer<T extends CooperativeEffect
 
     public IntactCooperativeEffectBaseSynchronizer(EntityManager entityManager, Class<? extends C> intactClass) {
         super(entityManager, intactClass);
-        this.cvSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<CooperativeEffectAnnotation>(entityManager, CooperativeEffectAnnotation.class);
-        this.evidenceSynchronizer = new IntactCooperativityEvidenceSynchronizer(entityManager);
-        this.complexSynchronizer = new IntactComplexSynchronizer(entityManager);
-    }
-
-    public IntactCooperativeEffectBaseSynchronizer(EntityManager entityManager, Class<? extends C> intactClass,
-                                                   IntactDbSynchronizer<CvTerm, IntactCvTerm> cvSynchronizer,
-                                                   IntactDbSynchronizer<Annotation, CooperativeEffectAnnotation> annotationSynchronizer,
-                                                   IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> evidenceSynchronizer,
-                                                   IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer) {
-        super(entityManager, intactClass);
-        this.cvSynchronizer = cvSynchronizer != null ? cvSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.TOPIC_OBJCLASS);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<CooperativeEffectAnnotation>(entityManager, CooperativeEffectAnnotation.class);
-        this.evidenceSynchronizer = evidenceSynchronizer != null ? evidenceSynchronizer : new IntactCooperativityEvidenceSynchronizer(entityManager);
-        this.complexSynchronizer = complexSynchronizer != null ? complexSynchronizer : new IntactComplexSynchronizer(entityManager);
     }
 
     public C find(T object) throws FinderException {
@@ -68,17 +52,61 @@ public class IntactCooperativeEffectBaseSynchronizer<T extends CooperativeEffect
     }
 
     public void clearCache() {
-        this.cvSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
-        this.evidenceSynchronizer.clearCache();
-        this.complexSynchronizer.clearCache();
+        getCvSynchronizer().clearCache();
+        getAnnotationSynchronizer().clearCache();
+        getEvidenceSynchronizer().clearCache();
+        getComplexSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCvSynchronizer() {
+        if (this.cvSynchronizer == null){
+            this.cvSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+        }
+        return cvSynchronizer;
+    }
+
+    public void setCvSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> cvSynchronizer) {
+        this.cvSynchronizer = cvSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Annotation, CooperativeEffectAnnotation> getAnnotationSynchronizer() {
+        if (this.annotationSynchronizer == null){
+            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<CooperativeEffectAnnotation>(getEntityManager(), CooperativeEffectAnnotation.class);
+        }
+        return annotationSynchronizer;
+    }
+
+    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, CooperativeEffectAnnotation> annotationSynchronizer) {
+        this.annotationSynchronizer = annotationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> getEvidenceSynchronizer() {
+        if (this.evidenceSynchronizer == null){
+            this.evidenceSynchronizer = new IntactCooperativityEvidenceSynchronizer(getEntityManager());
+        }
+        return evidenceSynchronizer;
+    }
+
+    public void setEvidenceSynchronizer(IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> evidenceSynchronizer) {
+        this.evidenceSynchronizer = evidenceSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Complex, IntactComplex> getComplexSynchronizer() {
+        if (this.complexSynchronizer == null){
+            this.complexSynchronizer = new IntactComplexSynchronizer(getEntityManager());
+        }
+        return complexSynchronizer;
+    }
+
+    public void setComplexSynchronizer(IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer) {
+        this.complexSynchronizer = complexSynchronizer;
     }
 
     protected void prepareAnnotations(C object) throws PersisterException, FinderException, SynchronizerException {
         if (object.areAnnotationsInitialized()){
             Collection<Annotation> annotsToPersist = new ArrayList<Annotation>(object.getAnnotations());
             for (Annotation annot : annotsToPersist){
-                Annotation persistentAnnot = this.annotationSynchronizer.synchronize(annot, false);
+                Annotation persistentAnnot = getAnnotationSynchronizer().synchronize(annot, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentAnnot != annot){
                     object.getAnnotations().remove(annot);
@@ -102,7 +130,7 @@ public class IntactCooperativeEffectBaseSynchronizer<T extends CooperativeEffect
                     convertedComplex = (Complex)interaction;
                 }
 
-                Complex persistentInteraction = this.complexSynchronizer.synchronize(convertedComplex, true);
+                Complex persistentInteraction = getComplexSynchronizer().synchronize(convertedComplex, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentInteraction != interaction){
                     object.getAffectedInteractions().remove(interaction);
@@ -116,7 +144,7 @@ public class IntactCooperativeEffectBaseSynchronizer<T extends CooperativeEffect
         if (object.areCooperativityEvidencesInitialized()){
             Collection<CooperativityEvidence> parametersToPersist = new ArrayList<CooperativityEvidence>(object.getCooperativityEvidences());
             for (CooperativityEvidence param : parametersToPersist){
-                CooperativityEvidence expParam = this.evidenceSynchronizer.synchronize(param, false);
+                CooperativityEvidence expParam = getEvidenceSynchronizer().synchronize(param, false);
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     object.getCooperativityEvidences().remove(param);
@@ -128,13 +156,13 @@ public class IntactCooperativeEffectBaseSynchronizer<T extends CooperativeEffect
 
     protected void prepareResponse(C object) throws PersisterException, FinderException, SynchronizerException {
        CvTerm outcome = object.getOutCome();
-       object.setOutCome(this.cvSynchronizer.synchronize(outcome, true));
+       object.setOutCome(getCvSynchronizer().synchronize(outcome, true));
     }
 
     protected void prepareOutcome(C object) throws PersisterException, FinderException, SynchronizerException {
 
         CvTerm response = object.getResponse();
-        object.setResponse(this.cvSynchronizer.synchronize(response, true));
+        object.setResponse(getCvSynchronizer().synchronize(response, true));
     }
 
     @Override
@@ -152,9 +180,5 @@ public class IntactCooperativeEffectBaseSynchronizer<T extends CooperativeEffect
     @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactMergerIgnoringPersistentObject<T, C>(this));
-    }
-
-    protected IntactDbSynchronizer<CvTerm, IntactCvTerm> getCvSynchronizer() {
-        return cvSynchronizer;
     }
 }

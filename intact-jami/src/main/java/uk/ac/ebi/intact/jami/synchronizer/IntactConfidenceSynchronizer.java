@@ -32,7 +32,6 @@ public class IntactConfidenceSynchronizer<T extends Confidence, C extends Abstra
 
     public IntactConfidenceSynchronizer(EntityManager entityManager, Class<? extends C> confClass, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer){
         super(entityManager, confClass);
-        this.typeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
     }
 
     public C find(T object) throws FinderException {
@@ -42,7 +41,7 @@ public class IntactConfidenceSynchronizer<T extends Confidence, C extends Abstra
     public void synchronizeProperties(C object) throws FinderException, PersisterException, SynchronizerException {
         // type first
         CvTerm type = object.getType();
-        object.setType(typeSynchronizer.synchronize(type, true));
+        object.setType(getTypeSynchronizer().synchronize(type, true));
 
         // check confidenceClass value
         if (object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -52,7 +51,18 @@ public class IntactConfidenceSynchronizer<T extends Confidence, C extends Abstra
     }
 
     public void clearCache() {
-        this.typeSynchronizer.clearCache();
+        getTypeSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTypeSynchronizer() {
+        if (this.typeSynchronizer == null){
+            this.typeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        }
+        return typeSynchronizer;
+    }
+
+    public void setTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer) {
+        this.typeSynchronizer = typeSynchronizer;
     }
 
     @Override
