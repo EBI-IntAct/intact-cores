@@ -258,9 +258,46 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
 
     public void clearCache() {
         this.persistedObjects.clear();
-        getAnnotationSynchronizer().clearCache();
-        getXrefSynchronizer().clearCache();
-        getAliasSynchronizer().clearCache();
+
+        if (this.annotationSynchronizer != null){
+            if (this.annotationSynchronizer instanceof IntactAnnotationsSynchronizer){
+                IntactAnnotationsSynchronizer intactSynchronizer = (IntactAnnotationsSynchronizer)this.annotationSynchronizer;
+                if (intactSynchronizer.getTopicSynchronizer() != this){
+                    this.annotationSynchronizer.clearCache();
+                }
+            }
+            else{
+                this.annotationSynchronizer.clearCache();
+            }
+        }
+        if (this.aliasSynchronizer != null){
+            if (this.aliasSynchronizer instanceof IntactAliasSynchronizer){
+                IntactAliasSynchronizer intactSynchronizer = (IntactAliasSynchronizer)this.aliasSynchronizer;
+                if (intactSynchronizer.getTypeSynchronizer() != this){
+                    this.aliasSynchronizer.clearCache();
+                }
+            }
+            else{
+                this.aliasSynchronizer.clearCache();
+            }
+        }
+        if (this.xrefSynchronizer != null){
+            if (this.xrefSynchronizer instanceof IntactXrefSynchronizer){
+                IntactXrefSynchronizer intactSynchronizer = (IntactXrefSynchronizer)this.xrefSynchronizer;
+                if (intactSynchronizer.getDbSynchronizer() != this && intactSynchronizer.getQualifierSynchronizer() != this){
+                    this.xrefSynchronizer.clearCache();
+                }
+                else if (intactSynchronizer.getDbSynchronizer() != this){
+                    intactSynchronizer.getDbSynchronizer().clearCache();
+                }
+                else if (intactSynchronizer.getQualifierSynchronizer() != this){
+                    intactSynchronizer.getQualifierSynchronizer().clearCache();
+                }
+            }
+            else{
+                this.xrefSynchronizer.clearCache();
+            }
+        }
     }
 
     public IntactDbSynchronizer<Alias, CvTermAlias> getAliasSynchronizer() {

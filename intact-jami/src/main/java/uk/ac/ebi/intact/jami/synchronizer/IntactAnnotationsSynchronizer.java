@@ -48,7 +48,7 @@ public class IntactAnnotationsSynchronizer<A extends AbstractIntactAnnotation> e
     }
 
     public void clearCache() {
-        this.getTopicSynchronizer().clearCache();
+        clearCache(this.topicSynchronizer);
     }
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTopicSynchronizer() {

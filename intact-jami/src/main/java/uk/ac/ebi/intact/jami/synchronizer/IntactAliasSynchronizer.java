@@ -48,7 +48,7 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
     }
 
     public void clearCache() {
-        getTypeSynchronizer().clearCache();
+        clearCache(this.typeSynchronizer);
     }
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTypeSynchronizer() {

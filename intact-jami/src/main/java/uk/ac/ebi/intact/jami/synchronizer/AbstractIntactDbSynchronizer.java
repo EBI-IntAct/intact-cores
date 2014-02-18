@@ -155,4 +155,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected Class<? extends T> getIntactClass() {
         return intactClass;
     }
+
+    protected void clearCache(IntactDbSynchronizer delegate){
+         if (delegate != null){
+            delegate.clearCache();
+         }
+    }
 }

@@ -65,8 +65,8 @@ public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends Abstra
     }
 
     public void clearCache() {
-        getDbSynchronizer().clearCache();
-        getQualifierSynchronizer().clearCache();
+        clearCache(this.dbSynchronizer);
+        clearCache(this.qualifierSynchronizer);
     }
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDbSynchronizer() {
