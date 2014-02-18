@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.user.User;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;

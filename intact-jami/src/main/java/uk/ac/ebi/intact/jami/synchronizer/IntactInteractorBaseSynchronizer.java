@@ -4,23 +4,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
-import psidev.psi.mi.jami.factory.InteractorFactory;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
-import psidev.psi.mi.jami.utils.ChecksumUtils;
-import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorComparator;
 import uk.ac.ebi.intact.jami.merger.IntactInteractorBaseMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.regex.Matcher;
 
 /**
  * Synchronizer for interactors
@@ -201,7 +199,7 @@ implements InteractorFetcher<T>{
 
     public IntactDbSynchronizer<Annotation, InteractorAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<InteractorAnnotation>(getEntityManager(), InteractorAnnotation.class);
+            this.annotationSynchronizer = new IntactAnnotationSynchronizer<InteractorAnnotation>(getEntityManager(), InteractorAnnotation.class);
         }
         return annotationSynchronizer;
     }

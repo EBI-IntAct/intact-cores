@@ -10,14 +10,15 @@ import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
-import uk.ac.ebi.intact.jami.context.IntactContext;
-import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.IntactPublicationMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -207,7 +208,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     public IntactDbSynchronizer<Annotation, PublicationAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<PublicationAnnotation>(getEntityManager(), PublicationAnnotation.class);
+            this.annotationSynchronizer = new IntactAnnotationSynchronizer<PublicationAnnotation>(getEntityManager(), PublicationAnnotation.class);
         }
         return annotationSynchronizer;
     }

@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -7,7 +7,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -21,13 +21,13 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactAnnotationsSynchronizer<A extends AbstractIntactAnnotation> extends AbstractIntactDbSynchronizer<Annotation, A> {
+public class IntactAnnotationSynchronizer<A extends AbstractIntactAnnotation> extends AbstractIntactDbSynchronizer<Annotation, A> implements AnnotationDbSynchronizer<A>{
 
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> topicSynchronizer;
+    private CvTermDbSynchronizer topicSynchronizer;
 
-    private static final Log log = LogFactory.getLog(IntactAnnotationsSynchronizer.class);
+    private static final Log log = LogFactory.getLog(IntactAnnotationSynchronizer.class);
 
-    public IntactAnnotationsSynchronizer(EntityManager entityManager, Class<? extends A> annotationClass){
+    public IntactAnnotationSynchronizer(EntityManager entityManager, Class<? extends A> annotationClass){
         super(entityManager, annotationClass);
     }
 
@@ -51,19 +51,20 @@ public class IntactAnnotationsSynchronizer<A extends AbstractIntactAnnotation> e
         clearCache(this.topicSynchronizer);
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTopicSynchronizer() {
+    public CvTermDbSynchronizer getTopicSynchronizer() {
         if (this.topicSynchronizer == null){
             this.topicSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
 
             if (getIntactClass().isAssignableFrom(CvTermAnnotation.class)){
-                ((IntactCvTermSynchronizer)this.topicSynchronizer).setAnnotationSynchronizer((IntactDbSynchronizer<Annotation, CvTermAnnotation>) this);
+                this.topicSynchronizer.setAnnotationSynchronizer((AnnotationDbSynchronizer<CvTermAnnotation>) this);
             }
         }
         return topicSynchronizer;
     }
 
-    public void setTopicSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> topicSynchronizer) {
+    public IntactAnnotationSynchronizer<A> setTopicSynchronizer(CvTermDbSynchronizer topicSynchronizer) {
         this.topicSynchronizer = topicSynchronizer;
+        return this;
     }
 
     @Override

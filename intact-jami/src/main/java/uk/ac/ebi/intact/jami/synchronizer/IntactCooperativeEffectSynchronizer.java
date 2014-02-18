@@ -10,6 +10,7 @@ import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
 import uk.ac.ebi.intact.jami.model.extension.IntactAllostery;
 import uk.ac.ebi.intact.jami.model.extension.IntactPreassembly;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAllosterySynchronizer;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;

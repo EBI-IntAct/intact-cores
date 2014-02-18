@@ -7,6 +7,10 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.merger.IntactFeatureMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -23,7 +27,7 @@ import java.util.Map;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactFeatureBaseSynchronizer<F extends Feature, I extends AbstractIntactFeature> extends AbstractIntactDbSynchronizer<F,I>{
+public class IntactFeatureBaseSynchronizer<F extends Feature, I extends AbstractIntactFeature> extends AbstractIntactDbSynchronizer<F,I> implements FeatureDbSynchronizer<F,I>{
 
     private IntactDbSynchronizer<Alias, FeatureAlias> aliasSynchronizer;
     private IntactDbSynchronizer<Annotation, FeatureAnnotation> annotationSynchronizer;
@@ -119,7 +123,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     public IntactDbSynchronizer<Annotation, FeatureAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer(getEntityManager(), FeatureAnnotation.class);
+            this.annotationSynchronizer = new IntactAnnotationSynchronizer(getEntityManager(), FeatureAnnotation.class);
         }
         return annotationSynchronizer;
     }
@@ -170,6 +174,21 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     public void setRangeSynchronizer(IntactDbSynchronizer<Range, IntactRange> rangeSynchronizer) {
         this.rangeSynchronizer = rangeSynchronizer;
+    }
+
+    protected IntactFeatureBaseSynchronizer<F,I> setBasicCvAnnotationSynchronizer(IntactDbSynchronizer<Annotation, CvTermAnnotation> annotSynchronizer){
+        // TODO
+        return this;
+    }
+
+    protected IntactFeatureBaseSynchronizer<F,I> setBasicCvAliasSynchronizer(IntactDbSynchronizer<Alias, CvTermAlias> annotSynchronizer){
+        // TODO
+        return this;
+    }
+
+    protected IntactFeatureBaseSynchronizer<F,I> setBasicCvXrefSynchronizer(IntactDbSynchronizer<Xref, CvTermXref> annotSynchronizer){
+        // TODO
+        return this;
     }
 
     protected void prepareLinkedFeatures(I intactFeature) throws PersisterException, FinderException, SynchronizerException {

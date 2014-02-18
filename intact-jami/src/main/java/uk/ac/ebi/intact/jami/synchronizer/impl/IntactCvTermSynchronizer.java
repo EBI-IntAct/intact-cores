@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -17,6 +17,7 @@ import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -32,14 +33,14 @@ import java.util.*;
  * @since <pre>21/01/14</pre>
  */
 
-public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, IntactCvTerm> implements CvTermFetcher<CvTerm>{
+public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, IntactCvTerm> implements CvTermFetcher<CvTerm>, CvTermDbSynchronizer {
 
     private String objClass;
     private Map<CvTerm, IntactCvTerm> persistedObjects;
 
-    private IntactDbSynchronizer<Alias, CvTermAlias> aliasSynchronizer;
-    private IntactDbSynchronizer<Annotation, CvTermAnnotation> annotationSynchronizer;
-    private IntactDbSynchronizer<Xref, CvTermXref> xrefSynchronizer;
+    private AliasDbSynchronizer<CvTermAlias> aliasSynchronizer;
+    private AnnotationDbSynchronizer<CvTermAnnotation> annotationSynchronizer;
+    private XrefDbSynchronizer<CvTermXref> xrefSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactCvTermSynchronizer.class);
 
@@ -256,93 +257,171 @@ public class IntactCvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTer
         return results;
     }
 
+    public void clearPersistentCvCacheOnly() {
+        this.persistedObjects.clear();
+    }
+
     public void clearCache() {
         this.persistedObjects.clear();
 
         if (this.annotationSynchronizer != null){
-            if (this.annotationSynchronizer instanceof IntactAnnotationsSynchronizer){
-                IntactAnnotationsSynchronizer intactSynchronizer = (IntactAnnotationsSynchronizer)this.annotationSynchronizer;
-                if (intactSynchronizer.getTopicSynchronizer() != this){
-                    this.annotationSynchronizer.clearCache();
-                }
-            }
-            else{
-                this.annotationSynchronizer.clearCache();
+            if (this.annotationSynchronizer.getTopicSynchronizer() != this){
+                this.annotationSynchronizer.getTopicSynchronizer().clearPersistentCvCacheOnly();
             }
         }
         if (this.aliasSynchronizer != null){
-            if (this.aliasSynchronizer instanceof IntactAliasSynchronizer){
-                IntactAliasSynchronizer intactSynchronizer = (IntactAliasSynchronizer)this.aliasSynchronizer;
-                if (intactSynchronizer.getTypeSynchronizer() != this){
-                    this.aliasSynchronizer.clearCache();
-                }
-            }
-            else{
-                this.aliasSynchronizer.clearCache();
+            if (this.aliasSynchronizer.getTypeSynchronizer() != this){
+                this.aliasSynchronizer.getTypeSynchronizer().clearPersistentCvCacheOnly();
             }
         }
         if (this.xrefSynchronizer != null){
-            if (this.xrefSynchronizer instanceof IntactXrefSynchronizer){
-                IntactXrefSynchronizer intactSynchronizer = (IntactXrefSynchronizer)this.xrefSynchronizer;
-                if (intactSynchronizer.getDbSynchronizer() != this && intactSynchronizer.getQualifierSynchronizer() != this){
-                    this.xrefSynchronizer.clearCache();
-                }
-                else if (intactSynchronizer.getDbSynchronizer() != this){
-                    intactSynchronizer.getDbSynchronizer().clearCache();
-                }
-                else if (intactSynchronizer.getQualifierSynchronizer() != this){
-                    intactSynchronizer.getQualifierSynchronizer().clearCache();
-                }
+            if (this.xrefSynchronizer.getDbSynchronizer() != this){
+                this.xrefSynchronizer.getDbSynchronizer().clearPersistentCvCacheOnly();
             }
-            else{
-                this.xrefSynchronizer.clearCache();
+            else if (this.xrefSynchronizer.getQualifierSynchronizer() != this){
+                this.xrefSynchronizer.getQualifierSynchronizer().clearPersistentCvCacheOnly();
             }
         }
     }
 
-    public IntactDbSynchronizer<Alias, CvTermAlias> getAliasSynchronizer() {
+    public AliasDbSynchronizer<CvTermAlias> getAliasSynchronizer() {
         if (aliasSynchronizer == null){
-            aliasSynchronizer = new IntactAliasSynchronizer<CvTermAlias>(getEntityManager(), CvTermAlias.class);
-            if (this.objClass != null && this.objClass.equals(IntactUtils.ALIAS_TYPE_OBJCLASS)){
-                ((IntactAliasSynchronizer)aliasSynchronizer).setTypeSynchronizer(this);
+            if (annotationSynchronizer == null && xrefSynchronizer == null){
+                initialiseAllSynchronizers();
+            }
+            else{
+                aliasSynchronizer = new IntactAliasSynchronizer<CvTermAlias>(getEntityManager(), CvTermAlias.class);
+                if (this.objClass != null && this.objClass.equals(IntactUtils.ALIAS_TYPE_OBJCLASS)){
+                    aliasSynchronizer.setTypeSynchronizer(this);
+                }
+                else{
+                    IntactUtils.initialiseBasicSynchronizers(aliasSynchronizer.getTypeSynchronizer(),
+                            this.aliasSynchronizer, getXrefSynchronizer(), getAnnotationSynchronizer());
+                }
             }
         }
         return aliasSynchronizer;
     }
 
-    public void setAliasSynchronizer(IntactDbSynchronizer<Alias, CvTermAlias> aliasSynchronizer) {
+    public IntactCvTermSynchronizer setAliasSynchronizer(AliasDbSynchronizer<CvTermAlias> aliasSynchronizer) {
         this.aliasSynchronizer = aliasSynchronizer;
+        return this;
     }
 
-    public IntactDbSynchronizer<Annotation, CvTermAnnotation> getAnnotationSynchronizer() {
+    public AnnotationDbSynchronizer<CvTermAnnotation> getAnnotationSynchronizer() {
         if (annotationSynchronizer == null){
-            annotationSynchronizer = new IntactAnnotationsSynchronizer<CvTermAnnotation>(getEntityManager(), CvTermAnnotation.class);
-            if (this.objClass != null && this.objClass.equals(IntactUtils.TOPIC_OBJCLASS)){
-                ((IntactAnnotationsSynchronizer)annotationSynchronizer).setTopicSynchronizer(this);
+            if (aliasSynchronizer == null && xrefSynchronizer == null){
+                initialiseAllSynchronizers();
+            }
+            else{
+                annotationSynchronizer = new IntactAnnotationSynchronizer<CvTermAnnotation>(getEntityManager(), CvTermAnnotation.class);
+                if (this.objClass != null && this.objClass.equals(IntactUtils.TOPIC_OBJCLASS)){
+                    annotationSynchronizer.setTopicSynchronizer(this);
+                }
+                else{
+                    IntactUtils.initialiseBasicSynchronizers(annotationSynchronizer.getTopicSynchronizer(),
+                            getAliasSynchronizer(), getXrefSynchronizer(), this.annotationSynchronizer);
+                }
             }
         }
         return annotationSynchronizer;
     }
 
-    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, CvTermAnnotation> annotationSynchronizer) {
+    public IntactCvTermSynchronizer setAnnotationSynchronizer(AnnotationDbSynchronizer<CvTermAnnotation> annotationSynchronizer) {
         this.annotationSynchronizer = annotationSynchronizer;
+        return this;
     }
 
-    public IntactDbSynchronizer<Xref, CvTermXref> getXrefSynchronizer() {
+    public XrefDbSynchronizer<CvTermXref> getXrefSynchronizer() {
         if (xrefSynchronizer == null){
-            xrefSynchronizer = new IntactXrefSynchronizer<CvTermXref>(getEntityManager(), CvTermXref.class);
-            if (this.objClass != null && this.objClass.equals(IntactUtils.DATABASE_OBJCLASS)){
-                ((IntactXrefSynchronizer)xrefSynchronizer).setDbSynchronizer(this);
+            if (aliasSynchronizer == null && annotationSynchronizer == null){
+                initialiseAllSynchronizers();
             }
-            else if (this.objClass != null && this.objClass.equals(IntactUtils.QUALIFIER_OBJCLASS)){
-                ((IntactXrefSynchronizer)xrefSynchronizer).setQualifierSynchronizer(this);
+            else{
+                xrefSynchronizer = new IntactXrefSynchronizer<CvTermXref>(getEntityManager(), CvTermXref.class);
+                if (this.objClass != null && this.objClass.equals(IntactUtils.DATABASE_OBJCLASS)){
+                    xrefSynchronizer.setDbSynchronizer(this);
+
+                    IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getQualifierSynchronizer(),
+                            getAliasSynchronizer(), this.xrefSynchronizer, getAnnotationSynchronizer());
+                }
+                else if (this.objClass != null && this.objClass.equals(IntactUtils.QUALIFIER_OBJCLASS)){
+                    xrefSynchronizer.setQualifierSynchronizer(this);
+
+                    IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getDbSynchronizer(),
+                            getAliasSynchronizer(), this.xrefSynchronizer, getAnnotationSynchronizer());
+                }
+                else{
+                    IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getQualifierSynchronizer(),
+                            getAliasSynchronizer(), this.xrefSynchronizer, getAnnotationSynchronizer());
+                    IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getQualifierSynchronizer(),
+                            getAliasSynchronizer(), this.xrefSynchronizer, getAnnotationSynchronizer());
+                }
             }
         }
         return xrefSynchronizer;
     }
 
-    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, CvTermXref> xrefSynchronizer) {
+    public IntactCvTermSynchronizer setXrefSynchronizer(XrefDbSynchronizer<CvTermXref> xrefSynchronizer) {
         this.xrefSynchronizer = xrefSynchronizer;
+        return this;
+    }
+
+    protected void initialiseAllSynchronizers() {
+        aliasSynchronizer = new IntactAliasSynchronizer<CvTermAlias>(getEntityManager(), CvTermAlias.class);
+        xrefSynchronizer = new IntactXrefSynchronizer<CvTermXref>(getEntityManager(), CvTermXref.class);
+        annotationSynchronizer = new IntactAnnotationSynchronizer<CvTermAnnotation>(getEntityManager(), CvTermAnnotation.class);
+
+        if (this.objClass != null && this.objClass.equals(IntactUtils.ALIAS_TYPE_OBJCLASS)){
+            aliasSynchronizer.setTypeSynchronizer(this);
+
+            IntactUtils.initialiseBasicSynchronizers(annotationSynchronizer.getTopicSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getDbSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getQualifierSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+        }
+        else if (this.objClass != null && this.objClass.equals(IntactUtils.DATABASE_OBJCLASS)){
+            xrefSynchronizer.setDbSynchronizer(this);
+
+            IntactUtils.initialiseBasicSynchronizers(aliasSynchronizer.getTypeSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(annotationSynchronizer.getTopicSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getQualifierSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+        }
+        else if (this.objClass != null && this.objClass.equals(IntactUtils.QUALIFIER_OBJCLASS)){
+            xrefSynchronizer.setQualifierSynchronizer(this);
+
+            IntactUtils.initialiseBasicSynchronizers(aliasSynchronizer.getTypeSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(annotationSynchronizer.getTopicSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getDbSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+        }
+        else if (this.objClass != null && this.objClass.equals(IntactUtils.TOPIC_OBJCLASS)){
+            annotationSynchronizer.setTopicSynchronizer(this);
+
+            IntactUtils.initialiseBasicSynchronizers(aliasSynchronizer.getTypeSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getDbSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getQualifierSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+        }
+        else{
+            IntactUtils.initialiseBasicSynchronizers(aliasSynchronizer.getTypeSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(annotationSynchronizer.getTopicSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getDbSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+            IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getQualifierSynchronizer(),
+                    this.aliasSynchronizer, this.xrefSynchronizer, this.annotationSynchronizer);
+        }
     }
 
     protected IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {

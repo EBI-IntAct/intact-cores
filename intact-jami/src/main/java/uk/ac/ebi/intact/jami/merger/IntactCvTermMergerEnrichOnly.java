@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.enricher.impl.full.FullCvTermEnricher;
 import psidev.psi.mi.jami.enricher.listener.CvTermEnricherListener;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
 
 /**
  * Cv term merger based on the jami cv term enricher.

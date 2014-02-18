@@ -1,22 +1,16 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
-import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
-import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.merger.IntactExperimentMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.merger.IntactPublicationMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.model.user.User;
-import uk.ac.ebi.intact.jami.sequence.SequenceManager;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactExperimentComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -205,7 +199,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     public IntactDbSynchronizer<Annotation, ExperimentAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<ExperimentAnnotation>(getEntityManager(), ExperimentAnnotation.class);
+            this.annotationSynchronizer = new IntactAnnotationSynchronizer<ExperimentAnnotation>(getEntityManager(), ExperimentAnnotation.class);
         }
         return annotationSynchronizer;
     }

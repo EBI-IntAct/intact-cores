@@ -190,29 +190,50 @@ public class IntActEntitySynchronizer extends AbstractIntactDbSynchronizer<Entit
         return experimentalEntityPoolSynchronizer;
     }
 
-    public void setModelledEntitySynchronizer(IntactDbSynchronizer<ModelledEntity, IntactModelledEntity> modelledEntitySynchronizer) {
+    public IntActEntitySynchronizer setModelledEntitySynchronizer(IntactDbSynchronizer<ModelledEntity, IntactModelledEntity> modelledEntitySynchronizer) {
         this.modelledEntitySynchronizer = modelledEntitySynchronizer;
+        return this;
     }
 
-    public void setModelledParticipantSynchronizer(IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> modelledParticipantSynchronizer) {
+    public IntActEntitySynchronizer setModelledParticipantSynchronizer(IntactDbSynchronizer<ModelledParticipant, IntactModelledParticipant> modelledParticipantSynchronizer) {
         this.modelledParticipantSynchronizer = modelledParticipantSynchronizer;
+        return this;
     }
 
-    public void setModelledEntityPoolSynchronizer(IntactDbSynchronizer<ModelledEntityPool, IntactModelledEntityPool> modelledEntityPoolSynchronizer) {
+    public IntActEntitySynchronizer setModelledEntityPoolSynchronizer(IntactDbSynchronizer<ModelledEntityPool, IntactModelledEntityPool> modelledEntityPoolSynchronizer) {
         this.modelledEntityPoolSynchronizer = modelledEntityPoolSynchronizer;
+        return this;
     }
 
-    public void setExperimentalEntitySynchronizer(IntactDbSynchronizer<ExperimentalEntity, IntactExperimentalEntity> experimentalEntitySynchronizer) {
+    public IntActEntitySynchronizer setExperimentalEntitySynchronizer(IntactDbSynchronizer<ExperimentalEntity, IntactExperimentalEntity> experimentalEntitySynchronizer) {
         this.experimentalEntitySynchronizer = experimentalEntitySynchronizer;
+        return this;
     }
 
-    public void setParticipantEvidenceSynchronizer(IntactDbSynchronizer<ParticipantEvidence, IntactParticipantEvidence> participantEvidenceSynchronizer) {
+    public IntActEntitySynchronizer setParticipantEvidenceSynchronizer(IntactDbSynchronizer<ParticipantEvidence, IntactParticipantEvidence> participantEvidenceSynchronizer) {
         this.participantEvidenceSynchronizer = participantEvidenceSynchronizer;
+        return this;
     }
 
-    public void setExperimentalEntityPoolSynchronizer(IntactDbSynchronizer<ExperimentalEntityPool, IntactExperimentalEntityPool> experimentalEntityPoolSynchronizer) {
+    public IntActEntitySynchronizer setExperimentalEntityPoolSynchronizer(IntactDbSynchronizer<ExperimentalEntityPool, IntactExperimentalEntityPool> experimentalEntityPoolSynchronizer) {
         this.experimentalEntityPoolSynchronizer = experimentalEntityPoolSynchronizer;
+        return this;
     }
+
+    public AliasDbSynchronizer<CvTermAlias> getCvAliasSynchronizer();
+
+    public IntActEntitySynchronizer setCvAliasSynchronizer(AliasDbSynchronizer<CvTermAlias> aliasSynchronizer);
+
+    public AnnotationDbSynchronizer<CvTermAnnotation> getCvAnnotationSynchronizer();
+    public IntActEntitySynchronizer setCvAnnotationSynchronizer(AnnotationDbSynchronizer<CvTermAnnotation> annotationSynchronizer);
+
+    public XrefDbSynchronizer<CvTermXref> getCvXrefSynchronizer();
+
+    public IntActEntitySynchronizer setCvXrefSynchronizer(XrefDbSynchronizer<CvTermXref> xrefSynchronizer);
+
+    public FeatureDbSynchronizer<ModelledFeature, IntactModelledFeature> getModelledFeatureSynchronizer();
+
+    public IntActEntitySynchronizer setModelledFeatureSynchronizer(FeatureDbSynchronizer<ModelledFeature, IntactModelledFeature> aliasSynchronizer);
 
     @Override
     protected Object extractIdentifier(AbstractIntactEntity object) {

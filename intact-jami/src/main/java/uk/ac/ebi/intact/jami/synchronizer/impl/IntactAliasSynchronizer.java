@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -7,7 +7,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -21,9 +21,9 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends AbstractIntactDbSynchronizer<Alias, A> {
+public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends AbstractIntactDbSynchronizer<Alias, A> implements AliasDbSynchronizer<A> {
 
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer;
+    private CvTermDbSynchronizer typeSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactAliasSynchronizer.class);
 
@@ -51,19 +51,20 @@ public class IntactAliasSynchronizer<A extends AbstractIntactAlias> extends Abst
         clearCache(this.typeSynchronizer);
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTypeSynchronizer() {
+    public CvTermDbSynchronizer getTypeSynchronizer() {
         if (typeSynchronizer == null){
             this.typeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.ALIAS_TYPE_OBJCLASS);
 
             if (getIntactClass().isAssignableFrom(CvTermAlias.class)){
-                ((IntactCvTermSynchronizer)this.typeSynchronizer).setAliasSynchronizer((IntactDbSynchronizer<Alias, CvTermAlias>)this);
+                this.typeSynchronizer.setAliasSynchronizer((AliasDbSynchronizer<CvTermAlias>)this);
             }
         }
         return typeSynchronizer;
     }
 
-    public void setTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer) {
+    public IntactAliasSynchronizer<A> setTypeSynchronizer(CvTermDbSynchronizer typeSynchronizer) {
         this.typeSynchronizer = typeSynchronizer;
+        return this;
     }
 
     @Override

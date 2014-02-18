@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.merger.IntactFeatureEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;

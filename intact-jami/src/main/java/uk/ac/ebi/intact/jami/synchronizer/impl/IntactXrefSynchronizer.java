@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -7,7 +7,7 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -21,10 +21,10 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends AbstractIntactDbSynchronizer<Xref, X> {
+public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends AbstractIntactDbSynchronizer<Xref, X> implements XrefDbSynchronizer<X> {
 
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> dbSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> qualifierSynchronizer;
+    private CvTermDbSynchronizer dbSynchronizer;
+    private CvTermDbSynchronizer qualifierSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactCvTermSynchronizer.class);
 
@@ -69,34 +69,36 @@ public class IntactXrefSynchronizer<X extends AbstractIntactXref> extends Abstra
         clearCache(this.qualifierSynchronizer);
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDbSynchronizer() {
+    public CvTermDbSynchronizer getDbSynchronizer() {
         if (this.dbSynchronizer == null){
             this.dbSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.DATABASE_OBJCLASS);
 
             if (getIntactClass().isAssignableFrom(CvTermXref.class)){
-                ((IntactCvTermSynchronizer)this.dbSynchronizer).setXrefSynchronizer((IntactDbSynchronizer<Xref, CvTermXref>)this);
+                this.dbSynchronizer.setXrefSynchronizer((XrefDbSynchronizer<CvTermXref>)this);
             }
         }
         return dbSynchronizer;
     }
 
-    public void setDbSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> dbSynchronizer) {
+    public IntactXrefSynchronizer<X> setDbSynchronizer(CvTermDbSynchronizer dbSynchronizer) {
         this.dbSynchronizer = dbSynchronizer;
+        return this;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getQualifierSynchronizer() {
+    public CvTermDbSynchronizer getQualifierSynchronizer() {
         if (this.qualifierSynchronizer == null){
             this.qualifierSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.QUALIFIER_OBJCLASS);
 
             if (getIntactClass().isAssignableFrom(CvTermXref.class)){
-                ((IntactCvTermSynchronizer)this.qualifierSynchronizer).setXrefSynchronizer((IntactDbSynchronizer<Xref, CvTermXref>)this);
+                this.qualifierSynchronizer.setXrefSynchronizer((XrefDbSynchronizer<CvTermXref>)this);
             }
         }
         return this.qualifierSynchronizer;
     }
 
-    public void setQualifierSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> qualifierSynchronizer) {
+    public IntactXrefSynchronizer<X> setQualifierSynchronizer(CvTermDbSynchronizer qualifierSynchronizer) {
         this.qualifierSynchronizer = qualifierSynchronizer;
+        return this;
     }
 
     @Override

@@ -3,21 +3,20 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
-import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
-import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.IntactSourceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.utils.IntactCvTermComparator;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.regex.Matcher;
 
 /**
  * Default synchronizer for sources
@@ -246,7 +245,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
 
     public IntactDbSynchronizer<Annotation, SourceAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<SourceAnnotation>(getEntityManager(), SourceAnnotation.class);
+            this.annotationSynchronizer = new IntactAnnotationSynchronizer<SourceAnnotation>(getEntityManager(), SourceAnnotation.class);
         }
         return annotationSynchronizer;
     }

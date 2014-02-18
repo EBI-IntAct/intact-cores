@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AllosteryDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactAllostery;
-import uk.ac.ebi.intact.jami.synchronizer.IntactAllosterySynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAllosterySynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

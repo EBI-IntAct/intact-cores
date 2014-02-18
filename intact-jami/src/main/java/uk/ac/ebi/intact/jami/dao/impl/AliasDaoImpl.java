@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AliasDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
-import uk.ac.ebi.intact.jami.synchronizer.IntactAliasSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

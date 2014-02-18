@@ -5,7 +5,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

@@ -1,15 +1,9 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
-import psidev.psi.mi.jami.model.Alias;
-import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.VariableParameterValueSet;
-import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.dao.AliasDao;
 import uk.ac.ebi.intact.jami.dao.VariableParameterValueSetDao;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValueSet;
-import uk.ac.ebi.intact.jami.synchronizer.IntactAliasSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactVariableParameterValueSetSynchronizer;
 
 import javax.persistence.EntityManager;

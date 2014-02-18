@@ -1,26 +1,20 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
-import psidev.psi.mi.jami.utils.clone.OrganismCloner;
-import uk.ac.ebi.intact.jami.ApplicationContextProvider;
-import uk.ac.ebi.intact.jami.context.IntactContext;
-import uk.ac.ebi.intact.jami.merger.IntactCvTermMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.IntactOrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.sequence.SequenceManager;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.regex.Matcher;
 
 /**
  * Default finder/synchronizer for organisms

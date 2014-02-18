@@ -7,6 +7,8 @@ import psidev.psi.mi.jami.utils.clone.CooperativeEffectCloner;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -71,7 +73,7 @@ public class IntactCooperativeEffectBaseSynchronizer<T extends CooperativeEffect
 
     public IntactDbSynchronizer<Annotation, CooperativeEffectAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<CooperativeEffectAnnotation>(getEntityManager(), CooperativeEffectAnnotation.class);
+            this.annotationSynchronizer = new IntactAnnotationSynchronizer<CooperativeEffectAnnotation>(getEntityManager(), CooperativeEffectAnnotation.class);
         }
         return annotationSynchronizer;
     }

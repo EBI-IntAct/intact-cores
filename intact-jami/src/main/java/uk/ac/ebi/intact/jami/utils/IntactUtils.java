@@ -5,6 +5,10 @@ import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.ParticipantUtils;
 import psidev.psi.mi.jami.utils.comparator.IntegerComparator;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.AliasDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.AnnotationDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.CvTermDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.XrefDbSynchronizer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -458,5 +462,24 @@ public class IntactUtils {
         else {
             return new IntactCvTerm(name, (String)null, (String)null, objclass);
         }
+    }
+
+    public static void initialiseBasicSynchronizers(CvTermDbSynchronizer cvSynchronizer, AliasDbSynchronizer<CvTermAlias> aliasSynchronizer,
+                                                    XrefDbSynchronizer<CvTermXref> xrefSynxhronizer, AnnotationDbSynchronizer<CvTermAnnotation> annotationSynchronizer){
+         cvSynchronizer.setAliasSynchronizer(aliasSynchronizer);
+         cvSynchronizer.setXrefSynchronizer(xrefSynxhronizer);
+         cvSynchronizer.setAnnotationSynchronizer(annotationSynchronizer);
+    }
+
+    public static void initialiseBasicSynchronizers(AliasDbSynchronizer<CvTermAlias> aliasSynchronizer,
+                                                    XrefDbSynchronizer<CvTermXref> xrefSynchronizer, AnnotationDbSynchronizer<CvTermAnnotation> annotationSynchronizer){
+        IntactUtils.initialiseBasicSynchronizers(aliasSynchronizer.getTypeSynchronizer(),
+                aliasSynchronizer, xrefSynchronizer, annotationSynchronizer);
+        IntactUtils.initialiseBasicSynchronizers(annotationSynchronizer.getTopicSynchronizer(),
+                aliasSynchronizer, xrefSynchronizer, annotationSynchronizer);
+        IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getDbSynchronizer(),
+                aliasSynchronizer, xrefSynchronizer, annotationSynchronizer);
+        IntactUtils.initialiseBasicSynchronizers(xrefSynchronizer.getQualifierSynchronizer(),
+                aliasSynchronizer, xrefSynchronizer, annotationSynchronizer);
     }
 }

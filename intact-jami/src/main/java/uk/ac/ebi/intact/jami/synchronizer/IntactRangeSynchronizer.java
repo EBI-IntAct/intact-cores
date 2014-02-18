@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;

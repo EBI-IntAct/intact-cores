@@ -4,11 +4,12 @@ import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.InteractionCloner;
-import uk.ac.ebi.intact.jami.merger.IntactExperimentMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.IntactInteractionEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -112,7 +113,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     public IntactDbSynchronizer<Annotation, InteractionAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<InteractionAnnotation>(getEntityManager(), InteractionAnnotation.class);
+            this.annotationSynchronizer = new IntactAnnotationSynchronizer<InteractionAnnotation>(getEntityManager(), InteractionAnnotation.class);
         }
         return annotationSynchronizer;
     }

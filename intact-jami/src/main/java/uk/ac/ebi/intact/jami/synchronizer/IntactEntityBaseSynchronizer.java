@@ -7,6 +7,10 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.merger.IntactEntityMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -119,7 +123,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public IntactDbSynchronizer<Annotation, EntityAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<EntityAnnotation>(getEntityManager(), EntityAnnotation.class);
+            this.annotationSynchronizer = new IntactAnnotationSynchronizer<EntityAnnotation>(getEntityManager(), EntityAnnotation.class);
         }
         return annotationSynchronizer;
     }

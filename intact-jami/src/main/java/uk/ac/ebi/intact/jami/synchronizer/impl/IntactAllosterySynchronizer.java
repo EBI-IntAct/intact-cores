@@ -1,10 +1,12 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CooperativeEffectCloner;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
@@ -17,9 +19,9 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSynchronizer<Allostery, IntactAllostery>{
-    private IntactDbSynchronizer<Entity, AbstractIntactEntity> participantSynchronizer;
-    private IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer;
+public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSynchronizer<Allostery, IntactAllostery> implements AllosteryDbSynchronizer{
+    private IntActEntitySynchronizer participantSynchronizer;
+    private FeatureDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactAllosterySynchronizer.class);
 
@@ -43,30 +45,95 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
 
     public void clearCache() {
         super.clearCache();
-        getParticipantSynchronizer().clearCache();
-        getFeatureSynchronizer().clearCache();
+        clearCache(participantSynchronizer);
+        if (featureSynchronizer != null){
+            if (participantSynchronizer == null || participantSynchronizer.getModelledFeatureSynchronizer() != featureSynchronizer){
+                this.featureSynchronizer.clearCache();
+            }
+        }
     }
 
-    public IntactDbSynchronizer<Entity, AbstractIntactEntity> getParticipantSynchronizer() {
+    public IntActEntitySynchronizer getParticipantSynchronizer() {
         if (this.participantSynchronizer == null){
-            this.participantSynchronizer = new IntActEntitySynchronizer(getEntityManager());
+            if (featureSynchronizer == null){
+                initialiseDefaultParticipantAndFeatureSynchronizer();
+            }
+            else{
+                initialiseDefaultParticipantSynchronizer();
+            }
         }
         return participantSynchronizer;
     }
 
-    public void setParticipantSynchronizer(IntactDbSynchronizer<Entity, AbstractIntactEntity> participantSynchronizer) {
+    public IntactAllosterySynchronizer setParticipantSynchronizer(IntActEntitySynchronizer participantSynchronizer) {
         this.participantSynchronizer = participantSynchronizer;
+        return this;
     }
 
-    public IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> getFeatureSynchronizer() {
+    public FeatureDbSynchronizer<ModelledFeature, IntactModelledFeature> getFeatureSynchronizer() {
         if (this.featureSynchronizer == null){
-            this.featureSynchronizer = new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(getEntityManager(), IntactModelledFeature.class);
+            if (participantSynchronizer == null){
+                initialiseDefaultParticipantAndFeatureSynchronizer();
+            }
+            else{
+                initialiseDefaultFeatureSynchronizer();
+            }
         }
         return featureSynchronizer;
     }
 
-    public void setFeatureSynchronizer(IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer) {
+    public IntactAllosterySynchronizer setFeatureSynchronizer(FeatureDbSynchronizer<ModelledFeature, IntactModelledFeature> featureSynchronizer) {
         this.featureSynchronizer = featureSynchronizer;
+        return this;
+    }
+
+    protected void initialiseDefaultParticipantAndFeatureSynchronizer() {
+        // basic cv synchronizers to initialise
+        AliasDbSynchronizer<CvTermAlias> cvAliasSynchronizer = new IntactAliasSynchronizer<CvTermAlias>(getEntityManager(), CvTermAlias.class);
+        AnnotationDbSynchronizer<CvTermAnnotation> cvAnnotationSynchronizer = new IntactAnnotationSynchronizer<CvTermAnnotation>(getEntityManager(), CvTermAnnotation.class);
+        XrefDbSynchronizer<CvTermXref> cvXrefSynchronizer = new IntactXrefSynchronizer<CvTermXref>(getEntityManager(), CvTermXref.class);
+        IntactUtils.initialiseBasicSynchronizers(cvAliasSynchronizer, cvXrefSynchronizer, cvAnnotationSynchronizer);
+
+        // generate participant synchronizer and set basic types
+        IntActEntitySynchronizer pSynchronizer = new IntActEntitySynchronizer(getEntityManager());
+        IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature> fSynchronizer = new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(getEntityManager(), IntactModelledFeature.class);
+        this.participantSynchronizer = pSynchronizer;
+        this.featureSynchronizer = fSynchronizer;
+
+        pSynchronizer.setModelledFeatureSynchronizer(this.featureSynchronizer);
+
+        pSynchronizer.setCvAnnotationSynchronizer(cvAnnotationSynchronizer);
+        pSynchronizer.setCvXrefSynchronizer(cvXrefSynchronizer);
+        pSynchronizer.setCvAliasSynchronizer(cvAliasSynchronizer);
+    }
+
+    protected void initialiseDefaultParticipantSynchronizer() {
+        // basic cv synchronizers
+        AliasDbSynchronizer<CvTermAlias> cvAliasSynchronizer = this.featureSynchronizer.getCvAliasSynchronizer();
+        AnnotationDbSynchronizer<CvTermAnnotation> cvAnnotationSynchronizer = this.featureSynchronizer.getCvAnnotationSynchronizer();
+        XrefDbSynchronizer<CvTermXref> cvXrefSynchronizer = this.featureSynchronizer.getCvXrefSynchronizer();
+
+        // generate participant synchronizer and set basic types
+        IntActEntitySynchronizer pSynchronizer = new IntActEntitySynchronizer(getEntityManager());
+        this.participantSynchronizer = pSynchronizer;
+        pSynchronizer.setModelledFeatureSynchronizer(getFeatureSynchronizer());
+        pSynchronizer.setCvAnnotationSynchronizer(cvAnnotationSynchronizer);
+        pSynchronizer.setCvXrefSynchronizer(cvXrefSynchronizer);
+        pSynchronizer.setCvAliasSynchronizer(cvAliasSynchronizer);
+    }
+
+    protected void initialiseDefaultFeatureSynchronizer() {
+        // basic cv synchronizers
+        AliasDbSynchronizer<CvTermAlias> cvAliasSynchronizer = this.participantSynchronizer.getCvAliasSynchronizer();
+        AnnotationDbSynchronizer<CvTermAnnotation> cvAnnotationSynchronizer = this.participantSynchronizer.getCvAnnotationSynchronizer();
+        XrefDbSynchronizer<CvTermXref> cvXrefSynchronizer = this.participantSynchronizer.getCvXrefSynchronizer();
+        // generate feature synchronizer and set basic types
+        IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature> fSynchronizer = new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(getEntityManager(), IntactModelledFeature.class);
+        this.featureSynchronizer = fSynchronizer;
+
+        fSynchronizer.setCvAliasSynchronizer(cvAliasSynchronizer);
+        fSynchronizer.setCvAnnotationSynchronizer(cvAnnotationSynchronizer);
+        fSynchronizer.setCvXrefSynchronizer(cvXrefSynchronizer);
     }
 
     protected void prepareAllostericEffector(IntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
@@ -74,8 +141,8 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
             case molecule:
                 MoleculeEffector moleculeEffector = (MoleculeEffector)object.getAllostericEffector();
                 if (!(moleculeEffector instanceof IntactMoleculeEffector)){
-                   IntactMoleculeEffector newEffector = new IntactMoleculeEffector(moleculeEffector.getMolecule());
-                   moleculeEffector = newEffector;
+                    IntactMoleculeEffector newEffector = new IntactMoleculeEffector(moleculeEffector.getMolecule());
+                    moleculeEffector = newEffector;
 
                     object.setAllostericEffector(newEffector);
                 }
@@ -101,7 +168,7 @@ public class IntactAllosterySynchronizer extends IntactCooperativeEffectBaseSync
     }
 
     protected void prepareMechanism(IntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
-       CvTerm mehcanism = object.getAllostericMechanism();
+        CvTerm mehcanism = object.getAllostericMechanism();
         if (mehcanism != null){
             object.setAllostericMechanism(getCvSynchronizer().synchronize(mehcanism, true));
         }
