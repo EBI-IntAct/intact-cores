@@ -32,66 +32,39 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
 
     public IntactInteractorSynchronizer(EntityManager entityManager){
         super(entityManager, IntactInteractor.class);
-        this.polymerSynchronizer = new IntactPolymerSynchronizer<Polymer, IntactPolymer>(entityManager, IntactPolymer.class);
-        this.proteinSynchronizer = new IntactPolymerSynchronizer<Protein, IntactProtein>(entityManager, IntactProtein.class);
-        this.nucleicAcidSynchronizer = new IntactPolymerSynchronizer<NucleicAcid, IntactNucleicAcid>(entityManager, IntactNucleicAcid.class);
-        this.interactorBaseSynchronizer = new IntactInteractorBaseSynchronizer<Interactor, IntactInteractor>(entityManager, IntactInteractor.class);
-        this.moleculeSynchronizer = new IntactInteractorBaseSynchronizer<Molecule, IntactMolecule>(entityManager, IntactMolecule.class);
-        this.bioactiveEntitySynchronizer = new IntactBioactiveEntitySynchronizer(entityManager);
-        this.geneSynchronizer = new IntactInteractorBaseSynchronizer<Gene, IntactGene>(entityManager, IntactGene.class);
-        this.interactorPoolSynchronizer = new IntactInteractorPoolSynchronizer(entityManager);
-        this.complexSynchronizer = new IntactComplexSynchronizer(entityManager);
-
-    }
-
-    public IntactInteractorSynchronizer(EntityManager entityManager,IntactDbSynchronizer<Protein, IntactProtein> proteinSynchronizer,
-                                        IntactDbSynchronizer<NucleicAcid, IntactNucleicAcid> nucleicAcidSynchronizer, IntactDbSynchronizer<Polymer, IntactPolymer> polymerSynchronizer,
-                                        IntactDbSynchronizer<Molecule, IntactMolecule> moleculeBaseSynchronizer, IntactDbSynchronizer<BioactiveEntity, IntactBioactiveEntity> bioactiveEntitySynchronizer,
-                                        IntactDbSynchronizer<Gene, IntactGene> geneSynchronizer, IntactDbSynchronizer<InteractorPool, IntactInteractorPool> interactorPoolSynchronizer,
-                                        IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer, IntactDbSynchronizer<Interactor, IntactInteractor> interactorBaseSynchronizer){
-        super(entityManager, IntactInteractor.class);
-        this.polymerSynchronizer = polymerSynchronizer != null ? polymerSynchronizer : new IntactPolymerSynchronizer<Polymer, IntactPolymer>(entityManager, IntactPolymer.class);
-        this.proteinSynchronizer = proteinSynchronizer != null ? proteinSynchronizer : new IntactPolymerSynchronizer<Protein, IntactProtein>(entityManager, IntactProtein.class);
-        this.nucleicAcidSynchronizer = nucleicAcidSynchronizer != null ? nucleicAcidSynchronizer : new IntactPolymerSynchronizer<NucleicAcid, IntactNucleicAcid>(entityManager, IntactNucleicAcid.class);
-        this.interactorBaseSynchronizer = interactorBaseSynchronizer != null ? interactorBaseSynchronizer : new IntactInteractorBaseSynchronizer<Interactor, IntactInteractor>(entityManager, IntactInteractor.class);
-        this.moleculeSynchronizer = moleculeBaseSynchronizer != null ? moleculeBaseSynchronizer : new IntactInteractorBaseSynchronizer<Molecule, IntactMolecule>(entityManager, IntactMolecule.class);
-        this.bioactiveEntitySynchronizer = bioactiveEntitySynchronizer != null ? bioactiveEntitySynchronizer : new IntactBioactiveEntitySynchronizer(entityManager);
-        this.geneSynchronizer = geneSynchronizer != null ? geneSynchronizer : new IntactInteractorBaseSynchronizer<Gene, IntactGene>(entityManager, IntactGene.class);
-        this.interactorPoolSynchronizer = interactorPoolSynchronizer != null ? interactorPoolSynchronizer : new IntactInteractorPoolSynchronizer(entityManager);
-        this.complexSynchronizer = complexSynchronizer != null ? complexSynchronizer : new IntactComplexSynchronizer(entityManager);
     }
 
     public IntactInteractor find(Interactor term) throws FinderException{
         if (term instanceof Molecule){
             if (term instanceof Polymer){
                 if (term instanceof Protein){
-                    return this.proteinSynchronizer.find((Protein)term);
+                    return getProteinSynchronizer().find((Protein)term);
                 }
                 else if (term instanceof NucleicAcid){
-                    return this.nucleicAcidSynchronizer.find((NucleicAcid)term);
+                    return getNucleicAcidSynchronizer().find((NucleicAcid)term);
                 }
                 else{
-                    return this.polymerSynchronizer.find((Polymer)term);
+                    return getPolymerSynchronizer().find((Polymer)term);
                 }
             }
             else if (term instanceof BioactiveEntity){
-                return this.bioactiveEntitySynchronizer.find((BioactiveEntity)term);
+                return getBioactiveEntitySynchronizer().find((BioactiveEntity)term);
             }
             else if (term instanceof Gene){
-                return this.geneSynchronizer.find((Gene)term);
+                return getGeneSynchronizer().find((Gene)term);
             }
             else{
-                return this.moleculeSynchronizer.find((Molecule)term);
+                return getMoleculeSynchronizer().find((Molecule)term);
             }
         }
         else if (term instanceof Complex){
-            return this.complexSynchronizer.find((Complex)term);
+            return getComplexSynchronizer().find((Complex)term);
         }
         else if (term instanceof InteractorPool){
-            return this.interactorPoolSynchronizer.find((InteractorPool)term);
+            return getInteractorPoolSynchronizer().find((InteractorPool)term);
         }
         else {
-            return this.interactorBaseSynchronizer.find(term);
+            return getInteractorBaseSynchronizer().find(term);
         }
     }
 
@@ -99,33 +72,33 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         if (term instanceof IntactMolecule){
             if (term instanceof IntactPolymer){
                 if (term instanceof IntactProtein){
-                    return this.proteinSynchronizer.persist((IntactProtein)term);
+                    return getProteinSynchronizer().persist((IntactProtein)term);
                 }
                 else if (term instanceof IntactNucleicAcid){
-                    return this.nucleicAcidSynchronizer.persist((IntactNucleicAcid)term);
+                    return getNucleicAcidSynchronizer().persist((IntactNucleicAcid)term);
                 }
                 else{
-                    return this.polymerSynchronizer.persist((IntactPolymer)term);
+                    return getPolymerSynchronizer().persist((IntactPolymer)term);
                 }
             }
             else if (term instanceof IntactBioactiveEntity){
-                return this.bioactiveEntitySynchronizer.persist((IntactBioactiveEntity)term);
+                return getBioactiveEntitySynchronizer().persist((IntactBioactiveEntity)term);
             }
             else if (term instanceof IntactGene){
-                return this.geneSynchronizer.persist((IntactGene)term);
+                return getGeneSynchronizer().persist((IntactGene)term);
             }
             else{
-                return this.moleculeSynchronizer.persist((IntactMolecule)term);
+                return getMoleculeSynchronizer().persist((IntactMolecule)term);
             }
         }
         else if (term instanceof IntactComplex){
-            return this.complexSynchronizer.persist((IntactComplex)term);
+            return getComplexSynchronizer().persist((IntactComplex)term);
         }
         else if (term instanceof IntactInteractorPool){
-            return this.interactorPoolSynchronizer.persist((IntactInteractorPool)term);
+            return getInteractorPoolSynchronizer().persist((IntactInteractorPool)term);
         }
         else {
-            return this.interactorBaseSynchronizer.persist(term);
+            return getInteractorBaseSynchronizer().persist(term);
         }
     }
 
@@ -134,33 +107,33 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
             if (term instanceof IntactMolecule){
                 if (term instanceof IntactPolymer){
                     if (term instanceof IntactProtein){
-                        return this.proteinSynchronizer.synchronize((IntactProtein)term, persist);
+                        return getProteinSynchronizer().synchronize((IntactProtein)term, persist);
                     }
                     else if (term instanceof IntactNucleicAcid){
-                        return this.nucleicAcidSynchronizer.synchronize((IntactNucleicAcid)term, persist);
+                        return getNucleicAcidSynchronizer().synchronize((IntactNucleicAcid)term, persist);
                     }
                     else{
-                        return this.polymerSynchronizer.synchronize((IntactPolymer)term, persist);
+                        return getPolymerSynchronizer().synchronize((IntactPolymer)term, persist);
                     }
                 }
                 else if (term instanceof IntactBioactiveEntity){
-                    return this.bioactiveEntitySynchronizer.synchronize((IntactBioactiveEntity)term, persist);
+                    return getBioactiveEntitySynchronizer().synchronize((IntactBioactiveEntity)term, persist);
                 }
                 else if (term instanceof IntactGene){
-                    return this.geneSynchronizer.synchronize((IntactGene)term, persist);
+                    return getGeneSynchronizer().synchronize((IntactGene)term, persist);
                 }
                 else{
-                    return this.moleculeSynchronizer.synchronize((IntactMolecule)term, persist);
+                    return getMoleculeSynchronizer().synchronize((IntactMolecule)term, persist);
                 }
             }
             else if (term instanceof IntactComplex){
-                return this.complexSynchronizer.synchronize((IntactComplex)term, persist);
+                return getComplexSynchronizer().synchronize((IntactComplex)term, persist);
             }
             else if (term instanceof IntactInteractorPool){
-                return this.interactorPoolSynchronizer.synchronize((IntactInteractorPool)term, persist);
+                return getInteractorPoolSynchronizer().synchronize((IntactInteractorPool)term, persist);
             }
             else {
-                return this.interactorBaseSynchronizer.synchronize(term, persist);
+                return getInteractorBaseSynchronizer().synchronize(term, persist);
             }
     }
 
@@ -168,45 +141,45 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         if (term instanceof IntactMolecule){
             if (term instanceof IntactPolymer){
                 if (term instanceof IntactProtein){
-                    this.proteinSynchronizer.synchronizeProperties((IntactProtein)term);
+                    getProteinSynchronizer().synchronizeProperties((IntactProtein)term);
                 }
                 else if (term instanceof IntactNucleicAcid){
-                    this.nucleicAcidSynchronizer.synchronizeProperties((IntactNucleicAcid)term);
+                    getNucleicAcidSynchronizer().synchronizeProperties((IntactNucleicAcid)term);
                 }
                 else{
-                    this.polymerSynchronizer.synchronizeProperties((IntactPolymer)term);
+                    getPolymerSynchronizer().synchronizeProperties((IntactPolymer)term);
                 }
             }
             else if (term instanceof IntactBioactiveEntity){
-                this.bioactiveEntitySynchronizer.synchronizeProperties((IntactBioactiveEntity)term);
+                getBioactiveEntitySynchronizer().synchronizeProperties((IntactBioactiveEntity)term);
             }
             else if (term instanceof IntactGene){
-                this.geneSynchronizer.synchronizeProperties((IntactGene)term);
+                getGeneSynchronizer().synchronizeProperties((IntactGene)term);
             }
             else{
-                this.moleculeSynchronizer.synchronizeProperties((IntactMolecule)term);
+                getMoleculeSynchronizer().synchronizeProperties((IntactMolecule)term);
             }
         }
         else if (term instanceof IntactComplex){
-            this.complexSynchronizer.synchronizeProperties((IntactComplex)term);
+            getComplexSynchronizer().synchronizeProperties((IntactComplex)term);
         }
         else if (term instanceof IntactInteractorPool){
-            this.interactorPoolSynchronizer.synchronizeProperties((IntactInteractorPool)term);
+            getInteractorPoolSynchronizer().synchronizeProperties((IntactInteractorPool)term);
         }
         else {
-            this.interactorBaseSynchronizer.synchronizeProperties(term);
+            getInteractorBaseSynchronizer().synchronizeProperties(term);
         }
     }
 
     public void clearCache() {
-        this.proteinSynchronizer.clearCache();
-        this.nucleicAcidSynchronizer.clearCache();
-        this.moleculeSynchronizer.clearCache();
-        this.polymerSynchronizer.clearCache();
-        this.bioactiveEntitySynchronizer.clearCache();
-        this.geneSynchronizer.clearCache();
-        this.complexSynchronizer.clearCache();
-        this.interactorPoolSynchronizer.clearCache();
+        getProteinSynchronizer().clearCache();
+        getNucleicAcidSynchronizer().clearCache();
+        getMoleculeSynchronizer().clearCache();
+        getPolymerSynchronizer().clearCache();
+        getBioactiveEntitySynchronizer().clearCache();
+        getGeneSynchronizer().clearCache();
+        getComplexSynchronizer().clearCache();
+        getInteractorPoolSynchronizer().clearCache();
     }
 
     public Collection<Interactor> fetchByIdentifier(String identifier) throws BridgeFailedException {
@@ -218,39 +191,103 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
     }
 
     public IntactDbSynchronizer<Polymer, IntactPolymer> getPolymerSynchronizer() {
+        if (this.polymerSynchronizer == null){
+            this.polymerSynchronizer = new IntactPolymerSynchronizer<Polymer, IntactPolymer>(getEntityManager(), IntactPolymer.class);
+        }
         return polymerSynchronizer;
     }
 
     public IntactDbSynchronizer<Protein, IntactProtein> getProteinSynchronizer() {
+        if (this.proteinSynchronizer == null){
+            this.proteinSynchronizer = new IntactPolymerSynchronizer<Protein, IntactProtein>(getEntityManager(), IntactProtein.class);
+        }
         return proteinSynchronizer;
     }
 
     public IntactDbSynchronizer<NucleicAcid, IntactNucleicAcid> getNucleicAcidSynchronizer() {
+        if (this.nucleicAcidSynchronizer == null){
+            this.nucleicAcidSynchronizer = new IntactPolymerSynchronizer<NucleicAcid, IntactNucleicAcid>(getEntityManager(), IntactNucleicAcid.class);
+        }
         return nucleicAcidSynchronizer;
     }
 
     public IntactDbSynchronizer<Interactor, IntactInteractor> getInteractorBaseSynchronizer() {
+        if (this.interactorBaseSynchronizer == null){
+            this.interactorBaseSynchronizer = new IntactInteractorBaseSynchronizer<Interactor, IntactInteractor>(getEntityManager(), IntactInteractor.class);
+        }
         return interactorBaseSynchronizer;
     }
 
     public IntactDbSynchronizer<Molecule, IntactMolecule> getMoleculeSynchronizer() {
+        if (this.moleculeSynchronizer == null){
+            this.moleculeSynchronizer = new IntactInteractorBaseSynchronizer<Molecule, IntactMolecule>(getEntityManager(), IntactMolecule.class);
+        }
         return moleculeSynchronizer;
     }
 
     public IntactDbSynchronizer<BioactiveEntity, IntactBioactiveEntity> getBioactiveEntitySynchronizer() {
+        if (this.bioactiveEntitySynchronizer == null){
+            this.bioactiveEntitySynchronizer = new IntactBioactiveEntitySynchronizer(getEntityManager());
+        }
         return bioactiveEntitySynchronizer;
     }
 
     public IntactDbSynchronizer<Gene, IntactGene> getGeneSynchronizer() {
+        if (this.geneSynchronizer == null){
+            this.geneSynchronizer = new IntactInteractorBaseSynchronizer<Gene, IntactGene>(getEntityManager(), IntactGene.class);
+        }
         return geneSynchronizer;
     }
 
     public IntactDbSynchronizer<InteractorPool, IntactInteractorPool> getInteractorPoolSynchronizer() {
+        if (this.interactorPoolSynchronizer == null){
+            this.interactorPoolSynchronizer = new IntactInteractorPoolSynchronizer(getEntityManager());
+            ((IntactInteractorPoolSynchronizer)this.interactorPoolSynchronizer).setInteractorSynchronizer(this);
+        }
         return interactorPoolSynchronizer;
     }
 
     public IntactDbSynchronizer<Complex, IntactComplex> getComplexSynchronizer() {
+        if (this.complexSynchronizer == null){
+            this.complexSynchronizer = new IntactComplexSynchronizer(getEntityManager());
+        }
         return complexSynchronizer;
+    }
+
+    public void setPolymerSynchronizer(IntactDbSynchronizer<Polymer, IntactPolymer> polymerSynchronizer) {
+        this.polymerSynchronizer = polymerSynchronizer;
+    }
+
+    public void setProteinSynchronizer(IntactDbSynchronizer<Protein, IntactProtein> proteinSynchronizer) {
+        this.proteinSynchronizer = proteinSynchronizer;
+    }
+
+    public void setNucleicAcidSynchronizer(IntactDbSynchronizer<NucleicAcid, IntactNucleicAcid> nucleicAcidSynchronizer) {
+        this.nucleicAcidSynchronizer = nucleicAcidSynchronizer;
+    }
+
+    public void setMoleculeSynchronizer(IntactDbSynchronizer<Molecule, IntactMolecule> moleculeSynchronizer) {
+        this.moleculeSynchronizer = moleculeSynchronizer;
+    }
+
+    public void setInteractorBaseSynchronizer(IntactDbSynchronizer<Interactor, IntactInteractor> interactorBaseSynchronizer) {
+        this.interactorBaseSynchronizer = interactorBaseSynchronizer;
+    }
+
+    public void setBioactiveEntitySynchronizer(IntactDbSynchronizer<BioactiveEntity, IntactBioactiveEntity> bioactiveEntitySynchronizer) {
+        this.bioactiveEntitySynchronizer = bioactiveEntitySynchronizer;
+    }
+
+    public void setGeneSynchronizer(IntactDbSynchronizer<Gene, IntactGene> geneSynchronizer) {
+        this.geneSynchronizer = geneSynchronizer;
+    }
+
+    public void setInteractorPoolSynchronizer(IntactDbSynchronizer<InteractorPool, IntactInteractorPool> interactorPoolSynchronizer) {
+        this.interactorPoolSynchronizer = interactorPoolSynchronizer;
+    }
+
+    public void setComplexSynchronizer(IntactDbSynchronizer<Complex, IntactComplex> complexSynchronizer) {
+        this.complexSynchronizer = complexSynchronizer;
     }
 
     @Override

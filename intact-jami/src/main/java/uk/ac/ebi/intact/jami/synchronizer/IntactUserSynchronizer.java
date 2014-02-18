@@ -35,16 +35,6 @@ public class IntactUserSynchronizer extends AbstractIntactDbSynchronizer<User, U
 
     public IntactUserSynchronizer(EntityManager entityManager){
         super(entityManager, User.class);
-        this.roleSynchronizer = new IntactRoleSynchronizer(entityManager);
-        this.preferenceSynchronizer = new IntactPreferenceSynchronizer(entityManager);
-        this.persistedUsers = new IdentityMap();
-    }
-
-    public IntactUserSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Role, Role> roleSynchronizer,
-                                  IntactDbSynchronizer<Preference, Preference> preferenceSynchronizer){
-        super(entityManager, User.class);
-        this.roleSynchronizer = roleSynchronizer != null ? roleSynchronizer : new IntactRoleSynchronizer(entityManager);
-        this.preferenceSynchronizer = preferenceSynchronizer != null ? preferenceSynchronizer : new IntactPreferenceSynchronizer(entityManager);
         this.persistedUsers = new IdentityMap();
     }
 
@@ -93,16 +83,38 @@ public class IntactUserSynchronizer extends AbstractIntactDbSynchronizer<User, U
     }
 
     public void clearCache() {
-        this.roleSynchronizer.clearCache();
-        this.preferenceSynchronizer.clearCache();
+        getRoleSynchronizer().clearCache();
+        getPreferenceSynchronizer().clearCache();
         this.persistedUsers.clear();
+    }
+
+    public IntactDbSynchronizer<Preference, Preference> getPreferenceSynchronizer() {
+        if (this.preferenceSynchronizer == null){
+            this.preferenceSynchronizer = new IntactPreferenceSynchronizer(getEntityManager());
+        }
+        return preferenceSynchronizer;
+    }
+
+    public void setPreferenceSynchronizer(IntactDbSynchronizer<Preference, Preference> preferenceSynchronizer) {
+        this.preferenceSynchronizer = preferenceSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Role, Role> getRoleSynchronizer() {
+        if (this.roleSynchronizer == null){
+            this.roleSynchronizer = new IntactRoleSynchronizer(getEntityManager());
+        }
+        return roleSynchronizer;
+    }
+
+    public void setRoleSynchronizer(IntactDbSynchronizer<Role, Role> roleSynchronizer) {
+        this.roleSynchronizer = roleSynchronizer;
     }
 
     protected void prepareRoles(User intactUser) throws FinderException, PersisterException, SynchronizerException {
         if (intactUser.areRolesInitialized()){
             List<Role> rolesToPersist = new ArrayList<Role>(intactUser.getRoles());
             for (Role role : rolesToPersist){
-                Role userRole = this.roleSynchronizer.synchronize(role, true);
+                Role userRole = getRoleSynchronizer().synchronize(role, true);
                 // we have a different instance because needed to be synchronized
                 if (userRole != role){
                     intactUser.removeRole(role);
@@ -117,7 +129,7 @@ public class IntactUserSynchronizer extends AbstractIntactDbSynchronizer<User, U
             List<Preference> preferencesToPersist = new ArrayList<Preference>(intactUser.getPreferences());
             for (Preference pref : preferencesToPersist){
                 // do not persist or merge preferences because of cascades
-                Preference userPref = this.preferenceSynchronizer.synchronize(pref, false);
+                Preference userPref = getPreferenceSynchronizer().synchronize(pref, false);
                 // we have a different instance because needed to be synchronized
                 if (userPref != pref){
                     intactUser.removePreference(pref);

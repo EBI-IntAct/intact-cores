@@ -43,34 +43,6 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
         super(entityManager, IntactInteractionEvidence.class);
         // to keep track of persisted cvs
         this.persistedObjects = new IdentityMap();
-
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<InteractionAnnotation>(entityManager, InteractionAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer<InteractionXref>(entityManager, InteractionXref.class);
-        this.interactionTypeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTION_TYPE_OBJCLASS);
-        this.checksumSynchronizer = new IntactChecksumSynchronizer<InteractionChecksum>(entityManager, InteractionChecksum.class);
-        this.parameterSynchronizer = new IntactParameterSynchronizer<Parameter, InteractionEvidenceParameter>(entityManager, InteractionEvidenceParameter.class);
-        this.confidenceSynchronizer = new IntactConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence>(entityManager, InteractionEvidenceConfidence.class);
-        this.variableValueSetSynchronizer = new IntactVariableParameterValueSetSynchronizer(entityManager);
-        this.participantEvidenceSynchronizer = new IntActEntitySynchronizer(entityManager);
-    }
-
-    public IntactInteractionEvidenceSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Annotation, InteractionAnnotation> annotationSynchronizer,
-                                                 IntactDbSynchronizer<Xref, InteractionXref> xrefSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
-                                                 IntactDbSynchronizer<Checksum, InteractionChecksum> checksumSynchronizer, IntactDbSynchronizer<Entity, AbstractIntactEntity> participantEvidenceSynchronizer,
-                                                 IntactDbSynchronizer<Parameter, InteractionEvidenceParameter> parameterSynchronizer, IntactDbSynchronizer<Confidence, InteractionEvidenceConfidence> confidenceSynchronizer,
-                                                 IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> variableValueSetSynchronizer){
-        super(entityManager, IntactInteractionEvidence.class);
-        // to keep track of persisted cvs
-        this.persistedObjects = new IdentityMap();
-
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<InteractionAnnotation>(entityManager, InteractionAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<InteractionXref>(entityManager, InteractionXref.class);
-        this.interactionTypeSynchronizer = typeSynchronizer != null ? typeSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.INTERACTION_TYPE_OBJCLASS);
-        this.checksumSynchronizer = checksumSynchronizer != null ? checksumSynchronizer : new IntactChecksumSynchronizer<InteractionChecksum>(entityManager, InteractionChecksum.class);
-        this.parameterSynchronizer = parameterSynchronizer != null ? parameterSynchronizer : new IntactParameterSynchronizer<Parameter, InteractionEvidenceParameter>(entityManager, InteractionEvidenceParameter.class);
-        this.confidenceSynchronizer = confidenceSynchronizer != null ? confidenceSynchronizer : new IntactConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence>(entityManager, InteractionEvidenceConfidence.class);
-        this.variableValueSetSynchronizer = variableValueSetSynchronizer != null ? variableValueSetSynchronizer : new IntactVariableParameterValueSetSynchronizer(entityManager);
-        this.participantEvidenceSynchronizer = participantEvidenceSynchronizer != null ? participantEvidenceSynchronizer : new IntActEntitySynchronizer(entityManager);
     }
 
     public IntactInteractionEvidence find(InteractionEvidence interaction) throws FinderException {
@@ -128,14 +100,102 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     public void clearCache() {
         this.persistedObjects.clear();
-        this.checksumSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
-        this.parameterSynchronizer.clearCache();
-        this.confidenceSynchronizer.clearCache();
-        this.interactionTypeSynchronizer.clearCache();
-        this.participantEvidenceSynchronizer.clearCache();
-        this.variableValueSetSynchronizer.clearCache();
+        getChecksumSynchronizer().clearCache();
+        getXrefSynchronizer().clearCache();
+        getAnnotationSynchronizer().clearCache();
+        getParameterSynchronizer().clearCache();
+        getConfidenceSynchronizer().clearCache();
+        getInteractionTypeSynchronizer().clearCache();
+        getParticipantEvidenceSynchronizer().clearCache();
+        getVariableValueSetSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<Annotation, InteractionAnnotation> getAnnotationSynchronizer() {
+        if (this.annotationSynchronizer == null){
+            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<InteractionAnnotation>(getEntityManager(), InteractionAnnotation.class);
+        }
+        return annotationSynchronizer;
+    }
+
+    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, InteractionAnnotation> annotationSynchronizer) {
+        this.annotationSynchronizer = annotationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Xref, InteractionXref> getXrefSynchronizer() {
+        if (this.xrefSynchronizer == null){
+            this.xrefSynchronizer = new IntactXrefSynchronizer<InteractionXref>(getEntityManager(), InteractionXref.class);
+        }
+        return xrefSynchronizer;
+    }
+
+    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, InteractionXref> xrefSynchronizer) {
+        this.xrefSynchronizer = xrefSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractionTypeSynchronizer() {
+        if (this.interactionTypeSynchronizer == null){
+            this.interactionTypeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.INTERACTION_TYPE_OBJCLASS);
+        }
+        return interactionTypeSynchronizer;
+    }
+
+    public void setInteractionTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> interactionTypeSynchronizer) {
+        this.interactionTypeSynchronizer = interactionTypeSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Checksum, InteractionChecksum> getChecksumSynchronizer() {
+        if (this.checksumSynchronizer == null){
+            this.checksumSynchronizer = new IntactChecksumSynchronizer<InteractionChecksum>(getEntityManager(), InteractionChecksum.class);
+        }
+        return checksumSynchronizer;
+    }
+
+    public void setChecksumSynchronizer(IntactDbSynchronizer<Checksum, InteractionChecksum> checksumSynchronizer) {
+        this.checksumSynchronizer = checksumSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Entity, AbstractIntactEntity> getParticipantEvidenceSynchronizer() {
+        if (this.participantEvidenceSynchronizer == null){
+            this.participantEvidenceSynchronizer = new IntActEntitySynchronizer(getEntityManager());
+        }
+        return participantEvidenceSynchronizer;
+    }
+
+    public void setParticipantEvidenceSynchronizer(IntactDbSynchronizer<Entity, AbstractIntactEntity> participantEvidenceSynchronizer) {
+        this.participantEvidenceSynchronizer = participantEvidenceSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Parameter, InteractionEvidenceParameter> getParameterSynchronizer() {
+        if (this.parameterSynchronizer == null){
+            this.parameterSynchronizer = new IntactParameterSynchronizer<Parameter, InteractionEvidenceParameter>(getEntityManager(), InteractionEvidenceParameter.class);
+        }
+        return parameterSynchronizer;
+    }
+
+    public void setParameterSynchronizer(IntactDbSynchronizer<Parameter, InteractionEvidenceParameter> parameterSynchronizer) {
+        this.parameterSynchronizer = parameterSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Confidence, InteractionEvidenceConfidence> getConfidenceSynchronizer() {
+        if (this.confidenceSynchronizer == null){
+            this.confidenceSynchronizer = new IntactConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence>(getEntityManager(), InteractionEvidenceConfidence.class);
+        }
+        return confidenceSynchronizer;
+    }
+
+    public void setConfidenceSynchronizer(IntactDbSynchronizer<Confidence, InteractionEvidenceConfidence> confidenceSynchronizer) {
+        this.confidenceSynchronizer = confidenceSynchronizer;
+    }
+
+    public IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> getVariableValueSetSynchronizer() {
+        if (this.variableValueSetSynchronizer == null){
+            this.variableValueSetSynchronizer = new IntactVariableParameterValueSetSynchronizer(getEntityManager());
+        }
+        return variableValueSetSynchronizer;
+    }
+
+    public void setVariableValueSetSynchronizer(IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> variableValueSetSynchronizer) {
+        this.variableValueSetSynchronizer = variableValueSetSynchronizer;
     }
 
     @Override
@@ -156,7 +216,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
             Collection<VariableParameterValueSet> parametersToPersist = new ArrayList<VariableParameterValueSet>(intactInteraction.getVariableParameterValues());
             for (VariableParameterValueSet param : parametersToPersist){
                 // do not persist or merge parameters because of cascades
-                VariableParameterValueSet expParam = this.variableValueSetSynchronizer.synchronize(param, false);
+                VariableParameterValueSet expParam = getVariableValueSetSynchronizer().synchronize(param, false);
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     intactInteraction.getVariableParameterValues().remove(param);
@@ -173,7 +233,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
                 // reinit parent
                 participant.setInteraction(intactInteraction);
                 // do not persist or merge participants because of cascades
-                ParticipantEvidence expPart = (ParticipantEvidence)this.participantEvidenceSynchronizer.synchronize(participant, false);
+                ParticipantEvidence expPart = (ParticipantEvidence)getParticipantEvidenceSynchronizer().synchronize(participant, false);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);
@@ -188,7 +248,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
             Collection<Parameter> parametersToPersist = new ArrayList<Parameter>(intactInteraction.getParameters());
             for (Parameter param : parametersToPersist){
                 // do not persist or merge parameters because of cascades
-                Parameter expPar = this.parameterSynchronizer.synchronize(param, false);
+                Parameter expPar = getParameterSynchronizer().synchronize(param, false);
                 // we have a different instance because needed to be synchronized
                 if (expPar != param){
                     intactInteraction.getParameters().remove(param);
@@ -201,7 +261,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
     protected void prepareInteractionType(IntactInteractionEvidence intactInteraction) throws PersisterException, FinderException, SynchronizerException {
         CvTerm type = intactInteraction.getInteractionType();
         if (type != null){
-            intactInteraction.setInteractionType(this.interactionTypeSynchronizer.synchronize(type, true));
+            intactInteraction.setInteractionType(getInteractionTypeSynchronizer().synchronize(type, true));
         }
     }
 
@@ -210,7 +270,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteraction.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref expRef = this.xrefSynchronizer.synchronize(xref, false);
+                Xref expRef = getXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (expRef != xref){
                     intactInteraction.getXrefs().remove(xref);
@@ -225,7 +285,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteraction.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation expAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
+                Annotation expAnnotation = getAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (expAnnotation != annotation){
                     intactInteraction.getAnnotations().remove(annotation);
@@ -240,7 +300,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
             List<Confidence> confsToPersist = new ArrayList<Confidence>(intactInteraction.getConfidences());
             for (Confidence confidence : confsToPersist){
                 // do not persist or merge confidences because of cascades
-                Confidence expConf = this.confidenceSynchronizer.synchronize(confidence, false);
+                Confidence expConf = getConfidenceSynchronizer().synchronize(confidence, false);
                 // we have a different instance because needed to be synchronized
                 if (expConf != confidence){
                     intactInteraction.getConfidences().remove(confidence);

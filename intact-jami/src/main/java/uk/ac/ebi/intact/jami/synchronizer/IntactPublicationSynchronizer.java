@@ -52,31 +52,6 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         super(entityManager, IntactPublication.class);
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<Publication, IntactPublication>(new UnambiguousPublicationComparator());
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<PublicationAnnotation>(entityManager, PublicationAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer<PublicationXref>(entityManager, PublicationXref.class);
-        this.sourceSynchronizer = new IntactSourceSynchronizer(entityManager);
-        this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
-
-        this.experimentSynchronizer = new IntactExperimentSynchronizer(entityManager);
-        this.lifecycleEventSynchronizer = new IntactLifeCycleSynchronizer<PublicationLifecycleEvent>(entityManager, PublicationLifecycleEvent.class);
-        this.userSynchronizer = new IntactUserSynchronizer(entityManager);
-    }
-
-    public IntactPublicationSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Experiment, IntactExperiment> expSynchronizer,
-                                         IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer, IntactDbSynchronizer<User, User> userSynchronizer,
-                                         IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> lifecycleEventSynchronizer, IntactDbSynchronizer<Source, IntactSource> sourceSynchronizer,
-                                         IntactDbSynchronizer<Annotation, PublicationAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, PublicationXref> xrefSynchronizer){
-        super(entityManager, IntactPublication.class);
-        // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<Publication, IntactPublication>(new UnambiguousPublicationComparator());
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<PublicationAnnotation>(entityManager, PublicationAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<PublicationXref>(entityManager, PublicationXref.class);
-        this.sourceSynchronizer = sourceSynchronizer != null ? sourceSynchronizer : new IntactSourceSynchronizer(entityManager);
-        this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
-
-        this.experimentSynchronizer = expSynchronizer != null ? expSynchronizer : new IntactExperimentSynchronizer(entityManager);
-        this.lifecycleEventSynchronizer = lifecycleEventSynchronizer != null ? lifecycleEventSynchronizer : new IntactLifeCycleSynchronizer<PublicationLifecycleEvent>(entityManager, PublicationLifecycleEvent.class);
-        this.userSynchronizer = userSynchronizer != null ? userSynchronizer : new IntactUserSynchronizer(entityManager);
     }
 
     public IntactPublication find(Publication publication) throws FinderException {
@@ -177,7 +152,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
         prepareLifeCycleEvents(intactPublication);
     }
 
-    private void prepareStatusAndCurators(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareStatusAndCurators(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
         // first the status
         CvTerm status = intactPublication.getStatus() != null ? intactPublication.getStatus() : IntactUtils.createLifecycleStatus(LifeCycleEvent.NEW_STATUS);
         intactPublication.setStatus(this.statusSynchronizer.synchronize(status, true));
@@ -221,9 +196,90 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     public void clearCache() {
         this.persistedObjects.clear();
-        this.experimentSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
+        getExperimentSynchronizer().clearCache();
+        getXrefSynchronizer().clearCache();
+        getAnnotationSynchronizer().clearCache();
+        getLifecycleEventSynchronizer().clearCache();
+        getUserSynchronizer().clearCache();
+        getStatusSynchronizer().clearCache();
+        getSourceSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<Annotation, PublicationAnnotation> getAnnotationSynchronizer() {
+        if (this.annotationSynchronizer == null){
+            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<PublicationAnnotation>(getEntityManager(), PublicationAnnotation.class);
+        }
+        return annotationSynchronizer;
+    }
+
+    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, PublicationAnnotation> annotationSynchronizer) {
+        this.annotationSynchronizer = annotationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Xref, PublicationXref> getXrefSynchronizer() {
+        if (this.xrefSynchronizer == null){
+            this.xrefSynchronizer = new IntactXrefSynchronizer<PublicationXref>(getEntityManager(), PublicationXref.class);
+        }
+        return xrefSynchronizer;
+    }
+
+    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, PublicationXref> xrefSynchronizer) {
+        this.xrefSynchronizer = xrefSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Source, IntactSource> getSourceSynchronizer() {
+        if (this.sourceSynchronizer == null){
+            this.sourceSynchronizer = new IntactSourceSynchronizer(getEntityManager());
+        }
+        return sourceSynchronizer;
+    }
+
+    public void setSourceSynchronizer(IntactDbSynchronizer<Source, IntactSource> sourceSynchronizer) {
+        this.sourceSynchronizer = sourceSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getStatusSynchronizer() {
+        if (this.statusSynchronizer == null){
+            this.statusSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PUBLICATION_STATUS_OBJCLASS);
+        }
+        return statusSynchronizer;
+    }
+
+    public void setStatusSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer) {
+        this.statusSynchronizer = statusSynchronizer;
+    }
+
+    public IntactDbSynchronizer<User, User> getUserSynchronizer() {
+        if(this.userSynchronizer == null){
+            this.userSynchronizer = new IntactUserSynchronizer(getEntityManager());
+        }
+        return userSynchronizer;
+    }
+
+    public void setUserSynchronizer(IntactDbSynchronizer<User, User> userSynchronizer) {
+        this.userSynchronizer = userSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer() {
+        if (this.experimentSynchronizer == null){
+            this.experimentSynchronizer = new IntactExperimentSynchronizer(getEntityManager());
+        }
+        return experimentSynchronizer;
+    }
+
+    public void setExperimentSynchronizer(IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer) {
+        this.experimentSynchronizer = experimentSynchronizer;
+    }
+
+    public IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> getLifecycleEventSynchronizer() {
+        if (this.lifecycleEventSynchronizer == null){
+            this.lifecycleEventSynchronizer = new IntactLifeCycleSynchronizer<PublicationLifecycleEvent>(getEntityManager(), PublicationLifecycleEvent.class);
+        }
+        return lifecycleEventSynchronizer;
+    }
+
+    public void setLifecycleEventSynchronizer(IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> lifecycleEventSynchronizer) {
+        this.lifecycleEventSynchronizer = lifecycleEventSynchronizer;
     }
 
     protected IntactPublication fetchByTitleAndJournal(String title, String journal, Date publicationDate, Collection<String> authors) throws BridgeFailedException {
@@ -351,7 +407,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
     protected void prepareSource(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
         Source source = intactPublication.getSource();
         if (source != null){
-            intactPublication.setSource(this.sourceSynchronizer.synchronize(source, true));
+            intactPublication.setSource(getSourceSynchronizer().synchronize(source, true));
         }
     }
 
@@ -361,7 +417,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
             List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactPublication.getLifecycleEvents());
             for (LifeCycleEvent event : eventsToPersist){
                 // do not persist or merge events because of cascades
-                LifeCycleEvent evt = this.lifecycleEventSynchronizer.synchronize(event, false);
+                LifeCycleEvent evt = getLifecycleEventSynchronizer().synchronize(event, false);
                 // we have a different instance because needed to be synchronized
                 if (evt != event){
                     intactPublication.getLifecycleEvents().add(intactPublication.getLifecycleEvents().indexOf(event), evt);
@@ -376,7 +432,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
             List<Experiment> experimentToPersist = new ArrayList<Experiment>(intactPublication.getExperiments());
             for (Experiment experiment : experimentToPersist){
                 // do not persist or merge experiments because of cascades
-                Experiment pubExperiment = this.experimentSynchronizer.synchronize(experiment, false);
+                Experiment pubExperiment = getExperimentSynchronizer().synchronize(experiment, false);
                 // we have a different instance because needed to be synchronized
                 if (pubExperiment != experiment){
                     intactPublication.removeExperiment(experiment);
@@ -470,7 +526,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactPublication.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref pubRef = this.xrefSynchronizer.synchronize(xref, false);
+                Xref pubRef = getXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (pubRef != xref){
                     intactPublication.getPersistentXrefs().remove(xref);
@@ -485,7 +541,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactPublication.getPersistentAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation pubAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
+                Annotation pubAnnotation = getAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (pubAnnotation != annotation){
                     intactPublication.getPersistentAnnotations().remove(annotation);

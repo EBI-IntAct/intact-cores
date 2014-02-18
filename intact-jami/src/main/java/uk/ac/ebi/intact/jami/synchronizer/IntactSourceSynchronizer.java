@@ -40,19 +40,6 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         super(entityManager, IntactSource.class);
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Source, IntactSource>();
-        this.aliasSynchronizer = new IntactAliasSynchronizer<SourceAlias>(entityManager, SourceAlias.class);
-        this.annotationSynchronizer = new IntactAnnotationsSynchronizer<SourceAnnotation>(entityManager, SourceAnnotation.class);
-        this.xrefSynchronizer = new IntactXrefSynchronizer<SourceXref>(entityManager, SourceXref.class);
-    }
-
-    public IntactSourceSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer,
-                                    IntactDbSynchronizer<Annotation, SourceAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, SourceXref> xrefSynchronizer){
-        super(entityManager, IntactSource.class);
-        // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<Source, IntactSource>();
-        this.aliasSynchronizer = aliasSynchronizer != null ? aliasSynchronizer : new IntactAliasSynchronizer<SourceAlias>(entityManager, SourceAlias.class);
-        this.annotationSynchronizer = annotationSynchronizer != null ? annotationSynchronizer : new IntactAnnotationsSynchronizer<SourceAnnotation>(entityManager, SourceAnnotation.class);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<SourceXref>(entityManager, SourceXref.class);
     }
 
     public IntactSource find(Source term) throws FinderException{
@@ -138,9 +125,9 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
 
     public void clearCache() {
         this.persistedObjects.clear();
-        this.aliasSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
+        getAliasSynchronizer().clearCache();
+        getXrefSynchronizer().clearCache();
+        getAnnotationSynchronizer().clearCache();
     }
 
     public Source fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
@@ -246,6 +233,39 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
         return results;
     }
 
+    public IntactDbSynchronizer<Alias, SourceAlias> getAliasSynchronizer() {
+        if (this.aliasSynchronizer == null){
+            this.aliasSynchronizer = new IntactAliasSynchronizer<SourceAlias>(getEntityManager(), SourceAlias.class);
+        }
+        return aliasSynchronizer;
+    }
+
+    public void setAliasSynchronizer(IntactDbSynchronizer<Alias, SourceAlias> aliasSynchronizer) {
+        this.aliasSynchronizer = aliasSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Annotation, SourceAnnotation> getAnnotationSynchronizer() {
+        if (this.annotationSynchronizer == null){
+            this.annotationSynchronizer = new IntactAnnotationsSynchronizer<SourceAnnotation>(getEntityManager(), SourceAnnotation.class);
+        }
+        return annotationSynchronizer;
+    }
+
+    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, SourceAnnotation> annotationSynchronizer) {
+        this.annotationSynchronizer = annotationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Xref, SourceXref> getXrefSynchronizer() {
+        if (this.xrefSynchronizer == null){
+            this.xrefSynchronizer = new IntactXrefSynchronizer<SourceXref>(getEntityManager(), SourceXref.class);
+        }
+        return xrefSynchronizer;
+    }
+
+    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, SourceXref> xrefSynchronizer) {
+        this.xrefSynchronizer = xrefSynchronizer;
+    }
+
     protected IntactSource fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {
         Query query;
         if (checkAc){
@@ -298,7 +318,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false);
+                Xref cvXref = getXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactSource.getPersistentXrefs().remove(xref);
@@ -313,7 +333,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getPersistentAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
+                Annotation cvAnnotation = getAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactSource.getPersistentAnnotations().remove(annotation);
@@ -328,7 +348,7 @@ public class IntactSourceSynchronizer extends AbstractIntactDbSynchronizer<Sourc
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactSource.getSynonyms());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false);
+                Alias cvAlias = getAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactSource.getSynonyms().remove(alias);

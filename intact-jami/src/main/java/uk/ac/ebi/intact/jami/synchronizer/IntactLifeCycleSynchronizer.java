@@ -31,15 +31,6 @@ public class IntactLifeCycleSynchronizer<A extends AbstractLifecycleEvent> exten
 
     public IntactLifeCycleSynchronizer(EntityManager entityManager, Class<? extends A> eventClass){
         super(entityManager, eventClass);
-        this.eventSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.LIFECYCLE_EVENT_OBJCLASS);
-        this.userSynchronizer = new IntactUserSynchronizer(entityManager);
-    }
-
-    public IntactLifeCycleSynchronizer(EntityManager entityManager, Class<? extends A> eventClass, IntactDbSynchronizer<CvTerm, IntactCvTerm> eventSynchronizer,
-                                       IntactDbSynchronizer<User, User> userSynchronizer){
-        super(entityManager, eventClass);
-        this.eventSynchronizer = eventSynchronizer != null ? eventSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.LIFECYCLE_EVENT_OBJCLASS);
-        this.userSynchronizer = userSynchronizer != null ? userSynchronizer : new IntactUserSynchronizer(entityManager);
     }
 
     public A find(LifeCycleEvent object) throws FinderException {
@@ -50,18 +41,40 @@ public class IntactLifeCycleSynchronizer<A extends AbstractLifecycleEvent> exten
         // check event
         if (object.getEvent() != null){
             CvTerm event = object.getEvent();
-            object.setEvent(eventSynchronizer.synchronize(event, true));
+            object.setEvent(getEventSynchronizer().synchronize(event, true));
         }
         // check user
         if (object.getWho() != null){
             User who = object.getWho();
-            object.setWho(userSynchronizer.synchronize(who, false));
+            object.setWho(getUserSynchronizer().synchronize(who, false));
         }
     }
 
     public void clearCache() {
-        this.eventSynchronizer.clearCache();
-        this.userSynchronizer.clearCache();
+        getEventSynchronizer().clearCache();
+        getUserSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getEventSynchronizer() {
+        if (this.eventSynchronizer == null){
+            this.eventSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.LIFECYCLE_EVENT_OBJCLASS);
+        }
+        return eventSynchronizer;
+    }
+
+    public void setEventSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> eventSynchronizer) {
+        this.eventSynchronizer = eventSynchronizer;
+    }
+
+    public IntactDbSynchronizer<User, User> getUserSynchronizer() {
+        if (this.userSynchronizer == null){
+            this.userSynchronizer = new IntactUserSynchronizer(getEntityManager());
+        }
+        return userSynchronizer;
+    }
+
+    public void setUserSynchronizer(IntactDbSynchronizer<User, User> userSynchronizer) {
+        this.userSynchronizer = userSynchronizer;
     }
 
     @Override

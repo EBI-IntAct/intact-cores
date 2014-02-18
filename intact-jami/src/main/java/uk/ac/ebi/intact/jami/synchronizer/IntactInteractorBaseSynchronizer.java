@@ -165,10 +165,10 @@ implements InteractorFetcher<T>{
         prepareFullName(intactInteractor);
         // then check organism
         if (intactInteractor.getOrganism() != null){
-            intactInteractor.setOrganism(this.organismSynchronizer.synchronize(intactInteractor.getOrganism(), true));
+            intactInteractor.setOrganism(getOrganismSynchronizer().synchronize(intactInteractor.getOrganism(), true));
         }
         // then check interactor type
-        intactInteractor.setInteractorType(this.interactorTypeSynchronizer.synchronize(intactInteractor.getInteractorType(), true));
+        intactInteractor.setInteractorType(getInteractorTypeSynchronizer().synchronize(intactInteractor.getInteractorType(), true));
         // then check checksums
         prepareChecksums(intactInteractor);
         // then check aliases
@@ -181,11 +181,11 @@ implements InteractorFetcher<T>{
 
     public void clearCache() {
         this.persistedObjects.clear();
-        this.aliasSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.annotationSynchronizer.clearCache();
-        this.organismSynchronizer.clearCache();
-        this.interactorTypeSynchronizer.clearCache();
+        getAliasSynchronizer().clearCache();
+        getXrefSynchronizer().clearCache();
+        getAnnotationSynchronizer().clearCache();
+        getOrganismSynchronizer().clearCache();
+        getInteractorTypeSynchronizer().clearCache();
     }
 
     public IntactDbSynchronizer<Alias, InteractorAlias> getAliasSynchronizer() {
@@ -279,7 +279,7 @@ implements InteractorFetcher<T>{
             List<Checksum> checksumToPersist = new ArrayList<Checksum>(intactInteractor.getPersistentChecksums());
             for (Checksum checksum : checksumToPersist){
                 // do not persist or merge checksum because of cascades
-                Checksum interactorCheck = this.checksumSynchronizer.synchronize(checksum, false);
+                Checksum interactorCheck = getChecksumSynchronizer().synchronize(checksum, false);
                 // we have a different instance because needed to be synchronized
                 if (interactorCheck != checksum){
                     intactInteractor.getPersistentChecksums().remove(checksum);
@@ -295,7 +295,7 @@ implements InteractorFetcher<T>{
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref = this.xrefSynchronizer.synchronize(xref, false);
+                Xref cvXref = getXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactInteractor.getPersistentXrefs().remove(xref);
@@ -310,7 +310,7 @@ implements InteractorFetcher<T>{
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteractor.getPersistentAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = this.annotationSynchronizer.synchronize(annotation, false);
+                Annotation cvAnnotation = getAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactInteractor.getPersistentAnnotations().remove(annotation);
@@ -325,7 +325,7 @@ implements InteractorFetcher<T>{
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactInteractor.getPersistentAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = this.aliasSynchronizer.synchronize(alias, false);
+                Alias cvAlias = getAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactInteractor.getPersistentAliases().remove(alias);

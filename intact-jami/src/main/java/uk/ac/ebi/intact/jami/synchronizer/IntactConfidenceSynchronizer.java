@@ -30,10 +30,6 @@ public class IntactConfidenceSynchronizer<T extends Confidence, C extends Abstra
         this.typeSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
     }
 
-    public IntactConfidenceSynchronizer(EntityManager entityManager, Class<? extends C> confClass, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer){
-        super(entityManager, confClass);
-    }
-
     public C find(T object) throws FinderException {
         return null;
     }

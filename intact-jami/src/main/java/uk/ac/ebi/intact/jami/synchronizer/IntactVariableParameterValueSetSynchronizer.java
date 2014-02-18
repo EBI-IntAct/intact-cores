@@ -25,12 +25,6 @@ public class IntactVariableParameterValueSetSynchronizer extends AbstractIntactD
 
     public IntactVariableParameterValueSetSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactVariableParameterValueSet.class);
-        this.parameterValueSynchronizer = new IntactVariableParameterValueSynchronizer(entityManager);
-    }
-
-    public IntactVariableParameterValueSetSynchronizer(EntityManager entityManager, IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
-        super(entityManager, IntactVariableParameterValueSet.class);
-        this.parameterValueSynchronizer = parameterValueSynchronizer != null ? parameterValueSynchronizer : new IntactVariableParameterValueSynchronizer(entityManager);
     }
 
     @Override
@@ -51,7 +45,7 @@ public class IntactVariableParameterValueSetSynchronizer extends AbstractIntactD
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object);
             for (VariableParameterValue value : valuesToPersist){
-                VariableParameterValue valueCheck = this.parameterValueSynchronizer.synchronize(value, false);
+                VariableParameterValue valueCheck = getParameterValueSynchronizer().synchronize(value, false);
                 // we have a different instance because needed to be synchronized
                 if (valueCheck != value){
                     object.remove(value);
@@ -62,7 +56,18 @@ public class IntactVariableParameterValueSetSynchronizer extends AbstractIntactD
     }
 
     public void clearCache() {
-        this.parameterValueSynchronizer.clearCache();
+        getParameterValueSynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> getParameterValueSynchronizer() {
+        if (this.parameterValueSynchronizer == null){
+            this.parameterValueSynchronizer = new IntactVariableParameterValueSynchronizer(getEntityManager());
+        }
+        return parameterValueSynchronizer;
+    }
+
+    public void setParameterValueSynchronizer(IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
+        this.parameterValueSynchronizer = parameterValueSynchronizer;
     }
 
     @Override

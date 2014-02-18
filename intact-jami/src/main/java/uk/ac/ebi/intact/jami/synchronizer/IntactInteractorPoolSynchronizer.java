@@ -30,19 +30,6 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
 
     public IntactInteractorPoolSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactInteractorPool.class);
-        this.interactorSynchronizer = new IntactInteractorSynchronizer(entityManager);
-    }
-
-    public IntactInteractorPoolSynchronizer(EntityManager entityManager,
-                                            IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer,
-                                            IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer,
-                                            IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer,
-                                            IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer,
-                                            IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer,
-                                            IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer,
-                                            IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer) {
-        super(entityManager, IntactInteractorPool.class, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, organismSynchronizer, typeSynchronizer, checksumSynchronizer);
-        this.interactorSynchronizer = interactorSynchronizer != null ? interactorSynchronizer : new IntactInteractorSynchronizer(entityManager);
     }
 
     @Override
@@ -53,11 +40,23 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
         prepareInteractors(intactInteractor);
     }
 
+    public IntactDbSynchronizer<Interactor, IntactInteractor> getInteractorSynchronizer() {
+        if (this.interactorSynchronizer == null){
+            this.interactorSynchronizer = new IntactInteractorSynchronizer(getEntityManager());
+            ((IntactInteractorSynchronizer)this.interactorSynchronizer).setInteractorPoolSynchronizer(this);
+        }
+        return interactorSynchronizer;
+    }
+
+    public void setInteractorSynchronizer(IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer) {
+        this.interactorSynchronizer = interactorSynchronizer;
+    }
+
     protected void prepareInteractors(IntactInteractorPool intactInteractor) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areInteractorsInitialized()){
             List<Interactor> interactorToPersist = new ArrayList<Interactor>(intactInteractor);
             for (Interactor interactor : interactorToPersist){
-                Interactor interactorCheck = this.interactorSynchronizer.synchronize(interactor, false);
+                Interactor interactorCheck = getInteractorSynchronizer().synchronize(interactor, false);
                 // we have a different instance because needed to be synchronized
                 if (interactorCheck != interactor){
                     intactInteractor.remove(interactor);
@@ -130,6 +129,6 @@ public class IntactInteractorPoolSynchronizer extends IntactInteractorBaseSynchr
     @Override
     public void clearCache() {
         super.clearCache();
-        this.interactorSynchronizer.clearCache();
+        getInteractorSynchronizer().clearCache();
     }
 }

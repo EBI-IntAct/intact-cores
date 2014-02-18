@@ -26,10 +26,6 @@ public class IntactPolymerSynchronizer<T extends Polymer, P extends IntactPolyme
         super(entityManager, intactClass);
     }
 
-    public IntactPolymerSynchronizer(EntityManager entityManager, Class<P> intactClass, IntactDbSynchronizer<Alias, InteractorAlias> aliasSynchronizer, IntactDbSynchronizer<Annotation, InteractorAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, InteractorXref> xrefSynchronizer, IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer, IntactDbSynchronizer<Checksum, InteractorChecksum> checksumSynchronizer) {
-        super(entityManager, intactClass, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, organismSynchronizer, typeSynchronizer, checksumSynchronizer);
-    }
-
     @Override
     protected P postFilter(T term, Collection<P> results) {
         Collection<P> filteredResults = new ArrayList<P>(results.size());

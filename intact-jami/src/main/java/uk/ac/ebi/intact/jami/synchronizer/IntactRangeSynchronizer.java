@@ -28,17 +28,6 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
 
     public IntactRangeSynchronizer(EntityManager entityManager){
         super(entityManager, IntactRange.class);
-        this.statusSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.RANGE_STATUS_OBJCLASS);
-        this.xrefSynchronizer = new IntactXrefSynchronizer<ResultingSequenceXref>(entityManager, ResultingSequenceXref.class);
-        this.entitySynchronizer = new IntActEntitySynchronizer(entityManager);
-    }
-
-    public IntactRangeSynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer,
-                                   IntactDbSynchronizer<Xref, ResultingSequenceXref> xrefSynchronizer, IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer){
-        super(entityManager, IntactRange.class);
-        this.statusSynchronizer = statusSynchronizer != null ? statusSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.RANGE_STATUS_OBJCLASS);
-        this.xrefSynchronizer = xrefSynchronizer != null ? xrefSynchronizer : new IntactXrefSynchronizer<ResultingSequenceXref>(entityManager, ResultingSequenceXref.class);
-        this.entitySynchronizer = entitySynchronizer != null ? entitySynchronizer : new IntActEntitySynchronizer(entityManager);
     }
 
     public IntactRange find(Range object) throws FinderException {
@@ -55,7 +44,7 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
             start = (IntactPosition)object.getStart();
         }
         // prepare start status
-        CvTerm startStatus = this.statusSynchronizer.synchronize(start.getStatus(), true);
+        CvTerm startStatus = getStatusSynchronizer().synchronize(start.getStatus(), true);
         start.setStatus(startStatus);
 
         // prepare end position
@@ -67,7 +56,7 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
             end = (IntactPosition)object.getEnd();
         }
         // prepare end status
-        CvTerm endStatus = this.statusSynchronizer.synchronize(end.getStatus(), true);
+        CvTerm endStatus = getStatusSynchronizer().synchronize(end.getStatus(), true);
         end.setStatus(endStatus);
         // reset positions
         object.setPositions(start, end);
@@ -85,15 +74,48 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
 
         // synchronize participant
         if (object.getParticipant() != null){
-            Entity synchronizedParticipant = this.entitySynchronizer.synchronize(object.getParticipant(), false);
+            Entity synchronizedParticipant = getEntitySynchronizer().synchronize(object.getParticipant(), false);
             object.setParticipant(synchronizedParticipant);
         }
     }
 
     public void clearCache() {
-        this.statusSynchronizer.clearCache();
-        this.xrefSynchronizer.clearCache();
-        this.entitySynchronizer.clearCache();
+        getStatusSynchronizer().clearCache();
+        getXrefSynchronizer().clearCache();
+        getEntitySynchronizer().clearCache();
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getStatusSynchronizer() {
+        if (this.statusSynchronizer == null){
+            this.statusSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
+        }
+        return statusSynchronizer;
+    }
+
+    public void setStatusSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> statusSynchronizer) {
+        this.statusSynchronizer = statusSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Xref, ResultingSequenceXref> getXrefSynchronizer() {
+        if (this.xrefSynchronizer == null){
+            this.xrefSynchronizer = new IntactXrefSynchronizer<ResultingSequenceXref>(getEntityManager(), ResultingSequenceXref.class);
+        }
+        return xrefSynchronizer;
+    }
+
+    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, ResultingSequenceXref> xrefSynchronizer) {
+        this.xrefSynchronizer = xrefSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer() {
+        if (this.entitySynchronizer == null){
+            this.entitySynchronizer = new IntActEntitySynchronizer(getEntityManager());
+        }
+        return entitySynchronizer;
+    }
+
+    public void setEntitySynchronizer(IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer) {
+        this.entitySynchronizer = entitySynchronizer;
     }
 
     @Override
@@ -111,7 +133,7 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref objRef = this.xrefSynchronizer.synchronize(xref, false);
+                Xref objRef = getXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (objRef != xref){
                     intactObj.getXrefs().remove(xref);

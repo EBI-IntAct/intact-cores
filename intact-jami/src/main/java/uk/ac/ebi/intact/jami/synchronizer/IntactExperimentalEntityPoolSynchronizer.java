@@ -1,9 +1,12 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Entity;
+import psidev.psi.mi.jami.model.ExperimentalEntity;
+import psidev.psi.mi.jami.model.ExperimentalEntityPool;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
-import uk.ac.ebi.intact.jami.merger.IntactExperimentalEntityMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.merger.IntactExperimentalEntityPoolMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntityPool;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
@@ -75,6 +78,6 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactExperimentalEntityMergerEnrichOnly<ExperimentalEntityPool, IntactExperimentalEntityPool>());
+        super.setIntactMerger(new IntactExperimentalEntityPoolMergerEnrichOnly());
     }
 }

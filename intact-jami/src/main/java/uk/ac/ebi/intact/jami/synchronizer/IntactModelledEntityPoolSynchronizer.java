@@ -1,9 +1,12 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Entity;
+import psidev.psi.mi.jami.model.ModelledEntity;
+import psidev.psi.mi.jami.model.ModelledEntityPool;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
-import uk.ac.ebi.intact.jami.merger.IntactEntityMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.merger.IntactModelledEntityPoolMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
+import uk.ac.ebi.intact.jami.model.extension.IntactModelledEntityPool;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
@@ -24,21 +27,6 @@ public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchr
 
     public IntactModelledEntityPoolSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactModelledEntityPool.class);
-        this.entitySynchronizer = new IntActEntitySynchronizer(entityManager, null, null, this, null, null, null);
-    }
-
-    public IntactModelledEntityPoolSynchronizer(EntityManager entityManager,
-                                                IntactDbSynchronizer<Alias, EntityAlias> aliasSynchronizer,
-                                                IntactDbSynchronizer<Annotation, EntityAnnotation> annotationSynchronizer,
-                                                IntactDbSynchronizer<Xref, EntityXref> xrefSynchronizer,
-                                                IntactDbSynchronizer<CvTerm, IntactCvTerm> biologicalRoleSynchronizer,
-                                                IntactDbSynchronizer<Feature, AbstractIntactFeature> featureSynchronizer,
-                                                IntactDbSynchronizer<CausalRelationship,
-                                                        IntactCausalRelationship> causalRelationshipSynchronizer,
-                                                IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer,
-                                                IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer) {
-        super(entityManager, IntactModelledEntityPool.class, aliasSynchronizer, annotationSynchronizer, xrefSynchronizer, biologicalRoleSynchronizer, featureSynchronizer, causalRelationshipSynchronizer, interactorSynchronizer);
-        this.entitySynchronizer = entitySynchronizer != null ? entitySynchronizer : new IntActEntitySynchronizer(entityManager, null, null, this, null, null, null);
     }
 
     @Override
@@ -50,6 +38,10 @@ public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchr
     }
 
     public IntactDbSynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer() {
+        if (this.entitySynchronizer == null){
+            this.entitySynchronizer = new IntActEntitySynchronizer(getEntityManager());
+            ((IntActEntitySynchronizer)this.entitySynchronizer).setModelledEntityPoolSynchronizer(this);
+        }
         return entitySynchronizer;
     }
 
@@ -61,7 +53,7 @@ public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchr
         if (intactEntity.areEntitiesInitialized()){
             List<ModelledEntity> entitiesToPersist = new ArrayList<ModelledEntity>(intactEntity);
             for (ModelledEntity entity : entitiesToPersist){
-                ModelledEntity persistentEntity = (ModelledEntity) this.entitySynchronizer.synchronize(entity, true);
+                ModelledEntity persistentEntity = (ModelledEntity) getEntitySynchronizer().synchronize(entity, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentEntity != entity){
                     intactEntity.remove(entity);
@@ -73,7 +65,7 @@ public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchr
 
     @Override
     protected IntactModelledEntityPool instantiateNewPersistentInstance( ModelledEntityPool object, Class<? extends IntactModelledEntityPool> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        IntactModelledEntityPool newParticipant = new IntactModelledEntityPool((InteractorPool)object.getInteractor());
+        IntactModelledEntityPool newParticipant = new IntactModelledEntityPool(object.getInteractor().getShortName());
         ParticipantCloner.copyAndOverrideParticipantPoolProperties(object, newParticipant, false);
         return newParticipant;
     }
@@ -81,11 +73,11 @@ public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchr
     @Override
     public void clearCache() {
         super.clearCache();
-        this.entitySynchronizer.clearCache();
+        getEntitySynchronizer().clearCache();
     }
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactEntityMergerEnrichOnly<T,I,Feature>());
+        super.setIntactMerger(new IntactModelledEntityPoolMergerEnrichOnly());
     }
 }

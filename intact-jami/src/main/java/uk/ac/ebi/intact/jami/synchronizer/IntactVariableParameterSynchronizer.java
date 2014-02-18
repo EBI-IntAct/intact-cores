@@ -29,15 +29,6 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
 
     public IntactVariableParameterSynchronizer(EntityManager entityManager) {
         super(entityManager, IntactVariableParameter.class);
-        this.unitSynchronizer = new IntactCvTermSynchronizer(entityManager, IntactUtils.UNIT_OBJCLASS);
-        this.parameterValueSynchronizer = new IntactVariableParameterValueSynchronizer(entityManager);
-    }
-
-    public IntactVariableParameterSynchronizer(EntityManager entityManager, IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer,
-                                               IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
-        super(entityManager, IntactVariableParameter.class);
-        this.unitSynchronizer = unitSynchronizer != null ? unitSynchronizer : new IntactCvTermSynchronizer(entityManager, IntactUtils.UNIT_OBJCLASS);
-        this.parameterValueSynchronizer = parameterValueSynchronizer != null ? parameterValueSynchronizer : new IntactVariableParameterValueSynchronizer(entityManager);
     }
 
     @Override
@@ -65,11 +56,33 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
         synchronizeParameterValues(object);
     }
 
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getUnitSynchronizer() {
+        if (this.unitSynchronizer == null){
+            this.unitSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.UNIT_OBJCLASS);
+        }
+        return unitSynchronizer;
+    }
+
+    public void setUnitSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer) {
+        this.unitSynchronizer = unitSynchronizer;
+    }
+
+    public IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> getParameterValueSynchronizer() {
+        if (this.parameterValueSynchronizer == null){
+            this.parameterValueSynchronizer = new IntactVariableParameterValueSynchronizer(getEntityManager());
+        }
+        return parameterValueSynchronizer;
+    }
+
+    public void setParameterValueSynchronizer(IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
+        this.parameterValueSynchronizer = parameterValueSynchronizer;
+    }
+
     protected void synchronizeParameterValues(IntactVariableParameter object) throws FinderException, PersisterException, SynchronizerException {
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object.getVariableValues());
             for (VariableParameterValue value : valuesToPersist){
-                VariableParameterValue valueCheck = this.parameterValueSynchronizer.synchronize(value, false);
+                VariableParameterValue valueCheck = getParameterValueSynchronizer().synchronize(value, false);
                 // we have a different instance because needed to be synchronized
                 if (valueCheck != value){
                     object.getVariableValues().remove(value);
@@ -81,7 +94,7 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
 
     protected void synchronizeUnit(IntactVariableParameter object) throws FinderException, PersisterException, SynchronizerException {
         if (object.getUnit() != null){
-            object.setUnit(this.unitSynchronizer.synchronize(object.getUnit(), true));
+            object.setUnit(getUnitSynchronizer().synchronize(object.getUnit(), true));
         }
     }
 
@@ -92,7 +105,8 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
     }
 
     public void clearCache() {
-        this.unitSynchronizer.clearCache();
+        getUnitSynchronizer().clearCache();
+        getParameterValueSynchronizer().clearCache();
     }
 
     @Override
