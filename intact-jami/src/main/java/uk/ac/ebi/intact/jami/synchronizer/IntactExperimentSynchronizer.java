@@ -71,7 +71,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
         else{
             IntactPublication fetchedPublication = null;
             if (experiment.getPublication() != null){
-                fetchedPublication = this.publicationSynchronizer.find(experiment.getPublication());
+                fetchedPublication = getPublicationSynchronizer().find(experiment.getPublication());
                 // the publication does not exist so the experiment does not exist
                 if (fetchedPublication == null){
                     return null;
@@ -79,7 +79,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
             }
             IntactOrganism fetchedOrganism = null;
             if (experiment.getHostOrganism() != null){
-                fetchedOrganism = this.organismSynchronizer.find(experiment.getHostOrganism());
+                fetchedOrganism = getOrganismSynchronizer().find(experiment.getHostOrganism());
                 // the organism does not exist so the experiment does not exist
                 if (fetchedOrganism == null){
                     return null;
@@ -87,7 +87,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
             }
             IntactCvTerm fetchedDetectionMethod = null;
             if (experiment.getInteractionDetectionMethod() != null){
-                fetchedDetectionMethod = this.detectionMethodSynchronizer.find(experiment.getInteractionDetectionMethod());
+                fetchedDetectionMethod = getDetectionMethodSynchronizer().find(experiment.getInteractionDetectionMethod());
                 // the detection method does not exist so the experiment does not exist
                 if (fetchedDetectionMethod == null){
                     return null;
@@ -96,7 +96,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
             IntactCvTerm fetchedParticipantDetectionMethod = null;
             CvTerm commonMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(experiment);
             if (commonMethod != null){
-                fetchedParticipantDetectionMethod = this.participantDetectionMethodSynchronizer.find(commonMethod);
+                fetchedParticipantDetectionMethod = getParticipantDetectionMethodSynchronizer().find(commonMethod);
                 // the participant detection method does not exist so the experiment does not exist
                 if (fetchedParticipantDetectionMethod == null){
                     return null;

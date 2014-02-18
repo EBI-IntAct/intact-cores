@@ -25,24 +25,14 @@ public class IntactFeatureSynchronizer extends AbstractIntactDbSynchronizer<Feat
 
     public IntactFeatureSynchronizer(EntityManager entityManager){
         super(entityManager, AbstractIntactFeature.class);
-        this.modelledFeatureSynchronizer = new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
-        this.featureEvidenceSynchronizer = new IntactFeatureEvidenceSynchronizer(entityManager);
-
-    }
-
-    public IntactFeatureSynchronizer(EntityManager entityManager, IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> modelledFeatureSynchronizer,
-                                     IntactDbSynchronizer<FeatureEvidence, IntactFeatureEvidence> featureEvidenceSynchronizer){
-        super(entityManager, AbstractIntactFeature.class);
-        this.modelledFeatureSynchronizer = modelledFeatureSynchronizer != null ? modelledFeatureSynchronizer : new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(entityManager, IntactModelledFeature.class);
-        this.featureEvidenceSynchronizer = featureEvidenceSynchronizer != null ? featureEvidenceSynchronizer : new IntactFeatureEvidenceSynchronizer(entityManager);
     }
 
     public AbstractIntactFeature find(Feature term) throws FinderException{
         if (term instanceof FeatureEvidence){
-            return this.featureEvidenceSynchronizer.find((FeatureEvidence)term);
+            return getFeatureEvidenceSynchronizer().find((FeatureEvidence)term);
         }
         else if (term instanceof ModelledFeature){
-            return this.modelledFeatureSynchronizer.find((ModelledFeature)term);
+            return getModelledFeatureSynchronizer().find((ModelledFeature)term);
         }
         else {
             return null;
@@ -51,43 +41,57 @@ public class IntactFeatureSynchronizer extends AbstractIntactDbSynchronizer<Feat
 
     public AbstractIntactFeature persist(AbstractIntactFeature term) throws FinderException, PersisterException, SynchronizerException{
         if (term instanceof IntactFeatureEvidence){
-            return this.featureEvidenceSynchronizer.persist((IntactFeatureEvidence)term);
+            return getFeatureEvidenceSynchronizer().persist((IntactFeatureEvidence)term);
         }
         else {
-            return this.modelledFeatureSynchronizer.find((IntactModelledFeature)term);
+            return getModelledFeatureSynchronizer().find((IntactModelledFeature)term);
         }
     }
 
     @Override
     public AbstractIntactFeature synchronize(Feature term, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         if (term instanceof FeatureEvidence){
-            return this.featureEvidenceSynchronizer.synchronize((FeatureEvidence)term, persist);
+            return getFeatureEvidenceSynchronizer().synchronize((FeatureEvidence)term, persist);
         }
         else {
-            return this.modelledFeatureSynchronizer.synchronize((ModelledFeature)term, persist);
+            return getModelledFeatureSynchronizer().synchronize((ModelledFeature)term, persist);
         }
     }
 
     public void synchronizeProperties(AbstractIntactFeature term) throws FinderException, PersisterException, SynchronizerException {
         if (term instanceof IntactFeatureEvidence){
-            this.featureEvidenceSynchronizer.synchronizeProperties((IntactFeatureEvidence)term);
+            getFeatureEvidenceSynchronizer().synchronizeProperties((IntactFeatureEvidence)term);
         }
         else {
-            this.modelledFeatureSynchronizer.synchronizeProperties((IntactModelledFeature)term);
+            getModelledFeatureSynchronizer().synchronizeProperties((IntactModelledFeature)term);
         }
     }
 
     public void clearCache() {
-        this.featureEvidenceSynchronizer.clearCache();
-        this.modelledFeatureSynchronizer.clearCache();
+        getFeatureEvidenceSynchronizer().clearCache();
+        getModelledFeatureSynchronizer().clearCache();
     }
 
     public IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> getModelledFeatureSynchronizer() {
+        if (this.modelledFeatureSynchronizer == null){
+            this.modelledFeatureSynchronizer = new IntactFeatureBaseSynchronizer<ModelledFeature, IntactModelledFeature>(getEntityManager(), IntactModelledFeature.class);
+        }
         return modelledFeatureSynchronizer;
     }
 
     public IntactDbSynchronizer<FeatureEvidence, IntactFeatureEvidence> getFeatureEvidenceSynchronizer() {
+        if (this.featureEvidenceSynchronizer == null){
+            this.featureEvidenceSynchronizer = new IntactFeatureEvidenceSynchronizer(getEntityManager());
+        }
         return featureEvidenceSynchronizer;
+    }
+
+    public void setModelledFeatureSynchronizer(IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> modelledFeatureSynchronizer) {
+        this.modelledFeatureSynchronizer = modelledFeatureSynchronizer;
+    }
+
+    public void setFeatureEvidenceSynchronizer(IntactDbSynchronizer<FeatureEvidence, IntactFeatureEvidence> featureEvidenceSynchronizer) {
+        this.featureEvidenceSynchronizer = featureEvidenceSynchronizer;
     }
 
     @Override

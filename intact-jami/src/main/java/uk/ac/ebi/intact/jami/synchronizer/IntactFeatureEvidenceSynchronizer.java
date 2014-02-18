@@ -1,9 +1,11 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.FeatureEvidence;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.merger.IntactFeatureEvidenceMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -24,24 +26,11 @@ public class IntactFeatureEvidenceSynchronizer extends IntactFeatureBaseSynchron
 
     public IntactFeatureEvidenceSynchronizer(EntityManager entityManager){
         super(entityManager, IntactFeatureEvidence.class);
-        this.methodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_METHOD_OBJCLASS);
-    }
-
-    public IntactFeatureEvidenceSynchronizer(EntityManager entityManager, IntactDbSynchronizer<Alias, FeatureAlias> aliasSynchronizer,
-                                             IntactDbSynchronizer<Annotation, FeatureAnnotation> annotationSynchronizer, IntactDbSynchronizer<Xref, FeatureXref> xrefSynchronizer,
-                                             IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> effectSynchronizer,
-                                             IntactDbSynchronizer<Range, IntactRange> rangeSynchronizer, IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer){
-        super(entityManager, IntactFeatureEvidence.class, aliasSynchronizer, annotationSynchronizer,xrefSynchronizer, typeSynchronizer, effectSynchronizer, rangeSynchronizer);
-        this.methodSynchronizer = methodSynchronizer != null ? methodSynchronizer : new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_METHOD_OBJCLASS);
-    }
-
-    public IntactFeatureEvidence find(FeatureEvidence feature) throws FinderException {
-        return null;
     }
 
     public void clearCache() {
         super.clearCache();
-        this.methodSynchronizer.clearCache();
+        getMethodSynchronizer().clearCache();
     }
 
     @Override
@@ -50,7 +39,7 @@ public class IntactFeatureEvidenceSynchronizer extends IntactFeatureBaseSynchron
         if (intactFeature.areDetectionMethodsInitialized()){
             List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactFeature.getDetectionMethods());
             for (CvTerm method : methodsToPersist){
-                CvTerm featureTerm = this.methodSynchronizer.synchronize(method, true);
+                CvTerm featureTerm = getMethodSynchronizer().synchronize(method, true);
                 // we have a different instance because needed to be synchronized
                 if (featureTerm != method){
                     intactFeature.getDetectionMethods().remove(method);
@@ -58,6 +47,17 @@ public class IntactFeatureEvidenceSynchronizer extends IntactFeatureBaseSynchron
                 }
             }
         }
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getMethodSynchronizer() {
+        if (this.methodSynchronizer == null){
+            this.methodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_METHOD_OBJCLASS);
+        }
+        return methodSynchronizer;
+    }
+
+    public void setMethodSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer) {
+        this.methodSynchronizer = methodSynchronizer;
     }
 
     @Override
