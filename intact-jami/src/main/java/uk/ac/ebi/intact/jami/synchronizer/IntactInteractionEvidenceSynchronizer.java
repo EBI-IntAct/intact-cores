@@ -7,10 +7,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractionCloner;
 import uk.ac.ebi.intact.jami.merger.IntactInteractionEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactChecksumSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;

@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -6,8 +6,7 @@ import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -21,8 +20,9 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactConfidenceSynchronizer<T extends Confidence, C extends AbstractIntactConfidence> extends AbstractIntactDbSynchronizer<T, C>{
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer;
+public class IntactConfidenceSynchronizer<T extends Confidence, C extends AbstractIntactConfidence> extends AbstractIntactDbSynchronizer<T, C>
+        implements ConfidenceDbSynchronizer<T,C>{
+    private CvTermDbSynchronizer typeSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactConfidenceSynchronizer.class);
 
@@ -51,15 +51,16 @@ public class IntactConfidenceSynchronizer<T extends Confidence, C extends Abstra
         getTypeSynchronizer().clearCache();
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTypeSynchronizer() {
+    public CvTermDbSynchronizer getTypeSynchronizer() {
         if (this.typeSynchronizer == null){
             this.typeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
         }
         return typeSynchronizer;
     }
 
-    public void setTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer) {
+    public IntactConfidenceSynchronizer setTypeSynchronizer(CvTermDbSynchronizer typeSynchronizer) {
         this.typeSynchronizer = typeSynchronizer;
+        return this;
     }
 
     @Override

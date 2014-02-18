@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.merger.IntactExperimentalEntityMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactConfidenceSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 

@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.merger.IntactComplexMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactConfidenceSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 

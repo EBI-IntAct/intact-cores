@@ -7,7 +7,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ConfidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
-import uk.ac.ebi.intact.jami.synchronizer.IntactConfidenceSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactConfidenceSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
