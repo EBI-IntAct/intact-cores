@@ -1,9 +1,13 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.IntactInteractorBaseSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import javax.persistence.EntityManager;
 
@@ -15,7 +19,7 @@ import javax.persistence.EntityManager;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactBioactiveEntitySynchronizer extends IntactInteractorBaseSynchronizer<BioactiveEntity, IntactBioactiveEntity>{
+public class IntactBioactiveEntitySynchronizer extends IntactInteractorBaseSynchronizer<BioactiveEntity, IntactBioactiveEntity> {
 
     public IntactBioactiveEntitySynchronizer(EntityManager entityManager) {
         super(entityManager, IntactBioactiveEntity.class);

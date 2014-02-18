@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactBioactiveEntitySynchronizer;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
@@ -38,30 +39,30 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         if (term instanceof Molecule){
             if (term instanceof Polymer){
                 if (term instanceof Protein){
-                    return getProteinSynchronizer().find((Protein)term);
+                    return getProteinSynchronizer().find((Protein) term);
                 }
                 else if (term instanceof NucleicAcid){
-                    return getNucleicAcidSynchronizer().find((NucleicAcid)term);
+                    return getNucleicAcidSynchronizer().find((NucleicAcid) term);
                 }
                 else{
-                    return getPolymerSynchronizer().find((Polymer)term);
+                    return getPolymerSynchronizer().find((Polymer) term);
                 }
             }
             else if (term instanceof BioactiveEntity){
-                return getBioactiveEntitySynchronizer().find((BioactiveEntity)term);
+                return getBioactiveEntitySynchronizer().find((BioactiveEntity) term);
             }
             else if (term instanceof Gene){
-                return getGeneSynchronizer().find((Gene)term);
+                return getGeneSynchronizer().find((Gene) term);
             }
             else{
-                return getMoleculeSynchronizer().find((Molecule)term);
+                return getMoleculeSynchronizer().find((Molecule) term);
             }
         }
         else if (term instanceof Complex){
-            return getComplexSynchronizer().find((Complex)term);
+            return getComplexSynchronizer().find((Complex) term);
         }
         else if (term instanceof InteractorPool){
-            return getInteractorPoolSynchronizer().find((InteractorPool)term);
+            return getInteractorPoolSynchronizer().find((InteractorPool) term);
         }
         else {
             return getInteractorBaseSynchronizer().find(term);
@@ -72,30 +73,30 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         if (term instanceof IntactMolecule){
             if (term instanceof IntactPolymer){
                 if (term instanceof IntactProtein){
-                    return getProteinSynchronizer().persist((IntactProtein)term);
+                    return getProteinSynchronizer().persist((IntactProtein) term);
                 }
                 else if (term instanceof IntactNucleicAcid){
-                    return getNucleicAcidSynchronizer().persist((IntactNucleicAcid)term);
+                    return getNucleicAcidSynchronizer().persist((IntactNucleicAcid) term);
                 }
                 else{
-                    return getPolymerSynchronizer().persist((IntactPolymer)term);
+                    return getPolymerSynchronizer().persist((IntactPolymer) term);
                 }
             }
             else if (term instanceof IntactBioactiveEntity){
-                return getBioactiveEntitySynchronizer().persist((IntactBioactiveEntity)term);
+                return getBioactiveEntitySynchronizer().persist((IntactBioactiveEntity) term);
             }
             else if (term instanceof IntactGene){
-                return getGeneSynchronizer().persist((IntactGene)term);
+                return getGeneSynchronizer().persist((IntactGene) term);
             }
             else{
-                return getMoleculeSynchronizer().persist((IntactMolecule)term);
+                return getMoleculeSynchronizer().persist((IntactMolecule) term);
             }
         }
         else if (term instanceof IntactComplex){
-            return getComplexSynchronizer().persist((IntactComplex)term);
+            return getComplexSynchronizer().persist((IntactComplex) term);
         }
         else if (term instanceof IntactInteractorPool){
-            return getInteractorPoolSynchronizer().persist((IntactInteractorPool)term);
+            return getInteractorPoolSynchronizer().persist((IntactInteractorPool) term);
         }
         else {
             return getInteractorBaseSynchronizer().persist(term);
@@ -107,30 +108,30 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
             if (term instanceof IntactMolecule){
                 if (term instanceof IntactPolymer){
                     if (term instanceof IntactProtein){
-                        return getProteinSynchronizer().synchronize((IntactProtein)term, persist);
+                        return getProteinSynchronizer().synchronize((IntactProtein) term, persist);
                     }
                     else if (term instanceof IntactNucleicAcid){
-                        return getNucleicAcidSynchronizer().synchronize((IntactNucleicAcid)term, persist);
+                        return getNucleicAcidSynchronizer().synchronize((IntactNucleicAcid) term, persist);
                     }
                     else{
-                        return getPolymerSynchronizer().synchronize((IntactPolymer)term, persist);
+                        return getPolymerSynchronizer().synchronize((IntactPolymer) term, persist);
                     }
                 }
                 else if (term instanceof IntactBioactiveEntity){
-                    return getBioactiveEntitySynchronizer().synchronize((IntactBioactiveEntity)term, persist);
+                    return getBioactiveEntitySynchronizer().synchronize((IntactBioactiveEntity) term, persist);
                 }
                 else if (term instanceof IntactGene){
-                    return getGeneSynchronizer().synchronize((IntactGene)term, persist);
+                    return getGeneSynchronizer().synchronize((IntactGene) term, persist);
                 }
                 else{
                     return getMoleculeSynchronizer().synchronize((IntactMolecule)term, persist);
                 }
             }
             else if (term instanceof IntactComplex){
-                return getComplexSynchronizer().synchronize((IntactComplex)term, persist);
+                return getComplexSynchronizer().synchronize((IntactComplex) term, persist);
             }
             else if (term instanceof IntactInteractorPool){
-                return getInteractorPoolSynchronizer().synchronize((IntactInteractorPool)term, persist);
+                return getInteractorPoolSynchronizer().synchronize((IntactInteractorPool) term, persist);
             }
             else {
                 return getInteractorBaseSynchronizer().synchronize(term, persist);
@@ -141,30 +142,30 @@ public class IntactInteractorSynchronizer extends AbstractIntactDbSynchronizer<I
         if (term instanceof IntactMolecule){
             if (term instanceof IntactPolymer){
                 if (term instanceof IntactProtein){
-                    getProteinSynchronizer().synchronizeProperties((IntactProtein)term);
+                    getProteinSynchronizer().synchronizeProperties((IntactProtein) term);
                 }
                 else if (term instanceof IntactNucleicAcid){
-                    getNucleicAcidSynchronizer().synchronizeProperties((IntactNucleicAcid)term);
+                    getNucleicAcidSynchronizer().synchronizeProperties((IntactNucleicAcid) term);
                 }
                 else{
-                    getPolymerSynchronizer().synchronizeProperties((IntactPolymer)term);
+                    getPolymerSynchronizer().synchronizeProperties((IntactPolymer) term);
                 }
             }
             else if (term instanceof IntactBioactiveEntity){
-                getBioactiveEntitySynchronizer().synchronizeProperties((IntactBioactiveEntity)term);
+                getBioactiveEntitySynchronizer().synchronizeProperties((IntactBioactiveEntity) term);
             }
             else if (term instanceof IntactGene){
-                getGeneSynchronizer().synchronizeProperties((IntactGene)term);
+                getGeneSynchronizer().synchronizeProperties((IntactGene) term);
             }
             else{
-                getMoleculeSynchronizer().synchronizeProperties((IntactMolecule)term);
+                getMoleculeSynchronizer().synchronizeProperties((IntactMolecule) term);
             }
         }
         else if (term instanceof IntactComplex){
-            getComplexSynchronizer().synchronizeProperties((IntactComplex)term);
+            getComplexSynchronizer().synchronizeProperties((IntactComplex) term);
         }
         else if (term instanceof IntactInteractorPool){
-            getInteractorPoolSynchronizer().synchronizeProperties((IntactInteractorPool)term);
+            getInteractorPoolSynchronizer().synchronizeProperties((IntactInteractorPool) term);
         }
         else {
             getInteractorBaseSynchronizer().synchronizeProperties(term);
