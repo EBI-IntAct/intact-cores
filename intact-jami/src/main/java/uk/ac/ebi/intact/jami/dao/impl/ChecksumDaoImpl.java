@@ -7,7 +7,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ChecksumDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
-import uk.ac.ebi.intact.jami.synchronizer.IntactChecksumSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.IntactChecksumSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

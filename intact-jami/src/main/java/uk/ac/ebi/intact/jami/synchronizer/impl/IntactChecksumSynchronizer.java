@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -6,8 +6,7 @@ import psidev.psi.mi.jami.model.Checksum;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -21,8 +20,8 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extends AbstractIntactDbSynchronizer<Checksum, C>{
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer;
+public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extends AbstractIntactDbSynchronizer<Checksum, C> implements ChecksumDbSynchronizer<C>{
+    private CvTermDbSynchronizer methodSynchronizer;
 
     private static final Log log = LogFactory.getLog(IntactChecksumSynchronizer.class);
 
@@ -50,15 +49,16 @@ public class IntactChecksumSynchronizer<C extends AbstractIntactChecksum> extend
         getMethodSynchronizer().clearCache();
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getMethodSynchronizer() {
+    public CvTermDbSynchronizer getMethodSynchronizer() {
         if (this.methodSynchronizer == null){
             this.methodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
         }
         return methodSynchronizer;
     }
 
-    public void setMethodSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer) {
+    public IntactChecksumSynchronizer<C> setMethodSynchronizer(CvTermDbSynchronizer methodSynchronizer) {
         this.methodSynchronizer = methodSynchronizer;
+        return this;
     }
 
     @Override
