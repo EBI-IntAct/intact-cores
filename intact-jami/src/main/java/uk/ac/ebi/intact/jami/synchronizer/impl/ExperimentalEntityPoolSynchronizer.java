@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.ExperimentalEntityPool;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
@@ -34,6 +35,9 @@ public class ExperimentalEntityPoolSynchronizer extends ExperimentalEntitySynchr
 
         // then synchronize subEntities if not done
         prepareEntities(intactEntity);
+
+        CvTerm type = intactEntity.getType();
+        intactEntity.setType(getContext().getInteractorTypeSynchronizer().synchronize(type, true));
     }
 
     protected void prepareEntities(IntactExperimentalEntityPool intactEntity) throws FinderException, PersisterException, SynchronizerException {

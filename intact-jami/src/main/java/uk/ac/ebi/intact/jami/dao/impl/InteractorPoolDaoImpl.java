@@ -12,19 +12,19 @@ import javax.persistence.Query;
 import java.util.Collection;
 
 /**
- * Implementation of polymerDao
+ * Implementation of interactorPoolDao
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>31/01/14</pre>
  */
 @Repository
-public class InteractorPoolImpl extends InteractorDaoImpl<InteractorPool,IntactInteractorPool> implements InteractorPoolDao{
-    public InteractorPoolImpl() {
+public class InteractorPoolDaoImpl extends InteractorDaoImpl<InteractorPool,IntactInteractorPool> implements InteractorPoolDao{
+    public InteractorPoolDaoImpl() {
         super(IntactInteractorPool.class);
     }
 
-    public InteractorPoolImpl(EntityManager entityManager) {
+    public InteractorPoolDaoImpl(EntityManager entityManager) {
         super(IntactInteractorPool.class, entityManager);
     }
 

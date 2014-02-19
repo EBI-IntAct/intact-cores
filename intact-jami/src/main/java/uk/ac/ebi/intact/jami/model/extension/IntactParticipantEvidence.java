@@ -18,7 +18,7 @@ import java.util.Collection;
  */
 @javax.persistence.Entity
 @DiscriminatorValue("participant_evidence")
-public class IntactParticipantEvidence extends AbstractIntactExperimentalEntity implements ParticipantEvidence{
+public class IntactParticipantEvidence extends IntactExperimentalEntity implements ParticipantEvidence{
 
     private InteractionEvidence interaction;
     private String interactionAc;
