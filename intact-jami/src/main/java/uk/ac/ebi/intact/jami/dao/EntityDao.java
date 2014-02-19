@@ -46,5 +46,9 @@ public interface EntityDao<F extends AbstractIntactEntity> extends IntactBaseDao
 
     public Collection<F> getByBiologicalRole(String typeName, String typeMI, int first, int max);
 
-    public Collection<F> getByCausalRelationShip(String effectName, String effectMI, String targetAc);
+    public Collection<F> getByCausalRelationship(String effectName, String effectMI, String targetAc);
+
+    public Collection<F> getByCausalRelationship(String targetAc);
+
+    public Collection<F> getByInteractorAc(String ac, int first, int max);
 }

@@ -30,6 +30,9 @@
     the first actual invocation. -->
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
+    <!-- for autowired annotations to work propertly -->
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+
     <!-- JPATransactionManager is not dependent on hibernate. It is a more global platform -->
     <!-- We use entity manager because it is JPA and not just specific to hibernate -->
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -46,6 +49,7 @@
                 <prop key="hibernate.generate_statistics">true</prop>
                 <prop key="hibernate.format_sql">false</prop>
                 <prop key="hibernate.hbm2ddl.auto">${db.hbm2ddl}</prop>
+                <prop key="hibernate.ejb.interceptor.session_scoped"></prop>
             </props>
         </property>
         <property name="jpaVendorAdapter">

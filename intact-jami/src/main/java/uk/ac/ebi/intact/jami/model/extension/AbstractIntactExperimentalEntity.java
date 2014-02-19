@@ -114,7 +114,6 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn(name = "ia_experimentalrole_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
-    // TODO fetch proper cv term
     public CvTerm getExperimentalRole() {
         if (this.experimentalRole == null){
             this.experimentalRole = IntactUtils.createMIExperimentalRole(Participant.UNSPECIFIED_ROLE, Participant.UNSPECIFIED_ROLE_MI);
