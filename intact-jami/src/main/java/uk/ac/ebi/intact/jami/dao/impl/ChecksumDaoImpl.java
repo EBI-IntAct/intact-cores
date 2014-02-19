@@ -7,7 +7,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ChecksumDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactChecksumSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.ChecksumSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -111,6 +111,6 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactChecksumSynchronizer<C>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new ChecksumSynchronizer<C>(getEntityManager(), getEntityClass()));
     }
 }

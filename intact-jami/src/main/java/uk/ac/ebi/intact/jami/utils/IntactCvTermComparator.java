@@ -16,6 +16,10 @@ public class IntactCvTermComparator extends UnambiguousCvTermComparator{
 
     @Override
     public int compare(CvTerm cvTerm1, CvTerm cvTerm2) {
+        if (cvTerm1 == cvTerm2){
+            return 0;
+        }
+
         int comp = super.compare(cvTerm1, cvTerm2);
         if (comp != 0){
             return comp;

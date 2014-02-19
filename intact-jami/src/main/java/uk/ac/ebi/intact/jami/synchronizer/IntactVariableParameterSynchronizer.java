@@ -4,11 +4,11 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.utils.clone.VariableParameterCloner;
-import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -59,7 +59,7 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getUnitSynchronizer() {
         if (this.unitSynchronizer == null){
-            this.unitSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.UNIT_OBJCLASS);
+            this.unitSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.UNIT_OBJCLASS);
         }
         return unitSynchronizer;
     }
@@ -112,6 +112,6 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<VariableParameter, IntactVariableParameter>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<VariableParameter, IntactVariableParameter>(this));
     }
 }

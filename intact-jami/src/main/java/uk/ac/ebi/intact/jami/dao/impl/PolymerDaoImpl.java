@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Polymer;
 import uk.ac.ebi.intact.jami.dao.PolymerDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactPolymerSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.PolymerSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -46,6 +46,6 @@ public class PolymerDaoImpl<T extends Polymer, P extends IntactPolymer> extends 
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactPolymerSynchronizer<T, P>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new PolymerSynchronizerTemplate<T, P>(getEntityManager(), getEntityClass()));
     }
 }

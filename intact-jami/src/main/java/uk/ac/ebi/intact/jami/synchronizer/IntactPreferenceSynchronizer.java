@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -54,6 +54,6 @@ public class IntactPreferenceSynchronizer extends AbstractIntactDbSynchronizer<P
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<Preference, Preference>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Preference, Preference>(this));
     }
 }

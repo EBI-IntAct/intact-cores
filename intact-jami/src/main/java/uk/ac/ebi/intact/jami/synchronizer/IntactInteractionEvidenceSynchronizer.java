@@ -5,7 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractionCloner;
-import uk.ac.ebi.intact.jami.merger.IntactInteractionEvidenceMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.InteractionEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.impl.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -111,7 +111,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     public IntactDbSynchronizer<Annotation, InteractionAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationSynchronizer<InteractionAnnotation>(getEntityManager(), InteractionAnnotation.class);
+            this.annotationSynchronizer = new AnnotationSynchronizerTemplate<InteractionAnnotation>(getEntityManager(), InteractionAnnotation.class);
         }
         return annotationSynchronizer;
     }
@@ -122,7 +122,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     public IntactDbSynchronizer<Xref, InteractionXref> getXrefSynchronizer() {
         if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new IntactXrefSynchronizer<InteractionXref>(getEntityManager(), InteractionXref.class);
+            this.xrefSynchronizer = new XrefSynchronizerTemplate<InteractionXref>(getEntityManager(), InteractionXref.class);
         }
         return xrefSynchronizer;
     }
@@ -133,7 +133,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractionTypeSynchronizer() {
         if (this.interactionTypeSynchronizer == null){
-            this.interactionTypeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.INTERACTION_TYPE_OBJCLASS);
+            this.interactionTypeSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.INTERACTION_TYPE_OBJCLASS);
         }
         return interactionTypeSynchronizer;
     }
@@ -144,7 +144,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     public IntactDbSynchronizer<Checksum, InteractionChecksum> getChecksumSynchronizer() {
         if (this.checksumSynchronizer == null){
-            this.checksumSynchronizer = new IntactChecksumSynchronizer<InteractionChecksum>(getEntityManager(), InteractionChecksum.class);
+            this.checksumSynchronizer = new uk.ac.ebi.intact.jami.synchronizer.impl.ChecksumSynchronizer<InteractionChecksum>(getEntityManager(), InteractionChecksum.class);
         }
         return checksumSynchronizer;
     }
@@ -166,7 +166,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     public IntactDbSynchronizer<Parameter, InteractionEvidenceParameter> getParameterSynchronizer() {
         if (this.parameterSynchronizer == null){
-            this.parameterSynchronizer = new IntactParameterSynchronizer<Parameter, InteractionEvidenceParameter>(getEntityManager(), InteractionEvidenceParameter.class);
+            this.parameterSynchronizer = new ParameterSynchronizerTemplate<Parameter, InteractionEvidenceParameter>(getEntityManager(), InteractionEvidenceParameter.class);
         }
         return parameterSynchronizer;
     }
@@ -177,7 +177,7 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     public IntactDbSynchronizer<Confidence, InteractionEvidenceConfidence> getConfidenceSynchronizer() {
         if (this.confidenceSynchronizer == null){
-            this.confidenceSynchronizer = new IntactConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence>(getEntityManager(), InteractionEvidenceConfidence.class);
+            this.confidenceSynchronizer = new ConfidenceSynchronizerTemplate<Confidence, InteractionEvidenceConfidence>(getEntityManager(), InteractionEvidenceConfidence.class);
         }
         return confidenceSynchronizer;
     }
@@ -366,6 +366,6 @@ public class IntactInteractionEvidenceSynchronizer extends AbstractIntactDbSynch
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactInteractionEvidenceMergerEnrichOnly());
+        super.setIntactMerger(new InteractionEvidenceMergerEnrichOnly());
     }
 }

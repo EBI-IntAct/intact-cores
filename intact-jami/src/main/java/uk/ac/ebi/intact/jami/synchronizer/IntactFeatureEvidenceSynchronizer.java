@@ -3,10 +3,10 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.FeatureEvidence;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
-import uk.ac.ebi.intact.jami.merger.IntactFeatureEvidenceMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.FeatureEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -52,7 +52,7 @@ public class IntactFeatureEvidenceSynchronizer extends IntactFeatureBaseSynchron
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getMethodSynchronizer() {
         if (this.methodSynchronizer == null){
-            this.methodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_METHOD_OBJCLASS);
+            this.methodSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_METHOD_OBJCLASS);
         }
         return methodSynchronizer;
     }
@@ -63,7 +63,7 @@ public class IntactFeatureEvidenceSynchronizer extends IntactFeatureBaseSynchron
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactFeatureEvidenceMergerEnrichOnly());
+        super.setIntactMerger(new FeatureEvidenceMergerEnrichOnly());
     }
 
     @Override

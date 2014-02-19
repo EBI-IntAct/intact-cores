@@ -1,16 +1,18 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.CooperativityEvidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.utils.clone.CooperativityEvidenceCloner;
-import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
+import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
+import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCooperativityEvidence;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.AliasSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -26,11 +28,10 @@ import java.util.Collection;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactCooperativityEvidenceSynchronizer extends AbstractIntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence>{
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer;
-    private IntactDbSynchronizer<Publication, IntactPublication> publicationSynchronizer;
-
-    private static final Log log = LogFactory.getLog(IntactCooperativityEvidenceSynchronizer.class);
+public class IntactCooperativityEvidenceSynchronizer extends AbstractIntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence>
+implements CooperativityEvidenceDbSynchronizer{
+    private CvTermDbSynchronizer methodSynchronizer;
+    private PublicationDbSynchronizer publicationSynchronizer;
 
     public IntactCooperativityEvidenceSynchronizer(EntityManager entityManager){
         super(entityManager, IntactCooperativityEvidence.class);
@@ -50,30 +51,118 @@ public class IntactCooperativityEvidenceSynchronizer extends AbstractIntactDbSyn
     }
 
     public void clearCache() {
-        getMethodSynchronizer().clearCache();
-        getPublicationSynchronizer().clearCache();
+        clearCache(this.publicationSynchronizer);
+        if (this.methodSynchronizer != null){
+            if (publicationSynchronizer == null || publicationSynchronizer.getCvAnnotationSynchronizer().getTopicSynchronizer() != methodSynchronizer){
+                this.methodSynchronizer.clearCache();
+            }
+        }
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getMethodSynchronizer() {
+    public CvTermDbSynchronizer getMethodSynchronizer() {
         if (this.methodSynchronizer == null){
-            this.methodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+            if (this.publicationSynchronizer == null){
+                initialiseDefaultPublicationAndEvidenceSynchronizer();
+            }
+            else{
+                initialiseDefaultMethodSynchronizer();
+            }
         }
         return methodSynchronizer;
     }
 
-    public void setMethodSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> methodSynchronizer) {
+    public IntactCooperativityEvidenceSynchronizer setMethodSynchronizer(CvTermDbSynchronizer methodSynchronizer) {
         this.methodSynchronizer = methodSynchronizer;
+        return this;
     }
 
-    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer() {
+    public PublicationDbSynchronizer getPublicationSynchronizer() {
         if (this.publicationSynchronizer == null){
-            this.publicationSynchronizer = new IntactPublicationSynchronizer(getEntityManager());
+            if (this.methodSynchronizer == null){
+                initialiseDefaultPublicationAndEvidenceSynchronizer();
+            }
+            else{
+                initialiseDefaultPublicationSynchronizer();
+            }
         }
         return publicationSynchronizer;
     }
 
-    public void setPublicationSynchronizer(IntactDbSynchronizer<Publication, IntactPublication> publicationSynchronizer) {
+    public IntactCooperativityEvidenceSynchronizer setPublicationSynchronizer(PublicationDbSynchronizer publicationSynchronizer) {
         this.publicationSynchronizer = publicationSynchronizer;
+        return this;
+    }
+
+    public AliasDbSynchronizer<CvTermAlias> getCvAliasSynchronizer() {
+        return getMethodSynchronizer().getAliasSynchronizer();
+    }
+
+    public IntactCooperativityEvidenceSynchronizer setCvAliasSynchronizer(AliasDbSynchronizer<CvTermAlias> aliasSynchronizer) {
+        getMethodSynchronizer().setAliasSynchronizer(aliasSynchronizer);
+        getPublicationSynchronizer().setCvAliasSynchronizer(aliasSynchronizer);
+        return this;
+    }
+
+    public AnnotationDbSynchronizer<CvTermAnnotation> getCvAnnotationSynchronizer() {
+        return getMethodSynchronizer().getAnnotationSynchronizer();
+    }
+
+    public IntactCooperativityEvidenceSynchronizer setCvAnnotationSynchronizer(AnnotationDbSynchronizer<CvTermAnnotation> annotationSynchronizer) {
+        getMethodSynchronizer().setAnnotationSynchronizer(annotationSynchronizer);
+        getPublicationSynchronizer().setCvAnnotationSynchronizer(annotationSynchronizer);
+        return this;
+    }
+
+    public XrefDbSynchronizer<CvTermXref> getCvXrefSynchronizer() {
+        return getMethodSynchronizer().getXrefSynchronizer();
+    }
+
+    public IntactCooperativityEvidenceSynchronizer setCvXrefSynchronizer(XrefDbSynchronizer<CvTermXref> xrefSynchronizer) {
+        getMethodSynchronizer().setXrefSynchronizer(xrefSynchronizer);
+        getPublicationSynchronizer().setCvXrefSynchronizer(xrefSynchronizer);
+        return this;
+    }
+
+    protected void initialiseDefaultPublicationAndEvidenceSynchronizer() {
+        // create new type synchronizer
+        this.methodSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+
+        // basic cv synchronizers to initialise
+        AliasDbSynchronizer<CvTermAlias> cvAliasSynchronizer = new AliasSynchronizerTemplate<CvTermAlias>(getEntityManager(), CvTermAlias.class);
+        AnnotationDbSynchronizer<CvTermAnnotation> cvAnnotationSynchronizer = new AnnotationSynchronizerTemplate<CvTermAnnotation>(getEntityManager(), CvTermAnnotation.class);
+        cvAnnotationSynchronizer.setTopicSynchronizer(this.methodSynchronizer);
+        XrefDbSynchronizer<CvTermXref> cvXrefSynchronizer = new XrefSynchronizerTemplate<CvTermXref>(getEntityManager(), CvTermXref.class);
+        IntactUtils.initialiseBasicSynchronizers(cvAliasSynchronizer, cvXrefSynchronizer, cvAnnotationSynchronizer);
+
+        // initialise basic synchronizers for type synchronizer
+        IntactUtils.initialiseBasicSynchronizers(this.methodSynchronizer, cvAliasSynchronizer, cvXrefSynchronizer, cvAnnotationSynchronizer);
+
+        // generate publication synchronizer and set basic types
+        IntactPublicationSynchronizer pSynchronizer = new IntactPublicationSynchronizer(getEntityManager());
+        this.publicationSynchronizer = pSynchronizer;
+        pSynchronizer.setCvAnnotationSynchronizer(cvAnnotationSynchronizer);
+        pSynchronizer.setCvXrefSynchronizer(cvXrefSynchronizer);
+        pSynchronizer.setCvAliasSynchronizer(cvAliasSynchronizer);
+    }
+
+    protected void initialiseDefaultPublicationSynchronizer() {
+        // basic cv synchronizers
+        AliasDbSynchronizer<CvTermAlias> cvAliasSynchronizer = this.methodSynchronizer.getAliasSynchronizer();
+        AnnotationDbSynchronizer<CvTermAnnotation> cvAnnotationSynchronizer = this.methodSynchronizer.getAnnotationSynchronizer();
+        XrefDbSynchronizer<CvTermXref> cvXrefSynchronizer = this.methodSynchronizer.getXrefSynchronizer();
+
+        // generate publication synchronizer and set basic types
+        IntactPublicationSynchronizer pSynchronizer = new IntactPublicationSynchronizer(getEntityManager());
+        this.publicationSynchronizer = pSynchronizer;
+        pSynchronizer.setCvAnnotationSynchronizer(cvAnnotationSynchronizer);
+        pSynchronizer.setCvXrefSynchronizer(cvXrefSynchronizer);
+        pSynchronizer.setCvAliasSynchronizer(cvAliasSynchronizer);
+    }
+
+    protected void initialiseDefaultMethodSynchronizer() {
+
+        // generate type synchronizer from publication synchronizer
+        this.methodSynchronizer = this.publicationSynchronizer.getCvAnnotationSynchronizer().getTopicSynchronizer();
     }
 
     protected void prepareEvidenceMethods(IntactCooperativityEvidence object) throws PersisterException, FinderException, SynchronizerException {
@@ -105,6 +194,6 @@ public class IntactCooperativityEvidenceSynchronizer extends AbstractIntactDbSyn
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<CooperativityEvidence, IntactCooperativityEvidence>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<CooperativityEvidence, IntactCooperativityEvidence>(this));
     }
 }

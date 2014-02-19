@@ -5,12 +5,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
-import uk.ac.ebi.intact.jami.merger.IntactEntityMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.EntityMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -112,7 +109,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public IntactDbSynchronizer<Alias, EntityAlias> getAliasSynchronizer() {
         if (this.aliasSynchronizer == null){
-            this.aliasSynchronizer = new IntactAliasSynchronizer<EntityAlias>(getEntityManager(), EntityAlias.class);
+            this.aliasSynchronizer = new AliasSynchronizerTemplate<EntityAlias>(getEntityManager(), EntityAlias.class);
         }
         return aliasSynchronizer;
     }
@@ -123,7 +120,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public IntactDbSynchronizer<Annotation, EntityAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationSynchronizer<EntityAnnotation>(getEntityManager(), EntityAnnotation.class);
+            this.annotationSynchronizer = new AnnotationSynchronizerTemplate<EntityAnnotation>(getEntityManager(), EntityAnnotation.class);
         }
         return annotationSynchronizer;
     }
@@ -134,7 +131,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public IntactDbSynchronizer<Xref, EntityXref> getXrefSynchronizer() {
         if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new IntactXrefSynchronizer<EntityXref>(getEntityManager(), EntityXref.class);
+            this.xrefSynchronizer = new XrefSynchronizerTemplate<EntityXref>(getEntityManager(), EntityXref.class);
         }
         return xrefSynchronizer;
     }
@@ -145,7 +142,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getBiologicalRoleSynchronizer() {
         if (this.biologicalRoleSynchronizer == null){
-            this.biologicalRoleSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.BIOLOGICAL_ROLE_OBJCLASS);
+            this.biologicalRoleSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.BIOLOGICAL_ROLE_OBJCLASS);
         }
         return biologicalRoleSynchronizer;
     }
@@ -167,7 +164,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getCausalRelationshipSynchronizer() {
         if (this.causalRelationshipSynchronizer == null){
-            this.causalRelationshipSynchronizer = new IntactCausalRelationchipSynchronizer(getEntityManager());
+            this.causalRelationshipSynchronizer = new CausalRelationchipSynchronizer(getEntityManager());
         }
         return causalRelationshipSynchronizer;
     }
@@ -178,7 +175,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public IntactDbSynchronizer<Interactor, IntactInteractor> getInteractorSynchronizer() {
         if (this.interactorSynchronizer == null){
-            this.interactorSynchronizer = new IntactInteractorSynchronizer(getEntityManager());
+            this.interactorSynchronizer = new InteractorCompositeSynchronizer(getEntityManager());
         }
         return interactorSynchronizer;
     }
@@ -308,6 +305,6 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactEntityMergerEnrichOnly<T,I,Feature>());
+        super.setIntactMerger(new EntityMergerEnrichOnly<T,I,Feature>());
     }
 }

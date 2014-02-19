@@ -3,10 +3,10 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -89,7 +89,7 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getStatusSynchronizer() {
         if (this.statusSynchronizer == null){
-            this.statusSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
+            this.statusSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.RANGE_STATUS_OBJCLASS);
         }
         return statusSynchronizer;
     }
@@ -100,7 +100,7 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
 
     public IntactDbSynchronizer<Xref, ResultingSequenceXref> getXrefSynchronizer() {
         if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new IntactXrefSynchronizer<ResultingSequenceXref>(getEntityManager(), ResultingSequenceXref.class);
+            this.xrefSynchronizer = new XrefSynchronizerTemplate<ResultingSequenceXref>(getEntityManager(), ResultingSequenceXref.class);
         }
         return xrefSynchronizer;
     }
@@ -147,6 +147,6 @@ public class IntactRangeSynchronizer extends AbstractIntactDbSynchronizer<Range,
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<Range, IntactRange>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Range, IntactRange>(this));
     }
 }

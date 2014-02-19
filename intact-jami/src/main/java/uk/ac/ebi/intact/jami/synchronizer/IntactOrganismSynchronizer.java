@@ -5,10 +5,10 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.merger.IntactOrganismMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.AliasSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -31,7 +31,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> cellTypeSynchronizer;
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> tissueSynchronizer;
 
-    private static final Log log = LogFactory.getLog(IntactCvTermSynchronizer.class);
+    private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
 
     public IntactOrganismSynchronizer(EntityManager entityManager){
         super(entityManager, IntactOrganism.class);
@@ -192,7 +192,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
 
     public IntactDbSynchronizer<Alias, OrganismAlias> getAliasSynchronizer() {
         if (this.aliasSynchronizer == null){
-            this.aliasSynchronizer = new IntactAliasSynchronizer<OrganismAlias>(getEntityManager(), OrganismAlias.class);
+            this.aliasSynchronizer = new AliasSynchronizerTemplate<OrganismAlias>(getEntityManager(), OrganismAlias.class);
         }
         return aliasSynchronizer;
     }
@@ -203,7 +203,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCellTypeSynchronizer() {
         if (this.cellTypeSynchronizer == null){
-            this.cellTypeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.CELL_TYPE_OBJCLASS);
+            this.cellTypeSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.CELL_TYPE_OBJCLASS);
         }
         return cellTypeSynchronizer;
     }
@@ -214,7 +214,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTissueSynchronizer() {
         if (this.tissueSynchronizer == null){
-            this.tissueSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TISSUE_OBJCLASS);
+            this.tissueSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.TISSUE_OBJCLASS);
         }
         return tissueSynchronizer;
     }
@@ -316,6 +316,6 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactOrganismMergerEnrichOnly(this));
+        super.setIntactMerger(new OrganismMergerEnrichOnly(this));
     }
 }

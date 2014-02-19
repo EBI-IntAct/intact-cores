@@ -2,12 +2,8 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.dao.InteractorDao;
 import uk.ac.ebi.intact.jami.dao.PublicationDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
-import uk.ac.ebi.intact.jami.synchronizer.IntactInteractorBaseSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactPublicationSynchronizer;
 
 import javax.persistence.EntityManager;

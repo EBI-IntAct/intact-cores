@@ -5,7 +5,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -636,6 +636,6 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactXrefSynchronizer<X>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new XrefSynchronizerTemplate<X>(getEntityManager(), getEntityClass()));
     }
 }

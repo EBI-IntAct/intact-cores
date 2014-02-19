@@ -66,4 +66,8 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
     public IntactDbMerger<I,T> getIntactMerger();
 
     public void setIntactMerger(IntactDbMerger<I,T> intactMerger);
+
+    public Class<? extends T> getIntactClass();
+
+    public void setIntactClass(Class<? extends T> intactClass);
 }

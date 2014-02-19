@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.AllosteryDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactAllostery;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAllosterySynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.AllosterySynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -106,6 +106,6 @@ public class AllosteryDaoImpl extends CooperativeEffectDaoImpl<Allostery, Intact
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactAllosterySynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new AllosterySynchronizer(getEntityManager()));
     }
 }

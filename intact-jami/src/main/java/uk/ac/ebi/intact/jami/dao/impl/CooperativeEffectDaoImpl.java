@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.CooperativeEffectDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCooperativeEffectBaseSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CooperativeEffectSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -162,7 +162,7 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactCooperativeEffectBaseSynchronizer<T, F>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new CooperativeEffectSynchronizerTemplate<T, F>(getEntityManager(), getEntityClass()));
     }
 
     @Override

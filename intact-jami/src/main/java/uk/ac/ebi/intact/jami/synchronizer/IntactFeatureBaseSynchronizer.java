@@ -5,12 +5,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
-import uk.ac.ebi.intact.jami.merger.IntactFeatureMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.FeatureMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAliasSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.AliasSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -112,7 +112,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     public IntactDbSynchronizer<Alias, FeatureAlias> getAliasSynchronizer() {
         if (this.aliasSynchronizer == null){
-            this.aliasSynchronizer = new IntactAliasSynchronizer(getEntityManager(), FeatureAlias.class);
+            this.aliasSynchronizer = new AliasSynchronizerTemplate(getEntityManager(), FeatureAlias.class);
         }
         return aliasSynchronizer;
     }
@@ -123,7 +123,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     public IntactDbSynchronizer<Annotation, FeatureAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationSynchronizer(getEntityManager(), FeatureAnnotation.class);
+            this.annotationSynchronizer = new AnnotationSynchronizerTemplate(getEntityManager(), FeatureAnnotation.class);
         }
         return annotationSynchronizer;
     }
@@ -134,7 +134,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     public IntactDbSynchronizer<Xref, FeatureXref> getXrefSynchronizer() {
         if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new IntactXrefSynchronizer(getEntityManager(), FeatureXref.class);
+            this.xrefSynchronizer = new XrefSynchronizerTemplate(getEntityManager(), FeatureXref.class);
         }
         return xrefSynchronizer;
     }
@@ -145,7 +145,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getEffectSynchronizer() {
         if (this.effectSynchronizer == null){
-            this.effectSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
+            this.effectSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
         }
         return effectSynchronizer;
     }
@@ -156,7 +156,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTypeSynchronizer() {
         if (this.typeSynchronizer == null){
-            this.typeSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_TYPE_OBJCLASS);
+            this.typeSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_TYPE_OBJCLASS);
         }
         return typeSynchronizer;
     }
@@ -310,6 +310,6 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactFeatureMergerEnrichOnly<F, I>());
+        super.setIntactMerger(new FeatureMergerEnrichOnly<F, I>());
     }
 }

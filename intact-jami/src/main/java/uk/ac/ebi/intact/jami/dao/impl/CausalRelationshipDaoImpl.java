@@ -3,14 +3,10 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.CausalRelationshipDao;
-import uk.ac.ebi.intact.jami.dao.VariableParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCausalRelationship;
-import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCausalRelationchipSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactVariableParameterSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CausalRelationchipSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -88,6 +84,6 @@ public class CausalRelationshipDaoImpl extends AbstractIntactBaseDao<CausalRelat
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactCausalRelationchipSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new CausalRelationchipSynchronizer(getEntityManager()));
     }
 }

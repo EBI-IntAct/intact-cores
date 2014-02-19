@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParameter;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.impl.ParameterSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -200,6 +200,6 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactParameterSynchronizer<P>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new ParameterSynchronizerTemplate<P>(getEntityManager(), getEntityClass()));
     }
 }

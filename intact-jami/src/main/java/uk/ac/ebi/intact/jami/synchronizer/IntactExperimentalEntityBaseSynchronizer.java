@@ -4,10 +4,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
-import uk.ac.ebi.intact.jami.merger.IntactExperimentalEntityMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.ExperimentalEntityMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactConfidenceSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.ConfidenceSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.ParameterSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -66,7 +67,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     public IntactDbSynchronizer<Parameter, ExperimentalEntityParameter> getParameterSynchronizer() {
         if (this.parameterSynchronizer == null){
-            this.parameterSynchronizer = new IntactParameterSynchronizer<Parameter, ExperimentalEntityParameter>(getEntityManager(), ExperimentalEntityParameter.class);
+            this.parameterSynchronizer = new ParameterSynchronizerTemplate<Parameter, ExperimentalEntityParameter>(getEntityManager(), ExperimentalEntityParameter.class);
         }
         return parameterSynchronizer;
     }
@@ -77,7 +78,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     public IntactDbSynchronizer<Confidence, ExperimentalEntityConfidence> getConfidenceSynchronizer() {
         if (this.confidenceSynchronizer == null){
-            this.confidenceSynchronizer = new IntactConfidenceSynchronizer<Confidence, ExperimentalEntityConfidence>(getEntityManager(), ExperimentalEntityConfidence.class);
+            this.confidenceSynchronizer = new ConfidenceSynchronizerTemplate<Confidence, ExperimentalEntityConfidence>(getEntityManager(), ExperimentalEntityConfidence.class);
         }
         return confidenceSynchronizer;
     }
@@ -88,7 +89,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getIdentificationMethodSynchronizer() {
         if (this.identificationMethodSynchronizer == null){
-            this.identificationMethodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
+            this.identificationMethodSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
         }
         return identificationMethodSynchronizer;
     }
@@ -99,7 +100,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getExperimentalPreparationSynchronizer() {
         if (this.experimentalPreparationSynchronizer == null){
-            this.experimentalPreparationSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS);
+            this.experimentalPreparationSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS);
         }
         return experimentalPreparationSynchronizer;
     }
@@ -110,7 +111,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getExperimentalRoleSynchronizer() {
         if (this.experimentalRoleSynchronizer == null){
-            this.experimentalRoleSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.EXPERIMENTAL_ROLE_OBJCLASS);
+            this.experimentalRoleSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.EXPERIMENTAL_ROLE_OBJCLASS);
         }
         return experimentalRoleSynchronizer;
     }
@@ -208,6 +209,6 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactExperimentalEntityMergerEnrichOnly<T, I>());
+        super.setIntactMerger(new ExperimentalEntityMergerEnrichOnly<T, I>());
     }
 }

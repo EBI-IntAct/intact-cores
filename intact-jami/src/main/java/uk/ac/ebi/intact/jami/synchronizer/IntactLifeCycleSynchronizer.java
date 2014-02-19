@@ -3,12 +3,12 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.CvTerm;
-import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.user.User;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -58,7 +58,7 @@ public class IntactLifeCycleSynchronizer<A extends AbstractLifecycleEvent> exten
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getEventSynchronizer() {
         if (this.eventSynchronizer == null){
-            this.eventSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.LIFECYCLE_EVENT_OBJCLASS);
+            this.eventSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.LIFECYCLE_EVENT_OBJCLASS);
         }
         return eventSynchronizer;
     }
@@ -90,6 +90,6 @@ public class IntactLifeCycleSynchronizer<A extends AbstractLifecycleEvent> exten
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<LifeCycleEvent, A>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<LifeCycleEvent, A>(this));
     }
 }

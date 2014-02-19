@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.VariableParameterValue;
-import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -83,6 +83,6 @@ public class IntactVariableParameterValueSynchronizer extends AbstractIntactDbSy
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactMergerIgnoringPersistentObject<VariableParameterValue, IntactVariableParameterValue>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<VariableParameterValue, IntactVariableParameterValue>(this));
     }
 }

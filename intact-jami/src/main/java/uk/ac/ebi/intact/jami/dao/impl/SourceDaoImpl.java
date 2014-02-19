@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
-import uk.ac.ebi.intact.jami.synchronizer.IntactSourceSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.SourceSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -567,6 +567,6 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactSourceSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new SourceSynchronizer(getEntityManager()));
     }
 }

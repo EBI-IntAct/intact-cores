@@ -10,15 +10,16 @@ import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
-import uk.ac.ebi.intact.jami.merger.IntactPublicationMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.SourceSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -34,7 +35,8 @@ import java.util.*;
  * @since <pre>21/01/14</pre>
  */
 
-public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<Publication, IntactPublication> implements PublicationFetcher {
+public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<Publication, IntactPublication>
+        implements PublicationFetcher, PublicationDbSynchronizer {
 
     private Map<Publication, IntactPublication> persistedObjects;
 
@@ -208,7 +210,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     public IntactDbSynchronizer<Annotation, PublicationAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationSynchronizer<PublicationAnnotation>(getEntityManager(), PublicationAnnotation.class);
+            this.annotationSynchronizer = new AnnotationSynchronizerTemplate<PublicationAnnotation>(getEntityManager(), PublicationAnnotation.class);
         }
         return annotationSynchronizer;
     }
@@ -219,7 +221,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     public IntactDbSynchronizer<Xref, PublicationXref> getXrefSynchronizer() {
         if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new IntactXrefSynchronizer<PublicationXref>(getEntityManager(), PublicationXref.class);
+            this.xrefSynchronizer = new XrefSynchronizerTemplate<PublicationXref>(getEntityManager(), PublicationXref.class);
         }
         return xrefSynchronizer;
     }
@@ -230,7 +232,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     public IntactDbSynchronizer<Source, IntactSource> getSourceSynchronizer() {
         if (this.sourceSynchronizer == null){
-            this.sourceSynchronizer = new IntactSourceSynchronizer(getEntityManager());
+            this.sourceSynchronizer = new SourceSynchronizer(getEntityManager());
         }
         return sourceSynchronizer;
     }
@@ -241,7 +243,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getStatusSynchronizer() {
         if (this.statusSynchronizer == null){
-            this.statusSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PUBLICATION_STATUS_OBJCLASS);
+            this.statusSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.PUBLICATION_STATUS_OBJCLASS);
         }
         return statusSynchronizer;
     }
@@ -620,6 +622,6 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactPublicationMergerEnrichOnly(this));
+        super.setIntactMerger(new PublicationMergerEnrichOnly(this));
     }
 }

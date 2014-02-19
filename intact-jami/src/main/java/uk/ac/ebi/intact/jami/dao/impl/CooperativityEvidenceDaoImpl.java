@@ -1,15 +1,11 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
-import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CooperativityEvidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.dao.CausalRelationshipDao;
 import uk.ac.ebi.intact.jami.dao.CooperativityEvidenceDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactCausalRelationship;
 import uk.ac.ebi.intact.jami.model.extension.IntactCooperativityEvidence;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCausalRelationchipSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactCooperativityEvidenceSynchronizer;
 
 import javax.persistence.EntityManager;

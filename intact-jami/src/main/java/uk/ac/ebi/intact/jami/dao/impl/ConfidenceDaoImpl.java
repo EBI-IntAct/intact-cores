@@ -7,7 +7,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.ConfidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactConfidenceSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.ConfidenceSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -111,6 +111,6 @@ public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends Abstr
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactConfidenceSynchronizer<C>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new ConfidenceSynchronizerTemplate<C>(getEntityManager(), getEntityClass()));
     }
 }

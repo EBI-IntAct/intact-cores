@@ -6,11 +6,11 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
-import uk.ac.ebi.intact.jami.merger.IntactExperimentMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactAnnotationSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactCvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.IntactXrefSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.utils.IntactExperimentComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -199,7 +199,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     public IntactDbSynchronizer<Annotation, ExperimentAnnotation> getAnnotationSynchronizer() {
         if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new IntactAnnotationSynchronizer<ExperimentAnnotation>(getEntityManager(), ExperimentAnnotation.class);
+            this.annotationSynchronizer = new AnnotationSynchronizerTemplate<ExperimentAnnotation>(getEntityManager(), ExperimentAnnotation.class);
         }
         return annotationSynchronizer;
     }
@@ -210,7 +210,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     public IntactDbSynchronizer<Xref, ExperimentXref> getXrefSynchronizer() {
         if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new IntactXrefSynchronizer<ExperimentXref>(getEntityManager(), ExperimentXref.class);
+            this.xrefSynchronizer = new XrefSynchronizerTemplate<ExperimentXref>(getEntityManager(), ExperimentXref.class);
         }
         return xrefSynchronizer;
     }
@@ -221,7 +221,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDetectionMethodSynchronizer() {
         if (this.detectionMethodSynchronizer == null){
-            this.detectionMethodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.INTERACTION_DETECTION_METHOD_OBJCLASS);
+            this.detectionMethodSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.INTERACTION_DETECTION_METHOD_OBJCLASS);
         }
         return detectionMethodSynchronizer;
     }
@@ -232,7 +232,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getParticipantDetectionMethodSynchronizer() {
         if (this.participantDetectionMethodSynchronizer == null){
-            this.participantDetectionMethodSynchronizer = new IntactCvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
+            this.participantDetectionMethodSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
         }
         return participantDetectionMethodSynchronizer;
     }
@@ -427,6 +427,6 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactExperimentMergerEnrichOnly());
+        super.setIntactMerger(new ExperimentMergerEnrichOnly());
     }
 }

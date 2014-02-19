@@ -4,7 +4,7 @@ import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.ExperimentalEntityPool;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
-import uk.ac.ebi.intact.jami.merger.IntactExperimentalEntityPoolMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.ExperimentalEntityPoolMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntityPool;
 
@@ -78,6 +78,6 @@ public class IntactExperimentalEntityPoolSynchronizer extends IntactExperimental
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactExperimentalEntityPoolMergerEnrichOnly());
+        super.setIntactMerger(new ExperimentalEntityPoolMergerEnrichOnly());
     }
 }

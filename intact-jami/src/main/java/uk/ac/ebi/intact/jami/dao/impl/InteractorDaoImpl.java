@@ -6,8 +6,7 @@ import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.InteractorDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
-import uk.ac.ebi.intact.jami.model.extension.IntactSource;
-import uk.ac.ebi.intact.jami.synchronizer.IntactInteractorBaseSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -557,7 +556,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactInteractorBaseSynchronizer<T, F>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new InteractorSynchronizerTemplate<T, F>(getEntityManager(), getEntityClass()));
     }
 
     @Override

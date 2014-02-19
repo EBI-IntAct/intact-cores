@@ -2,9 +2,10 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.merger.IntactMergerIgnoringLocalObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 import javax.persistence.EntityManager;
@@ -21,16 +22,18 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> implements IntactDbSynchronizer<I,T> {
 
     private EntityManager entityManager;
+    private SynchronizerContext context;
     private Class<? extends T> intactClass;
     private static final Log log = LogFactory.getLog(AbstractIntactDbSynchronizer.class);
 
     private IntactDbMerger<I,T> intactMerger;
 
-    public AbstractIntactDbSynchronizer(EntityManager entityManager, Class<? extends T> intactClass){
-        if (entityManager == null){
-            throw new IllegalArgumentException("An IntAct database synchronizer needs a non null entity manager");
+    public AbstractIntactDbSynchronizer(SynchronizerContext context, Class<? extends T> intactClass){
+        if (context == null){
+            throw new IllegalArgumentException("An IntAct database synchronizer needs a non null synchronizer context");
         }
-        this.entityManager = entityManager;
+        this.context = context;
+        this.entityManager = this.context.getEntityManager();
         if (intactClass == null){
             throw new IllegalArgumentException("An IntAct database synchronizer needs a non null intact class");
         }
@@ -97,9 +100,20 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         this.intactMerger = intactMerger;
     }
 
+    public Class<? extends T> getIntactClass() {
+        return intactClass;
+    }
+
+    public void setIntactClass(Class<? extends T> intactClass) {
+        if (intactClass == null){
+           throw new IllegalArgumentException("Intact class cannot be null");
+        }
+        this.intactClass = intactClass;
+    }
+
     protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier) throws FinderException, PersisterException, SynchronizerException {
         // do not merge existing instance if the merger is a merger ignoring source
-        if (getIntactMerger() instanceof IntactMergerIgnoringLocalObject){
+        if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){
             T reloaded = getEntityManager().find(getIntactClass(), identifier);
             if (reloaded != null){
                 return reloaded;
@@ -152,8 +166,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         return entityManager;
     }
 
-    protected Class<? extends T> getIntactClass() {
-        return intactClass;
+    protected SynchronizerContext getContext() {
+        return context;
     }
 
     protected void clearCache(IntactDbSynchronizer delegate){
