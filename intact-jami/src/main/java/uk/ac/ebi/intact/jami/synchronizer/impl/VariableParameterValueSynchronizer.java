@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.VariableParameterValue;
+import psidev.psi.mi.jami.model.VariableParameterValueSet;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
@@ -12,6 +13,8 @@ import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -83,6 +86,19 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
 
     public void clearCache() {
         this.persistedObjects.clear();
+    }
+
+    public void removeVariableParameterValue(IntactVariableParameterValue value){
+        if (!value.getInteractionParameterValues().isEmpty()){
+            Collection<VariableParameterValueSet> existingSet = new ArrayList<VariableParameterValueSet>(value.getInteractionParameterValues());
+            // delete interaction sets if it only contained the value that will be removed (avoid to keep empty sets)
+            for (VariableParameterValueSet set : existingSet){
+                if (set.size() == 1 && set.contains(value)){
+                    value.getInteractionParameterValues().remove(set);
+                    getEntityManager().remove(set);
+                }
+            }
+        }
     }
 
     @Override

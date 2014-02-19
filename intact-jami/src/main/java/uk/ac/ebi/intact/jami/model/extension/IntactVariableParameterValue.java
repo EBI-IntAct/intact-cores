@@ -1,15 +1,17 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.VariableParameter;
-import psidev.psi.mi.jami.model.VariableParameterValue;
+import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.comparator.experiment.VariableParameterValueComparator;
 import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Intact implementation of VariableParameterValue
@@ -27,6 +29,8 @@ public class IntactVariableParameterValue extends AbstractAuditable implements V
     private Long id;
 
     private int order;
+
+    private Collection<VariableParameterValueSet> interactionParameterValues;
 
     public IntactVariableParameterValue() {
     }
@@ -101,6 +105,15 @@ public class IntactVariableParameterValue extends AbstractAuditable implements V
         this.variableParameter = variableParameter;
     }
 
+    @OneToMany( mappedBy = "variableParameterValues", targetEntity = VariableParameterValueSet.class)
+    @Target(VariableParameterValueSet.class)
+    public Collection<VariableParameterValueSet> getInteractionParameterValues() {
+        if (this.interactionParameterValues == null){
+            this.interactionParameterValues = new ArrayList<VariableParameterValueSet>();
+        }
+        return interactionParameterValues;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o){
@@ -128,5 +141,9 @@ public class IntactVariableParameterValue extends AbstractAuditable implements V
     @Size(max = IntactUtils.MAX_DESCRIPTION_LEN)
     private int getPersistentOrder() {
         return this.order;
+    }
+
+    private void setInteractionParameterValues(Collection<VariableParameterValueSet> values){
+        this.interactionParameterValues = values;
     }
 }

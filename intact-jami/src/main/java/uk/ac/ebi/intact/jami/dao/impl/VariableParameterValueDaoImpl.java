@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+import org.omg.DynamicAny._DynValueStub;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
@@ -35,6 +36,12 @@ public class VariableParameterValueDaoImpl extends AbstractIntactBaseDao<Variabl
                 "where p.ac = :ac ");
         query.setParameter("ac",parentAc);
         return query.getResultList();
+    }
+
+    @Override
+    public void delete(IntactVariableParameterValue objToDelete) {
+        ((VariableParameterValueSynchronizer)getDbSynchronizer()).removeVariableParameterValue(objToDelete);
+        super.delete(objToDelete);
     }
 
     @Override
