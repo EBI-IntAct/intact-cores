@@ -135,8 +135,6 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> getCooperativityEvidenceSynchronizer();
 
-    public EntitySynchronizer<AbstractIntactEntity> getEntitySynchronizer();
-
     public InteractorSynchronizer<Complex, IntactComplex> getComplexSynchronizer();
 
     public InteractorSynchronizer<Interactor, IntactInteractor> getInteractorSynchronizer();
@@ -206,4 +204,18 @@ public interface SynchronizerContext {
     public IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> getVariableParameterValueSynchronizer();
 
     public IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> getVariableParameterValueSetSynchronizer();
+
+    public EntitySynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer();
+
+    public EntitySynchronizer<ModelledEntity, IntactModelledEntity> getModelledEntitySynchronizer();
+
+    public EntitySynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer();
+
+    public EntitySynchronizer<ModelledEntityPool, IntactModelledEntityPool> getModelledEntityPoolSynchronizer();
+
+    public EntitySynchronizer<ExperimentalEntity, IntactExperimentalEntity> getExperimentalEntitySynchronizer();
+
+    public EntitySynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer();
+
+    public EntitySynchronizer<ExperimentalEntityPool, IntactExperimentalEntityPool> getExperimentalEntityPoolSynchronizer();
 }

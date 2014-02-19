@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
@@ -19,9 +18,10 @@ import java.util.Collection;
  */
 @Entity
 @DiscriminatorValue("modelled_participant")
-public class IntactModelledParticipant extends AbstractIntactParticipant<ModelledInteraction, ModelledFeature> implements ModelledParticipant{
+public class IntactModelledParticipant extends IntactModelledEntity implements ModelledParticipant{
 
     private String interactionAc;
+    private ModelledInteraction interaction;
 
     protected IntactModelledParticipant() {
         super();
@@ -43,25 +43,28 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
         super(interactor, bioRole, stoichiometry);
     }
 
-    @Override
     @ManyToOne( targetEntity = IntactComplex.class )
     @JoinColumn( name = "complex_ac" )
     @Target(IntactComplex.class)
     public ModelledInteraction getInteraction() {
-        return super.getInteraction();
+        return this.interaction;
     }
 
-    @Override
     public void setInteraction(ModelledInteraction interaction) {
-        super.setInteraction(interaction);
+        this.interaction = interaction;
         if (interaction instanceof IntactPrimaryObject){
             this.interactionAc = ((IntactPrimaryObject)interaction).getAc();
         }
     }
 
-    @Override
     public void setInteractionAndAddParticipant(ModelledInteraction interaction) {
-        super.setInteractionAndAddParticipant(interaction);
+        if (this.interaction != null){
+            this.interaction.removeParticipant(this);
+        }
+
+        if (interaction != null){
+            interaction.addParticipant(this);
+        }
         if (interaction instanceof IntactPrimaryObject){
             this.interactionAc = ((IntactPrimaryObject)interaction).getAc();
         }

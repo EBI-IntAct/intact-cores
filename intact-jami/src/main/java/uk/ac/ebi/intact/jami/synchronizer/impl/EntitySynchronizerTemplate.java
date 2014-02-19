@@ -1,16 +1,17 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.EntityMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.*;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
+import uk.ac.ebi.intact.jami.model.extension.IntactStoichiometry;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,27 +25,20 @@ import java.util.Map;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIntactEntity> extends AbstractIntactDbSynchronizer<T, I>{
+public class EntitySynchronizerTemplate<T extends Entity, I extends AbstractIntactEntity> extends AbstractIntactDbSynchronizer<T, I>
+implements EntitySynchronizer<T,I> {
     private Map<T, I> persistedObjects;
 
-    private IntactDbSynchronizer<Alias, EntityAlias> aliasSynchronizer;
-    private IntactDbSynchronizer<Annotation, EntityAnnotation> annotationSynchronizer;
-    private IntactDbSynchronizer<Xref, EntityXref> xrefSynchronizer;
+    private static final Log log = LogFactory.getLog(EntitySynchronizerTemplate.class);
+    private IntactDbSynchronizer featureSynchronizer;
 
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> biologicalRoleSynchronizer;
-    private IntactDbSynchronizer<Feature, AbstractIntactFeature> featureSynchronizer;
-    private IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> causalRelationshipSynchronizer;
-    private IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer;
-
-    private static final Log log = LogFactory.getLog(IntactEntityBaseSynchronizer.class);
-
-    public IntactEntityBaseSynchronizer(EntityManager entityManager, Class<I> intactClass){
-        super(entityManager, intactClass);
+    public EntitySynchronizerTemplate(SynchronizerContext context, Class<I> intactClass){
+        super(context, intactClass);
         // to keep track of persisted cvs
         this.persistedObjects = new IdentityMap();
     }
 
-    public I find(T term) throws FinderException{
+    public I find(T term) throws FinderException {
         if (this.persistedObjects.containsKey(term)){
             return this.persistedObjects.get(term);
         }
@@ -98,94 +92,6 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     public void clearCache() {
         this.persistedObjects.clear();
-        getAliasSynchronizer().clearCache();
-        getXrefSynchronizer().clearCache();
-        getAnnotationSynchronizer().clearCache();
-        getBiologicalRoleSynchronizer().clearCache();
-        getCausalRelationshipSynchronizer().clearCache();
-        getFeatureSynchronizer().clearCache();
-        getInteractorSynchronizer().clearCache();
-    }
-
-    public IntactDbSynchronizer<Alias, EntityAlias> getAliasSynchronizer() {
-        if (this.aliasSynchronizer == null){
-            this.aliasSynchronizer = new AliasSynchronizerTemplate<EntityAlias>(getEntityManager(), EntityAlias.class);
-        }
-        return aliasSynchronizer;
-    }
-
-    public void setAliasSynchronizer(IntactDbSynchronizer<Alias, EntityAlias> aliasSynchronizer) {
-        this.aliasSynchronizer = aliasSynchronizer;
-    }
-
-    public IntactDbSynchronizer<Annotation, EntityAnnotation> getAnnotationSynchronizer() {
-        if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new AnnotationSynchronizerTemplate<EntityAnnotation>(getEntityManager(), EntityAnnotation.class);
-        }
-        return annotationSynchronizer;
-    }
-
-    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, EntityAnnotation> annotationSynchronizer) {
-        this.annotationSynchronizer = annotationSynchronizer;
-    }
-
-    public IntactDbSynchronizer<Xref, EntityXref> getXrefSynchronizer() {
-        if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new XrefSynchronizerTemplate<EntityXref>(getEntityManager(), EntityXref.class);
-        }
-        return xrefSynchronizer;
-    }
-
-    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, EntityXref> xrefSynchronizer) {
-        this.xrefSynchronizer = xrefSynchronizer;
-    }
-
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getBiologicalRoleSynchronizer() {
-        if (this.biologicalRoleSynchronizer == null){
-            this.biologicalRoleSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.BIOLOGICAL_ROLE_OBJCLASS);
-        }
-        return biologicalRoleSynchronizer;
-    }
-
-    public void setBiologicalRoleSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> biologicalRoleSynchronizer) {
-        this.biologicalRoleSynchronizer = biologicalRoleSynchronizer;
-    }
-
-    public IntactDbSynchronizer<Feature, AbstractIntactFeature> getFeatureSynchronizer() {
-        if (this.featureSynchronizer == null){
-            initialiseFeatureSynchronizer(getEntityManager());
-        }
-        return featureSynchronizer;
-    }
-
-    public void setFeatureSynchronizer(IntactDbSynchronizer<Feature, AbstractIntactFeature> featureSynchronizer) {
-        this.featureSynchronizer = featureSynchronizer;
-    }
-
-    public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getCausalRelationshipSynchronizer() {
-        if (this.causalRelationshipSynchronizer == null){
-            this.causalRelationshipSynchronizer = new CausalRelationchipSynchronizer(getEntityManager());
-        }
-        return causalRelationshipSynchronizer;
-    }
-
-    public void setCausalRelationshipSynchronizer(IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> causalRelationshipSynchronizer) {
-        this.causalRelationshipSynchronizer = causalRelationshipSynchronizer;
-    }
-
-    public IntactDbSynchronizer<Interactor, IntactInteractor> getInteractorSynchronizer() {
-        if (this.interactorSynchronizer == null){
-            this.interactorSynchronizer = new InteractorCompositeSynchronizer(getEntityManager());
-        }
-        return interactorSynchronizer;
-    }
-
-    public void setInteractorSynchronizer(IntactDbSynchronizer<Interactor, IntactInteractor> interactorSynchronizer) {
-        this.interactorSynchronizer = interactorSynchronizer;
-    }
-
-    protected void initialiseFeatureSynchronizer(EntityManager entityManager) {
-        this.featureSynchronizer = new CompositeFeatureSynchronizer(entityManager);
     }
 
     @Override
@@ -205,7 +111,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
             List<CausalRelationship> relationshipsToPersist = new ArrayList<CausalRelationship>(intactEntity.getCausalRelationships());
             for (CausalRelationship causalRelationship : relationshipsToPersist){
                 // do not persist or merge causalRelationship because of cascades
-                CausalRelationship persistentRelationship = getCausalRelationshipSynchronizer().synchronize(causalRelationship, false);
+                CausalRelationship persistentRelationship = getContext().getCausalRelationshipSynchronizer().synchronize(causalRelationship, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentRelationship != causalRelationship){
                     intactEntity.getCausalRelationships().remove(causalRelationship);
@@ -224,18 +130,18 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
 
     protected void prepareExperimentalPreparations(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
        CvTerm bioRole = intactEntity.getBiologicalRole();
-       intactEntity.setBiologicalRole(getBiologicalRoleSynchronizer().synchronize(bioRole, true));
+       intactEntity.setBiologicalRole(getContext().getBiologicalRoleSynchronizer().synchronize(bioRole, true));
     }
 
     protected void prepareFeatures(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
-        if (intactEntity.areFeaturesInitialized()){
+        if (intactEntity.areFeaturesInitialized()) {
             List<Feature> featuresToPersist = new ArrayList<Feature>(intactEntity.getFeatures());
-            for (Feature feature : featuresToPersist){
+            for (Feature feature : featuresToPersist) {
                 feature.setParticipant(intactEntity);
                 // do not persist or merge features because of cascades
-                Feature persistentFeature = getFeatureSynchronizer().synchronize(feature, false);
+                Feature persistentFeature = (Feature)getFeatureSynchronizer().synchronize(feature, false);
                 // we have a different instance because needed to be synchronized
-                if (persistentFeature != feature){
+                if (persistentFeature != feature) {
                     intactEntity.getFeatures().remove(feature);
                     intactEntity.addFeature(persistentFeature);
                 }
@@ -249,7 +155,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactEntity.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref persistentXref = getXrefSynchronizer().synchronize(xref, false);
+                Xref persistentXref = getContext().getEntityXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentXref != xref){
                     intactEntity.getXrefs().remove(xref);
@@ -264,7 +170,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactEntity.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation persistentAnnotation = getAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation persistentAnnotation = getContext().getEntityAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentAnnotation != annotation){
                     intactEntity.getAnnotations().remove(annotation);
@@ -279,7 +185,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactEntity.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias persistentAlias = getAliasSynchronizer().synchronize(alias, false);
+                Alias persistentAlias = getContext().getEntityAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentAlias != alias){
                     intactEntity.getAliases().remove(alias);
@@ -292,7 +198,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
     protected void prepareInteractor(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
         // persist interactor if not there
         Interactor interactor = intactEntity.getInteractor();
-        intactEntity.setInteractor(getInteractorSynchronizer().synchronize(interactor, true));
+        intactEntity.setInteractor(getContext().getInteractorSynchronizer().synchronize(interactor, true));
     }
 
     protected void prepareShortLabel(I intactParticipant) {
@@ -306,5 +212,9 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
     @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new EntityMergerEnrichOnly<T,I,Feature>());
+    }
+
+    protected IntactDbSynchronizer getFeatureSynchronizer() {
+        return getContext().getFeatureSynchronizer();
     }
 }

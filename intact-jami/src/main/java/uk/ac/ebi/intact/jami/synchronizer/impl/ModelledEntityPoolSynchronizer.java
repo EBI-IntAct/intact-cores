@@ -1,14 +1,15 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.ModelledEntity;
 import psidev.psi.mi.jami.model.ModelledEntityPool;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ModelledEntityPoolMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledEntityPool;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +22,10 @@ import java.util.List;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchronizer<ModelledEntityPool,IntactModelledEntityPool> {
+public class ModelledEntityPoolSynchronizer extends ModelledEntitySynchronizerTemplate<ModelledEntityPool,IntactModelledEntityPool> {
 
-    private IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer;
-
-    public IntactModelledEntityPoolSynchronizer(EntityManager entityManager) {
-        super(entityManager, IntactModelledEntityPool.class);
+    public ModelledEntityPoolSynchronizer(SynchronizerContext context) {
+        super(context, IntactModelledEntityPool.class);
     }
 
     @Override
@@ -37,23 +36,11 @@ public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchr
         prepareEntities(intactEntity);
     }
 
-    public IntactDbSynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer() {
-        if (this.entitySynchronizer == null){
-            this.entitySynchronizer = new IntActEntitySynchronizer(getEntityManager());
-            ((IntActEntitySynchronizer)this.entitySynchronizer).setModelledEntityPoolSynchronizer(this);
-        }
-        return entitySynchronizer;
-    }
-
-    public void setEntitySynchronizer(IntactDbSynchronizer<Entity, AbstractIntactEntity> entitySynchronizer) {
-        this.entitySynchronizer = entitySynchronizer;
-    }
-
     protected void prepareEntities(IntactModelledEntityPool intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areEntitiesInitialized()){
             List<ModelledEntity> entitiesToPersist = new ArrayList<ModelledEntity>(intactEntity);
             for (ModelledEntity entity : entitiesToPersist){
-                ModelledEntity persistentEntity = (ModelledEntity) getEntitySynchronizer().synchronize(entity, true);
+                ModelledEntity persistentEntity = (ModelledEntity) getContext().getEntitySynchronizer().synchronize(entity, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentEntity != entity){
                     intactEntity.remove(entity);
@@ -73,7 +60,6 @@ public class IntactModelledEntityPoolSynchronizer extends IntactEntityBaseSynchr
     @Override
     public void clearCache() {
         super.clearCache();
-        getEntitySynchronizer().clearCache();
     }
 
     @Override

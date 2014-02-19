@@ -72,6 +72,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private InteractorSynchronizer polymerSynchronizer;
     private InteractorSynchronizer<Complex, IntactComplex> complexSynchronizer;
     private InteractorSynchronizer<InteractorPool, IntactInteractorPool> interactorPoolSynchronizer;
+    private InteractorSynchronizer<BioactiveEntity, IntactBioactiveEntity> bioactiveEntitySynchronizer;
 
     // causal relationship synchronizers
     private IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> causalRelationshipSynchronizer;
@@ -130,9 +131,11 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> variableParameterValueSetSynchronizer;
 
     // participant synchronizers
-    private EntitySynchronizer<AbstractIntactEntity> entitySynchronizer;
-    private EntitySynchronizer entityBaseSynchronizer;
-    private EntitySynchronizer entityPoolSynchronizer;
+    private EntitySynchronizer<Entity, AbstractIntactEntity> entitySynchronizer;
+    private EntitySynchronizer modelledEntitySynchronizer;
+    private EntitySynchronizer modelledEntityPoolSynchronizer;
+    private EntitySynchronizer experimentalEntitySynchronizer;
+    private EntitySynchronizer experimentalEntityPoolSynchronizer;
 
     public DefaultSynchronizerContext(EntityManager entityManager){
         if (this.entityManager == null){
@@ -522,9 +525,10 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     }
 
     public InteractorSynchronizer<BioactiveEntity, IntactBioactiveEntity> getBioactiveEntitySynchronizer() {
-        initialiseInteractorTemplateIfNotDone();
-        this.interactorBaseSynchronizer.setIntactClass(IntactBioactiveEntity.class);
-        return this.interactorBaseSynchronizer;
+        if (this.bioactiveEntitySynchronizer == null){
+           this.bioactiveEntitySynchronizer = new BioactiveEntitySynchronizer(this);
+        }
+        return this.bioactiveEntitySynchronizer;
     }
 
     public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getCausalRelationshipSynchronizer() {
@@ -700,12 +704,46 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         return variableParameterValueSetSynchronizer;
     }
 
-    public EntitySynchronizer<AbstractIntactEntity> getEntitySynchronizer() {
+    public EntitySynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer() {
         return entitySynchronizer;
     }
 
-    public EntitySynchronizer getEntityBaseSynchronizer() {
-        return entityBaseSynchronizer;
+    public EntitySynchronizer<ModelledEntity, IntactModelledEntity> getModelledEntitySynchronizer() {
+        initialiseModelledEntityTemplateIfNodDone();
+        this.modelledEntitySynchronizer.setIntactClass(IntactModelledEntity.class);
+        return this.modelledEntitySynchronizer;
+    }
+
+    public EntitySynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer(){
+        initialiseModelledEntityTemplateIfNodDone();
+        this.modelledEntitySynchronizer.setIntactClass(IntactModelledParticipant.class);
+        return this.modelledEntitySynchronizer;
+    }
+
+    public EntitySynchronizer<ModelledEntityPool, IntactModelledEntityPool> getModelledEntityPoolSynchronizer(){
+        if (this.modelledEntityPoolSynchronizer == null){
+            this.modelledEntityPoolSynchronizer = new ModelledEntityPoolSynchronizer(this);
+        }
+        return this.modelledEntityPoolSynchronizer;
+    }
+
+    public EntitySynchronizer<ExperimentalEntity, IntactExperimentalEntity> getExperimentalEntitySynchronizer(){
+        initialiseExperimentalEntityTemplateIfNodDone();
+        this.experimentalEntitySynchronizer.setIntactClass(IntactExperimentalEntity.class);
+        return this.experimentalEntitySynchronizer;
+    }
+
+    public EntitySynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer(){
+        initialiseExperimentalEntityTemplateIfNodDone();
+        this.experimentalEntitySynchronizer.setIntactClass(IntactParticipantEvidence.class);
+        return this.experimentalEntitySynchronizer;
+    }
+
+    public EntitySynchronizer<ExperimentalEntityPool, IntactExperimentalEntityPool> getExperimentalEntityPoolSynchronizer(){
+        if (this.experimentalEntityPoolSynchronizer == null){
+            this.experimentalEntityPoolSynchronizer = new ExperimentalEntityPoolSynchronizer(this);
+        }
+        return this.experimentalEntityPoolSynchronizer;
     }
 
     public void clearCache() {
@@ -763,6 +801,18 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private void initialiseLifecycleTemplateIfNodDone() {
         if (this.lifecycleSynchronizer == null){
             this.lifecycleSynchronizer = new LifeCycleSynchronizerTemplate(this, AbstractLifecycleEvent.class);
+        }
+    }
+
+    private void initialiseModelledEntityTemplateIfNodDone() {
+        if (this.modelledEntitySynchronizer == null){
+            this.modelledEntitySynchronizer = new ModelledEntitySynchronizerTemplate(this, IntactModelledEntity.class);
+        }
+    }
+
+    private void initialiseExperimentalEntityTemplateIfNodDone() {
+        if (this.experimentalEntitySynchronizer == null){
+            this.experimentalEntitySynchronizer = new ExperimentalEntitySynchronizerTemplate(this, IntactExperimentalEntity.class);
         }
     }
 }

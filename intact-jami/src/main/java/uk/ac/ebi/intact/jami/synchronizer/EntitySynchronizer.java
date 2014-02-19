@@ -11,6 +11,6 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
  * @since <pre>21/01/14</pre>
  */
 
-public interface EntitySynchronizer<T extends AbstractIntactEntity> extends IntactDbSynchronizer<Entity, T>{
+public interface EntitySynchronizer<I extends Entity, T extends AbstractIntactEntity> extends IntactDbSynchronizer<I, T>{
 
 }

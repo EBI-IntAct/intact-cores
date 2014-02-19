@@ -1,12 +1,16 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.BioactiveEntity;
+import psidev.psi.mi.jami.model.Checksum;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorSynchronizerTemplate;
-
-import javax.persistence.EntityManager;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.model.extension.IntactBioactiveEntity;
+import uk.ac.ebi.intact.jami.model.extension.InteractorAnnotation;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 /**
  * Synchronizer for bioactive entities
@@ -16,10 +20,10 @@ import javax.persistence.EntityManager;
  * @since <pre>28/01/14</pre>
  */
 
-public class IntactBioactiveEntitySynchronizer extends InteractorSynchronizerTemplate<BioactiveEntity, IntactBioactiveEntity> {
+public class BioactiveEntitySynchronizer extends InteractorSynchronizerTemplate<BioactiveEntity, IntactBioactiveEntity> {
 
-    public IntactBioactiveEntitySynchronizer(EntityManager entityManager) {
-        super(entityManager, IntactBioactiveEntity.class);
+    public BioactiveEntitySynchronizer(SynchronizerContext context) {
+        super(context, IntactBioactiveEntity.class);
     }
 
     @Override
