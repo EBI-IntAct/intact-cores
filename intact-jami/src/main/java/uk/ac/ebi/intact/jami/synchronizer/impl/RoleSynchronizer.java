@@ -1,21 +1,19 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Organism;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.user.Role;
-import uk.ac.ebi.intact.jami.model.user.User;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,13 +25,13 @@ import java.util.Map;
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactRoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
+public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
 
-    private static final Log log = LogFactory.getLog(IntactRoleSynchronizer.class);
+    private static final Log log = LogFactory.getLog(RoleSynchronizer.class);
     private Map<Role, Role> persistedRoles;
 
-    public IntactRoleSynchronizer(EntityManager entityManager){
-        super(entityManager, Role.class);
+    public RoleSynchronizer(SynchronizerContext context){
+        super(context, Role.class);
         this.persistedRoles = new HashMap<Role, Role>();
     }
 

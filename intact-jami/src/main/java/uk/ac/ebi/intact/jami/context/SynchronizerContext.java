@@ -4,6 +4,9 @@ import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.user.Preference;
+import uk.ac.ebi.intact.jami.model.user.Role;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import javax.persistence.EntityManager;
@@ -155,10 +158,6 @@ public interface SynchronizerContext {
 
     public InteractorSynchronizer<BioactiveEntity, IntactBioactiveEntity> getBioactiveEntitySynchronizer();
 
-    public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer();
-
-    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer();
-
     public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getCausalRelationshipSynchronizer();
 
     public ChecksumSynchronizer<InteractionChecksum> getInteractionChecksumSynchronizer();
@@ -177,6 +176,18 @@ public interface SynchronizerContext {
 
     public ParameterSynchronizer<Parameter, ExperimentalEntityParameter> getEntityParameterSynchronizer();
 
+    public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer();
+
+    public IntactDbSynchronizer<Range, IntactRange> getRangeSynchronizer();
+
+    public IntactDbSynchronizer<Preference, Preference> getPreferenceSynchronizer();
+
+    public IntactDbSynchronizer<Role, Role> getRoleSynchronizer();
+
+    public IntactDbSynchronizer<User, User> getUserSynchronizer();
+
     public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer();
+
+    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer();
 
 }

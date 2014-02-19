@@ -8,7 +8,7 @@ import psidev.psi.mi.jami.enricher.listener.OrganismEnricherListener;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Organism;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
-import uk.ac.ebi.intact.jami.synchronizer.IntactOrganismSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.OrganismSynchronizer;
 
 /**
  * Organism merger based on the jami organism enricher.
@@ -21,7 +21,7 @@ import uk.ac.ebi.intact.jami.synchronizer.IntactOrganismSynchronizer;
 
 public class OrganismMergerEnrichOnly extends IntactDbMergerEnrichOnly<Organism, IntactOrganism> implements OrganismEnricher{
 
-    public OrganismMergerEnrichOnly(IntactOrganismSynchronizer intactSynchronizer){
+    public OrganismMergerEnrichOnly(OrganismSynchronizer intactSynchronizer){
         super(IntactOrganism.class, new FullOrganismEnricher(intactSynchronizer));
     }
 

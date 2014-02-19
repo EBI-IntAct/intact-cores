@@ -7,10 +7,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.merger.FeatureMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.AliasSynchronizerTemplate;
-import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
-import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -167,7 +164,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     public IntactDbSynchronizer<Range, IntactRange> getRangeSynchronizer() {
         if (this.rangeSynchronizer == null){
-            this.rangeSynchronizer = new IntactRangeSynchronizer(getEntityManager());
+            this.rangeSynchronizer = new RangeSynchronizer(getEntityManager());
         }
         return rangeSynchronizer;
     }

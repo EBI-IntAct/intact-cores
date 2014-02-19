@@ -16,10 +16,7 @@ import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
-import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
-import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.SourceSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -254,7 +251,7 @@ public class IntactPublicationSynchronizer extends AbstractIntactDbSynchronizer<
 
     public IntactDbSynchronizer<User, User> getUserSynchronizer() {
         if(this.userSynchronizer == null){
-            this.userSynchronizer = new IntactUserSynchronizer(getEntityManager());
+            this.userSynchronizer = new UserSynchronizer(getEntityManager());
         }
         return userSynchronizer;
     }

@@ -6,10 +6,8 @@ import psidev.psi.mi.jami.model.Range;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.RangeDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
 import uk.ac.ebi.intact.jami.model.extension.IntactRange;
-import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.synchronizer.impl.RangeSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -488,6 +486,6 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactRangeSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new RangeSynchronizer(getEntityManager()));
     }
 }

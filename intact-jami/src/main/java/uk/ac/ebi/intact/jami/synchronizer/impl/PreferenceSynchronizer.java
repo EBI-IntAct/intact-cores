@@ -1,12 +1,16 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.user.Preference;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -17,12 +21,12 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactPreferenceSynchronizer extends AbstractIntactDbSynchronizer<Preference, Preference> {
+public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Preference, Preference> {
 
-    private static final Log log = LogFactory.getLog(IntactPreferenceSynchronizer.class);
+    private static final Log log = LogFactory.getLog(PreferenceSynchronizer.class);
 
-    public IntactPreferenceSynchronizer(EntityManager entityManager){
-        super(entityManager, Preference.class);
+    public PreferenceSynchronizer(SynchronizerContext context){
+        super(context, Preference.class);
     }
 
     public Preference find(Preference preference) throws FinderException {

@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.UserSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -69,7 +70,7 @@ public class IntactLifeCycleSynchronizer<A extends AbstractLifecycleEvent> exten
 
     public IntactDbSynchronizer<User, User> getUserSynchronizer() {
         if (this.userSynchronizer == null){
-            this.userSynchronizer = new IntactUserSynchronizer(getEntityManager());
+            this.userSynchronizer = new UserSynchronizer(getEntityManager());
         }
         return userSynchronizer;
     }

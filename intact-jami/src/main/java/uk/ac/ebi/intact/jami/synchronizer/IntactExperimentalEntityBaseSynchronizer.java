@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.merger.ExperimentalEntityMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ConfidenceSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.impl.OrganismSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ParameterSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -122,7 +123,7 @@ public class IntactExperimentalEntityBaseSynchronizer<T extends ExperimentalEnti
 
     public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer() {
         if (this.organismSynchronizer == null){
-            this.organismSynchronizer = new IntactOrganismSynchronizer(getEntityManager());
+            this.organismSynchronizer = new OrganismSynchronizer(getEntityManager());
         }
         return organismSynchronizer;
     }

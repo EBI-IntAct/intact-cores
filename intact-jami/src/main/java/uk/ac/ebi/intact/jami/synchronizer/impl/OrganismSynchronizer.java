@@ -1,12 +1,14 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.synchronizer.impl.AliasSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -24,17 +26,13 @@ import java.util.*;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism> implements OrganismFetcher{
+public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism> implements OrganismFetcher{
     private Map<Organism, IntactOrganism> persistedObjects;
-
-    private IntactDbSynchronizer<Alias, OrganismAlias> aliasSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> cellTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> tissueSynchronizer;
 
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
 
-    public IntactOrganismSynchronizer(EntityManager entityManager){
-        super(entityManager, IntactOrganism.class);
+    public OrganismSynchronizer(SynchronizerContext context){
+        super(context, IntactOrganism.class);
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Organism, IntactOrganism>();
     }
@@ -58,10 +56,10 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
         // we have a celltype/tissue to find first
         else {
             if (term.getCellType() != null && term.getTissue() != null){
-                CvTerm existingCell = getCellTypeSynchronizer().find(term.getCellType());
-                CvTerm existingTissue = getTissueSynchronizer().find(term.getTissue());
+                IntactCvTerm existingCell = getContext().getCellTypeSynchronizer().find(term.getCellType());
+                IntactCvTerm existingTissue = getContext().getTissueSynchronizer().find(term.getTissue());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
-                if (existingCell == null || existingTissue == null){
+                if ((existingCell == null || existingCell.getAc() == null) || (existingTissue == null || existingTissue.getAc() == null)){
                     return null;
                 }
                 else {
@@ -77,9 +75,9 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
                 }
             }
             else if (term.getCellType() != null){
-                CvTerm existingCell = getCellTypeSynchronizer().find(term.getCellType());
+                IntactCvTerm existingCell = getContext().getCellTypeSynchronizer().find(term.getCellType());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
-                if (existingCell == null){
+                if (existingCell == null || existingCell.getAc() == null){
                     return null;
                 }
                 else {
@@ -92,9 +90,9 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
                 }
             }
             else{
-                CvTerm existingTissue = getTissueSynchronizer().find(term.getTissue());
+                IntactCvTerm existingTissue = getContext().getTissueSynchronizer().find(term.getTissue());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
-                if (existingTissue == null){
+                if (existingTissue == null  || existingTissue.getAc() == null){
                     return null;
                 }
                 else {
@@ -154,9 +152,6 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
 
     public void clearCache() {
         this.persistedObjects.clear();
-        getAliasSynchronizer().clearCache();
-        getCellTypeSynchronizer().clearCache();
-        getTissueSynchronizer().clearCache();
     }
 
     public IntactOrganism fetchByTaxID(int taxID) throws BridgeFailedException {
@@ -190,45 +185,12 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
         return results;
     }
 
-    public IntactDbSynchronizer<Alias, OrganismAlias> getAliasSynchronizer() {
-        if (this.aliasSynchronizer == null){
-            this.aliasSynchronizer = new AliasSynchronizerTemplate<OrganismAlias>(getEntityManager(), OrganismAlias.class);
-        }
-        return aliasSynchronizer;
-    }
-
-    public void setAliasSynchronizer(IntactDbSynchronizer<Alias, OrganismAlias> aliasSynchronizer) {
-        this.aliasSynchronizer = aliasSynchronizer;
-    }
-
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCellTypeSynchronizer() {
-        if (this.cellTypeSynchronizer == null){
-            this.cellTypeSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.CELL_TYPE_OBJCLASS);
-        }
-        return cellTypeSynchronizer;
-    }
-
-    public void setCellTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> cellTypeSynchronizer) {
-        this.cellTypeSynchronizer = cellTypeSynchronizer;
-    }
-
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTissueSynchronizer() {
-        if (this.tissueSynchronizer == null){
-            this.tissueSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.TISSUE_OBJCLASS);
-        }
-        return tissueSynchronizer;
-    }
-
-    public void setTissueSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> tissueSynchronizer) {
-        this.tissueSynchronizer = tissueSynchronizer;
-    }
-
     protected void prepareCellTypeAndTissue(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
         if (intactOrganism.getCellType() != null){
-            intactOrganism.setCellType(getCellTypeSynchronizer().synchronize(intactOrganism.getCellType(), true));
+            intactOrganism.setCellType(getContext().getCellTypeSynchronizer().synchronize(intactOrganism.getCellType(), true));
         }
         if (intactOrganism.getTissue() != null){
-            intactOrganism.setTissue(getTissueSynchronizer().synchronize(intactOrganism.getTissue(), true));
+            intactOrganism.setTissue(getContext().getTissueSynchronizer().synchronize(intactOrganism.getTissue(), true));
         }
     }
 
@@ -237,7 +199,7 @@ public class IntactOrganismSynchronizer extends AbstractIntactDbSynchronizer<Org
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactOrganism.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias organismAlias = getAliasSynchronizer().synchronize(alias, false);
+                Alias organismAlias = getContext().getOrganismAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (organismAlias != alias){
                     intactOrganism.getAliases().remove(alias);

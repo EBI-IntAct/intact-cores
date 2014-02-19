@@ -1,12 +1,9 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.intact.jami.dao.RoleDao;
 import uk.ac.ebi.intact.jami.dao.UserDao;
-import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
-import uk.ac.ebi.intact.jami.synchronizer.IntactRoleSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactUserSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.UserSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -105,6 +102,6 @@ public class UserDaoImpl extends AbstractIntactBaseDao<User, User> implements Us
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactUserSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new UserSynchronizer(getEntityManager()));
     }
 }

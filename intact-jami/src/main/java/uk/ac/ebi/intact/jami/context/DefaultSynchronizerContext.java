@@ -581,27 +581,42 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     }
 
     public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer() {
+        if (this.organismSynchronizer == null){
+            this.organismSynchronizer = new OrganismSynchronizer(this);
+        }
         return organismSynchronizer;
     }
 
-    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer() {
-        return null;
-    }
-
     public IntactDbSynchronizer<Range, IntactRange> getRangeSynchronizer() {
+        if (this.rangeSynchronizer == null){
+            this.rangeSynchronizer = new RangeSynchronizer(this);
+        }
         return rangeSynchronizer;
     }
 
     public IntactDbSynchronizer<Preference, Preference> getPreferenceSynchronizer() {
+        if (this.preferenceSynchronizer == null){
+            this.preferenceSynchronizer = new PreferenceSynchronizer(this);
+        }
         return preferenceSynchronizer;
     }
 
     public IntactDbSynchronizer<Role, Role> getRoleSynchronizer() {
+        if (this.roleSynchronizer == null){
+            this.roleSynchronizer = new RoleSynchronizer(this);
+        }
         return roleSynchronizer;
     }
 
     public IntactDbSynchronizer<User, User> getUserSynchronizer() {
+        if (this.userSynchronizer == null){
+            this.userSynchronizer = new UserSynchronizer(this);
+        }
         return userSynchronizer;
+    }
+
+    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer() {
+        return null;
     }
 
     public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer() {

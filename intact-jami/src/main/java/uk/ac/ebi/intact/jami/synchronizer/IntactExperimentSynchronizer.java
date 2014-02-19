@@ -10,6 +10,7 @@ import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.OrganismSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 import uk.ac.ebi.intact.jami.utils.IntactExperimentComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -277,7 +278,7 @@ public class IntactExperimentSynchronizer extends AbstractIntactDbSynchronizer<E
 
     public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer() {
         if (this.organismSynchronizer == null){
-            this.organismSynchronizer = new IntactOrganismSynchronizer(getEntityManager());
+            this.organismSynchronizer = new OrganismSynchronizer(getEntityManager());
         }
         return organismSynchronizer;
     }

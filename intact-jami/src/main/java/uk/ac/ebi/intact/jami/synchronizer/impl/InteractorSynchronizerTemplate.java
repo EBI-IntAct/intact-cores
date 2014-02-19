@@ -49,11 +49,11 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         else{
             IntactCvTerm existingType = getContext().getInteractorTypeSynchronizer().find(term.getInteractorType());
             // could not retrieve the interactor type so this interactor does not exist in IntAct
-            if (existingType == null){
+            if (existingType == null || existingType.getAc() == null){
                 return null;
             }
             IntactOrganism existingOrganism = null;
-            if (term.getOrganism() != null){
+            if (term.getOrganism() != null || existingOrganism.getAc() == null){
                 existingOrganism = getContext().getOrganismSynchronizer().find(term.getOrganism());
                 // could not retrieve the organism so this interactor does not exist in IntAct
                 if (existingOrganism == null){
