@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.model.Feature;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
-import uk.ac.ebi.intact.jami.synchronizer.IntactFeatureBaseSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.FeatureSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -634,7 +634,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactFeatureBaseSynchronizer<T, F>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new FeatureSynchronizerTemplate<T, F>(getEntityManager(), getEntityClass()));
     }
 
     @Override

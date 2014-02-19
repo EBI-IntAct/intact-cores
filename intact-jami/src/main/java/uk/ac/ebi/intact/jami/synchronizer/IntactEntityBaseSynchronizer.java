@@ -185,7 +185,7 @@ public class IntactEntityBaseSynchronizer<T extends Entity, I extends AbstractIn
     }
 
     protected void initialiseFeatureSynchronizer(EntityManager entityManager) {
-        this.featureSynchronizer = new IntactFeatureSynchronizer(entityManager);
+        this.featureSynchronizer = new CompositeFeatureSynchronizer(entityManager);
     }
 
     @Override

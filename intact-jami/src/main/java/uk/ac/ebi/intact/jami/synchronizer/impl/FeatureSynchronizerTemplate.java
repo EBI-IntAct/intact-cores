@@ -1,16 +1,19 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.FeatureMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.*;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,21 +27,13 @@ import java.util.Map;
  * @since <pre>27/01/14</pre>
  */
 
-public class IntactFeatureBaseSynchronizer<F extends Feature, I extends AbstractIntactFeature> extends AbstractIntactDbSynchronizer<F,I> implements FeatureDbSynchronizer<F,I>{
-
-    private IntactDbSynchronizer<Alias, FeatureAlias> aliasSynchronizer;
-    private IntactDbSynchronizer<Annotation, FeatureAnnotation> annotationSynchronizer;
-    private IntactDbSynchronizer<Xref, FeatureXref> xrefSynchronizer;
-
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> effectSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer;
-    private IntactDbSynchronizer<Range, IntactRange> rangeSynchronizer;
+public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIntactFeature> extends AbstractIntactDbSynchronizer<F,I>{
     private Map<F, I> persistedObjects;
 
-    private static final Log log = LogFactory.getLog(IntactFeatureBaseSynchronizer.class);
+    private static final Log log = LogFactory.getLog(FeatureSynchronizerTemplate.class);
 
-    public IntactFeatureBaseSynchronizer(EntityManager entityManager, Class<? extends I> featureClass){
-        super(entityManager, featureClass);
+    public FeatureSynchronizerTemplate(SynchronizerContext context, Class<? extends I> featureClass){
+        super(context, featureClass);
 
         this.persistedObjects = new IdentityMap();
     }
@@ -98,94 +93,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
     }
 
     public void clearCache() {
-        getAliasSynchronizer().clearCache();
-        getXrefSynchronizer().clearCache();
-        getAnnotationSynchronizer().clearCache();
-
-        getTypeSynchronizer().clearCache();
-        getEffectSynchronizer().clearCache();
         this.persistedObjects.clear();
-    }
-
-    public IntactDbSynchronizer<Alias, FeatureAlias> getAliasSynchronizer() {
-        if (this.aliasSynchronizer == null){
-            this.aliasSynchronizer = new AliasSynchronizerTemplate(getEntityManager(), FeatureAlias.class);
-        }
-        return aliasSynchronizer;
-    }
-
-    public void setAliasSynchronizer(IntactDbSynchronizer<Alias, FeatureAlias> aliasSynchronizer) {
-        this.aliasSynchronizer = aliasSynchronizer;
-    }
-
-    public IntactDbSynchronizer<Annotation, FeatureAnnotation> getAnnotationSynchronizer() {
-        if (this.annotationSynchronizer == null){
-            this.annotationSynchronizer = new AnnotationSynchronizerTemplate(getEntityManager(), FeatureAnnotation.class);
-        }
-        return annotationSynchronizer;
-    }
-
-    public void setAnnotationSynchronizer(IntactDbSynchronizer<Annotation, FeatureAnnotation> annotationSynchronizer) {
-        this.annotationSynchronizer = annotationSynchronizer;
-    }
-
-    public IntactDbSynchronizer<Xref, FeatureXref> getXrefSynchronizer() {
-        if (this.xrefSynchronizer == null){
-            this.xrefSynchronizer = new XrefSynchronizerTemplate(getEntityManager(), FeatureXref.class);
-        }
-        return xrefSynchronizer;
-    }
-
-    public void setXrefSynchronizer(IntactDbSynchronizer<Xref, FeatureXref> xrefSynchronizer) {
-        this.xrefSynchronizer = xrefSynchronizer;
-    }
-
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getEffectSynchronizer() {
-        if (this.effectSynchronizer == null){
-            this.effectSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.TOPIC_OBJCLASS);
-        }
-        return effectSynchronizer;
-    }
-
-    public void setEffectSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> effectSynchronizer) {
-        this.effectSynchronizer = effectSynchronizer;
-    }
-
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTypeSynchronizer() {
-        if (this.typeSynchronizer == null){
-            this.typeSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.FEATURE_TYPE_OBJCLASS);
-        }
-        return typeSynchronizer;
-    }
-
-    public void setTypeSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> typeSynchronizer) {
-        this.typeSynchronizer = typeSynchronizer;
-    }
-
-    public IntactDbSynchronizer<Range, IntactRange> getRangeSynchronizer() {
-        if (this.rangeSynchronizer == null){
-            this.rangeSynchronizer = new RangeSynchronizer(getEntityManager());
-        }
-        return rangeSynchronizer;
-    }
-
-    public void setRangeSynchronizer(IntactDbSynchronizer<Range, IntactRange> rangeSynchronizer) {
-        this.rangeSynchronizer = rangeSynchronizer;
-    }
-
-    protected IntactFeatureBaseSynchronizer<F,I> setBasicCvAnnotationSynchronizer(IntactDbSynchronizer<Annotation, CvTermAnnotation> annotSynchronizer){
-        // TODO
-        return this;
-    }
-
-    protected IntactFeatureBaseSynchronizer<F,I> setBasicCvAliasSynchronizer(IntactDbSynchronizer<Alias, CvTermAlias> annotSynchronizer){
-        // TODO
-        return this;
-    }
-
-    protected IntactFeatureBaseSynchronizer<F,I> setBasicCvXrefSynchronizer(IntactDbSynchronizer<Xref, CvTermXref> annotSynchronizer){
-        // TODO
-        return this;
     }
 
     protected void prepareLinkedFeatures(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
@@ -208,7 +116,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
             List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
             for (Range range : rangesToPersist){
                 // do not persist or merge ranges because of cascades
-                Range featureRange = getRangeSynchronizer().synchronize(range, false);
+                Range featureRange = getContext().getRangeSynchronizer().synchronize(range, false);
                 // we have a different instance because needed to be synchronized
                 if (featureRange != range){
                     intactFeature.getRanges().remove(range);
@@ -220,11 +128,11 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
 
     protected void prepareInteractionEffectAndDependencies(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.getInteractionDependency() != null){
-            intactFeature.setInteractionDependency(getEffectSynchronizer().synchronize(intactFeature.getInteractionDependency(), true));
+            intactFeature.setInteractionDependency(getContext().getTopicSynchronizer().synchronize(intactFeature.getInteractionDependency(), true));
         }
 
         if (intactFeature.getInteractionEffect() != null){
-            intactFeature.setInteractionEffect(getEffectSynchronizer().synchronize(intactFeature.getInteractionEffect(), true));
+            intactFeature.setInteractionEffect(getContext().getTopicSynchronizer().synchronize(intactFeature.getInteractionEffect(), true));
         }
     }
 
@@ -233,7 +141,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref featureXref = getXrefSynchronizer().synchronize(xref, false);
+                Xref featureXref = getContext().getFeatureXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (featureXref != xref){
                     intactFeature.getPersistentXrefs().remove(xref);
@@ -248,7 +156,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation featureAnnotation = getAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation featureAnnotation = getContext().getFeatureAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (featureAnnotation != annotation){
                     intactFeature.getAnnotations().remove(annotation);
@@ -263,7 +171,7 @@ public class IntactFeatureBaseSynchronizer<F extends Feature, I extends Abstract
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias featureAlias = getAliasSynchronizer().synchronize(alias, false);
+                Alias featureAlias = getContext().getFeatureAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (featureAlias != alias){
                     intactFeature.getAliases().remove(alias);

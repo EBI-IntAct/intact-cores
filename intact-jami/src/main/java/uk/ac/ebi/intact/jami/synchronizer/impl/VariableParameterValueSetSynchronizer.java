@@ -1,12 +1,15 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.model.VariableParameterValueSet;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
-import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValueSet;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +22,10 @@ import java.util.List;
  * @since <pre>31/01/14</pre>
  */
 
-public class IntactVariableParameterValueSetSynchronizer extends AbstractIntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> {
+public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> {
 
-    private IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer;
-
-    public IntactVariableParameterValueSetSynchronizer(EntityManager entityManager) {
-        super(entityManager, IntactVariableParameterValueSet.class);
+    public VariableParameterValueSetSynchronizer(SynchronizerContext context) {
+        super(context, IntactVariableParameterValueSet.class);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class IntactVariableParameterValueSetSynchronizer extends AbstractIntactD
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object);
             for (VariableParameterValue value : valuesToPersist){
-                VariableParameterValue valueCheck = getParameterValueSynchronizer().synchronize(value, false);
+                VariableParameterValue valueCheck = getContext().getVariableParameterValueSynchronizer().synchronize(value, false);
                 // we have a different instance because needed to be synchronized
                 if (valueCheck != value){
                     object.remove(value);
@@ -56,18 +57,7 @@ public class IntactVariableParameterValueSetSynchronizer extends AbstractIntactD
     }
 
     public void clearCache() {
-        getParameterValueSynchronizer().clearCache();
-    }
-
-    public IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> getParameterValueSynchronizer() {
-        if (this.parameterValueSynchronizer == null){
-            this.parameterValueSynchronizer = new IntactVariableParameterValueSynchronizer(getEntityManager());
-        }
-        return parameterValueSynchronizer;
-    }
-
-    public void setParameterValueSynchronizer(IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
-        this.parameterValueSynchronizer = parameterValueSynchronizer;
+        // nothing to do
     }
 
     @Override

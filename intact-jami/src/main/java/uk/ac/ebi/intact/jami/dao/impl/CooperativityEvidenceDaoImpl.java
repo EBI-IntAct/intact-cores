@@ -6,7 +6,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.dao.CooperativityEvidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCooperativityEvidence;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCooperativityEvidenceSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CooperativityEvidenceSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -107,6 +107,6 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactCooperativityEvidenceSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new CooperativityEvidenceSynchronizer(getEntityManager()));
     }
 }

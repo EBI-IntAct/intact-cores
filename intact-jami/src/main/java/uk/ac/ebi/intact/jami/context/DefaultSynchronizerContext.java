@@ -1,8 +1,10 @@
 package uk.ac.ebi.intact.jami.context;
 
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
@@ -114,6 +116,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private LifecycleEventSynchronizer lifecycleSynchronizer;
 
     // feature synchronizers
+    private IntactDbSynchronizer<Feature, AbstractIntactFeature> featureSynchronizer;
     private IntactDbSynchronizer<FeatureEvidence, IntactFeatureEvidence> featureEvidenceSynchronizer;
     private IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> modelledFeatureSynchronizer;
 
@@ -615,47 +618,85 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         return userSynchronizer;
     }
 
-    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer() {
-        return null;
-    }
-
     public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer() {
+        if (this.publicationSynchronizer == null){
+            this.publicationSynchronizer = new PublicationSynchronizer(this);
+        }
         return publicationSynchronizer;
     }
 
     public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer() {
+        if (this.experimentSynchronizer == null){
+            this.experimentSynchronizer = new ExperimentSynchronizer(this);
+        }
         return experimentSynchronizer;
     }
 
-    public IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> getInteractionEvidenceSynchronizer() {
+    public IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> getInteractionSynchronizer() {
+        if (this.interactionEvidenceSynchronizer == null){
+            this.interactionEvidenceSynchronizer = new InteractionEvidenceSynchronizer(this);
+        }
         return interactionEvidenceSynchronizer;
     }
 
     public IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> getCooperativityEvidenceSynchronizer() {
+        if (this.cooperativityEvidenceSynchronizer == null){
+            this.cooperativityEvidenceSynchronizer = new CooperativityEvidenceSynchronizer(this);
+        }
         return cooperativityEvidenceSynchronizer;
     }
 
-    public LifecycleEventSynchronizer getLifecycleSynchronizer() {
-        return lifecycleSynchronizer;
+    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer() {
+        initialiseLifecycleTemplateIfNodDone();
+        this.lifecycleSynchronizer.setIntactClass(ComplexLifecycleEvent.class);
+        return this.lifecycleSynchronizer;
+    }
+
+    public IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> getPublicationLifecycleSynchronizer() {
+        initialiseLifecycleTemplateIfNodDone();
+        this.lifecycleSynchronizer.setIntactClass(PublicationLifecycleEvent.class);
+        return this.lifecycleSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Feature, AbstractIntactFeature> getFeatureSynchronizer(){
+        if (this.featureSynchronizer == null){
+            this.featureSynchronizer = new CompositeFeatureSynchronizer(this);
+        }
+        return this.featureSynchronizer;
     }
 
     public IntactDbSynchronizer<FeatureEvidence, IntactFeatureEvidence> getFeatureEvidenceSynchronizer() {
+        if (this.featureEvidenceSynchronizer == null){
+            this.featureEvidenceSynchronizer = new FeatureEvidenceSynchronizer(this);
+        }
         return featureEvidenceSynchronizer;
     }
 
     public IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> getModelledFeatureSynchronizer() {
+        if (this.modelledFeatureSynchronizer == null){
+            this.modelledFeatureSynchronizer = new FeatureSynchronizerTemplate<ModelledFeature, IntactModelledFeature>(this, IntactModelledFeature.class);
+        }
         return modelledFeatureSynchronizer;
     }
 
     public IntactDbSynchronizer<VariableParameter, IntactVariableParameter> getVariableParameterSynchronizer() {
+        if (this.variableParameterSynchronizer == null){
+            this.variableParameterSynchronizer = new VariableParameterSynchronizer(this);
+        }
         return variableParameterSynchronizer;
     }
 
     public IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> getVariableParameterValueSynchronizer() {
+        if (this.variableParameterValueSynchronizer == null){
+           this.variableParameterValueSynchronizer = new VariableParameterValueSynchronizer(this);
+        }
         return variableParameterValueSynchronizer;
     }
 
     public IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> getVariableParameterValueSetSynchronizer() {
+        if (this.variableParameterValueSetSynchronizer == null){
+            this.variableParameterValueSetSynchronizer = new VariableParameterValueSetSynchronizer(this);
+        }
         return variableParameterValueSetSynchronizer;
     }
 
@@ -716,6 +757,12 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private void initialiseParameterTemplateIfNodDone() {
         if (this.parameterSynchronizer == null){
             this.parameterSynchronizer = new ParameterSynchronizerTemplate(this, AbstractIntactParameter.class);
+        }
+    }
+
+    private void initialiseLifecycleTemplateIfNodDone() {
+        if (this.lifecycleSynchronizer == null){
+            this.lifecycleSynchronizer = new LifeCycleSynchronizerTemplate(this, AbstractLifecycleEvent.class);
         }
     }
 }

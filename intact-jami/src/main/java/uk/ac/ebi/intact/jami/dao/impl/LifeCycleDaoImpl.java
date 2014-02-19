@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.dao.LifeCycleEventDao;
 import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.synchronizer.IntactLifeCycleSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.LifeCycleSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -111,6 +111,6 @@ public class LifeCycleDaoImpl<A extends AbstractLifecycleEvent> extends Abstract
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactLifeCycleSynchronizer<A>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new LifeCycleSynchronizer<A>(getEntityManager(), getEntityClass()));
     }
 }

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.context;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
@@ -136,8 +137,6 @@ public interface SynchronizerContext {
 
     public EntitySynchronizer<AbstractIntactEntity> getEntitySynchronizer();
 
-    public IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> getModelledFeatureSynchronizer();
-
     public InteractorSynchronizer<Complex, IntactComplex> getComplexSynchronizer();
 
     public InteractorSynchronizer<Interactor, IntactInteractor> getInteractorSynchronizer();
@@ -186,8 +185,25 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<User, User> getUserSynchronizer();
 
+    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer();
+
     public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer();
 
     public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer();
 
+    public IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> getPublicationLifecycleSynchronizer();
+
+    public IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> getInteractionSynchronizer();
+
+    public IntactDbSynchronizer<Feature, AbstractIntactFeature> getFeatureSynchronizer();
+
+    public IntactDbSynchronizer<FeatureEvidence, IntactFeatureEvidence> getFeatureEvidenceSynchronizer();
+
+    public IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> getModelledFeatureSynchronizer();
+
+    public IntactDbSynchronizer<VariableParameter, IntactVariableParameter> getVariableParameterSynchronizer();
+
+    public IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> getVariableParameterValueSynchronizer();
+
+    public IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> getVariableParameterValueSetSynchronizer();
 }

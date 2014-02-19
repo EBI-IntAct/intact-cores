@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import uk.ac.ebi.intact.jami.dao.VariableParameterValueDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
-import uk.ac.ebi.intact.jami.synchronizer.IntactVariableParameterValueSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.VariableParameterValueSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -38,6 +38,6 @@ public class VariableParameterValueDaoImpl extends AbstractIntactBaseDao<Variabl
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactVariableParameterValueSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new VariableParameterValueSynchronizer(getEntityManager()));
     }
 }

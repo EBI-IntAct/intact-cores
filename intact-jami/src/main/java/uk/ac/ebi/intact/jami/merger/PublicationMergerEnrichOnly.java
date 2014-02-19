@@ -10,7 +10,7 @@ import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
-import uk.ac.ebi.intact.jami.synchronizer.IntactPublicationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.PublicationSynchronizer;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class PublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Publication, IntactPublication> implements CuratedPublicationEnricher {
 
-    public PublicationMergerEnrichOnly(IntactPublicationSynchronizer intactSynchronizer){
+    public PublicationMergerEnrichOnly(PublicationSynchronizer intactSynchronizer){
         super(IntactPublication.class, new FullCuratedPublicationEnricher(intactSynchronizer));
     }
 

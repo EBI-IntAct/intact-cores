@@ -3,17 +3,14 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.dao.ExperimentDao;
-import uk.ac.ebi.intact.jami.dao.PublicationDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
-import uk.ac.ebi.intact.jami.synchronizer.IntactExperimentSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.IntactPublicationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.ExperimentSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -495,6 +492,6 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactExperimentSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new ExperimentSynchronizer(getEntityManager()));
     }
 }

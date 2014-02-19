@@ -1,12 +1,16 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.VariableParameterValue;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -18,11 +22,11 @@ import java.util.Map;
  * @since <pre>31/01/14</pre>
  */
 
-public class IntactVariableParameterValueSynchronizer extends AbstractIntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue>{
+public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> {
     private Map<VariableParameterValue, IntactVariableParameterValue> persistedObjects;
 
-    public IntactVariableParameterValueSynchronizer(EntityManager entityManager) {
-        super(entityManager, IntactVariableParameterValue.class);
+    public VariableParameterValueSynchronizer(SynchronizerContext context) {
+        super(context, IntactVariableParameterValue.class);
         this.persistedObjects = new IdentityMap();
     }
 

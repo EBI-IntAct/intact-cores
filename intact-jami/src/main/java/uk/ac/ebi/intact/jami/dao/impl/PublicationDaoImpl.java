@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.dao.PublicationDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
-import uk.ac.ebi.intact.jami.synchronizer.IntactPublicationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.PublicationSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -663,6 +663,6 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new IntactPublicationSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new PublicationSynchronizer(getEntityManager()));
     }
 }

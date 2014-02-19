@@ -1,17 +1,17 @@
-package uk.ac.ebi.intact.jami.synchronizer;
+package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValue;
 import psidev.psi.mi.jami.utils.clone.VariableParameterCloner;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
-import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
-import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +24,10 @@ import java.util.List;
  * @since <pre>31/01/14</pre>
  */
 
-public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchronizer<VariableParameter, IntactVariableParameter>{
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer;
-    private IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer;
+public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<VariableParameter, IntactVariableParameter> {
 
-    public IntactVariableParameterSynchronizer(EntityManager entityManager) {
-        super(entityManager, IntactVariableParameter.class);
+    public VariableParameterSynchronizer(SynchronizerContext context) {
+        super(context, IntactVariableParameter.class);
     }
 
     @Override
@@ -57,33 +55,11 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
         synchronizeParameterValues(object);
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getUnitSynchronizer() {
-        if (this.unitSynchronizer == null){
-            this.unitSynchronizer = new CvTermSynchronizer(getEntityManager(), IntactUtils.UNIT_OBJCLASS);
-        }
-        return unitSynchronizer;
-    }
-
-    public void setUnitSynchronizer(IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer) {
-        this.unitSynchronizer = unitSynchronizer;
-    }
-
-    public IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> getParameterValueSynchronizer() {
-        if (this.parameterValueSynchronizer == null){
-            this.parameterValueSynchronizer = new IntactVariableParameterValueSynchronizer(getEntityManager());
-        }
-        return parameterValueSynchronizer;
-    }
-
-    public void setParameterValueSynchronizer(IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> parameterValueSynchronizer) {
-        this.parameterValueSynchronizer = parameterValueSynchronizer;
-    }
-
     protected void synchronizeParameterValues(IntactVariableParameter object) throws FinderException, PersisterException, SynchronizerException {
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object.getVariableValues());
             for (VariableParameterValue value : valuesToPersist){
-                VariableParameterValue valueCheck = getParameterValueSynchronizer().synchronize(value, false);
+                VariableParameterValue valueCheck = getContext().getVariableParameterValueSynchronizer().synchronize(value, false);
                 // we have a different instance because needed to be synchronized
                 if (valueCheck != value){
                     object.getVariableValues().remove(value);
@@ -95,7 +71,7 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
 
     protected void synchronizeUnit(IntactVariableParameter object) throws FinderException, PersisterException, SynchronizerException {
         if (object.getUnit() != null){
-            object.setUnit(getUnitSynchronizer().synchronize(object.getUnit(), true));
+            object.setUnit(getContext().getUnitSynchronizer().synchronize(object.getUnit(), true));
         }
     }
 
@@ -106,8 +82,7 @@ public class IntactVariableParameterSynchronizer extends AbstractIntactDbSynchro
     }
 
     public void clearCache() {
-        getUnitSynchronizer().clearCache();
-        getParameterValueSynchronizer().clearCache();
+        // nothing to do
     }
 
     @Override
