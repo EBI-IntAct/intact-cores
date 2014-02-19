@@ -705,6 +705,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     }
 
     public EntitySynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer() {
+        if (this.entitySynchronizer == null){
+            this.entitySynchronizer = new CompositeEntitySynchronizer(this);
+        }
         return entitySynchronizer;
     }
 
@@ -747,7 +750,65 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     }
 
     public void clearCache() {
-
+        clearCache(this.databaseSynchronizer);
+        clearCache(this.qualifierSynchronizer);
+        clearCache(this.topicSynchronizer);
+        clearCache(this.aliasTypeSynchronizer);
+        clearCache(this.unitSynchronizer);
+        clearCache(this.featureTypeSynchronizer);
+        clearCache(this.experimentalRoleSynchronizer);
+        clearCache(this.biologicalRoleSynchronizer);
+        clearCache(this.interactionDetectionMethodSynchronizer);
+        clearCache(this.interactionTypeSynchronizer);
+        clearCache(this.participantDetectionMethodSynchronizer);
+        clearCache(this.experimentalPreparationSynchronizer);
+        clearCache(this.interactorTypeSynchronizer);
+        clearCache(this.rangeStatusSynchronizer);
+        clearCache(this.confidenceTypeSynchronizer);
+        clearCache(this.parameterTypeSynchronizer);
+        clearCache(this.cellTypeSynchronizer);
+        clearCache(this.tissueSynchronizer);
+        clearCache(this.featureDetectionMethodSynchronizer);
+        clearCache(this.lifecycleStatusSynchronizer);
+        clearCache(this.lifecycleEventSynchronizer);
+        clearCache(this.sourceSynchronizer);
+        clearCache(this.aliasSynchronizer);
+        clearCache(this.annotationSynchronizer);
+        clearCache(this.xrefSynchronizer);
+        clearCache(this.cooperativeEffectSynchronizer);
+        clearCache(this.preAssemblySynchronizer);
+        clearCache(this.allosterySynchronizer);
+        clearCache(this.interactorSynchronizer);
+        clearCache(this.interactorBaseSynchronizer);
+        clearCache(this.polymerSynchronizer);
+        clearCache(this.complexSynchronizer);
+        clearCache(this.interactorPoolSynchronizer);
+        clearCache(this.bioactiveEntitySynchronizer);
+        clearCache(this.causalRelationshipSynchronizer);
+        clearCache(this.checksumSynchronizer);
+        clearCache(this.confidenceSynchronizer);
+        clearCache(this.parameterSynchronizer);
+        clearCache(this.organismSynchronizer);
+        clearCache(this.rangeSynchronizer);
+        clearCache(this.preferenceSynchronizer);
+        clearCache(this.roleSynchronizer);
+        clearCache(this.userSynchronizer);
+        clearCache(this.publicationSynchronizer);
+        clearCache(this.experimentSynchronizer);
+        clearCache(this.interactionEvidenceSynchronizer);
+        clearCache(this.cooperativityEvidenceSynchronizer);
+        clearCache(this.lifecycleSynchronizer);
+        clearCache(this.featureSynchronizer);
+        clearCache(this.featureEvidenceSynchronizer);
+        clearCache(this.modelledFeatureSynchronizer);
+        clearCache(this.variableParameterSynchronizer);
+        clearCache(this.variableParameterValueSynchronizer);
+        clearCache(this.variableParameterValueSetSynchronizer);
+        clearCache(this.entitySynchronizer);
+        clearCache(this.modelledEntitySynchronizer);
+        clearCache(this.modelledEntityPoolSynchronizer);
+        clearCache(this.experimentalEntitySynchronizer);
+        clearCache(this.experimentalEntityPoolSynchronizer);
     }
 
     private void initialiseAliasTemplateIfNotDone() {
@@ -813,6 +874,12 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private void initialiseExperimentalEntityTemplateIfNodDone() {
         if (this.experimentalEntitySynchronizer == null){
             this.experimentalEntitySynchronizer = new ExperimentalEntitySynchronizerTemplate(this, IntactExperimentalEntity.class);
+        }
+    }
+
+    private void clearCache(IntactDbSynchronizer delegate){
+        if (delegate != null){
+            delegate.clearCache();
         }
     }
 }

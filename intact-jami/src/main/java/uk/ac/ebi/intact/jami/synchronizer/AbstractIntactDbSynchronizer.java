@@ -169,10 +169,4 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected SynchronizerContext getContext() {
         return context;
     }
-
-    protected void clearCache(IntactDbSynchronizer delegate){
-         if (delegate != null){
-            delegate.clearCache();
-         }
-    }
 }
