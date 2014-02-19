@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CausalRelationshipDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCausalRelationship;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CausalRelationchipSynchronizer;
@@ -84,6 +85,6 @@ public class CausalRelationshipDaoImpl extends AbstractIntactBaseDao<CausalRelat
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new CausalRelationchipSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new CausalRelationchipSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

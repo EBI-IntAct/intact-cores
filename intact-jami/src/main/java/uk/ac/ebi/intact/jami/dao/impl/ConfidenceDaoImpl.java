@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ConfidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ConfidenceSynchronizerTemplate;
@@ -106,11 +107,11 @@ public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends Abstr
     @Override
     public void setEntityClass(Class<C> entityClass) {
         super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        getDbSynchronizer().setIntactClass(entityClass);
     }
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ConfidenceSynchronizerTemplate<C>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new ConfidenceSynchronizerTemplate(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
     }
 }

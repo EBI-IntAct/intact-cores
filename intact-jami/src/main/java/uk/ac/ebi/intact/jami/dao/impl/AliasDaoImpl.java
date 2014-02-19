@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.AliasDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.synchronizer.impl.AliasSynchronizerTemplate;
@@ -155,11 +156,11 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
     @Override
     public void setEntityClass(Class<A> entityClass) {
         super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        getDbSynchronizer().setIntactClass(entityClass);
     }
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new AliasSynchronizerTemplate<A>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new AliasSynchronizerTemplate<A>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CooperativityEvidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CooperativityEvidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCooperativityEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CooperativityEvidenceSynchronizer;
@@ -107,6 +108,6 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new CooperativityEvidenceSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new CooperativityEvidenceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

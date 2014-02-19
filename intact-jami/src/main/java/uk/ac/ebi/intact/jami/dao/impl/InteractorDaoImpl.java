@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.InteractorDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorSynchronizerTemplate;
@@ -556,12 +557,12 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new InteractorSynchronizerTemplate<T, F>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new InteractorSynchronizerTemplate<T, F>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
     }
 
     @Override
     public void setEntityClass(Class<F> entityClass) {
         super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        getDbSynchronizer().setIntactClass(entityClass);
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Allostery;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.AllosteryDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactAllostery;
 import uk.ac.ebi.intact.jami.synchronizer.impl.AllosterySynchronizer;
@@ -106,6 +107,6 @@ public class AllosteryDaoImpl extends CooperativeEffectDaoImpl<Allostery, Intact
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new AllosterySynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new AllosterySynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

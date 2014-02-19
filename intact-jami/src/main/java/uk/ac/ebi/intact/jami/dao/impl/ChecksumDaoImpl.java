@@ -5,9 +5,10 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Checksum;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ChecksumDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
-import uk.ac.ebi.intact.jami.synchronizer.impl.ChecksumSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.ChecksumSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -106,11 +107,11 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
     @Override
     public void setEntityClass(Class<C> entityClass) {
         super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        getDbSynchronizer().setIntactClass(entityClass);
     }
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ChecksumSynchronizer<C>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new ChecksumSynchronizerTemplate<C>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
     }
 }

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.OrganismDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.impl.OrganismSynchronizer;
@@ -239,6 +240,6 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new OrganismSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new OrganismSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

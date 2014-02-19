@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.FeatureEvidence;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureEvidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.impl.FeatureEvidenceSynchronizer;
@@ -60,6 +61,6 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new FeatureEvidenceSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new FeatureEvidenceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

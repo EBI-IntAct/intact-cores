@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParameter;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ParameterSynchronizerTemplate;
@@ -195,11 +196,11 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
     @Override
     public void setEntityClass(Class<P> entityClass) {
         super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        getDbSynchronizer().setIntactClass(entityClass);
     }
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ParameterSynchronizerTemplate<P>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new ParameterSynchronizerTemplate(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
     }
 }

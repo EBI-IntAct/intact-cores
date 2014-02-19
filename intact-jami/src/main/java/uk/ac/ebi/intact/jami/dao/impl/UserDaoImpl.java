@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.UserDao;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.impl.UserSynchronizer;
@@ -102,6 +103,6 @@ public class UserDaoImpl extends AbstractIntactBaseDao<User, User> implements Us
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new UserSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new UserSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

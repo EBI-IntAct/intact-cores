@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.PreferenceDao;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.synchronizer.impl.PreferenceSynchronizer;
@@ -46,6 +47,6 @@ public class PreferenceDaoImpl extends AbstractIntactBaseDao<Preference, Prefere
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new PreferenceSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new PreferenceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

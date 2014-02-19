@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CooperativeEffect;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CooperativeEffectDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CooperativeEffectSynchronizerTemplate;
@@ -162,12 +163,12 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new CooperativeEffectSynchronizerTemplate<T, F>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new CooperativeEffectSynchronizerTemplate<T, F>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
     }
 
     @Override
     public void setEntityClass(Class<F> entityClass) {
         super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        getDbSynchronizer().setIntactClass(entityClass);
     }
 }

@@ -1,10 +1,11 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.LifeCycleEventDao;
 import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.synchronizer.impl.LifeCycleSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.impl.LifeCycleSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -106,11 +107,11 @@ public class LifeCycleDaoImpl<A extends AbstractLifecycleEvent> extends Abstract
     @Override
     public void setEntityClass(Class<A> entityClass) {
         super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        getDbSynchronizer().setIntactClass(entityClass);
     }
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new LifeCycleSynchronizer<A>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new LifeCycleSynchronizerTemplate<A>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
     }
 }

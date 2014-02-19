@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.InteractorPool;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.InteractorPoolDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorPoolSynchronizer;
@@ -29,7 +30,7 @@ public class InteractorPoolImpl extends InteractorDaoImpl<InteractorPool,IntactI
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new InteractorPoolSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new InteractorPoolSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 
     public Collection<IntactInteractorPool> getByInteractorAc(String ac) {

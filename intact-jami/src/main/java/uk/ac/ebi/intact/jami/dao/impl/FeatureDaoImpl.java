@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Feature;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 import uk.ac.ebi.intact.jami.synchronizer.impl.FeatureSynchronizerTemplate;
@@ -634,12 +635,12 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new FeatureSynchronizerTemplate<T, F>(getEntityManager(), getEntityClass()));
+        super.setDbSynchronizer(new FeatureSynchronizerTemplate<T, F>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
     }
 
     @Override
     public void setEntityClass(Class<F> entityClass) {
         super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
+        getDbSynchronizer().setIntactClass(entityClass);
     }
 }

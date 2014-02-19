@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.RoleDao;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.synchronizer.impl.RoleSynchronizer;
@@ -46,6 +47,6 @@ public class RoleDaoImpl extends AbstractIntactBaseDao<Role, Role> implements Ro
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new RoleSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new RoleSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

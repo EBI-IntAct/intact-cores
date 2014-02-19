@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
@@ -678,6 +679,6 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new CvTermSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new CvTermSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

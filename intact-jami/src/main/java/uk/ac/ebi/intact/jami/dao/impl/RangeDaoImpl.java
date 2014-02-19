@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Range;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.RangeDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactRange;
@@ -486,6 +487,6 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new RangeSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new RangeSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

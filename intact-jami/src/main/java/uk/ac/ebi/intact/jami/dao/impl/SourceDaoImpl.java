@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.impl.SourceSynchronizer;
@@ -567,6 +568,6 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new SourceSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new SourceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

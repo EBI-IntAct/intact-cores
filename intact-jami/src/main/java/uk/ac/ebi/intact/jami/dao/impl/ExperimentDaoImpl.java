@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ExperimentDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
@@ -492,6 +493,6 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
 
     @Override
     protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ExperimentSynchronizer(getEntityManager()));
+        super.setDbSynchronizer(new ExperimentSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
     }
 }

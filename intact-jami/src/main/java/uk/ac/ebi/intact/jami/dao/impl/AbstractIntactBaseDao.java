@@ -64,6 +64,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
 
     public void flush() {
         getEntityManager().flush();
+        getDbSynchronizer().clearCache();
     }
 
     public List<T> getAll() {
@@ -171,7 +172,6 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
     protected abstract void initialiseDbSynchronizer();
 
     protected void synchronizeObjectProperties(T objToUpdate) throws PersisterException, FinderException, SynchronizerException {
-        getDbSynchronizer().clearCache();
         getDbSynchronizer().synchronizeProperties(objToUpdate);
         getDbSynchronizer().clearCache();
     }
