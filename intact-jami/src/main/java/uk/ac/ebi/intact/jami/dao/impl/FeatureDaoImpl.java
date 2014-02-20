@@ -5,8 +5,10 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Feature;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.synchronizer.impl.FeatureSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
@@ -20,19 +22,14 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> extends AbstractIntactBaseDao<T, F> implements FeatureDao<F> {
 
-    protected FeatureDaoImpl() {
-        super((Class<F>)AbstractIntactFeature.class);
+    public FeatureDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<F>)AbstractIntactFeature.class, entityManager, context);
     }
 
-    public FeatureDaoImpl(Class<F> entityClass) {
-        super(entityClass);
-    }
-
-    public FeatureDaoImpl(Class<F> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public FeatureDaoImpl(Class<F> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public F getByAc(String ac) {

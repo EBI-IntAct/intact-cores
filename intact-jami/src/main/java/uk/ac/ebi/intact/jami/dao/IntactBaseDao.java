@@ -5,7 +5,6 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,8 +17,6 @@ import java.util.List;
  */
 
 public interface IntactBaseDao<T extends Auditable> {
-
-    public EntityManager getEntityManager();
 
     public void flush();
 

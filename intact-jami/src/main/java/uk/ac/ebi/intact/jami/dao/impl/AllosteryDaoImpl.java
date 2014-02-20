@@ -5,7 +5,9 @@ import psidev.psi.mi.jami.model.Allostery;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.AllosteryDao;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.model.extension.IntactAllostery;
 import uk.ac.ebi.intact.jami.synchronizer.impl.AllosterySynchronizer;
 
@@ -20,15 +22,10 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class AllosteryDaoImpl extends CooperativeEffectDaoImpl<Allostery, IntactAllostery> implements AllosteryDao {
 
-    protected AllosteryDaoImpl() {
-        super(IntactAllostery.class);
-    }
-
-    public AllosteryDaoImpl(EntityManager entityManager) {
-        super(IntactAllostery.class, entityManager);
+    public AllosteryDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactAllostery.class, entityManager, context);
     }
 
     public Collection<IntactAllostery> getByAllostericMoleculeAc(String ac) {

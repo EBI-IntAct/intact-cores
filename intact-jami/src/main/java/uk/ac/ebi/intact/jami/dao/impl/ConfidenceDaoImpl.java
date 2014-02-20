@@ -1,11 +1,11 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ConfidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ConfidenceSynchronizerTemplate;
@@ -21,19 +21,14 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends AbstractIntactBaseDao<Confidence, C> implements ConfidenceDao<C> {
 
-    public ConfidenceDaoImpl() {
-        super((Class<C>)AbstractIntactConfidence.class);
+    public ConfidenceDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<C>)AbstractIntactConfidence.class, entityManager, context);
     }
 
-    public ConfidenceDaoImpl(Class<C> entityClass) {
-        super(entityClass);
-    }
-
-    public ConfidenceDaoImpl(Class<C> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public ConfidenceDaoImpl(Class<C> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public Collection<C> getByValue(String value) {

@@ -5,7 +5,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.InteractorDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorSynchronizerTemplate;
 
@@ -22,19 +24,14 @@ import java.util.List;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor> extends AbstractIntactBaseDao<T, F> implements InteractorDao<F> {
 
-    protected InteractorDaoImpl() {
-        super((Class<F>)IntactInteractor.class);
+    public InteractorDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<F>)IntactInteractor.class, entityManager, context);
     }
 
-    public InteractorDaoImpl(Class<F> entityClass) {
-        super(entityClass);
-    }
-
-    public InteractorDaoImpl(Class<F> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public InteractorDaoImpl(Class<F> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public F getByAc(String ac) {

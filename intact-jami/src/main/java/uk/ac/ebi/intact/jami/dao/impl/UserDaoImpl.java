@@ -2,7 +2,9 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.UserDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.impl.UserSynchronizer;
 
@@ -18,15 +20,10 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class UserDaoImpl extends AbstractIntactBaseDao<User, User> implements UserDao {
 
-    public UserDaoImpl() {
-        super(User.class);
-    }
-
-    public UserDaoImpl(EntityManager entityManager) {
-        super(User.class, entityManager);
+    public UserDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(User.class, entityManager, context);
     }
 
     public User getByLogin(String login) {

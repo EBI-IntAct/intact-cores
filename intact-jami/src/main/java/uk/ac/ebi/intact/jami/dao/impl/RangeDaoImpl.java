@@ -5,8 +5,10 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Range;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.RangeDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.IntactRange;
 import uk.ac.ebi.intact.jami.synchronizer.impl.RangeSynchronizer;
 
@@ -21,15 +23,10 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>24/01/14</pre>
  */
-@Repository
 public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> implements RangeDao {
 
-    public RangeDaoImpl() {
-        super(IntactRange.class);
-    }
-
-    public RangeDaoImpl(EntityManager entityManager) {
-        super(IntactRange.class, entityManager);
+    public RangeDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactRange.class, entityManager, context);
     }
 
     public IntactRange getByAc(String ac) {

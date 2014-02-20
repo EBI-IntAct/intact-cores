@@ -1,10 +1,10 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CooperativeEffect;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CooperativeEffectDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CooperativeEffectSynchronizerTemplate;
@@ -20,19 +20,14 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends AbstractIntactCooperativeEffect> extends AbstractIntactBaseDao<T, F> implements CooperativeEffectDao<F> {
 
-    protected CooperativeEffectDaoImpl() {
-        super((Class<F>)AbstractIntactCooperativeEffect.class);
+    public CooperativeEffectDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<F>)AbstractIntactCooperativeEffect.class, entityManager, context);
     }
 
-    public CooperativeEffectDaoImpl(Class<F> entityClass) {
-        super(entityClass);
-    }
-
-    public CooperativeEffectDaoImpl(Class<F> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public CooperativeEffectDaoImpl(Class<F> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public Collection<F> getByAnnotationTopic(String topicName, String topicMI) {

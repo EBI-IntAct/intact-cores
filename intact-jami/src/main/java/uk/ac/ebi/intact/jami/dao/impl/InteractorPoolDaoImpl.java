@@ -3,7 +3,9 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.InteractorPool;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.InteractorPoolDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorPoolSynchronizer;
 
@@ -18,14 +20,9 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>31/01/14</pre>
  */
-@Repository
 public class InteractorPoolDaoImpl extends InteractorDaoImpl<InteractorPool,IntactInteractorPool> implements InteractorPoolDao{
-    public InteractorPoolDaoImpl() {
-        super(IntactInteractorPool.class);
-    }
-
-    public InteractorPoolDaoImpl(EntityManager entityManager) {
-        super(IntactInteractorPool.class, entityManager);
+    public InteractorPoolDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactInteractorPool.class, entityManager, context);
     }
 
     @Override

@@ -2,7 +2,9 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.PreferenceDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.synchronizer.impl.PreferenceSynchronizer;
 
@@ -17,15 +19,10 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class PreferenceDaoImpl extends AbstractIntactBaseDao<Preference, Preference> implements PreferenceDao {
 
-    public PreferenceDaoImpl() {
-        super(Preference.class);
-    }
-
-    public PreferenceDaoImpl(EntityManager entityManager) {
-        super(Preference.class, entityManager);
+    public PreferenceDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(Preference.class, entityManager, context);
     }
 
     public Collection<Preference> getByKey(String key, int first, int max) {

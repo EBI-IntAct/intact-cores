@@ -78,6 +78,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         prepareAndSynchronizeShortLabel(intactFeature);
         // then check full name
         prepareFullName(intactFeature);
+        prepareType(intactFeature);
         // then check def
         prepareInteractionEffectAndDependencies(intactFeature);
         // then check aliases
@@ -90,6 +91,12 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         prepareRanges(intactFeature);
         // then check linkedFeatures
         prepareLinkedFeatures(intactFeature);
+    }
+
+    protected void prepareType(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        if (intactFeature.getType() != null){
+            intactFeature.setType(getContext().getFeatureTypeSynchronizer().synchronize(intactFeature.getType(), true));
+        }
     }
 
     public void clearCache() {

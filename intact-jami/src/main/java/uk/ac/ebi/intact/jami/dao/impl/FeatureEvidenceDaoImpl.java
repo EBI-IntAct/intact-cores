@@ -4,7 +4,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.FeatureEvidence;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureEvidenceDao;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.impl.FeatureEvidenceSynchronizer;
 
@@ -22,12 +24,8 @@ import java.util.Collection;
 
 public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, IntactFeatureEvidence> implements FeatureEvidenceDao{
 
-    public FeatureEvidenceDaoImpl() {
-        super(IntactFeatureEvidence.class);
-    }
-
-    public FeatureEvidenceDaoImpl(EntityManager entityManager) {
-        super(IntactFeatureEvidence.class, entityManager);
+    public FeatureEvidenceDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactFeatureEvidence.class, entityManager, context);
     }
 
     public Collection<IntactFeatureEvidence> getByFeatureDetectionMethod(String methodName, String methodMI) {

@@ -3,8 +3,10 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.VariableParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.impl.VariableParameterSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -18,15 +20,10 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class VariableParameterDaoImpl extends AbstractIntactBaseDao<VariableParameter, IntactVariableParameter> implements VariableParameterDao {
 
-    public VariableParameterDaoImpl() {
-        super(IntactVariableParameter.class);
-    }
-
-    public VariableParameterDaoImpl(EntityManager entityManager) {
-        super(IntactVariableParameter.class, entityManager);
+    public VariableParameterDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactVariableParameter.class, entityManager, context);
     }
 
     public Collection<IntactVariableParameter> getByDescription(String desc) {

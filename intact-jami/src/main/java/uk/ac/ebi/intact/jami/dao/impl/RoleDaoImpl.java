@@ -2,7 +2,9 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.RoleDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactRange;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.synchronizer.impl.RoleSynchronizer;
 
@@ -18,15 +20,10 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class RoleDaoImpl extends AbstractIntactBaseDao<Role, Role> implements RoleDao {
 
-    public RoleDaoImpl() {
-        super(Role.class);
-    }
-
-    public RoleDaoImpl(EntityManager entityManager) {
-        super(Role.class, entityManager);
+    public RoleDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(Role.class, entityManager, context);
     }
 
     public Role getByName(String name) {

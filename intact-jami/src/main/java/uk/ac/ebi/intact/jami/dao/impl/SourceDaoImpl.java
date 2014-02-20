@@ -5,8 +5,10 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
+import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.synchronizer.impl.SourceSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -22,15 +24,9 @@ import java.util.List;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> implements SourceDao {
-
-    public SourceDaoImpl() {
-        super(IntactSource.class);
-    }
-
-    public SourceDaoImpl(EntityManager entityManager) {
-        super(IntactSource.class, entityManager);
+    public SourceDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactSource.class, entityManager, context);
     }
 
     public IntactSource getByAc(String ac) {

@@ -5,7 +5,9 @@ import psidev.psi.mi.jami.model.CooperativityEvidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CooperativityEvidenceDao;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
 import uk.ac.ebi.intact.jami.model.extension.IntactCooperativityEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CooperativityEvidenceSynchronizer;
 
@@ -20,15 +22,10 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<CooperativityEvidence, IntactCooperativityEvidence> implements CooperativityEvidenceDao {
 
-    public CooperativityEvidenceDaoImpl() {
-        super(IntactCooperativityEvidence.class);
-    }
-
-    public CooperativityEvidenceDaoImpl(EntityManager entityManager) {
-        super(IntactCooperativityEvidence.class, entityManager);
+    public CooperativityEvidenceDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactCooperativityEvidence.class, entityManager, context);
     }
 
     public Collection<IntactCooperativityEvidence> getByMethod(String methodName, String methodMI) {

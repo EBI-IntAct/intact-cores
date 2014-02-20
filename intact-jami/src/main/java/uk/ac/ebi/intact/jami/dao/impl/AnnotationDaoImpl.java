@@ -1,11 +1,11 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.AnnotationDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
@@ -21,19 +21,14 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends AbstractIntactBaseDao<Annotation, A> implements AnnotationDao<A> {
 
-    protected AnnotationDaoImpl() {
-        super((Class<A>)AbstractIntactAnnotation.class);
+    public AnnotationDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<A>)AbstractIntactAnnotation.class, entityManager, context);
     }
 
-    public AnnotationDaoImpl(Class<A> entityClass) {
-        super(entityClass);
-    }
-
-    public AnnotationDaoImpl(Class<A> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public AnnotationDaoImpl(Class<A> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public Collection<A> getByValue(String value) {

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.PublicationDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.impl.PublicationSynchronizer;
@@ -21,15 +22,10 @@ import java.util.List;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, IntactPublication> implements PublicationDao {
 
-    public PublicationDaoImpl() {
-        super(IntactPublication.class);
-    }
-
-    public PublicationDaoImpl(EntityManager entityManager) {
-        super(IntactPublication.class, entityManager);
+    public PublicationDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactPublication.class, entityManager, context);
     }
 
     public IntactPublication getByAc(String ac) {

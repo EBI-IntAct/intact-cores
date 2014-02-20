@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ExperimentDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
@@ -21,15 +22,10 @@ import java.util.List;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactExperiment> implements ExperimentDao {
 
-    public ExperimentDaoImpl() {
-        super(IntactExperiment.class);
-    }
-
-    public ExperimentDaoImpl(EntityManager entityManager) {
-        super(IntactExperiment.class, entityManager);
+    public ExperimentDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactExperiment.class, entityManager, context);
     }
 
     public IntactExperiment getByAc(String ac) {

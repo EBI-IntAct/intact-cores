@@ -1,8 +1,8 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.ParticipantEvidence;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParticipantEvidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
@@ -19,20 +19,15 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends IntactParticipantEvidence> extends ExperimentalEntityDaoImpl<P, I>
         implements ParticipantEvidenceDao<I> {
 
-    protected ParticipantEvidenceDaoImpl() {
-        super((Class<I>)IntactModelledParticipant.class);
+    public ParticipantEvidenceDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<I>)IntactModelledParticipant.class, entityManager, context);
     }
 
-    public ParticipantEvidenceDaoImpl(Class<I> entityClass) {
-        super(entityClass);
-    }
-
-    public ParticipantEvidenceDaoImpl(Class<I> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public ParticipantEvidenceDaoImpl(Class<I> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     @Override

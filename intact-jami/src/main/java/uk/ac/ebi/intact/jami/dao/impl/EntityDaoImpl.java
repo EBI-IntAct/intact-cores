@@ -5,8 +5,10 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.EntityDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.impl.EntitySynchronizerTemplate;
 
 import javax.persistence.EntityManager;
@@ -20,19 +22,14 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> extends AbstractIntactBaseDao<T, F> implements EntityDao<F> {
 
-    protected EntityDaoImpl() {
-        super((Class<F>)AbstractIntactEntity.class);
+    public EntityDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<F>)AbstractIntactEntity.class, entityManager, context);
     }
 
-    public EntityDaoImpl(Class<F> entityClass) {
-        super(entityClass);
-    }
-
-    public EntityDaoImpl(Class<F> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public EntityDaoImpl(Class<F> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public F getByAc(String ac) {

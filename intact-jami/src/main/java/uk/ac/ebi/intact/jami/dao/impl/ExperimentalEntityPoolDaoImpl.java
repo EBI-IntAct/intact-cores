@@ -6,8 +6,10 @@ import psidev.psi.mi.jami.model.ExperimentalEntityPool;
 import psidev.psi.mi.jami.model.ModelledEntityPool;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ExperimentalEntityPoolDao;
 import uk.ac.ebi.intact.jami.dao.ModelledEntityPoolDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntityPool;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledEntityPool;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ExperimentalEntityPoolSynchronizer;
@@ -24,16 +26,11 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class ExperimentalEntityPoolDaoImpl extends ParticipantEvidenceDaoImpl<ExperimentalEntityPool, IntactExperimentalEntityPool>
         implements ExperimentalEntityPoolDao {
 
-    public ExperimentalEntityPoolDaoImpl() {
-        super(IntactExperimentalEntityPool.class);
-    }
-
-    public ExperimentalEntityPoolDaoImpl(EntityManager entityManager) {
-        super(IntactExperimentalEntityPool.class, entityManager);
+    public ExperimentalEntityPoolDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactExperimentalEntityPool.class, entityManager, context);
     }
 
     @Override

@@ -1,10 +1,10 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.AliasDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.synchronizer.impl.AliasSynchronizerTemplate;
@@ -20,19 +20,14 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactBaseDao<Alias, A> implements AliasDao<A> {
 
-    public AliasDaoImpl() {
-        super((Class<A>)AbstractIntactAlias.class);
+    public AliasDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<A>)AbstractIntactAlias.class, entityManager, context);
     }
 
-    public AliasDaoImpl(Class<A> entityClass) {
-        super(entityClass);
-    }
-
-    public AliasDaoImpl(Class<A> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public AliasDaoImpl(Class<A> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public Collection<A> getByName(String name) {

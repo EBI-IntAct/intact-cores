@@ -1,8 +1,8 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.ModelledParticipant;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ModelledParticipantDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ModelledEntitySynchronizerTemplate;
@@ -18,20 +18,15 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends IntactModelledParticipant> extends ModelledEntityDaoImpl<P, I>
         implements ModelledParticipantDao<I> {
 
-    protected ModelledParticipantDaoImpl() {
-        super((Class<I>)IntactModelledParticipant.class);
+    public ModelledParticipantDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<I>)IntactModelledParticipant.class, entityManager, context);
     }
 
-    public ModelledParticipantDaoImpl(Class<I> entityClass) {
-        super(entityClass);
-    }
-
-    public ModelledParticipantDaoImpl(Class<I> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public ModelledParticipantDaoImpl(Class<I> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     @Override

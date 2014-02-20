@@ -196,7 +196,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteraction.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation expAnnotation = getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation expAnnotation = getContext().getInteractionAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (expAnnotation != annotation){
                     intactInteraction.getAnnotations().remove(annotation);

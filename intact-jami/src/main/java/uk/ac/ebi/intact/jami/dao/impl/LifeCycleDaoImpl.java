@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.LifeCycleEventDao;
 import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
@@ -19,19 +19,14 @@ import java.util.Date;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public class LifeCycleDaoImpl<A extends AbstractLifecycleEvent> extends AbstractIntactBaseDao<LifeCycleEvent, A> implements LifeCycleEventDao<A> {
 
-    public LifeCycleDaoImpl() {
-        super((Class<A>)AbstractLifecycleEvent.class);
+    public LifeCycleDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<A>)AbstractLifecycleEvent.class, entityManager, context);
     }
 
-    public LifeCycleDaoImpl(Class<A> entityClass) {
-        super(entityClass);
-    }
-
-    public LifeCycleDaoImpl(Class<A> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public LifeCycleDaoImpl(Class<A> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public Collection<A> getByNote(String note, int first, int max) {

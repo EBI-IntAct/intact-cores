@@ -5,7 +5,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ExperimentalEntityDao;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntity;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ExperimentalEntitySynchronizerTemplate;
 
@@ -20,20 +22,15 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends IntactExperimentalEntity> extends EntityDaoImpl<T, F>
         implements ExperimentalEntityDao<F> {
 
-    protected ExperimentalEntityDaoImpl() {
-        super((Class<F>)IntactExperimentalEntity.class);
+    public ExperimentalEntityDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<F>)IntactExperimentalEntity.class, entityManager, context);
     }
 
-    public ExperimentalEntityDaoImpl(Class<F> entityClass) {
-        super(entityClass);
-    }
-
-    public ExperimentalEntityDaoImpl(Class<F> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public ExperimentalEntityDaoImpl(Class<F> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     @Override

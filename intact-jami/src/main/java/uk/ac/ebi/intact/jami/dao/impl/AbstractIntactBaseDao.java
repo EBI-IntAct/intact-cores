@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.IntactBaseDao;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
@@ -9,9 +9,6 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
@@ -26,45 +23,29 @@ import java.util.List;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-@Repository
 public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements IntactBaseDao<T> {
 
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-
-    @PersistenceUnit(unitName = "intact-core")
-    private EntityManagerFactory entityManagerFactory;
-
     private Class<T> entityClass;
-
     private IntactDbSynchronizer<I,T> dbSynchronizer;
+    private EntityManager entityManager;
+    private SynchronizerContext synchronizerContext;
 
-    protected AbstractIntactBaseDao(){
-
-    }
-
-    public AbstractIntactBaseDao( Class<T> entityClass) {
+    public AbstractIntactBaseDao( Class<T> entityClass, EntityManager entityManager, SynchronizerContext context) {
         if (entityClass == null){
             throw new IllegalArgumentException("Entity class is mandatory");
         }
         this.entityClass = entityClass;
-    }
-
-    public AbstractIntactBaseDao( Class<T> entityClass, EntityManager entityManager) {
-        this(entityClass);
-        this.entityManager = entityManager;
-    }
-
-    public EntityManager getEntityManager() {
-        if (this.entityManager != null && !this.entityManager.isOpen()) {
-            this.entityManager = this.entityManagerFactory.createEntityManager();
+        if (this.entityManager == null){
+            throw new IllegalArgumentException("The entityManager cannot be null");
         }
-        return this.entityManager;
+        this.entityManager = entityManager;
+        if (context == null){
+            throw new IllegalArgumentException("The Intact database synchronizer context cannot be null");
+        }
     }
 
     public void flush() {
         getEntityManager().flush();
-        getDbSynchronizer().clearCache();
     }
 
     public List<T> getAll() {
@@ -173,6 +154,13 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
 
     protected void synchronizeObjectProperties(T objToUpdate) throws PersisterException, FinderException, SynchronizerException {
         getDbSynchronizer().synchronizeProperties(objToUpdate);
-        getDbSynchronizer().clearCache();
+    }
+
+    protected EntityManager getEntityManager() {
+        return this.entityManager;
+    }
+
+    protected SynchronizerContext getSynchronizerContext() {
+        return synchronizerContext;
     }
 }

@@ -6,8 +6,10 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ComplexDao;
 import uk.ac.ebi.intact.jami.dao.InteractorPoolDao;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ComplexSynchronizer;
@@ -24,14 +26,10 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>31/01/14</pre>
  */
-@Repository
 public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> implements ComplexDao{
-    public ComplexDaoImpl() {
-        super(IntactComplex.class);
-    }
 
-    public ComplexDaoImpl(EntityManager entityManager) {
-        super(IntactComplex.class, entityManager);
+    public ComplexDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactComplex.class, entityManager, context);
     }
 
     @Override

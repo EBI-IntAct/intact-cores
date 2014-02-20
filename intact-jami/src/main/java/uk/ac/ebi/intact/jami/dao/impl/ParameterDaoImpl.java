@@ -1,10 +1,10 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParameter;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ParameterSynchronizerTemplate;
@@ -20,19 +20,14 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>24/01/14</pre>
  */
-@Repository
 public class ParameterDaoImpl<P extends AbstractIntactParameter> extends AbstractIntactBaseDao<Parameter, P> implements ParameterDao<P> {
 
-    public ParameterDaoImpl() {
-        super((Class<P>)AbstractIntactParameter.class);
+    public ParameterDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<P>)AbstractIntactParameter.class, entityManager, context);
     }
 
-    public ParameterDaoImpl(Class<P> entityClass) {
-        super(entityClass);
-    }
-
-    public ParameterDaoImpl(Class<P> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public ParameterDaoImpl(Class<P> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public Collection<P> getByType(String typeName, String typeMI) {

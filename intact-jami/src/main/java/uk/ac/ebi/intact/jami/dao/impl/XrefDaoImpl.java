@@ -3,8 +3,10 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
+import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValueSet;
 import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
@@ -18,19 +20,14 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBaseDao<Xref, X> implements XrefDao<X> {
 
-    public XrefDaoImpl() {
-        super((Class<X>)AbstractIntactXref.class);
+    public XrefDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super((Class<X>)AbstractIntactXref.class, entityManager, context);
     }
 
-    public XrefDaoImpl(Class<X> entityClass) {
-        super(entityClass);
-    }
-
-    public XrefDaoImpl(Class<X> entityClass, EntityManager entityManager) {
-        super(entityClass, entityManager);
+    public XrefDaoImpl(Class<X> entityClass, EntityManager entityManager, SynchronizerContext context) {
+        super(entityClass, entityManager, context);
     }
 
     public Collection<X> getByPrimaryId(String value, String version) {

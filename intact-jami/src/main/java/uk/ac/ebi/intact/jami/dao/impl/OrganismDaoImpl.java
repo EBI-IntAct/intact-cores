@@ -4,7 +4,9 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.OrganismDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.impl.OrganismSynchronizer;
 
@@ -24,12 +26,8 @@ import java.util.List;
 
 public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrganism> implements OrganismDao{
 
-    public OrganismDaoImpl() {
-        super(IntactOrganism.class);
-    }
-
-    public OrganismDaoImpl(EntityManager entityManager) {
-        super(IntactOrganism.class, entityManager);
+    public OrganismDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactOrganism.class, entityManager, context);
     }
 
     public IntactOrganism getByAc(String ac) {

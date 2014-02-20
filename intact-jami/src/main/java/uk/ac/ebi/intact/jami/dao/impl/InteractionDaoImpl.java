@@ -6,9 +6,11 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ComplexDao;
 import uk.ac.ebi.intact.jami.dao.InteractionDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
+import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ComplexSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractionEvidenceSynchronizer;
@@ -26,14 +28,10 @@ import java.util.List;
  * @version $Id$
  * @since <pre>31/01/14</pre>
  */
-@Repository
 public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidence, IntactInteractionEvidence> implements InteractionDao{
-    public InteractionDaoImpl() {
-        super(IntactInteractionEvidence.class);
-    }
 
-    public InteractionDaoImpl(EntityManager entityManager) {
-        super(IntactInteractionEvidence.class, entityManager);
+    public InteractionDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactInteractionEvidence.class, entityManager, context);
     }
 
     @Override

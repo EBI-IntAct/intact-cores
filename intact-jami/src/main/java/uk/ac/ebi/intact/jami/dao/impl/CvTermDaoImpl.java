@@ -4,7 +4,9 @@ import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 
@@ -21,15 +23,10 @@ import java.util.List;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> implements CvTermDao {
 
-    public CvTermDaoImpl() {
-        super(IntactCvTerm.class);
-    }
-
-    public CvTermDaoImpl(EntityManager entityManager) {
-        super(IntactCvTerm.class, entityManager);
+    public CvTermDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactCvTerm.class, entityManager, context);
     }
 
     public IntactCvTerm getByAc(String ac) {

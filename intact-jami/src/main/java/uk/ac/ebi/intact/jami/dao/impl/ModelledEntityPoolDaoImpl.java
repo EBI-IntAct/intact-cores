@@ -5,9 +5,11 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ModelledEntityPool;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ModelledEntityPoolDao;
 import uk.ac.ebi.intact.jami.dao.ModelledParticipantDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntityPool;
+import uk.ac.ebi.intact.jami.model.extension.IntactModelledEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledEntityPool;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ModelledEntityPoolSynchronizer;
 
@@ -22,16 +24,11 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-@Repository
 public class ModelledEntityPoolDaoImpl extends ModelledParticipantDaoImpl<ModelledEntityPool, IntactModelledEntityPool>
         implements ModelledEntityPoolDao {
 
-    public ModelledEntityPoolDaoImpl() {
-        super(IntactModelledEntityPool.class);
-    }
-
-    public ModelledEntityPoolDaoImpl(EntityManager entityManager) {
-        super(IntactModelledEntityPool.class, entityManager);
+    public ModelledEntityPoolDaoImpl(EntityManager entityManager, SynchronizerContext context) {
+        super(IntactModelledEntityPool.class, entityManager, context);
     }
 
     @Override
