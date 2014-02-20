@@ -13,7 +13,7 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 
-public interface ModelledEntityPoolDao extends ModelledEntityDao<IntactModelledEntityPool>{
+public interface ModelledEntityPoolDao extends ModelledParticipantDao<IntactModelledEntityPool>{
 
     public Collection<IntactExperimentalEntityPool> getByType(String typeName, String typeMI);
 }

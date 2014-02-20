@@ -4,7 +4,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ExperimentalEntityMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntity;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -22,7 +22,7 @@ import java.util.List;
  * @since <pre>28/01/14</pre>
  */
 
-public class ExperimentalEntitySynchronizerTemplate<T extends ExperimentalEntity, I extends IntactParticipantEvidence> extends EntitySynchronizerTemplate<T, I> {
+public class ExperimentalEntitySynchronizerTemplate<T extends ExperimentalEntity, I extends IntactExperimentalEntity> extends EntitySynchronizerTemplate<T, I> {
 
     public ExperimentalEntitySynchronizerTemplate(SynchronizerContext context, Class<I> intactClass){
         super(context, intactClass);

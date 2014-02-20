@@ -5,7 +5,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntity;
 import java.util.Collection;
 
 /**
- * Feature dao
+ * experimental entity dao
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
