@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.ModelledEntity;
@@ -15,9 +14,7 @@ import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 
 /**
  * Implementation of IntactDao
@@ -30,10 +27,6 @@ import javax.persistence.PersistenceUnit;
 public class IntactDaoImpl implements IntactDao{
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;
-
-    @PersistenceUnit(unitName = "intact-core")
-    @Qualifier("intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
 
     private SynchronizerContext synchronizerContext;
     private AliasDao aliasDao;
@@ -76,9 +69,6 @@ public class IntactDaoImpl implements IntactDao{
     private VariableParameterValueSetDao variableParameterValueSetDao;
 
     public EntityManager getEntityManager() {
-        if (this.entityManager != null && !this.entityManager.isOpen()) {
-            this.entityManager = this.intactEntityManagerFactory.createEntityManager();
-        }
         return this.entityManager;
     }
 

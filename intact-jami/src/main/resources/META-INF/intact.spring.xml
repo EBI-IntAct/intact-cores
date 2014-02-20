@@ -39,17 +39,21 @@
         <property name="entityManagerFactory" ref="intactEntityManagerFactory"/>
         <property name="dataSource" ref="intactCoreDataSource"/>
     </bean>
+
+
     <!-- The LocalContainerEntityManagerFactoryBean gives full control over EntityManagerFactory configuration
     and is appropriate for environments where fine-grained customization is required-->
     <bean id="intactEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="intact-core"/>
+        <property name="persistenceXmlLocation" value="classpath*:/META-INF/persistence.xml"/>
         <property name="dataSource" ref="intactCoreDataSource"/>
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.generate_statistics">true</prop>
                 <prop key="hibernate.format_sql">false</prop>
                 <prop key="hibernate.hbm2ddl.auto">${db.hbm2ddl}</prop>
-                <prop key="hibernate.ejb.interceptor.session_scoped"></prop>
+                <!-- hibernate interceptor to clear the synchronizer caches after each transaction-->
+                <prop key="hibernate.ejb.interceptor.session_scoped">uk.ac.ebi.intact.jami.interceptor.IntactSynchronizerInterceptor</prop>
             </props>
         </property>
         <property name="jpaVendorAdapter">

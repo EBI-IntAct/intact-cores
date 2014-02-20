@@ -128,7 +128,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
         return !getEntityManager().contains(object);
     }
 
-    protected void setEntityClass(Class<T> entityClass) {
+    public void setEntityClass(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
