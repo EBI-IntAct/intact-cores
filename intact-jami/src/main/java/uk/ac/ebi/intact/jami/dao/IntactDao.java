@@ -111,7 +111,7 @@ public interface IntactDao {
 
     public InteractorPoolDao getInteractorPoolDao();
 
-    public InteractorDao<IntactBioactiveEntity> getBioactiveEntityDao();
+    public BioactiveEntityDao getBioactiveEntityDao();
 
     public CausalRelationshipDao getCausalRelationshipDao();
 

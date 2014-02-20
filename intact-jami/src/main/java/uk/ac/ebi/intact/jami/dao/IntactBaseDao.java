@@ -58,4 +58,6 @@ public interface IntactBaseDao<T extends Auditable> {
     public boolean isTransient(T object);
 
     public Class<T> getEntityClass();
+
+    public void setEntityClass(Class<T> entityClass);
 }
