@@ -22,7 +22,7 @@ import java.util.Collection;
 public class CompositeInteractorSynchronizer extends AbstractIntactDbSynchronizer<Interactor, IntactInteractor>
         implements InteractorFetcher<Interactor>, InteractorSynchronizer<Interactor, IntactInteractor>{
 
-    public InteractorCompositeSynchronizer(SynchronizerContext context){
+    public CompositeInteractorSynchronizer(SynchronizerContext context){
         super(context, IntactInteractor.class);
     }
 

@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.springframework.context.ApplicationContext;
 import psidev.psi.mi.jami.model.CvTerm;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
@@ -22,7 +24,7 @@ import java.util.Date;
 public class LifeCycleSynchronizerTemplate<A extends AbstractLifecycleEvent> extends AbstractIntactDbSynchronizer<LifeCycleEvent, A>
 implements LifecycleEventSynchronizer<A>{
 
-    public LifeCycleSynchronizer(SynchronizerContext context, Class<? extends A> eventClass){
+    public LifeCycleSynchronizerTemplate(SynchronizerContext context, Class<? extends A> eventClass){
         super(context, eventClass);
     }
 
@@ -31,6 +33,7 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
+        ApplicationCo
         // check event
         if (object.getEvent() != null){
             CvTerm event = object.getEvent();
