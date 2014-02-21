@@ -16,10 +16,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Interaction evidence service
@@ -35,11 +32,18 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
     private IntactDao intactDAO;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<InteractionEvidence> fetchIntactObjects(String query, Map<String, Object> queryParameters, int first, int max) {
-        if (query == null){
-            return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getAll("ac", first, max));
-        }
-        return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(query, queryParameters, first, max));
+    public long countAll() {
+        return this.intactDAO.getInteractionDao().countAll();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<InteractionEvidence> iterateAll() {
+        return new IntactQueryResultIterator<InteractionEvidence>(this);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<InteractionEvidence> fetchIntactObjects(int first, int max) {
+        return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getAll("ac", first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

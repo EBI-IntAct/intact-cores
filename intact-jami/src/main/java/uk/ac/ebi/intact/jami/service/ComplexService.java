@@ -12,8 +12,8 @@ import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Complex service
@@ -29,11 +29,18 @@ public class ComplexService implements IntactService<Complex>{
     private IntactDao intactDAO;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<Complex> fetchIntactObjects(String query, Map<String, Object> queryParameters, int first, int max) {
-        if (query == null){
-            return new ArrayList<Complex>(this.intactDAO.getComplexDao().getAll("ac", first, max));
-        }
-        return new ArrayList<Complex>(this.intactDAO.getComplexDao().getByQuery(query, queryParameters, first, max));
+    public long countAll() {
+        return this.intactDAO.getComplexDao().countAll();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<Complex> iterateAll() {
+        return new IntactQueryResultIterator<Complex>(this);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Complex> fetchIntactObjects(int first, int max) {
+        return new ArrayList<Complex>(this.intactDAO.getComplexDao().getAll("ac", first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

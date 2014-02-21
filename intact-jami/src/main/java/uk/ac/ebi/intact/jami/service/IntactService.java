@@ -5,8 +5,8 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Service interface for intact basic services
@@ -18,7 +18,11 @@ import java.util.Map;
 
 public interface IntactService<I> {
 
-    public List<I> fetchIntactObjects(String query, Map<String, Object> queryParameters, int first, int max);
+    public long countAll();
+
+    public Iterator<I> iterateAll();
+
+    public List<I> fetchIntactObjects(int first, int max);
 
     public void saveOrUpdate(I object) throws PersisterException, FinderException, SynchronizerException;
 
