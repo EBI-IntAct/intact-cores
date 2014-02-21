@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Experiment;
+import psidev.psi.mi.jami.model.Publication;
+import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -54,6 +57,19 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void saveOrUpdate(Experiment object) throws PersisterException, FinderException, SynchronizerException {
+        Publication pub = object.getPublication();
+        // create publication first in the database if not done
+        if (pub != null){
+            // transcient publication to persist first
+            if (!(pub instanceof IntactCuratedPublication)
+                    || intactDAO.getCuratedPublicationDao().isTransient((IntactCuratedPublication)pub)){
+                IntactCuratedPublication intactCuratedPub = new IntactCuratedPublication();
+                PublicationCloner.copyAndOverridePublicationProperties(pub, intactCuratedPub);
+
+                intactDAO.getCuratedPublicationDao().persist(intactCuratedPub);
+                intactCuratedPub.addExperiment(object);
+            }
+        }
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getExperimentSynchronizer().synchronize(object, true);
     }
