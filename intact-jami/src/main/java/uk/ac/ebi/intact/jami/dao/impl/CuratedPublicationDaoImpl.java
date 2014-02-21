@@ -69,12 +69,12 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
         Query query;
         if (depth != null){
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
-                    "where p.curationDepth is null or p.curationDepth = :unspecified");
+                    "where p.curationDepth is null or p.curationDepth = :unspecified order by p.ac");
             query.setParameter("unspecified", CurationDepth.undefined);
         }
         else{
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
-                    "where p.curationDepth = :depth");
+                    "where p.curationDepth = :depth order by p.ac");
             query.setParameter("depth", depth);
         }
         query.setFirstResult(first);
@@ -86,13 +86,13 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
         Query query;
         if (evtName != null){
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
-                    "where p.lifecycleEvents is empty");
+                    "where p.lifecycleEvents is empty order by p.ac");
         }
         else{
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
                     "join p.lifecycleEvents as l "  +
                     "join l.event as e "  +
-                    "where e.shortName = :name");
+                    "where e.shortName = :name order by p.ac");
             query.setParameter("name", evtName);
         }
         query.setFirstResult(first);
@@ -104,12 +104,12 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
         Query query;
         if (statusName != null){
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
-                    "where p.status is null");
+                    "where p.status is null order by p.ac");
         }
         else{
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
                     "join p.status as s "  +
-                    "where s.shortName = :name");
+                    "where s.shortName = :name order by p.ac");
             query.setParameter("name", statusName);
         }
         query.setFirstResult(first);
@@ -121,12 +121,12 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
         Query query;
         if (login != null){
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
-                    "where p.currentOwner is null");
+                    "where p.currentOwner is null order by p.ac");
         }
         else{
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
                     "join p.currentOwner as o "  +
-                    "where o.login = :name");
+                    "where o.login = :name order by p.ac");
             query.setParameter("name", login);
         }
         query.setFirstResult(first);
@@ -143,7 +143,7 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
         else{
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
                     "join p.currentReviewer as c "  +
-                    "where c.login = :name");
+                    "where c.login = :name order by p.ac");
             query.setParameter("name", login);
         }
         query.setFirstResult(first);
@@ -155,12 +155,12 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
         Query query;
         if (name != null){
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
-                    "where p.source is null");
+                    "where p.source is null order by p.ac");
         }
         else{
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
                     "join p.source as s "  +
-                    "where s.shortName = :name");
+                    "where s.shortName = :name order by p.ac");
             query.setParameter("name", name);
         }
         query.setFirstResult(first);

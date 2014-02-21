@@ -42,7 +42,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         Query query;
         if (typeName == null && typeMI == null){
             query = getEntityManager().createQuery("select f from IntactComplex f "  +
-                    "where f.interactionType is null");
+                    "where f.interactionType is null order by f.ac");
         }
         else if (typeMI != null){
             query = getEntityManager().createQuery("select f from IntactComplex f "  +
@@ -52,7 +52,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
-                    "and xref.id = :mi");
+                    "and xref.id = :mi order by f.ac");
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
@@ -61,7 +61,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         else{
             query = getEntityManager().createQuery("select f from IntactComplex f "  +
                     "join f.interactionType as t " +
-                    "where t.shortName = :typeName");
+                    "where t.shortName = :typeName order by f.ac");
             query.setParameter("typeName", typeName);
         }
         return query.getResultList();
@@ -71,13 +71,13 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         Query query;
         if (evtName != null){
             query = getEntityManager().createQuery("select p from IntactComplex p "  +
-                    "where p.lifecycleEvents is empty");
+                    "where p.lifecycleEvents is empty order by p.ac");
         }
         else{
             query = getEntityManager().createQuery("select p from IntactComplex p "  +
                     "join p.lifecycleEvents as l "  +
                     "join l.event as e "  +
-                    "where e.shortName = :name");
+                    "where e.shortName = :name order by p.ac");
             query.setParameter("name", evtName);
         }
         query.setFirstResult(first);
@@ -89,12 +89,12 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         Query query;
         if (statusName != null){
             query = getEntityManager().createQuery("select p from IntactComplex p "  +
-                    "where p.status is null");
+                    "where p.status is null order by p.ac");
         }
         else{
             query = getEntityManager().createQuery("select p from IntactComplex p "  +
                     "join p.status as s "  +
-                    "where s.shortName = :name");
+                    "where s.shortName = :name order by p.ac");
             query.setParameter("name", statusName);
         }
         query.setFirstResult(first);

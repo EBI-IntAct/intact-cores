@@ -45,7 +45,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
-                    "and xref.id = :mi");
+                    "and xref.id = :mi order by e.ac");
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
@@ -54,7 +54,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
         else{
             query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
                     "join f.experimentalRole as e " +
-                    "where e.shortName = :name");
+                    "where e.shortName = :name order by e.ac");
             query.setParameter("name", typeName);
         }
         query.setFirstResult(first);
@@ -72,7 +72,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
-                    "and xref.id = :mi");
+                    "and xref.id = :mi order by e.ac");
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
@@ -81,7 +81,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
         else{
             query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
                     "join f.experimentalPreparations as e " +
-                    "where e.shortName = :name");
+                    "where e.shortName = :name order by e.ac");
             query.setParameter("name", name);
         }
         query.setFirstResult(first);
@@ -93,7 +93,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
         Query query;
         if (name == null && mi == null){
             query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "where f.identificationMethods is empty");
+                    "where f.identificationMethods is empty order by f.ac");
         }
         else if (mi != null){
             query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
@@ -103,7 +103,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
-                    "and xref.id = :mi");
+                    "and xref.id = :mi order by f.ac");
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
@@ -112,7 +112,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
         else{
             query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
                     "join f.identificationMethods as i " +
-                    "where i.shortName = :name");
+                    "where i.shortName = :name order by f.ac");
             query.setParameter("name", name);
         }
         query.setFirstResult(first);
@@ -123,7 +123,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
     public Collection<F> getByExpressedInTaxid(String taxid, int first, int max) {
         Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
                 "join f.expressedInOrganism as o " +
-                "where o.persistentTaxid = :taxid");
+                "where o.persistentTaxid = :taxid order by f.ac");
         query.setParameter("taxid", taxid);
         query.setFirstResult(first);
         query.setMaxResults(max);
@@ -133,7 +133,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
     public Collection<F> getByExpressedInAc(String ac, int first, int max) {
         Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
                 "join f.expressedInOrganism as o " +
-                "where o.ac = :orgAc");
+                "where o.ac = :orgAc order by f.ac");
         query.setParameter("orgAc", ac);
         query.setFirstResult(first);
         query.setMaxResults(max);

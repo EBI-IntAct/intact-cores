@@ -519,7 +519,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
-                    "and xref.id = :mi");
+                    "and xref.id = :mi order by f.ac");
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
@@ -528,7 +528,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
         else{
             query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
                     "join f.biologicalRole as b " +
-                    "where b.shortName = :typeName");
+                    "where b.shortName = :typeName order by f.ac");
             query.setParameter("typeName", typeName);
         }
         query.setFirstResult(first);
@@ -611,7 +611,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByInteractorAc(String ac, int first, int max) {
         Query query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
                 "join f.interactor as i " +
-                "where i.ac = :ac ");
+                "where i.ac = :ac order by f.ac");
         query.setParameter("ac",ac);
         query.setFirstResult(first);
         query.setMaxResults(max);

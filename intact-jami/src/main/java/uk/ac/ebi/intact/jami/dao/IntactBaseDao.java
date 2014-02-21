@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Basic interface for intact DAO
@@ -20,9 +21,11 @@ public interface IntactBaseDao<T extends Auditable> {
 
     public void flush();
 
+    public List<T> getByQuery(String query, Map<String, Object> queryParameters, int first, int max);
+
     public List<T> getAll();
 
-    public List<T> getAll(int firstResult, int maxResults);
+    public List<T> getAll(String sortProperty, int firstResult, int maxResults);
 
     /**
      * Returns all the objects, sorted by the chosen property

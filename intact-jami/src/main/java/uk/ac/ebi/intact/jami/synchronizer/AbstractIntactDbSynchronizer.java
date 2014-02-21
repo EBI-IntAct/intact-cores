@@ -111,6 +111,36 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         this.intactClass = intactClass;
     }
 
+    public boolean delete(I object) {
+        if (!object.getClass().isAssignableFrom(this.intactClass)){
+            return false;
+        }
+        else{
+            T intactObject = (T)object;
+            Object identifier = extractIdentifier(intactObject);
+            // detached existing instance or new transient instance
+            if (identifier != null && !this.entityManager.contains(intactObject)){
+                deleteRelatedProperties(intactObject);
+                this.entityManager.remove(this.entityManager.getReference(getIntactClass(), identifier));
+                return true;
+
+            }
+            // retrieve and or persist transient instance
+            else if (identifier == null){
+                return false;
+            }
+            else{
+                deleteRelatedProperties(intactObject);
+                this.entityManager.remove(intactObject);
+                return true;
+            }
+        }
+    }
+
+    protected void deleteRelatedProperties(T intactObject){
+        // does nothing
+    }
+
     protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier) throws FinderException, PersisterException, SynchronizerException {
         // do not merge existing instance if the merger is a merger ignoring source
         if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){

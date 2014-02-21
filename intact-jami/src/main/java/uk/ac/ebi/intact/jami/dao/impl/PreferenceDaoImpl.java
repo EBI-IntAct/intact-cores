@@ -28,7 +28,7 @@ public class PreferenceDaoImpl extends AbstractIntactBaseDao<Preference, Prefere
 
     public Collection<Preference> getByKey(String key, int first, int max) {
         Query query = getEntityManager().createQuery("select p from Preference p " +
-                "where p.key = :keyValue");
+                "where p.key = :keyValue order by p.ac");
         query.setParameter("keyValue", key);
         query.setFirstResult(first);
         query.setMaxResults(max);

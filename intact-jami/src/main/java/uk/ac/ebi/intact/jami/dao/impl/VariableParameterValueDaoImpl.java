@@ -38,12 +38,6 @@ public class VariableParameterValueDaoImpl extends AbstractIntactBaseDao<Variabl
     }
 
     @Override
-    public void delete(IntactVariableParameterValue objToDelete) {
-        ((VariableParameterValueSynchronizer)getDbSynchronizer()).removeVariableParameterValue(objToDelete);
-        super.delete(objToDelete);
-    }
-
-    @Override
     public IntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> getDbSynchronizer() {
         return getSynchronizerContext().getVariableParameterValueSynchronizer();
     }

@@ -88,7 +88,8 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
         this.persistedObjects.clear();
     }
 
-    public void removeVariableParameterValue(IntactVariableParameterValue value){
+    @Override
+    public void deleteRelatedProperties(IntactVariableParameterValue value){
         if (!value.getInteractionParameterValues().isEmpty()){
             Collection<VariableParameterValueSet> existingSet = new ArrayList<VariableParameterValueSet>(value.getInteractionParameterValues());
             // delete interaction sets if it only contained the value that will be removed (avoid to keep empty sets)

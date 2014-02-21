@@ -1,20 +1,12 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
-import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
-import uk.ac.ebi.intact.jami.dao.ComplexDao;
 import uk.ac.ebi.intact.jami.dao.InteractionDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
-import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.ComplexSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.InteractionEvidenceSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -437,7 +429,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         Query query;
         if (typeName == null && typeMI == null){
             query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
-                    "where f.interactionType is null");
+                    "where f.interactionType is null order by f.ac");
         }
         else if (typeMI != null){
             query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
@@ -447,7 +439,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
                     "and d.shortName = :psimi " +
-                    "and xref.id = :mi");
+                    "and xref.id = :mi order by f.ac");
             query.setParameter("identity", Xref.IDENTITY);
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);

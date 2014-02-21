@@ -70,4 +70,6 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
     public Class<? extends T> getIntactClass();
 
     public void setIntactClass(Class<? extends T> intactClass);
+
+    public boolean delete(I object);
 }

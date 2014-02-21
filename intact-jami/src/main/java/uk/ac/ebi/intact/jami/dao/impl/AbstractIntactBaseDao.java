@@ -9,12 +9,14 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract class for
@@ -48,15 +50,31 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
         getEntityManager().flush();
     }
 
+    public List<T> getByQuery(String query, Map<String, Object> queryParameters, int first, int max) {
+
+        Query queryObject = getEntityManager().createQuery(query);
+        if (queryParameters != null && !queryParameters.isEmpty()){
+            for (Map.Entry<String,Object> param : queryParameters.entrySet()){
+                queryObject.setParameter(param.getKey(), param.getValue());
+            }
+        }
+        queryObject.setFirstResult(first);
+        queryObject.setMaxResults(max);
+        return queryObject.getResultList();
+    }
+
     public List<T> getAll() {
         return getEntityManager().createQuery(this.entityManager.getCriteriaBuilder().
                 createQuery(this.entityClass))
                 .getResultList();
     }
 
-    public List<T> getAll(int firstResult, int maxResults) {
-        return getEntityManager().createQuery(this.entityManager.getCriteriaBuilder().
-                createQuery(this.entityClass))
+    public List<T> getAll(String sortProperty, int firstResult, int maxResults) {
+        CriteriaBuilder builder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<T> criteria = builder.createQuery(this.entityClass);
+        Root<T> root = criteria.from(getEntityClass());
+        Order order = builder.asc(root.get(sortProperty));
+        return this.entityManager.createQuery(criteria.orderBy(order))
                 .setFirstResult(firstResult)
                 .setMaxResults(maxResults)
                 .getResultList();
@@ -98,7 +116,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
     }
 
     public void delete(T objToDelete) {
-        getEntityManager().remove(objToDelete);
+        getDbSynchronizer().delete(objToDelete);
     }
 
     public void deleteAll(Collection<T> objsToDelete) {
