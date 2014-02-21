@@ -263,6 +263,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         this.persistedObjects.clear();
     }
 
+    public String getObjClass() {
+        return objClass;
+    }
+
+    public void setObjClass(String objClass) {
+        this.objClass = objClass;
+    }
+
     protected IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {
         Query query;
         if (checkAc){

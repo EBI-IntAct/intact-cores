@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.ModelledEntity;
@@ -24,6 +25,7 @@ import javax.persistence.PersistenceContext;
  * @since <pre>20/02/14</pre>
  */
 @Repository
+@Lazy
 public class IntactDaoImpl implements IntactDao{
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;

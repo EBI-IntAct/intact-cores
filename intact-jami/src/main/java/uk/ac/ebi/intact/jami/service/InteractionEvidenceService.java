@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +27,18 @@ import java.util.*;
  * @since <pre>21/02/14</pre>
  */
 @Service
+@Lazy
 public class InteractionEvidenceService implements IntactService<InteractionEvidence> {
 
     @Autowired
     private IntactDao intactDAO;
+    private IntactQuery intactQuery;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
+        if (this.intactQuery != null){
+            return this.intactDAO.getInteractionDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
+        }
         return this.intactDAO.getInteractionDao().countAll();
     }
 
@@ -43,6 +49,9 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<InteractionEvidence> fetchIntactObjects(int first, int max) {
+        if (this.intactQuery != null){
+            return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
+        }
         return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getAll("ac", first, max));
     }
 
@@ -100,5 +109,13 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
         for (InteractionEvidence interaction : objects){
             delete(interaction);
         }
+    }
+
+    public IntactQuery getIntactQuery() {
+        return intactQuery;
+    }
+
+    public void setIntactQuery(IntactQuery intactQuery) {
+        this.intactQuery = intactQuery;
     }
 }

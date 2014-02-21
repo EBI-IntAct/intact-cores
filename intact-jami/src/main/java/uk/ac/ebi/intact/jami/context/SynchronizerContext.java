@@ -38,6 +38,8 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getGeneralCvSynchronizer();
 
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCvSynchronizer(String objclass);
+
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDatabaseSynchronizer();
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getQualifierSynchronizer();

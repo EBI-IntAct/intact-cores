@@ -23,6 +23,8 @@ public interface IntactBaseDao<T extends Auditable> {
 
     public List<T> getByQuery(String query, Map<String, Object> queryParameters, int first, int max);
 
+    public long countByQuery(String queryCount, Map<String, Object> queryParameters);
+
     public List<T> getAll();
 
     public List<T> getAll(String sortProperty, int firstResult, int maxResults);

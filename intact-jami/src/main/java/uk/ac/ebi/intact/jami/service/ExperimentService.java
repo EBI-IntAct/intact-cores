@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import psidev.psi.mi.jami.model.Complex;
+import psidev.psi.mi.jami.model.Experiment;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Complex service
+ * Experiment service
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Service
 @Lazy
-public class ComplexService implements IntactService<Complex>{
+public class ExperimentService implements IntactService<Experiment>{
 
     @Autowired
     private IntactDao intactDAO;
@@ -34,47 +34,47 @@ public class ComplexService implements IntactService<Complex>{
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
         if (this.intactQuery != null){
-            return this.intactDAO.getComplexDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
+            return this.intactDAO.getExperimentDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
         }
-        return this.intactDAO.getComplexDao().countAll();
+        return this.intactDAO.getExperimentDao().countAll();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Iterator<Complex> iterateAll() {
-        return new IntactQueryResultIterator<Complex>(this);
+    public Iterator<Experiment> iterateAll() {
+        return new IntactQueryResultIterator<Experiment>(this);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<Complex> fetchIntactObjects(int first, int max) {
+    public List<Experiment> fetchIntactObjects(int first, int max) {
         if (this.intactQuery != null){
-            return new ArrayList<Complex>(this.intactDAO.getComplexDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
+            return new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
         }
-        return new ArrayList<Complex>(this.intactDAO.getComplexDao().getAll("ac", first, max));
+        return new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getAll("ac", first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void saveOrUpdate(Complex object) throws PersisterException, FinderException, SynchronizerException {
+    public void saveOrUpdate(Experiment object) throws PersisterException, FinderException, SynchronizerException {
         // we can synchronize the complex with the database now
-        intactDAO.getSynchronizerContext().getComplexSynchronizer().synchronize(object, true);
+        intactDAO.getSynchronizerContext().getExperimentSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void saveOrUpdate(Collection<? extends Complex> objects) throws SynchronizerException, PersisterException, FinderException {
-        for (Complex interaction : objects){
-            saveOrUpdate(interaction);
+    public void saveOrUpdate(Collection<? extends Experiment> objects) throws SynchronizerException, PersisterException, FinderException {
+        for (Experiment exp : objects){
+            saveOrUpdate(exp);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void delete(Complex object) throws PersisterException, FinderException, SynchronizerException {
+    public void delete(Experiment object) throws PersisterException, FinderException, SynchronizerException {
 
-        this.intactDAO.getSynchronizerContext().getComplexSynchronizer().delete(object);
+        this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().delete(object);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void delete(Collection<? extends Complex> objects) throws SynchronizerException, PersisterException, FinderException {
-        for (Complex interaction : objects){
-            delete(interaction);
+    public void delete(Collection<? extends Experiment> objects) throws SynchronizerException, PersisterException, FinderException {
+        for (Experiment exp : objects){
+            delete(exp);
         }
     }
 

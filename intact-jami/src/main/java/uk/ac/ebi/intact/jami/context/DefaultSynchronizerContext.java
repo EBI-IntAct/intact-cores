@@ -866,6 +866,15 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         if (this.generalCvSynchronizer == null){
             this.generalCvSynchronizer = new CvTermSynchronizer(this);
         }
+        ((CvTermSynchronizer)this.generalCvSynchronizer).setObjClass(null);
+        return this.generalCvSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCvSynchronizer(String objclass) {
+        if (this.generalCvSynchronizer == null){
+            this.generalCvSynchronizer = new CvTermSynchronizer(this);
+        }
+        ((CvTermSynchronizer)this.generalCvSynchronizer).setObjClass(objclass);
         return this.generalCvSynchronizer;
     }
 

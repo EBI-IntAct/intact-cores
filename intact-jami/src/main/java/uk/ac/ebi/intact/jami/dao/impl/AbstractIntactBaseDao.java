@@ -63,6 +63,17 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
         return queryObject.getResultList();
     }
 
+    public long countByQuery(String query, Map<String, Object> queryParameters) {
+
+        Query queryObject = getEntityManager().createQuery(query);
+        if (queryParameters != null && !queryParameters.isEmpty()){
+            for (Map.Entry<String,Object> param : queryParameters.entrySet()){
+                queryObject.setParameter(param.getKey(), param.getValue());
+            }
+        }
+        return (Long)queryObject.getSingleResult();
+    }
+
     public List<T> getAll() {
         return getEntityManager().createQuery(this.entityManager.getCriteriaBuilder().
                 createQuery(this.entityClass))
