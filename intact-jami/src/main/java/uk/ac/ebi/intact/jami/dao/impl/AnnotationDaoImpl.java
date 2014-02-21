@@ -4,11 +4,10 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.AnnotationDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
-import uk.ac.ebi.intact.jami.synchronizer.impl.AnnotationSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -155,13 +154,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
     }
 
     @Override
-    public void setEntityClass(Class<A> entityClass) {
-        super.setEntityClass(entityClass);
-        getDbSynchronizer().setIntactClass(entityClass);
-    }
-
-    @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new AnnotationSynchronizerTemplate<A>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
+    public IntactDbSynchronizer<Annotation, A> getDbSynchronizer() {
+        return getSynchronizerContext().getAnnotationSynchronizer(getEntityClass());
     }
 }

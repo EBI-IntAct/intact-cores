@@ -1,15 +1,12 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ExperimentalEntityDao;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntity;
-import uk.ac.ebi.intact.jami.synchronizer.impl.ExperimentalEntitySynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -34,8 +31,8 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ExperimentalEntitySynchronizerTemplate<T, F>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getExperimentalEntitySynchronizer();
     }
 
     public Collection<F> getByExperimentalRole(String typeName, String typeMI, int first, int max) {

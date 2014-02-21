@@ -3,11 +3,10 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParameter;
-import uk.ac.ebi.intact.jami.synchronizer.impl.ParameterSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -189,13 +188,7 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
     }
 
     @Override
-    public void setEntityClass(Class<P> entityClass) {
-        super.setEntityClass(entityClass);
-        getDbSynchronizer().setIntactClass(entityClass);
-    }
-
-    @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ParameterSynchronizerTemplate(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getParameterSynchronizer(getEntityClass());
     }
 }

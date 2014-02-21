@@ -36,8 +36,9 @@ import java.util.*;
  */
 @javax.persistence.Entity
 @Table( name = "ia_publication" )
-@EntityListeners(value = {PublicationLifecycleListener.class})
 @Cacheable
+@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
+@DiscriminatorValue("simple_publication")
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
     private String title;
     private String journal;
@@ -55,12 +56,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private Xref doi;
     private Xref imexId;
 
-    private String shortLabel;
     private PersistentXrefList persistentXrefs;
-    private List<LifeCycleEvent> lifecycleEvents;
-    private CvTerm status;
-    private User currentOwner;
-    private User currentReviewer;
 
     private Xref acRef;
 
@@ -141,30 +137,6 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             this.acRef = newRef;
             this.identifiers.addOnly(acRef);
         }
-    }
-
-    @Column(name = "shortLabel", nullable = false, unique = true)
-    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
-    @NotNull
-    /**
-     * @deprecated the publication shortLabel is deprecated. We should use getPubmedId or getDoi or getIdentifiers
-     */
-    @Deprecated
-    public String getShortLabel() {
-        return shortLabel;
-    }
-
-    /**
-     * Set the shortlabel
-     * @param shortLabel
-     * @deprecated the shortlabel is deprecated and getPubmedId/getDOI should be used instead
-     */
-    @Deprecated
-    public void setShortLabel( String shortLabel ) {
-        if (shortLabel == null){
-            throw new IllegalArgumentException("The short name cannot be null");
-        }
-        this.shortLabel = shortLabel.trim().toLowerCase();
     }
 
     @Transient
@@ -314,10 +286,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.xrefs;
     }
 
-    @OneToMany( mappedBy = "publication", cascade = { CascadeType.ALL }, targetEntity = IntactExperiment.class)
-    @OrderBy("created")
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(IntactExperiment.class)
+    @Transient
     public Collection<Experiment> getExperiments() {
         if (experiments == null){
             initialiseExperiments();
@@ -325,8 +294,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.experiments;
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "curation_depth", length = IntactUtils.MAX_SHORT_LABEL_LEN)
+    @Transient
     public CurationDepth getCurationDepth() {
         if (this.curationDepth == null){
             this.curationDepth = CurationDepth.undefined;
@@ -347,8 +315,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "released_date")
+    @Transient
     public Date getReleasedDate() {
         return this.releasedDate;
     }
@@ -357,9 +324,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.releasedDate = released;
     }
 
-    @ManyToOne(targetEntity = IntactSource.class)
-    @JoinColumn( name = "owner_ac", nullable = false, referencedColumnName = "ac" )
-    @Target(IntactSource.class)
+    @Transient
     public Source getSource() {
         return this.source;
     }
@@ -426,53 +391,6 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    @OneToMany( mappedBy = "publication", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifecycleEvent.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @OrderBy("when, created")
-    @Target(PublicationLifecycleEvent.class)
-    public List<LifeCycleEvent> getLifecycleEvents() {
-        if (this.lifecycleEvents == null){
-            this.lifecycleEvents = new ArrayList<LifeCycleEvent>();
-        }
-        return lifecycleEvents;
-    }
-
-    @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "status_ac", referencedColumnName = "ac" )
-    @ForeignKey(name="FK_PUBLICATION_STATUS")
-    @Target(IntactCvTerm.class)
-    public CvTerm getStatus() {
-        return status;
-    }
-
-    public void setStatus( CvTerm status ) {
-        this.status = status;
-    }
-
-    @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "owner_pk", referencedColumnName = "ac" )
-    @ForeignKey(name="FK_PUBLICATION_OWNER")
-    @Target(User.class)
-    public User getCurrentOwner() {
-        return currentOwner;
-    }
-
-    public void setCurrentOwner( User currentOwner ) {
-        this.currentOwner = currentOwner;
-    }
-
-    @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "reviewer_pk", referencedColumnName = "ac" )
-    @ForeignKey(name="FK_PUBLICATION_REVIEWER")
-    @Target(User.class)
-    public User getCurrentReviewer() {
-        return currentReviewer;
-    }
-
-    public void setCurrentReviewer( User currentReviewer ) {
-        this.currentReviewer = currentReviewer;
-    }
-
     @Override
     public String toString() {
         return (imexId != null ? imexId.getId() : (pubmedId != null ? pubmedId.getId() : (doi != null ? doi.getId() : (title != null ? title : "-"))));
@@ -501,11 +419,6 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     @Transient
     public boolean areExperimentsInitialized(){
         return Hibernate.isInitialized(getExperiments());
-    }
-
-    @Transient
-    public boolean areLifecycleEventsInitialized(){
-        return Hibernate.isInitialized(getLifecycleEvents());
     }
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationXref.class)
@@ -675,16 +588,12 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         getAuthors().clear();
     }
 
-    private void setPersistentAnnotations(Collection<Annotation> annotations) {
-        this.annotations = new PublicationAnnotationList(annotations);
-    }
-
-    private void setExperiments(Collection<Experiment> experiments) {
+    protected void setExperiments(Collection<Experiment> experiments) {
         this.experiments = experiments;
     }
 
-    private void setLifecycleEvents( List<LifeCycleEvent> lifecycleEvents ) {
-        this.lifecycleEvents = lifecycleEvents;
+    private void setPersistentAnnotations(Collection<Annotation> annotations) {
+        this.annotations = new PublicationAnnotationList(annotations);
     }
 
     private class PublicationIdentifierList extends AbstractListHavingProperties<Xref> {

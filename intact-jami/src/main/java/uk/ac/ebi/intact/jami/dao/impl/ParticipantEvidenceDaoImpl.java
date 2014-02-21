@@ -1,12 +1,11 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import psidev.psi.mi.jami.model.ParticipantEvidence;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParticipantEvidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
-import uk.ac.ebi.intact.jami.synchronizer.impl.ExperimentalEntitySynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -31,8 +30,8 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ExperimentalEntitySynchronizerTemplate<P, I>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getParticipantEvidenceSynchronizer();
     }
 
     public Collection<I> getByInteractionAc(String ac) {

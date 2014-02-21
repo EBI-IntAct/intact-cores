@@ -6,6 +6,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.UserDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.User;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.UserSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -99,7 +100,7 @@ public class UserDaoImpl extends AbstractIntactBaseDao<User, User> implements Us
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new UserSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<User, User> getDbSynchronizer() {
+        return getSynchronizerContext().getUserSynchronizer();
     }
 }

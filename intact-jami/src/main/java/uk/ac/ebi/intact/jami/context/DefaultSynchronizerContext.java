@@ -27,6 +27,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private EntityManager entityManager;
 
     // cv synchronizer
+    private IntactDbSynchronizer<CvTerm, IntactCvTerm> generalCvSynchronizer;
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> databaseSynchronizer;
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> qualifierSynchronizer;
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> topicSynchronizer;
@@ -102,7 +103,8 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private IntactDbSynchronizer<User, User> userSynchronizer;
 
     // publication synchronizers
-    private IntactDbSynchronizer<Publication, IntactPublication> publicationSynchronizer;
+    private IntactDbSynchronizer<Publication, IntactPublication> simplePublicationSynchronizer;
+    private IntactDbSynchronizer<Publication, IntactCuratedPublication> publicationSynchronizer;
 
     // experiment synchronizers
     private IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer;
@@ -293,6 +295,48 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
             this.lifecycleEventSynchronizer = new CvTermSynchronizer(this, IntactUtils.LIFECYCLE_EVENT_OBJCLASS);
         }
         return lifecycleEventSynchronizer;
+    }
+
+    public <A extends AbstractIntactAlias> AliasSynchronizer<A> getAliasSynchronizer(Class<A> aliasclass) {
+        initialiseAliasTemplateIfNotDone();
+        this.aliasSynchronizer.setIntactClass(aliasclass);
+        return this.aliasSynchronizer;
+    }
+
+    public <A extends AbstractIntactAnnotation> AnnotationSynchronizer<A> getAnnotationSynchronizer(Class<A> annotationclass) {
+        initialiseAnnotationTemplateIfNodDone();
+        this.annotationSynchronizer.setIntactClass(annotationclass);
+        return this.annotationSynchronizer;
+    }
+
+    public <A extends AbstractIntactXref> XrefSynchronizer<A> getXrefSynchronizer(Class<A> xrefclass) {
+        initialiseXrefTemplateIfNotDone();
+        this.xrefSynchronizer.setIntactClass(xrefclass);
+        return this.xrefSynchronizer;
+    }
+
+    public <A extends AbstractIntactChecksum> ChecksumSynchronizer<A> getChecksumSynchronizer(Class<A> checksumclass) {
+        initialiseChecksumTemplateIfNodDone();
+        this.checksumSynchronizer.setIntactClass(checksumclass);
+        return this.checksumSynchronizer;
+    }
+
+    public <A extends AbstractIntactConfidence> ConfidenceSynchronizer<Confidence, A> getConfidenceSynchronizer(Class<A> confidenceclass) {
+        initialiseConfidenceTemplateIfNodDone();
+        this.confidenceSynchronizer.setIntactClass(confidenceclass);
+        return this.confidenceSynchronizer;
+    }
+
+    public <A extends AbstractIntactParameter> ParameterSynchronizer<Parameter, A> getParameterSynchronizer(Class<A> parameterclass) {
+        initialiseParameterTemplateIfNodDone();
+        this.parameterSynchronizer.setIntactClass(parameterclass);
+        return this.parameterSynchronizer;
+    }
+
+    public <A extends AbstractLifecycleEvent> LifecycleEventSynchronizer<A> getLifecycleSynchronizer(Class<A> eventclass) {
+        initialiseLifecycleTemplateIfNodDone();
+        this.lifecycleSynchronizer.setIntactClass(eventclass);
+        return this.lifecycleSynchronizer;
     }
 
     public AliasSynchronizer<CvTermAlias> getCvAliasSynchronizer() {
@@ -622,9 +666,16 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         return userSynchronizer;
     }
 
-    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer() {
+    public IntactDbSynchronizer<Publication, IntactPublication> getSimplePublicationSynchronizer() {
+        if (this.simplePublicationSynchronizer == null){
+            this.simplePublicationSynchronizer = new PublicationSynchronizer<IntactPublication>(this, IntactPublication.class);
+        }
+        return simplePublicationSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Publication, IntactCuratedPublication> getPublicationSynchronizer() {
         if (this.publicationSynchronizer == null){
-            this.publicationSynchronizer = new PublicationSynchronizer(this);
+            this.publicationSynchronizer = new CuratedPublicationSynchronizer(this);
         }
         return publicationSynchronizer;
     }
@@ -809,6 +860,13 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         clearCache(this.modelledEntityPoolSynchronizer);
         clearCache(this.experimentalEntitySynchronizer);
         clearCache(this.experimentalEntityPoolSynchronizer);
+    }
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getGeneralCvSynchronizer() {
+        if (this.generalCvSynchronizer == null){
+            this.generalCvSynchronizer = new CvTermSynchronizer(this);
+        }
+        return this.generalCvSynchronizer;
     }
 
     private void initialiseAliasTemplateIfNotDone() {

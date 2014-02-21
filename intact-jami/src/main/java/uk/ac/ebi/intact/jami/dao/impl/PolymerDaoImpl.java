@@ -1,12 +1,11 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import psidev.psi.mi.jami.model.Polymer;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.PolymerDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.PolymerSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -44,13 +43,7 @@ public class PolymerDaoImpl<T extends Polymer, P extends IntactPolymer> extends 
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new PolymerSynchronizerTemplate<T, P>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
-    }
-
-    @Override
-    public void setEntityClass(Class<P> entityClass) {
-        super.setEntityClass(entityClass);
-        getDbSynchronizer().setIntactClass(entityClass);
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getPolymerSynchronizer();
     }
 }

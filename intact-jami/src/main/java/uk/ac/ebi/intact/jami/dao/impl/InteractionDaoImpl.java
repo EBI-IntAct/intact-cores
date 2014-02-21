@@ -12,6 +12,7 @@ import uk.ac.ebi.intact.jami.dao.InteractionDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ComplexSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractionEvidenceSynchronizer;
 
@@ -35,8 +36,8 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new InteractionEvidenceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> getDbSynchronizer() {
+        return getSynchronizerContext().getInteractionSynchronizer();
     }
 
     public IntactInteractionEvidence getByAc(String ac) {

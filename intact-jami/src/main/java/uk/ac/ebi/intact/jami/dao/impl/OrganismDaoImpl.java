@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.OrganismDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.OrganismSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -237,7 +238,7 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new OrganismSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getOrganismSynchronizer();
     }
 }

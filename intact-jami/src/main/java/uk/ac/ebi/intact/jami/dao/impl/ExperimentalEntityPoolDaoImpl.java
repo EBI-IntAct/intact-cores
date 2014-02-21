@@ -12,6 +12,7 @@ import uk.ac.ebi.intact.jami.dao.ModelledEntityPoolDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntityPool;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledEntityPool;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ExperimentalEntityPoolSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ModelledEntityPoolSynchronizer;
 
@@ -34,8 +35,8 @@ public class ExperimentalEntityPoolDaoImpl extends ParticipantEvidenceDaoImpl<Ex
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ExperimentalEntityPoolSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<ExperimentalEntityPool, IntactExperimentalEntityPool> getDbSynchronizer() {
+        return getSynchronizerContext().getExperimentalEntityPoolSynchronizer();
     }
 
     public Collection<IntactExperimentalEntityPool> getByType(String typeName, String typeMI) {

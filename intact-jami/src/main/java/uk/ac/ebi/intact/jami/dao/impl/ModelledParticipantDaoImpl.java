@@ -1,11 +1,10 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import psidev.psi.mi.jami.model.ModelledParticipant;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ModelledParticipantDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
-import uk.ac.ebi.intact.jami.synchronizer.impl.ModelledEntitySynchronizerTemplate;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -30,8 +29,8 @@ public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ModelledEntitySynchronizerTemplate<P, I>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getModelledParticipantSynchronizer();
     }
 
     public Collection<I> getByInteractionAc(String ac) {

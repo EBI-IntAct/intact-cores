@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.VariableParameterDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
 import uk.ac.ebi.intact.jami.model.user.User;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.VariableParameterSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -75,7 +76,7 @@ public class VariableParameterDaoImpl extends AbstractIntactBaseDao<VariablePara
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new VariableParameterSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<VariableParameter, IntactVariableParameter> getDbSynchronizer() {
+        return getSynchronizerContext().getVariableParameterSynchronizer();
     }
 }

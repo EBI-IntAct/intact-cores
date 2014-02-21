@@ -1,12 +1,12 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ExperimentDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
-import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ExperimentSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -470,7 +470,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
         return query.getResultList();
     }
 
-    public Collection<IntactPublication> getByVariableParameterDescription(String description) {
+    public Collection<IntactCuratedPublication> getByVariableParameterDescription(String description) {
         Query query = getEntityManager().createQuery("select e from IntactExperiment e " +
                 "join e.variableParameters as p " +
                 "where p.description = :desc");
@@ -488,7 +488,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ExperimentSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<Experiment, IntactExperiment> getDbSynchronizer() {
+        return getSynchronizerContext().getExperimentSynchronizer();
     }
 }

@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureEvidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.FeatureEvidenceSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -58,7 +59,7 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new FeatureEvidenceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<FeatureEvidence, IntactFeatureEvidence> getDbSynchronizer() {
+        return getSynchronizerContext().getFeatureEvidenceSynchronizer();
     }
 }

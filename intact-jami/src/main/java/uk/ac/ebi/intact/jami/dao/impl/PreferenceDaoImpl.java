@@ -6,6 +6,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.PreferenceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.user.Preference;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.PreferenceSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -43,7 +44,7 @@ public class PreferenceDaoImpl extends AbstractIntactBaseDao<Preference, Prefere
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new PreferenceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<Preference, Preference> getDbSynchronizer() {
+        return getSynchronizerContext().getPreferenceSynchronizer();
     }
 }

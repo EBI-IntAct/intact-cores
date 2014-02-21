@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CooperativityEvidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
 import uk.ac.ebi.intact.jami.model.extension.IntactCooperativityEvidence;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CooperativityEvidenceSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -104,7 +105,7 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new CooperativityEvidenceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> getDbSynchronizer() {
+        return getSynchronizerContext().getCooperativityEvidenceSynchronizer();
     }
 }

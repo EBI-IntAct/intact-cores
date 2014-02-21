@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.context;
 
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
@@ -34,6 +35,8 @@ public interface SynchronizerContext {
      * Clear cache of all synchronizers
      */
     public void clearCache();
+
+    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getGeneralCvSynchronizer();
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDatabaseSynchronizer();
 
@@ -76,6 +79,20 @@ public interface SynchronizerContext {
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getLifecycleStatusSynchronizer();
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getLifecycleEventSynchronizer();
+
+    public <A extends AbstractIntactAlias> AliasSynchronizer<A> getAliasSynchronizer(Class<A> aliasclass);
+
+    public <A extends AbstractIntactAnnotation> AnnotationSynchronizer<A> getAnnotationSynchronizer(Class<A> annotationclass);
+
+    public <A extends AbstractIntactXref> XrefSynchronizer<A> getXrefSynchronizer(Class<A> xrefclass);
+
+    public <A extends AbstractIntactChecksum> ChecksumSynchronizer<A> getChecksumSynchronizer(Class<A> checksumclass);
+
+    public <A extends AbstractIntactConfidence> ConfidenceSynchronizer<Confidence, A> getConfidenceSynchronizer(Class<A> confidenceclass);
+
+    public <A extends AbstractIntactParameter> ParameterSynchronizer<Parameter, A> getParameterSynchronizer(Class<A> parameterclass);
+
+    public <A extends AbstractLifecycleEvent> LifecycleEventSynchronizer<A> getLifecycleSynchronizer(Class<A> eventclass);
 
     public AliasSynchronizer<CvTermAlias> getCvAliasSynchronizer();
 
@@ -183,7 +200,9 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<User, User> getUserSynchronizer();
 
-    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer();
+    public IntactDbSynchronizer<Publication, IntactPublication> getSimplePublicationSynchronizer();
+
+    public IntactDbSynchronizer<Publication, IntactCuratedPublication> getPublicationSynchronizer();
 
     public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer();
 

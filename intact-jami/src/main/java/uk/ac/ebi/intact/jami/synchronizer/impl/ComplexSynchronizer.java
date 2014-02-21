@@ -7,14 +7,11 @@ import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactComplexCom
 import psidev.psi.mi.jami.utils.comparator.participant.UnambiguousModelledParticipantComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ComplexMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -122,15 +119,15 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
             if (exp == null){
                 createExperiment(intactComplex, "14681455");
                 exp = intactComplex.getExperiments().iterator().next();
-                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+                ((IntactCuratedPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
             }
             else if (exp.getPublication() == null){
-                exp.setPublication(new IntactPublication("14681455"));
-                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+                exp.setPublication(new IntactCuratedPublication("14681455"));
+                ((IntactCuratedPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
             }
             else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("14681455")){
-                exp.setPublication(new IntactPublication("14681455"));
-                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+                exp.setPublication(new IntactCuratedPublication("14681455"));
+                ((IntactCuratedPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
             }
         }
     }
@@ -195,7 +192,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     private void createExperiment(IntactComplex intactComplex, String pubmed) throws FinderException, PersisterException, SynchronizerException {
         // create default experiment with publication unassigned for complexes
-        IntactExperiment defaultExperiment = new IntactExperiment(new IntactPublication(pubmed));
+        IntactExperiment defaultExperiment = new IntactExperiment(new IntactCuratedPublication(pubmed));
         // inferred by curator
         defaultExperiment.setInteractionDetectionMethod(IntactUtils.createMIInteractionDetectionMethod(Experiment.INFERRED_BY_CURATOR, Experiment.INFERRED_BY_CURATOR_MI));
         // use host organism of interaction

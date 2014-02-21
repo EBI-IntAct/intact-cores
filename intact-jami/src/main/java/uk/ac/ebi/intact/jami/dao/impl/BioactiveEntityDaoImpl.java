@@ -1,11 +1,10 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import psidev.psi.mi.jami.model.BioactiveEntity;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.BioactiveEntityDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactBioactiveEntity;
-import uk.ac.ebi.intact.jami.synchronizer.impl.BioactiveEntitySynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
 
@@ -22,7 +21,7 @@ public class BioactiveEntityDaoImpl extends InteractorDaoImpl<BioactiveEntity,In
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new BioactiveEntitySynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<BioactiveEntity, IntactBioactiveEntity> getDbSynchronizer() {
+        return getSynchronizerContext().getBioactiveEntitySynchronizer();
     }
 }

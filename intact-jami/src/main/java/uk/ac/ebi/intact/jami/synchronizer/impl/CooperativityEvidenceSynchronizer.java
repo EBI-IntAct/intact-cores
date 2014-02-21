@@ -37,7 +37,7 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     public void synchronizeProperties(IntactCooperativityEvidence object) throws FinderException, PersisterException, SynchronizerException {
         // publication first
         Publication pub = object.getPublication();
-        object.setPublication(getContext().getPublicationSynchronizer().synchronize(pub, true));
+        object.setPublication(getContext().getSimplePublicationSynchronizer().synchronize(pub, true));
 
         // check evidence methodse
         prepareEvidenceMethods(object);

@@ -160,8 +160,9 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         }
     }
 
-    @Transient
-    // TODO check primary ref?
+    @ManyToOne( targetEntity = IntactPublication.class)
+    @JoinColumn( name = "publication_ac", referencedColumnName = "ac")
+    @Target(IntactPublication.class)
     public Publication getPublication() {
         return this.bibRef;
     }

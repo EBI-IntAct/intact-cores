@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.jami.model.listener;
 
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
 
 import javax.persistence.PostLoad;
 
@@ -18,7 +18,7 @@ import javax.persistence.PostLoad;
 public class PublicationLifecycleListener {
 
     @PostLoad
-    public void postLoad(IntactPublication pub){
+    public void postLoad(IntactCuratedPublication pub){
 
         if (pub.getReleasedDate() == null && !pub.getLifecycleEvents().isEmpty()){
             for (LifeCycleEvent evt : pub.getLifecycleEvents()){

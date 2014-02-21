@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
@@ -13,7 +11,6 @@ import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactExperimentComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -51,7 +48,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
             return this.persistedObjects.get(experiment);
         }
         else{
-            IntactPublication fetchedPublication = null;
+            IntactCuratedPublication fetchedPublication = null;
             if (experiment.getPublication() != null){
                 fetchedPublication = getContext().getPublicationSynchronizer().find(experiment.getPublication());
                 // the publication does not exist so the experiment does not exist

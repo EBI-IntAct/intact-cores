@@ -61,7 +61,8 @@ public class IntactDaoImpl implements IntactDao{
     private PreferenceDao preferenceDao;
     private UserDao userDao;
     private RoleDao roleDao;
-    private PublicationDao publicationDao;
+    private PublicationDao<IntactPublication> publicationDao;
+    private CuratedPublicationDao curatedPublicationDao;
     private RangeDao rangeDao;
     private SourceDao sourceDao;
     private VariableParameterDao variableParameterDao;
@@ -398,11 +399,18 @@ public class IntactDaoImpl implements IntactDao{
         return this.userDao;
     }
 
-    public PublicationDao getPublicationDao() {
+    public PublicationDao<IntactPublication> getPublicationDao() {
         if (this.publicationDao == null){
-            this.publicationDao = new PublicationDaoImpl(getEntityManager(), getSynchronizerContext());
+            this.publicationDao = new PublicationDaoImpl<IntactPublication>(IntactPublication.class, getEntityManager(), getSynchronizerContext());
         }
         return this.publicationDao;
+    }
+
+    public CuratedPublicationDao getCuratedPublicationDao() {
+        if (this.curatedPublicationDao == null){
+            this.curatedPublicationDao = new CuratedPublicationDaoImpl(getEntityManager(), getSynchronizerContext());
+        }
+        return this.curatedPublicationDao;
     }
 
     public ExperimentDao getExperimentDao() {

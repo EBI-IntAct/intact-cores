@@ -12,6 +12,7 @@ import uk.ac.ebi.intact.jami.dao.InteractorPoolDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.ComplexSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorPoolSynchronizer;
 
@@ -33,8 +34,8 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new ComplexSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<Complex, IntactComplex> getDbSynchronizer() {
+        return getSynchronizerContext().getComplexSynchronizer();
     }
 
     public Collection<IntactComplex> getByInteractionType(String typeName, String typeMI, int first, int max) {

@@ -45,6 +45,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
     private Collection<Experiment> experiments;
     private List<LifeCycleEvent> lifecycleEvents;
     private CvTerm status;
+    private CvTerm evidenceType;
 
     protected IntactComplex(){
         super();
@@ -146,6 +147,17 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     public void setSource(Source source) {
         this.source = source;
+    }
+
+    @ManyToOne(targetEntity = IntactCvTerm.class)
+    @JoinColumn( name = "evidencetype_ac", referencedColumnName = "ac", nullable = false )
+    @Target(IntactCvTerm.class)
+    public CvTerm getEvidenceType() {
+        return evidenceType;
+    }
+
+    public void setEvidenceType(CvTerm evidenceType) {
+        this.evidenceType = evidenceType;
     }
 
     @OneToMany( mappedBy = "interaction", orphanRemoval = true,
@@ -440,7 +452,13 @@ public class IntactComplex extends IntactInteractor implements Complex{
         this.interactionType = term;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = IntactInteractionEvidence.class)
+    @JoinTable(
+            name = "ia_complex2evidence",
+            joinColumns = {@JoinColumn( name = "complex_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "evidence_ac" )}
+    )
+    @Target(IntactInteractionEvidence.class)
     public Collection<InteractionEvidence> getInteractionEvidences() {
         if (interactionEvidences == null){
             initialiseInteractionEvidences();
@@ -586,6 +604,10 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     private void setLifecycleEvents( List<LifeCycleEvent> lifecycleEvents ) {
         this.lifecycleEvents = lifecycleEvents;
+    }
+
+    private void setInteractionEvidences(Collection<InteractionEvidence> interactionEvidences) {
+        this.interactionEvidences = interactionEvidences;
     }
 
     private class ComplexAnnotationList extends PersistentAnnotationList {

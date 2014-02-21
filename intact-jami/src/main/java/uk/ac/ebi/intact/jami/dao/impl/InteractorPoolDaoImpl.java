@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.InteractorPoolDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorPoolSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -26,8 +27,8 @@ public class InteractorPoolDaoImpl extends InteractorDaoImpl<InteractorPool,Inta
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new InteractorPoolSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<InteractorPool,IntactInteractorPool> getDbSynchronizer() {
+        return getSynchronizerContext().getInteractorPoolSynchronizer();
     }
 
     public Collection<IntactInteractorPool> getByInteractorAc(String ac) {

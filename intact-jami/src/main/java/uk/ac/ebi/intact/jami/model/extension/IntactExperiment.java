@@ -71,9 +71,9 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
         this.shortLabel = shortName;
     }
 
-    @ManyToOne(targetEntity = IntactPublication.class)
+    @ManyToOne(targetEntity = IntactCuratedPublication.class)
     @JoinColumn( name = "publication_ac", referencedColumnName = "ac")
-    @Target(IntactPublication.class)
+    @Target(IntactCuratedPublication.class)
     public Publication getPublication() {
         return this.publication;
     }

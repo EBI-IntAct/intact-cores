@@ -1,12 +1,15 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
+import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.VariableParameterValueSet;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.VariableParameterValueSetDao;
+import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValue;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValueSet;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.VariableParameterValueSetSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -35,7 +38,7 @@ public class VariableParameterValueSetDaoImpl extends AbstractIntactBaseDao<Vari
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new VariableParameterValueSetSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> getDbSynchronizer() {
+        return getSynchronizerContext().getVariableParameterValueSetSynchronizer();
     }
 }

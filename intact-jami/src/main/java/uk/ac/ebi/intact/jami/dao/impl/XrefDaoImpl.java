@@ -2,11 +2,14 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
+import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
 import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValueSet;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
@@ -621,18 +624,12 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         Query query = getEntityManager().createQuery("select x from " + getEntityClass() + " x " +
                 "join x.parent as p " +
                 "where p.ac = :ac ");
-        query.setParameter("ac",parentAc);
+        query.setParameter("ac", parentAc);
         return query.getResultList();
     }
 
     @Override
-    public void setEntityClass(Class<X> entityClass) {
-        super.setEntityClass(entityClass);
-        initialiseDbSynchronizer();
-    }
-
-    @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new XrefSynchronizerTemplate<X>(getEntityManager(), getEntityClass()));
+    public IntactDbSynchronizer<Xref, X> getDbSynchronizer() {
+        return getSynchronizerContext().getXrefSynchronizer(getEntityClass());
     }
 }

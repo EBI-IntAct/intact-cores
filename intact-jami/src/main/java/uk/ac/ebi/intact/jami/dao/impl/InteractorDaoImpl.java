@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.InteractorDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
@@ -553,13 +554,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new InteractorSynchronizerTemplate<T, F>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
-    }
-
-    @Override
-    public void setEntityClass(Class<F> entityClass) {
-        super.setEntityClass(entityClass);
-        getDbSynchronizer().setIntactClass(entityClass);
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getInteractorSynchronizer();
     }
 }

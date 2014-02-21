@@ -4,7 +4,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Publication;
-import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
 import uk.ac.ebi.intact.jami.model.user.User;
 
 import javax.persistence.*;
@@ -39,10 +39,10 @@ public class PublicationLifecycleEvent extends AbstractLifecycleEvent {
         super( event, who, new Date(), note );
     }
 
-    @ManyToOne( targetEntity = IntactPublication.class, fetch = FetchType.LAZY, optional = false )
+    @ManyToOne( targetEntity = IntactCuratedPublication.class, fetch = FetchType.LAZY, optional = false )
     @JoinColumn( name = "publication_ac", referencedColumnName = "ac")
     @ForeignKey(name="FK_LIFECYCLE_EVENT_PUBLICATION")
-    @Target(IntactPublication.class)
+    @Target(IntactCuratedPublication.class)
     public Publication getParent() {
         return publication;
     }

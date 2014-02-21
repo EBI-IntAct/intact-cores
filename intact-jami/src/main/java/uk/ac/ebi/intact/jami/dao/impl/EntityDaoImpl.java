@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.EntityDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.EntitySynchronizerTemplate;
 
 import javax.persistence.EntityManager;
@@ -618,13 +619,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new EntitySynchronizerTemplate<T, F>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
-    }
-
-    @Override
-    public void setEntityClass(Class<F> entityClass) {
-        super.setEntityClass(entityClass);
-        getDbSynchronizer().setIntactClass(entityClass);
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getEntitySynchronizer();
     }
 }

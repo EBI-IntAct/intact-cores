@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.FeatureSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
@@ -631,13 +632,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new FeatureSynchronizerTemplate<T, F>(new DefaultSynchronizerContext(getEntityManager()), getEntityClass()));
-    }
-
-    @Override
-    public void setEntityClass(Class<F> entityClass) {
-        super.setEntityClass(entityClass);
-        getDbSynchronizer().setIntactClass(entityClass);
+    public IntactDbSynchronizer getDbSynchronizer() {
+        return getSynchronizerContext().getFeatureSynchronizer();
     }
 }

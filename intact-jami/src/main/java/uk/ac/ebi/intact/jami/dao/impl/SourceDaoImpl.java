@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.Role;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.SourceSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -563,7 +564,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new SourceSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<Source, IntactSource> getDbSynchronizer() {
+        return getSynchronizerContext().getSourceSynchronizer();
     }
 }

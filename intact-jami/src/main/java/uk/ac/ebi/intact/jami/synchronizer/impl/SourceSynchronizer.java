@@ -115,6 +115,8 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         prepareAliases(intactSource);
         // then check annotations
         prepareAnnotations(intactSource);
+        // then publication
+        preparePublication(intactSource);
         // then check xrefs
         prepareXrefs(intactSource);
     }
@@ -315,6 +317,13 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                     intactSource.getSynonyms().add(cvAlias);
                 }
             }
+        }
+    }
+
+    protected void preparePublication(IntactSource intactSource) throws PersisterException, FinderException, SynchronizerException {
+       Publication pub = intactSource.getPublication();
+        if (pub != null){
+            intactSource.setPublication(getContext().getSimplePublicationSynchronizer().synchronize(pub, true));
         }
     }
 

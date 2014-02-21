@@ -41,9 +41,9 @@ public class PublicationXref extends AbstractIntactXref{
         super(database, id);
     }
 
-    @ManyToOne( targetEntity = IntactPublication.class )
+    @ManyToOne( targetEntity = IntactCuratedPublication.class )
     @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
-    @Target(IntactPublication.class)
+    @Target(IntactCuratedPublication.class)
     public Publication getParent() {
         return parent;
     }

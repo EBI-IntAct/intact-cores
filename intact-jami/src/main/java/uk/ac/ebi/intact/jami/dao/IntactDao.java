@@ -147,7 +147,9 @@ public interface IntactDao {
 
     public UserDao getUserDao();
 
-    public PublicationDao getPublicationDao();
+    public PublicationDao<IntactPublication> getPublicationDao();
+
+    public CuratedPublicationDao getCuratedPublicationDao();
 
     public ExperimentDao getExperimentDao();
 

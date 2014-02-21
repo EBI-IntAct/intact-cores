@@ -26,7 +26,6 @@ import java.util.List;
 public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements IntactBaseDao<T> {
 
     private Class<T> entityClass;
-    private IntactDbSynchronizer<I,T> dbSynchronizer;
     private EntityManager entityManager;
     private SynchronizerContext synchronizerContext;
 
@@ -42,6 +41,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
         if (context == null){
             throw new IllegalArgumentException("The Intact database synchronizer context cannot be null");
         }
+        this.synchronizerContext = context;
     }
 
     public void flush() {
@@ -139,18 +139,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
         return this.entityClass;
     }
 
-    public IntactDbSynchronizer<I,T> getDbSynchronizer() {
-        if (this.dbSynchronizer == null){
-            initialiseDbSynchronizer();
-        }
-        return this.dbSynchronizer;
-    }
-
-    public void setDbSynchronizer(IntactDbSynchronizer<I, T> dbSynchronizer) {
-        this.dbSynchronizer = dbSynchronizer;
-    }
-
-    protected abstract void initialiseDbSynchronizer();
+    public abstract IntactDbSynchronizer getDbSynchronizer();
 
     protected void synchronizeObjectProperties(T objToUpdate) throws PersisterException, FinderException, SynchronizerException {
         getDbSynchronizer().synchronizeProperties(objToUpdate);

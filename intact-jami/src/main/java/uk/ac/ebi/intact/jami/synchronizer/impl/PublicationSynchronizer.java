@@ -11,12 +11,16 @@ import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Query;
@@ -24,27 +28,33 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
- * Default synchronizer for publications
+ * Default synchronizer for simple publications
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
 
-public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Publication, IntactPublication>
+public class PublicationSynchronizer<I extends IntactPublication> extends AbstractIntactDbSynchronizer<Publication, I>
         implements PublicationFetcher{
 
-    private Map<Publication, IntactPublication> persistedObjects;
+    private Map<Publication, I> persistedObjects;
 
     private static final Log log = LogFactory.getLog(PublicationSynchronizer.class);
 
-    public PublicationSynchronizer(SynchronizerContext context){
-        super(context, IntactPublication.class);
+    public PublicationSynchronizer(SynchronizerContext context, Class<I> intactClass) {
+        super(context, intactClass);
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<Publication, IntactPublication>(new UnambiguousPublicationComparator());
+        this.persistedObjects = new TreeMap<Publication, I>(new UnambiguousPublicationComparator());
     }
 
-    public IntactPublication find(Publication publication) throws FinderException {
+    public PublicationSynchronizer(SynchronizerContext context){
+        super(context, (Class<I>)IntactPublication.class);
+        // to keep track of persisted cvs
+        this.persistedObjects = new TreeMap<Publication, I>(new UnambiguousPublicationComparator());
+    }
+
+    public I find(Publication publication) throws FinderException {
         try {
             if (publication == null){
                 return null;
@@ -65,7 +75,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                 boolean foundSeveral = false;
                 for (Xref ref : publication.getIdentifiers()){
                     try{
-                        IntactPublication fetchedPublication = fetchByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true);
+                        I fetchedPublication = fetchByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true);
                         if (fetchedPublication != null){
                             return fetchedPublication;
                         }
@@ -90,34 +100,32 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    public IntactPublication persist(IntactPublication object) throws FinderException, PersisterException, SynchronizerException {
+    public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
-        IntactPublication persisted = super.persist(object);
+        I persisted = super.persist(object);
         this.persistedObjects.put(object, persisted);
 
         return persisted;
     }
 
     @Override
-    public IntactPublication synchronize(Publication object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+    public I synchronize(Publication object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
         if (!this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
-        IntactPublication persisted = super.synchronize(object, persist);
+        I persisted = super.synchronize(object, persist);
         this.persistedObjects.put(object, persisted);
 
         return persisted;
     }
 
-    public void synchronizeProperties(IntactPublication intactPublication) throws FinderException, PersisterException, SynchronizerException {
-        // then check shortlabel/synchronize
-        prepareAndSynchronizeShortLabel(intactPublication);
+    public void synchronizeProperties(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
         // then check full name
         prepareTitle(intactPublication);
         // then check journal
@@ -126,39 +134,10 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         preparePublicationDate(intactPublication);
         // then check authors
         preparePublicationAuthors(intactPublication);
-        // then check curation depth
-        prepareCurationDepth(intactPublication);
-        // then check source
-        prepareSource(intactPublication);
         // then check annotations
         prepareAnnotations(intactPublication);
         // then check xrefs
         prepareXrefs(intactPublication);
-        // then check experiments
-        prepareExperiments(intactPublication);
-        // then prepare users
-        prepareStatusAndCurators(intactPublication);
-        // then check publication lifecycle
-        prepareLifeCycleEvents(intactPublication);
-    }
-
-    protected void prepareStatusAndCurators(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
-        // first the status
-        CvTerm status = intactPublication.getStatus() != null ? intactPublication.getStatus() : IntactUtils.createLifecycleStatus(LifeCycleEvent.NEW_STATUS);
-        intactPublication.setStatus(getContext().getLifecycleStatusSynchronizer().synchronize(status, true));
-
-        // then curator
-        User curator = intactPublication.getCurrentOwner();
-        // do not persist user if not there
-        if (curator != null){
-            intactPublication.setCurrentOwner(getContext().getUserSynchronizer().synchronize(curator, false));
-        }
-
-        // then reviewer
-        User reviewer = intactPublication.getCurrentReviewer();
-        if (reviewer != null){
-            intactPublication.setCurrentReviewer(getContext().getUserSynchronizer().synchronize(reviewer, false));
-        }
     }
 
     public Publication fetchByIdentifier(String identifier, String source) throws BridgeFailedException {
@@ -188,13 +167,13 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         this.persistedObjects.clear();
     }
 
-    protected IntactPublication fetchByTitleAndJournal(String title, String journal, Date publicationDate, Collection<String> authors) throws BridgeFailedException {
+    protected I fetchByTitleAndJournal(String title, String journal, Date publicationDate, Collection<String> authors) throws BridgeFailedException {
         Query query;
         if(title == null && journal == null && publicationDate == null && authors.isEmpty()) {
            return null;
         }
         else if (authors.isEmpty()){
-            query = getEntityManager().createQuery("select p from IntactPublication p " +
+            query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
                     "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
                     "and "+(journal != null ? "upper(p.journal) = :journal":"p.journal is null ") +
                     "and p.publicationDate "+(publicationDate != null ? "= :pubDate":"is null "));
@@ -209,7 +188,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             }
         }
         else {
-            query = getEntityManager().createQuery("select p from IntactPublication p " +
+            query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
                     "join p.persistentAnnotations as a "+
                     "join a.topic as topic "+
                     "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
@@ -230,7 +209,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             query.setParameter("authorsList",StringUtils.join(authors, ", ").toUpperCase());
         }
 
-        Collection<IntactPublication> publications = query.getResultList();
+        Collection<I> publications = query.getResultList();
         if (publications.size() == 1){
             return publications.iterator().next();
         }
@@ -240,19 +219,19 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         return null;
     }
 
-    protected IntactPublication fetchByIdentifier(String identifier, String source, boolean checkAc) throws BridgeFailedException {
+    protected I fetchByIdentifier(String identifier, String source, boolean checkAc) throws BridgeFailedException {
         Query query;
         if (checkAc){
-            query = getEntityManager().createQuery("select p from IntactPublication p " +
+            query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
                     "where p.ac = :id");
             query.setParameter("id", identifier);
-            Collection<IntactPublication> publications = query.getResultList();
+            Collection<I> publications = query.getResultList();
             if (publications.size() == 1){
                 return publications.iterator().next();
             }
         }
 
-        query = getEntityManager().createQuery("select p from IntactPublication p " +
+        query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
@@ -265,7 +244,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         query.setParameter("dbName", source.toLowerCase().trim());
         query.setParameter("dbId", identifier);
 
-        Collection<IntactPublication> publications = query.getResultList();
+        Collection<I> publications = query.getResultList();
         if (publications.size() == 1){
             return publications.iterator().next();
         }
@@ -275,9 +254,9 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         return null;
     }
 
-    protected IntactPublication fetchByImexId(String imex) throws FinderException {
+    protected I fetchByImexId(String imex) throws FinderException {
 
-        Query query = getEntityManager().createQuery("select p from IntactPublication p " +
+        Query query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
@@ -288,7 +267,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         query.setParameter("dbName", Xref.IMEX.toLowerCase());
         query.setParameter("dbId", imex);
 
-        Collection<IntactPublication> publications = query.getResultList();
+        Collection<I> publications = query.getResultList();
         if (publications.size() == 1){
             return publications.iterator().next();
         }
@@ -299,56 +278,18 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected Object extractIdentifier(IntactPublication object) {
+    protected Object extractIdentifier(I object) {
         return object.getAc();
     }
 
     @Override
-    protected IntactPublication instantiateNewPersistentInstance(Publication object, Class<? extends IntactPublication> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        IntactPublication pub = new IntactPublication();
-        PublicationCloner.copyAndOverridePublicationPropertiesAndExperiments(object, pub);
+    protected I instantiateNewPersistentInstance(Publication object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        I pub = intactClass.newInstance();
+        PublicationCloner.copyAndOverridePublicationProperties(object, pub);
         return pub;
     }
 
-    protected void prepareSource(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
-        Source source = intactPublication.getSource();
-        if (source != null){
-            intactPublication.setSource(getContext().getSourceSynchronizer().synchronize(source, true));
-        }
-    }
-
-    protected void prepareLifeCycleEvents(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
-
-        if (intactPublication.areLifecycleEventsInitialized()){
-            List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactPublication.getLifecycleEvents());
-            for (LifeCycleEvent event : eventsToPersist){
-                // do not persist or merge events because of cascades
-                LifeCycleEvent evt = getContext().getPublicationLifecycleSynchronizer().synchronize(event, false);
-                // we have a different instance because needed to be synchronized
-                if (evt != event){
-                    intactPublication.getLifecycleEvents().add(intactPublication.getLifecycleEvents().indexOf(event), evt);
-                    intactPublication.getLifecycleEvents().remove(event);
-                }
-            }
-        }
-    }
-
-    protected void prepareExperiments(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
-        if (intactPublication.areExperimentsInitialized()){
-            List<Experiment> experimentToPersist = new ArrayList<Experiment>(intactPublication.getExperiments());
-            for (Experiment experiment : experimentToPersist){
-                // do not persist or merge experiments because of cascades
-                Experiment pubExperiment = getContext().getExperimentSynchronizer().synchronize(experiment, false);
-                // we have a different instance because needed to be synchronized
-                if (pubExperiment != experiment){
-                    intactPublication.removeExperiment(experiment);
-                    intactPublication.addExperiment(pubExperiment);
-                }
-            }
-        }
-    }
-
-    protected void preparePublicationAuthors(IntactPublication intactPublication) {
+    protected void preparePublicationAuthors(I intactPublication) {
         if (intactPublication.getAuthors().isEmpty()){
             AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.AUTHOR_MI, Annotation.AUTHOR);
         }
@@ -371,7 +312,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void prepareJournal(IntactPublication intactPublication) {
+    protected void prepareJournal(I intactPublication) {
         if (intactPublication.getJournal() == null){
             AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.PUBLICATION_JOURNAL_MI, Annotation.PUBLICATION_JOURNAL);
         }
@@ -388,46 +329,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void prepareCurationDepth(IntactPublication intactPublication) {
-        Annotation depth = AnnotationUtils.collectFirstAnnotationWithTopic(intactPublication.getAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
-        switch (intactPublication.getCurationDepth()){
-            case IMEx:
-                if (depth != null){
-                    if (!Annotation.IMEX_CURATION.equalsIgnoreCase(depth.getValue())){
-                        depth.setValue(Annotation.IMEX_CURATION);
-                    }
-                }
-                else{
-                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.IMEX_CURATION));
-                }
-                break;
-            case MIMIx:
-                if (depth != null){
-                    if (!Annotation.MIMIX_CURATION.equalsIgnoreCase(depth.getValue())){
-                        depth.setValue(Annotation.MIMIX_CURATION);
-                    }
-                }
-                else{
-                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.MIMIX_CURATION));
-                }
-                break;
-            case rapid_curation:
-                if (depth != null){
-                    if (!Annotation.RAPID_CURATION.equalsIgnoreCase(depth.getValue())){
-                        depth.setValue(Annotation.RAPID_CURATION);
-                    }
-                }
-                else{
-                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.RAPID_CURATION));
-                }
-                break;
-            default:
-                AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
-                break;
-        }
-    }
-
-    protected void prepareXrefs(IntactPublication intactPublication) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
         if (intactPublication.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactPublication.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
@@ -442,7 +344,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void prepareAnnotations(IntactPublication intactPublication) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
         if (intactPublication.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactPublication.getPersistentAnnotations());
             for (Annotation annotation : annotationsToPersist){
@@ -457,7 +359,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void preparePublicationDate(IntactPublication intactPublication) throws FinderException, PersisterException, SynchronizerException {
+    protected void preparePublicationDate(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
         if (intactPublication.getPublicationDate() == null){
             AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR);
         }
@@ -480,7 +382,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void prepareTitle(IntactPublication intactPublication) {
+    protected void prepareTitle(I intactPublication) {
         // truncate if necessary
         if (intactPublication.getTitle() != null && IntactUtils.MAX_FULL_NAME_LEN < intactPublication.getTitle().length()){
             log.warn("Publication title too long: "+intactPublication.getTitle()+", will be truncated to "+ IntactUtils.MAX_FULL_NAME_LEN+" characters.");
@@ -488,43 +390,8 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void prepareAndSynchronizeShortLabel(IntactPublication intactPublication) throws SynchronizerException {
-        // first initialise shortlabel if not done
-        String pubmed = intactPublication.getPubmedId();
-        String doi = intactPublication.getDoi();
-        if (pubmed != null ){
-            intactPublication.setShortLabel(pubmed);
-        }
-        else if (doi != null){
-            intactPublication.setShortLabel(doi);
-        }
-        else if (!intactPublication.getIdentifiers().isEmpty()){
-            intactPublication.setShortLabel(intactPublication.getIdentifiers().iterator().next().getId());
-        }
-        else {
-            // create unassigned pubmed id
-            SequenceManager seqManager = ApplicationContextProvider.getBean(SequenceManager.class);
-            if (seqManager == null){
-                throw new SynchronizerException("The publication synchronizer needs a sequence manager to automatically generate a unassigned pubmed identifier for backward compatibility. No sequence manager bean " +
-                        "was found in the spring context.");
-            }
-            seqManager.createSequenceIfNotExists(IntactUtils.UNASSIGNED_SEQ, 1);
-            String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(IntactUtils.UNASSIGNED_SEQ));
-            String identifier = "unassigned" + nextIntegerAsString;
-            // set identifier
-            intactPublication.setShortLabel(identifier);
-            // add xref
-            intactPublication.getIdentifiers().add(new PublicationXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), identifier, IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI)));
-        }
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < intactPublication.getShortLabel().length()){
-            log.warn("Publication shortLabel too long: "+intactPublication.getShortLabel()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            intactPublication.setShortLabel(intactPublication.getShortLabel().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
-    }
-
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new PublicationMergerEnrichOnly(this));
+        super.setIntactMerger((IntactDbMerger<Publication,I>) new PublicationMergerEnrichOnly(this));
     }
 }

@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CausalRelationshipDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.IntactCausalRelationship;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CausalRelationchipSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -81,7 +82,7 @@ public class CausalRelationshipDaoImpl extends AbstractIntactBaseDao<CausalRelat
     }
 
     @Override
-    protected void initialiseDbSynchronizer() {
-        super.setDbSynchronizer(new CausalRelationchipSynchronizer(new DefaultSynchronizerContext(getEntityManager())));
+    public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getDbSynchronizer() {
+        return getSynchronizerContext().getCausalRelationshipSynchronizer();
     }
 }
