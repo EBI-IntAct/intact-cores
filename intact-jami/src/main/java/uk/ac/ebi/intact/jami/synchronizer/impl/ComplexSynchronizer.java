@@ -89,6 +89,8 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     @Override
     public void synchronizeProperties(IntactComplex intactComplex) throws FinderException, PersisterException, SynchronizerException {
         super.synchronizeProperties(intactComplex);
+        // prepare interaction evidences
+        prepareInteractionEvidences(intactComplex);
         // then check confidences
         prepareConfidences(intactComplex);
         // then check parameters
@@ -104,6 +106,21 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
         // then prepare experiment for backward compatibility
         prepareExperiments(intactComplex);
+    }
+
+    protected void prepareInteractionEvidences(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+        if (intactComplex.areInteractionEvidencesInitialized()){
+            Collection<InteractionEvidence> evidencesToPersist = new ArrayList<InteractionEvidence>(intactComplex.getInteractionEvidences());
+            for (InteractionEvidence interaction : evidencesToPersist){
+                // do not persist or merge interaction evidences
+                InteractionEvidence persistetnInter = getContext().getInteractionSynchronizer().synchronize(interaction, false);
+                // we have a different instance because needed to be synchronized
+                if (persistetnInter != interaction){
+                    intactComplex.getInteractionEvidences().remove(interaction);
+                    intactComplex.getInteractionEvidences().add(persistetnInter);
+                }
+            }
+        }
     }
 
     protected void prepareStatus(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {

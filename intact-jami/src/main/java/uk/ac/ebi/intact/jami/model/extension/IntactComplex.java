@@ -359,6 +359,11 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return experiments;
     }
 
+    @Transient
+    public boolean areInteractionEvidencesInitialized(){
+        return Hibernate.isInitialized(getInteractionEvidences());
+    }
+
     protected void processAddedAnnotationEvent(Annotation added) {
         if (physicalProperties == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES)){
             physicalProperties = added;

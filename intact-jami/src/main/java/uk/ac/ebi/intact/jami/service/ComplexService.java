@@ -1,5 +1,20 @@
 package uk.ac.ebi.intact.jami.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import psidev.psi.mi.jami.model.Complex;
+import uk.ac.ebi.intact.jami.dao.IntactDao;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Complex service
  *
@@ -7,6 +22,43 @@ package uk.ac.ebi.intact.jami.service;
  * @version $Id$
  * @since <pre>21/02/14</pre>
  */
+@Service
+public class ComplexService implements IntactService<Complex>{
 
-public class ComplexService {
+    @Autowired
+    private IntactDao intactDAO;
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Complex> fetchIntactObjects(String query, Map<String, Object> queryParameters, int first, int max) {
+        if (query == null){
+            return new ArrayList<Complex>(this.intactDAO.getComplexDao().getAll("ac", first, max));
+        }
+        return new ArrayList<Complex>(this.intactDAO.getComplexDao().getByQuery(query, queryParameters, first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveOrUpdate(Complex object) throws PersisterException, FinderException, SynchronizerException {
+        // we can synchronize the complex with the database now
+        intactDAO.getSynchronizerContext().getComplexSynchronizer().synchronize(object, true);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveOrUpdate(Collection<? extends Complex> objects) throws SynchronizerException, PersisterException, FinderException {
+        for (Complex interaction : objects){
+            saveOrUpdate(interaction);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void delete(Complex object) throws PersisterException, FinderException, SynchronizerException {
+
+        this.intactDAO.getSynchronizerContext().getComplexSynchronizer().delete(object);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void delete(Collection<? extends Complex> objects) throws SynchronizerException, PersisterException, FinderException {
+        for (Complex interaction : objects){
+            delete(interaction);
+        }
+    }
 }
