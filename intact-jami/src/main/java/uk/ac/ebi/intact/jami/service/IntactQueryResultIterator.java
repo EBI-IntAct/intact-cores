@@ -33,6 +33,9 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
         this.totalCount = this.service.countAll();
         this.query = null;
         this.queryParameters = null;
+
+        prepareNextObject();
+
     }
 
     public IntactQueryResultIterator(IntactService<T> service, int batch){
@@ -56,6 +59,9 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
         this.query = query;
         this.queryParameters = parameters;
         this.totalCount = this.service.countAll(queryCount, parameters);
+
+        prepareNextObject();
+
     }
 
     public IntactQueryResultIterator(IntactService<T> service, int batch, String query, String queryCount, Map<String, Object> parameters){
@@ -65,8 +71,12 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
         this.service = service;
         this.query = query;
         this.queryParameters = parameters;
-        this.totalCount = this.service.countAll(queryCount, parameters);
-        this.totalCount = this.service.countAll();
+        if (queryCount != null){
+            this.totalCount = this.service.countAll(queryCount, parameters);
+        }
+        else{
+            this.totalCount = this.service.countAll();
+        }
         this.batch = batch;
 
         prepareNextObject();
@@ -89,6 +99,12 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
                 this.chunk = this.service.fetchIntactObjects(this.query, this.queryParameters, (int)currentCount, (int)max);
             }
             this.chunkIterator = this.chunk.iterator();
+            if (this.chunkIterator.hasNext()){
+                this.currentObject = this.chunkIterator.next();
+            }
+            else{
+                this.currentObject = null;
+            }
             this.currentCount+=max;
         }
     }

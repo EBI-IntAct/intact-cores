@@ -41,8 +41,13 @@ public class IntactDataSourceOptions extends MIDataSourceOptions{
     public static final String HQL_QUERY_OPTION = "hql_query_key";
 
     /**
+     * The HQL query to use when counting the number of results in the interaction/complex services. If not provided, it will count everything in the interaction/complex service
+     */
+    public static final String HQL_COUNT_QUERY_OPTION = "hql_count_query_key";
+
+    /**
      * The Map<String, Object> which contains the HQL query parameters to apply when querying the interaction/complex service.
      * It is optional and no query parameters will be used by default if this map is not provided
      */
-    public static final String HQL_QUERY_PARAMETERs_OPTION = "hql_query_parameter_key";
+    public static final String HQL_QUERY_PARAMETERS_OPTION = "hql_query_parameter_key";
 }
