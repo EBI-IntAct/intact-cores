@@ -20,7 +20,6 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>16/01/14</pre>
  */
-@MappedSuperclass
 @Entity
 @EntityListeners(value = {ExperimentalRolesListener.class})
 public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEntity<FeatureEvidence> implements ExperimentalEntity{

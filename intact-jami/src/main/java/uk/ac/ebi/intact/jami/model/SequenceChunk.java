@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
  * @author marine Dumousseau
  */
 @Entity
-@Table( name = "ia_sequence_chunk", uniqueConstraints = {@UniqueConstraint(columnNames={"parent", "sequenceIndex"})} )
+@Table( name = "ia_sequence_chunk", uniqueConstraints = {@UniqueConstraint(columnNames={"parent_ac", "sequence_index"})} )
 public class SequenceChunk extends AbstractIntactPrimaryObject {
 
     ///////////////////////////////////////

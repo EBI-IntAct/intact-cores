@@ -184,7 +184,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         this.currentReviewer = currentReviewer;
     }
 
-    @OneToMany( mappedBy = "complex", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)
+    @OneToMany( mappedBy = "parent", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @OrderBy("when, created")
     @Target(ComplexLifecycleEvent.class)

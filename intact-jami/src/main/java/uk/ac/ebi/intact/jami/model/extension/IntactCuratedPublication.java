@@ -36,8 +36,6 @@ public class IntactCuratedPublication extends IntactPublication{
     private User currentOwner;
     private User currentReviewer;
 
-    private Xref acRef;
-
     public IntactCuratedPublication(){
         super();
     }
@@ -191,7 +189,7 @@ public class IntactCuratedPublication extends IntactPublication{
         }
     }
 
-    @OneToMany( mappedBy = "publication", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifecycleEvent.class)
+    @OneToMany( mappedBy = "parent", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifecycleEvent.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @OrderBy("when, created")
     @Target(PublicationLifecycleEvent.class)

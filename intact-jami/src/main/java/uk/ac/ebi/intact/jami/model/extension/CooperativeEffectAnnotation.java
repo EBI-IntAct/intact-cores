@@ -35,7 +35,7 @@ public class CooperativeEffectAnnotation extends AbstractIntactAnnotation{
     }
 
     @ManyToOne( targetEntity = AbstractIntactCooperativeEffect.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
+    @JoinColumn( name = "parent_ac", referencedColumnName = "id" )
     @Target(AbstractIntactCooperativeEffect.class)
     public CooperativeEffect getParent() {
         return parent;

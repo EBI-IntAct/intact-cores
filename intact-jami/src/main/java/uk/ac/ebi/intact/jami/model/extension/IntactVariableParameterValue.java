@@ -105,8 +105,8 @@ public class IntactVariableParameterValue extends AbstractAuditable implements V
         this.variableParameter = variableParameter;
     }
 
-    @OneToMany( mappedBy = "variableParameterValues", targetEntity = VariableParameterValueSet.class)
-    @Target(VariableParameterValueSet.class)
+    @OneToMany( mappedBy = "variableParameterValues", targetEntity = IntactVariableParameterValueSet.class)
+    @Target(IntactVariableParameterValueSet.class)
     public Collection<VariableParameterValueSet> getInteractionParameterValues() {
         if (this.interactionParameterValues == null){
             this.interactionParameterValues = new ArrayList<VariableParameterValueSet>();

@@ -30,7 +30,7 @@ public abstract class AbstractIntactPrimaryObject extends AbstractAuditable impl
     @Id
     @GeneratedValue( generator = "intact-id-generator" )
     @GenericGenerator( name = "intact-id-generator", strategy = "uk.ac.ebi.intact.jami.model.IntactAcGenerator")
-    @Column( length = 30 )
+    @Column( name = "ac", length = 30 )
     public String getAc() {
         return ac;
     }
