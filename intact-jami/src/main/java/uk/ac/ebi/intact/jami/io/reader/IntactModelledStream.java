@@ -3,8 +3,7 @@ package uk.ac.ebi.intact.jami.io.reader;
 import psidev.psi.mi.jami.datasource.ModelledInteractionStream;
 import psidev.psi.mi.jami.model.ModelledInteraction;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
-import uk.ac.ebi.intact.jami.service.ComplexService;
-import uk.ac.ebi.intact.jami.service.IntactService;
+import uk.ac.ebi.intact.jami.service.ModelledInteractionService;
 
 /**
  * Intact stream for interaction evidences
@@ -26,11 +25,11 @@ public class IntactModelledStream extends AbstractIntactStream<ModelledInteracti
 
     @Override
     protected boolean isSpringContextInitialised() {
-        return ApplicationContextProvider.getBean(ComplexService.class) != null;
+        return ApplicationContextProvider.getBean(ModelledInteractionService.class) != null;
     }
 
     @Override
     protected void initialiseDefaultIntactService() {
-        setIntactService((IntactService)ApplicationContextProvider.getBean(ComplexService.class));
+        setIntactService(ApplicationContextProvider.getBean(ModelledInteractionService.class));
     }
 }
