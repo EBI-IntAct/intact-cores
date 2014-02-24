@@ -12,6 +12,15 @@
     <!-- only scan annotations in this package -->
     <context:component-scan base-package="uk.ac.ebi.intact.jami"/>
 
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath*:/META-INF/intact-jami.properties</value>
+            </list>
+        </property>
+    </bean>
+
     <!-- so the @Transactional annotations work -->
     <tx:annotation-driven transaction-manager="transactionManager"/>
 

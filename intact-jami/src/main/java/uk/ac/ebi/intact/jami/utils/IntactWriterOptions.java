@@ -14,24 +14,23 @@ import psidev.psi.mi.jami.datasource.InteractionWriterOptions;
 public class IntactWriterOptions extends InteractionWriterOptions{
 
     /**
-     * The source location of the spring file which describe IntAct configuration
+     * The source location of the spring file which describe IntAct configuration for the IntAct database writer.
+     * If provided, it will override any existing spring configuration.
+     * If no spring configuration was provided, it will inject spring configuration file classpath*:/META-INF/intact-jami.spring.xml which expects some properties to be set such as :
+     * intact.hbm2ddl
+     * intact.platform
+     * intact.driver
+     * intact.db.url
+     * intact.db.user
+     * intact.db.password
+     * intact.user.id
+     * intact.acPrefix
+     * intact.default.institution
      */
     public static final String SPRING_CONFIG_OPTION = "intact_spring_source_key";
 
     /**
-     * The mitab version. It must be an enum of type MitabVersion.
-     * If it is not provided, it will be considered as 2.7 by default
+     * The bean name of the interaction service to use. If not provided, will use the default interactionEvidenceService or complexService
      */
-    public static final String MITAB_VERSION_OPTION = "mitab_version_key";
-    /**
-     * The option to write or not the MITAB header. It must be a boolean value
-     * If it is not provided, it will be considered as true by default
-     */
-    public static final String MITAB_HEADER_OPTION = "mitab_header_key";
-    /**
-     * The option to select more specialised writers with extended MITAB objects (features and confidences).
-     * It must be a boolean value
-     * If it is not provided, it will be considered as false.
-     */
-    public static final String MITAB_EXTENDED_OPTION = "mitab_extended_key";
+    public static final String INTERACTION_SERVICE_NAME_OPTION = "interaction_service_name_key";
 }

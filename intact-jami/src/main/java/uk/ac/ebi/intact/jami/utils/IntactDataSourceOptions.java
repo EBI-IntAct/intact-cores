@@ -14,8 +14,35 @@ import psidev.psi.mi.jami.datasource.MIDataSourceOptions;
 public class IntactDataSourceOptions extends MIDataSourceOptions{
 
     /**
-     * The source location of the spring file which describe IntAct configuration
+     * The source location of the spring file which describe IntAct configuration for the IntAct datasource reader.
+     * If provided, it will override any existing spring configuration.
+     * If no spring configuration was provided, it will inject spring configuration file classpath*:/META-INF/intact-jami.spring.xml which expects some properties to be set such as :
+     * intact.hbm2ddl
+     * intact.platform
+     * intact.driver
+     * intact.db.url
+     * intact.db.user
+     * intact.db.password
+     * intact.user.id
+     * intact.acPrefix
+     * intact.default.institution
+     *
      */
     public static final String SPRING_CONFIG_OPTION = "intact_spring_source_key";
 
+    /**
+     * The bean name of the interaction service to use. If not provided, will use the default interactionEvidenceService or complexService
+     */
+    public static final String INTERACTION_SERVICE_NAME_OPTION = "interaction_service_name_key";
+
+    /**
+     * The HQL query to use when querying the interaction/complex services. If not provided, it will query for everything in the interaction/complex service
+     */
+    public static final String HQL_QUERY_OPTION = "hql_query_key";
+
+    /**
+     * The Map<String, Object> which contains the HQL query parameters to apply when querying the interaction/complex service.
+     * It is optional and no query parameters will be used by default if this map is not provided
+     */
+    public static final String HQL_QUERY_PARAMETERs_OPTION = "hql_query_parameter_key";
 }
