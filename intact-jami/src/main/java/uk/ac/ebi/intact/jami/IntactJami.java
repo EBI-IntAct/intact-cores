@@ -26,6 +26,8 @@ import java.util.Map;
 
 public class IntactJami {
 
+    public static final String INTACT_INPUT_TYPE = "intact_db";
+
     public static void initialiseAllFactories(){
 
         initialiseAllMIDataSources();
@@ -77,7 +79,7 @@ public class IntactJami {
 
     private static Map<String, Object> createIntactWriterOptions(InteractionObjectCategory interactionCategory) {
         Map<String, Object> supportedOptions4 = new HashMap<String, Object>(6);
-        supportedOptions4.put(InteractionWriterOptions.OUTPUT_FORMAT_OPTION_KEY, "intact_db");
+        supportedOptions4.put(InteractionWriterOptions.OUTPUT_FORMAT_OPTION_KEY, INTACT_INPUT_TYPE);
         supportedOptions4.put(InteractionWriterOptions.INTERACTION_OBJECT_OPTION_KEY, interactionCategory);
         supportedOptions4.put(IntactWriterOptions.INTERACTION_SERVICE_NAME_OPTION, null);
         supportedOptions4.put(IntactWriterOptions.SPRING_CONFIG_OPTION, null);
@@ -86,7 +88,7 @@ public class IntactJami {
 
     private static Map<String, Object> createDataSourceOptions(boolean streaming, InteractionObjectCategory objectCategory, boolean needExpansion) {
         Map<String, Object> supportedOptions1 = new HashMap<String, Object>(10);
-        supportedOptions1.put(MIFileDataSourceOptions.INPUT_FORMAT_OPTION_KEY, "intact_db");
+        supportedOptions1.put(MIFileDataSourceOptions.INPUT_TYPE_OPTION_KEY, INTACT_INPUT_TYPE);
         supportedOptions1.put(MIFileDataSourceOptions.STREAMING_OPTION_KEY, streaming);
         supportedOptions1.put(MIFileDataSourceOptions.INTERACTION_OBJECT_OPTION_KEY, objectCategory);
         if (needExpansion){
