@@ -10,6 +10,7 @@ import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -46,6 +47,8 @@ public class IntactComplex extends IntactInteractor implements Complex{
     private List<LifeCycleEvent> lifecycleEvents;
     private CvTerm status;
     private CvTerm evidenceType;
+    private User currentOwner;
+    private User currentReviewer;
 
     protected IntactComplex(){
         super();
@@ -125,6 +128,30 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     public void setStatus( CvTerm status ) {
         this.status = status;
+    }
+
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "owner_pk", referencedColumnName = "ac" )
+    @ForeignKey(name="FK_COMPLEX_OWNER")
+    @Target(User.class)
+    public User getCurrentOwner() {
+        return currentOwner;
+    }
+
+    public void setCurrentOwner( User currentOwner ) {
+        this.currentOwner = currentOwner;
+    }
+
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "reviewer_pk", referencedColumnName = "ac" )
+    @ForeignKey(name="FK_COMPLEX_REVIEWER")
+    @Target(User.class)
+    public User getCurrentReviewer() {
+        return currentReviewer;
+    }
+
+    public void setCurrentReviewer( User currentReviewer ) {
+        this.currentReviewer = currentReviewer;
     }
 
     @OneToMany( mappedBy = "complex", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)

@@ -78,6 +78,14 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
         if (mergedComplex.getStatus() == null && obj1.getStatus() != null){
             mergedComplex.setStatus(obj1.getStatus());
         }
+        // merge curator
+        if (mergedComplex.getCurrentOwner() == null && obj1.getCurrentOwner() != null){
+            mergedComplex.setCurrentOwner(obj1.getCurrentOwner());
+        }
+        // merge reviewer
+        if (mergedComplex.getCurrentReviewer() == null && obj1.getCurrentReviewer() != null){
+            mergedComplex.setCurrentReviewer(obj1.getCurrentReviewer());
+        }
         // merge lifecycle
         if (obj1.areLifeCycleEventsInitialized()){
             mergeLifeCycleEvents(mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());

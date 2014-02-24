@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ComplexMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -100,7 +101,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         // then check cooperative effects
         prepareCooperativeEffects(intactComplex);
         // prepare status
-        prepareStatus(intactComplex);
+        prepareStatusAndCurators(intactComplex);
         // prepare lifecycle
         prepareLifeCycleEvents(intactComplex);
 
@@ -123,7 +124,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         }
     }
 
-    protected void prepareStatus(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareStatusAndCurators(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
 
         // first the status
         CvTerm status = intactComplex.getStatus() != null ? intactComplex.getStatus() : IntactUtils.createLifecycleStatus(LifeCycleEvent.NEW_STATUS);
@@ -146,6 +147,19 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                 exp.setPublication(new IntactCuratedPublication("14681455"));
                 ((IntactCuratedPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
             }
+        }
+
+        // then curator
+        User curator = intactComplex.getCurrentOwner();
+        // do not persist user if not there
+        if (curator != null){
+            intactComplex.setCurrentOwner(getContext().getUserSynchronizer().synchronize(curator, false));
+        }
+
+        // then reviewer
+        User reviewer = intactComplex.getCurrentReviewer();
+        if (reviewer != null){
+            intactComplex.setCurrentReviewer(getContext().getUserSynchronizer().synchronize(reviewer, false));
         }
     }
 
