@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.service;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -21,6 +22,8 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
     private int batch = 200;
     private List<T> chunk;
     private Iterator<T> chunkIterator;
+    private String query;
+    private Map<String, Object> queryParameters;
 
     public IntactQueryResultIterator(IntactService<T> service){
         if (service == null){
@@ -28,6 +31,8 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
         }
         this.service = service;
         this.totalCount = this.service.countAll();
+        this.query = null;
+        this.queryParameters = null;
     }
 
     public IntactQueryResultIterator(IntactService<T> service, int batch){
@@ -35,6 +40,32 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
             throw new IllegalArgumentException("The IntAct service cannot be null");
         }
         this.service = service;
+        this.totalCount = this.service.countAll();
+        this.batch = batch;
+        this.query = null;
+        this.queryParameters = null;
+
+        prepareNextObject();
+    }
+
+    public IntactQueryResultIterator(IntactService<T> service, String query, String queryCount, Map<String, Object> parameters){
+        if (service == null){
+            throw new IllegalArgumentException("The IntAct service cannot be null");
+        }
+        this.service = service;
+        this.query = query;
+        this.queryParameters = parameters;
+        this.totalCount = this.service.countAll(queryCount, parameters);
+    }
+
+    public IntactQueryResultIterator(IntactService<T> service, int batch, String query, String queryCount, Map<String, Object> parameters){
+        if (service == null){
+            throw new IllegalArgumentException("The IntAct service cannot be null");
+        }
+        this.service = service;
+        this.query = query;
+        this.queryParameters = parameters;
+        this.totalCount = this.service.countAll(queryCount, parameters);
         this.totalCount = this.service.countAll();
         this.batch = batch;
 
@@ -51,7 +82,12 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
         }
         else{
             long max = Math.min(batch, totalCount - currentCount);
-            this.chunk = this.service.fetchIntactObjects((int)currentCount, (int)max);
+            if (this.query == null){
+                this.chunk = this.service.fetchIntactObjects((int)currentCount, (int)max);
+            }
+            else{
+                this.chunk = this.service.fetchIntactObjects(this.query, this.queryParameters, (int)currentCount, (int)max);
+            }
             this.chunkIterator = this.chunk.iterator();
             this.currentCount+=max;
         }

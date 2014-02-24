@@ -11,10 +11,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Source service
@@ -29,13 +26,9 @@ public class SourceService implements IntactService<Source>{
 
     @Autowired
     private IntactDao intactDAO;
-    private IntactQuery intactQuery;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
-        if (this.intactQuery != null){
-            return this.intactDAO.getSourceDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
-        }
         return this.intactDAO.getSourceDao().countAll();
     }
 
@@ -46,10 +39,22 @@ public class SourceService implements IntactService<Source>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Source> fetchIntactObjects(int first, int max) {
-        if (this.intactQuery != null){
-            return new ArrayList<Source>(this.intactDAO.getSourceDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
-        }
         return new ArrayList<Source>(this.intactDAO.getSourceDao().getAll("ac", first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public long countAll(String countQuery, Map<String, Object> parameters) {
+        return this.intactDAO.getSourceDao().countByQuery(countQuery, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<Source> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
+        return new IntactQueryResultIterator<Source>(this, query, queryCount, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Source> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
+        return new ArrayList<Source>(this.intactDAO.getSourceDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -76,13 +81,5 @@ public class SourceService implements IntactService<Source>{
         for (Source source : objects){
             delete(source);
         }
-    }
-
-    public IntactQuery getIntactQuery() {
-        return intactQuery;
-    }
-
-    public void setIntactQuery(IntactQuery intactQuery) {
-        this.intactQuery = intactQuery;
     }
 }

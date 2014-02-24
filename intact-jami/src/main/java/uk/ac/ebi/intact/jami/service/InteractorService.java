@@ -11,10 +11,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Interactor service
@@ -29,13 +26,9 @@ public class InteractorService implements IntactService<Interactor>{
 
     @Autowired
     private IntactDao intactDAO;
-    private IntactQuery intactQuery;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
-        if (this.intactQuery != null){
-            return this.intactDAO.getInteractorBaseDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
-        }
         return this.intactDAO.getInteractorBaseDao().countAll();
     }
 
@@ -46,9 +39,6 @@ public class InteractorService implements IntactService<Interactor>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Interactor> fetchIntactObjects(int first, int max) {
-        if (this.intactQuery != null){
-            return new ArrayList<Interactor>(this.intactDAO.getInteractorBaseDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
-        }
         return new ArrayList<Interactor>(this.intactDAO.getInteractorBaseDao().getAll("ac", first, max));
     }
 
@@ -56,6 +46,21 @@ public class InteractorService implements IntactService<Interactor>{
     public void saveOrUpdate(Interactor object) throws PersisterException, FinderException, SynchronizerException {
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getInteractorSynchronizer().synchronize(object, true);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public long countAll(String countQuery, Map<String, Object> parameters) {
+        return this.intactDAO.getInteractorBaseDao().countByQuery(countQuery, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<Interactor> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
+        return new IntactQueryResultIterator<Interactor>(this, query, queryCount, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Interactor> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
+        return new ArrayList<Interactor>(this.intactDAO.getInteractorBaseDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -76,13 +81,5 @@ public class InteractorService implements IntactService<Interactor>{
         for (Interactor interactor : objects){
             delete(interactor);
         }
-    }
-
-    public IntactQuery getIntactQuery() {
-        return intactQuery;
-    }
-
-    public void setIntactQuery(IntactQuery intactQuery) {
-        this.intactQuery = intactQuery;
     }
 }

@@ -32,13 +32,9 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Autowired
     private IntactDao intactDAO;
-    private IntactQuery intactQuery;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
-        if (this.intactQuery != null){
-            return this.intactDAO.getInteractionDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
-        }
         return this.intactDAO.getInteractionDao().countAll();
     }
 
@@ -49,10 +45,22 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<InteractionEvidence> fetchIntactObjects(int first, int max) {
-        if (this.intactQuery != null){
-            return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
-        }
         return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getAll("ac", first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public long countAll(String countQuery, Map<String, Object> parameters) {
+        return this.intactDAO.getInteractionDao().countByQuery(countQuery, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<InteractionEvidence> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
+        return new IntactQueryResultIterator<InteractionEvidence>(this, query, queryCount, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<InteractionEvidence> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
+        return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -109,13 +117,5 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
         for (InteractionEvidence interaction : objects){
             delete(interaction);
         }
-    }
-
-    public IntactQuery getIntactQuery() {
-        return intactQuery;
-    }
-
-    public void setIntactQuery(IntactQuery intactQuery) {
-        this.intactQuery = intactQuery;
     }
 }

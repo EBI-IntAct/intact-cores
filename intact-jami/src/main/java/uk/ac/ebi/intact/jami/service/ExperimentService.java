@@ -14,10 +14,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Experiment service
@@ -32,13 +29,9 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Autowired
     private IntactDao intactDAO;
-    private IntactQuery intactQuery;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
-        if (this.intactQuery != null){
-            return this.intactDAO.getExperimentDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
-        }
         return this.intactDAO.getExperimentDao().countAll();
     }
 
@@ -49,10 +42,22 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Experiment> fetchIntactObjects(int first, int max) {
-        if (this.intactQuery != null){
-            return new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
-        }
         return new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getAll("ac", first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public long countAll(String countQuery, Map<String, Object> parameters) {
+        return this.intactDAO.getExperimentDao().countByQuery(countQuery, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<Experiment> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
+        return new IntactQueryResultIterator<Experiment>(this, query, queryCount, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Experiment> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
+        return new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -92,13 +97,5 @@ public class ExperimentService implements IntactService<Experiment>{
         for (Experiment exp : objects){
             delete(exp);
         }
-    }
-
-    public IntactQuery getIntactQuery() {
-        return intactQuery;
-    }
-
-    public void setIntactQuery(IntactQuery intactQuery) {
-        this.intactQuery = intactQuery;
     }
 }

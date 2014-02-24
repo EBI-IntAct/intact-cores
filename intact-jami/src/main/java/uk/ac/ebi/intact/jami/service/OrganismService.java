@@ -11,10 +11,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Organism service
@@ -29,13 +26,9 @@ public class OrganismService implements IntactService<Organism>{
 
     @Autowired
     private IntactDao intactDAO;
-    private IntactQuery intactQuery;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
-        if (this.intactQuery != null){
-            return this.intactDAO.getOrganismDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
-        }
         return this.intactDAO.getOrganismDao().countAll();
     }
 
@@ -46,10 +39,22 @@ public class OrganismService implements IntactService<Organism>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Organism> fetchIntactObjects(int first, int max) {
-        if (this.intactQuery != null){
-            return new ArrayList<Organism>(this.intactDAO.getOrganismDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
-        }
         return new ArrayList<Organism>(this.intactDAO.getOrganismDao().getAll("ac", first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public long countAll(String countQuery, Map<String, Object> parameters) {
+        return this.intactDAO.getOrganismDao().countByQuery(countQuery, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<Organism> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
+        return new IntactQueryResultIterator<Organism>(this, query, queryCount, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Organism> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
+        return new ArrayList<Organism>(this.intactDAO.getOrganismDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -76,13 +81,5 @@ public class OrganismService implements IntactService<Organism>{
         for (Organism org : objects){
             delete(org);
         }
-    }
-
-    public IntactQuery getIntactQuery() {
-        return intactQuery;
-    }
-
-    public void setIntactQuery(IntactQuery intactQuery) {
-        this.intactQuery = intactQuery;
     }
 }

@@ -11,10 +11,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Complex service
@@ -29,13 +26,9 @@ public class ComplexService implements IntactService<Complex>{
 
     @Autowired
     private IntactDao intactDAO;
-    private IntactQuery intactQuery;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
-        if (this.intactQuery != null){
-            return this.intactDAO.getComplexDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
-        }
         return this.intactDAO.getComplexDao().countAll();
     }
 
@@ -46,10 +39,22 @@ public class ComplexService implements IntactService<Complex>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Complex> fetchIntactObjects(int first, int max) {
-        if (this.intactQuery != null){
-            return new ArrayList<Complex>(this.intactDAO.getComplexDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
-        }
         return new ArrayList<Complex>(this.intactDAO.getComplexDao().getAll("ac", first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public long countAll(String countQuery, Map<String, Object> parameters) {
+        return this.intactDAO.getComplexDao().countByQuery(countQuery, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<Complex> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
+        return new IntactQueryResultIterator<Complex>(this, query, queryCount, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Complex> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
+        return new ArrayList<Complex>(this.intactDAO.getComplexDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -76,13 +81,5 @@ public class ComplexService implements IntactService<Complex>{
         for (Complex interaction : objects){
             delete(interaction);
         }
-    }
-
-    public IntactQuery getIntactQuery() {
-        return intactQuery;
-    }
-
-    public void setIntactQuery(IntactQuery intactQuery) {
-        this.intactQuery = intactQuery;
     }
 }

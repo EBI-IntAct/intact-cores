@@ -11,10 +11,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Cv term service
@@ -29,14 +26,10 @@ public class CvTermService implements IntactService<CvTerm>{
 
     @Autowired
     private IntactDao intactDAO;
-    private IntactQuery intactQuery;
     private String objClass;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
-        if (this.intactQuery != null){
-            return this.intactDAO.getCvTermDao().countByQuery(this.intactQuery.getCountQuery(), this.intactQuery.getQueryParameters());
-        }
         return this.intactDAO.getCvTermDao().countAll();
     }
 
@@ -47,10 +40,22 @@ public class CvTermService implements IntactService<CvTerm>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<CvTerm> fetchIntactObjects(int first, int max) {
-        if (this.intactQuery != null){
-            return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getByQuery(intactQuery.getQuery(), intactQuery.getQueryParameters(), first, max));
-        }
         return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getAll("ac", first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public long countAll(String countQuery, Map<String, Object> parameters) {
+        return this.intactDAO.getCvTermDao().countByQuery(countQuery, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Iterator<CvTerm> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
+        return new IntactQueryResultIterator<CvTerm>(this, query, queryCount, parameters);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<CvTerm> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
+        return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -77,14 +82,6 @@ public class CvTermService implements IntactService<CvTerm>{
         for (CvTerm cv : objects){
             delete(cv);
         }
-    }
-
-    public IntactQuery getIntactQuery() {
-        return intactQuery;
-    }
-
-    public void setIntactQuery(IntactQuery intactQuery) {
-        this.intactQuery = intactQuery;
     }
 
     public String getObjClass() {
