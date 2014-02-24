@@ -95,15 +95,6 @@ public abstract class AbstractIntactStream<T extends Interaction> implements MID
             initialiseSpringContext(null, null);
         }
 
-        // load special service bean
-        if (options.containsKey(IntactDataSourceOptions.INTERACTION_SERVICE_NAME_OPTION)){
-            String serviceName = (String)options.get(IntactDataSourceOptions.INTERACTION_SERVICE_NAME_OPTION);
-            this.intactService = ApplicationContextProvider.getBean(serviceName, IntactService.class);
-        }
-        else{
-            initialiseDefaultIntactService();
-        }
-
         // load special count query
         if (options.containsKey(IntactDataSourceOptions.HQL_COUNT_QUERY_OPTION)){
             this.countQuery = (String)options.get(IntactDataSourceOptions.HQL_COUNT_QUERY_OPTION);
