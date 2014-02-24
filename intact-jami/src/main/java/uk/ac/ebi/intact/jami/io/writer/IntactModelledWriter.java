@@ -12,7 +12,7 @@ import uk.ac.ebi.intact.jami.service.ModelledInteractionService;
  * @since <pre>24/02/14</pre>
  */
 
-public class ModelledInteractionWriter extends AbstractIntactWriter<ModelledInteraction>{
+public class IntactModelledWriter extends AbstractIntactWriter<ModelledInteraction>{
     @Override
     protected boolean isSpringContextInitialised() {
         return ApplicationContextProvider.getBean(ModelledInteractionService.class) != null;
