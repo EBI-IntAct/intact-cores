@@ -118,6 +118,36 @@ public class IntactComplex extends IntactInteractor implements Complex{
         super(name, fullName, organism, uniqueId);
     }
 
+    @Override
+    @Transient
+    public Collection<Annotation> getAnnotations() {
+        return super.getAnnotations();
+    }
+
+    @Override
+    @Transient
+    public Collection<Checksum> getChecksums() {
+        return super.getChecksums();
+    }
+
+    @Override
+    @Transient
+    public Collection<Xref> getXrefs() {
+        return super.getXrefs();
+    }
+
+    @Override
+    @Transient
+    public Collection<Xref> getIdentifiers() {
+        return super.getIdentifiers();
+    }
+
+    @Override
+    @Transient
+    public Collection<Alias> getAliases() {
+        return super.getAliases();
+    }
+
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "status_ac", referencedColumnName = "ac" )
     @ForeignKey(name="FK_COMPLEX_STATUS")

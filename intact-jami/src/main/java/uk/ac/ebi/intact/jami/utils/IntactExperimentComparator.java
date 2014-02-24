@@ -40,8 +40,8 @@ public class IntactExperimentComparator extends UnambiguousExperimentComparator{
             return comp;
         }
 
-        CvTerm identificationMethod1 = ExperimentUtils.extractCommonParticipantDetectionMethodFrom(exp1);
-        CvTerm identificationMethod2 = ExperimentUtils.extractCommonParticipantDetectionMethodFrom(exp2);
+        CvTerm identificationMethod1 = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp1);
+        CvTerm identificationMethod2 = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp2);
         int EQUAL = 0;
         int BEFORE = -1;
         int AFTER = 1;

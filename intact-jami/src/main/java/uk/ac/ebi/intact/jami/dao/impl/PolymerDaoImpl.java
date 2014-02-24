@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import psidev.psi.mi.jami.model.Polymer;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.PolymerDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
@@ -21,7 +20,7 @@ import java.util.Collection;
 public class PolymerDaoImpl<T extends Polymer, P extends IntactPolymer> extends InteractorDaoImpl<T,P> implements PolymerDao<P>{
 
     public PolymerDaoImpl(EntityManager entityManager, SynchronizerContext context) {
-        super((Class<P>)IntactModelledParticipant.class, entityManager, context);
+        super((Class<P>)IntactPolymer.class, entityManager, context);
     }
 
     public PolymerDaoImpl(Class<P> entityClass, EntityManager entityManager, SynchronizerContext context) {

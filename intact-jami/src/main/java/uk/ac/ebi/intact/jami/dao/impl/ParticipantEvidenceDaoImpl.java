@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.jami.dao.impl;
 import psidev.psi.mi.jami.model.ParticipantEvidence;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParticipantEvidenceDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
@@ -22,7 +21,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         implements ParticipantEvidenceDao<I> {
 
     public ParticipantEvidenceDaoImpl(EntityManager entityManager, SynchronizerContext context) {
-        super((Class<I>)IntactModelledParticipant.class, entityManager, context);
+        super((Class<I>)IntactParticipantEvidence.class, entityManager, context);
     }
 
     public ParticipantEvidenceDaoImpl(Class<I> entityClass, EntityManager entityManager, SynchronizerContext context) {

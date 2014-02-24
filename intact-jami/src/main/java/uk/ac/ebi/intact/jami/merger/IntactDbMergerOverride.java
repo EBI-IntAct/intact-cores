@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.enricher.MIEnricher;
-import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 /**
@@ -12,7 +11,7 @@ import uk.ac.ebi.intact.jami.model.audit.Auditable;
  * @since <pre>29/01/14</pre>
  */
 
-public class IntactDbMergerOverride<I, A extends AbstractAuditable> extends AbstractIntactDbMerger<I, A> {
+public class IntactDbMergerOverride<I, A extends Auditable> extends AbstractIntactDbMerger<I, A> {
 
     public IntactDbMergerOverride() {
         super((Class<A>)Auditable.class);
