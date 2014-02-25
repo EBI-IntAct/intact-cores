@@ -1,10 +1,9 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Target;
+import org.hibernate.annotations.*;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
@@ -14,7 +13,10 @@ import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -398,13 +400,14 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
-    @ManyToMany(targetEntity = IntactExperiment.class, fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = IntactExperiment.class)
     @JoinTable(
             name = "ia_int2exp",
             joinColumns = {@JoinColumn( name = "interaction_ac" )},
             inverseJoinColumns = {@JoinColumn( name = "experiment_ac" )}
     )
     @Target(IntactExperiment.class)
+    @LazyCollection(LazyCollectionOption.FALSE)
     @Deprecated
     /**
      * @deprecated Only kept for backward compatibility with intact core. Complexes should not have experiments
@@ -564,6 +567,8 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     @Override
+    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
+    @NotNull
     protected String getObjClass() {
         return "uk.ac.ebi.intact.model.InteractionImpl";
     }

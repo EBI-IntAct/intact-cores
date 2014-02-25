@@ -86,6 +86,7 @@ public class IntactExperimentalEntityPool extends IntactParticipantEvidence impl
         return getComponents().size();
     }
 
+    @Transient
     public boolean isEmpty() {
         return getComponents().isEmpty();
     }

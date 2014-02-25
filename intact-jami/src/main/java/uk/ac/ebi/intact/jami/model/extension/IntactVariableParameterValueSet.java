@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.VariableParameterValue;
@@ -135,13 +137,14 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
         this.parent = interaction;
     }
 
-    @ManyToMany( targetEntity = IntactVariableParameterValue.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany( targetEntity = IntactVariableParameterValue.class, cascade = CascadeType.MERGE)
     @JoinTable(
             name="ia_varset2parametervalue",
             joinColumns = @JoinColumn( name="varset_id"),
             inverseJoinColumns = @JoinColumn( name="parametervalue_id")
     )
     @Target(IntactVariableParameterValue.class)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private Set<VariableParameterValue> getVariableParameterValues() {
         if (this.variableParameterValues == null){
             this.variableParameterValues = new HashSet<VariableParameterValue>();

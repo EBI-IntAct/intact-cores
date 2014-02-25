@@ -3,8 +3,6 @@ package uk.ac.ebi.intact.jami.context;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.model.user.User;
 
-import javax.annotation.PostConstruct;
-
 /**
  * The user context
  * @author Marine Dumousseau (baranda@ebi.ac.uk)
@@ -22,42 +20,38 @@ public class UserContext{
         initialiseDefaultUser(userId, userPassword);
     }
 
-    @PostConstruct
-    public void initIfNotDone(){
-        if (this.user == null){
-            initialiseDefaultUser("default", "");
-        }
-    }
-
     public UserContext(User user) {
         this.user = user;
     }
 
     public String getUserId() {
-        return user.getLogin();
+        return getUser().getLogin();
     }
 
     public void setUserId( String userId ) {
-        this.user.setLogin(userId);
+        this.getUser().setLogin(userId);
     }
 
     public String getUserMail() {
-        return user.getEmail();
+        return getUser().getEmail();
     }
 
     public void setUserMail( String userMail ) {
-        user.setEmail(userMail);
+        getUser().setEmail(userMail);
     }
 
     public String getUserPassword() {
-        return user.getPassword();
+        return getUser().getPassword();
     }
 
     public void setUserPassword( String userPassword ) {
-        user.setPassword(userPassword);
+        getUser().setPassword(userPassword);
     }
 
     public User getUser() {
+        if (this.user == null){
+            initialiseDefaultUser("default", "");
+        }
         return user;
     }
 
@@ -66,7 +60,7 @@ public class UserContext{
     }
 
     private void initialiseDefaultUser(String userId, String userPassword) {
-        user = new User(userId, userId, "N/A", userId+"@example.com");
-        user.setPassword(userPassword);
+        this.user = new User(userId, userId, "N/A", userId+"@example.com");
+        this.user.setPassword(userPassword);
     }
 }

@@ -213,6 +213,9 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
     @JoinColumn( name = "featuretype_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
     public CvTerm getType() {
+        if (this.type == null){
+           initialiseDefaultType();
+        }
         return this.type;
     }
 
@@ -352,6 +355,10 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
     @Transient
     public boolean areLinkedFeaturesInitialized(){
         return Hibernate.isInitialized(getLinkedFeatures());
+    }
+
+    protected void initialiseDefaultType(){
+        // by default do not initialise default type
     }
 
     protected void initialiseXrefs(){

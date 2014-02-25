@@ -18,6 +18,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,6 +83,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         this.fullName = fullName;
     }
 
+    @Transient
     public String getShortName() {
         return shortName;
     }

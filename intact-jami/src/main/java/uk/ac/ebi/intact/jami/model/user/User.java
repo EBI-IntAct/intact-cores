@@ -1,13 +1,14 @@
 package uk.ac.ebi.intact.jami.model.user;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
+import org.hibernate.annotations.*;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import java.util.*;
 
@@ -133,8 +134,7 @@ public class User extends AbstractIntactPrimaryObject {
      *
      * @return
      */
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
-            fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_user2role",
@@ -142,6 +142,7 @@ public class User extends AbstractIntactPrimaryObject {
             inverseJoinColumns = {@JoinColumn(name = "role_ac")}
     )
     @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
+    @LazyCollection(LazyCollectionOption.FALSE)
     public Set<Role> getRoles() {
         return roles;
     }
@@ -178,9 +179,9 @@ public class User extends AbstractIntactPrimaryObject {
     }
 
     @OneToMany( mappedBy = "user",
-                cascade = {CascadeType.ALL},
-                fetch = FetchType.EAGER, orphanRemoval = true)
+                cascade = {CascadeType.ALL},orphanRemoval = true)
     @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
+    @LazyCollection(LazyCollectionOption.FALSE)
     public Collection<Preference> getPreferences() {
         return preferences;
     }

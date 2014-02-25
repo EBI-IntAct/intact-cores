@@ -2,6 +2,8 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import uk.ac.ebi.intact.jami.model.SequenceChunk;
@@ -10,6 +12,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -139,9 +142,10 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
         }
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true, fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToMany( mappedBy = "parent", orphanRemoval = true, cascade = {CascadeType.ALL})
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @IndexColumn( name = "sequence_index" )
+    @LazyCollection(LazyCollectionOption.FALSE)
     @Deprecated
     /**
      * @deprecated only for backward compatibility with intact-core
@@ -151,6 +155,8 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
     }
 
     @Override
+    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
+    @NotNull
     protected String getObjClass() {
         return "uk.ac.ebi.intact.model.PolymerImpl";
     }

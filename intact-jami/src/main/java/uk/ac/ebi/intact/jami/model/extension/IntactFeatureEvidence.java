@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
@@ -62,13 +64,14 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
         super(shortName, fullName, type);
     }
 
-    @ManyToMany( targetEntity = IntactCvTerm.class, fetch = FetchType.EAGER)
+    @ManyToMany( targetEntity = IntactCvTerm.class)
     @JoinTable(
             name="ia_feature2method",
             joinColumns = @JoinColumn( name="feature_ac"),
             inverseJoinColumns = @JoinColumn( name="method_ac")
     )
     @Target(IntactCvTerm.class)
+    @LazyCollection(LazyCollectionOption.FALSE)
     public Collection<CvTerm> getDetectionMethods() {
         if (detectionMethods == null){
             initialiseDetectionMethods();

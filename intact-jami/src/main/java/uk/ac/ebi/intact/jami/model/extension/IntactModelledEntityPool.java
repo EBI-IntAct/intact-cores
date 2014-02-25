@@ -97,6 +97,7 @@ public class IntactModelledEntityPool extends IntactModelledParticipant implemen
         return getComponents().size();
     }
 
+    @Transient
     public boolean isEmpty() {
         return getComponents().isEmpty();
     }

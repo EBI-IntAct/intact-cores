@@ -94,14 +94,8 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity,
     }
 
     @Override
-    @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "featuretype_ac", referencedColumnName = "ac")
-    @Target(IntactCvTerm.class)
-    public CvTerm getType() {
-        if (super.getType() == null){
-            super.setType(IntactUtils.createMIFeatureType(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI));
-        }
-        return super.getType();
+    protected void initialiseDefaultType() {
+        super.setType(IntactUtils.createMIFeatureType(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI));
     }
 
     @Override

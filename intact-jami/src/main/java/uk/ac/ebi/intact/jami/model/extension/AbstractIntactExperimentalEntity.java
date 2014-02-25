@@ -2,6 +2,8 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Parameter;
@@ -185,7 +187,7 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
         return this.parameters;
     }
 
-    @ManyToMany(targetEntity = IntactCvTerm.class, fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = IntactCvTerm.class)
     @JoinTable(
             name = "ia_component2exprole",
             joinColumns = {@JoinColumn( name = "component_ac" )},
@@ -196,6 +198,7 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
      * @deprecated this method is for backward compatibility only. Use experimentalRole instead
      */
     @Deprecated
+    @LazyCollection(LazyCollectionOption.FALSE)
     public Collection<CvTerm> getExperimentalRoles() {
         if (this.experimentalRoles == null){
             this.experimentalRoles =  new ArrayList<CvTerm>();
