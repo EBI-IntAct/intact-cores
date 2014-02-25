@@ -63,7 +63,9 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
     public AbstractIntactCvTerm(String shortName, String miIdentifier){
         this(shortName);
-        setMIIdentifier(miIdentifier);
+        if (miIdentifier != null){
+            setMIIdentifier(miIdentifier);
+        }
     }
 
     public AbstractIntactCvTerm(String shortName, String fullName, String miIdentifier){
