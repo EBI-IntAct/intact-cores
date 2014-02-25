@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
@@ -324,6 +325,22 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
        Publication pub = intactSource.getPublication();
         if (pub != null){
             intactSource.setPublication(getContext().getSimplePublicationSynchronizer().synchronize(pub, true));
+
+            // add primary ref
+            if (pub.getPubmedId() != null){
+                Xref primaryRef = new SourceXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), pub.getPubmedId(),
+                        IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI));
+                if (!intactSource.getXrefs().contains(primaryRef)){
+                    intactSource.getXrefs().add(primaryRef);
+                }
+            }
+            else if (pub.getDoi() != null){
+                Xref primaryRef = new SourceXref(IntactUtils.createMIDatabase(Xref.DOI, Xref.DOI_MI), pub.getDoi(),
+                        IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI));
+                if (!intactSource.getXrefs().contains(primaryRef)){
+                    intactSource.getXrefs().add(primaryRef);
+                }
+            }
         }
     }
 
