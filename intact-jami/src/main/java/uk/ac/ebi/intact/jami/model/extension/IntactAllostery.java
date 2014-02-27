@@ -76,7 +76,7 @@ public class IntactAllostery<T extends AllostericEffector> extends AbstractIntac
     }
 
     @ManyToOne(targetEntity = IntactModelledParticipant.class, optional = false)
-    @JoinColumn( name = "participant_ac", referencedColumnName = "ac" )
+    @JoinColumn( name = "allosteric_molecule_ac", referencedColumnName = "ac" )
     @Target(IntactModelledParticipant.class)
     @NotNull
     public ModelledParticipant getAllostericMolecule() {
