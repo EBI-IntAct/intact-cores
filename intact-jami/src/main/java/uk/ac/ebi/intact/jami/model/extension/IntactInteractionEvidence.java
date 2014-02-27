@@ -538,6 +538,16 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
+    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
+    @NotNull
+    private String getObjClass() {
+        return "uk.ac.ebi.intact.model.InteractionImpl";
+    }
+
+    private void setObjClass(String value){
+        // nothing to do
+    }
+
     private void setPersistentXrefs(Collection<Xref> persistentXrefs) {
         this.persistentXrefs = new PersistentXrefList(persistentXrefs);
     }
