@@ -34,6 +34,7 @@ import java.util.*;
 @Table( name = "ia_publication" )
 @Cacheable
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
+@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("simple_publication")
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
     private String title;
