@@ -174,7 +174,7 @@ public class CuratedPublicationSynchronizer extends PublicationSynchronizer<Inta
         }
         else {
             // create unassigned pubmed id
-            SequenceManager seqManager = ApplicationContextProvider.getBean(SequenceManager.class);
+            SequenceManager seqManager = ApplicationContextProvider.getBean("sequenceManager");
             if (seqManager == null){
                 throw new SynchronizerException("The publication synchronizer needs a sequence manager to automatically generate a unassigned pubmed identifier for backward compatibility. No sequence manager bean " +
                         "was found in the spring context.");

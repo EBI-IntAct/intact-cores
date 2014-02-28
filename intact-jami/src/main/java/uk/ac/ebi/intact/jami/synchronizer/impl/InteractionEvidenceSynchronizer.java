@@ -45,7 +45,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
 
     public IntactInteractionEvidence persist(IntactInteractionEvidence object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
@@ -58,7 +58,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     @Override
     public IntactInteractionEvidence synchronize(InteractionEvidence object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 

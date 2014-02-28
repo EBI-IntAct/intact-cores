@@ -5,18 +5,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.PublicationFetcher;
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Publication;
+import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationComparator;
-import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.model.user.User;
-import uk.ac.ebi.intact.jami.sequence.SequenceManager;
+import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -102,7 +102,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
 
     public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
@@ -115,7 +115,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
     @Override
     public I synchronize(Publication object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 

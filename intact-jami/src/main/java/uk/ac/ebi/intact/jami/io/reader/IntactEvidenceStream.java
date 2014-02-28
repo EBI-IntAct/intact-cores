@@ -30,6 +30,6 @@ public class IntactEvidenceStream extends AbstractIntactStream<InteractionEviden
 
     @Override
     protected void initialiseDefaultIntactService() {
-        setIntactService(ApplicationContextProvider.getBean(InteractionEvidenceService.class));
+        setIntactService((InteractionEvidenceService) ApplicationContextProvider.getBean("interactionEvidenceService"));
     }
 }

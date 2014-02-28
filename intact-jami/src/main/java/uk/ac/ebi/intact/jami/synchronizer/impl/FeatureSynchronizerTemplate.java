@@ -51,7 +51,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     @Override
     public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
@@ -64,7 +64,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     @Override
     public I synchronize(F object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 

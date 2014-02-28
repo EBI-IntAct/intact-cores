@@ -166,7 +166,7 @@ public abstract class AbstractIntactWriter<T extends Interaction> implements Int
 
         // load special service bean
         if (intactServiceName != null){
-            this.intactService = ApplicationContextProvider.getBean(intactServiceName, IntactService.class);
+            this.intactService = ApplicationContextProvider.getBean(intactServiceName);
         }
         else{
             initialiseDefaultIntactService();

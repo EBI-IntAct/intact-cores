@@ -55,7 +55,7 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
 
     public IntactVariableParameterValue persist(IntactVariableParameterValue object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 

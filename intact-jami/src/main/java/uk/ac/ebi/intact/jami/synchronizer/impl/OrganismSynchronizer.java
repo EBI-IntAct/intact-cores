@@ -117,7 +117,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
 
     public IntactOrganism persist(IntactOrganism object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
@@ -130,7 +130,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     @Override
     public IntactOrganism synchronize(Organism object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 

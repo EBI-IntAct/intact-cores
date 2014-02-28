@@ -36,14 +36,14 @@
     <!-- JPATransactionManager is not dependent on hibernate. It is a more global platform -->
     <!-- We use entity manager because it is JPA and not just specific to hibernate -->
     <bean id="transactionManagerTest" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="intactEntityManagerFactoryTest"/>
+        <property name="entityManagerFactory" ref="intactEntityManagerFactory"/>
         <property name="dataSource" ref="intactCoreDataSourceTest"/>
     </bean>
 
 
     <!-- The LocalContainerEntityManagerFactoryBean gives full control over EntityManagerFactory configuration
     and is appropriate for environments where fine-grained customization is required-->
-    <bean id="intactEntityManagerFactoryTest" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <bean id="intactEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="intact-core"/>
         <property name="persistenceXmlLocation" value="classpath*:/META-INF/persistence.xml"/>
         <property name="dataSource" ref="intactCoreDataSourceTest"/>

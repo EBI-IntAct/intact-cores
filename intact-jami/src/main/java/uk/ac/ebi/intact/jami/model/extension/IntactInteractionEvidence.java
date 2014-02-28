@@ -527,7 +527,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
         // initialise ac
         if (getAc() != null){
-            IntactContext intactContext = ApplicationContextProvider.getBean(IntactContext.class);
+            IntactContext intactContext = ApplicationContextProvider.getBean("intactContext");
             if (intactContext != null){
                 this.acRef = new DefaultXref(intactContext.getConfig().getDefaultInstitution(), getAc(), CvTermUtils.createIdentityQualifier());
             }

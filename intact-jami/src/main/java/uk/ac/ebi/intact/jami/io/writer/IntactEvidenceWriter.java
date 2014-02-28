@@ -20,6 +20,6 @@ public class IntactEvidenceWriter extends AbstractIntactWriter<InteractionEviden
 
     @Override
     protected void initialiseDefaultIntactService() {
-        setIntactService(ApplicationContextProvider.getBean(InteractionEvidenceService.class));
+        setIntactService((InteractionEvidenceService)ApplicationContextProvider.getBean("interactionEvidenceService"));
     }
 }

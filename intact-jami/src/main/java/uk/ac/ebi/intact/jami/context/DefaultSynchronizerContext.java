@@ -140,7 +140,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private EntitySynchronizer experimentalEntityPoolSynchronizer;
 
     public DefaultSynchronizerContext(EntityManager entityManager){
-        if (this.entityManager == null){
+        if (entityManager == null){
             throw new IllegalArgumentException("Entity manager cannot be null in an IntAct database synchronizer context");
         }
         this.entityManager = entityManager;

@@ -4,7 +4,6 @@ import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
-import uk.ac.ebi.intact.jami.dao.impl.IntactDaoImpl;
 
 import java.util.Iterator;
 
@@ -22,7 +21,7 @@ public class IntactSynchronizerInterceptor extends EmptyInterceptor{
     @Override
     public void postFlush(Iterator entities) {
 
-        IntactDao intactDao = ApplicationContextProvider.getBean(IntactDaoImpl.class);
+        IntactDao intactDao = ApplicationContextProvider.getBean("intactDaoImpl");
 
         if (intactDao != null) {
             intactDao.getSynchronizerContext().clearCache();
@@ -33,7 +32,7 @@ public class IntactSynchronizerInterceptor extends EmptyInterceptor{
 
     @Override
     public void afterTransactionCompletion(Transaction tx) {
-        IntactDao intactDao = ApplicationContextProvider.getBean(IntactDaoImpl.class);
+        IntactDao intactDao = ApplicationContextProvider.getBean("intactDaoImpl");
 
         if (intactDao != null) {
             intactDao.getSynchronizerContext().clearCache();

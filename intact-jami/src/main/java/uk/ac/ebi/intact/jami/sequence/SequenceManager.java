@@ -24,10 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -46,8 +43,8 @@ public class SequenceManager {
 
     private Dialect dialect;
 
-    @PersistenceUnit(unitName = "intact-core")
-    private HibernateEntityManagerFactory entityManagerFactory;
+    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
+    private EntityManagerFactory intactEntityManagerFactory;
 
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;
@@ -57,13 +54,13 @@ public class SequenceManager {
     }
 
     public SequenceManager(HibernateEntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+        this.intactEntityManagerFactory = entityManagerFactory;
         init();
     }
 
     @PostConstruct
     public void init() {
-        this.dialect = ((SessionFactoryImplementor) entityManagerFactory.getSessionFactory()).getDialect();
+        this.dialect = ((SessionFactoryImplementor) ((HibernateEntityManagerFactory) intactEntityManagerFactory).getSessionFactory()).getDialect();
     }
 
     /**

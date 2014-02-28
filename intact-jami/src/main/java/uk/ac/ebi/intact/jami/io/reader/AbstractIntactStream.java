@@ -178,7 +178,7 @@ public abstract class AbstractIntactStream<T extends Interaction> implements MID
 
         // load special service bean
         if (intactServiceName != null){
-            this.intactService = ApplicationContextProvider.getBean(intactServiceName, IntactService.class);
+            this.intactService = ApplicationContextProvider.getBean(intactServiceName);
         }
         else{
             initialiseDefaultIntactService();

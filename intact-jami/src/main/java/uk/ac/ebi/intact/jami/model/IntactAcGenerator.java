@@ -74,7 +74,7 @@ public class IntactAcGenerator extends SequenceGenerator {
     @Override
     public Serializable generate( SessionImplementor sessionImplementor, Object object ) throws HibernateException {
         String prefix="UNK";
-        IntactContext intactContext = ApplicationContextProvider.getBean(IntactContext.class);
+        IntactContext intactContext = ApplicationContextProvider.getBean("intactContext");
         if (intactContext != null) {
             prefix = intactContext.getConfig().getAcPrefix();
         }

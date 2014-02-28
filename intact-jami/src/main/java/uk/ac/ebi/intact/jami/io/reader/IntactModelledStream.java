@@ -30,6 +30,6 @@ public class IntactModelledStream extends AbstractIntactStream<ModelledInteracti
 
     @Override
     protected void initialiseDefaultIntactService() {
-        setIntactService(ApplicationContextProvider.getBean(ModelledInteractionService.class));
+        setIntactService((ModelledInteractionService)ApplicationContextProvider.getBean("modelledInteractionService"));
     }
 }

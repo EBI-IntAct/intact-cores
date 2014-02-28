@@ -74,7 +74,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
 
     public Role persist(Role object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedRoles.containsKey(object)){
+        if (this.persistedRoles.containsKey(object)){
             return this.persistedRoles.get(object);
         }
 
@@ -87,7 +87,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     @Override
     public Role synchronize(Role object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
-        if (!this.persistedRoles.containsKey(object)){
+        if (this.persistedRoles.containsKey(object)){
             return this.persistedRoles.get(object);
         }
 

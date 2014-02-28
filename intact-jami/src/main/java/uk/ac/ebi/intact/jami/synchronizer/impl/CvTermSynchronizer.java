@@ -102,7 +102,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     public IntactCvTerm persist(IntactCvTerm object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
@@ -115,7 +115,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     @Override
     public IntactCvTerm synchronize(CvTerm object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
@@ -344,7 +344,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             }
             // then generate automatic identifier
             else{
-                final IntactContext context = ApplicationContextProvider.getBean(IntactContext.class);
+                final IntactContext context = ApplicationContextProvider.getBean("intactContext");
                 String prefix = "IA";
                 Source institution = null;
                 if (context != null){

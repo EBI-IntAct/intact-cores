@@ -3,8 +3,10 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import psidev.psi.mi.jami.model.Source;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -60,6 +62,31 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
             throw new FinderException("The user "+user + " can match "+users.size()+" users in the database and we cannot determine which one is valid.");
         }
         return null;
+    }
+
+    public User persist(User object) throws FinderException, PersisterException, SynchronizerException {
+        // only persist if not already done
+        if (this.persistedUsers.containsKey(object)){
+            return this.persistedUsers.get(object);
+        }
+
+        User persisted = super.persist(object);
+        this.persistedUsers.put(object, persisted);
+
+        return persisted;
+    }
+
+    @Override
+    public User synchronize(User object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+        // only synchronize if not already done
+        if (this.persistedUsers.containsKey(object)){
+            return this.persistedUsers.get(object);
+        }
+
+        User persisted = super.synchronize(object, persist);
+        this.persistedUsers.put(object, persisted);
+
+        return persisted;
     }
 
     public void synchronizeProperties(User object) throws FinderException, PersisterException, SynchronizerException {

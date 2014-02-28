@@ -40,7 +40,7 @@ public class AuditableEventListener {
         auditable.setUpdated(now);
 
         String currentUser = "INTACT";
-        UserContext userContext = ApplicationContextProvider.getBean(UserContext.class);
+        UserContext userContext = ApplicationContextProvider.getBean("userContext");
 
         if (userContext != null && userContext.getUserId() != null) {
             currentUser = userContext.getUserId().toUpperCase();

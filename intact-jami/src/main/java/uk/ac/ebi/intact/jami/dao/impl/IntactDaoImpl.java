@@ -15,7 +15,9 @@ import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 
 /**
  * Implementation of IntactDao
@@ -29,6 +31,8 @@ import javax.persistence.PersistenceContext;
 public class IntactDaoImpl implements IntactDao{
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;
+    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
+    private EntityManagerFactory intactEntityManagerFactory;
 
     private SynchronizerContext synchronizerContext;
     private AliasDao aliasDao;

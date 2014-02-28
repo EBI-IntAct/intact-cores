@@ -20,6 +20,6 @@ public class IntactModelledWriter extends AbstractIntactWriter<ModelledInteracti
 
     @Override
     protected void initialiseDefaultIntactService() {
-        setIntactService(ApplicationContextProvider.getBean(ModelledInteractionService.class));
+        setIntactService((ModelledInteractionService)ApplicationContextProvider.getBean("modelledInteractionService"));
     }
 }

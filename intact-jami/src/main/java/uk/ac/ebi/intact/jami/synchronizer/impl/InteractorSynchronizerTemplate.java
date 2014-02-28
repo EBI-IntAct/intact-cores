@@ -124,7 +124,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
     public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
@@ -137,7 +137,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     @Override
     public I synchronize(T object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 

@@ -128,7 +128,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
 
     public IntactExperiment persist(IntactExperiment object) throws FinderException, PersisterException, SynchronizerException {
         // only persist if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
@@ -141,7 +141,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     @Override
     public IntactExperiment synchronize(Experiment object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // only synchronize if not already done
-        if (!this.persistedObjects.containsKey(object)){
+        if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
         }
 
