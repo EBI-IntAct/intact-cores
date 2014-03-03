@@ -107,12 +107,14 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         if (intactFeature.areLinkedFeaturesInitialized()){
             List<I> featureToSynchronize = new ArrayList<I>(intactFeature.getLinkedFeatures());
             for (I feature : featureToSynchronize){
-                // do not persist or merge features because of cascades
-                I linkedFeature = synchronize((F) feature, false);
-                // we have a different instance because needed to be synchronized
-                if (linkedFeature != feature){
-                    intactFeature.getLinkedFeatures().remove(feature);
-                    intactFeature.getLinkedFeatures().add(linkedFeature);
+                if (intactFeature != feature){
+                    // do not persist or merge features because of cascades
+                    I linkedFeature = synchronize((F) feature, false);
+                    // we have a different instance because needed to be synchronized
+                    if (linkedFeature != feature){
+                        intactFeature.getLinkedFeatures().remove(feature);
+                        intactFeature.getLinkedFeatures().add(linkedFeature);
+                    }
                 }
             }
         }

@@ -8,7 +8,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactExperimentComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactExperimentComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Query;

@@ -157,8 +157,8 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
         // add new mi if not null
         if (mi != null){
-            CvTerm psiMiDatabase = IntactUtils.createMIDatabase(CvTerm.PSI_MI, null);
-            CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, null);
+            CvTerm psiMiDatabase = IntactUtils.createPsiMiDatabase();
+            CvTerm identityQualifier = IntactUtils.createIdentityQualifier(psiMiDatabase);
             // first remove old psi mi if not null
             if (this.miIdentifier != null){
                 cvTermIdentifiers.remove(this.miIdentifier);
@@ -179,8 +179,8 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         // add new mod if not null
         if (mod != null){
 
-            CvTerm psiModDatabase = IntactUtils.createMIDatabase(CvTerm.PSI_MOD, null);
-            CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, null);
+            CvTerm psiModDatabase = IntactUtils.createMIDatabase(CvTerm.PSI_MOD, CvTerm.PSI_MOD_MI);
+            CvTerm identityQualifier = IntactUtils.createIdentityQualifier();
             // first remove old psi mod if not null
             if (this.modIdentifier != null){
                 cvTermIdentifiers.remove(this.modIdentifier);
@@ -202,7 +202,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         if (par != null){
 
             CvTerm psiModDatabase = IntactUtils.createMIDatabase(CvTerm.PSI_PAR, null);
-            CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, null);
+            CvTerm identityQualifier = IntactUtils.createIdentityQualifier();
             // first remove old psi mod if not null
             if (this.parIdentifier != null){
                 cvTermIdentifiers.remove(this.parIdentifier);

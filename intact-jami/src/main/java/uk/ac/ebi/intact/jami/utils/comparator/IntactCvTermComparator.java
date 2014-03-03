@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.utils;
+package uk.ac.ebi.intact.jami.utils.comparator;
 
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.utils.comparator.cv.UnambiguousCvTermComparator;
@@ -16,32 +16,20 @@ public class IntactCvTermComparator extends UnambiguousCvTermComparator{
 
     @Override
     public int compare(CvTerm cvTerm1, CvTerm cvTerm2) {
-        if (cvTerm1 == cvTerm2){
-            return 0;
-        }
 
         int comp = super.compare(cvTerm1, cvTerm2);
         if (comp != 0){
             return comp;
         }
 
-        String objClass1 = ((IntactCvTerm)cvTerm1).getObjClass();
-        String objClass2 = ((IntactCvTerm)cvTerm2).getObjClass();
-        int EQUAL = 0;
-        int BEFORE = -1;
-        int AFTER = 1;
+        if (cvTerm1 instanceof IntactCvTerm && cvTerm2 instanceof IntactCvTerm){
+            String objClass1 = ((IntactCvTerm)cvTerm1).getObjClass();
+            String objClass2 = ((IntactCvTerm)cvTerm2).getObjClass();
 
-        if (objClass1 == null && objClass2 == null){
-            return EQUAL;
+            if (objClass1 != null && objClass2 != null){
+                return objClass1.compareTo(objClass2);
+            }
         }
-        else if (objClass1 == null){
-            return AFTER;
-        }
-        else if (objClass2 == null){
-            return BEFORE;
-        }
-        else {
-            return objClass1.compareTo(objClass2);
-        }
+        return comp;
     }
 }

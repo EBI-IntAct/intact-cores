@@ -13,4 +13,7 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 
 public interface AnnotationSynchronizer<T extends AbstractIntactAnnotation> extends IntactDbSynchronizer<Annotation, T>{
 
+    public boolean isAnnotationTopicSynchronizationEnabled();
+
+    public void setAnnotationTopicSynchronizationEnabled(boolean enabled);
 }

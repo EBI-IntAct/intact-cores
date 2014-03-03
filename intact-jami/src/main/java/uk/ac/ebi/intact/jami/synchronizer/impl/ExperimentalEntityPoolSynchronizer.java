@@ -44,11 +44,13 @@ public class ExperimentalEntityPoolSynchronizer extends ExperimentalEntitySynchr
         if (intactEntity.areEntitiesInitialized()){
             List<ExperimentalEntity> entitiesToPersist = new ArrayList<ExperimentalEntity>(intactEntity);
             for (ExperimentalEntity entity : entitiesToPersist){
-                ExperimentalEntity persistentEntity = (ExperimentalEntity)getContext().getEntitySynchronizer().synchronize(entity, true);
-                // we have a different instance because needed to be synchronized
-                if (persistentEntity != entity){
-                    intactEntity.remove(entity);
-                    intactEntity.add(persistentEntity);
+                if (entity != intactEntity){
+                    ExperimentalEntity persistentEntity = (ExperimentalEntity)getContext().getEntitySynchronizer().synchronize(entity, true);
+                    // we have a different instance because needed to be synchronized
+                    if (persistentEntity != entity){
+                        intactEntity.remove(entity);
+                        intactEntity.add(persistentEntity);
+                    }
                 }
             }
         }

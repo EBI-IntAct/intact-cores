@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends AbstractIntactDbSynchronizer<Alias, A> implements AliasSynchronizer<A> {
 
     private static final Log log = LogFactory.getLog(AliasSynchronizerTemplate.class);
+    private boolean isAliasTypeSynchronizationEnabled = true;
 
     public AliasSynchronizerTemplate(SynchronizerContext context, Class<? extends A> aliasClass){
         super(context, aliasClass);
@@ -33,7 +34,7 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
-        if (object.getType() != null){
+        if (object.getType() != null && isAliasTypeSynchronizationEnabled){
             CvTerm type = object.getType();
             object.setType(getContext().getAliasTypeSynchronizer().synchronize(type, true));
         }
@@ -46,6 +47,14 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
 
     public void clearCache() {
         // nothing to clear
+    }
+
+    public boolean isAliasTypeSynchronizationEnabled() {
+        return isAliasTypeSynchronizationEnabled;
+    }
+
+    public void setAliasTypeSynchronizationEnabled(boolean isAliasTypeSynchronization) {
+        this.isAliasTypeSynchronizationEnabled = isAliasTypeSynchronization;
     }
 
     @Override

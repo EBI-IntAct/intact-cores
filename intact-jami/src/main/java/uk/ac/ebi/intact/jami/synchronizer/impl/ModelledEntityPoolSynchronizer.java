@@ -44,11 +44,13 @@ public class ModelledEntityPoolSynchronizer extends ModelledEntitySynchronizerTe
         if (intactEntity.areEntitiesInitialized()){
             List<ModelledEntity> entitiesToPersist = new ArrayList<ModelledEntity>(intactEntity);
             for (ModelledEntity entity : entitiesToPersist){
-                ModelledEntity persistentEntity = (ModelledEntity) getContext().getEntitySynchronizer().synchronize(entity, true);
-                // we have a different instance because needed to be synchronized
-                if (persistentEntity != entity){
-                    intactEntity.remove(entity);
-                    intactEntity.add(persistentEntity);
+                if (intactEntity != entity){
+                    ModelledEntity persistentEntity = (ModelledEntity) getContext().getEntitySynchronizer().synchronize(entity, true);
+                    // we have a different instance because needed to be synchronized
+                    if (persistentEntity != entity){
+                        intactEntity.remove(entity);
+                        intactEntity.add(persistentEntity);
+                    }
                 }
             }
         }

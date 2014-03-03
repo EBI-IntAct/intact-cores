@@ -44,11 +44,13 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
         if (intactInteractor.areInteractorsInitialized()){
             List<Interactor> interactorToPersist = new ArrayList<Interactor>(intactInteractor);
             for (Interactor interactor : interactorToPersist){
-                Interactor interactorCheck = getContext().getInteractorSynchronizer().synchronize(interactor, false);
-                // we have a different instance because needed to be synchronized
-                if (interactorCheck != interactor){
-                    intactInteractor.remove(interactor);
-                    intactInteractor.add(interactorCheck);
+                if (interactor != intactInteractor){
+                    Interactor interactorCheck = getContext().getInteractorSynchronizer().synchronize(interactor, false);
+                    // we have a different instance because needed to be synchronized
+                    if (interactorCheck != interactor){
+                        intactInteractor.remove(interactor);
+                        intactInteractor.add(interactorCheck);
+                    }
                 }
             }
         }

@@ -8,7 +8,6 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends AbstractIntactDbSynchronizer<Xref, X> implements XrefSynchronizer<X> {
 
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
+    private boolean isXrefDatabaseSynchronizationEnabled=true;
+    private boolean isXrefQualifierSynchronizationEnabled=true;
 
     public XrefSynchronizerTemplate(SynchronizerContext context, Class<? extends X> xrefClass){
         super(context, xrefClass);
@@ -36,8 +37,10 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
 
     public void synchronizeProperties(X object) throws FinderException, PersisterException, SynchronizerException {
         // database first
-        CvTerm db = object.getDatabase();
-        object.setDatabase(getContext().getDatabaseSynchronizer().synchronize(db, true));
+        if (isXrefDatabaseSynchronizationEnabled){
+            CvTerm db = object.getDatabase();
+            object.setDatabase(getContext().getDatabaseSynchronizer().synchronize(db, true));
+        }
 
         // check primaryId
         if (object.getId().length() > IntactUtils.MAX_ID_LEN){
@@ -55,7 +58,7 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
             object.setVersion(object.getVersion().substring(0, IntactUtils.MAX_DB_RELEASE_LEN));
         }
         // check qualifier
-        if (object.getQualifier() != null){
+        if (object.getQualifier() != null && isXrefQualifierSynchronizationEnabled){
             CvTerm qualifier = object.getQualifier();
             object.setQualifier(getContext().getQualifierSynchronizer().synchronize(qualifier, true));
         }
@@ -63,6 +66,22 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
 
     public void clearCache() {
         // nothing to do
+    }
+
+    public boolean isXrefDatabaseSynchronizationEnabled() {
+        return isXrefDatabaseSynchronizationEnabled;
+    }
+
+    public void setXrefDatabaseSynchronizationEnabled(boolean isXrefDatabaseSynchronizationEnabled) {
+        this.isXrefDatabaseSynchronizationEnabled = isXrefDatabaseSynchronizationEnabled;
+    }
+
+    public boolean isXrefQualifierSynchronizationEnabled() {
+        return isXrefQualifierSynchronizationEnabled;
+    }
+
+    public void setXrefQualifierSynchronizationEnabled(boolean isXrefQualifierSynchronizationEnabled) {
+        this.isXrefQualifierSynchronizationEnabled = isXrefQualifierSynchronizationEnabled;
     }
 
     @Override

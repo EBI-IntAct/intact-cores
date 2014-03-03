@@ -444,7 +444,8 @@ public class IntactUtils {
 
     public static IntactCvTerm createIntactMITerm(String name, String MI, String objclass){
         if (MI != null){
-            return new IntactCvTerm(name, new CvTermXref(new IntactCvTerm(CvTerm.PSI_MI, null, CvTerm.PSI_MI_MI, DATABASE_OBJCLASS), MI, new IntactCvTerm(Xref.IDENTITY, null, Xref.IDENTITY_MI, QUALIFIER_OBJCLASS)), objclass);
+            CvTerm psimi = createPsiMiDatabase();
+            return new IntactCvTerm(name, new CvTermXref(psimi, MI, createIdentityQualifier(psimi)), objclass);
         }
         else {
             return new IntactCvTerm(name, (String)null, (String)null, objclass);
@@ -453,10 +454,38 @@ public class IntactUtils {
 
     public static IntactCvTerm createIntactMODTerm(String name, String MOD, String objclass){
         if (MOD != null){
-            return new IntactCvTerm(name, new CvTermXref(new IntactCvTerm(CvTerm.PSI_MOD, null, CvTerm.PSI_MOD_MI, DATABASE_OBJCLASS), MOD, new IntactCvTerm(Xref.IDENTITY, null, Xref.IDENTITY_MI, QUALIFIER_OBJCLASS)), objclass);
+            return new IntactCvTerm(name, new CvTermXref(new IntactCvTerm(CvTerm.PSI_MOD, null, CvTerm.PSI_MOD_MI, DATABASE_OBJCLASS), MOD, createIdentityQualifier()), objclass);
         }
         else {
             return new IntactCvTerm(name, (String)null, (String)null, objclass);
         }
+    }
+
+    public static CvTerm createPsiMiDatabase(){
+        CvTerm psiMi = new IntactCvTerm(CvTerm.PSI_MI, null, (String)null, DATABASE_OBJCLASS);
+        Xref psiMiXref = new CvTermXref(psiMi, CvTerm.PSI_MI_MI, createIdentityQualifier(psiMi));
+        psiMi.getIdentifiers().add(psiMiXref);
+        return psiMi;
+    }
+
+    public static CvTerm createIdentityQualifier(){
+        CvTerm identity = new IntactCvTerm(Xref.IDENTITY, null, (String)null, QUALIFIER_OBJCLASS);
+        Xref psiMiXref = new CvTermXref(createPsiMiDatabase(identity), Xref.IDENTITY_MI, identity);
+        identity.getIdentifiers().add(psiMiXref);
+        return identity;
+    }
+
+    public static CvTerm createPsiMiDatabase(CvTerm identity){
+        CvTerm psiMi = new IntactCvTerm(CvTerm.PSI_MI, null, (String)null, DATABASE_OBJCLASS);
+        Xref psiMiXref = new CvTermXref(psiMi, CvTerm.PSI_MI_MI, identity);
+        psiMi.getIdentifiers().add(psiMiXref);
+        return psiMi;
+    }
+
+    public static CvTerm createIdentityQualifier(CvTerm psiMi){
+        CvTerm identity = new IntactCvTerm(Xref.IDENTITY, null, (String)null, QUALIFIER_OBJCLASS);
+        Xref psiMiXref = new CvTermXref(psiMi, Xref.IDENTITY_MI, identity);
+        identity.getIdentifiers().add(psiMiXref);
+        return identity;
     }
 }

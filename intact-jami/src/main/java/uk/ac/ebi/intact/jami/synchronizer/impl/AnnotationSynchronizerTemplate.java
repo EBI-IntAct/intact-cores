@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> extends AbstractIntactDbSynchronizer<Annotation, A> implements AnnotationSynchronizer<A> {
 
     private static final Log log = LogFactory.getLog(AnnotationSynchronizerTemplate.class);
+    private boolean isAnnotationTopicSynchronizationEnabled=true;
 
     public AnnotationSynchronizerTemplate(SynchronizerContext context, Class<? extends A> annotationClass){
         super(context, annotationClass);
@@ -34,8 +35,10 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
         // topic first
-        CvTerm topic = object.getTopic();
-        object.setTopic(getContext().getTopicSynchronizer().synchronize(topic, true));
+        if (isAnnotationTopicSynchronizationEnabled){
+            CvTerm topic = object.getTopic();
+            object.setTopic(getContext().getTopicSynchronizer().synchronize(topic, true));
+        }
 
         // check annotation value
         if (object.getValue() != null && object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -46,6 +49,14 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
 
     public void clearCache() {
         // nothing to clear
+    }
+
+    public boolean isAnnotationTopicSynchronizationEnabled() {
+        return isAnnotationTopicSynchronizationEnabled;
+    }
+
+    public void setAnnotationTopicSynchronizationEnabled(boolean isAnnotationTopicSynchronizationEnabled) {
+        this.isAnnotationTopicSynchronizationEnabled = isAnnotationTopicSynchronizationEnabled;
     }
 
     @Override

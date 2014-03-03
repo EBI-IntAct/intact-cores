@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.utils;
+package uk.ac.ebi.intact.jami.utils.comparator;
 
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
@@ -32,40 +32,42 @@ public class IntactExperimentComparator extends UnambiguousExperimentComparator{
 
     @Override
     public int compare(Experiment exp1, Experiment exp2) {
-        if (exp1 == exp2){
-            return 0;
-        }
         int comp = super.compare(exp1, exp2);
         if (comp != 0){
             return comp;
         }
 
-        CvTerm identificationMethod1 = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp1);
-        CvTerm identificationMethod2 = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp2);
-        int EQUAL = 0;
-        int BEFORE = -1;
-        int AFTER = 1;
+        if (exp1 != null && exp2 != null){
+            CvTerm identificationMethod1 = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp1);
+            CvTerm identificationMethod2 = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp2);
+            int EQUAL = 0;
+            int BEFORE = -1;
+            int AFTER = 1;
 
-        if (identificationMethod1 == null && identificationMethod2 == null){
-            comp = EQUAL;
+            if (identificationMethod1 == null && identificationMethod2 == null){
+                comp = EQUAL;
+            }
+            else if (identificationMethod1 == null){
+                return AFTER;
+            }
+            else if (identificationMethod2 == null){
+                return BEFORE;
+            }
+            else {
+                comp = getCvTermComparator().compare(identificationMethod1, identificationMethod2);
+            }
+            if (comp != 0){
+                return comp;
+            }
+
+            // check annotations
+            Collection<Annotation> annots1 = exp1.getAnnotations();
+            Collection<Annotation> annots2 = exp2.getAnnotations();
+            return this.annotationCollectionComparator.compare(annots1, annots2);
         }
-        else if (identificationMethod1 == null){
-            return AFTER;
-        }
-        else if (identificationMethod2 == null){
-            return BEFORE;
-        }
-        else {
-            comp = getCvTermComparator().compare(identificationMethod1, identificationMethod2);
-        }
-        if (comp != 0){
+        else{
             return comp;
         }
-
-        // check annotations
-        Collection<Annotation> annots1 = exp1.getAnnotations();
-        Collection<Annotation> annots2 = exp2.getAnnotations();
-        return this.annotationCollectionComparator.compare(annots1, annots2);
     }
 
     public AnnotationComparator getAnnotationComparator() {
