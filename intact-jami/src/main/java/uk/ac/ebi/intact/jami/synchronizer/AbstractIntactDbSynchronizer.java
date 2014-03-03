@@ -45,7 +45,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         synchronizeProperties(object);
 
         // persist the cv
-        this.entityManager.persist(object);
+        persistObject(object);
 
         return object;
     }
@@ -186,19 +186,23 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // we only return the existing instance after merging
             return existingInstance;
         }
-        // the existing instance has been cached but not persisted
+        // the existing instance has been cached but not persisted.
         else if (existingInstance != null){
             if (persist){
-                this.entityManager.persist(existingInstance);
+                persistObject(existingInstance);
             }
             return existingInstance;
         }
         else{
             if (persist){
-                this.entityManager.persist(persistentObject);
+                persistObject(persistentObject);
             }
             return persistentObject;
         }
+    }
+
+    protected void persistObject(T existingInstance) {
+        this.entityManager.persist(existingInstance);
     }
 
     /**

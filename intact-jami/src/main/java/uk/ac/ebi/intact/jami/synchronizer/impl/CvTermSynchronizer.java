@@ -513,4 +513,25 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new CvTermMergerEnrichOnly(this));
     }
+
+    @Override
+    protected void persistObject(IntactCvTerm existingInstance) {
+        // first remove all dependencies to other cv terms
+        Collection<Alias> cvAliases = existingInstance.getSynonyms();
+        existingInstance.getSynonyms().clear();
+        Collection<Annotation> cvAnnotations = existingInstance.getAnnotations();
+        existingInstance.getAnnotations().clear();
+        Collection<Xref> cvRefs = existingInstance.getPersistentXrefs();
+        existingInstance.getPersistentXrefs().clear();
+        Collection<OntologyTerm> children = existingInstance.getChildren();
+        existingInstance.getChildren().clear();
+
+        super.persistObject(existingInstance);
+
+        // after persistence, re-attach dependent objects
+        existingInstance.getSynonyms().addAll(cvAliases);
+        existingInstance.getPersistentXrefs().addAll(cvRefs);
+        existingInstance.getAnnotations().addAll(cvAnnotations);
+        existingInstance.getChildren().addAll(children);
+    }
 }
