@@ -53,6 +53,16 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
         }
     }
 
+    @Override
+    protected IntactVariableParameterValue fetchObjectFromCache(VariableParameterValue object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(VariableParameterValue object) {
+        return this.persistedObjects.containsKey(object);
+    }
+
     public IntactVariableParameterValue find(VariableParameterValue object) throws FinderException {
         if (this.persistedObjects.containsKey(object)){
             return this.persistedObjects.get(object);
@@ -61,25 +71,6 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
         else {
             return null;
         }
-    }
-
-    public IntactVariableParameterValue persist(IntactVariableParameterValue object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public IntactVariableParameterValue synchronize(VariableParameterValue object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (!this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(IntactVariableParameterValue object) throws FinderException, PersisterException, SynchronizerException {

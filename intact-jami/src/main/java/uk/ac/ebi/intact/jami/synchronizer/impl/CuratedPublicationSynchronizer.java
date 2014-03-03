@@ -33,7 +33,6 @@ import java.util.List;
 
 public class CuratedPublicationSynchronizer extends PublicationSynchronizer<IntactCuratedPublication>{
 
-
     private static final Log log = LogFactory.getLog(CuratedPublicationSynchronizer.class);
 
     public CuratedPublicationSynchronizer(SynchronizerContext context){

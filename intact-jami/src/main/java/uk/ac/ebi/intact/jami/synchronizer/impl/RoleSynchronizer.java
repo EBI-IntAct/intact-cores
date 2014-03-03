@@ -72,25 +72,6 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
         this.persistedRoles.clear();
     }
 
-    public Role persist(Role object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedRoles.containsKey(object)){
-            return this.persistedRoles.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public Role synchronize(Role object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedRoles.containsKey(object)){
-            return this.persistedRoles.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     @Override
     protected Object extractIdentifier(Role object) {
         return object.getAc();
@@ -109,5 +90,15 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
         else{
             this.persistedRoles.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected Role fetchObjectFromCache(Role object) {
+        return this.persistedRoles.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Role object) {
+        return this.persistedRoles.containsKey(object);
     }
 }

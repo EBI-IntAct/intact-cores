@@ -115,25 +115,6 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         return null;
     }
 
-    public IntactOrganism persist(IntactOrganism object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public IntactOrganism synchronize(Organism object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeCommonName(intactOrganism);
@@ -279,6 +260,16 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         else{
             this.persistedObjects.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected IntactOrganism fetchObjectFromCache(Organism object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Organism object) {
+        return this.persistedObjects.containsKey(object);
     }
 
     @Override

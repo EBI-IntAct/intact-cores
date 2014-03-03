@@ -64,6 +64,16 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     }
 
     @Override
+    protected A fetchObjectFromCache(Annotation object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Annotation object) {
+        return false;
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Annotation, A>(this));
     }

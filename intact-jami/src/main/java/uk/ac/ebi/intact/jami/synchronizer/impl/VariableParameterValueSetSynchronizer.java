@@ -43,6 +43,16 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
         // nothing to do
     }
 
+    @Override
+    protected IntactVariableParameterValueSet fetchObjectFromCache(VariableParameterValueSet object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(VariableParameterValueSet object) {
+        return false;
+    }
+
     public IntactVariableParameterValueSet find(VariableParameterValueSet object) throws FinderException {
         return null;
     }

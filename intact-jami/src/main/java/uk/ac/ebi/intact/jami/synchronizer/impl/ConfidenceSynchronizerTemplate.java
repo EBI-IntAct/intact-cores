@@ -65,6 +65,16 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     }
 
     @Override
+    protected C fetchObjectFromCache(T object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(T object) {
+        return false;
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<T, C>(this));
     }

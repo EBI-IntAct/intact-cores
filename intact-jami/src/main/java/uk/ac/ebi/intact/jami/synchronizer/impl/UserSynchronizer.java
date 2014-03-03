@@ -64,25 +64,6 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
         return null;
     }
 
-    public User persist(User object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedUsers.containsKey(object)){
-            return this.persistedUsers.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public User synchronize(User object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedUsers.containsKey(object)){
-            return this.persistedUsers.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(User object) throws FinderException, PersisterException, SynchronizerException {
         // check first name
         // truncate if necessary
@@ -158,6 +139,16 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
         else{
             this.persistedUsers.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected User fetchObjectFromCache(User object) {
+        return this.persistedUsers.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(User object) {
+        return this.persistedUsers.containsKey(object);
     }
 
     @Override

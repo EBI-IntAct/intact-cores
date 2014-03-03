@@ -114,4 +114,14 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
     protected void storeInCache(Allostery originalObject, IntactAllostery persistentObject, IntactAllostery existingInstance) {
         // nothing to do
     }
+
+    @Override
+    protected IntactAllostery fetchObjectFromCache(Allostery object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Allostery object) {
+        return false;
+    }
 }

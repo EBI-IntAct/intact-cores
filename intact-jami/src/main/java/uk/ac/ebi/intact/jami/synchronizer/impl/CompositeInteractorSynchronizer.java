@@ -3,12 +3,14 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.InteractorSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 /**
@@ -19,44 +21,49 @@ import java.util.Collection;
  * @since <pre>28/01/14</pre>
  */
 
-public class CompositeInteractorSynchronizer extends AbstractIntactDbSynchronizer<Interactor, IntactInteractor>
-        implements InteractorFetcher<Interactor>, InteractorSynchronizer<Interactor, IntactInteractor>{
+public class CompositeInteractorSynchronizer implements InteractorFetcher<Interactor>,
+        InteractorSynchronizer<Interactor, IntactInteractor>{
+
+    private SynchronizerContext context;
 
     public CompositeInteractorSynchronizer(SynchronizerContext context){
-        super(context, IntactInteractor.class);
+        if (context == null){
+            throw new IllegalArgumentException("An IntAct database synchronizer needs a non null synchronizer context");
+        }
+        this.context = context;
     }
 
     public IntactInteractor find(Interactor term) throws FinderException {
         if (term instanceof Molecule){
             if (term instanceof Polymer){
                 if (term instanceof Protein){
-                    return getContext().getProteinSynchronizer().find((Protein) term);
+                    return this.context.getProteinSynchronizer().find((Protein) term);
                 }
                 else if (term instanceof NucleicAcid){
-                    return getContext().getNucleicAcidSynchronizer().find((NucleicAcid) term);
+                    return this.context.getNucleicAcidSynchronizer().find((NucleicAcid) term);
                 }
                 else{
-                    return getContext().getPolymerSynchronizer().find((Polymer) term);
+                    return this.context.getPolymerSynchronizer().find((Polymer) term);
                 }
             }
             else if (term instanceof BioactiveEntity){
-                return getContext().getBioactiveEntitySynchronizer().find((BioactiveEntity) term);
+                return this.context.getBioactiveEntitySynchronizer().find((BioactiveEntity) term);
             }
             else if (term instanceof Gene){
-                return getContext().getGeneSynchronizer().find((Gene) term);
+                return this.context.getGeneSynchronizer().find((Gene) term);
             }
             else{
-                return getContext().getMoleculeSynchronizer().find((Molecule) term);
+                return this.context.getMoleculeSynchronizer().find((Molecule) term);
             }
         }
         else if (term instanceof Complex){
-            return getContext().getComplexSynchronizer().find((Complex) term);
+            return this.context.getComplexSynchronizer().find((Complex) term);
         }
         else if (term instanceof InteractorPool){
-            return getContext().getInteractorPoolSynchronizer().find((InteractorPool) term);
+            return this.context.getInteractorPoolSynchronizer().find((InteractorPool) term);
         }
         else {
-            return getContext().getInteractorBaseSynchronizer().find(term);
+            return this.context.getInteractorBaseSynchronizer().find(term);
         }
     }
 
@@ -64,68 +71,67 @@ public class CompositeInteractorSynchronizer extends AbstractIntactDbSynchronize
         if (term instanceof IntactMolecule){
             if (term instanceof IntactPolymer){
                 if (term instanceof IntactProtein){
-                    return getContext().getProteinSynchronizer().persist((IntactProtein) term);
+                    return this.context.getProteinSynchronizer().persist((IntactProtein) term);
                 }
                 else if (term instanceof IntactNucleicAcid){
-                    return getContext().getNucleicAcidSynchronizer().persist((IntactNucleicAcid) term);
+                    return this.context.getNucleicAcidSynchronizer().persist((IntactNucleicAcid) term);
                 }
                 else{
-                    return getContext().getPolymerSynchronizer().persist((IntactPolymer) term);
+                    return this.context.getPolymerSynchronizer().persist((IntactPolymer) term);
                 }
             }
             else if (term instanceof IntactBioactiveEntity){
-                return getContext().getBioactiveEntitySynchronizer().persist((IntactBioactiveEntity) term);
+                return this.context.getBioactiveEntitySynchronizer().persist((IntactBioactiveEntity) term);
             }
             else if (term instanceof IntactGene){
-                return getContext().getGeneSynchronizer().persist((IntactGene) term);
+                return this.context.getGeneSynchronizer().persist((IntactGene) term);
             }
             else{
-                return getContext().getMoleculeSynchronizer().persist((IntactMolecule) term);
+                return this.context.getMoleculeSynchronizer().persist((IntactMolecule) term);
             }
         }
         else if (term instanceof IntactComplex){
-            return getContext().getComplexSynchronizer().persist((IntactComplex) term);
+            return this.context.getComplexSynchronizer().persist((IntactComplex) term);
         }
         else if (term instanceof IntactInteractorPool){
-            return getContext().getInteractorPoolSynchronizer().persist((IntactInteractorPool) term);
+            return this.context.getInteractorPoolSynchronizer().persist((IntactInteractorPool) term);
         }
         else {
-            return getContext().getInteractorBaseSynchronizer().persist(term);
+            return this.context.getInteractorBaseSynchronizer().persist(term);
         }
     }
 
-    @Override
     public IntactInteractor synchronize(Interactor term, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-            if (term instanceof IntactMolecule){
-                if (term instanceof IntactPolymer){
-                    if (term instanceof IntactProtein){
-                        return getContext().getProteinSynchronizer().synchronize((IntactProtein) term, persist);
+            if (term instanceof Molecule){
+                if (term instanceof Polymer){
+                    if (term instanceof Protein){
+                        return this.context.getProteinSynchronizer().synchronize((Protein) term, persist);
                     }
-                    else if (term instanceof IntactNucleicAcid){
-                        return getContext().getNucleicAcidSynchronizer().synchronize((IntactNucleicAcid) term, persist);
+                    else if (term instanceof NucleicAcid){
+                        return this.context.getNucleicAcidSynchronizer().synchronize((NucleicAcid) term, persist);
                     }
                     else{
-                        return getContext().getPolymerSynchronizer().synchronize((IntactPolymer) term, persist);
+                        return this.context.getPolymerSynchronizer().synchronize((Polymer) term, persist);
                     }
                 }
-                else if (term instanceof IntactBioactiveEntity){
-                    return getContext().getBioactiveEntitySynchronizer().synchronize((IntactBioactiveEntity) term, persist);
+                else if (term instanceof BioactiveEntity){
+                    return this.context.getBioactiveEntitySynchronizer().synchronize((BioactiveEntity) term, persist);
                 }
-                else if (term instanceof IntactGene){
-                    return getContext().getGeneSynchronizer().synchronize((IntactGene) term, persist);
+                else if (term instanceof Gene){
+                    return this.context.getGeneSynchronizer().synchronize((Gene) term, persist);
                 }
                 else{
-                    return getContext().getMoleculeSynchronizer().synchronize((IntactMolecule)term, persist);
+                    return this.context.getMoleculeSynchronizer().synchronize((Molecule)term, persist);
                 }
             }
-            else if (term instanceof IntactComplex){
-                return getContext().getComplexSynchronizer().synchronize((IntactComplex) term, persist);
+            else if (term instanceof Complex){
+                return this.context.getComplexSynchronizer().synchronize((Complex) term, persist);
             }
-            else if (term instanceof IntactInteractorPool){
-                return getContext().getInteractorPoolSynchronizer().synchronize((IntactInteractorPool) term, persist);
+            else if (term instanceof InteractorPool){
+                return this.context.getInteractorPoolSynchronizer().synchronize((InteractorPool) term, persist);
             }
             else {
-                return getContext().getInteractorBaseSynchronizer().synchronize(term, persist);
+                return this.context.getInteractorBaseSynchronizer().synchronize(term, persist);
             }
     }
 
@@ -133,33 +139,33 @@ public class CompositeInteractorSynchronizer extends AbstractIntactDbSynchronize
         if (term instanceof IntactMolecule){
             if (term instanceof IntactPolymer){
                 if (term instanceof IntactProtein){
-                    getContext().getProteinSynchronizer().synchronizeProperties((IntactProtein) term);
+                    this.context.getProteinSynchronizer().synchronizeProperties((IntactProtein) term);
                 }
                 else if (term instanceof IntactNucleicAcid){
-                    getContext().getNucleicAcidSynchronizer().synchronizeProperties((IntactNucleicAcid) term);
+                    this.context.getNucleicAcidSynchronizer().synchronizeProperties((IntactNucleicAcid) term);
                 }
                 else{
-                    getContext().getPolymerSynchronizer().synchronizeProperties((IntactPolymer) term);
+                    this.context.getPolymerSynchronizer().synchronizeProperties((IntactPolymer) term);
                 }
             }
             else if (term instanceof IntactBioactiveEntity){
-                getContext().getBioactiveEntitySynchronizer().synchronizeProperties((IntactBioactiveEntity) term);
+                this.context.getBioactiveEntitySynchronizer().synchronizeProperties((IntactBioactiveEntity) term);
             }
             else if (term instanceof IntactGene){
-                getContext().getGeneSynchronizer().synchronizeProperties((IntactGene) term);
+                this.context.getGeneSynchronizer().synchronizeProperties((IntactGene) term);
             }
             else{
-                getContext().getMoleculeSynchronizer().synchronizeProperties((IntactMolecule) term);
+                this.context.getMoleculeSynchronizer().synchronizeProperties((IntactMolecule) term);
             }
         }
         else if (term instanceof IntactComplex){
-            getContext().getComplexSynchronizer().synchronizeProperties((IntactComplex) term);
+            this.context.getComplexSynchronizer().synchronizeProperties((IntactComplex) term);
         }
         else if (term instanceof IntactInteractorPool){
-            getContext().getInteractorPoolSynchronizer().synchronizeProperties((IntactInteractorPool) term);
+            this.context.getInteractorPoolSynchronizer().synchronizeProperties((IntactInteractorPool) term);
         }
         else {
-            getContext().getInteractorBaseSynchronizer().synchronizeProperties(term);
+            this.context.getInteractorBaseSynchronizer().synchronizeProperties(term);
         }
     }
 
@@ -167,28 +173,61 @@ public class CompositeInteractorSynchronizer extends AbstractIntactDbSynchronize
         // nothing to do
     }
 
+    public IntactDbMerger<Interactor, IntactInteractor> getIntactMerger() {
+        return null;
+    }
+
+    public void setIntactMerger(IntactDbMerger<Interactor, IntactInteractor> intactMerger) {
+        throw new UnsupportedOperationException("The interactor synchronizer does not support this method as it is a composite synchronizer");
+    }
+
+    public Class<? extends IntactInteractor> getIntactClass() {
+        return IntactInteractor.class;
+    }
+
+    public void setIntactClass(Class<? extends IntactInteractor> intactClass) {
+        throw new UnsupportedOperationException("The interactor synchronizer does not support this method as it is a composite synchronizer");
+    }
+
+    public boolean delete(Interactor term) {
+        if (term instanceof Molecule){
+            if (term instanceof Polymer){
+                if (term instanceof Protein){
+                    return this.context.getProteinSynchronizer().delete((Protein) term);
+                }
+                else if (term instanceof NucleicAcid){
+                    return this.context.getNucleicAcidSynchronizer().delete((NucleicAcid) term);
+                }
+                else{
+                    return this.context.getPolymerSynchronizer().delete((Polymer) term);
+                }
+            }
+            else if (term instanceof BioactiveEntity){
+                return this.context.getBioactiveEntitySynchronizer().delete((BioactiveEntity) term);
+            }
+            else if (term instanceof Gene){
+                return this.context.getGeneSynchronizer().delete((Gene) term);
+            }
+            else{
+                return this.context.getMoleculeSynchronizer().delete((Molecule) term);
+            }
+        }
+        else if (term instanceof Complex){
+            return this.context.getComplexSynchronizer().delete((Complex) term);
+        }
+        else if (term instanceof InteractorPool){
+            return this.context.getInteractorPoolSynchronizer().delete((InteractorPool) term);
+        }
+        else {
+            return this.context.getInteractorBaseSynchronizer().delete(term);
+        }
+    }
+
     public Collection<Interactor> fetchByIdentifier(String identifier) throws BridgeFailedException {
-        return ((InteractorFetcher<Interactor>)getContext().getInteractorBaseSynchronizer()).fetchByIdentifier(identifier);
+        return ((InteractorFetcher<Interactor>)this.context.getInteractorBaseSynchronizer()).fetchByIdentifier(identifier);
     }
 
     public Collection<Interactor> fetchByIdentifiers(Collection<String> identifiers) throws BridgeFailedException {
-        return ((InteractorFetcher<Interactor>)getContext().getInteractorTypeSynchronizer()).fetchByIdentifiers(identifiers);
-    }
-
-    @Override
-    protected Object extractIdentifier(IntactInteractor object) {
-        return object.getAc();
-    }
-
-    @Override
-    protected IntactInteractor instantiateNewPersistentInstance(Interactor object, Class<? extends IntactInteractor> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        IntactInteractor newInteractor = intactClass.getConstructor(String.class).newInstance(object.getShortName());
-        InteractorCloner.copyAndOverrideBasicInteractorProperties(object, newInteractor);
-        return newInteractor;
-    }
-
-    @Override
-    protected void storeInCache(Interactor originalObject, IntactInteractor persistentObject, IntactInteractor existingInstance) {
-        // nothing to do
+        return ((InteractorFetcher<Interactor>)this.context.getInteractorTypeSynchronizer()).fetchByIdentifiers(identifiers);
     }
 }

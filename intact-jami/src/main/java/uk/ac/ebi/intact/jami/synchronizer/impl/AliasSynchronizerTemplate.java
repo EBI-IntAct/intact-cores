@@ -64,6 +64,16 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     @Override
+    protected A fetchObjectFromCache(Alias object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Alias object) {
+        return false;
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Alias, A>(this));
     }

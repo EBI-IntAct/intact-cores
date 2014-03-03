@@ -63,6 +63,16 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     @Override
+    protected A fetchObjectFromCache(LifeCycleEvent object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(LifeCycleEvent object) {
+        return false;
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<LifeCycleEvent, A>(this));
     }

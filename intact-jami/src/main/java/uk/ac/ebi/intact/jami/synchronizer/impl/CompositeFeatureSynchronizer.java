@@ -3,16 +3,16 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import psidev.psi.mi.jami.model.Feature;
 import psidev.psi.mi.jami.model.FeatureEvidence;
 import psidev.psi.mi.jami.model.ModelledFeature;
+import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledFeature;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Synchronizer for features
@@ -22,18 +22,23 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>28/01/14</pre>
  */
 
-public class CompositeFeatureSynchronizer extends AbstractIntactDbSynchronizer<Feature, AbstractIntactFeature> {
+public class CompositeFeatureSynchronizer implements IntactDbSynchronizer<Feature, AbstractIntactFeature> {
+
+    private SynchronizerContext context;
 
     public CompositeFeatureSynchronizer(SynchronizerContext context){
-        super(context, AbstractIntactFeature.class);
+        if (context == null){
+            throw new IllegalArgumentException("An IntAct database synchronizer needs a non null synchronizer context");
+        }
+        this.context = context;
     }
 
     public AbstractIntactFeature find(Feature term) throws FinderException {
         if (term instanceof FeatureEvidence){
-            return getContext().getFeatureEvidenceSynchronizer().find((FeatureEvidence)term);
+            return this.context.getFeatureEvidenceSynchronizer().find((FeatureEvidence)term);
         }
         else if (term instanceof ModelledFeature){
-            return getContext().getModelledFeatureSynchronizer().find((ModelledFeature)term);
+            return this.context.getModelledFeatureSynchronizer().find((ModelledFeature)term);
         }
         else {
             return null;
@@ -42,29 +47,34 @@ public class CompositeFeatureSynchronizer extends AbstractIntactDbSynchronizer<F
 
     public AbstractIntactFeature persist(AbstractIntactFeature term) throws FinderException, PersisterException, SynchronizerException {
         if (term instanceof IntactFeatureEvidence){
-            return getContext().getFeatureEvidenceSynchronizer().persist((IntactFeatureEvidence)term);
+            return this.context.getFeatureEvidenceSynchronizer().persist((IntactFeatureEvidence)term);
         }
         else {
-            return getContext().getModelledFeatureSynchronizer().find((IntactModelledFeature)term);
+            return this.context.getModelledFeatureSynchronizer().find((IntactModelledFeature)term);
         }
     }
 
-    @Override
     public AbstractIntactFeature synchronize(Feature term, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         if (term instanceof FeatureEvidence){
-            return getContext().getFeatureEvidenceSynchronizer().synchronize((FeatureEvidence)term, persist);
+            return this.context.getFeatureEvidenceSynchronizer().synchronize((FeatureEvidence)term, persist);
         }
-        else {
-            return getContext().getModelledFeatureSynchronizer().synchronize((ModelledFeature)term, persist);
+        else if (term instanceof ModelledFeature) {
+            return this.context.getModelledFeatureSynchronizer().synchronize((ModelledFeature)term, persist);
+        }
+        else{
+            IntactFeatureEvidence featureEvidence = new IntactFeatureEvidence();
+            FeatureCloner.copyAndOverrideBasicFeaturesProperties(term, featureEvidence);
+
+            return this.context.getFeatureEvidenceSynchronizer().synchronize(featureEvidence, persist);
         }
     }
 
     public void synchronizeProperties(AbstractIntactFeature term) throws FinderException, PersisterException, SynchronizerException {
         if (term instanceof IntactFeatureEvidence){
-            getContext().getFeatureEvidenceSynchronizer().synchronizeProperties((IntactFeatureEvidence)term);
+            this.context.getFeatureEvidenceSynchronizer().synchronizeProperties((IntactFeatureEvidence)term);
         }
         else {
-            getContext().getModelledFeatureSynchronizer().synchronizeProperties((IntactModelledFeature)term);
+            this.context.getModelledFeatureSynchronizer().synchronizeProperties((IntactModelledFeature)term);
         }
     }
 
@@ -72,18 +82,31 @@ public class CompositeFeatureSynchronizer extends AbstractIntactDbSynchronizer<F
         // nothing to do
     }
 
-    @Override
-    protected Object extractIdentifier(AbstractIntactFeature object) {
-        return object.getAc();
+    public IntactDbMerger<Feature, AbstractIntactFeature> getIntactMerger() {
+        return null;
     }
 
-    @Override
-    protected AbstractIntactFeature instantiateNewPersistentInstance(Feature object, Class<? extends AbstractIntactFeature> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        throw new UnsupportedOperationException("This synchronizer relies on delegate synchronizers and cannot be used this way");
+    public void setIntactMerger(IntactDbMerger<Feature, AbstractIntactFeature> intactMerger) {
+        throw new UnsupportedOperationException("The feature synchronizer does not support this method as it is a composite synchronizer");
     }
 
-    @Override
-    protected void storeInCache(Feature originalObject, AbstractIntactFeature persistentObject, AbstractIntactFeature existingInstance) {
-        // nothing to do
+    public Class<? extends AbstractIntactFeature> getIntactClass() {
+        return AbstractIntactFeature.class;
+    }
+
+    public void setIntactClass(Class<? extends AbstractIntactFeature> intactClass) {
+        throw new UnsupportedOperationException("The feature synchronizer does not support this method as it is a composite synchronizer");
+    }
+
+    public boolean delete(Feature term) {
+        if (term instanceof FeatureEvidence){
+            return this.context.getFeatureEvidenceSynchronizer().delete((FeatureEvidence) term);
+        }
+        else if (term instanceof ModelledFeature){
+            return this.context.getModelledFeatureSynchronizer().delete((ModelledFeature)term);
+        }
+        else{
+            return false;
+        }
     }
 }

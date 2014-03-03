@@ -5,13 +5,14 @@ import psidev.psi.mi.jami.model.CooperativeEffect;
 import psidev.psi.mi.jami.model.Preassembly;
 import psidev.psi.mi.jami.utils.clone.CooperativeEffectCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
-import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
 import uk.ac.ebi.intact.jami.model.extension.IntactAllostery;
 import uk.ac.ebi.intact.jami.model.extension.IntactPreassembly;
-import uk.ac.ebi.intact.jami.synchronizer.*;
-
-import java.lang.reflect.InvocationTargetException;
+import uk.ac.ebi.intact.jami.synchronizer.CooperativeEffectSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 /**
  * Default finder/synchronizer for cooperative effect
@@ -21,11 +22,15 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class CompositeCooperativeEffectSynchronizer extends AbstractIntactDbSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect>
-implements CooperativeEffectSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect>{
+public class CompositeCooperativeEffectSynchronizer implements CooperativeEffectSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect>{
+
+    private SynchronizerContext context;
 
     public CompositeCooperativeEffectSynchronizer(SynchronizerContext context) {
-        super(context, AbstractIntactCooperativeEffect.class);
+        if (context == null){
+            throw new IllegalArgumentException("An IntAct database synchronizer needs a non null synchronizer context");
+        }
+        this.context = context;
     }
 
     public AbstractIntactCooperativeEffect find(CooperativeEffect object) throws FinderException {
@@ -35,50 +40,40 @@ implements CooperativeEffectSynchronizer<CooperativeEffect, AbstractIntactCooper
     public void synchronizeProperties(AbstractIntactCooperativeEffect object) throws FinderException, PersisterException, SynchronizerException {
         // preassembly
         if (object instanceof IntactPreassembly){
-            getContext().getPreAssemblySynchronizer().synchronizeProperties((IntactPreassembly)object);
+            this.context.getPreAssemblySynchronizer().synchronizeProperties((IntactPreassembly)object);
         }
         // allostery
         else {
-            getContext().getAllosterySynchronizer().synchronizeProperties((IntactAllostery)object);
+            this.context.getAllosterySynchronizer().synchronizeProperties((IntactAllostery)object);
         }
     }
 
-    @Override
     public AbstractIntactCooperativeEffect persist(AbstractIntactCooperativeEffect object) throws FinderException, PersisterException, SynchronizerException {
         // preassembly
         if (object instanceof IntactPreassembly){
-            return getContext().getPreAssemblySynchronizer().persist((IntactPreassembly)object);
+            return this.context.getPreAssemblySynchronizer().persist((IntactPreassembly)object);
         }
         // allostery
         else {
-            return getContext().getAllosterySynchronizer().persist((IntactAllostery)object);
+            return this.context.getAllosterySynchronizer().persist((IntactAllostery)object);
         }
     }
 
-    @Override
     public AbstractIntactCooperativeEffect synchronize(CooperativeEffect object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // preassembly
         if (object instanceof Preassembly){
-            return getContext().getPreAssemblySynchronizer().synchronize((IntactPreassembly) object, persist);
+            return this.context.getPreAssemblySynchronizer().synchronize((Preassembly) object, persist);
         }
         // allostery
         else if (object instanceof Allostery){
-            return getContext().getAllosterySynchronizer().synchronize((IntactAllostery) object, persist);
+            return this.context.getAllosterySynchronizer().synchronize((Allostery) object, persist);
         }
         // consider that as preassembly in intact
         else{
-            try {
-                IntactPreassembly preassembly = (IntactPreassembly)instantiateNewPersistentInstance(object, getIntactClass());
-                return getContext().getPreAssemblySynchronizer().synchronize(preassembly, persist);
-            } catch (InstantiationException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+IntactPreassembly.class, e);
-            } catch (IllegalAccessException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+IntactPreassembly.class, e);
-            } catch (InvocationTargetException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+IntactPreassembly.class, e);
-            } catch (NoSuchMethodException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+IntactPreassembly.class, e);
-            }
+            IntactPreassembly preassembly = new IntactPreassembly();
+            CooperativeEffectCloner.copyAndOverrideBasicCooperativeEffectProperties(object, preassembly);
+
+            return this.context.getPreAssemblySynchronizer().synchronize(preassembly, persist);
         }
     }
 
@@ -86,25 +81,34 @@ implements CooperativeEffectSynchronizer<CooperativeEffect, AbstractIntactCooper
         // nothing to do
     }
 
-    @Override
-    protected Object extractIdentifier(AbstractIntactCooperativeEffect object) {
-        return object.getId();
+    public IntactDbMerger<CooperativeEffect, AbstractIntactCooperativeEffect> getIntactMerger() {
+        return null;
     }
 
-    @Override
-    protected AbstractIntactCooperativeEffect instantiateNewPersistentInstance(CooperativeEffect object, Class<? extends AbstractIntactCooperativeEffect> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        IntactPreassembly newEffect = new IntactPreassembly(object.getOutCome());
-        CooperativeEffectCloner.copyAndOverrideBasicCooperativeEffectProperties(object, newEffect);
-        return newEffect;
+    public void setIntactMerger(IntactDbMerger<CooperativeEffect, AbstractIntactCooperativeEffect> intactMerger) {
+        throw new UnsupportedOperationException("The cooperative effect synchronizer does not support this method as it is a composite synchronizer");
     }
 
-    @Override
-    protected void storeInCache(CooperativeEffect originalObject, AbstractIntactCooperativeEffect persistentObject, AbstractIntactCooperativeEffect existingInstance) {
-        // nothing to do
+    public Class<? extends AbstractIntactCooperativeEffect> getIntactClass() {
+        return AbstractIntactCooperativeEffect.class;
     }
 
-    @Override
-    protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<CooperativeEffect, AbstractIntactCooperativeEffect>(this));
+    public void setIntactClass(Class<? extends AbstractIntactCooperativeEffect> intactClass) {
+        throw new UnsupportedOperationException("The cooperative effect synchronizer does not support this method as it is a composite synchronizer");
+    }
+
+    public boolean delete(CooperativeEffect object) {
+        // preassembly
+        if (object instanceof Preassembly){
+            return this.context.getPreAssemblySynchronizer().delete((Preassembly) object);
+        }
+        // allostery
+        else if (object instanceof Allostery){
+            return this.context.getAllosterySynchronizer().delete((Allostery) object);
+        }
+        // consider that as preassembly in intact
+        else{
+            return false;
+        }
     }
 }

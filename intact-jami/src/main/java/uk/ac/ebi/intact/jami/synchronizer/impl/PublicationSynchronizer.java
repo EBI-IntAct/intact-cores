@@ -100,25 +100,6 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
         }
     }
 
-    public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public I synchronize(Publication object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
         // then check full name
         prepareTitle(intactPublication);
@@ -291,6 +272,16 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
         else{
             this.persistedObjects.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected I fetchObjectFromCache(Publication object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Publication object) {
+        return this.persistedObjects.containsKey(object);
     }
 
     protected void preparePublicationAuthors(I intactPublication) {

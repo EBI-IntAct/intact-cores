@@ -82,25 +82,6 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         }
     }
 
-    public IntactSource persist(IntactSource object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public IntactSource synchronize(Source object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactSource);
@@ -277,6 +258,16 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         else{
             this.persistedObjects.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected IntactSource fetchObjectFromCache(Source object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Source object) {
+        return this.persistedObjects.containsKey(object);
     }
 
 

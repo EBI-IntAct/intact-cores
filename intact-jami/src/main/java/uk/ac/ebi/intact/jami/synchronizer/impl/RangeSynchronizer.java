@@ -100,6 +100,16 @@ public class RangeSynchronizer extends AbstractIntactDbSynchronizer<Range, Intac
         // nothing to do
     }
 
+    @Override
+    protected IntactRange fetchObjectFromCache(Range object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Range object) {
+        return false;
+    }
+
     protected void prepareXrefs(IntactResultingSequence intactObj) throws FinderException, PersisterException, SynchronizerException {
         if (intactObj.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());

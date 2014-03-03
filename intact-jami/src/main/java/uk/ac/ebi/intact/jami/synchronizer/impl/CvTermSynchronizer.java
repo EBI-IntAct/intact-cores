@@ -101,25 +101,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         }
     }
 
-    public IntactCvTerm persist(IntactCvTerm object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public IntactCvTerm synchronize(CvTerm object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         // first set objclass
         initialiseObjClass(intactCv);
@@ -250,10 +231,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         return results;
     }
 
-    public void clearPersistentCvCacheOnly() {
-        this.persistedObjects.clear();
-    }
-
     public void clearCache() {
         this.persistedObjects.clear();
     }
@@ -326,6 +303,16 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         else{
             this.persistedObjects.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected IntactCvTerm fetchObjectFromCache(CvTerm object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(CvTerm object) {
+        return this.persistedObjects.containsKey(object);
     }
 
     protected void initialiseIdentifier(IntactCvTerm intactCv) throws SynchronizerException {

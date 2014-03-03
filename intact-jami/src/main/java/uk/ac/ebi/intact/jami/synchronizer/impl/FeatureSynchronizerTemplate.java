@@ -48,26 +48,6 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         }
     }
 
-    @Override
-    public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public I synchronize(F object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactFeature);
@@ -220,6 +200,16 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         else{
             this.persistedObjects.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected I fetchObjectFromCache(F object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(F object) {
+        return this.persistedObjects.containsKey(object);
     }
 
     @Override

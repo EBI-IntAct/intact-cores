@@ -71,5 +71,10 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
 
     public void setIntactClass(Class<? extends T> intactClass);
 
+    /**
+     * Delete the object and synchronize changes with database when needed
+     * @param object
+     * @return true if the object was deleted from the database
+     */
     public boolean delete(I object);
 }

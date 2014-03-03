@@ -80,6 +80,16 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     }
 
     @Override
+    protected X fetchObjectFromCache(Xref object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Xref object) {
+        return false;
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Xref, X>(this));
     }

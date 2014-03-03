@@ -126,25 +126,6 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         }
     }
 
-    public IntactExperiment persist(IntactExperiment object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public IntactExperiment synchronize(Experiment object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(IntactExperiment intactExperiment) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactExperiment);
@@ -187,6 +168,16 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         else{
             this.persistedObjects.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected IntactExperiment fetchObjectFromCache(Experiment object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Experiment object) {
+        return this.persistedObjects.containsKey(object);
     }
 
     protected void prepareVariableParameters(IntactExperiment intactExperiment) throws PersisterException, FinderException, SynchronizerException {

@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerEnrichOnly;
@@ -24,7 +22,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     private EntityManager entityManager;
     private SynchronizerContext context;
     private Class<? extends T> intactClass;
-    private static final Log log = LogFactory.getLog(AbstractIntactDbSynchronizer.class);
 
     private IntactDbMerger<I,T> intactMerger;
 
@@ -41,6 +38,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     public T persist(T object) throws FinderException, PersisterException, SynchronizerException {
+
+        // check cache when possible
+        if (isObjectStoredInCache((I)object)){
+            return fetchObjectFromCache((I)object);
+        }
+
         // synchronize properties
         synchronizeProperties(object);
 
@@ -51,6 +54,11 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     public T synchronize(I object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+
+        // check cache when possible
+        if (isObjectStoredInCache(object)){
+            return fetchObjectFromCache(object);
+        }
 
         if (!object.getClass().isAssignableFrom(this.intactClass)){
             T newObject = null;
@@ -178,19 +186,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // synchronize before persisting
         synchronizeProperties(persistentObject);
         // merge existing persistent instance with the other instance
-        if (existingInstance != null && extractIdentifier(existingInstance) == null){
+        if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
                 getIntactMerger().merge(persistentObject, existingInstance);
             }
             // we only return the existing instance after merging
-            return existingInstance;
-        }
-        // the existing instance has been cached but not persisted.
-        else if (existingInstance != null){
-            if (persist){
-                persistObject(existingInstance);
-            }
             return existingInstance;
         }
         else{
@@ -220,4 +221,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected SynchronizerContext getContext() {
         return context;
     }
+
+    protected abstract T fetchObjectFromCache(I object);
+
+    protected abstract boolean isObjectStoredInCache(I object);
 }

@@ -64,6 +64,16 @@ implements ChecksumSynchronizer<C>{
     }
 
     @Override
+    protected C fetchObjectFromCache(Checksum object) {
+        return null;
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(Checksum object) {
+        return false;
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Checksum, C>(this));
     }

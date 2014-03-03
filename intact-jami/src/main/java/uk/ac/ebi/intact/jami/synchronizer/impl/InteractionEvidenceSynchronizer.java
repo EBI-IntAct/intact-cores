@@ -43,25 +43,6 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         }
     }
 
-    public IntactInteractionEvidence persist(IntactInteractionEvidence object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public IntactInteractionEvidence synchronize(InteractionEvidence object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(IntactInteractionEvidence intactInteraction) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactInteraction);
@@ -107,6 +88,16 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         else{
             this.persistedObjects.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected IntactInteractionEvidence fetchObjectFromCache(InteractionEvidence object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(InteractionEvidence object) {
+        return this.persistedObjects.containsKey(object);
     }
 
     protected void prepareChecksums(IntactInteractionEvidence intactInteraction) throws PersisterException, FinderException, SynchronizerException {

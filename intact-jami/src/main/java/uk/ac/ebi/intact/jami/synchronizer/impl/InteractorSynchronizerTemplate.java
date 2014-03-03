@@ -122,25 +122,6 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         return query;
     }
 
-    public I persist(I object) throws FinderException, PersisterException, SynchronizerException {
-        // only persist if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.persist(object);
-    }
-
-    @Override
-    public I synchronize(T object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        // only synchronize if not already done
-        if (this.persistedObjects.containsKey(object)){
-            return this.persistedObjects.get(object);
-        }
-
-        return super.synchronize(object, persist);
-    }
-
     public void synchronizeProperties(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactInteractor);
@@ -194,6 +175,16 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         else{
             this.persistedObjects.put(originalObject, persistentObject);
         }
+    }
+
+    @Override
+    protected I fetchObjectFromCache(T object) {
+        return this.persistedObjects.get(object);
+    }
+
+    @Override
+    protected boolean isObjectStoredInCache(T object) {
+        return this.persistedObjects.containsKey(object);
     }
 
     protected void prepareChecksums(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
