@@ -144,4 +144,9 @@ implements EntitySynchronizer<Entity, AbstractIntactEntity>{
     protected AbstractIntactEntity instantiateNewPersistentInstance(Entity object, Class<? extends AbstractIntactEntity> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         throw new UnsupportedOperationException("This synchronizer relies on delegate synchronizers and cannot be used this way");
     }
+
+    @Override
+    protected void storeInCache(Entity originalObject, AbstractIntactEntity persistentObject, AbstractIntactEntity existingInstance) {
+        // nothing to do
+    }
 }

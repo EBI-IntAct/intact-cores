@@ -106,10 +106,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
             return this.persistedObjects.get(object);
         }
 
-        I persisted = super.persist(object);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -119,10 +116,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
             return this.persistedObjects.get(object);
         }
 
-        I persisted = super.synchronize(object, persist);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
@@ -287,6 +281,16 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
         I pub = intactClass.newInstance();
         PublicationCloner.copyAndOverridePublicationProperties(object, pub);
         return pub;
+    }
+
+    @Override
+    protected void storeInCache(Publication originalObject, I persistentObject, I existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
     }
 
     protected void preparePublicationAuthors(I intactPublication) {

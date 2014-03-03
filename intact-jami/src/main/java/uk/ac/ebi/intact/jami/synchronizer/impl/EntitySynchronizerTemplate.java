@@ -53,10 +53,7 @@ implements EntitySynchronizer<T,I> {
             return this.persistedObjects.get(object);
         }
 
-        I persisted = super.persist(object);
-        this.persistedObjects.put((T)object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -66,9 +63,7 @@ implements EntitySynchronizer<T,I> {
             return this.persistedObjects.get(object);
         }
 
-        I org = super.synchronize(object, persist);
-        this.persistedObjects.put(object, org);
-        return org;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
@@ -104,6 +99,16 @@ implements EntitySynchronizer<T,I> {
         I newParticipant = intactClass.getConstructor(Interactor.class).newInstance(object.getInteractor());
         ParticipantCloner.copyAndOverrideBasicParticipantProperties(object, newParticipant, false);
         return newParticipant;
+    }
+
+    @Override
+    protected void storeInCache(T originalObject, I persistentObject, I existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
     }
 
     protected void prepareCausalRelationships(I intactEntity) throws PersisterException, FinderException, SynchronizerException {

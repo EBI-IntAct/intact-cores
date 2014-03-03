@@ -95,6 +95,11 @@ public class RangeSynchronizer extends AbstractIntactDbSynchronizer<Range, Intac
         return intactClass.getConstructor(Position.class, Position.class, Boolean.class, ResultingSequence.class).newInstance(object.getStart(), object.getEnd(), object.isLink(), object.getResultingSequence());
     }
 
+    @Override
+    protected void storeInCache(Range originalObject, IntactRange persistentObject, IntactRange existingInstance) {
+        // nothing to do
+    }
+
     protected void prepareXrefs(IntactResultingSequence intactObj) throws FinderException, PersisterException, SynchronizerException {
         if (intactObj.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());

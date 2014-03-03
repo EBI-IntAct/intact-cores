@@ -60,6 +60,11 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     }
 
     @Override
+    protected void storeInCache(T originalObject, C persistentObject, C existingInstance) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<T, C>(this));
     }

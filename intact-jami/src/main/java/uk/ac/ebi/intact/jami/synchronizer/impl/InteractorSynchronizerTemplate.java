@@ -128,10 +128,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             return this.persistedObjects.get(object);
         }
 
-        I persisted = super.persist(object);
-        this.persistedObjects.put((T)object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -141,9 +138,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             return this.persistedObjects.get(object);
         }
 
-        I org = super.synchronize(object, persist);
-        this.persistedObjects.put(object, org);
-        return org;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
@@ -189,6 +184,16 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         I newInteractor = intactClass.getConstructor(String.class).newInstance(object.getShortName());
         InteractorCloner.copyAndOverrideBasicInteractorProperties(object, newInteractor);
         return newInteractor;
+    }
+
+    @Override
+    protected void storeInCache(T originalObject, I persistentObject, I existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
     }
 
     protected void prepareChecksums(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {

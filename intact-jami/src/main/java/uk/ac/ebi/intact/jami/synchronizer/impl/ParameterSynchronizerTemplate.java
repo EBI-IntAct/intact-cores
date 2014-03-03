@@ -57,6 +57,11 @@ implements ParameterSynchronizer<T,P>{
     }
 
     @Override
+    protected void storeInCache(T originalObject, P persistentObject, P existingInstance) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<T, P>(this));
     }

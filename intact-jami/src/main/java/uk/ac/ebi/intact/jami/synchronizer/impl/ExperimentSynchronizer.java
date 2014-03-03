@@ -132,10 +132,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
             return this.persistedObjects.get(object);
         }
 
-        IntactExperiment persisted = super.persist(object);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -145,10 +142,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
             return this.persistedObjects.get(object);
         }
 
-        IntactExperiment persisted = super.synchronize(object, persist);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(IntactExperiment intactExperiment) throws FinderException, PersisterException, SynchronizerException {
@@ -183,6 +177,16 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         IntactExperiment exp = new IntactExperiment(object.getPublication());
         ExperimentCloner.copyAndOverrideExperimentPropertiesAndInteractionEvidences(object, exp);
         return exp;
+    }
+
+    @Override
+    protected void storeInCache(Experiment originalObject, IntactExperiment persistentObject, IntactExperiment existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
     }
 
     protected void prepareVariableParameters(IntactExperiment intactExperiment) throws PersisterException, FinderException, SynchronizerException {

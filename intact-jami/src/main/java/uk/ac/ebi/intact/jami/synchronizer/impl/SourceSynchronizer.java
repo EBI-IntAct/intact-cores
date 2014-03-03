@@ -88,10 +88,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             return this.persistedObjects.get(object);
         }
 
-        IntactSource persisted = super.persist(object);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -101,10 +98,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             return this.persistedObjects.get(object);
         }
 
-        IntactSource persisted = super.synchronize(object, persist);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
@@ -273,6 +267,16 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         IntactSource cv = intactClass.getConstructor(String.class).newInstance(object.getShortName());
         CvTermCloner.copyAndOverrideSourceProperties(object, cv);
         return cv;
+    }
+
+    @Override
+    protected void storeInCache(Source originalObject, IntactSource persistentObject, IntactSource existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
     }
 
 

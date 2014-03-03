@@ -23,8 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends AbstractIntactDbSynchronizer<Xref, X> implements XrefSynchronizer<X> {
 
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
-    private boolean isXrefDatabaseSynchronizationEnabled=true;
-    private boolean isXrefQualifierSynchronizationEnabled=true;
 
     public XrefSynchronizerTemplate(SynchronizerContext context, Class<? extends X> xrefClass){
         super(context, xrefClass);
@@ -37,10 +35,8 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
 
     public void synchronizeProperties(X object) throws FinderException, PersisterException, SynchronizerException {
         // database first
-        if (isXrefDatabaseSynchronizationEnabled){
-            CvTerm db = object.getDatabase();
-            object.setDatabase(getContext().getDatabaseSynchronizer().synchronize(db, true));
-        }
+        CvTerm db = object.getDatabase();
+        object.setDatabase(getContext().getDatabaseSynchronizer().synchronize(db, true));
 
         // check primaryId
         if (object.getId().length() > IntactUtils.MAX_ID_LEN){
@@ -58,7 +54,7 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
             object.setVersion(object.getVersion().substring(0, IntactUtils.MAX_DB_RELEASE_LEN));
         }
         // check qualifier
-        if (object.getQualifier() != null && isXrefQualifierSynchronizationEnabled){
+        if (object.getQualifier() != null){
             CvTerm qualifier = object.getQualifier();
             object.setQualifier(getContext().getQualifierSynchronizer().synchronize(qualifier, true));
         }
@@ -66,22 +62,6 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
 
     public void clearCache() {
         // nothing to do
-    }
-
-    public boolean isXrefDatabaseSynchronizationEnabled() {
-        return isXrefDatabaseSynchronizationEnabled;
-    }
-
-    public void setXrefDatabaseSynchronizationEnabled(boolean isXrefDatabaseSynchronizationEnabled) {
-        this.isXrefDatabaseSynchronizationEnabled = isXrefDatabaseSynchronizationEnabled;
-    }
-
-    public boolean isXrefQualifierSynchronizationEnabled() {
-        return isXrefQualifierSynchronizationEnabled;
-    }
-
-    public void setXrefQualifierSynchronizationEnabled(boolean isXrefQualifierSynchronizationEnabled) {
-        this.isXrefQualifierSynchronizationEnabled = isXrefQualifierSynchronizationEnabled;
     }
 
     @Override
@@ -92,6 +72,11 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     @Override
     protected X instantiateNewPersistentInstance(Xref object, Class<? extends X> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return intactClass.getConstructor(CvTerm.class, String.class, String.class, CvTerm.class).newInstance(object.getDatabase(), object.getId(), object.getVersion(), object.getQualifier());
+    }
+
+    @Override
+    protected void storeInCache(Xref originalObject, X persistentObject, X existingInstance) {
+        // nothing to do
     }
 
     @Override

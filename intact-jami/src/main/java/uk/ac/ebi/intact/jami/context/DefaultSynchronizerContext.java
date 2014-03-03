@@ -55,16 +55,12 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
 
     // aliases synchronizers
     private AliasSynchronizer aliasSynchronizer;
-    private AliasSynchronizer<CvTermAlias> cvAliasSynchronizerWithDisabledTypeSynchronization;
 
     // annotation synchronizers
     private AnnotationSynchronizer annotationSynchronizer;
-    private AnnotationSynchronizer<CvTermAnnotation> cvAnnotationSynchronizerWithDisabledTopicSynchronization;
 
     // xrefs synchronizers
     private XrefSynchronizer xrefSynchronizer;
-    private XrefSynchronizer<CvTermXref> cvXrefSynchronizerWithDisabledDatabaseSynchronization;
-    private XrefSynchronizer<CvTermXref> cvXrefSynchronizerWithDisabledDQualifierSynchronization;
 
     // cooperative effect synchronizers
     private CooperativeEffectSynchronizer cooperativeEffectSynchronizer;
@@ -359,38 +355,6 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         initialiseAnnotationTemplateIfNodDone();
         this.annotationSynchronizer.setIntactClass(CvTermAnnotation.class);
         return this.annotationSynchronizer;
-    }
-
-    public AliasSynchronizer<CvTermAlias> getCvAliasSynchronizerWithDisabledTypeSynchronization() {
-        if (this.cvAliasSynchronizerWithDisabledTypeSynchronization == null){
-            this.cvAliasSynchronizerWithDisabledTypeSynchronization = new AliasSynchronizerTemplate<CvTermAlias>(this, CvTermAlias.class);
-            this.cvAliasSynchronizerWithDisabledTypeSynchronization.setAliasTypeSynchronizationEnabled(false);
-        }
-        return this.cvAliasSynchronizerWithDisabledTypeSynchronization;
-    }
-
-    public XrefSynchronizer<CvTermXref> getCvXrefSynchronizerWithDisabledDatabaseSynchronization() {
-        if (this.cvXrefSynchronizerWithDisabledDatabaseSynchronization == null){
-            this.cvXrefSynchronizerWithDisabledDatabaseSynchronization = new XrefSynchronizerTemplate<CvTermXref>(this, CvTermXref.class);
-            this.cvXrefSynchronizerWithDisabledDatabaseSynchronization.setXrefDatabaseSynchronizationEnabled(false);
-        }
-        return this.cvXrefSynchronizerWithDisabledDatabaseSynchronization;
-    }
-
-    public XrefSynchronizer<CvTermXref> getCvXrefSynchronizerWithDisabledQualifierSynchronization() {
-        if (this.cvXrefSynchronizerWithDisabledDQualifierSynchronization == null){
-            this.cvXrefSynchronizerWithDisabledDQualifierSynchronization = new XrefSynchronizerTemplate<CvTermXref>(this, CvTermXref.class);
-            this.cvXrefSynchronizerWithDisabledDQualifierSynchronization.setXrefQualifierSynchronizationEnabled(false);
-        }
-        return this.cvXrefSynchronizerWithDisabledDQualifierSynchronization;
-    }
-
-    public AnnotationSynchronizer<CvTermAnnotation> getCvAnnotationSynchronizerWithDisabledTopicSynchronization() {
-        if (this.cvAnnotationSynchronizerWithDisabledTopicSynchronization == null){
-            this.cvAnnotationSynchronizerWithDisabledTopicSynchronization = new AnnotationSynchronizerTemplate<CvTermAnnotation>(this, CvTermAnnotation.class);
-            this.cvAnnotationSynchronizerWithDisabledTopicSynchronization.setAnnotationTopicSynchronizationEnabled(false);
-        }
-        return this.cvAnnotationSynchronizerWithDisabledTopicSynchronization;
     }
 
     public IntactDbSynchronizer<Source, IntactSource> getSourceSynchronizer() {

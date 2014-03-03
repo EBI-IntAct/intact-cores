@@ -13,7 +13,4 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 
 public interface AliasSynchronizer<T extends AbstractIntactAlias> extends IntactDbSynchronizer<Alias, T>{
 
-    public boolean isAliasTypeSynchronizationEnabled();
-
-    public void setAliasTypeSynchronizationEnabled(boolean enabled);
 }

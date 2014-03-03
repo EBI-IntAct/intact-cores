@@ -55,10 +55,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
             return this.persistedObjects.get(object);
         }
 
-        I persisted = super.persist(object);
-        this.persistedObjects.put((F)object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -68,9 +65,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
             return this.persistedObjects.get(object);
         }
 
-        I org = super.synchronize(object, persist);
-        this.persistedObjects.put(object, org);
-        return org;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
@@ -215,6 +210,16 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         FeatureCloner.copyAndOverrideBasicFeaturesProperties(object, newFeature);
         newFeature.setParticipant(object.getParticipant());
         return newFeature;
+    }
+
+    @Override
+    protected void storeInCache(F originalObject, I persistentObject, I existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
     }
 
     @Override

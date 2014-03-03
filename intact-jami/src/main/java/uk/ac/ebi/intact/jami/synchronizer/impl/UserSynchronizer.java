@@ -70,10 +70,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
             return this.persistedUsers.get(object);
         }
 
-        User persisted = super.persist(object);
-        this.persistedUsers.put(object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -83,10 +80,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
             return this.persistedUsers.get(object);
         }
 
-        User persisted = super.synchronize(object, persist);
-        this.persistedUsers.put(object, persisted);
-
-        return persisted;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(User object) throws FinderException, PersisterException, SynchronizerException {
@@ -154,6 +148,16 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
         user.setLastLogin(object.getLastLogin());
         user.setPassword(object.getPassword());
         return user;
+    }
+
+    @Override
+    protected void storeInCache(User originalObject, User persistentObject, User existingInstance) {
+        if (existingInstance != null){
+            this.persistedUsers.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedUsers.put(originalObject, persistentObject);
+        }
     }
 
     @Override

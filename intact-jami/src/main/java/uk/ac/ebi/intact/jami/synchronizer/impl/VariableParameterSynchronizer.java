@@ -42,6 +42,11 @@ public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<
         return param;
     }
 
+    @Override
+    protected void storeInCache(VariableParameter originalObject, IntactVariableParameter persistentObject, IntactVariableParameter existingInstance) {
+        // nothing to do
+    }
+
     public IntactVariableParameter find(VariableParameter object) throws FinderException {
         return null;
     }

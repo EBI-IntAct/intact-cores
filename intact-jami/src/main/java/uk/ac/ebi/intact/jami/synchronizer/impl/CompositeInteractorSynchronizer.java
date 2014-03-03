@@ -186,4 +186,9 @@ public class CompositeInteractorSynchronizer extends AbstractIntactDbSynchronize
         InteractorCloner.copyAndOverrideBasicInteractorProperties(object, newInteractor);
         return newInteractor;
     }
+
+    @Override
+    protected void storeInCache(Interactor originalObject, IntactInteractor persistentObject, IntactInteractor existingInstance) {
+        // nothing to do
+    }
 }

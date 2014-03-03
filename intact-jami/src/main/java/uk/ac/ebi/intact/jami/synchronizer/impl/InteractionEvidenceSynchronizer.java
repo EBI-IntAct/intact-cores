@@ -49,10 +49,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
             return this.persistedObjects.get(object);
         }
 
-        IntactInteractionEvidence persisted = super.persist(object);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -62,10 +59,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
             return this.persistedObjects.get(object);
         }
 
-        IntactInteractionEvidence persisted = super.synchronize(object, persist);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(IntactInteractionEvidence intactInteraction) throws FinderException, PersisterException, SynchronizerException {
@@ -103,6 +97,16 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         IntactInteractionEvidence inter = new IntactInteractionEvidence();
         InteractionCloner.copyAndOverrideInteractionEvidenceProperties(object, inter, false, false);
         return inter;
+    }
+
+    @Override
+    protected void storeInCache(InteractionEvidence originalObject, IntactInteractionEvidence persistentObject, IntactInteractionEvidence existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
     }
 
     protected void prepareChecksums(IntactInteractionEvidence intactInteraction) throws PersisterException, FinderException, SynchronizerException {

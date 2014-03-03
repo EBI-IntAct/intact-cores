@@ -58,6 +58,11 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     @Override
+    protected void storeInCache(LifeCycleEvent originalObject, A persistentObject, A existingInstance) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<LifeCycleEvent, A>(this));
     }

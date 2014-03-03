@@ -99,6 +99,11 @@ implements CooperativeEffectSynchronizer<CooperativeEffect, AbstractIntactCooper
     }
 
     @Override
+    protected void storeInCache(CooperativeEffect originalObject, AbstractIntactCooperativeEffect persistentObject, AbstractIntactCooperativeEffect existingInstance) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<CooperativeEffect, AbstractIntactCooperativeEffect>(this));
     }

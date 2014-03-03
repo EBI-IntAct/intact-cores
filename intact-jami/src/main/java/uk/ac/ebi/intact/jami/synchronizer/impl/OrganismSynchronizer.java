@@ -121,10 +121,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
             return this.persistedObjects.get(object);
         }
 
-        IntactOrganism persisted = super.persist(object);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -134,9 +131,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
             return this.persistedObjects.get(object);
         }
 
-        IntactOrganism org = super.synchronize(object, persist);
-        this.persistedObjects.put(object, org);
-        return org;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
@@ -274,6 +269,16 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     @Override
     protected IntactOrganism instantiateNewPersistentInstance(Organism object, Class<? extends IntactOrganism> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return intactClass.getConstructor(Integer.class).newInstance(object.getTaxId());
+    }
+
+    @Override
+    protected void storeInCache(Organism originalObject, IntactOrganism persistentObject, IntactOrganism existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
     }
 
     @Override

@@ -22,6 +22,7 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactCvTermComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +47,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         super(context, IntactCvTerm.class);
         this.objClass = null;
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new UnambiguousCvTermComparator());
+        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
     }
 
     public CvTermSynchronizer(SynchronizerContext context, String objClass){
@@ -106,10 +107,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             return this.persistedObjects.get(object);
         }
 
-        IntactCvTerm persisted = super.persist(object);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -119,10 +117,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             return this.persistedObjects.get(object);
         }
 
-        IntactCvTerm persisted = super.synchronize(object, persist);
-        this.persistedObjects.put(object, persisted);
-
-        return persisted;
+        return super.synchronize(object, persist);
     }
 
     public void synchronizeProperties(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
@@ -323,6 +318,16 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         return cv;
     }
 
+    @Override
+    protected void storeInCache(CvTerm originalObject, IntactCvTerm persistentObject, IntactCvTerm existingInstance) {
+        if (existingInstance != null){
+            this.persistedObjects.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedObjects.put(originalObject, persistentObject);
+        }
+    }
+
     protected void initialiseIdentifier(IntactCvTerm intactCv) throws SynchronizerException {
         // if xrefs have been initialised, some identifiers may have changed
         if (intactCv.areXrefsInitialized()){
@@ -395,13 +400,11 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         if (intactCv.areChildrenInitialized()){
             List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getChildren());
             for (OntologyTerm term : termsToPersist){
-                if (term != intactCv){
-                    OntologyTerm cvChild = synchronize(term, true);
-                    // we have a different instance because needed to be synchronized
-                    if (cvChild != term){
-                        intactCv.getChildren().remove(term);
-                        intactCv.getChildren().add(cvChild);
-                    }
+                OntologyTerm cvChild = synchronize(term, true);
+                // we have a different instance because needed to be synchronized
+                if (cvChild != term){
+                    intactCv.getChildren().remove(term);
+                    intactCv.getChildren().add(cvChild);
                 }
             }
         }
@@ -412,16 +415,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref;
-                if (xref.getDatabase() == intactCv){
-                    cvXref = getContext().getCvXrefSynchronizerWithDisabledDatabaseSynchronization().synchronize(xref, false);
-                }
-                else if (xref.getQualifier() == intactCv){
-                    cvXref = getContext().getCvXrefSynchronizerWithDisabledQualifierSynchronization().synchronize(xref, false);
-                }
-                else{
-                   cvXref = getContext().getCvXrefSynchronizer().synchronize(xref, false);
-                }
+                Xref cvXref = getContext().getCvXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactCv.getPersistentXrefs().remove(xref);
@@ -435,16 +429,12 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         if (intactCv.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
-                // avoid internal loop
-                if (annotation.getTopic() != intactCv){
-                    // do not persist or merge annotations because of cascades
-                    Annotation cvAnnotation = annotation.getTopic() != intactCv ? getContext().getCvAnnotationSynchronizer().synchronize(annotation, false) : getContext().getCvAnnotationSynchronizerWithDisabledTopicSynchronization().synchronize(annotation, false);
-
-                    // we have a different instance because needed to be synchronized
-                    if (cvAnnotation != annotation){
-                        intactCv.getAnnotations().remove(annotation);
-                        intactCv.getAnnotations().add(cvAnnotation);
-                    }
+                // do not persist or merge annotations because of cascades
+                Annotation cvAnnotation = getContext().getCvAnnotationSynchronizer().synchronize(annotation, false);
+                // we have a different instance because needed to be synchronized
+                if (cvAnnotation != annotation){
+                    intactCv.getAnnotations().remove(annotation);
+                    intactCv.getAnnotations().add(cvAnnotation);
                 }
             }
         }
@@ -455,7 +445,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = alias.getType() != intactCv ? getContext().getCvAliasSynchronizer().synchronize(alias, false) : getContext().getCvAliasSynchronizerWithDisabledTypeSynchronization().synchronize(alias, false);
+                Alias cvAlias = getContext().getCvAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactCv.getSynonyms().remove(alias);

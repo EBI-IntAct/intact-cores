@@ -102,14 +102,6 @@ public interface SynchronizerContext {
 
     public AnnotationSynchronizer<CvTermAnnotation> getCvAnnotationSynchronizer();
 
-    public AliasSynchronizer<CvTermAlias> getCvAliasSynchronizerWithDisabledTypeSynchronization();
-
-    public XrefSynchronizer<CvTermXref> getCvXrefSynchronizerWithDisabledDatabaseSynchronization();
-
-    public XrefSynchronizer<CvTermXref> getCvXrefSynchronizerWithDisabledQualifierSynchronization();
-
-    public AnnotationSynchronizer<CvTermAnnotation> getCvAnnotationSynchronizerWithDisabledTopicSynchronization();
-
     public IntactDbSynchronizer<Source, IntactSource> getSourceSynchronizer();
 
     public AliasSynchronizer<SourceAlias> getSourceAliasSynchronizer();

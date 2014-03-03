@@ -57,6 +57,11 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
+    protected void storeInCache(Preference originalObject, Preference persistentObject, Preference existingInstance) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Preference, Preference>(this));
     }

@@ -78,10 +78,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
             return this.persistedRoles.get(object);
         }
 
-        Role persisted = super.persist(object);
-        this.persistedRoles.put(object, persisted);
-
-        return persisted;
+        return super.persist(object);
     }
 
     @Override
@@ -91,9 +88,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
             return this.persistedRoles.get(object);
         }
 
-        Role org = super.synchronize(object, persist);
-        this.persistedRoles.put(object, org);
-        return org;
+        return super.synchronize(object, persist);
     }
 
     @Override
@@ -104,5 +99,15 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     @Override
     protected Role instantiateNewPersistentInstance(Role object, Class<? extends Role> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return new Role(object.getName());
+    }
+
+    @Override
+    protected void storeInCache(Role originalObject, Role persistentObject, Role existingInstance) {
+        if (existingInstance != null){
+            this.persistedRoles.put(originalObject, existingInstance);
+        }
+        else{
+            this.persistedRoles.put(originalObject, persistentObject);
+        }
     }
 }

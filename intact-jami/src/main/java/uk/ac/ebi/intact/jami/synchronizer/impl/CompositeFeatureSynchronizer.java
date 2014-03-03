@@ -81,4 +81,9 @@ public class CompositeFeatureSynchronizer extends AbstractIntactDbSynchronizer<F
     protected AbstractIntactFeature instantiateNewPersistentInstance(Feature object, Class<? extends AbstractIntactFeature> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         throw new UnsupportedOperationException("This synchronizer relies on delegate synchronizers and cannot be used this way");
     }
+
+    @Override
+    protected void storeInCache(Feature originalObject, AbstractIntactFeature persistentObject, AbstractIntactFeature existingInstance) {
+        // nothing to do
+    }
 }

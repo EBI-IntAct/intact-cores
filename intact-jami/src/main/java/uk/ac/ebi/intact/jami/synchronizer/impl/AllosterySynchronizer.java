@@ -109,4 +109,9 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
         CooperativeEffectCloner.copyAndOverrideAllosteryProperties(object, newAllostery);
         return newAllostery;
     }
+
+    @Override
+    protected void storeInCache(Allostery originalObject, IntactAllostery persistentObject, IntactAllostery existingInstance) {
+        // nothing to do
+    }
 }

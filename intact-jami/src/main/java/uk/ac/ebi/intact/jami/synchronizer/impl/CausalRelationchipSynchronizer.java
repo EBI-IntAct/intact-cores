@@ -57,6 +57,11 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
     }
 
     @Override
+    protected void storeInCache(CausalRelationship originalObject, IntactCausalRelationship persistentObject, IntactCausalRelationship existingInstance) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<CausalRelationship, IntactCausalRelationship>(this));
     }

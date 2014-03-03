@@ -75,6 +75,11 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     }
 
     @Override
+    protected void storeInCache(CooperativityEvidence originalObject, IntactCooperativityEvidence persistentObject, IntactCooperativityEvidence existingInstance) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<CooperativityEvidence, IntactCooperativityEvidence>(this));
     }

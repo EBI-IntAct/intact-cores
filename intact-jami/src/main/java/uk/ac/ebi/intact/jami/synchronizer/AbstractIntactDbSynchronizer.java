@@ -66,7 +66,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
             }
             // new object to synchronize with db
-            return findOrPersist(newObject, persist);
+            return findOrPersist(object, newObject, persist);
         }
         else{
             T intactObject = (T)object;
@@ -79,7 +79,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // retrieve and or persist transient instance
             else if (identifier == null){
                 // new object to synchronize with db
-                return findOrPersist(intactObject, persist);
+                return findOrPersist(object, intactObject, persist);
             }
             else{
                 // synchronize properties
@@ -171,26 +171,43 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     protected abstract T instantiateNewPersistentInstance(I object, Class<? extends T> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException;
 
-    protected T findOrPersist(T object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
-        T existingInstance = find((I)object);
+    protected T findOrPersist(I originalObject, T persistentObject, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+        T existingInstance = find((I)persistentObject);
+        // cache object to persist if allowed
+        storeInCache(originalObject, persistentObject, existingInstance);
         // synchronize before persisting
-        synchronizeProperties(object);
-        // merge existing instance with the other instance
-        if (existingInstance != null){
+        synchronizeProperties(persistentObject);
+        // merge existing persistent instance with the other instance
+        if (existingInstance != null && extractIdentifier(existingInstance) == null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
-                getIntactMerger().merge(object, existingInstance);
+                getIntactMerger().merge(persistentObject, existingInstance);
             }
             // we only return the existing instance after merging
             return existingInstance;
         }
+        // the existing instance has been cached but not persisted
+        else if (existingInstance != null){
+            if (persist){
+                this.entityManager.persist(existingInstance);
+            }
+            return existingInstance;
+        }
         else{
             if (persist){
-                this.entityManager.persist(object);
+                this.entityManager.persist(persistentObject);
             }
-            return object;
+            return persistentObject;
         }
     }
+
+    /**
+     * Stores in cache the different states of an object if supported by the synchronizer
+     * @param originalObject : the original object instance that we want to persist/update
+     * @param persistentObject : the object instance which is a clone of the original object that can be persisted in the database
+     * @param existingInstance : the existing persistent instance in the database that matches the original object
+     */
+    protected abstract void storeInCache(I originalObject, T persistentObject, T existingInstance);
 
     protected EntityManager getEntityManager() {
         return entityManager;

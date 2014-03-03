@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> extends AbstractIntactDbSynchronizer<Annotation, A> implements AnnotationSynchronizer<A> {
 
     private static final Log log = LogFactory.getLog(AnnotationSynchronizerTemplate.class);
-    private boolean isAnnotationTopicSynchronizationEnabled=true;
 
     public AnnotationSynchronizerTemplate(SynchronizerContext context, Class<? extends A> annotationClass){
         super(context, annotationClass);
@@ -35,10 +34,8 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
         // topic first
-        if (isAnnotationTopicSynchronizationEnabled){
-            CvTerm topic = object.getTopic();
-            object.setTopic(getContext().getTopicSynchronizer().synchronize(topic, true));
-        }
+        CvTerm topic = object.getTopic();
+        object.setTopic(getContext().getTopicSynchronizer().synchronize(topic, true));
 
         // check annotation value
         if (object.getValue() != null && object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
@@ -51,14 +48,6 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
         // nothing to clear
     }
 
-    public boolean isAnnotationTopicSynchronizationEnabled() {
-        return isAnnotationTopicSynchronizationEnabled;
-    }
-
-    public void setAnnotationTopicSynchronizationEnabled(boolean isAnnotationTopicSynchronizationEnabled) {
-        this.isAnnotationTopicSynchronizationEnabled = isAnnotationTopicSynchronizationEnabled;
-    }
-
     @Override
     protected Object extractIdentifier(A object) {
         return object.getAc();
@@ -67,6 +56,11 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     @Override
     protected A instantiateNewPersistentInstance(Annotation object, Class<? extends A> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return  intactClass.getConstructor(CvTerm.class, String.class).newInstance(object.getTopic(), object.getValue());
+    }
+
+    @Override
+    protected void storeInCache(Annotation originalObject, A persistentObject, A existingInstance) {
+        // ntohing to do
     }
 
     @Override
