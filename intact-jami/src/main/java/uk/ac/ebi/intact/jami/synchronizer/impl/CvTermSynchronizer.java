@@ -354,7 +354,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                     // set identifier
                     intactCv.setIdentifier(identifier);
                     // add xref
-                    intactCv.getIdentifiers().add(new CvTermXref(IntactUtils.createMIDatabase(institution.getShortName(), institution.getMIIdentifier()), identifier, IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI)));
+                    intactCv.getIdentifiers().add(new CvTermXref(IntactUtils.createMIDatabase(institution.getShortName(), institution.getMIIdentifier()), identifier, IntactUtils.createIdentityQualifier()));
                 }
             }
         }
@@ -504,13 +504,13 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     @Override
     protected void persistObject(IntactCvTerm existingInstance) {
         // first remove all dependencies to other cv terms
-        Collection<Alias> cvAliases = existingInstance.getSynonyms();
+        Collection<Alias> cvAliases = new ArrayList<Alias>(existingInstance.getSynonyms());
         existingInstance.getSynonyms().clear();
-        Collection<Annotation> cvAnnotations = existingInstance.getAnnotations();
+        Collection<Annotation> cvAnnotations = new ArrayList<Annotation>(existingInstance.getAnnotations());
         existingInstance.getAnnotations().clear();
-        Collection<Xref> cvRefs = existingInstance.getPersistentXrefs();
+        Collection<Xref> cvRefs = new ArrayList<Xref>(existingInstance.getPersistentXrefs());
         existingInstance.getPersistentXrefs().clear();
-        Collection<OntologyTerm> children = existingInstance.getChildren();
+        Collection<OntologyTerm> children = new ArrayList<OntologyTerm>(existingInstance.getChildren());
         existingInstance.getChildren().clear();
 
         super.persistObject(existingInstance);

@@ -48,7 +48,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
-    public void test_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
         this.synchronizer = new AliasSynchronizerTemplate(new DefaultSynchronizerContext(this.entityManager), AbstractIntactAlias.class);
 
         CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
@@ -84,5 +84,8 @@ public class AliasSynchronizerTemplateTest {
         Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
 
+        entityManager.flush();
+
+        System.out.println("flush");
     }
 }
