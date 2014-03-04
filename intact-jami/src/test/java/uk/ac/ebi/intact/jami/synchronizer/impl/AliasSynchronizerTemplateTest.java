@@ -10,6 +10,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.AliasSynchronizer;
@@ -44,7 +46,6 @@ public class AliasSynchronizerTemplateTest {
     private EntityManagerFactory intactEntityManagerFactory;
 
     private AliasSynchronizer synchronizer;
-
 
     @Transactional
     @Test
@@ -82,6 +83,69 @@ public class AliasSynchronizerTemplateTest {
         IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
+        Assert.assertEquals("test synonym 3", interactorAlias.getName());
+
+        entityManager.flush();
+
+        System.out.println("flush");
+    }
+
+    @Transactional
+    @Test
+    public void test_persist_existing_type_name_only() throws PersisterException, FinderException, SynchronizerException {
+        this.synchronizer = new AliasSynchronizerTemplate(new DefaultSynchronizerContext(this.entityManager), AbstractIntactAlias.class);
+
+        // pre persist alias synonym
+        IntactCvTerm aliasSynonym = new IntactCvTerm(Alias.SYNONYM);
+        aliasSynonym.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        entityManager.persist(aliasSynonym);
+        IntactCvTerm psimi = new IntactCvTerm(CvTerm.PSI_MI);
+        psimi.setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        entityManager.persist(psimi);
+        IntactCvTerm identity = new IntactCvTerm(Xref.IDENTITY);
+        identity.setObjClass(IntactUtils.QUALIFIER_OBJCLASS);
+        entityManager.persist(identity);
+
+        CvTermXref ref1 = new CvTermXref(psimi, Alias.SYNONYM_MI, identity);
+        aliasSynonym.getPersistentXrefs().add(ref1);
+        ref1.setParent(aliasSynonym);
+        CvTermXref ref2 = new CvTermXref(psimi, CvTerm.PSI_MI, identity);
+        psimi.getPersistentXrefs().add(ref2);
+        ref2.setParent(psimi);
+        CvTermXref ref3 = new CvTermXref(psimi, Xref.IDENTITY_MI, identity);
+        identity.getPersistentXrefs().add(ref3);
+        ref3.setParent(identity);
+        entityManager.flush();
+        this.synchronizer.clearCache();
+
+        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+
+        OrganismAlias organismAlias = new OrganismAlias("test synonym 2");
+
+        InteractorAlias interactorAlias = new InteractorAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
+
+        this.synchronizer.setIntactClass(CvTermAlias.class);
+        this.synchronizer.persist(cvAliasWithType);
+
+        Assert.assertNotNull(cvAliasWithType.getType());
+        IntactCvTerm aliasType = (IntactCvTerm)cvAliasWithType.getType();
+        Assert.assertEquals(aliasType.getAc(), aliasSynonym.getAc());
+        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+
+        this.synchronizer.setIntactClass(OrganismAlias.class);
+        this.synchronizer.persist(organismAlias);
+
+        Assert.assertNotNull(organismAlias.getAc());
+        Assert.assertNull(organismAlias.getType());
+        Assert.assertEquals("test synonym 2", organismAlias.getName());
+
+        this.synchronizer.setIntactClass(InteractorAlias.class);
+        this.synchronizer.persist(interactorAlias);
+
+        Assert.assertNotNull(interactorAlias.getAc());
+        Assert.assertNotNull(interactorAlias.getType());
+        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
+        Assert.assertEquals(aliasType2.getAc(), aliasSynonym.getAc());
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
 
         entityManager.flush();

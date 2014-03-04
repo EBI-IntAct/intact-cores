@@ -249,6 +249,46 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getPersistentXrefs();
     }
 
+    public void addSynonym(CvTermAlias alias){
+        alias.setParent(this);
+        getSynonyms().add(alias);
+    }
+
+    public void addXref(CvTermXref ref){
+        ref.setParent(this);
+        getXrefs().add(ref);
+    }
+
+    public void addIdentifier(CvTermXref ref){
+        ref.setParent(this);
+        getIdentifiers().add(ref);
+    }
+
+    public void addAnnotation(CvTermAnnotation annotation){
+        annotation.setParent(null);
+        getAnnotations().add(annotation);
+    }
+
+    public void removeSynonym(CvTermAlias alias){
+        alias.setParent(null);
+        getSynonyms().remove(alias);
+    }
+
+    public void removeXref(CvTermXref ref){
+        ref.setParent(null);
+        getXrefs().remove(ref);
+    }
+
+    public void removeIdentifier(CvTermXref ref){
+        ref.setParent(null);
+        getIdentifiers().remove(ref);
+    }
+
+    public void removeAnnotation(CvTermAnnotation annotation){
+        annotation.setParent(null);
+        getAnnotations().remove(annotation);
+    }
+
     private void setChildren( Collection<OntologyTerm> children ) {
         this.children = children;
     }

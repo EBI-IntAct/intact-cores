@@ -13,6 +13,7 @@ import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.CvTermMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -387,11 +388,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         if (intactCv.areChildrenInitialized()){
             List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getChildren());
             for (OntologyTerm term : termsToPersist){
-                OntologyTerm cvChild = synchronize(term, true);
+                IntactCvTerm cvChild = synchronize(term, true);
                 // we have a different instance because needed to be synchronized
                 if (cvChild != term){
                     intactCv.getChildren().remove(term);
                     intactCv.getChildren().add(cvChild);
+                }
+                if (!cvChild.getParents().contains(intactCv)){
+                    cvChild.getParents().add(intactCv);
                 }
             }
         }
@@ -402,12 +406,13 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getPersistentXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref = getContext().getCvXrefSynchronizer().synchronize(xref, false);
+                CvTermXref cvXref = getContext().getCvXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactCv.getPersistentXrefs().remove(xref);
                     intactCv.getPersistentXrefs().add(cvXref);
                 }
+                cvXref.setParent(intactCv);
             }
         }
     }
@@ -417,12 +422,13 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = getContext().getCvAnnotationSynchronizer().synchronize(annotation, false);
+                CvTermAnnotation cvAnnotation = getContext().getCvAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactCv.getAnnotations().remove(annotation);
                     intactCv.getAnnotations().add(cvAnnotation);
                 }
+                cvAnnotation.setParent(intactCv);
             }
         }
     }
@@ -432,12 +438,13 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = getContext().getCvAliasSynchronizer().synchronize(alias, false);
+                CvTermAlias cvAlias = getContext().getCvAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactCv.getSynonyms().remove(alias);
                     intactCv.getSynonyms().add(cvAlias);
                 }
+                cvAlias.setParent(intactCv);
             }
         }
     }

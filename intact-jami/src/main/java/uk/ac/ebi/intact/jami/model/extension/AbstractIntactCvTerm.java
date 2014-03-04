@@ -306,9 +306,13 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     protected void setPersistentXrefs(Collection<Xref> persistentXrefs){
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
+            this.identifiers = null;
+            this.xrefs = null;
         }
         else{
             this.persistentXrefs = new PersistentXrefList(persistentXrefs);
+            this.identifiers = null;
+            this.xrefs = null;
         }
     }
 
