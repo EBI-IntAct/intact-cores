@@ -39,7 +39,7 @@ public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends Abstr
     public Collection<C> getByType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select c from "+getEntityClass()+" c " +
+            query = getEntityManager().createQuery("select distinct c from "+getEntityClass()+" c " +
                     "join c.type as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
@@ -64,7 +64,7 @@ public class ConfidenceDaoImpl<C extends AbstractIntactConfidence> extends Abstr
     public Collection<C> getByTypeAndValue(String typeName, String typeMI, String value) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select c from "+getEntityClass()+" c " +
+            query = getEntityManager().createQuery("select distinct c from "+getEntityClass()+" c " +
                     "join c.type as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +

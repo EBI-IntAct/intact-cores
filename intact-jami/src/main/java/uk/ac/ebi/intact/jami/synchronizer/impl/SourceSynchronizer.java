@@ -216,7 +216,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             }
         }
 
-        query = getEntityManager().createQuery("select s from IntactSource s " +
+        query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                 "join s.persistentXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +

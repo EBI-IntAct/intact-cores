@@ -56,7 +56,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     public Collection<IntactExperiment> getByPubmedId(String value) {
-        Query query = getEntityManager().createQuery("select e from IntactExperiment e " +
+        Query query = getEntityManager().createQuery("select distinct e from IntactExperiment e " +
                 "join e.publication as p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as dat " +
@@ -73,7 +73,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     public Collection<IntactExperiment> getByDOI(String value) {
-        Query query = getEntityManager().createQuery("select e from IntactExperiment e " +
+        Query query = getEntityManager().createQuery("select distinct e from IntactExperiment e " +
                 "join e.publication as p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as dat " +
@@ -90,7 +90,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     public Collection<IntactExperiment> getByIMEx(String value) {
-        Query query = getEntityManager().createQuery("select e from IntactExperiment e " +
+        Query query = getEntityManager().createQuery("select distinct e from IntactExperiment e " +
                 "join e.publication as p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as dat " +
@@ -105,7 +105,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     public Collection<IntactExperiment> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+        Query query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                 "join e.xrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -113,7 +113,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     public Collection<IntactExperiment> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+        Query query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                 "join e.xrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
@@ -123,7 +123,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     public Collection<IntactExperiment> getByXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+            query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                     "join e.xrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -140,7 +140,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+            query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                     "join e.xrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -154,7 +154,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     public Collection<IntactExperiment> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+            query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                     "join e.xrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -171,7 +171,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+            query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                     "join e.xrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -186,7 +186,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -204,7 +204,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -229,7 +229,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -251,7 +251,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -261,8 +261,8 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select p from IntactPublication p "  +
-                        "join e.xrefs as x " +
+                query = getEntityManager().createQuery("select distinct p from IntactExperiment p "  +
+                        "join p.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -281,7 +281,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -300,7 +300,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -318,7 +318,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -343,7 +343,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -365,7 +365,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select e from IntactExperiment e " +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e " +
                         "join e.xrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -375,7 +375,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -395,7 +395,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+                query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                         "join e.xrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -413,7 +413,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     public Collection<IntactExperiment> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+            query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                     "join e.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -428,7 +428,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+            query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                     "join e.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
@@ -440,7 +440,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     public Collection<IntactExperiment> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+            query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                     "join e.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -458,7 +458,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
             }
         }
         else{
-            query = getEntityManager().createQuery("select e from IntactExperiment e "  +
+            query = getEntityManager().createQuery("select distinct e from IntactExperiment e "  +
                     "join e.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
@@ -471,7 +471,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     public Collection<IntactCuratedPublication> getByVariableParameterDescription(String description) {
-        Query query = getEntityManager().createQuery("select e from IntactExperiment e " +
+        Query query = getEntityManager().createQuery("select distinct e from IntactExperiment e " +
                 "join e.variableParameters as p " +
                 "where p.description = :desc");
         query.setParameter("desc", description);

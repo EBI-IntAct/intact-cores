@@ -47,7 +47,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
             query = getEntityManager().createQuery("select a from "+getEntityClass()+" a where a.type is null");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
+            query = getEntityManager().createQuery("select distinct a from "+getEntityClass()+" a " +
                     "join a.type as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
@@ -78,7 +78,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
             query.setParameter("name", name);
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
+            query = getEntityManager().createQuery("select distinct a from "+getEntityClass()+" a " +
                     "join a.type as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
@@ -113,7 +113,7 @@ public class AliasDaoImpl<A extends AbstractIntactAlias> extends AbstractIntactB
             query.setParameter("name", "%" + name.toUpperCase() + "%");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
+            query = getEntityManager().createQuery("select distinct a from "+getEntityClass()+" a " +
                     "join a.type as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +

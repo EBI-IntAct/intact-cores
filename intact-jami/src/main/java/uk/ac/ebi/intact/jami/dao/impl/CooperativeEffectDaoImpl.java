@@ -32,7 +32,7 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
     public Collection<F> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -47,7 +47,7 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
@@ -59,7 +59,7 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
     public Collection<F> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -77,7 +77,7 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
             }
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
@@ -90,7 +90,7 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
     }
 
     public Collection<F> getByAffectedInteractionAc(String ac) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                 "join f.affectedInteractions as i " +
                 "where i.ac = :interactionAc");
         query.setParameter("interactionAc", ac);
@@ -100,7 +100,7 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
     public Collection<F> getByOutcome(String name, String mi) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.outcome as c " +
                     "join c.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -125,7 +125,7 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
     public Collection<F> getByResponse(String name, String mi) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.response as r " +
                     "join r.persistentXrefs as xref " +
                     "join xref.database as d " +

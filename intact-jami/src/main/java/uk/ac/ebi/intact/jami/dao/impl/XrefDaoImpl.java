@@ -1,16 +1,11 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.VariableParameter;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.XrefDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
-import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameter;
-import uk.ac.ebi.intact.jami.model.extension.IntactVariableParameterValueSet;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.XrefSynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -64,7 +59,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
     public Collection<X> getByDatabase(String dbName, String dbMI) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+            query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -92,7 +87,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
             query = getEntityManager().createQuery("select x from "+getEntityClass()+" x where x.qualifier is null");
         }
         else if (qualifierMI != null){
-            query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+            query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                     "join x.qualifier as qual " +
                     "join qual.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -118,7 +113,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -133,7 +128,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 query.setParameter("mi", dbMI);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -155,7 +150,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 query.setParameter("mi2", qualifierMI);
             }
             else{
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -181,7 +176,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 query.setParameter("dbName", dbName);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -213,7 +208,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
     public Collection<X> getByDatabaseAndPrimaryId(String dbName, String dbMI, String id, String version) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+            query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -248,7 +243,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
     public Collection<X> getByDatabaseAndPrimaryIdLike(String dbName, String dbMI, String id, String version) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+            query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -292,7 +287,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
             }
         }
         else if (qualifierMI != null){
-            query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+            query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                     "join x.qualifier as qua " +
                     "join qua.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -336,7 +331,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
             }
         }
         else if (qualifierMI != null){
-            query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+            query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                     "join x.qualifier as qua " +
                     "join qua.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -372,7 +367,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -392,7 +387,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 }
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -419,7 +414,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 }
             }
             else{
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -455,7 +450,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 }
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -498,7 +493,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -518,7 +513,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 }
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -545,7 +540,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 }
             }
             else{
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -581,7 +576,7 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
                 }
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select x from "+getEntityClass()+" x " +
+                query = getEntityManager().createQuery("select distinct x from "+getEntityClass()+" x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +

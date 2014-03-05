@@ -42,7 +42,7 @@ public class ExperimentalEntityPoolDaoImpl extends ParticipantEvidenceDaoImpl<Ex
     public Collection<IntactExperimentalEntityPool> getByType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select f from IntactExperimentalEntityPool f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactExperimentalEntityPool f "  +
                     "join f.type as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +

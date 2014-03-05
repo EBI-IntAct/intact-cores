@@ -98,7 +98,7 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
     }
 
     public Collection<IntactOrganism> getByAliasName(String name) {
-        Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
+        Query query = getEntityManager().createQuery("select distinct o from IntactOrganism o " +
                 "join o.aliases as s " +
                 "where s.name = :name");
         query.setParameter("name", name);
@@ -106,7 +106,7 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
     }
 
     public Collection<IntactOrganism> getByAliasNameLike(String name) {
-        Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
+        Query query = getEntityManager().createQuery("select distinct o from IntactOrganism o " +
                 "join o.aliases as s " +
                 "where upper(s.name) = :name");
         query.setParameter("name", "%"+name.toUpperCase()+"%");
@@ -116,14 +116,14 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
     public Collection<IntactOrganism> getByAliasTypeAndName(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select o from IntactOrganism o " +
+            query = getEntityManager().createQuery("select distinct o from IntactOrganism o " +
                     "join o.aliases as s " +
                     "where s.type is null " +
                     "and s.name = :name");
             query.setParameter("name", name);
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select o from IntactOrganism o " +
+            query = getEntityManager().createQuery("select distinct o from IntactOrganism o " +
                     "join o.aliases as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
@@ -140,7 +140,7 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
             query.setParameter("name", name);
         }
         else{
-            query = getEntityManager().createQuery("select o from IntactOrganism o " +
+            query = getEntityManager().createQuery("select distinct o from IntactOrganism o " +
                     "join o.aliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -154,14 +154,14 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
     public Collection<IntactOrganism> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select o from IntactOrganism o " +
+            query = getEntityManager().createQuery("select distinct o from IntactOrganism o " +
                     "join o.aliases as s " +
                     "where s.type is null " +
                     "and upper(s.name) like :name");
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select o from IntactOrganism o " +
+            query = getEntityManager().createQuery("select distinct o from IntactOrganism o " +
                     "join o.aliases as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
@@ -178,7 +178,7 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select o from IntactOrganism o " +
+            query = getEntityManager().createQuery("select distinct o from IntactOrganism o " +
                     "join o.aliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +

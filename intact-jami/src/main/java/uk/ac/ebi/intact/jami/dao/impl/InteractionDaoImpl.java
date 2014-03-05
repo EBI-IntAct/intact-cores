@@ -68,7 +68,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     }
 
     public Collection<IntactInteractionEvidence> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+        Query query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                 "join f.persistentXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
@@ -78,7 +78,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     public Collection<IntactInteractionEvidence> getByXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -95,7 +95,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -109,7 +109,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     public Collection<IntactInteractionEvidence> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -126,7 +126,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -141,7 +141,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -159,7 +159,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -184,7 +184,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -206,7 +206,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -216,7 +216,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -236,7 +236,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -255,7 +255,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -273,7 +273,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -298,7 +298,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -320,7 +320,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f " +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f " +
                         "join f.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -330,7 +330,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -350,7 +350,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+                query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -368,7 +368,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     public Collection<IntactInteractionEvidence> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -383,7 +383,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
@@ -395,7 +395,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     public Collection<IntactInteractionEvidence> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -413,7 +413,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
             }
         }
         else{
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
@@ -432,7 +432,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                     "where f.interactionType is null order by f.ac");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                     "join f.interactionType as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +

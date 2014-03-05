@@ -40,7 +40,7 @@ public class ModelledEntityPoolDaoImpl extends ModelledParticipantDaoImpl<Modell
     public Collection<IntactExperimentalEntityPool> getByType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select f from IntactModelledEntityPool f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactModelledEntityPool f "  +
                     "join f.type as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +

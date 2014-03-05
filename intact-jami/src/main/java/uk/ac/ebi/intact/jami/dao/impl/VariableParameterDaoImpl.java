@@ -45,7 +45,7 @@ public class VariableParameterDaoImpl extends AbstractIntactBaseDao<VariablePara
             query = getEntityManager().createQuery("select v from IntactVariableParameter v where v.unit is null");
         }
         else if (unitMI != null){
-            query = getEntityManager().createQuery("select v from IntactVariableParameter v " +
+            query = getEntityManager().createQuery("select distinct v from IntactVariableParameter v " +
                     "join v.unit as u " +
                     "join u.persistentXrefs as x " +
                     "join x.database as d " +

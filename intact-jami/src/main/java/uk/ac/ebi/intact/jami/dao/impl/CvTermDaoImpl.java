@@ -67,7 +67,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -75,7 +75,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
@@ -85,7 +85,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     public Collection<IntactCvTerm> getByXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -102,7 +102,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -116,7 +116,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     public Collection<IntactCvTerm> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -133,7 +133,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -148,7 +148,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -166,7 +166,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -191,7 +191,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -213,7 +213,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -223,7 +223,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -243,7 +243,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -262,7 +262,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -280,7 +280,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -305,7 +305,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -327,7 +327,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -337,7 +337,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -357,7 +357,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                         "join cv.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -375,7 +375,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     public Collection<IntactCvTerm> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -390,7 +390,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
@@ -402,7 +402,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     public Collection<IntactCvTerm> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -420,7 +420,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             }
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
@@ -433,7 +433,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByAliasName(String name) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.synonyms as s " +
                 "where s.name = :name");
         query.setParameter("name", name);
@@ -441,7 +441,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByAliasNameLike(String name) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.synonyms as s " +
                 "where upper(s.name) = :name");
         query.setParameter("name", "%"+name.toUpperCase()+"%");
@@ -451,14 +451,14 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     public Collection<IntactCvTerm> getByAliasTypeAndName(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.synonyms as s " +
                     "where s.type is null " +
                     "and s.name = :name");
             query.setParameter("name", name);
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.synonyms as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
@@ -475,7 +475,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("name", name);
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.synonyms as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -489,14 +489,14 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     public Collection<IntactCvTerm> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.synonyms as s " +
                     "where s.type is null " +
                     "and upper(s.name) like :name");
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.synonyms as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
@@ -513,7 +513,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+            query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.synonyms as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -553,7 +553,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByMIIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
@@ -568,7 +568,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByMODIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
@@ -583,7 +583,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByPARIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
@@ -598,7 +598,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public IntactCvTerm getByMIIdentifier(String primaryId, String objClass) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
@@ -624,7 +624,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public IntactCvTerm getByMODIdentifier(String primaryId, String objClass) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
@@ -650,7 +650,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public IntactCvTerm getByPARIdentifier(String primaryId, String objClass) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +

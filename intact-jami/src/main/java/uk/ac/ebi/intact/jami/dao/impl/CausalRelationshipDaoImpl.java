@@ -32,7 +32,7 @@ public class CausalRelationshipDaoImpl extends AbstractIntactBaseDao<CausalRelat
     public Collection<IntactCausalRelationship> getByRelationType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select c from IntactCausalRelationship c " +
+            query = getEntityManager().createQuery("select distinct c from IntactCausalRelationship c " +
                     "join c.relationType as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +

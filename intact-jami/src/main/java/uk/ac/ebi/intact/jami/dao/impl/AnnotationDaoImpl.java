@@ -57,7 +57,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
     public Collection<A> getByTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
+            query = getEntityManager().createQuery("select distinct a from "+getEntityClass()+" a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
@@ -82,7 +82,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
     public Collection<A> getByTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
+            query = getEntityManager().createQuery("select distinct a from "+getEntityClass()+" a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
@@ -115,7 +115,7 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
     public Collection<A> getByTopicAndValueLike(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select a from "+getEntityClass()+" a " +
+            query = getEntityManager().createQuery("select distinct a from "+getEntityClass()+" a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +

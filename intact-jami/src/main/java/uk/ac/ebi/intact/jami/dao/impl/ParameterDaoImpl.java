@@ -32,7 +32,7 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
     public Collection<P> getByType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select p from "+getEntityClass()+" p " +
+            query = getEntityManager().createQuery("select distinct p from "+getEntityClass()+" p " +
                     "join p.type as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
@@ -61,7 +61,7 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
                     "where p.unit is null");
         }
         else if (unitMI != null){
-            query = getEntityManager().createQuery("select p from "+getEntityClass()+" p " +
+            query = getEntityManager().createQuery("select distinct p from "+getEntityClass()+" p " +
                     "join p.unit as u " +
                     "join u.persistentXrefs as x " +
                     "join x.database as d " +
@@ -87,7 +87,7 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
         Query query;
         if (typeMI != null){
             if (unitMI == null && unitName == null){
-                query = getEntityManager().createQuery("select p from "+getEntityClass()+" p " +
+                query = getEntityManager().createQuery("select distinct p from "+getEntityClass()+" p " +
                         "join p.type as t " +
                         "join t.persistentXrefs as x " +
                         "join x.database as d " +
@@ -102,7 +102,7 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
                 query.setParameter("mi", typeMI);
             }
             else if (unitMI != null){
-                query = getEntityManager().createQuery("select p from "+getEntityClass()+" p " +
+                query = getEntityManager().createQuery("select distinct p from "+getEntityClass()+" p " +
                         "join p.type as t " +
                         "join t.persistentXrefs as x " +
                         "join x.database as d " +
@@ -124,7 +124,7 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
                 query.setParameter("mi2", unitMI);
             }
             else{
-                query = getEntityManager().createQuery("select p from "+getEntityClass()+" p " +
+                query = getEntityManager().createQuery("select distinct p from "+getEntityClass()+" p " +
                         "join p.type as t " +
                         "join t.persistentXrefs as x " +
                         "join x.database as d " +
@@ -150,7 +150,7 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
                 query.setParameter("typeName", typeName);
             }
             else if (unitMI != null){
-                query = getEntityManager().createQuery("select p from "+getEntityClass()+" p " +
+                query = getEntityManager().createQuery("select distinct p from "+getEntityClass()+" p " +
                         "join p.type as t " +
                         "join p.unit as u " +
                         "join u.persistentXrefs as x " +

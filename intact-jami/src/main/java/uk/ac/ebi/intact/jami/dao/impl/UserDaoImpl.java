@@ -81,7 +81,7 @@ public class UserDaoImpl extends AbstractIntactBaseDao<User, User> implements Us
     }
 
     public Collection<User> getByRole(String role) {
-        Query query = getEntityManager().createQuery("select u from User u " +
+        Query query = getEntityManager().createQuery("select distinct u from User u " +
                 "join u.roles as r " +
                 "where r.name = :name ");
         query.setParameter("name",role);
@@ -89,7 +89,7 @@ public class UserDaoImpl extends AbstractIntactBaseDao<User, User> implements Us
     }
 
     public Collection<User> getByPreference(String key, String value) {
-        Query query = getEntityManager().createQuery("select u from User u " +
+        Query query = getEntityManager().createQuery("select distinct u from User u " +
                 "join u.preferences as p " +
                 "where p.key = :k and p.value "+(value != null ? "= :val " : "is null"));
         query.setParameter("k",key);

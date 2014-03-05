@@ -38,7 +38,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
     public Collection<F> getByExperimentalRole(String typeName, String typeMI, int first, int max) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.experimentalRole as e " +
                     "join e.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -65,7 +65,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
     public Collection<F> getByExperimentalPreparation(String name, String mi, int first, int max) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.experimentalPreparations as e " +
                     "join e.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -79,7 +79,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
             query.setParameter("mi", mi);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.experimentalPreparations as e " +
                     "where e.shortName = :name order by e.ac");
             query.setParameter("name", name);
@@ -92,11 +92,11 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
     public Collection<F> getByDetectionMethod(String name, String mi, int first, int max) {
         Query query;
         if (name == null && mi == null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "where f.identificationMethods is empty order by f.ac");
         }
         else if (mi != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.identificationMethods as i " +
                     "join i.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -110,7 +110,7 @@ public class ExperimentalEntityDaoImpl<T extends ExperimentalEntity, F extends I
             query.setParameter("mi", mi);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.identificationMethods as i " +
                     "where i.shortName = :name order by f.ac");
             query.setParameter("name", name);

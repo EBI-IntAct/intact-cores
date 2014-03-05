@@ -29,7 +29,7 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
     }
 
     public IntactCuratedPublication getByIMEx(String value) {
-        Query query = getEntityManager().createQuery("select p from IntactCuratedPublication p " +
+        Query query = getEntityManager().createQuery("select distinct p from IntactCuratedPublication p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
@@ -89,7 +89,7 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
                     "where p.lifecycleEvents is empty order by p.ac");
         }
         else{
-            query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
+            query = getEntityManager().createQuery("select distinct p from IntactCuratedPublication p "  +
                     "join p.lifecycleEvents as l "  +
                     "join l.event as e "  +
                     "where e.shortName = :name order by p.ac");

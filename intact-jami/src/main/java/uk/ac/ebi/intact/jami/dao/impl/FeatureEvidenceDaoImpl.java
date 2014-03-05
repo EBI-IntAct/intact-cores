@@ -36,7 +36,7 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
                     "where f.detectionMethods is empty");
         }
         else if (methodMI != null){
-            query = getEntityManager().createQuery("select f from IntactFeatureEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactFeatureEvidence f "  +
                     "join f.detectionMethods as det " +
                     "join det.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -50,7 +50,7 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
             query.setParameter("mi", methodMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from IntactFeatureEvidence f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactFeatureEvidence f "  +
                     "join f.detectionMethods as det " +
                     "where det.shortName = :methodName");
             query.setParameter("methodName", methodName);

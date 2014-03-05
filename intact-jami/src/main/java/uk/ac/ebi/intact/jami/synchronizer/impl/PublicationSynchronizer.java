@@ -163,7 +163,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
             }
         }
         else {
-            query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
+            query = getEntityManager().createQuery("select distinct p from "+getIntactClass()+" p " +
                     "join p.persistentAnnotations as a "+
                     "join a.topic as topic "+
                     "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
@@ -206,7 +206,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
             }
         }
 
-        query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
+        query = getEntityManager().createQuery("select distinct p from "+getIntactClass()+" p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
@@ -231,7 +231,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
 
     protected I fetchByImexId(String imex) throws FinderException {
 
-        Query query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
+        Query query = getEntityManager().createQuery("select distinct p from "+getIntactClass()+" p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +

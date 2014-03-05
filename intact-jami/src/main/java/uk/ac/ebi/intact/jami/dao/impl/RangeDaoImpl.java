@@ -43,7 +43,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
     public Collection<IntactRange> getByStartStatus(String statusName, String statusMI) {
         Query query;
         if (statusMI != null){
-            query = getEntityManager().createQuery("select r from IntactRange r " +
+            query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                     "join r.start.status as s " +
                     "join s.persistentXrefs as x " +
                     "join x.database as d " +
@@ -68,7 +68,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
     public Collection<IntactRange> getByEndStatus(String statusName, String statusMI) {
         Query query;
         if (statusMI != null){
-            query = getEntityManager().createQuery("select r from IntactRange r " +
+            query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                     "join r.end.status as s " +
                     "join s.persistentXrefs as x " +
                     "join x.database as d " +
@@ -94,7 +94,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
         Query query;
         if (startMI != null){
             if (endMI != null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.start.status as s " +
                         "join r.end.status as s2 " +
                         "join s.persistentXrefs as x " +
@@ -116,7 +116,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("mi2", endMI);
             }
             else{
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.start.status as s " +
                         "join r.end.status as s2 " +
                         "join s.persistentXrefs as x " +
@@ -139,7 +139,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                     "where s.shortName = :startName");
             query.setParameter("startName", startName);
             if (endMI != null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.start.status as s2 " +
                         "join r.end.status as s " +
                         "join s.persistentXrefs as x " +
@@ -169,7 +169,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
     }
 
     public Collection<IntactCvTerm> getByResultingSequenceXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select r from IntactRange r " +
+        Query query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                 "join r.resultingSequence.xrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -177,7 +177,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
     }
 
     public Collection<IntactCvTerm> getByResultingSequenceXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select r from IntactRange r " +
+        Query query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                 "join r.resultingSequence.xrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
@@ -187,7 +187,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
     public Collection<IntactCvTerm> getByResultingSequenceXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select r from IntactRange r " +
+            query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                     "join r.resultingSequence.xrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -218,7 +218,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
     public Collection<IntactCvTerm> getByResultingSequenceXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select r from IntactRange r " +
+            query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                     "join r.resultingSequence.xrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -235,8 +235,8 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select r from IntactRange r " +
-                    "join cv.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select distinct r from IntactRange r " +
+                    "join r.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and upper(x.id) like :primary");
@@ -250,7 +250,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -268,7 +268,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -293,7 +293,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -315,7 +315,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -325,7 +325,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -345,7 +345,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -364,7 +364,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -382,7 +382,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -407,7 +407,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -429,7 +429,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -439,7 +439,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -459,7 +459,7 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select r from IntactRange r " +
+                query = getEntityManager().createQuery("select distinct r from IntactRange r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +

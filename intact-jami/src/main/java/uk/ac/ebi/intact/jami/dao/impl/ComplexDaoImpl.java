@@ -45,7 +45,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                     "where f.interactionType is null order by f.ac");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select f from IntactComplex f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
                     "join f.interactionType as t " +
                     "join t.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -74,7 +74,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                     "where p.lifecycleEvents is empty order by p.ac");
         }
         else{
-            query = getEntityManager().createQuery("select p from IntactComplex p "  +
+            query = getEntityManager().createQuery("select distinct p from IntactComplex p "  +
                     "join p.lifecycleEvents as l "  +
                     "join l.event as e "  +
                     "where e.shortName = :name order by p.ac");

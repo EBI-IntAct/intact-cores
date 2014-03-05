@@ -258,7 +258,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             }
         }
 
-        query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.persistentXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +

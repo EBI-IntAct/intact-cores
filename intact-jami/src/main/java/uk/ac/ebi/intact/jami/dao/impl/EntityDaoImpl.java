@@ -1,16 +1,12 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.EntityDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.EntitySynchronizerTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -52,7 +48,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     }
 
     public Collection<F> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                 "join f.xrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -60,7 +56,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     }
 
     public Collection<F> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                 "join f.xrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
@@ -70,7 +66,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.xrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -87,7 +83,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.xrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -101,7 +97,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.xrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -118,7 +114,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.xrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -133,7 +129,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -151,7 +147,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -176,7 +172,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -198,7 +194,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -208,7 +204,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -228,7 +224,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -247,7 +243,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -265,7 +261,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -290,7 +286,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -312,7 +308,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                         "join f.xrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -322,7 +318,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -342,7 +338,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -360,7 +356,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -375,7 +371,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
@@ -387,7 +383,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -405,7 +401,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
             }
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
@@ -418,7 +414,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     }
 
     public Collection<F> getByAliasName(String name) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                 "join f.aliases as s " +
                 "where s.name = :name");
         query.setParameter("name", name);
@@ -426,7 +422,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     }
 
     public Collection<F> getByAliasNameLike(String name) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                 "join f.aliases as s " +
                 "where upper(s.name) = :name");
         query.setParameter("name", "%"+name.toUpperCase()+"%");
@@ -436,14 +432,14 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByAliasTypeAndName(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                     "join f.aliases as s " +
                     "where s.type is null " +
                     "and s.name = :name");
             query.setParameter("name", name);
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                     "join f.aliases as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
@@ -460,7 +456,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
             query.setParameter("name", name);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                     "join f.aliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -474,14 +470,14 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                     "join f.aliases as s " +
                     "where s.type is null " +
                     "and upper(s.name) like :name");
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                     "join f.aliases as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
@@ -498,7 +494,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.aliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -512,7 +508,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByBiologicalRole(String typeName, String typeMI, int first, int max) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.biologicalRole as b " +
                     "join b.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -539,7 +535,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     public Collection<F> getByCausalRelationship(String name, String mi, String targetAc) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.causalRelationships as c " +
                     "join c.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -557,7 +553,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
             }
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.causalRelationships as c " +
                     (targetAc != null ? "join c.target as t " : "")+
                     "where c.shortName = :effectName"+(targetAc != null ? " and t.ac = :tarAc" : ""));
@@ -570,7 +566,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
     }
 
     public Collection<F> getByCausalRelationship(String targetAc) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                 "join f.causalRelationships as c " +
                 "join c.target as t " +
                 "where t.ac = :tarAc");
@@ -586,7 +582,7 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
                     "where f.interactionDependency is null");
         }
         else if (dependencyMI != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.interactionDependency as id " +
                     "join id.persistentXrefs as xref " +
                     "join xref.database as d " +

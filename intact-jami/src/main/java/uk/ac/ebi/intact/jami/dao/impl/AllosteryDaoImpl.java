@@ -36,7 +36,7 @@ public class AllosteryDaoImpl extends CooperativeEffectDaoImpl<Allostery, Intact
     public Collection<IntactAllostery> getByMechanism(String name, String mi) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.mechanism as c " +
                     "join c.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -61,7 +61,7 @@ public class AllosteryDaoImpl extends CooperativeEffectDaoImpl<Allostery, Intact
     public Collection<IntactAllostery> getByAllosteryType(String name, String mi) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.allosteryType as r " +
                     "join r.persistentXrefs as xref " +
                     "join xref.database as d " +

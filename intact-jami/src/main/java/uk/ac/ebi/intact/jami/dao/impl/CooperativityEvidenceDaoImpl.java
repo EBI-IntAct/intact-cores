@@ -32,7 +32,7 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
     public Collection<IntactCooperativityEvidence> getByMethod(String methodName, String methodMI) {
         Query query;
         if (methodMI != null){
-            query = getEntityManager().createQuery("select c from IntactCooperativityEvidence c " +
+            query = getEntityManager().createQuery("select distinct c from IntactCooperativityEvidence c " +
                     "join c.evidenceMethods as t " +
                     "join t.persistentXrefs as x " +
                     "join x.database as d " +
@@ -46,7 +46,7 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
             query.setParameter("mi", methodMI);
         }
         else{
-            query = getEntityManager().createQuery("select c from IntactCooperativityEvidence c " +
+            query = getEntityManager().createQuery("select distinct c from IntactCooperativityEvidence c " +
                     "join c.evidenceMethods as t " +
                     "where t.shortName = :methodName");
             query.setParameter("methodName", methodName);
@@ -55,7 +55,7 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
     }
 
     public Collection<IntactCooperativityEvidence> getByPublicationPubmed(String pubmed) {
-        Query query = getEntityManager().createQuery("select c from IntactCooperativityEvidence c " +
+        Query query = getEntityManager().createQuery("select distinct c from IntactCooperativityEvidence c " +
                 "join c.publication as p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as d " +
@@ -72,7 +72,7 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
     }
 
     public Collection<IntactCooperativityEvidence> getByPublicationDoi(String doi) {
-        Query query = getEntityManager().createQuery("select c from IntactCooperativityEvidence c " +
+        Query query = getEntityManager().createQuery("select distinct c from IntactCooperativityEvidence c " +
                 "join c.publication as p " +
                 "join p.persistentXrefs as x " +
                 "join x.database as d " +

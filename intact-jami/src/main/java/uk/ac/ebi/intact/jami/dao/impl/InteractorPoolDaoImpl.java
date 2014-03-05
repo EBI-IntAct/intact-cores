@@ -32,7 +32,7 @@ public class InteractorPoolDaoImpl extends InteractorDaoImpl<InteractorPool,Inta
     }
 
     public Collection<IntactInteractorPool> getByInteractorAc(String ac) {
-        Query query = getEntityManager().createQuery("select f from IntactInteractorPool f " +
+        Query query = getEntityManager().createQuery("select distinct f from IntactInteractorPool f " +
                 "join f.interactors as i " +
                 "where i.ac = :interactorAc");
         query.setParameter("interactorAc",ac);
@@ -40,7 +40,7 @@ public class InteractorPoolDaoImpl extends InteractorDaoImpl<InteractorPool,Inta
     }
 
     public Collection<IntactInteractorPool> getByInteractorShortName(String value) {
-        Query query = getEntityManager().createQuery("select f from IntactInteractorPool f " +
+        Query query = getEntityManager().createQuery("select distinct f from IntactInteractorPool f " +
                 "join f.interactors as i " +
                 "where i.shortName = :name");
         query.setParameter("name",value);

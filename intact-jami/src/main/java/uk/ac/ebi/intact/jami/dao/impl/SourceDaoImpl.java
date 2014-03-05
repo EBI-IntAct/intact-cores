@@ -58,7 +58,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     }
 
     public Collection<IntactSource> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select s from IntactSource s " +
+        Query query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                 "join s.persistentXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -66,7 +66,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     }
 
     public Collection<IntactSource> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select s from IntactSource s " +
+        Query query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                 "join s.persistentXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
@@ -76,7 +76,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     public Collection<IntactSource> getByXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                     "join s.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -93,7 +93,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                     "join s.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -107,7 +107,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     public Collection<IntactSource> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                     "join s.persistentXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
@@ -124,7 +124,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                     "join s.persistentXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -139,7 +139,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -157,7 +157,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -182,7 +182,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -204,7 +204,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -214,7 +214,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -234,7 +234,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -253,7 +253,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -271,7 +271,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
@@ -296,7 +296,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -318,7 +318,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -328,7 +328,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -348,7 +348,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select s from IntactSource s " +
+                query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                         "join s.persistentXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -366,7 +366,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     public Collection<IntactSource> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                     "join s.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -381,7 +381,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                     "join s.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
@@ -393,7 +393,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     public Collection<IntactSource> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                     "join s.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "join t.persistentXrefs as xref " +
@@ -411,7 +411,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
         }
         else{
-            query = getEntityManager().createQuery("select s from IntactSource s " +
+            query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                     "join s.persistentAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
@@ -424,7 +424,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     }
 
     public Collection<IntactSource> getByAliasName(String name) {
-        Query query = getEntityManager().createQuery("select so from IntactSource so " +
+        Query query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                 "join so.synonyms as s " +
                 "where s.name = :name");
         query.setParameter("name", name);
@@ -432,7 +432,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     }
 
     public Collection<IntactSource> getByAliasNameLike(String name) {
-        Query query = getEntityManager().createQuery("select so from IntactSource so " +
+        Query query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                 "join so.synonyms as s " +
                 "where upper(s.name) = :name");
         query.setParameter("name", "%"+name.toUpperCase()+"%");
@@ -442,14 +442,14 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     public Collection<IntactSource> getByAliasTypeAndName(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select so from IntactSource so " +
+            query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                     "join so.synonyms as s " +
                     "where s.type is null " +
                     "and s.name = :name");
             query.setParameter("name", name);
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select so from IntactSource so " +
+            query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                     "join so.synonyms as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
@@ -466,7 +466,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             query.setParameter("name", name);
         }
         else{
-            query = getEntityManager().createQuery("select so from IntactSource so " +
+            query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                     "join so.synonyms as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -480,14 +480,14 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     public Collection<IntactSource> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select so from IntactSource so " +
+            query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                     "join so.synonyms as s " +
                     "where s.type is null " +
                     "and upper(s.name) like :name");
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select so from IntactSource so " +
+            query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                     "join so.synonyms as s " +
                     "join s.type as t " +
                     "join t.persistentXrefs as xref " +
@@ -504,7 +504,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select so from IntactSource so " +
+            query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                     "join so.synonyms as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -516,7 +516,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     }
 
     public IntactSource getByMIIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select s from IntactSource s " +
+        Query query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                 "join s.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
@@ -540,7 +540,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     }
 
     public IntactSource getByPARIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select s from IntactSource s " +
+        Query query = getEntityManager().createQuery("select distinct s from IntactSource s " +
                 "join s.persistentXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +

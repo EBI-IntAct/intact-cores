@@ -39,7 +39,7 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
     public Collection<C> getByMethod(String methodName, String methodMI) {
         Query query;
         if (methodMI != null){
-            query = getEntityManager().createQuery("select c from "+getEntityClass()+" c " +
+            query = getEntityManager().createQuery("select distinct c from "+getEntityClass()+" c " +
                     "join c.method as m " +
                     "join m.persistentXrefs as x " +
                     "join x.database as d " +
@@ -64,7 +64,7 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
     public Collection<C> getByMethodAndValue(String methodName, String methodMI, String value) {
         Query query;
         if (methodMI != null){
-            query = getEntityManager().createQuery("select c from "+getEntityClass()+" c " +
+            query = getEntityManager().createQuery("select distinct c from "+getEntityClass()+" c " +
                     "join c.method as m " +
                     "join m.persistentXrefs as x " +
                     "join x.database as d " +

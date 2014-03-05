@@ -312,7 +312,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                     return interactors;
                 }
                 else{
-                    query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+                    query = getEntityManager().createQuery("select distinct i from "+getIntactClass()+" i " +
                             "join i.persistentXrefs as x " +
                             "join x.database as d " +
                             "join x.qualifier as q " +
@@ -355,7 +355,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                     return interactors;
                 }
                 else{
-                    query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+                    query = getEntityManager().createQuery("select distinct i from "+getIntactClass()+" i " +
                             "join i.persistentXrefs as x " +
                             "join x.database as d " +
                             "join x.qualifier as q " +
@@ -399,7 +399,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             return interactors;
         }
         else{
-            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+            query = getEntityManager().createQuery("select distinct i from "+getIntactClass()+" i " +
                     "join i.persistentXrefs as x " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc)" +

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -38,6 +39,7 @@ import javax.persistence.PersistenceUnit;
 @ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
 @Transactional
 @TransactionConfiguration
+@DirtiesContext
 public class AliasSynchronizerTemplateTest {
 
     @Autowired
