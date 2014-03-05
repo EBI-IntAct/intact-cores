@@ -257,7 +257,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select i.shortName from IntactInteractionEvidence i " +
-                    "where i.shortName = :name or i.shortName like :nameWithSuffix"
+                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
                     + (intactInteraction.getAc() != null ? "and i.ac <> :interAc" : ""));
             query.setParameter("name", name);
             query.setParameter("nameWithSuffix", name+"-%");

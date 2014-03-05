@@ -293,7 +293,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select e.shortLabel from IntactExperiment e " +
-                    "where e.shortLabel = :name or e.shortLabel like :nameWithSuffix"
+                    "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
                     + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
             query.setParameter("name", name);
             query.setParameter("nameWithSuffix", name+"-%");

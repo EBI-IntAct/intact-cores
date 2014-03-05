@@ -369,7 +369,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select s.shortName from IntactSource s " +
-                    "where s.shortName = :name or s.shortName like :nameWithSuffix"
+                    "where (s.shortName = :name or s.shortName like :nameWithSuffix) "
                     + (intactSource.getAc() != null ? "and s.ac <> :sourceAc" : ""));
             query.setParameter("name", name);
             query.setParameter("nameWithSuffix", name+"-%");

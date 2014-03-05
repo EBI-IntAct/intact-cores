@@ -277,7 +277,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select i.shortName from IntactInteractor i " +
-                    "where i.shortName = :name or i.shortName like :nameWithSuffix"
+                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
                     + (intactInteractor.getAc() != null ? "and i.ac <> :interactorAc" : ""));
             query.setParameter("name", name);
             query.setParameter("nameWithSuffix", name+"-%");
