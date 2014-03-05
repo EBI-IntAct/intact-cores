@@ -97,14 +97,6 @@ public class CooperativeEffectDaoImpl<T extends CooperativeEffect, F extends Abs
         return query.getResultList();
     }
 
-    public Collection<F> getByComplexAc(String ac) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                "join f.complex as c " +
-                "where c.ac = :interactionAc");
-        query.setParameter("interactionAc", ac);
-        return query.getResultList();
-    }
-
     public Collection<F> getByOutcome(String name, String mi) {
         Query query;
         if (mi != null){

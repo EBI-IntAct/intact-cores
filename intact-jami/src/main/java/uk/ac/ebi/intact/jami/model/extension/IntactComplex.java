@@ -9,6 +9,7 @@ import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.listener.ComplexParameterListener;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @Entity
 @DiscriminatorValue( "complex" )
+@EntityListeners(value = {ComplexParameterListener.class})
 public class IntactComplex extends IntactInteractor implements Complex{
     private Collection<InteractionEvidence> interactionEvidences;
     private Collection<ModelledParticipant> components;
@@ -186,7 +188,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
         this.currentReviewer = currentReviewer;
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)
+    @OneToMany( orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @ForeignKey(name="FK_LIFECYCLE_EVENT_COMPLEX")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @OrderBy("when, created")
     @Target(ComplexLifecycleEvent.class)
@@ -283,8 +287,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return removed;
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true,
+    @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ComplexConfidence.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ComplexConfidence.class)
     public Collection<ModelledConfidence> getModelledConfidences() {
@@ -294,8 +299,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return this.confidences;
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true,
+    @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ComplexParameter.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ComplexParameter.class)
     public Collection<ModelledParameter> getModelledParameters() {
@@ -305,8 +311,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return this.parameters;
     }
 
-    @OneToMany( mappedBy = "complex", orphanRemoval = true,
+    @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = AbstractIntactCooperativeEffect.class)
+    @JoinColumn(name="complex_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(AbstractIntactCooperativeEffect.class)
     public Collection<CooperativeEffect> getCooperativeEffects() {
@@ -436,10 +443,6 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
-    protected void clearPropertiesLinkedToAnnotations() {
-        physicalProperties = null;
-    }
-
     protected void processAddedAliasEvent(Alias added) {
         if (recommendedName == null && AliasUtils.doesAliasHaveType(added, Alias.COMPLEX_RECOMMENDED_NAME_MI, Alias.COMPLEX_RECOMMENDED_NAME)){
             recommendedName = added;
@@ -456,11 +459,6 @@ public class IntactComplex extends IntactInteractor implements Complex{
         else if (systematicName != null && systematicName.equals(removed)){
             systematicName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME);
         }
-    }
-
-    protected void clearPropertiesLinkedToAliases() {
-        this.recommendedName = null;
-        this.systematicName = null;
     }
 
     @Transient
@@ -625,10 +623,6 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
-    private void clearPropertiesLinkedToChecksums() {
-        rigid = null;
-    }
-
     private void initialiseInteractionEvidences(){
         this.interactionEvidences = new ArrayList<InteractionEvidence>();
     }
@@ -683,64 +677,24 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
 
         @Override
-        public boolean add(Annotation xref) {
-            if(super.add(xref)){
-                processAddedAnnotationEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedAnnotationEvent((Annotation) o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Annotation> existingObject = new ArrayList<Annotation>(this);
-
-            boolean removed = false;
-            for (Annotation o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToAnnotations();
-        }
-
-        @Override
         protected boolean needToPreProcessElementToAdd(Annotation added) {
-            return false;
+            return true;
         }
 
         @Override
         protected Annotation processOrWrapElementToAdd(Annotation added) {
+            processAddedAnnotationEvent(added);
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            processRemovedAnnotationEvent((Annotation)o);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return o instanceof Annotation;
         }
     }
 
@@ -750,64 +704,24 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
 
         @Override
-        public boolean add(Checksum xref) {
-            if(super.add(xref)){
-                processAddedChecksumEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedChecksumEvent((Checksum) o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Checksum> existingObject = new ArrayList<Checksum>(this);
-
-            boolean removed = false;
-            for (Checksum o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToChecksums();
-        }
-
-        @Override
         protected boolean needToPreProcessElementToAdd(Checksum added) {
-            return false;
+            return true;
         }
 
         @Override
         protected Checksum processOrWrapElementToAdd(Checksum added) {
+            processAddedChecksumEvent(added);
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            processRemovedChecksumEvent((Checksum)o);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return o instanceof Checksum;
         }
     }
 
@@ -817,64 +731,24 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
 
         @Override
-        public boolean add(Alias xref) {
-            if(super.add(xref)){
-                processAddedAliasEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedAliasEvent((Alias) o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Alias> existingObject = new ArrayList<Alias>(this);
-
-            boolean removed = false;
-            for (Alias o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToAliases();
-        }
-
-        @Override
         protected boolean needToPreProcessElementToAdd(Alias added) {
-            return false;
+            return true;
         }
 
         @Override
         protected Alias processOrWrapElementToAdd(Alias added) {
+            processAddedAliasEvent(added);
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            processRemovedAliasEvent((Alias)o);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return o instanceof Alias;
         }
     }
 }

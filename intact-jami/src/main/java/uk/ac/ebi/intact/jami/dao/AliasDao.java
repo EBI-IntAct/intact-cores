@@ -24,6 +24,4 @@ public interface AliasDao<A extends AbstractIntactAlias> extends IntactBaseDao<A
     public Collection<A> getByTypeAndName(String name, String typeName, String typeMI);
 
     public Collection<A> getByTypeAndNameLike(String name, String typeName, String typeMI);
-
-    public Collection<A> getByParentAc(String parentAc);
 }

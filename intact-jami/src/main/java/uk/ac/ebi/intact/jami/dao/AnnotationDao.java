@@ -18,6 +18,4 @@ public interface AnnotationDao<A extends AbstractIntactAnnotation> extends Intac
     public Collection<A> getByTopicAndValue(String topicName, String topicMI, String value);
 
     public Collection<A> getByTopicAndValueLike(String topicName, String topicMI, String value);
-
-    public Collection<A> getByParentAc(String ac);
 }

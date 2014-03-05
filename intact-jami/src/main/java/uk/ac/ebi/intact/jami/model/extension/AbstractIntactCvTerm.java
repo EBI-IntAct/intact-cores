@@ -480,5 +480,15 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         protected Xref processOrWrapElementToAdd(Xref added) {
             return added;
         }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // nothing to do
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
+        }
     }
 }

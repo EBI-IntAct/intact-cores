@@ -37,6 +37,4 @@ public interface XrefDao<X extends AbstractIntactXref> extends IntactBaseDao<X> 
 
     public Collection<X> getByDatabasePrimaryIdLikeAndQualifier(String dbName, String dbMI, String id, String version, String qualifierName, String qualifierMI);
 
-    public Collection<X> getByParentAc(String parentAc);
-
 }

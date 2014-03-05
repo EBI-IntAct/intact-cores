@@ -113,7 +113,8 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         this.objClass = objClass;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAnnotation.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CvTermAnnotation.class)
     @Override
@@ -121,7 +122,8 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAlias.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CvTermAlias.class)
     @Override
@@ -145,12 +147,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     ///////////////////////////////////////
     // access methods for associations
 
-    @ManyToMany(targetEntity = IntactCvTerm.class)
-    @JoinTable(
-            name = "ia_cv2cv",
-            joinColumns = {@JoinColumn( name = "parent_ac", referencedColumnName = "ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "child_ac", referencedColumnName = "ac" )}
-    )
+    @ManyToMany( mappedBy = "parents", targetEntity = IntactCvTerm.class )
     @Target(IntactCvTerm.class)
     public Collection<OntologyTerm> getChildren() {
         if (children == null){
@@ -177,7 +174,12 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         }
     }
 
-    @ManyToMany( mappedBy = "children", targetEntity = IntactCvTerm.class )
+    @ManyToMany(targetEntity = IntactCvTerm.class)
+    @JoinTable(
+            name = "ia_cv2cv",
+            joinColumns = {@JoinColumn( name = "child_ac", referencedColumnName = "ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "parent_ac", referencedColumnName = "ac" )}
+    )
     @Target(IntactCvTerm.class)
     public Collection<OntologyTerm> getParents() {
         if (parents == null){
@@ -241,52 +243,13 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return Hibernate.isInitialized(getParents());
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Target(CvTermXref.class)
     @Override
     public Collection<Xref> getPersistentXrefs() {
         return super.getPersistentXrefs();
-    }
-
-    public void addSynonym(CvTermAlias alias){
-        alias.setParent(this);
-        getSynonyms().add(alias);
-    }
-
-    public void addXref(CvTermXref ref){
-        ref.setParent(this);
-        getXrefs().add(ref);
-    }
-
-    public void addIdentifier(CvTermXref ref){
-        ref.setParent(this);
-        getIdentifiers().add(ref);
-    }
-
-    public void addAnnotation(CvTermAnnotation annotation){
-        annotation.setParent(null);
-        getAnnotations().add(annotation);
-    }
-
-    public void removeSynonym(CvTermAlias alias){
-        alias.setParent(null);
-        getSynonyms().remove(alias);
-    }
-
-    public void removeXref(CvTermXref ref){
-        ref.setParent(null);
-        getXrefs().remove(ref);
-    }
-
-    public void removeIdentifier(CvTermXref ref){
-        ref.setParent(null);
-        getIdentifiers().remove(ref);
-    }
-
-    public void removeAnnotation(CvTermAnnotation annotation){
-        annotation.setParent(null);
-        getAnnotations().remove(annotation);
     }
 
     private void setChildren( Collection<OntologyTerm> children ) {

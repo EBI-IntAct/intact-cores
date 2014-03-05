@@ -17,8 +17,6 @@ public interface RangeDao extends IntactBaseDao<IntactRange>{
 
     public IntactRange getByAc(String ac);
 
-    public Collection<IntactRange> getByFeatureAc(String ac);
-
     public Collection<IntactRange> getByIsLinkProperty(boolean isLinked);
 
     public Collection<IntactRange> getByStartStatus(String statusName, String statusMI);

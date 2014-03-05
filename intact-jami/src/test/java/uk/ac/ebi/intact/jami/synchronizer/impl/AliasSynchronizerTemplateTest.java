@@ -108,13 +108,10 @@ public class AliasSynchronizerTemplateTest {
 
         CvTermXref ref1 = new CvTermXref(psimi, Alias.SYNONYM_MI, identity);
         aliasSynonym.getPersistentXrefs().add(ref1);
-        ref1.setParent(aliasSynonym);
         CvTermXref ref2 = new CvTermXref(psimi, CvTerm.PSI_MI, identity);
         psimi.getPersistentXrefs().add(ref2);
-        ref2.setParent(psimi);
         CvTermXref ref3 = new CvTermXref(psimi, Xref.IDENTITY_MI, identity);
         identity.getPersistentXrefs().add(ref3);
-        ref3.setParent(identity);
         entityManager.flush();
         this.synchronizer.clearCache();
 

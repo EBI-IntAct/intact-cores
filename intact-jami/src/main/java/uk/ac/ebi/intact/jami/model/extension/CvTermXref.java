@@ -1,11 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -18,8 +15,6 @@ import javax.persistence.Table;
 @Entity
 @Table( name = "ia_controlledvocab_xref" )
 public class CvTermXref extends AbstractIntactXref{
-
-    private CvTerm parent;
 
     public CvTermXref() {
     }
@@ -38,16 +33,5 @@ public class CvTermXref extends AbstractIntactXref{
 
     public CvTermXref(CvTerm database, String id) {
         super(database, id);
-    }
-
-    @ManyToOne( targetEntity = IntactCvTerm.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
-    @Target(IntactCvTerm.class)
-    public CvTerm getParent() {
-        return parent;
-    }
-
-    public void setParent(CvTerm parent) {
-        this.parent = parent;
     }
 }

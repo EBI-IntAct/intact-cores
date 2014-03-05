@@ -13,9 +13,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Intact implementation of a source. It replaces Institution from intact core
@@ -171,7 +169,8 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         this.bibRef = ref;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAlias.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceAlias.class)
     public Collection<Alias> getSynonyms() {
@@ -213,14 +212,16 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return Hibernate.isInitialized(getPersistentAnnotations());
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceXref.class)
     public Collection<Xref> getPersistentXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceAnnotation.class)
     public Collection<Annotation> getPersistentAnnotations() {
@@ -259,12 +260,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         }
     }
 
-    protected void clearPropertiesLinkedToAnnotations() {
-        url = null;
-        postalAddress = null;
-        this.postalAddress = null;
-    }
-
     private void setPersistentAnnotations(Collection<Annotation> persistentAnnotations) {
         super.setAnnotations(new SourceAnnotationList(persistentAnnotations));
     }
@@ -293,64 +288,24 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         }
 
         @Override
-        public boolean add(Annotation xref) {
-            if(super.add(xref)){
-                processAddedAnnotationEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedAnnotationEvent((Annotation)o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Annotation> existingObject = new ArrayList<Annotation>(this);
-
-            boolean removed = false;
-            for (Annotation o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToAnnotations();
-        }
-
-        @Override
         protected boolean needToPreProcessElementToAdd(Annotation added) {
-            return false;
+            return true;
         }
 
         @Override
         protected Annotation processOrWrapElementToAdd(Annotation added) {
+            processAddedAnnotationEvent(added);
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            processRemovedAnnotationEvent((Annotation)o);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return o instanceof Annotation;
         }
     }
 }

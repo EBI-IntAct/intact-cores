@@ -20,6 +20,4 @@ public interface ParameterDao<P extends AbstractIntactParameter> extends IntactB
 
     public Collection<P> getByTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
 
-    public Collection<P> getByParentAc(String ac);
-
 }

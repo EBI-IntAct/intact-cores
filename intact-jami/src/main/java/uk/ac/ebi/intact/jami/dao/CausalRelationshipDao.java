@@ -17,8 +17,6 @@ public interface CausalRelationshipDao extends IntactBaseDao<IntactCausalRelatio
 
     public Collection<IntactCausalRelationship> getByRelationType(String typeName, String typeMI);
 
-    public Collection<IntactCausalRelationship> getByParentAc(String parentAc);
-
     public Collection<IntactCausalRelationship> getByTargetAc(String parentAc);
 
     public Collection<IntactCausalRelationship> getByParentAndTargetAc(String parentAc, String targetAc);

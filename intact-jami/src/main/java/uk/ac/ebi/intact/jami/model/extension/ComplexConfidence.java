@@ -1,10 +1,12 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.ModelledConfidence;
+import psidev.psi.mi.jami.model.Publication;
 
-import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -19,7 +21,6 @@ import java.util.Collection;
 @Table(name = "ia_complex_confidence")
 public class ComplexConfidence extends AbstractIntactConfidence implements ModelledConfidence{
 
-    private Complex parent;
     private Collection<Publication> publications;
 
     public ComplexConfidence() {
@@ -27,17 +28,6 @@ public class ComplexConfidence extends AbstractIntactConfidence implements Model
 
     public ComplexConfidence(CvTerm type, String value) {
         super(type, value);
-    }
-
-    @ManyToOne( targetEntity = IntactComplex.class )
-    @JoinColumn( name = "complex_ac", referencedColumnName = "ac" )
-    @Target(IntactComplex.class)
-    public Complex getParent() {
-        return parent;
-    }
-
-    public void setParent(Complex interaction) {
-        this.parent = interaction;
     }
 
     @Transient

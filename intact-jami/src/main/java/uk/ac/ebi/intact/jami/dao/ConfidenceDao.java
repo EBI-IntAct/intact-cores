@@ -18,6 +18,4 @@ public interface ConfidenceDao<C extends AbstractIntactConfidence> extends Intac
     public Collection<C> getByType(String typeName, String typeMI);
 
     public Collection<C> getByTypeAndValue(String typeName, String typeMI, String value);
-
-    public Collection<C> getByParentAc(String ac);
 }

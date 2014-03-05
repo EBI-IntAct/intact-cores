@@ -101,7 +101,6 @@ public class IntactCuratedPublication extends IntactPublication{
     }
 
     @OneToMany( mappedBy = "publication", cascade = { CascadeType.ALL }, targetEntity = IntactExperiment.class)
-    @OrderBy("created")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactExperiment.class)
     @Override
@@ -189,8 +188,9 @@ public class IntactCuratedPublication extends IntactPublication{
         }
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifecycleEvent.class)
+    @OneToMany( orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifecycleEvent.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @OrderBy("when, created")
     @Target(PublicationLifecycleEvent.class)
     public List<LifeCycleEvent> getLifecycleEvents() {

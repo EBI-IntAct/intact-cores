@@ -165,8 +165,9 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
         this.expressedIn = organism;
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true,
+    @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ExperimentalEntityConfidence.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ExperimentalEntityConfidence.class)
     public Collection<Confidence> getConfidences() {
@@ -176,8 +177,9 @@ public abstract class AbstractIntactExperimentalEntity extends AbstractIntactEnt
         return this.confidences;
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true,
+    @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ExperimentalEntityParameter.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ExperimentalEntityParameter.class)
     public Collection<Parameter> getParameters() {

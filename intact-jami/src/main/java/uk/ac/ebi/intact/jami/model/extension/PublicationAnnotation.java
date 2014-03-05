@@ -1,12 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Publication;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -20,8 +16,6 @@ import javax.persistence.Table;
 @Table( name = "ia_publication_annot" )
 public class PublicationAnnotation extends AbstractIntactAnnotation{
 
-    private Publication parent;
-
     public PublicationAnnotation() {
         super();
     }
@@ -32,16 +26,5 @@ public class PublicationAnnotation extends AbstractIntactAnnotation{
 
     public PublicationAnnotation(CvTerm topic, String value) {
         super(topic, value);
-    }
-
-    @ManyToOne( targetEntity = IntactCuratedPublication.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
-    @Target(IntactCuratedPublication.class)
-    public Publication getParent() {
-        return parent;
-    }
-
-    public void setParent(Publication parent) {
-        this.parent = parent;
     }
 }

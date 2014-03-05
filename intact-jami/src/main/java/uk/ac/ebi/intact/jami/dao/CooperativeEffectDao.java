@@ -20,8 +20,6 @@ public interface CooperativeEffectDao<I extends AbstractIntactCooperativeEffect>
 
     public Collection<I> getByAffectedInteractionAc(String ac);
 
-    public Collection<I> getByComplexAc(String ac);
-
     public Collection<I> getByOutcome(String name, String mi);
 
     public Collection<I> getByResponse(String name, String mi);

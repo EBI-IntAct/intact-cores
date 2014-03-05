@@ -1,11 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -19,8 +16,6 @@ import javax.persistence.Table;
 @Table( name = "ia_controlledvocab_annot" )
 public class CvTermAnnotation extends AbstractIntactAnnotation{
 
-    private CvTerm parent;
-
     public CvTermAnnotation() {
         super();
     }
@@ -31,16 +26,5 @@ public class CvTermAnnotation extends AbstractIntactAnnotation{
 
     public CvTermAnnotation(CvTerm topic, String value) {
         super(topic, value);
-    }
-
-    @ManyToOne( targetEntity = IntactCvTerm.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
-    @Target(IntactCvTerm.class)
-    public CvTerm getParent() {
-        return parent;
-    }
-
-    public void setParent(CvTerm parent) {
-        this.parent = parent;
     }
 }

@@ -142,8 +142,9 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
         }
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @OneToMany( orphanRemoval = true, cascade = {CascadeType.ALL})
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @IndexColumn( name = "sequence_index" )
     @LazyCollection(LazyCollectionOption.FALSE)
     @Deprecated

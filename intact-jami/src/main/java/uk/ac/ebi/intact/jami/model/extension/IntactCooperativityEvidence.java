@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.CooperativeEffect;
 import psidev.psi.mi.jami.model.CooperativityEvidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Publication;
@@ -28,8 +27,6 @@ public class IntactCooperativityEvidence extends AbstractAuditable implements Co
     private Collection<CvTerm> evidenceMethods;
     private Long id;
 
-    private CooperativeEffect parent;
-
     protected IntactCooperativityEvidence(){
 
     }
@@ -50,17 +47,6 @@ public class IntactCooperativityEvidence extends AbstractAuditable implements Co
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @ManyToOne( targetEntity = AbstractIntactCooperativeEffect.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "id" )
-    @Target(AbstractIntactCooperativeEffect.class)
-    public CooperativeEffect getParent() {
-        return parent;
-    }
-
-    public void setParent(CooperativeEffect parent) {
-        this.parent = parent;
     }
 
     @ManyToOne( targetEntity = IntactPublication.class, optional = false)

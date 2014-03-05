@@ -620,14 +620,6 @@ public class XrefDaoImpl<X extends AbstractIntactXref> extends AbstractIntactBas
         return query.getResultList();
     }
 
-    public Collection<X> getByParentAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select x from " + getEntityClass() + " x " +
-                "join x.parent as p " +
-                "where p.ac = :ac ");
-        query.setParameter("ac", parentAc);
-        return query.getResultList();
-    }
-
     @Override
     public IntactDbSynchronizer<Xref, X> getDbSynchronizer() {
         return getSynchronizerContext().getXrefSynchronizer(getEntityClass());

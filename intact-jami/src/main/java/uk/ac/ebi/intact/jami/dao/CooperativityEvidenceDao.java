@@ -16,6 +16,4 @@ public interface CooperativityEvidenceDao extends IntactBaseDao<IntactCooperativ
     public Collection<IntactCooperativityEvidence> getByPublicationDoi(String doi);
 
     public Collection<IntactCooperativityEvidence> getByPublicationAc(String ac);
-
-    public Collection<IntactCooperativityEvidence> getByCooperativeEffectId(Long id);
 }

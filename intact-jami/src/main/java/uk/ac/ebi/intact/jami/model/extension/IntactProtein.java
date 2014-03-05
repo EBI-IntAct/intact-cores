@@ -358,57 +358,6 @@ public class IntactProtein extends IntactPolymer implements Protein{
         }
 
         @Override
-        public boolean add(Checksum xref) {
-            if(super.add(xref)){
-                processAddedChecksumEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedChecksumEvent((Checksum) o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Checksum> existingObject = new ArrayList<Checksum>(this);
-
-            boolean removed = false;
-            for (Checksum o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToChecksums();
-        }
-
-        @Override
         protected boolean needToPreProcessElementToAdd(Checksum added) {
             return false;
         }
@@ -422,57 +371,6 @@ public class IntactProtein extends IntactPolymer implements Protein{
     protected class ProteinAliasList extends PersistentAliasList {
         public ProteinAliasList(Collection<Alias> aliases){
             super(aliases);
-        }
-
-        @Override
-        public boolean add(Alias xref) {
-            if(super.add(xref)){
-                processAddedAliasEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedAliasEvent((Alias) o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Alias> existingObject = new ArrayList<Alias>(this);
-
-            boolean removed = false;
-            for (Alias o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToAliases();
         }
 
         @Override

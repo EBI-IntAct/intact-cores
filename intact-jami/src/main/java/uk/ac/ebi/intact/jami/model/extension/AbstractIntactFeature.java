@@ -189,8 +189,9 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         return this.xrefs;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureAnnotation.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
     @Target(FeatureAnnotation.class)
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
@@ -199,7 +200,8 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         return this.annotations;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureAlias.class)
+    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(FeatureAlias.class)
     public Collection<Alias> getAliases() {
@@ -223,9 +225,10 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         this.type = type;
     }
 
-    @OneToMany( mappedBy = "feature", orphanRemoval = true,
+    @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = IntactRange.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name = "feature_ac", referencedColumnName = "ac")
     @Target(IntactRange.class)
     public Collection<Range> getRanges() {
         if (ranges == null){
@@ -322,8 +325,9 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         this.binds = binds;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
     @Target(FeatureXref.class)
     public Collection<Xref> getPersistentXrefs() {
         if (this.persistentXrefs == null){
@@ -520,6 +524,16 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         @Override
         protected Xref processOrWrapElementToAdd(Xref added) {
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // nothing to do
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
         }
     }
 }

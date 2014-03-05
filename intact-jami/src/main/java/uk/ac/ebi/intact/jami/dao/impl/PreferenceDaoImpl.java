@@ -35,14 +35,6 @@ public class PreferenceDaoImpl extends AbstractIntactBaseDao<Preference, Prefere
         return query.getResultList();
     }
 
-    public Collection<Preference> getByUserAc(String userAc) {
-        Query query = getEntityManager().createQuery("select p from Preference p " +
-                "join p.user as u " +
-                "where u.ac = :ac ");
-        query.setParameter("ac",userAc);
-        return query.getResultList();
-    }
-
     @Override
     public IntactDbSynchronizer<Preference, Preference> getDbSynchronizer() {
         return getSynchronizerContext().getPreferenceSynchronizer();

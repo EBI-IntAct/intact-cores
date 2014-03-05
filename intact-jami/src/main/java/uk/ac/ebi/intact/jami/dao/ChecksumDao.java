@@ -15,6 +15,4 @@ public interface ChecksumDao<C extends AbstractIntactChecksum> extends IntactBas
     public Collection<C> getByMethod(String methodName, String methodMI);
 
     public Collection<C> getByMethodAndValue(String methodName, String methodMI, String value);
-
-    public Collection<C> getByParentAc(String ac);
 }

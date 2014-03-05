@@ -1,11 +1,13 @@
 package uk.ac.ebi.intact.jami.model.user;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -29,25 +31,22 @@ public class Preference extends AbstractIntactPrimaryObject {
 
     private String value;
 
-    private User user;
-
     //////////////////
     // Constructors
 
     protected Preference() {
     }
 
-    public Preference( User user, String key ) {
+    public Preference( String key ) {
         if ( key == null || key.trim().length() == 0 ) {
             throw new IllegalArgumentException( "You must give a non empty/null key" );
         }
 
         this.key = key;
-        this.user = user;
     }
 
-    public Preference( User user, String key, String value ) {
-        this(user, key);
+    public Preference( String key, String value ) {
+        this(key);
         this.value = value;
     }
 
@@ -77,17 +76,6 @@ public class Preference extends AbstractIntactPrimaryObject {
 
     public void setValue( String value ) {
         this.value = value;
-    }
-
-    @ManyToOne
-    @JoinColumn( name = "user_ac", referencedColumnName = "ac")
-    @ForeignKey(name="FK_PREF_USER")
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser( User user ) {
-        this.user = user;
     }
 
     //////////////////////////

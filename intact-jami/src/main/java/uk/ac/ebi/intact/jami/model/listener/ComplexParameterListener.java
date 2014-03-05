@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.model.listener;
 
+import psidev.psi.mi.jami.model.Experiment;
+import psidev.psi.mi.jami.model.ModelledParameter;
 import uk.ac.ebi.intact.jami.model.extension.ComplexParameter;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 
@@ -22,13 +24,17 @@ public class ComplexParameterListener {
     @PrePersist
     @PreUpdate
     @PostLoad
-    public void prepareExperiment(ComplexParameter param){
+    public void prepareExperiment(IntactComplex complex){
 
-        if (param.getParent() instanceof IntactComplex){
-            IntactComplex parent = (IntactComplex)param.getParent();
-            if (!parent.getExperiments().isEmpty()){
-                param.setExperiment(parent.getExperiments().iterator().next());
-            }
+        if (complex.areParametersInitialized()){
+            Experiment exp = !complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
+
+            for (ModelledParameter param : complex.getModelledParameters()){
+               if (param instanceof ComplexParameter){
+                   ComplexParameter complexParam = (ComplexParameter)param;
+                   complexParam.setExperiment(exp);
+               }
+           }
         }
     }
 }

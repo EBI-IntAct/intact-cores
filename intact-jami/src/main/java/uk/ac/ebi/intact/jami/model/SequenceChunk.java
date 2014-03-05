@@ -5,12 +5,12 @@ in the root directory of this distribution.
 */
 package uk.ac.ebi.intact.jami.model;
 
-import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.Polymer;
-import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -24,11 +24,6 @@ public class SequenceChunk extends AbstractIntactPrimaryObject {
 
     ///////////////////////////////////////
     //attributes
-
-    /**
-     * To who belongs that chunk.
-     */
-    private Polymer parent;
 
     /**
      * The content of the sequence chunk.
@@ -55,16 +50,6 @@ public class SequenceChunk extends AbstractIntactPrimaryObject {
 
     ///////////////////////////////////////
     //access methods for attributes
-    @ManyToOne( targetEntity = IntactPolymer.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac")
-    @Target(IntactPolymer.class)
-    public Polymer getParent() {
-        return parent;
-    }
-
-    public void setParent( Polymer parent ) {
-        this.parent = parent;
-    }
 
     @Column( name = "sequence_chunk", length = IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK, nullable = false)
     @NotNull

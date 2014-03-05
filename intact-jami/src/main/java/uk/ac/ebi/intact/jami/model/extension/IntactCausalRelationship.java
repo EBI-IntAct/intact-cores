@@ -23,8 +23,6 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
     private psidev.psi.mi.jami.model.Entity target;
     private Long id;
 
-    private psidev.psi.mi.jami.model.Entity parent;
-
     protected IntactCausalRelationship(){
     }
 
@@ -60,7 +58,7 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
     }
 
     @ManyToOne(targetEntity = AbstractIntactEntity.class, optional = false)
-    @JoinColumn( name = "entity_ac", referencedColumnName = "ac" )
+    @JoinColumn( name = "target_ac", referencedColumnName = "ac" )
     @Target(AbstractIntactEntity.class)
     @NotNull
     public psidev.psi.mi.jami.model.Entity getTarget() {
@@ -79,17 +77,6 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
             throw new IllegalArgumentException("The participat target in a CausalRelationship cannot be null");
         }
         this.target = target;
-    }
-
-    @ManyToOne( targetEntity = AbstractIntactEntity.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
-    @Target(AbstractIntactEntity.class)
-    public psidev.psi.mi.jami.model.Entity getParent() {
-        return parent;
-    }
-
-    public void setParent(psidev.psi.mi.jami.model.Entity parent) {
-        this.parent = parent;
     }
 
     @Override

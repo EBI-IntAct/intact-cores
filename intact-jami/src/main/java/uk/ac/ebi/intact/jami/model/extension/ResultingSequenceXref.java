@@ -1,13 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Range;
-import psidev.psi.mi.jami.model.ResultingSequence;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -20,8 +15,6 @@ import javax.persistence.Table;
 @Entity
 @Table( name = "ia_resulting_sequence_xref" )
 public class ResultingSequenceXref extends AbstractIntactXref{
-
-    private Range parent;
 
     public ResultingSequenceXref() {
     }
@@ -40,16 +33,5 @@ public class ResultingSequenceXref extends AbstractIntactXref{
 
     public ResultingSequenceXref(CvTerm database, String id) {
         super(database, id);
-    }
-
-    @ManyToOne( targetEntity = IntactRange.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac")
-    @Target(IntactRange.class)
-    public Range getParent() {
-        return parent;
-    }
-
-    public void setParent(Range parent) {
-        this.parent = parent;
     }
 }

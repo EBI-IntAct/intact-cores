@@ -179,14 +179,6 @@ public class ParameterDaoImpl<P extends AbstractIntactParameter> extends Abstrac
         return query.getResultList();
     }
 
-    public Collection<P> getByParentAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select par from " + getEntityClass() + " par " +
-                "join par.parent as p " +
-                "where p.ac = :ac ");
-        query.setParameter("ac",parentAc);
-        return query.getResultList();
-    }
-
     @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getParameterSynchronizer(getEntityClass());

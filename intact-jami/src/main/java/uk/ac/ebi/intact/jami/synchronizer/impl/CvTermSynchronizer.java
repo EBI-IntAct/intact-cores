@@ -8,7 +8,6 @@ import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
-import psidev.psi.mi.jami.utils.comparator.cv.UnambiguousCvTermComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -18,11 +17,11 @@ import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactCvTermComparator;
 
 import javax.persistence.Query;
@@ -412,7 +411,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                     intactCv.getPersistentXrefs().remove(xref);
                     intactCv.getPersistentXrefs().add(cvXref);
                 }
-                cvXref.setParent(intactCv);
             }
         }
     }
@@ -428,7 +426,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                     intactCv.getAnnotations().remove(annotation);
                     intactCv.getAnnotations().add(cvAnnotation);
                 }
-                cvAnnotation.setParent(intactCv);
             }
         }
     }
@@ -444,7 +441,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                     intactCv.getSynonyms().remove(alias);
                     intactCv.getSynonyms().add(cvAlias);
                 }
-                cvAlias.setParent(intactCv);
             }
         }
     }

@@ -1,13 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Interaction;
-import psidev.psi.mi.jami.model.Interactor;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -21,8 +16,6 @@ import javax.persistence.Table;
 @Table( name = "ia_molecule_annot" )
 public class InteractorAnnotation extends AbstractIntactAnnotation{
 
-    private Interactor parent;
-
     public InteractorAnnotation() {
         super();
     }
@@ -33,16 +26,5 @@ public class InteractorAnnotation extends AbstractIntactAnnotation{
 
     public InteractorAnnotation(CvTerm topic, String value) {
         super(topic, value);
-    }
-
-    @ManyToOne( targetEntity = IntactInteractor.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac")
-    @Target(IntactInteractor.class)
-    public Interactor getParent() {
-        return parent;
-    }
-
-    public void setParent(Interactor parent) {
-        this.parent = parent;
     }
 }

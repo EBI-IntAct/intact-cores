@@ -30,9 +30,8 @@ public class VariableParameterValueSetDaoImpl extends AbstractIntactBaseDao<Vari
     }
 
     public Collection<IntactVariableParameterValueSet> getByInteractionAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select v from IntactVariableParameterValueSet v " +
-                "join v.parent as p " +
-                "where p.ac = :ac ");
+        Query query = getEntityManager().createQuery("select v from IntactInteractionEvidence i join i.variableParameterValues v " +
+                "where i.ac = :ac ");
         query.setParameter("ac",parentAc);
         return query.getResultList();
     }

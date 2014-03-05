@@ -18,10 +18,8 @@ import java.math.BigDecimal;
  */
 @javax.persistence.Entity
 @Table( name = "ia_interaction_evidence_parameter" )
-@EntityListeners(value = {InteractionParameterListener.class})
 public class InteractionEvidenceParameter extends AbstractIntactParameter{
 
-    private InteractionEvidence parent;
     private Experiment experiment;
 
     protected InteractionEvidenceParameter() {
@@ -50,17 +48,6 @@ public class InteractionEvidenceParameter extends AbstractIntactParameter{
 
     public InteractionEvidenceParameter(CvTerm type, String value, CvTerm unit) throws IllegalParameterException {
         super(type, value, unit);
-    }
-
-    @ManyToOne( targetEntity = IntactInteractionEvidence.class )
-    @JoinColumn( name = "interaction_ac", referencedColumnName = "ac" )
-    @Target(IntactInteractionEvidence.class)
-    public InteractionEvidence getParent() {
-        return parent;
-    }
-
-    public void setParent(InteractionEvidence interaction) {
-        this.parent = interaction;
     }
 
     /**

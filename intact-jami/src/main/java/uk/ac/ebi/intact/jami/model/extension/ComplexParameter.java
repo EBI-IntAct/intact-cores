@@ -4,7 +4,6 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.listener.ComplexParameterListener;
-import uk.ac.ebi.intact.jami.model.listener.ParticipantParameterListener;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -20,9 +19,7 @@ import java.util.Collection;
  */
 @javax.persistence.Entity
 @Table( name = "ia_complex_parameter" )
-@EntityListeners(value = {ComplexParameterListener.class})
 public class ComplexParameter extends AbstractIntactParameter implements ModelledParameter{
-    private Complex parent;
     private Collection<Publication> publications;
 
     private Experiment experiment;
@@ -53,17 +50,6 @@ public class ComplexParameter extends AbstractIntactParameter implements Modelle
 
     public ComplexParameter(CvTerm type, String value, CvTerm unit) throws IllegalParameterException {
         super(type, value, unit);
-    }
-
-    @ManyToOne( targetEntity = IntactComplex.class )
-    @JoinColumn( name = "complex_ac", referencedColumnName = "ac" )
-    @Target(IntactComplex.class)
-    public Complex getParent() {
-        return parent;
-    }
-
-    public void setParent(Complex interaction) {
-        this.parent = interaction;
     }
 
     @Transient

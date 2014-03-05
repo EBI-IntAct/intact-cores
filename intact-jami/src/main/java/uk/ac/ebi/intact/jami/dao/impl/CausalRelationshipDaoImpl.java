@@ -54,14 +54,6 @@ public class CausalRelationshipDaoImpl extends AbstractIntactBaseDao<CausalRelat
         return query.getResultList();
     }
 
-    public Collection<IntactCausalRelationship> getByParentAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select c from IntactCausalRelationship c " +
-                "join c.parent as p " +
-                "where p.ac = :ac ");
-        query.setParameter("ac",parentAc);
-        return query.getResultList();
-    }
-
     public Collection<IntactCausalRelationship> getByTargetAc(String parentAc) {
         Query query = getEntityManager().createQuery("select c from IntactCausalRelationship c " +
                 "join c.target as t " +

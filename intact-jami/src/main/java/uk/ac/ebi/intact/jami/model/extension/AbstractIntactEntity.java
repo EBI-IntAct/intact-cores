@@ -118,8 +118,9 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         biologicalRole = bioRole;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactCausalRelationship.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactCausalRelationship.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="source_ac", referencedColumnName="ac")
     @Target(IntactCausalRelationship.class)
     public Collection<CausalRelationship> getCausalRelationships() {
         if (this.causalRelationships == null){
@@ -128,7 +129,8 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         return this.causalRelationships;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityXref.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(EntityXref.class)
     public Collection<Xref> getXrefs() {
@@ -138,8 +140,9 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         return this.xrefs;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityAnnotation.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Target(EntityAnnotation.class)
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
@@ -148,7 +151,8 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         return this.annotations;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityAlias.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(EntityAlias.class)
     public Collection<Alias> getAliases() {

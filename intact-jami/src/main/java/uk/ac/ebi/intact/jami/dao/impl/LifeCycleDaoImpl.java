@@ -90,14 +90,6 @@ public class LifeCycleDaoImpl<A extends AbstractLifecycleEvent> extends Abstract
         return query.getResultList();
     }
 
-    public Collection<A> getByParentAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select l from " + getEntityClass() + " l " +
-                "join l.parent as p " +
-                "where p.ac = :ac ");
-        query.setParameter("ac",parentAc);
-        return query.getResultList();
-    }
-
     @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getLifecycleSynchronizer(getEntityClass());

@@ -33,14 +33,6 @@ public class RangeDaoImpl extends AbstractIntactBaseDao<Range, IntactRange> impl
         return getEntityManager().find(IntactRange.class, ac);
     }
 
-    public Collection<IntactRange> getByFeatureAc(String ac) {
-        Query query = getEntityManager().createQuery("select r from IntactRange r " +
-                "join r.feature as f " +
-                "where f.ac = :ac ");
-        query.setParameter("ac",ac);
-        return query.getResultList();
-    }
-
     public Collection<IntactRange> getByIsLinkProperty(boolean isLinked) {
         Query query = getEntityManager().createQuery("select r from IntactRange r " +
                 "where r.link = :isLinked ");

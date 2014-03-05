@@ -4,7 +4,6 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Experiment;
-import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.ParameterValue;
 import uk.ac.ebi.intact.jami.model.listener.ParticipantParameterListener;
 
@@ -20,10 +19,8 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table( name = "ia_component_parameter" )
-@EntityListeners(value = {ParticipantParameterListener.class})
 public class ExperimentalEntityParameter extends AbstractIntactParameter{
 
-    private ExperimentalEntity parent;
     private Experiment experiment;
 
     protected ExperimentalEntityParameter() {
@@ -52,17 +49,6 @@ public class ExperimentalEntityParameter extends AbstractIntactParameter{
 
     public ExperimentalEntityParameter(CvTerm type, String value, CvTerm unit) throws IllegalParameterException {
         super(type, value, unit);
-    }
-
-    @ManyToOne( targetEntity = AbstractIntactExperimentalEntity.class )
-    @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
-    @Target(AbstractIntactExperimentalEntity.class)
-    public ExperimentalEntity getParent() {
-        return parent;
-    }
-
-    public void setParent(ExperimentalEntity participant) {
-        this.parent = participant;
     }
 
     /**

@@ -4,6 +4,7 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
+import uk.ac.ebi.intact.jami.model.listener.ParticipantParameterListener;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.Collection;
  */
 @javax.persistence.Entity
 @DiscriminatorValue("participant_evidence")
+@EntityListeners(value = {ParticipantParameterListener.class})
 public class IntactParticipantEvidence extends IntactExperimentalEntity implements ParticipantEvidence{
 
     private InteractionEvidence interaction;

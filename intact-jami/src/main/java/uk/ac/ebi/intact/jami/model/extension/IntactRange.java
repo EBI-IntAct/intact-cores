@@ -27,8 +27,6 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
     private ResultingSequence resultingSequence;
     private Entity participant;
 
-    private Feature feature;
-
     protected IntactRange(){
 
     }
@@ -117,17 +115,6 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
 
     public void setResultingSequence(ResultingSequence resultingSequence) {
         this.resultingSequence = resultingSequence;
-    }
-
-    @ManyToOne(targetEntity = AbstractIntactFeature.class)
-    @JoinColumn(name = "feature_ac", referencedColumnName = "ac")
-    @Target(AbstractIntactFeature.class)
-    public Feature getFeature() {
-        return this.feature;
-    }
-
-    public void setFeature(Feature feature) {
-        this.feature = feature;
     }
 
     @ManyToOne(targetEntity = AbstractIntactEntity.class)

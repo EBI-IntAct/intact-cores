@@ -265,7 +265,8 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return shortName + (organism != null ? ", " + organism.toString() : "") + (interactorType != null ? ", " + interactorType.toString() : "")  ;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorXref.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorXref.class)
     public Collection<Xref> getPersistentXrefs() {
@@ -275,7 +276,8 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return persistentXrefs.getWrappedList();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorChecksum.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorChecksum.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorChecksum.class)
     public Collection<Checksum> getPersistentChecksums() {
@@ -285,7 +287,8 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return this.checksums.getWrappedList();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAnnotation.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorAnnotation.class)
     public Collection<Annotation> getPersistentAnnotations() {
@@ -295,7 +298,8 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return this.annotations.getWrappedList();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAlias.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorAlias.class)
     public Collection<Alias> getPersistentAliases() {
@@ -494,6 +498,16 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         protected Annotation processOrWrapElementToAdd(Annotation added) {
             return added;
         }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // do nothing
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
+        }
     }
 
     protected class PersistentAliasList extends AbstractCollectionWrapper<Alias> {
@@ -510,6 +524,16 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         @Override
         protected Alias processOrWrapElementToAdd(Alias added) {
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // do nothing
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
         }
     }
 
@@ -528,6 +552,16 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         protected Checksum processOrWrapElementToAdd(Checksum added) {
             return added;
         }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // do nothing
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
+        }
     }
 
     protected class PersistentXrefList extends AbstractCollectionWrapper<Xref> {
@@ -544,6 +578,16 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         @Override
         protected Xref processOrWrapElementToAdd(Xref added) {
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // do nothing
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
         }
     }
 }

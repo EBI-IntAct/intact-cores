@@ -90,14 +90,6 @@ public class ChecksumDaoImpl<C extends AbstractIntactChecksum> extends AbstractI
         return query.getResultList();
     }
 
-    public Collection<C> getByParentAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select c from " + getEntityClass() + " c " +
-                "join c.parent as p " +
-                "where p.ac = :ac ");
-        query.setParameter("ac",parentAc);
-        return query.getResultList();
-    }
-
     @Override
     public IntactDbSynchronizer<Checksum, C> getDbSynchronizer() {
         return getSynchronizerContext().getChecksumSynchronizer(getEntityClass());

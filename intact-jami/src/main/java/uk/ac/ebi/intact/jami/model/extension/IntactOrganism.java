@@ -140,7 +140,8 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
         }
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = OrganismAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = OrganismAlias.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(OrganismAlias.class)
     public Collection<Alias> getAliases() {

@@ -1,13 +1,10 @@
 package uk.ac.ebi.intact.jami.model;
 
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Publication;
-import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
 import uk.ac.ebi.intact.jami.model.user.User;
 
-import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.util.Date;
 
 /**
@@ -19,8 +16,6 @@ import java.util.Date;
 @Entity
 @DiscriminatorValue("publication")
 public class PublicationLifecycleEvent extends AbstractLifecycleEvent {
-
-    private Publication publication;
 
     public PublicationLifecycleEvent() {
     }
@@ -37,17 +32,5 @@ public class PublicationLifecycleEvent extends AbstractLifecycleEvent {
      */
     public PublicationLifecycleEvent(CvTerm event, User who, String note) {
         super( event, who, new Date(), note );
-    }
-
-    @ManyToOne( targetEntity = IntactCuratedPublication.class, fetch = FetchType.LAZY, optional = false )
-    @JoinColumn( name = "publication_ac", referencedColumnName = "ac")
-    @ForeignKey(name="FK_LIFECYCLE_EVENT_PUBLICATION")
-    @Target(IntactCuratedPublication.class)
-    public Publication getParent() {
-        return publication;
-    }
-
-    public void setParent( Publication publication ) {
-        this.publication = publication;
     }
 }

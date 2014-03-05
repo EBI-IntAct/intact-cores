@@ -17,6 +17,7 @@ import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.listener.InteractionExperimentListener;
+import uk.ac.ebi.intact.jami.model.listener.InteractionParameterListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -26,7 +27,6 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Intact implementation of interaction evidence
@@ -37,7 +37,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "ia_interaction")
-@EntityListeners(value = {InteractionExperimentListener.class})
+@EntityListeners(value = {InteractionExperimentListener.class, InteractionParameterListener.class})
 public class IntactInteractionEvidence extends AbstractIntactPrimaryObject implements InteractionEvidence{
     private Xref imexId;
     private Experiment experiment;
@@ -147,7 +147,8 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return this.checksums;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionAnnotation.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionAnnotation.class)
     public Collection<Annotation> getAnnotations() {
@@ -298,7 +299,8 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
-    @OneToMany(mappedBy = "parent", targetEntity=IntactVariableParameterValueSet.class, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(targetEntity=IntactVariableParameterValueSet.class, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactVariableParameterValueSet.class)
     public Collection<VariableParameterValueSet> getVariableParameterValues() {
@@ -309,8 +311,9 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return this.variableParameterValueSets;
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true,
+    @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = InteractionEvidenceConfidence.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionEvidenceConfidence.class)
     public Collection<Confidence> getConfidences() {
@@ -344,8 +347,9 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true,
+    @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = InteractionEvidenceParameter.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionEvidenceParameter.class)
     public Collection<Parameter> getParameters() {
@@ -417,7 +421,8 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return Hibernate.isInitialized(getParticipants());
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionXref.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionXref.class)
     public Collection<Xref> getPersistentXrefs() {
@@ -427,7 +432,8 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return persistentXrefs.getWrappedList();
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionChecksum.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionChecksum.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionChecksum.class)
     public Collection<Checksum> getPersistentChecksums() {
@@ -448,10 +454,6 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         if (rigid == removed){
             rigid = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.RIGID_MI, Checksum.RIGID);
         }
-    }
-
-    protected void clearPropertiesLinkedToChecksums() {
-        rigid = null;
     }
 
     protected void initialiseExperimentalConfidences(){
@@ -635,64 +637,24 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
 
         @Override
-        public boolean add(Checksum xref) {
-            if(super.add(xref)){
-                processAddedChecksumEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedChecksumEvent((Checksum) o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Checksum> existingObject = new ArrayList<Checksum>(this);
-
-            boolean removed = false;
-            for (Checksum o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToChecksums();
-        }
-
-        @Override
         protected boolean needToPreProcessElementToAdd(Checksum added) {
-            return false;
+            return true;
         }
 
         @Override
         protected Checksum processOrWrapElementToAdd(Checksum added) {
+            processAddedChecksumEvent(added);
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            processRemovedChecksumEvent((Checksum)o);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return o instanceof Checksum;
         }
     }
     private class PersistentXrefList extends AbstractCollectionWrapper<Xref> {
@@ -703,21 +665,22 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
         @Override
         protected boolean needToPreProcessElementToAdd(Xref added) {
-            if (!(added instanceof InteractionXref)){
-                return true;
-            }
-            else{
-                InteractionXref termXref = (InteractionXref)added;
-                if (termXref.getParent() != null && termXref.getParent() != this){
-                    return true;
-                }
-            }
             return false;
         }
 
         @Override
         protected Xref processOrWrapElementToAdd(Xref added) {
-            return new InteractionXref(added.getDatabase(), added.getId(), added.getVersion(), added.getQualifier());
+            return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // do nothing
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
         }
     }
 

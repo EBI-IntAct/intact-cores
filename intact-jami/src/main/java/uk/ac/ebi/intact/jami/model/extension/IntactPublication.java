@@ -393,7 +393,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return (imexId != null ? imexId.getId() : (pubmedId != null ? pubmedId.getId() : (doi != null ? doi.getId() : (title != null ? title : "-"))));
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationAnnotation.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(PublicationAnnotation.class)
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -419,7 +420,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return Hibernate.isInitialized(getExperiments());
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationXref.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(PublicationXref.class)
     public Collection<Xref> getPersistentXrefs() {
@@ -659,6 +661,16 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         protected Xref processOrWrapElementToAdd(Xref added) {
             return added;
         }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // do nothing
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
+        }
     }
 
     private class PublicationAnnotationList extends AbstractCollectionWrapper<Annotation> {
@@ -719,12 +731,23 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
         @Override
         protected boolean needToPreProcessElementToAdd(Annotation added) {
-            return false;
+            return true;
         }
 
         @Override
         protected Annotation processOrWrapElementToAdd(Annotation added) {
+            processAddedAnnotationEvent(added);
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            processRemovedAnnotationEvent((Annotation)o);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return o instanceof Annotation;
         }
     }
 }

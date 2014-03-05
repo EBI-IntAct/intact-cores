@@ -16,5 +16,4 @@ import java.util.Collection;
 public interface PreferenceDao extends IntactBaseDao<Preference> {
 
     public Collection<Preference> getByKey(String key, int first, int max);
-    public Collection<Preference> getByUserAc(String parentAc);
 }

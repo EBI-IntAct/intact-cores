@@ -21,5 +21,4 @@ public interface LifeCycleEventDao<L extends LifeCycleEvent> extends IntactBaseD
     public Collection<L> getByUser(String user, int first, int max);
     public Collection<L> getByNote(String note, int first, int max);
     public Collection<L> getByNoteLike(String note, int first, int max);
-    public Collection<L> getByParentAc(String parentAc);
 }

@@ -37,8 +37,6 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
     private BigDecimal value;
     private Long id;
 
-    private Complex complex;
-
     protected AbstractIntactCooperativeEffect(){
 
     }
@@ -66,7 +64,8 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
         this.id = id;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactCooperativityEvidence.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactCooperativityEvidence.class)
+    @JoinColumn(name="cooperative_effect_id", referencedColumnName="id")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactCooperativityEvidence.class)
     public Collection<CooperativityEvidence> getCooperativityEvidences() {
@@ -90,7 +89,8 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
         return affectedInteractions;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CooperativeEffectAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CooperativeEffectAnnotation.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="id")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(CooperativeEffectAnnotation.class)
     public Collection<Annotation> getAnnotations() {
@@ -133,17 +133,6 @@ public abstract class AbstractIntactCooperativeEffect extends AbstractAuditable 
 
     public void setCooperativeEffectValue(BigDecimal value) {
         this.value = value;
-    }
-
-    @ManyToOne( targetEntity = IntactComplex.class )
-    @JoinColumn( name = "complex_ac", referencedColumnName = "ac" )
-    @Target(IntactComplex.class)
-    public Complex getComplex() {
-        return complex;
-    }
-
-    public void setComplex(Complex complex) {
-        this.complex = complex;
     }
 
     @Override

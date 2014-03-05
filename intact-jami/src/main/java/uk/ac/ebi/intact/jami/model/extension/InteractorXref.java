@@ -1,13 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Feature;
-import psidev.psi.mi.jami.model.Interactor;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -20,8 +15,6 @@ import javax.persistence.Table;
 @Entity
 @Table( name = "ia_molecule_xref" )
 public class InteractorXref extends AbstractIntactXref{
-
-    private Interactor parent;
 
     public InteractorXref() {
     }
@@ -40,16 +33,5 @@ public class InteractorXref extends AbstractIntactXref{
 
     public InteractorXref(CvTerm database, String id) {
         super(database, id);
-    }
-
-    @ManyToOne( targetEntity = IntactInteractor.class )
-    @JoinColumn( name = "parent_ac", referencedColumnName = "ac" )
-    @Target(IntactInteractor.class)
-    public Interactor getParent() {
-        return parent;
-    }
-
-    public void setParent(Interactor parent) {
-        this.parent = parent;
     }
 }

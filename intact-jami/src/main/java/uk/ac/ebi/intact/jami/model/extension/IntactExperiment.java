@@ -92,7 +92,8 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
         }
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ExperimentXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ExperimentXref.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ExperimentXref.class)
     public Collection<Xref> getXrefs() {
@@ -102,8 +103,9 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
         return this.xrefs;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ExperimentAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ExperimentAnnotation.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Target(ExperimentAnnotation.class)
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){

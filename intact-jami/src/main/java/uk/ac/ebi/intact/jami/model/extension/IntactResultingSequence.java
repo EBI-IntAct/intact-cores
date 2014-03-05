@@ -47,7 +47,8 @@ public class IntactResultingSequence implements ResultingSequence{
         return originalSequence;
     }
 
-    @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ResultingSequenceXref.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ResultingSequenceXref.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ResultingSequenceXref.class)
     public Collection<Xref> getXrefs() {

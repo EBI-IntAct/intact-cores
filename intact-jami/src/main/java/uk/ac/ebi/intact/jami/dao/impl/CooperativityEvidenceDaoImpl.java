@@ -96,14 +96,6 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
         return query.getResultList();
     }
 
-    public Collection<IntactCooperativityEvidence> getByCooperativeEffectId(Long id) {
-        Query query = getEntityManager().createQuery("select c from IntactCooperativityEvidence c " +
-                "join c.parent as p " +
-                "where p.id = :id ");
-        query.setParameter("id",id);
-        return query.getResultList();
-    }
-
     @Override
     public IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> getDbSynchronizer() {
         return getSynchronizerContext().getCooperativityEvidenceSynchronizer();

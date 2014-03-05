@@ -10,9 +10,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Intact implementation of bioactive entity
@@ -289,12 +287,6 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         }
     }
 
-    private void clearPropertiesLinkedToChecksums() {
-        standardInchiKey = null;
-        standardInchi = null;
-        smile = null;
-    }
-
     @Override
     protected void processAddedIdentifierEvent(Xref added) {
         // the added identifier is chebi and it is not the current chebi identifier
@@ -361,64 +353,24 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         }
 
         @Override
-        public boolean add(Checksum xref) {
-            if(super.add(xref)){
-                processAddedChecksumEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedChecksumEvent((Checksum) o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Checksum> existingObject = new ArrayList<Checksum>(this);
-
-            boolean removed = false;
-            for (Checksum o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToChecksums();
-        }
-
-        @Override
         protected boolean needToPreProcessElementToAdd(Checksum added) {
-            return false;
+            return true;
         }
 
         @Override
         protected Checksum processOrWrapElementToAdd(Checksum added) {
+            processAddedChecksumEvent(added);
             return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            processRemovedChecksumEvent((Checksum)o);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return o instanceof Checksum;
         }
     }
 }

@@ -53,7 +53,7 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
 
     @Override
     protected Preference instantiateNewPersistentInstance(Preference object, Class<? extends Preference> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return new Preference(object.getUser(), object.getKey(), object.getValue());
+        return new Preference(object.getKey(), object.getValue());
     }
 
     @Override

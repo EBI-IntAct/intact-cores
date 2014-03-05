@@ -145,14 +145,6 @@ public class AnnotationDaoImpl<A extends AbstractIntactAnnotation> extends Abstr
         return query.getResultList();
     }
 
-    public Collection<A> getByParentAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select a from " + getEntityClass() + " a " +
-                "join a.parent as p " +
-                "where p.ac = :ac ");
-        query.setParameter("ac",parentAc);
-        return query.getResultList();
-    }
-
     @Override
     public IntactDbSynchronizer<Annotation, A> getDbSynchronizer() {
         return getSynchronizerContext().getAnnotationSynchronizer(getEntityClass());

@@ -178,9 +178,10 @@ public class User extends AbstractIntactPrimaryObject {
         this.disabled = disabled;
     }
 
-    @OneToMany( mappedBy = "user",
-                cascade = {CascadeType.ALL},orphanRemoval = true)
+    @OneToMany( cascade = {CascadeType.ALL},orphanRemoval = true)
     @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
+    @JoinColumn(name = "user_ac", referencedColumnName = "ac")
+    @ForeignKey(name="FK_PREF_USER")
     @LazyCollection(LazyCollectionOption.FALSE)
     public Collection<Preference> getPreferences() {
         return preferences;
@@ -210,7 +211,7 @@ public class User extends AbstractIntactPrimaryObject {
     }
 
     public Preference addPreference(String key, String value) {
-        Preference preference = new Preference(this, key, value);
+        Preference preference = new Preference(key, value);
         addPreference(preference);
         return preference;
     }
