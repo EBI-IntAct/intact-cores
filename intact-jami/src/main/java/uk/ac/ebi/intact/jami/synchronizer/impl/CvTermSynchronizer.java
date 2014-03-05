@@ -475,8 +475,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select cv.shortName from IntactCvTerm cv " +
-                    "where cv.shortName = :name or cv.shortName like :nameWithSuffix"
-                    + (this.objClass != null ? " and cv.objClass = :objclass" : " ")
+                    "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
+                    + (this.objClass != null ? " and cv.objClass = :objclass " : " ")
                     + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
             query.setParameter("name", name);
             query.setParameter("nameWithSuffix", name+"-%");

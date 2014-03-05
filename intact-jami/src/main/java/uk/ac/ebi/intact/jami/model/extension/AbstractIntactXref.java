@@ -100,7 +100,7 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
     }
 
     public void setId(String aPrimaryId) {
-        if (id == null || (id != null && id.length() == 0)){
+        if (aPrimaryId == null || (aPrimaryId != null && aPrimaryId.length() == 0)){
             throw new IllegalArgumentException("The id is required and cannot be null or empty");
         }
         this.id = aPrimaryId;
