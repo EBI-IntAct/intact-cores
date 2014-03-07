@@ -35,7 +35,6 @@ public class IntactDaoImpl implements IntactDao{
     private EntityManagerFactory intactEntityManagerFactory;
 
     private SynchronizerContext synchronizerContext;
-    private AliasDao aliasDao;
     private XrefDao xrefDao;
     private AnnotationDao annotationDao;
     private AllosteryDao allosteryDao;
@@ -84,38 +83,6 @@ public class IntactDaoImpl implements IntactDao{
             this.synchronizerContext = new DefaultSynchronizerContext(getEntityManager());
         }
         return this.synchronizerContext;
-    }
-
-    public <T extends AbstractIntactAlias> AliasDao<T> getAliasDao(Class<T> aliasClass) {
-        if (this.aliasDao == null){
-            this.aliasDao = new AliasDaoImpl(AbstractIntactAlias.class, getEntityManager(), getSynchronizerContext());
-        }
-        this.aliasDao.setEntityClass(aliasClass);
-        return this.aliasDao;
-    }
-
-    public AliasDao<CvTermAlias> getCvAliasDao() {
-        return getAliasDao(CvTermAlias.class);
-    }
-
-    public AliasDao<SourceAlias> getSourceAliasDao() {
-        return getAliasDao(SourceAlias.class);
-    }
-
-    public AliasDao<OrganismAlias> getOrganismAliasDao() {
-        return getAliasDao(OrganismAlias.class);
-    }
-
-    public AliasDao<FeatureAlias> getFeatureAliasDao() {
-        return getAliasDao(FeatureAlias.class);
-    }
-
-    public AliasDao<EntityAlias> getEntityAliasDao() {
-        return getAliasDao(EntityAlias.class);
-    }
-
-    public AliasDao<InteractorAlias> getInteractorAliasDao() {
-        return getAliasDao(InteractorAlias.class);
     }
 
     public <T extends AbstractIntactXref> XrefDao<T> getXrefDao(Class<T> xrefClass) {

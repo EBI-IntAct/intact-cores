@@ -17,6 +17,7 @@ import javax.validation.constraints.Size;
  * Note: this implementation was chosen because aliases do not make sense without their parents and are not shared by different entities
  * It is then better to have several alias tables, one for each entity rather than one big alias table and x join tables.
  * In addition to that, it is backward compatible with previous intact-core data model
+ * It would be better to never query for an alias without involving its parent.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

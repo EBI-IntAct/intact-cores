@@ -25,20 +25,6 @@ public interface IntactDao {
 
     public SynchronizerContext getSynchronizerContext();
 
-    public <T extends AbstractIntactAlias> AliasDao<T> getAliasDao(Class<T> aliasClass);
-
-    public AliasDao<CvTermAlias> getCvAliasDao();
-
-    public AliasDao<SourceAlias> getSourceAliasDao();
-
-    public AliasDao<OrganismAlias> getOrganismAliasDao();
-
-    public AliasDao<FeatureAlias> getFeatureAliasDao();
-
-    public AliasDao<EntityAlias> getEntityAliasDao();
-
-    public AliasDao<InteractorAlias> getInteractorAliasDao();
-
     public <T extends AbstractIntactXref> XrefDao<T> getXrefDao(Class<T> xrefClass);
 
     public XrefDao<CvTermXref> getCvXrefDao();
