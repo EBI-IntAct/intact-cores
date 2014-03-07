@@ -9,9 +9,15 @@
     </parent>-->
     <groupId>uk.ac.ebi.intact.jami</groupId>
     <artifactId>intact-jami</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-alpha-SNAPSHOT</version>
 
     <name>INTACT :: JAMI - Core interfaces, default implementations of IntAct API based on JAMI interfaces</name>
+
+    <scm>
+        <connection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk/intact-jami</connection>
+        <developerConnection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk/intact-jami</developerConnection>
+        <url>http://code.google.com/p/intact/source/browse/repo/core/trunk/intact-jami/</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
