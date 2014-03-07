@@ -445,14 +445,22 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
         @Override
         protected void processAddedObjectEvent(Xref added) {
-            processAddedIdentifierEvent(added);
-            persistentXrefs.add(added);
+            if (!added.equals(acRef)){
+                processAddedIdentifierEvent(added);
+                persistentXrefs.add(added);
+            }
         }
 
         @Override
         protected void processRemovedObjectEvent(Xref removed) {
-            processRemovedIdentifierEvent(removed);
-            persistentXrefs.remove(removed);
+            if (!removed.equals(acRef)){
+                processRemovedIdentifierEvent(removed);
+                persistentXrefs.remove(removed);
+            }
+            else{
+                super.addOnly(acRef);
+                throw new UnsupportedOperationException("Cannot remove the database accession of a Feature object from its list of identifiers.");
+            }
         }
 
         @Override

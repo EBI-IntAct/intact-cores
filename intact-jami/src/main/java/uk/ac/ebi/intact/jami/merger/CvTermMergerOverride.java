@@ -5,8 +5,12 @@ import psidev.psi.mi.jami.enricher.CvTermEnricher;
 import psidev.psi.mi.jami.enricher.impl.full.FullCvTermEnricher;
 import psidev.psi.mi.jami.enricher.listener.CvTermEnricherListener;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.OntologyTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Cv term merger based on the jami cv term enricher.
@@ -34,5 +38,52 @@ public class CvTermMergerOverride extends IntactDbMergerOverride<CvTerm, IntactC
 
     public CvTermEnricherListener<CvTerm> getCvTermEnricherListener() {
         return null;
+    }
+
+    @Override
+    public IntactCvTerm merge(IntactCvTerm obj1, IntactCvTerm obj2) {
+        // obj2 is mergedCv
+        IntactCvTerm mergedCv = super.merge(obj1, obj2);
+
+        //merge parents
+        if (obj1.areParentsInitialized()){
+            mergeParents(mergedCv, mergedCv.getParents(), obj1.getParents());
+        }
+        return mergedCv;
+    }
+
+    private void mergeParents(IntactCvTerm cvToEnrich, Collection<OntologyTerm> toEnrichParents, Collection<OntologyTerm> sourceParents) {
+
+        Iterator<OntologyTerm> ontologyIterator  = toEnrichParents.iterator();
+        while(ontologyIterator.hasNext()){
+            OntologyTerm parent = ontologyIterator.next();
+            boolean containsParent = false;
+            for (OntologyTerm parent2 : sourceParents){
+                if (parent == parent2){
+                    containsParent = true;
+                    break;
+                }
+            }
+            // remove interaction not in second list
+            if (!containsParent){
+                ontologyIterator.remove();
+            }
+        }
+        ontologyIterator = sourceParents.iterator();
+        while(ontologyIterator.hasNext()){
+            OntologyTerm parent = ontologyIterator.next();
+            boolean containsParent = false;
+            for (OntologyTerm parent2 : toEnrichParents){
+                // identical terms
+                if (parent == parent2){
+                    containsParent = true;
+                    break;
+                }
+            }
+            // add missing parent not in second list
+            if (!containsParent){
+                cvToEnrich.addParent(parent);
+            }
+        }
     }
 }

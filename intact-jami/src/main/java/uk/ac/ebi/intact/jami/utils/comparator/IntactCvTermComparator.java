@@ -8,6 +8,7 @@ import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.xref.UnambiguousExternalIdentifierComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,6 +75,23 @@ public class IntactCvTermComparator implements Comparator<CvTerm> {
             String mod2 = cvTerm2.getMODIdentifier();
             String par1 = cvTerm1.getPARIdentifier();
             String par2 = cvTerm2.getPARIdentifier();
+
+            // get objclass first
+            String objClass1 = cvTerm1 instanceof IntactCvTerm ? ((IntactCvTerm) cvTerm1).getObjClass() : null;
+            String objClass2 = cvTerm2 instanceof IntactCvTerm ? ((IntactCvTerm) cvTerm2).getObjClass() : null;
+
+            if (objClass1 != null && objClass2 != null){
+                int comp = objClass1.compareTo(objClass2);
+                if (comp != 0){
+                    return comp;
+                }
+            }
+            else if (objClass1 != null){
+                 return BEFORE;
+            }
+            else if (objClass2 != null){
+                return AFTER;
+            }
 
             if (mi1 != null && mi2 != null){
                 return mi1.compareTo(mi2);

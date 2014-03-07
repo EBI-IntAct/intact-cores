@@ -54,6 +54,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
@@ -98,6 +99,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
@@ -141,6 +143,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
@@ -187,6 +190,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_find() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
@@ -205,6 +209,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
@@ -247,6 +252,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
@@ -289,6 +295,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
@@ -331,6 +338,7 @@ public class AliasSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);

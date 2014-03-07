@@ -588,12 +588,20 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
         @Override
         protected void processAddedObjectEvent(Xref added) {
-            persistentXrefs.add(added);
+            if (!added.equals(acRef)){
+                persistentXrefs.add(added);
+            }
         }
 
         @Override
         protected void processRemovedObjectEvent(Xref removed) {
-            persistentXrefs.remove(removed);
+            if (!removed.equals(acRef)){
+                persistentXrefs.remove(removed);
+            }
+            else{
+                super.addOnly(acRef);
+                throw new UnsupportedOperationException("Cannot remove the database accession of an Interaction object from its list of identifiers.");
+            }
         }
 
         @Override

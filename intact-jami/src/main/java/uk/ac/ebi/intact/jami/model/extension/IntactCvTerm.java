@@ -147,7 +147,12 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     ///////////////////////////////////////
     // access methods for associations
 
-    @ManyToMany( mappedBy = "parents", targetEntity = IntactCvTerm.class )
+    @ManyToMany(targetEntity = IntactCvTerm.class)
+    @JoinTable(
+            name = "ia_cv2cv",
+            joinColumns = {@JoinColumn( name = "parent_ac", referencedColumnName = "ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "child_ac", referencedColumnName = "ac" )}
+    )
     @Target(IntactCvTerm.class)
     public Collection<OntologyTerm> getChildren() {
         if (children == null){
@@ -161,10 +166,8 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     public void addChild( OntologyTerm cvDagObject ) {
 
-        if ( !getChildren().contains( cvDagObject ) ) {
-            children.add( cvDagObject );
-            cvDagObject.getParents().add( this );
-        }
+        getChildren().add( cvDagObject );
+        cvDagObject.getParents().add( this );
     }
 
     public void removeChild( OntologyTerm cvDagObject ) {
@@ -174,12 +177,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         }
     }
 
-    @ManyToMany(targetEntity = IntactCvTerm.class)
-    @JoinTable(
-            name = "ia_cv2cv",
-            joinColumns = {@JoinColumn( name = "child_ac", referencedColumnName = "ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "parent_ac", referencedColumnName = "ac" )}
-    )
+    @ManyToMany( mappedBy = "children", targetEntity = IntactCvTerm.class )
     @Target(IntactCvTerm.class)
     public Collection<OntologyTerm> getParents() {
         if (parents == null){
@@ -190,10 +188,8 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     public void addParent( OntologyTerm cvDagObject ) {
 
-        if ( !getParents().contains( cvDagObject ) ) {
-            parents.add( cvDagObject );
-            cvDagObject.getChildren().add( this );
-        }
+        getParents().add( cvDagObject );
+        cvDagObject.getChildren().add( this );
     }
 
     public void removeParent( OntologyTerm cvDagObject ) {
@@ -215,6 +211,9 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     @Column( name = "objclass", nullable = false)
     public String getObjClass() {
+        if (this.objClass == null){
+            this.objClass = IntactUtils.TOPIC_OBJCLASS;
+        }
         return objClass;
     }
 

@@ -45,14 +45,16 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     public CvTermSynchronizer(SynchronizerContext context){
         super(context, IntactCvTerm.class);
-        this.objClass = null;
+        // all new cv created will be annotation topic by default
+        this.objClass = IntactUtils.TOPIC_OBJCLASS;
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
     }
 
     public CvTermSynchronizer(SynchronizerContext context, String objClass){
         this(context);
-        this.objClass = objClass;
+        //If no objclass provided all new cv created will be annotation topic by default
+        this.objClass = objClass != null ? objClass : IntactUtils.TOPIC_OBJCLASS;
     }
 
     public IntactCvTerm find(CvTerm term) throws FinderException {
@@ -118,8 +120,10 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         initialiseIdentifier(intactCv);
         // then check xrefs
         prepareXrefs(intactCv);
-        // synchronize children
+        // do synchronize children
         prepareChildren(intactCv);
+        // do not synchronize parent
+        //prepareParents(intactCv);
     }
 
     public OntologyTerm fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
@@ -240,7 +244,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     public void setObjClass(String objClass) {
-        this.objClass = objClass;
+        this.objClass = objClass != null ? objClass : IntactUtils.TOPIC_OBJCLASS;
     }
 
     protected IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {
@@ -390,15 +394,27 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                 IntactCvTerm cvChild = synchronize(term, true);
                 // we have a different instance because needed to be synchronized
                 if (cvChild != term){
-                    intactCv.getChildren().remove(term);
-                    intactCv.getChildren().add(cvChild);
-                }
-                if (!cvChild.getParents().contains(intactCv)){
-                    cvChild.getParents().add(intactCv);
+                    intactCv.removeChild(term);
+                    intactCv.addChild(cvChild);
                 }
             }
         }
     }
+
+    /*protected void prepareParents(IntactCvTerm intactCv) throws PersisterException, FinderException, SynchronizerException {
+
+        if (intactCv.areParentsInitialized()){
+            List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getParents());
+            for (OntologyTerm term : termsToPersist){
+                IntactCvTerm cvParent = synchronize(term, true);
+                // we have a different instance because needed to be synchronized
+                if (cvParent != term){
+                    intactCv.removeParent(term);
+                    intactCv.addParent(cvParent);
+                }
+            }
+        }
+    }*/
 
     protected void prepareXrefs(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areXrefsInitialized()){
@@ -506,7 +522,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     @Override
     protected void persistObject(IntactCvTerm existingInstance) {
-        // first remove all dependencies to other cv terms
+        // first remove all dependencies to other cv terms to avoid cycle dependencies when persisting the objects
         Collection<Alias> cvAliases = new ArrayList<Alias>(existingInstance.getSynonyms());
         existingInstance.getSynonyms().clear();
         Collection<Annotation> cvAnnotations = new ArrayList<Annotation>(existingInstance.getAnnotations());
@@ -515,6 +531,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         existingInstance.getPersistentXrefs().clear();
         Collection<OntologyTerm> children = new ArrayList<OntologyTerm>(existingInstance.getChildren());
         existingInstance.getChildren().clear();
+        Collection<OntologyTerm> parents = new ArrayList<OntologyTerm>(existingInstance.getParents());
+        existingInstance.getParents().clear();
 
         super.persistObject(existingInstance);
 
@@ -523,5 +541,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         existingInstance.getPersistentXrefs().addAll(cvRefs);
         existingInstance.getAnnotations().addAll(cvAnnotations);
         existingInstance.getChildren().addAll(children);
+        existingInstance.getParents().addAll(parents);
     }
 }

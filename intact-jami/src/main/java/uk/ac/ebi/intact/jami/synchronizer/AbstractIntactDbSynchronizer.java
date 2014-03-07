@@ -44,6 +44,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             return fetchObjectFromCache((I)object);
         }
 
+        // store in cache
+        storeInCache((I)object, object, null);
+
         // synchronize properties
         synchronizeProperties(object);
 

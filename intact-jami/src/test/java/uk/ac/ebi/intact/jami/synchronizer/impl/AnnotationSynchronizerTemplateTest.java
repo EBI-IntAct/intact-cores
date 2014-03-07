@@ -40,7 +40,6 @@ import javax.persistence.PersistenceUnit;
 @ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
 @Transactional
 @TransactionConfiguration
-@DirtiesContext
 public class AnnotationSynchronizerTemplateTest {
 
     @Autowired
@@ -55,6 +54,7 @@ public class AnnotationSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
@@ -100,6 +100,7 @@ public class AnnotationSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_persist_with_existing_topic() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
@@ -145,6 +146,7 @@ public class AnnotationSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_persist_with_detached_topic() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
@@ -193,6 +195,7 @@ public class AnnotationSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_find() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
@@ -211,6 +214,7 @@ public class AnnotationSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
@@ -254,6 +258,7 @@ public class AnnotationSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
@@ -297,6 +302,7 @@ public class AnnotationSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
@@ -340,6 +346,7 @@ public class AnnotationSynchronizerTemplateTest {
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
