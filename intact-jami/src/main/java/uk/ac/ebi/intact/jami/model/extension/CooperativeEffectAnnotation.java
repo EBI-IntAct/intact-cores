@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_cooperative_effect_annot" )
+@Table( name = "ia_cooperative_effect_annotation" )
 public class CooperativeEffectAnnotation extends AbstractIntactAnnotation{
 
     public CooperativeEffectAnnotation() {

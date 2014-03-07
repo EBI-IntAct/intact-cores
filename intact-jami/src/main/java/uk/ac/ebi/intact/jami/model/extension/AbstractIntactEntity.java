@@ -142,8 +142,17 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityAnnotation.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinTable(
+            name="ia_component2annot",
+            joinColumns = @JoinColumn( name="component_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
     @Target(EntityAnnotation.class)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     */
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
             initialiseAnnotations();

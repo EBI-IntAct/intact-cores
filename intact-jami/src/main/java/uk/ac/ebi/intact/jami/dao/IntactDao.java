@@ -45,26 +45,6 @@ public interface IntactDao {
 
     public XrefDao<ResultingSequenceXref> getResultingSequenceXrefDao();
 
-    public <T extends AbstractIntactAnnotation> AnnotationDao<T> getAnnotationDao(Class<T> annotationClass);
-
-    public AnnotationDao<CvTermAnnotation> getCvAnnotationDao();
-
-    public AnnotationDao<SourceAnnotation> getSourceAnnotationDao();
-
-    public AnnotationDao<PublicationAnnotation> getPublicationAnnotationDao();
-
-    public AnnotationDao<ExperimentAnnotation> getExperimentAnnotationDao();
-
-    public AnnotationDao<InteractionAnnotation> getInteractionAnnotationDao();
-
-    public AnnotationDao<InteractorAnnotation> getInteractorAnnotationDao();
-
-    public AnnotationDao<FeatureAnnotation> getFeatureAnnotationDao();
-
-    public AnnotationDao<EntityAnnotation> getEntityAnnotationDao();
-
-    public AnnotationDao<CooperativeEffectAnnotation> getCooperativeEffectAnnotationDao();
-
     public CvTermDao getCvTermDao();
 
     public SourceDao getSourceDao();

@@ -148,9 +148,18 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionAnnotation.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinTable(
+            name="ia_int2annot",
+            joinColumns = @JoinColumn( name="interactor_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionAnnotation.class)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     */
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
             initialiseAnnotations();

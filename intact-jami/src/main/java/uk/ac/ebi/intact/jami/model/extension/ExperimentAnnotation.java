@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_experiment_annot" )
+@Table( name = "ia_annotation" )
 public class ExperimentAnnotation extends AbstractIntactAnnotation{
 
     public ExperimentAnnotation() {

@@ -221,9 +221,18 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinTable(
+            name="ia_institution2annot",
+            joinColumns = @JoinColumn( name="institution_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceAnnotation.class)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     */
     public Collection<Annotation> getPersistentAnnotations() {
         return ((SourceAnnotationList)super.getAnnotations()).getWrappedList();
     }

@@ -105,8 +105,17 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ExperimentAnnotation.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinTable(
+            name="ia_exp2annot",
+            joinColumns = @JoinColumn( name="experiment_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
     @Target(ExperimentAnnotation.class)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     */
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
             initialiseAnnotations();

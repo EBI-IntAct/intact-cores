@@ -14,14 +14,21 @@ import javax.validation.constraints.Size;
 
 /**
  * Abstract Intact implementation of annotation
+ *
  * Note: this implementation was chosen because annotations do not make sense without their parents and are not shared by different entities
  * It is then better to have several annotation tables, one for each entity rather than one big annotation table and x join tables.
+ *
+ * However, for backward compatibility with intact-core, we will keep a mapping oneToMany with a join table.
+ * All the extensions of AbstractIntactAnnotation (excepted CooperativeEffectAnnotation) will point to the same table ia_annotation.
+ * It would be better to never query for an annotation without involving its parent.
+ *
+ * Future improvements: this class would become an entity with Inheritance=TABLE_PER_CLASS and all subclasses would be a different table
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>07/01/14</pre>
  */
-@Entity
-@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+@MappedSuperclass
 public abstract class AbstractIntactAnnotation extends AbstractIntactPrimaryObject implements Annotation{
 
     ///////////////////////////////////////

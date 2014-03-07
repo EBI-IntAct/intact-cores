@@ -36,7 +36,6 @@ public class IntactDaoImpl implements IntactDao{
 
     private SynchronizerContext synchronizerContext;
     private XrefDao xrefDao;
-    private AnnotationDao annotationDao;
     private AllosteryDao allosteryDao;
     private CausalRelationshipDao causalRelationshipDao;
     private ChecksumDao checksumDao;
@@ -127,50 +126,6 @@ public class IntactDaoImpl implements IntactDao{
 
     public XrefDao<ResultingSequenceXref> getResultingSequenceXrefDao() {
         return getXrefDao(ResultingSequenceXref.class);
-    }
-
-    public <T extends AbstractIntactAnnotation> AnnotationDao<T> getAnnotationDao(Class<T> annotationClass) {
-        if (this.annotationDao == null){
-           this.annotationDao = new AnnotationDaoImpl(AbstractIntactAnnotation.class, getEntityManager(), getSynchronizerContext());
-        }
-        this.annotationDao.setEntityClass(annotationClass);
-        return this.annotationDao;
-    }
-
-    public AnnotationDao<CvTermAnnotation> getCvAnnotationDao() {
-        return getAnnotationDao(CvTermAnnotation.class);
-    }
-
-    public AnnotationDao<SourceAnnotation> getSourceAnnotationDao() {
-        return getAnnotationDao(SourceAnnotation.class);
-    }
-
-    public AnnotationDao<PublicationAnnotation> getPublicationAnnotationDao() {
-        return getAnnotationDao(PublicationAnnotation.class);
-    }
-
-    public AnnotationDao<ExperimentAnnotation> getExperimentAnnotationDao() {
-        return getAnnotationDao(ExperimentAnnotation.class);
-    }
-
-    public AnnotationDao<InteractionAnnotation> getInteractionAnnotationDao() {
-        return getAnnotationDao(InteractionAnnotation.class);
-    }
-
-    public AnnotationDao<InteractorAnnotation> getInteractorAnnotationDao() {
-        return getAnnotationDao(InteractorAnnotation.class);
-    }
-
-    public AnnotationDao<FeatureAnnotation> getFeatureAnnotationDao() {
-        return getAnnotationDao(FeatureAnnotation.class);
-    }
-
-    public AnnotationDao<EntityAnnotation> getEntityAnnotationDao() {
-        return getAnnotationDao(EntityAnnotation.class);
-    }
-
-    public AnnotationDao<CooperativeEffectAnnotation> getCooperativeEffectAnnotationDao() {
-        return getAnnotationDao(CooperativeEffectAnnotation.class);
     }
 
     public CvTermDao getCvTermDao() {

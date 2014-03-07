@@ -288,9 +288,18 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAnnotation.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinTable(
+            name="ia_int2annot",
+            joinColumns = @JoinColumn( name="interactor_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorAnnotation.class)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     */
     public Collection<Annotation> getPersistentAnnotations() {
         if (annotations == null){
             annotations = new PersistentAnnotationList(null);

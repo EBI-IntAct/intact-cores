@@ -394,10 +394,19 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = PublicationAnnotation.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinTable(
+            name="ia_pub2annot",
+            joinColumns = @JoinColumn( name="publication_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(PublicationAnnotation.class)
     @LazyCollection(LazyCollectionOption.FALSE)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     */
     public Collection<Annotation> getPersistentAnnotations() {
         if (this.annotations == null){
             this.annotations = new PublicationAnnotationList(null);
