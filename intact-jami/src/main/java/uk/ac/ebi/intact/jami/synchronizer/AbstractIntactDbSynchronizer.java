@@ -41,7 +41,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
         // check cache when possible
         if (isObjectStoredInCache((I)object)){
-            return mergePersistentInstanceWithExistingInstance(object, true, fetchObjectFromCache((I) object));
+            return fetchObjectFromCache((I)object);
         }
 
         // store in cache
@@ -51,7 +51,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         synchronizeProperties(object);
 
         // persist the cv
-        persistObjectOnly(object);
+        persistObject(object);
 
         return object;
     }
@@ -119,7 +119,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     public void setIntactClass(Class<? extends T> intactClass) {
         if (intactClass == null){
-           throw new IllegalArgumentException("Intact class cannot be null");
+            throw new IllegalArgumentException("Intact class cannot be null");
         }
         this.intactClass = intactClass;
     }
@@ -193,13 +193,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // cache object to persist if allowed
         storeInCache(originalObject, persistentObject, existingInstance);
         // synchronize before persisting
-        synchronizeProperties(persistentObject); 
-        // merge with existing instance if necessary
-        return mergePersistentInstanceWithExistingInstance(persistentObject, persist, existingInstance);
-
-    }
-
-    protected T mergePersistentInstanceWithExistingInstance(T persistentObject, boolean persist, T existingInstance) {
+        synchronizeProperties(persistentObject);
         // merge existing persistent instance with the other instance
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
@@ -211,13 +205,13 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         }
         else{
             if (persist){
-                persistObjectOnly(persistentObject);
+                persistObject(persistentObject);
             }
             return persistentObject;
         }
     }
 
-    protected void persistObjectOnly(T existingInstance) {
+    protected void persistObject(T existingInstance) {
         this.entityManager.persist(existingInstance);
     }
 
