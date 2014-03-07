@@ -51,7 +51,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         synchronizeProperties(object);
 
         // persist the cv
-        persistObject(object);
+        persistObjectOnly(object);
 
         return object;
     }
@@ -211,13 +211,13 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         }
         else{
             if (persist){
-                persistObject(persistentObject);
+                persistObjectOnly(persistentObject);
             }
             return persistentObject;
         }
     }
 
-    protected void persistObject(T existingInstance) {
+    protected void persistObjectOnly(T existingInstance) {
         this.entityManager.persist(existingInstance);
     }
 

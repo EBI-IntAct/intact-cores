@@ -301,12 +301,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     @Override
     protected void storeInCache(CvTerm originalObject, IntactCvTerm persistentObject, IntactCvTerm existingInstance) {
-        if (existingInstance != null){
-            this.persistedObjects.put(originalObject, existingInstance);
-        }
-        else{
-            this.persistedObjects.put(originalObject, persistentObject);
-        }
+        this.persistedObjects.put(originalObject, persistentObject);
     }
 
     @Override
@@ -521,7 +516,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected void persistObject(IntactCvTerm existingInstance) {
+    protected void persistObjectOnly(IntactCvTerm existingInstance) {
         // first remove all dependencies to other cv terms to avoid cycle dependencies when persisting the objects
         Collection<Alias> cvAliases = new ArrayList<Alias>(existingInstance.getSynonyms());
         existingInstance.getSynonyms().clear();
@@ -534,7 +529,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         Collection<OntologyTerm> parents = new ArrayList<OntologyTerm>(existingInstance.getParents());
         existingInstance.getParents().clear();
 
-        super.persistObject(existingInstance);
+        super.persistObjectOnly(existingInstance);
 
         // after persistence, re-attach dependent objects
         existingInstance.getSynonyms().addAll(cvAliases);
