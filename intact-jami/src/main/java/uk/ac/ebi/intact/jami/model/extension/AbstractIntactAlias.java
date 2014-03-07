@@ -8,12 +8,15 @@ import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Abstract IntAct implementation for alias
  *
  * Note: this implementation was chosen because aliases do not make sense without their parents and are not shared by different entities
  * It is then better to have several alias tables, one for each entity rather than one big alias table and x join tables.
+ * In addition to that, it is backward compatible with previous intact-core data model
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -54,6 +57,8 @@ public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject im
     }
 
     @Column( length = IntactUtils.MAX_ALIAS_NAME_LEN, nullable = false)
+    @NotNull
+    @Size(max = IntactUtils.MAX_ALIAS_NAME_LEN)
     public String getName() {
         return this.name;
     }

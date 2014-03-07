@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_molecule_alias" )
+@Table( name = "ia_interactor_alias" )
 public class InteractorAlias extends AbstractIntactAlias{
 
     protected InteractorAlias() {

@@ -9,7 +9,7 @@
     </parent>-->
     <groupId>uk.ac.ebi.intact.jami</groupId>
     <artifactId>intact-jami</artifactId>
-    <version>1.0.0-alpha-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <name>INTACT :: JAMI - Core interfaces, default implementations of IntAct API based on JAMI interfaces</name>
 
