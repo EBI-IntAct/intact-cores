@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ComplexDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -91,6 +92,45 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         }
         query.setFirstResult(first);
         query.setMaxResults(max);
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByConfidence(String typeName, String typeMI, String value) {
+        Query query;
+        if (typeName == null && typeMI == null){
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "where f.modelledConfidences is empty order by f.ac");
+        }
+        else if (typeMI != null){
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.modelledConfidences as c " +
+                    "join c.type as t " +
+                    "join t.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi " + (value != null ? " and c.value = :confValue ":" ")+
+                    "order by f.ac");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", typeMI);
+            if (value != null){
+                query.setParameter("confValue", value);
+            }
+        }
+        else{
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.modelledConfidences as c " +
+                    "join c.type as t " +
+                    "where t.shortName = :name "  + (value != null ? " and c.value = :confValue ":" ")+
+                    "order by f.ac");
+            query.setParameter("name", typeName);
+            if (value != null){
+                query.setParameter("confValue", value);
+            }
+        }
         return query.getResultList();
     }
 }

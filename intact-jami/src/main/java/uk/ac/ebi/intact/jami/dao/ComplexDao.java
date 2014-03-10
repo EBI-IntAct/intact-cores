@@ -19,4 +19,6 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
     public Collection<IntactComplex> getByLifecycleEvent(String evtName, int first, int max);
 
     public Collection<IntactComplex> getByStatus(String statusName, int first, int max);
+
+    public Collection<IntactComplex> getByConfidence(String typeName, String typeMI, String value);
 }

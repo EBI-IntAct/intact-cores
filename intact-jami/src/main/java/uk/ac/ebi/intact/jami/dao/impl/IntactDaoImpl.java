@@ -39,7 +39,6 @@ public class IntactDaoImpl implements IntactDao{
     private AllosteryDao allosteryDao;
     private CausalRelationshipDao causalRelationshipDao;
     private ComplexDao complexDao;
-    private ConfidenceDao confidenceDao;
     private CooperativeEffectDao cooperativeEffectDao;
     private CooperativityEvidenceDao cooperativityEvidenceDao;
     private CvTermDao cvTermDao;
@@ -233,26 +232,6 @@ public class IntactDaoImpl implements IntactDao{
             this.causalRelationshipDao = new CausalRelationshipDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.causalRelationshipDao;
-    }
-
-    public <T extends AbstractIntactConfidence> ConfidenceDao<T> getConfidenceDao(Class<T> confidenceClass) {
-        if (this.confidenceDao == null){
-            this.confidenceDao = new ConfidenceDaoImpl(AbstractIntactConfidence.class, getEntityManager(), getSynchronizerContext());
-        }
-        this.confidenceDao.setEntityClass(confidenceClass);
-        return this.confidenceDao;
-    }
-
-    public ConfidenceDao<ComplexConfidence> getComplexConfidenceDao() {
-        return getConfidenceDao(ComplexConfidence.class);
-    }
-
-    public ConfidenceDao<InteractionEvidenceConfidence> getInteractionConfidenceDao() {
-        return getConfidenceDao(InteractionEvidenceConfidence.class);
-    }
-
-    public ConfidenceDao<ExperimentalEntityConfidence> getEntityConfidenceDao() {
-        return getConfidenceDao(ExperimentalEntityConfidence.class);
     }
 
     public <T extends AbstractIntactParameter> ParameterDao<T> getParameterDao(Class<T> parameterClass) {

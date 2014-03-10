@@ -39,4 +39,6 @@ public interface InteractionDao extends IntactBaseDao<IntactInteractionEvidence>
     public Collection<IntactInteractionEvidence> getByInteractionType(String typeName, String typeMI, int first, int max);
 
     public Collection<IntactInteractionEvidence> getByExperimentAc(String ac);
+
+    public Collection<IntactInteractionEvidence> getByConfidence(String typeName, String typeMI, String value);
 }

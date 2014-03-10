@@ -8,7 +8,7 @@ import psidev.psi.mi.jami.utils.comparator.checksum.UnambiguousChecksumComparato
 /**
  * Intact checksum which is a wrapper of an annotation.
  *
- * A checksum wrapper is not persistent
+ * A checksum wrapper is not persistent but can wrap a persistent xref
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

@@ -461,4 +461,43 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         query.setParameter("expAc",ac);
         return query.getResultList();
     }
+
+    public Collection<IntactInteractionEvidence> getByConfidence(String typeName, String typeMI, String value) {
+        Query query;
+        if (typeName == null && typeMI == null){
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
+                    "where f.confidences is empty order by f.ac");
+        }
+        else if (typeMI != null){
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
+                    "join f.confidences as c " +
+                    "join c.type as t " +
+                    "join t.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi " + (value != null ? " and c.value = :confValue ":" ")+
+                    "order by f.ac");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", typeMI);
+            if (value != null){
+                query.setParameter("confValue", value);
+            }
+        }
+        else{
+            query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
+                    "join f.confidences as c " +
+                    "join c.type as t " +
+                    "where t.shortName = :name "  + (value != null ? " and c.value = :confValue ":" ")+
+                    "order by f.ac");
+            query.setParameter("name", typeName);
+            if (value != null){
+                query.setParameter("confValue", value);
+            }
+        }
+        return query.getResultList();
+    }
 }

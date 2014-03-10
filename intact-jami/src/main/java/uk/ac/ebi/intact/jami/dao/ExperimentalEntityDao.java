@@ -23,4 +23,6 @@ public interface ExperimentalEntityDao<F extends IntactExperimentalEntity> exten
     public Collection<F> getByExpressedInTaxid(String taxid, int first, int max);
 
     public Collection<F> getByExpressedInAc(String ac, int first, int max);
+
+    public Collection<F> getByConfidence(String typeName, String typeMI, String value, int first, int max);
 }

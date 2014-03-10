@@ -16,12 +16,13 @@ import javax.validation.constraints.Size;
  * Note: this implementation was chosen because confidences do not make sense without their parents and are not shared by different entities
  * It is then better to have several confidence tables, one for each entity rather than one big confidence table and x join tables.
  *
+ * Future improvements: this class would become an entity with Inheritance=TABLE_PER_CLASS and all subclasses would be a different table.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
-@Entity
-@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+@MappedSuperclass
 public abstract class AbstractIntactConfidence extends AbstractIntactPrimaryObject implements Confidence{
 
     private CvTerm type;
