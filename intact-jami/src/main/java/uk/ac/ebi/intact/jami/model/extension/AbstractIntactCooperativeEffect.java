@@ -19,6 +19,8 @@ import java.util.Collection;
  * Note: we prefer to have all cooperative effects in same table as they are all attached to modelled interactions and make sense all together
  * because we don't always need to know their specific fields
  *
+ * It would be better to never query for a cooperative effect without involving its parent.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>14/01/14</pre>

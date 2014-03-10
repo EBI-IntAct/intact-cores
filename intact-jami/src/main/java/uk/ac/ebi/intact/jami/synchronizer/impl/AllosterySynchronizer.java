@@ -20,15 +20,15 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>27/01/14</pre>
  */
 
-public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate<Allostery, IntactAllostery> {
+public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate<Allostery, AbstractIntactAllostery> {
 
     private static final Log log = LogFactory.getLog(AllosterySynchronizer.class);
 
     public AllosterySynchronizer(SynchronizerContext context) {
-        super(context, IntactAllostery.class);
+        super(context, AbstractIntactAllostery.class);
     }
 
-    public void synchronizeProperties(IntactAllostery object) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(AbstractIntactAllostery object) throws FinderException, PersisterException, SynchronizerException {
         super.synchronizeProperties(object);
 
         // prepare mechanism
@@ -42,7 +42,7 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
 
     }
 
-    protected void prepareAllostericEffector(IntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareAllostericEffector(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
         switch (object.getAllostericEffector().getEffectorType()){
             case molecule:
                 MoleculeEffector moleculeEffector = (MoleculeEffector)object.getAllostericEffector();
@@ -73,50 +73,50 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
         }
     }
 
-    protected void prepareMechanism(IntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareMechanism(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
         CvTerm mehcanism = object.getAllostericMechanism();
         if (mehcanism != null){
             object.setAllostericMechanism(getContext().getTopicSynchronizer().synchronize(mehcanism, true));
         }
     }
 
-    protected void prepareAllosteryType(IntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareAllosteryType(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
         CvTerm type = object.getAllosteryType();
         if (type != null){
             object.setAllosteryType(getContext().getTopicSynchronizer().synchronize(type, true));
         }
     }
 
-    protected void prepareAllostericMolecule(IntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareAllostericMolecule(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
         ModelledParticipant participant = object.getAllostericMolecule();
         object.setAllostericMolecule((ModelledParticipant)getContext().getEntitySynchronizer().synchronize(participant, false));
 
     }
 
     @Override
-    protected IntactAllostery instantiateNewPersistentInstance(Allostery object, Class<? extends IntactAllostery> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        IntactAllostery newAllostery;
+    protected AbstractIntactAllostery instantiateNewPersistentInstance(Allostery object, Class<? extends AbstractIntactAllostery> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        AbstractIntactAllostery newAllostery;
         switch (object.getAllostericEffector().getEffectorType()){
             case molecule:
                 newAllostery = new IntactAllosteryWithMolecule(object.getOutCome(), object.getAllostericMolecule(), new IntactMoleculeEffector(((MoleculeEffector)object.getAllostericEffector()).getMolecule()));
                 break;
             case feature_modification:
                 newAllostery = new IntactAllosteryWithFeature(object.getOutCome(), object.getAllostericMolecule(), new IntactFeatureModificationEffector(((FeatureModificationEffector)object.getAllostericEffector()).getFeatureModification()));
-            default:
-                newAllostery = new IntactAllostery<AllostericEffector>(object.getOutCome(), object.getAllostericMolecule(), object.getAllostericEffector());
                 break;
+            default:
+                throw new UnsupportedOperationException("Cannot instantiate a new instance of persistent allostery as it does not recognize the effector type "+object.getAllostericEffector().getEffectorType());
         }
         CooperativeEffectCloner.copyAndOverrideAllosteryProperties(object, newAllostery);
         return newAllostery;
     }
 
     @Override
-    protected void storeInCache(Allostery originalObject, IntactAllostery persistentObject, IntactAllostery existingInstance) {
+    protected void storeInCache(Allostery originalObject, AbstractIntactAllostery persistentObject, AbstractIntactAllostery existingInstance) {
         // nothing to do
     }
 
     @Override
-    protected IntactAllostery fetchObjectFromCache(Allostery object) {
+    protected AbstractIntactAllostery fetchObjectFromCache(Allostery object) {
         return null;
     }
 

@@ -49,12 +49,6 @@ public interface IntactDao {
 
     public SourceDao getSourceDao();
 
-    public <T extends AbstractIntactCooperativeEffect> CooperativeEffectDao<T> getCooperativeEffectDao(Class<T> effectClass);
-
-    public CooperativeEffectDao<IntactPreassembly> getPreAssemblyDao();
-
-    public AllosteryDao getAllosteryDao();
-
     public CooperativityEvidenceDao getCooperativityEvidenceDao();
 
     public <T extends IntactInteractor> InteractorDao<T> getInteractorDao(Class<T> interactorClass);

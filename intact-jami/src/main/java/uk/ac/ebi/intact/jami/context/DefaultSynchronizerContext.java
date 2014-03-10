@@ -494,7 +494,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         return this.preAssemblySynchronizer;
     }
 
-    public CooperativeEffectSynchronizer<Allostery, IntactAllostery> getAllosterySynchronizer() {
+    public CooperativeEffectSynchronizer<Allostery, AbstractIntactAllostery> getAllosterySynchronizer() {
         if (this.allosterySynchronizer == null){
             this.allosterySynchronizer = new AllosterySynchronizer(this);
         }

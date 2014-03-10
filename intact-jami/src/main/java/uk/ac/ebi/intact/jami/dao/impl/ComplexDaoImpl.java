@@ -133,4 +133,212 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         }
         return query.getResultList();
     }
+
+    public Collection<IntactComplex> getByCooperativeEffectAnnotationTopic(String topicName, String topicMI) {
+        Query query;
+        if (topicMI != null){
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.cooperativeEffects as c " +
+                    "join c.annotations as a " +
+                    "join a.topic as t " +
+                    "join t.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", topicMI);
+        }
+        else{
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.cooperativeEffects as c " +
+                    "join c.annotations as a " +
+                    "join a.topic as t " +
+                    "where t.shortName = :topicName");
+            query.setParameter("topicName", topicName);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByCooperativeEffectAnnotationTopicAndValue(String topicName, String topicMI, String value) {
+        Query query;
+        if (topicMI != null){
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.cooperativeEffects as c " +
+                    "join c.annotations as a " +
+                    "join a.topic as t " +
+                    "join t.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi"+(value != null ? " and a.value = :annotValue" : ""));
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", topicMI);
+            if (value != null){
+                query.setParameter("annotValue", value);
+            }
+        }
+        else{
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.cooperativeEffects as c " +
+                    "join c.annotations as a " +
+                    "join a.topic as t " +
+                    "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
+            query.setParameter("topicName", topicName);
+            if (value != null){
+                query.setParameter("annotValue", value);
+            }
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByCooperativeEffectAffectedInteractionAc(String ac) {
+        Query query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                "join f.cooperativeEffects as c " +
+                "join c.affectedInteractions as i " +
+                "where i.ac = :interactionAc");
+        query.setParameter("interactionAc", ac);
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByCooperativeEffectOutcome(String name, String mi) {
+        Query query;
+        if (mi != null){
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.cooperativeEffects as coop " +
+                    "join coop.outcome as c " +
+                    "join c.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", mi);
+        }
+        else{
+            query = getEntityManager().createQuery("select f from IntactComplex f "  +
+                    "join f.cooperativeEffects as coop " +
+                    "join coop.outcome as c " +
+                    "where c.shortName = :name");
+            query.setParameter("name", name);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByCooperativeEffectResponse(String name, String mi) {
+        Query query;
+        if (mi != null){
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.cooperativeEffects as coop " +
+                    "join coop.response as r " +
+                    "join r.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", mi);
+        }
+        else{
+            query = getEntityManager().createQuery("select f from IntactComplex f "  +
+                    "join f.cooperativeEffects as coop " +
+                    "join coop.response as r " +
+                    "where r.shortName = :name");
+            query.setParameter("name", name);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByAllostericMoleculeAc(String ac) {
+        Query query = getEntityManager().createQuery("select f from IntactComplex f "  +
+                "join f.cooperativeEffects as coop " +
+                "join coop.allostericMolecule as c " +
+                "where c.ac = :moleculeAc");
+        query.setParameter("moleculeAc", ac);
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByAllosteryMechanism(String name, String mi) {
+        Query query;
+        if (mi != null){
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.cooperativeEffects as coop " +
+                    "join coop.mechanism as c " +
+                    "join c.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", mi);
+        }
+        else{
+            query = getEntityManager().createQuery("select f from IntactComplex f "  +
+                    "join f.cooperativeEffects as coop " +
+                    "join coop.mechanism as c " +
+                    "where c.shortName = :name");
+            query.setParameter("name", name);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByAllosteryType(String name, String mi) {
+        Query query;
+        if (mi != null){
+            query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
+                    "join f.cooperativeEffects as coop " +
+                    "join coop.allosteryType as r " +
+                    "join r.persistentXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", mi);
+        }
+        else{
+            query = getEntityManager().createQuery("select f from IntactComplex f "  +
+                    "join f.cooperativeEffects as coop " +
+                    "join coop.allosteryType as r " +
+                    "where r.shortName = :name");
+            query.setParameter("name", name);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByAllostericMoleculeEffectorAc(String ac) {
+        Query query = getEntityManager().createQuery("select f from IntactComplex f "  +
+                "join f.cooperativeEffects as coop " +
+                "join coop.allostericEffector as c " +
+                "where c.ac = :moleculeAc");
+        query.setParameter("moleculeAc", ac);
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByAllostericFeatureModificationEffectorAc(String ac) {
+        Query query = getEntityManager().createQuery("select f from IntactComplex f "  +
+                "join f.cooperativeEffects as coop " +
+                "join coop.allostericEffector as c " +
+                "where c.ac = :featureAc");
+        query.setParameter("featureAc", ac);
+        return query.getResultList();
+    }
 }

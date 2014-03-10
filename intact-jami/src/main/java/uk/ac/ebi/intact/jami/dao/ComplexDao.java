@@ -21,4 +21,24 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
     public Collection<IntactComplex> getByStatus(String statusName, int first, int max);
 
     public Collection<IntactComplex> getByConfidence(String typeName, String typeMI, String value);
+
+    public Collection<IntactComplex> getByCooperativeEffectAnnotationTopic(String topicName, String topicMI);
+
+    public Collection<IntactComplex> getByCooperativeEffectAnnotationTopicAndValue(String topicName, String topicMI, String value);
+
+    public Collection<IntactComplex> getByCooperativeEffectAffectedInteractionAc(String ac);
+
+    public Collection<IntactComplex> getByCooperativeEffectOutcome(String name, String mi);
+
+    public Collection<IntactComplex> getByCooperativeEffectResponse(String name, String mi);
+
+    public Collection<IntactComplex> getByAllostericMoleculeAc(String ac);
+
+    public Collection<IntactComplex> getByAllosteryMechanism(String name, String mi);
+
+    public Collection<IntactComplex> getByAllosteryType(String name, String mi);
+
+    public Collection<IntactComplex> getByAllostericMoleculeEffectorAc(String ac);
+
+    public Collection<IntactComplex> getByAllostericFeatureModificationEffectorAc(String ac);
 }

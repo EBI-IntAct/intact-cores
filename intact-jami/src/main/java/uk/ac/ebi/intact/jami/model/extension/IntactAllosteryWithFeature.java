@@ -15,9 +15,9 @@ import javax.validation.constraints.NotNull;
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
-@DiscriminatorValue("allostery_feature_effector")
+@DiscriminatorValue("allostery_feature")
 @Entity
-public class IntactAllosteryWithFeature extends IntactAllostery<IntactFeatureModificationEffector>{
+public class IntactAllosteryWithFeature extends AbstractIntactAllostery<IntactFeatureModificationEffector>{
 
     protected IntactAllosteryWithFeature() {
         super();

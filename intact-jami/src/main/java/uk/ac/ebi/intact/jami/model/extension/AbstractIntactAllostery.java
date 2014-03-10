@@ -12,24 +12,27 @@ import javax.validation.constraints.NotNull;
 /**
  * Intact implementation of allostery
  *
+ * The discriminator value for the 'category' column of a allostery element is 'allostery'
+ *
+ * This class does not have any persistent allosteric effector
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
 @Entity
-@DiscriminatorValue("allostery")
-public class IntactAllostery<T extends AllostericEffector> extends AbstractIntactCooperativeEffect implements Allostery<T>{
+public abstract class AbstractIntactAllostery<T extends AllostericEffector> extends AbstractIntactCooperativeEffect implements Allostery<T>{
 
     private CvTerm allostericMechanism;
     private CvTerm allosteryType;
     private ModelledParticipant allostericMolecule;
     private T allostericEffector;
 
-    protected IntactAllostery(){
+    protected AbstractIntactAllostery(){
         super();
     }
 
-    public IntactAllostery(CvTerm outcome, ModelledParticipant allostericMolecule, T allostericEffector) {
+    public AbstractIntactAllostery(CvTerm outcome, ModelledParticipant allostericMolecule, T allostericEffector) {
         super(outcome);
         if (allostericMolecule == null){
             throw new IllegalArgumentException("The allosteric molecule cannot be null");
@@ -41,7 +44,7 @@ public class IntactAllostery<T extends AllostericEffector> extends AbstractIntac
         this.allostericEffector = allostericEffector;
     }
 
-    public IntactAllostery(CvTerm outcome, CvTerm response, ModelledParticipant allostericMolecule, T allostericEffector) {
+    public AbstractIntactAllostery(CvTerm outcome, CvTerm response, ModelledParticipant allostericMolecule, T allostericEffector) {
         super(outcome, response);
         if (allostericMolecule == null){
             throw new IllegalArgumentException("The allosteric molecule cannot be null");

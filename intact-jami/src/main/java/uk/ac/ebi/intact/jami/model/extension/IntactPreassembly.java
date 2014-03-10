@@ -7,7 +7,9 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 /**
- * Intact implementation of preassembly
+ * Intact implementation of preassembly.
+ *
+ * The discriminator value for the 'category' column of a preAssembly element is 'pre-assembly'
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

@@ -6,8 +6,8 @@ import psidev.psi.mi.jami.model.Preassembly;
 import psidev.psi.mi.jami.utils.clone.CooperativeEffectCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAllostery;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
-import uk.ac.ebi.intact.jami.model.extension.IntactAllostery;
 import uk.ac.ebi.intact.jami.model.extension.IntactPreassembly;
 import uk.ac.ebi.intact.jami.synchronizer.CooperativeEffectSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
@@ -44,7 +44,7 @@ public class CompositeCooperativeEffectSynchronizer implements CooperativeEffect
         }
         // allostery
         else {
-            this.context.getAllosterySynchronizer().synchronizeProperties((IntactAllostery)object);
+            this.context.getAllosterySynchronizer().synchronizeProperties((AbstractIntactAllostery)object);
         }
     }
 
@@ -55,7 +55,7 @@ public class CompositeCooperativeEffectSynchronizer implements CooperativeEffect
         }
         // allostery
         else {
-            return this.context.getAllosterySynchronizer().persist((IntactAllostery)object);
+            return this.context.getAllosterySynchronizer().persist((AbstractIntactAllostery)object);
         }
     }
 

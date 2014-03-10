@@ -146,7 +146,7 @@ public interface SynchronizerContext {
 
     public CooperativeEffectSynchronizer<Preassembly, IntactPreassembly> getPreAssemblySynchronizer();
 
-    public CooperativeEffectSynchronizer<Allostery, IntactAllostery> getAllosterySynchronizer();
+    public CooperativeEffectSynchronizer<Allostery, AbstractIntactAllostery> getAllosterySynchronizer();
 
     public CooperativeEffectSynchronizer<CooperativeEffect, AbstractIntactCooperativeEffect> getCooperativeEffectSynchronizer();
 

@@ -16,6 +16,8 @@ import javax.validation.constraints.Size;
  * Note: this implementation was chosen because confidences do not make sense without their parents and are not shared by different entities
  * It is then better to have several confidence tables, one for each entity rather than one big confidence table and x join tables.
  *
+ * It would be better to never query for a confidence without involving its parent.
+ *
  * Future improvements: this class would become an entity with Inheritance=TABLE_PER_CLASS and all subclasses would be a different table.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)

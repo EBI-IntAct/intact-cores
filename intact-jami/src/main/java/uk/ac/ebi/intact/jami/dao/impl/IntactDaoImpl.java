@@ -36,10 +36,8 @@ public class IntactDaoImpl implements IntactDao{
 
     private SynchronizerContext synchronizerContext;
     private XrefDao xrefDao;
-    private AllosteryDao allosteryDao;
     private CausalRelationshipDao causalRelationshipDao;
     private ComplexDao complexDao;
-    private CooperativeEffectDao cooperativeEffectDao;
     private CooperativityEvidenceDao cooperativityEvidenceDao;
     private CvTermDao cvTermDao;
     private EntityDao entityDao;
@@ -138,25 +136,6 @@ public class IntactDaoImpl implements IntactDao{
             this.sourceDao = new SourceDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.sourceDao;
-    }
-
-    public <T extends AbstractIntactCooperativeEffect> CooperativeEffectDao<T> getCooperativeEffectDao(Class<T> effectClass) {
-        if (this.cooperativeEffectDao == null){
-            this.cooperativeEffectDao = new CooperativeEffectDaoImpl(AbstractIntactCooperativeEffect.class, getEntityManager(), getSynchronizerContext());
-        }
-        this.cooperativeEffectDao.setEntityClass(effectClass);
-        return this.cooperativeEffectDao;
-    }
-
-    public CooperativeEffectDao<IntactPreassembly> getPreAssemblyDao() {
-        return getCooperativeEffectDao(IntactPreassembly.class);
-    }
-
-    public AllosteryDao getAllosteryDao() {
-        if (this.allosteryDao == null){
-           this.allosteryDao = new AllosteryDaoImpl(getEntityManager(), getSynchronizerContext());
-        }
-        return this.allosteryDao;
     }
 
     public CooperativityEvidenceDao getCooperativityEvidenceDao() {

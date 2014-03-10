@@ -16,8 +16,8 @@ import javax.validation.constraints.NotNull;
  * @since <pre>14/01/14</pre>
  */
 @Entity
-@DiscriminatorValue("allostery_molecule_effector")
-public class IntactAllosteryWithMolecule extends IntactAllostery<IntactMoleculeEffector>{
+@DiscriminatorValue("allostery_molecule")
+public class IntactAllosteryWithMolecule extends AbstractIntactAllostery<IntactMoleculeEffector>{
 
     protected IntactAllosteryWithMolecule() {
         super();
