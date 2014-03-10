@@ -38,7 +38,6 @@ public class IntactDaoImpl implements IntactDao{
     private XrefDao xrefDao;
     private AllosteryDao allosteryDao;
     private CausalRelationshipDao causalRelationshipDao;
-    private ChecksumDao checksumDao;
     private ComplexDao complexDao;
     private ConfidenceDao confidenceDao;
     private CooperativeEffectDao cooperativeEffectDao;
@@ -234,22 +233,6 @@ public class IntactDaoImpl implements IntactDao{
             this.causalRelationshipDao = new CausalRelationshipDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.causalRelationshipDao;
-    }
-
-    public <T extends AbstractIntactChecksum> ChecksumDao<T> getChecksumDao(Class<T> checksumClass) {
-        if (this.checksumDao == null){
-            this.checksumDao = new ChecksumDaoImpl(AbstractIntactChecksum.class, getEntityManager(), getSynchronizerContext());
-        }
-        this.checksumDao.setEntityClass(checksumClass);
-        return this.checksumDao;
-    }
-
-    public ChecksumDao<InteractionChecksum> getInteractionChecksumDao() {
-        return getChecksumDao(InteractionChecksum.class);
-    }
-
-    public ChecksumDao<InteractorChecksum> getInteractorChecksumDao() {
-        return getChecksumDao(InteractorChecksum.class);
     }
 
     public <T extends AbstractIntactConfidence> ConfidenceDao<T> getConfidenceDao(Class<T> confidenceClass) {

@@ -40,12 +40,15 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     private String shortName;
     private String fullName;
     private InteractorIdentifierList identifiers;
-    private PersistentChecksumList checksums;
+    private Collection<Checksum> checksums;
     private InteractorXrefList xrefs;
-    private PersistentAnnotationList annotations;
-    private PersistentAliasList aliases;
+    private Collection<Annotation> annotations;
+    private Collection<Alias> aliases;
     private Organism organism;
     private CvTerm interactorType;
+
+    private PersistentAnnotationList persistentAnnotations;
+    private PersistentAliasList persistentAliases;
     private PersistentXrefList persistentXrefs;
     private Collection<Entity> activeInstances;
 
@@ -276,17 +279,6 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return persistentXrefs.getWrappedList();
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorChecksum.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractorChecksum.class)
-    public Collection<Checksum> getPersistentChecksums() {
-        if (checksums == null){
-            checksums = new PersistentChecksumList(null);
-        }
-        return this.checksums.getWrappedList();
-    }
-
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAnnotation.class)
     @JoinTable(
             name="ia_int2annot",
@@ -301,10 +293,10 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
      * @JoinColumn(name="parent_ac", referencedColumnName="ac")
      */
     public Collection<Annotation> getPersistentAnnotations() {
-        if (annotations == null){
-            annotations = new PersistentAnnotationList(null);
+        if (persistentAnnotations == null){
+            persistentAnnotations = new PersistentAnnotationList(null);
         }
-        return this.annotations.getWrappedList();
+        return this.persistentAnnotations.getWrappedList();
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractorAlias.class)
@@ -312,10 +304,10 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorAlias.class)
     public Collection<Alias> getPersistentAliases() {
-        if (aliases == null){
-            aliases = new PersistentAliasList(null);
+        if (persistentAliases == null){
+            persistentAliases = new PersistentAliasList(null);
         }
-        return this.aliases.getWrappedList();
+        return this.persistentAliases.getWrappedList();
     }
 
     @Transient
@@ -333,11 +325,6 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return Hibernate.isInitialized(getPersistentAnnotations());
     }
 
-    @Transient
-    public boolean areChecksumsInitialized(){
-        return Hibernate.isInitialized(getPersistentChecksums());
-    }
-
     @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
     @NotNull
     protected String getObjClass(){
@@ -349,7 +336,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     }
 
     protected void initialiseAnnotations(){
-        this.annotations = new PersistentAnnotationList(null);
+        this.annotations = getPersistentAnnotations();
     }
 
     protected void initialiseXrefs(){
@@ -384,11 +371,29 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     }
 
     protected void initialiseAliases(){
-        this.aliases = new PersistentAliasList(null);
+        this.aliases = getPersistentAliases();
+    }
+
+    protected void initialiseAnnotationsWith(Collection<Annotation> annotations){
+        if (annotations == null){
+            this.annotations = new ArrayList<Annotation>();
+        }
+        else{
+            this.annotations = annotations;
+        }
     }
 
     protected void initialiseChecksums(){
-        this.checksums = new PersistentChecksumList(null);
+        this.checksums = new ArrayList<Checksum>();
+    }
+
+    protected void initialiseChecksumsWith(Collection<Checksum> checksum){
+        if (checksum == null){
+            this.checksums = new ArrayList<Checksum>();
+        }
+        else{
+            this.checksums = checksum;
+        }
     }
 
     protected void processAddedIdentifierEvent(Xref added) {
@@ -410,33 +415,27 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         else{
             this.persistentXrefs = new PersistentXrefList(persistentXrefs);
         }
+        initialiseXrefs();
     }
 
     protected void setPersistentAliases(Collection<Alias> aliases) {
         if (aliases instanceof PersistentAliasList){
-            this.aliases = (PersistentAliasList)aliases;
+            this.persistentAliases = (PersistentAliasList)aliases;
         }
         else{
-            this.aliases = new PersistentAliasList(aliases);
+            this.persistentAliases = new PersistentAliasList(aliases);
         }
+        initialiseAliases();
     }
 
     protected void setPersistentAnnotations(Collection<Annotation> annotations) {
         if (annotations instanceof PersistentAnnotationList){
-            this.annotations = (PersistentAnnotationList)annotations;
+            this.persistentAnnotations = (PersistentAnnotationList)annotations;
         }
         else{
-            this.annotations = new PersistentAnnotationList(annotations);
+            this.persistentAnnotations = new PersistentAnnotationList(annotations);
         }
-    }
-
-    protected void setPersistentChecksums(Collection<Checksum> checksums) {
-        if (checksums instanceof PersistentChecksumList){
-            this.checksums = (PersistentChecksumList)checksums;
-        }
-        else{
-            this.checksums = new PersistentChecksumList(checksums);
-        }
+        initialiseAnnotations();
     }
 
     protected void initialiseDefaultInteractorType() {
@@ -540,33 +539,6 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
         @Override
         protected Alias processOrWrapElementToAdd(Alias added) {
-            return added;
-        }
-
-        @Override
-        protected void processElementToRemove(Object o) {
-            // do nothing
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToRemove(Object o) {
-            return false;
-        }
-    }
-
-    protected class PersistentChecksumList extends AbstractCollectionWrapper<Checksum> {
-
-        public PersistentChecksumList(Collection<Checksum> persistentBag){
-            super(persistentBag);
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToAdd(Checksum added) {
-            return false;
-        }
-
-        @Override
-        protected Checksum processOrWrapElementToAdd(Checksum added) {
             return added;
         }
 

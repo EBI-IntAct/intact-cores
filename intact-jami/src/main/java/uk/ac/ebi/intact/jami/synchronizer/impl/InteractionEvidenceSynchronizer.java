@@ -56,8 +56,6 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         prepareAnnotations(intactInteraction);
         // then check xrefs
         prepareXrefs(intactInteraction);
-        // the check checksums
-        prepareChecksums(intactInteraction);
         // then check interactions
         prepareParticipants(intactInteraction);
         // then check variable parameters
@@ -98,22 +96,6 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     @Override
     protected boolean isObjectStoredInCache(InteractionEvidence object) {
         return this.persistedObjects.containsKey(object);
-    }
-
-    protected void prepareChecksums(IntactInteractionEvidence intactInteraction) throws PersisterException, FinderException, SynchronizerException {
-
-        if (intactInteraction.areChecksumsInitialized()){
-            Collection<Checksum> checksumsToPersist = new ArrayList<Checksum>(intactInteraction.getChecksums());
-            for (Checksum check : checksumsToPersist){
-                // do not persist or merge parameters because of cascades
-                Checksum persistentCheck = getContext().getInteractionChecksumSynchronizer().synchronize(check, false);
-                // we have a different instance because needed to be synchronized
-                if (persistentCheck != check){
-                    intactInteraction.getChecksums().remove(check);
-                    intactInteraction.getChecksums().add(persistentCheck);
-                }
-            }
-        }
     }
 
     protected void prepareVariableParametersValues(IntactInteractionEvidence intactInteraction) throws PersisterException, FinderException, SynchronizerException {

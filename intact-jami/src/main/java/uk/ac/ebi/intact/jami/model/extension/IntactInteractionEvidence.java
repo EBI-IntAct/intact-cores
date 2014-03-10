@@ -5,6 +5,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Parameter;
+import psidev.psi.mi.jami.model.impl.DefaultChecksum;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
@@ -50,7 +51,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     private Collection<VariableParameterValueSet> variableParameterValueSets;
     private String shortName;
     private Checksum rigid;
-    private InteractionChecksumList checksums;
+    private Collection<Checksum> checksums;
     private InteractionIdentifierList identifiers;
     private InteractionXrefList xrefs;
     private Collection<Annotation> annotations;
@@ -113,7 +114,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
             if (this.rigid != null){
                 checksums.remove(this.rigid);
             }
-            this.rigid = new InteractionChecksum(rigidMethod, rigid);
+            this.rigid = new DefaultChecksum(rigidMethod, rigid);
             checksums.add(this.rigid);
         }
         // remove all smiles if the collection is not empty
@@ -421,11 +422,6 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     }
 
     @Transient
-    public boolean areChecksumsInitialized(){
-        return Hibernate.isInitialized(getPersistentChecksums());
-    }
-
-    @Transient
     public boolean areParticipantsInitialized(){
         return Hibernate.isInitialized(getParticipants());
     }
@@ -439,17 +435,6 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
             persistentXrefs = new PersistentXrefList(null);
         }
         return persistentXrefs.getWrappedList();
-    }
-
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionChecksum.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractionChecksum.class)
-    public Collection<Checksum> getPersistentChecksums() {
-        if (checksums == null){
-            checksums = new InteractionChecksumList(null);
-        }
-        return this.checksums.getWrappedList();
     }
 
     protected void processAddedChecksumEvent(Checksum added) {
@@ -508,14 +493,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     }
 
     private void initialiseChecksums(){
-        this.checksums = new InteractionChecksumList(null);
-        for (Checksum check : this.checksums){
-            processAddedChecksumEvent(check);
-        }
-    }
-
-    private void setPersistentChecksums(Collection<Checksum> checksums) {
-        this.checksums = new InteractionChecksumList(checksums);
+        this.checksums = new ArrayList<Checksum>();
     }
 
     private void initialiseXrefs(){
@@ -648,32 +626,6 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
-    private class InteractionChecksumList extends AbstractCollectionWrapper<Checksum> {
-        public InteractionChecksumList(Collection<Checksum> checksums){
-            super(checksums);
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToAdd(Checksum added) {
-            return true;
-        }
-
-        @Override
-        protected Checksum processOrWrapElementToAdd(Checksum added) {
-            processAddedChecksumEvent(added);
-            return added;
-        }
-
-        @Override
-        protected void processElementToRemove(Object o) {
-            processRemovedChecksumEvent((Checksum)o);
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToRemove(Object o) {
-            return o instanceof Checksum;
-        }
-    }
     private class PersistentXrefList extends AbstractCollectionWrapper<Xref> {
 
         public PersistentXrefList(Collection<Xref> persistentBag){

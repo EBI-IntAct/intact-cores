@@ -4,9 +4,11 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.*;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Source;
+import psidev.psi.mi.jami.model.impl.DefaultChecksum;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
+import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.listener.ComplexParameterListener;
@@ -476,7 +478,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
             if (this.rigid != null){
                 checksums.remove(this.rigid);
             }
-            this.rigid = new InteractorChecksum(rigidMethod, rigid);
+            this.rigid = new DefaultChecksum(rigidMethod, rigid);
             checksums.add(this.rigid);
         }
         // remove all smiles if the collection is not empty
@@ -586,10 +588,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     @Override
     protected void initialiseChecksums(){
-        super.setPersistentChecksums(new ComplexChecksumList(null));
-        for (Checksum check : super.getChecksums()){
-            processAddedChecksumEvent(check);
-        }
+        super.initialiseChecksumsWith(new ComplexChecksumList());
     }
 
     @Override
@@ -603,11 +602,6 @@ public class IntactComplex extends IntactInteractor implements Complex{
         for (Alias alias : super.getAliases()){
             processAddedAliasEvent(alias);
         }
-    }
-
-    @Override
-    protected void setPersistentChecksums(Collection<Checksum> checksums) {
-        super.setPersistentChecksums(new ComplexChecksumList(checksums));
     }
 
     private void processAddedChecksumEvent(Checksum added) {
@@ -641,6 +635,10 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     private void initialiseComponents(){
         this.components = new ArrayList<ModelledParticipant>();
+    }
+
+    private void clearPropertiesLinkedToChecksums() {
+        this.rigid = null;
     }
 
     private void setParticipants(Collection<ModelledParticipant> components) {
@@ -698,31 +696,27 @@ public class IntactComplex extends IntactInteractor implements Complex{
         }
     }
 
-    private class ComplexChecksumList extends PersistentChecksumList {
-        public ComplexChecksumList(Collection<Checksum> checksums){
-            super(checksums);
+    private class ComplexChecksumList extends AbstractListHavingProperties<Checksum> {
+        public ComplexChecksumList(){
+            super();
         }
 
         @Override
-        protected boolean needToPreProcessElementToAdd(Checksum added) {
-            return true;
+        protected void processAddedObjectEvent(Checksum checksum) {
+            processAddedChecksumEvent(checksum);
         }
 
         @Override
-        protected Checksum processOrWrapElementToAdd(Checksum added) {
-            processAddedChecksumEvent(added);
-            return added;
+        protected void processRemovedObjectEvent(Checksum checksum) {
+            processRemovedChecksumEvent(checksum);
         }
 
         @Override
-        protected void processElementToRemove(Object o) {
-            processRemovedChecksumEvent((Checksum)o);
+        protected void clearProperties() {
+            clearPropertiesLinkedToChecksums();
         }
 
-        @Override
-        protected boolean needToPreProcessElementToRemove(Object o) {
-            return o instanceof Checksum;
-        }
+
     }
 
     private class ComplexAliasList extends PersistentAliasList {

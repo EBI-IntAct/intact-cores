@@ -73,13 +73,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private InteractorSynchronizer polymerSynchronizer;
     private InteractorSynchronizer<Complex, IntactComplex> complexSynchronizer;
     private InteractorSynchronizer<InteractorPool, IntactInteractorPool> interactorPoolSynchronizer;
-    private InteractorSynchronizer<BioactiveEntity, IntactBioactiveEntity> bioactiveEntitySynchronizer;
 
     // causal relationship synchronizers
     private IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> causalRelationshipSynchronizer;
-
-    // checksum synchronizers
-    private uk.ac.ebi.intact.jami.synchronizer.ChecksumSynchronizer checksumSynchronizer;
 
     // confidence synchronizers
     private ConfidenceSynchronizer confidenceSynchronizer;
@@ -313,12 +309,6 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         initialiseXrefTemplateIfNotDone();
         this.xrefSynchronizer.setIntactClass(xrefclass);
         return this.xrefSynchronizer;
-    }
-
-    public <A extends AbstractIntactChecksum> ChecksumSynchronizer<A> getChecksumSynchronizer(Class<A> checksumclass) {
-        initialiseChecksumTemplateIfNodDone();
-        this.checksumSynchronizer.setIntactClass(checksumclass);
-        return this.checksumSynchronizer;
     }
 
     public <A extends AbstractIntactConfidence> ConfidenceSynchronizer<Confidence, A> getConfidenceSynchronizer(Class<A> confidenceclass) {
@@ -569,10 +559,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     }
 
     public InteractorSynchronizer<BioactiveEntity, IntactBioactiveEntity> getBioactiveEntitySynchronizer() {
-        if (this.bioactiveEntitySynchronizer == null){
-           this.bioactiveEntitySynchronizer = new BioactiveEntitySynchronizer(this);
-        }
-        return this.bioactiveEntitySynchronizer;
+        initialiseInteractorTemplateIfNotDone();
+        this.interactorBaseSynchronizer.setIntactClass(IntactBioactiveEntity.class);
+        return this.interactorBaseSynchronizer;
     }
 
     public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getCausalRelationshipSynchronizer() {
@@ -580,19 +569,6 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
             this.causalRelationshipSynchronizer = new CausalRelationchipSynchronizer(this);
         }
         return causalRelationshipSynchronizer;
-    }
-
-    public uk.ac.ebi.intact.jami.synchronizer.ChecksumSynchronizer getInteractionChecksumSynchronizer() {
-        initialiseChecksumTemplateIfNodDone();
-        this.checksumSynchronizer.setIntactClass(InteractionChecksum.class);
-        return this.checksumSynchronizer;
-    }
-
-
-    public uk.ac.ebi.intact.jami.synchronizer.ChecksumSynchronizer getInteractorChecksumSynchronizer() {
-        initialiseChecksumTemplateIfNodDone();
-        this.checksumSynchronizer.setIntactClass(InteractorChecksum.class);
-        return this.checksumSynchronizer;
     }
 
     public ConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence> getInteractionConfidenceSynchronizer() {
@@ -834,9 +810,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         clearCache(this.polymerSynchronizer);
         clearCache(this.complexSynchronizer);
         clearCache(this.interactorPoolSynchronizer);
-        clearCache(this.bioactiveEntitySynchronizer);
         clearCache(this.causalRelationshipSynchronizer);
-        clearCache(this.checksumSynchronizer);
         clearCache(this.confidenceSynchronizer);
         clearCache(this.parameterSynchronizer);
         clearCache(this.organismSynchronizer);
@@ -905,12 +879,6 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private void initialiseXrefTemplateIfNotDone() {
         if (this.xrefSynchronizer == null){
             this.xrefSynchronizer = new XrefSynchronizerTemplate(this, AbstractIntactXref.class);
-        }
-    }
-
-    private void initialiseChecksumTemplateIfNodDone() {
-        if (this.checksumSynchronizer == null){
-            this.checksumSynchronizer = new ChecksumSynchronizerTemplate(this, AbstractIntactChecksum.class);
         }
     }
 

@@ -5,7 +5,9 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.impl.DefaultChecksum;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
+import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.SequenceChunk;
 import uk.ac.ebi.intact.jami.model.listener.PolymerSequenceListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -13,6 +15,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,6 +37,8 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
      * the sequence should not be repeated.
      */
     private List<SequenceChunk> sequenceChunks;
+
+    private Checksum crc64;
 
     protected IntactPolymer(){
         super();
@@ -115,30 +120,36 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
 
     @Deprecated
     /**
+     * For backward compatibility with intact-core, we keep the crc64.
+     * It will be removed when intact-core is removed
      * @deprecated look at checksums instead
      */
     public String getCrc64() {
-        Checksum checksum = ChecksumUtils.collectFirstChecksumWithMethod(getPersistentChecksums(), null, "crc64");
-        return checksum != null ? checksum.getValue() : null;
+        return this.crc64 != null ? this.crc64.getValue() : null;
     }
 
     @Deprecated
     /**
+     * For backward compatibility with intact-core, we keep the crc64.
+     * It will be removed when intact-core is removed
      * @deprecated look at checksums instead. Only kept for bacward compatibility with intact-core
      */
     public void setCrc64( String crc64 ) {
-        if (crc64 == null){
-           ChecksumUtils.removeAllChecksumWithMethod(getPersistentChecksums(), null, "crc64");
+        Collection<Checksum> polymerChecksums = getChecksums();
+
+        if (crc64 != null){
+            CvTerm crc64Method = IntactUtils.createMITopic("crc64", null);
+            // first remove old crc64
+            if (this.crc64 != null){
+                polymerChecksums.remove(this.crc64);
+            }
+            this.crc64 = new DefaultChecksum(crc64Method, crc64);
+            polymerChecksums.add(this.crc64);
         }
-        else{
-            Checksum checksum = ChecksumUtils.collectFirstChecksumWithMethod(getPersistentChecksums(), null, "crc64");
-            if (checksum == null){
-                InteractorChecksum crc64Checksum = new InteractorChecksum(IntactUtils.createMITopic("crc64", null), crc64);
-                getPersistentChecksums().add(crc64Checksum);
-            }
-            else if (checksum instanceof InteractorChecksum){
-                ((InteractorChecksum)checksum).setValue(crc64);
-            }
+        // remove all crc64 if the collection is not empty
+        else if (!polymerChecksums.isEmpty()) {
+            ChecksumUtils.removeAllChecksumWithMethod(polymerChecksums, null, "crc64");
+            this.crc64 = null;
         }
     }
 
@@ -169,5 +180,48 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
 
     protected void setSequenceChunks( List<SequenceChunk> sequenceChunks ) {
         this.sequenceChunks = sequenceChunks;
+    }
+
+    @Override
+    protected void initialiseChecksums() {
+        super.initialiseChecksumsWith(new PolymerChecksumList());
+    }
+
+    private void processAddedChecksumEvent(Checksum added) {
+        if (crc64 == null && ChecksumUtils.doesChecksumHaveMethod(added, null, "crc64")){
+            crc64 = added;
+        }
+    }
+
+    private void processRemovedChecksumEvent(Checksum removed) {
+        if (crc64 != null && crc64.equals(removed)){
+            crc64 = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), null, "crc64");
+        }
+    }
+
+    private void clearPropertiesLinkedToChecksums() {
+        this.crc64 = null;
+    }
+
+    private class PolymerChecksumList extends AbstractListHavingProperties<Checksum> {
+        public PolymerChecksumList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(Checksum checksum) {
+            processAddedChecksumEvent(checksum);
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(Checksum checksum) {
+            processRemovedChecksumEvent(checksum);
+        }
+
+        @Override
+        protected void clearProperties() {
+            clearPropertiesLinkedToChecksums();
+        }
+
     }
 }

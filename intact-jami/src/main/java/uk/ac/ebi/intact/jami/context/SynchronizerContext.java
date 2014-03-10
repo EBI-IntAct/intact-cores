@@ -88,8 +88,6 @@ public interface SynchronizerContext {
 
     public <A extends AbstractIntactXref> XrefSynchronizer<A> getXrefSynchronizer(Class<A> xrefclass);
 
-    public <A extends AbstractIntactChecksum> ChecksumSynchronizer<A> getChecksumSynchronizer(Class<A> checksumclass);
-
     public <A extends AbstractIntactConfidence> ConfidenceSynchronizer<Confidence, A> getConfidenceSynchronizer(Class<A> confidenceclass);
 
     public <A extends AbstractIntactParameter> ParameterSynchronizer<Parameter, A> getParameterSynchronizer(Class<A> parameterclass);
@@ -175,10 +173,6 @@ public interface SynchronizerContext {
     public InteractorSynchronizer<BioactiveEntity, IntactBioactiveEntity> getBioactiveEntitySynchronizer();
 
     public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getCausalRelationshipSynchronizer();
-
-    public ChecksumSynchronizer<InteractionChecksum> getInteractionChecksumSynchronizer();
-
-    public ChecksumSynchronizer<InteractorChecksum> getInteractorChecksumSynchronizer();
 
     public ConfidenceSynchronizer<ModelledConfidence, ComplexConfidence> getComplexConfidenceSynchronizer();
 

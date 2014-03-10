@@ -1,18 +1,18 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.impl.DefaultChecksum;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
+import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Intact implementation of checksum
@@ -209,7 +209,7 @@ public class IntactProtein extends IntactPolymer implements Protein{
             if (this.rogid != null){
                 proteinChecksums.remove(this.rogid);
             }
-            this.rogid = new InteractorChecksum(rogidMethod, rogid);
+            this.rogid = new DefaultChecksum(rogidMethod, rogid);
             proteinChecksums.add(this.rogid);
         }
         // remove all smiles if the collection is not empty
@@ -233,7 +233,7 @@ public class IntactProtein extends IntactPolymer implements Protein{
 
     @Override
     protected void initialiseChecksums() {
-        super.setPersistentChecksums(new ProteinChecksumList(null));
+        super.initialiseChecksumsWith(new ProteinChecksumList());
     }
 
     @Override
@@ -246,14 +246,6 @@ public class IntactProtein extends IntactPolymer implements Protein{
         super.setPersistentAliases(new ProteinAliasList(aliases));
         for (Alias alias : super.getAliases()){
             processAddedAliasEvent(alias);
-        }
-    }
-
-    @Override
-    protected void setPersistentChecksums(Collection<Checksum> checksums) {
-        super.setPersistentChecksums(new ProteinChecksumList(checksums));
-        for (Checksum check : super.getChecksums()){
-            processAddedChecksumEvent(check);
         }
     }
 
@@ -352,20 +344,27 @@ public class IntactProtein extends IntactPolymer implements Protein{
         return geneName != null ? geneName.getName() : (uniprotkb != null ? uniprotkb.getId() : (refseq != null ? refseq.getId() : super.toString()));
     }
 
-    protected class ProteinChecksumList extends PersistentChecksumList {
-        public ProteinChecksumList(Collection<Checksum> checksums){
-            super(checksums);
+    protected class ProteinChecksumList extends AbstractListHavingProperties<Checksum> {
+        public ProteinChecksumList(){
+            super();
         }
 
         @Override
-        protected boolean needToPreProcessElementToAdd(Checksum added) {
-            return false;
+        protected void processAddedObjectEvent(Checksum checksum) {
+            processAddedChecksumEvent(checksum);
         }
 
         @Override
-        protected Checksum processOrWrapElementToAdd(Checksum added) {
-            return added;
+        protected void processRemovedObjectEvent(Checksum checksum) {
+            processRemovedChecksumEvent(checksum);
         }
+
+        @Override
+        protected void clearProperties() {
+            clearPropertiesLinkedToChecksums();
+        }
+
+
     }
 
     protected class ProteinAliasList extends PersistentAliasList {

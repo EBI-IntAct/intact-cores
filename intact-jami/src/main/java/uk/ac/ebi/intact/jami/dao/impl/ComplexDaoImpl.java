@@ -1,20 +1,12 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ComplexDao;
-import uk.ac.ebi.intact.jami.dao.InteractorPoolDao;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactChecksum;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
-import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.ComplexSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorPoolSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

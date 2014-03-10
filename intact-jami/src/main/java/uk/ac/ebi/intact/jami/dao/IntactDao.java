@@ -81,12 +81,6 @@ public interface IntactDao {
 
     public CausalRelationshipDao getCausalRelationshipDao();
 
-    public <T extends AbstractIntactChecksum> ChecksumDao<T> getChecksumDao(Class<T> checksumClass);
-
-    public ChecksumDao<InteractionChecksum> getInteractionChecksumDao();
-
-    public ChecksumDao<InteractorChecksum> getInteractorChecksumDao();
-
     public <T extends AbstractIntactConfidence> ConfidenceDao<T> getConfidenceDao(Class<T> confidenceClass);
 
     public ConfidenceDao<ComplexConfidence> getComplexConfidenceDao();

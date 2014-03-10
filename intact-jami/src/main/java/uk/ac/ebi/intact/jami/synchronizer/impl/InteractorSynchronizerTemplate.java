@@ -133,8 +133,6 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         }
         // then check interactor type
         intactInteractor.setInteractorType(getContext().getInteractorTypeSynchronizer().synchronize(intactInteractor.getInteractorType(), true));
-        // then check checksums
-        prepareChecksums(intactInteractor);
         // then check aliases
         prepareAliases(intactInteractor);
         // then check annotations
@@ -186,22 +184,6 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected boolean isObjectStoredInCache(T object) {
         return this.persistedObjects.containsKey(object);
     }
-
-    protected void prepareChecksums(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
-        if (intactInteractor.areChecksumsInitialized()){
-            List<Checksum> checksumToPersist = new ArrayList<Checksum>(intactInteractor.getPersistentChecksums());
-            for (Checksum checksum : checksumToPersist){
-                // do not persist or merge checksum because of cascades
-                Checksum interactorCheck = getContext().getInteractorChecksumSynchronizer().synchronize(checksum, false);
-                // we have a different instance because needed to be synchronized
-                if (interactorCheck != checksum){
-                    intactInteractor.getPersistentChecksums().remove(checksum);
-                    intactInteractor.getPersistentChecksums().add(interactorCheck);
-                }
-            }
-        }
-    }
-
 
     protected void prepareXrefs(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areXrefsInitialized()){
