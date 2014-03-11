@@ -19,6 +19,19 @@ import java.util.Collection;
 /**
  * Intact implementation of Cv term
  *
+ * NOTE: getIdentifiers and getXrefs are not persistent methods annotated with hibernate annotations. All the xrefs present in identifiers
+ * and xrefs are persisted in the same table for backward compatibility with intact-core. So the persistent xrefs are available with the getDbXrefs method.
+ * For HQL queries, the method getDbXrefs should be used because is annotated with hibernate annotations.
+ * However, getDbXrefs should not be used directly to add/remove xrefs because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence.
+ * However, it is not recommended to use this method to directly add/remove xrefs as it may mess up with the state of the object.
+ * NOTE: The property objClass is deprecated but is kept for backward compatibility with intact-core. Once intact-core is removed, we can remove the objclass
+ * property and merge all cvs that were duplicated. The only remaining unique constraint would be the shortlabel.
+ * NOTE: The identifier property is deprecated but is automatically set for backward compatibility with intact-core. Once intact-core is removed,
+ * we should remove the identifier property and the matching column in the database.
+ * NOTE: the children of a CvTerm are responsible for the persistent relationship in the database. It is then recommended to use addChild and removeChild methods
+ * to make sure that children are added/removed but also the relationship is persisted in the database.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>07/01/14</pre>
@@ -228,7 +241,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     @Transient
     public boolean areXrefsInitialized(){
-        return Hibernate.isInitialized(getPersistentXrefs());
+        return Hibernate.isInitialized(getDbXrefs());
     }
 
     @Transient
@@ -256,8 +269,12 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Target(CvTermXref.class)
     @Override
-    public Collection<Xref> getPersistentXrefs() {
-        return super.getPersistentXrefs();
+    /**
+     * This method give direct access to the persistent collection of xrefs (identifiers and xrefs all together) for this object.
+     * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
+     */
+    public Collection<Xref> getDbXrefs() {
+        return super.getDbXrefs();
     }
 
     private void setChildren( Collection<OntologyTerm> children ) {

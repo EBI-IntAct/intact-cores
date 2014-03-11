@@ -1,16 +1,12 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
-import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.SourceSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -59,7 +55,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
 
     public Collection<IntactSource> getByXref(String primaryId) {
         Query query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                "join s.persistentXrefs as x " +
+                "join s.dbXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
         return query.getResultList();
@@ -67,7 +63,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
 
     public Collection<IntactSource> getByXrefLike(String primaryId) {
         Query query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                "join s.persistentXrefs as x " +
+                "join s.dbXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
         return query.getResultList();
@@ -77,9 +73,9 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         Query query;
         if (dbMI != null){
             query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                    "join s.persistentXrefs as x " +
+                    "join s.dbXrefs as x " +
                     "join x.database as dat " +
-                    "join dat.persistentXrefs as xref " +
+                    "join dat.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -94,7 +90,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         }
         else{
             query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                    "join s.persistentXrefs as x " +
+                    "join s.dbXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and x.id = :primary");
@@ -108,9 +104,9 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         Query query;
         if (dbMI != null){
             query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                    "join s.persistentXrefs as x " +
+                    "join s.dbXrefs as x " +
                     "join x.database as dat " +
-                    "join dat.persistentXrefs as xref " +
+                    "join dat.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -125,7 +121,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         }
         else{
             query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                    "join s.persistentXrefs as x " +
+                    "join s.dbXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and upper(x.id) like :primary");
@@ -140,9 +136,9 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where x.qualifier is null " +
@@ -158,11 +154,11 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
             else if (qualifierMI != null){
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join x.qualifier as qual " +
-                        "join qual.persistentXrefs as xref2 " +
+                        "join qual.dbXrefs as xref2 " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "join xref2.database as d2 " +
@@ -183,10 +179,10 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
             else{
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -205,7 +201,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         else{
             if (qualifierName == null && qualifierMI == null){
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
                         "and x.qualifier is null " +
@@ -215,10 +211,10 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
             else if (qualifierMI != null){
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
-                        "join qual.persistentXrefs as xref " +
+                        "join qual.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where dat.shortName = :dbName " +
@@ -235,7 +231,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
             else{
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +
@@ -254,9 +250,9 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where x.qualifier is null " +
@@ -272,11 +268,11 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
             else if (qualifierMI != null){
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join x.qualifier as qual " +
-                        "join qual.persistentXrefs as xref2 " +
+                        "join qual.dbXrefs as xref2 " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "join xref2.database as d2 " +
@@ -297,10 +293,10 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
             else{
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -319,7 +315,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         else{
             if (qualifierName == null && qualifierMI == null){
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
                         "and x.qualifier is null " +
@@ -329,10 +325,10 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
             else if (qualifierMI != null){
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
-                        "join qual.persistentXrefs as xref " +
+                        "join qual.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where dat.shortName = :dbName " +
@@ -349,7 +345,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             }
             else{
                 query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                        "join s.persistentXrefs as x " +
+                        "join s.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +
@@ -367,9 +363,9 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         Query query;
         if (topicMI != null){
             query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                    "join s.persistentAnnotations as a " +
+                    "join s.dbAnnotations as a " +
                     "join a.topic as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -382,7 +378,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         }
         else{
             query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                    "join s.persistentAnnotations as a " +
+                    "join s.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
             query.setParameter("topicName", topicName);
@@ -394,9 +390,9 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         Query query;
         if (topicMI != null){
             query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                    "join s.persistentAnnotations as a " +
+                    "join s.dbAnnotations as a " +
                     "join a.topic as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -412,7 +408,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         }
         else{
             query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                    "join s.persistentAnnotations as a " +
+                    "join s.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
             query.setParameter("topicName", topicName);
@@ -452,7 +448,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                     "join so.synonyms as s " +
                     "join s.type as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -490,7 +486,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
             query = getEntityManager().createQuery("select distinct so from IntactSource so " +
                     "join so.synonyms as s " +
                     "join s.type as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -517,7 +513,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
 
     public IntactSource getByMIIdentifier(String primaryId) {
         Query query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                "join s.persistentXrefs as x " +
+                "join s.dbXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
                 "where (qual.shortName = :identity or qual.shortName = :secondaryAc) " +
@@ -541,7 +537,7 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
 
     public IntactSource getByPARIdentifier(String primaryId) {
         Query query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                "join s.persistentXrefs as x " +
+                "join s.dbXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
                 "where dat.shortName = :par "+

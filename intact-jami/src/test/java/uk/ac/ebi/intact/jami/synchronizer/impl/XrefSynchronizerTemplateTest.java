@@ -473,11 +473,11 @@ public class XrefSynchronizerTemplateTest {
         entityManager.persist(identity);
 
         CvTermXref ref1 = new CvTermXref(psimi, Xref.PUBMED_MI, identity);
-        db.getPersistentXrefs().add(ref1);
+        db.getDbXrefs().add(ref1);
         CvTermXref ref2 = new CvTermXref(psimi, CvTerm.PSI_MI, identity);
-        psimi.getPersistentXrefs().add(ref2);
+        psimi.getDbXrefs().add(ref2);
         CvTermXref ref3 = new CvTermXref(psimi, Xref.IDENTITY_MI, identity);
-        identity.getPersistentXrefs().add(ref3);
+        identity.getDbXrefs().add(ref3);
         entityManager.flush();
         this.context.clearCache();
         return db;
@@ -490,7 +490,7 @@ public class XrefSynchronizerTemplateTest {
         entityManager.persist(qualifier);
 
         CvTermXref ref1 = new CvTermXref(psimi, Xref.SEE_ALSO_MI, identity);
-        qualifier.getPersistentXrefs().add(ref1);
+        qualifier.getDbXrefs().add(ref1);
         entityManager.flush();
         this.context.clearCache();
         return qualifier;

@@ -392,11 +392,11 @@ public class AliasSynchronizerTemplateTest {
         entityManager.persist(identity);
 
         CvTermXref ref1 = new CvTermXref(psimi, Alias.SYNONYM_MI, identity);
-        aliasSynonym.getPersistentXrefs().add(ref1);
+        aliasSynonym.getDbXrefs().add(ref1);
         CvTermXref ref2 = new CvTermXref(psimi, CvTerm.PSI_MI, identity);
-        psimi.getPersistentXrefs().add(ref2);
+        psimi.getDbXrefs().add(ref2);
         CvTermXref ref3 = new CvTermXref(psimi, Xref.IDENTITY_MI, identity);
-        identity.getPersistentXrefs().add(ref3);
+        identity.getDbXrefs().add(ref3);
         entityManager.flush();
         this.context.clearCache();
         return aliasSynonym;

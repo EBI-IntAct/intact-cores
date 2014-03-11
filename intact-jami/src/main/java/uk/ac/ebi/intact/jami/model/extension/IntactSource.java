@@ -6,7 +6,6 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
-import uk.ac.ebi.intact.jami.model.listener.SourceUrlAndPostalAddressListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -18,11 +17,22 @@ import java.util.Collection;
 /**
  * Intact implementation of a source. It replaces Institution from intact core
  *
+ * NOTE: dbUrl and dbPostalAddress are private methods as they are deprecated and only there for backward compatibility with intact-core.
+ * Only getUrl and getPostalAddress should be used. These methods are not persistent, if a URL/postal address is attached to an institution, it
+ * should always be stored in the annotations of the institution.
+ * NOTE: getAnnotations is not persistent. For HQL queries, the method getDbAnnotations should be used because is annotated with hibernate annotations.
+ * However, getDbAnnotations should not be used directly to add/remove annotations because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence.
+ * NOTE: getIdentifiers and getXrefs are not persistent methods annotated with hibernate annotations. All the xrefs present in identifiers
+ * and xrefs are persisted in the same table for backward compatibility with intact-core. So the persistent xrefs are available with the getDbXrefs method.
+ * For HQL queries, the method getDbXrefs should be used because is annotated with hibernate annotations.
+ * However, getDbXrefs should not be used directly to add/remove xrefs because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
-@EntityListeners(value = {SourceUrlAndPostalAddressListener.class})
 @Entity
 @Table(name = "ia_institution")
 @Cacheable
@@ -91,6 +101,28 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         setUrl(url);
         setPostalAddress(address);
         this.bibRef = bibRef;
+    }
+
+    @PrePersist
+    @PreUpdate
+    /**
+     * This method is only for backward compatibility with intact-core. Once intact-core is removed (or editor updated) and the database columns removed,
+     * this method can be safely deleted
+     */
+    public void prePersist() {
+        if (this.url != null){
+            this.persistentUrl = this.url.getValue();
+        }
+        else{
+            this.persistentUrl = null;
+        }
+
+        if (this.postalAddress != null){
+            this.persistentPostalAddress = this.postalAddress.getValue();
+        }
+        else{
+            this.persistentPostalAddress = null;
+        }
     }
 
     @Column(name = "shortlabel", nullable = false, unique = true)
@@ -177,29 +209,9 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return super.getSynonyms();
     }
 
-    /**
-     *
-     * @param persistentURL
-     * @deprecated this method is used only for backward compatibility with intact-core. Use setURL instead
-     */
-    @Deprecated
-    public void setPersistentURL(String persistentURL) {
-        this.persistentUrl = persistentURL;
-    }
-
-    /**
-     *
-     * @param persistentPostalAddress
-     * @deprecated this method is used only for backward compatibility with intact-core. Use setPostalAddress instead
-     */
-    @Deprecated
-    public void setPersistentPostalAddress(String persistentPostalAddress) {
-        this.persistentPostalAddress = persistentPostalAddress;
-    }
-
     @Transient
     public boolean areXrefsInitialized(){
-        return Hibernate.isInitialized(getPersistentXrefs());
+        return Hibernate.isInitialized(getDbXrefs());
     }
 
     @Transient
@@ -209,14 +221,18 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     @Transient
     public boolean areAnnotationsInitialized(){
-        return Hibernate.isInitialized(getPersistentAnnotations());
+        return Hibernate.isInitialized(getDbAnnotations());
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceXref.class)
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceXref.class)
-    public Collection<Xref> getPersistentXrefs() {
+    /**
+     * This method give direct access to the persistent collection of xrefs (identifiers and xrefs all together) for this object.
+     * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
+     */
+    public Collection<Xref> getDbXrefs() {
         return super.getXrefs();
     }
 
@@ -232,26 +248,25 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
      * WARNING: The join table is for backward compatibility with intact-core.
      * When intact-core will be removed, the join table would disappear wnd the relation would become
      * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     *
+     * This method give direct access to the persistent collection of annotations for this object.
+     * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
+     *
      */
-    public Collection<Annotation> getPersistentAnnotations() {
+    public Collection<Annotation> getDbAnnotations() {
         return ((SourceAnnotationList)super.getAnnotations()).getWrappedList();
     }
 
     @Override
     protected void initialiseAnnotations() {
-        super.initialiseAnnotations();
+        super.setAnnotations(new SourceAnnotationList(null));
+
         for (Annotation annot : super.getAnnotations()){
             processAddedAnnotationEvent(annot);
         }
-        if (this.url == null && this.persistentUrl != null){
-            setUrl(this.persistentUrl);
-        }
-        if (this.postalAddress == null && this.persistentPostalAddress != null){
-            setPostalAddress(this.persistentPostalAddress);
-        }
     }
 
-    protected void processAddedAnnotationEvent(Annotation added) {
+    private void processAddedAnnotationEvent(Annotation added) {
         if (url == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.URL_MI, Annotation.URL)){
             url = added;
         }
@@ -260,7 +275,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         }
     }
 
-    protected void processRemovedAnnotationEvent(Annotation removed) {
+    private void processRemovedAnnotationEvent(Annotation removed) {
         if (url != null && url.equals(removed)){
             url = null;
         }
@@ -269,8 +284,11 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         }
     }
 
-    private void setPersistentAnnotations(Collection<Annotation> persistentAnnotations) {
+    private void setDbAnnotations(Collection<Annotation> persistentAnnotations) {
         super.setAnnotations(new SourceAnnotationList(persistentAnnotations));
+        for (Annotation annot : super.getAnnotations()){
+            processAddedAnnotationEvent(annot);
+        }
     }
 
     @Column(name = "url")
@@ -278,7 +296,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
      * @deprecated use getURL instead
      */
     @Deprecated
-    private String getPersistentURL() {
+    private String getDbURL() {
         return persistentUrl;
     }
 
@@ -287,9 +305,30 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
      * @deprecated use getPostalAdress instead
      */
     @Deprecated
-    private String getPersistentPostalAddress() {
+    private String getDbPostalAddress() {
         return persistentPostalAddress;
     }
+
+    /**
+     *
+     * @param persistentURL
+     * @deprecated this method is used only for backward compatibility with intact-core. Use setURL instead
+     */
+    @Deprecated
+    private void setDbURL(String persistentURL) {
+        this.persistentUrl = persistentURL;
+    }
+
+    /**
+     *
+     * @param persistentPostalAddress
+     * @deprecated this method is used only for backward compatibility with intact-core. Use setPostalAddress instead
+     */
+    @Deprecated
+    private void setDbPostalAddress(String persistentPostalAddress) {
+        this.persistentPostalAddress = persistentPostalAddress;
+    }
+
 
     private class SourceAnnotationList extends AbstractCollectionWrapper<Annotation> {
         public SourceAnnotationList(Collection<Annotation> annots){

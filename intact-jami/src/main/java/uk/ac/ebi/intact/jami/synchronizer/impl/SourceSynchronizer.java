@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
@@ -217,7 +216,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         }
 
         query = getEntityManager().createQuery("select distinct s from IntactSource s " +
-                "join s.persistentXrefs as x " +
+                "join s.dbXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
                 "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -273,14 +272,14 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
 
     protected void prepareXrefs(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getPersistentXrefs());
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref cvXref = getContext().getSourceXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
-                    intactSource.getPersistentXrefs().remove(xref);
-                    intactSource.getPersistentXrefs().add(cvXref);
+                    intactSource.getDbXrefs().remove(xref);
+                    intactSource.getDbXrefs().add(cvXref);
                 }
             }
         }
@@ -288,14 +287,14 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
 
     protected void prepareAnnotations(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getPersistentAnnotations());
+            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation cvAnnotation = getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
-                    intactSource.getPersistentAnnotations().remove(annotation);
-                    intactSource.getPersistentAnnotations().add(cvAnnotation);
+                    intactSource.getDbAnnotations().remove(annotation);
+                    intactSource.getDbAnnotations().add(cvAnnotation);
                 }
             }
         }

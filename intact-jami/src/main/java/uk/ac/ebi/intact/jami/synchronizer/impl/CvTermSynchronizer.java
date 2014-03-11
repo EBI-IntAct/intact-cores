@@ -263,7 +263,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         }
 
         query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
-                "join cv.persistentXrefs as x " +
+                "join cv.dbXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
                 "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -413,14 +413,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     protected void prepareXrefs(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getPersistentXrefs());
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 CvTermXref cvXref = getContext().getCvXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
-                    intactCv.getPersistentXrefs().remove(xref);
-                    intactCv.getPersistentXrefs().add(cvXref);
+                    intactCv.getDbXrefs().remove(xref);
+                    intactCv.getDbXrefs().add(cvXref);
                 }
             }
         }
@@ -522,8 +522,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         existingInstance.getSynonyms().clear();
         Collection<Annotation> cvAnnotations = new ArrayList<Annotation>(existingInstance.getAnnotations());
         existingInstance.getAnnotations().clear();
-        Collection<Xref> cvRefs = new ArrayList<Xref>(existingInstance.getPersistentXrefs());
-        existingInstance.getPersistentXrefs().clear();
+        Collection<Xref> cvRefs = new ArrayList<Xref>(existingInstance.getDbXrefs());
+        existingInstance.getDbXrefs().clear();
         Collection<OntologyTerm> children = new ArrayList<OntologyTerm>(existingInstance.getChildren());
         existingInstance.getChildren().clear();
         Collection<OntologyTerm> parents = new ArrayList<OntologyTerm>(existingInstance.getParents());
@@ -533,7 +533,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
         // after persistence, re-attach dependent objects
         existingInstance.getSynonyms().addAll(cvAliases);
-        existingInstance.getPersistentXrefs().addAll(cvRefs);
+        existingInstance.getDbXrefs().addAll(cvRefs);
         existingInstance.getAnnotations().addAll(cvAnnotations);
         existingInstance.getChildren().addAll(children);
         existingInstance.getParents().addAll(parents);

@@ -296,14 +296,14 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     }
 
     @javax.persistence.Transient
-    protected Collection<Xref> getPersistentXrefs() {
+    protected Collection<Xref> getDbXrefs() {
         if (this.persistentXrefs == null){
             this.persistentXrefs = new PersistentXrefList(null);
         }
         return this.persistentXrefs.getWrappedList();
     }
 
-    protected void setPersistentXrefs(Collection<Xref> persistentXrefs){
+    protected void setDbXrefs(Collection<Xref> persistentXrefs){
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
             this.identifiers = null;
