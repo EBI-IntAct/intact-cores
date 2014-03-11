@@ -112,7 +112,9 @@ public interface SynchronizerContext {
 
     public AliasSynchronizer<FeatureAlias> getFeatureAliasSynchronizer();
 
-    public AliasSynchronizer<ExperimentalEntityAlias> getEntityAliasSynchronizer();
+    public AliasSynchronizer<ExperimentalEntityAlias> getExperimentalEntityAliasSynchronizer();
+
+    public AliasSynchronizer<ModelledEntityAlias> getModelledEntityAliasSynchronizer();
 
     public AliasSynchronizer<InteractorAlias> getInteractorAliasSynchronizer();
 
@@ -126,7 +128,9 @@ public interface SynchronizerContext {
 
     public XrefSynchronizer<FeatureXref> getFeatureXrefSynchronizer();
 
-    public XrefSynchronizer<ExperimentalEntityXref> getEntityXrefSynchronizer();
+    public XrefSynchronizer<ExperimentalEntityXref> getExperimentalEntityXrefSynchronizer();
+
+    public XrefSynchronizer<ModelledEntityXref> getModelledEntityXrefSynchronizer();
 
     public XrefSynchronizer<ResultingSequenceXref> getResultingSequenceXrefSynchronizer();
 
@@ -140,7 +144,9 @@ public interface SynchronizerContext {
 
     public AnnotationSynchronizer<FeatureAnnotation> getFeatureAnnotationSynchronizer();
 
-    public AnnotationSynchronizer<ExperimentalEntityAnnotation> getEntityAnnotationSynchronizer();
+    public AnnotationSynchronizer<ExperimentalEntityAnnotation> getExperimentalEntityAnnotationSynchronizer();
+
+    public AnnotationSynchronizer<ModelledEntityAnnotation> getModelledEntityAnnotationSynchronizer();
 
     public AnnotationSynchronizer<CooperativeEffectAnnotation> getCooperativeEffectAnnotationSynchronizer();
 

@@ -53,12 +53,6 @@ implements EntitySynchronizer<T,I> {
         prepareStoichiometry(intactEntity);
         // then check features
         prepareFeatures(intactEntity);
-        // then check aliases
-        prepareAliases(intactEntity);
-        // then check annotations
-        prepareAnnotations(intactEntity);
-        // then check xrefs
-        prepareXrefs(intactEntity);
         // then check causal relationships
         prepareCausalRelationships(intactEntity);
     }
@@ -137,52 +131,6 @@ implements EntitySynchronizer<T,I> {
                 if (persistentFeature != feature) {
                     intactEntity.getFeatures().remove(feature);
                     intactEntity.addFeature(persistentFeature);
-                }
-            }
-        }
-    }
-
-
-    protected void prepareXrefs(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
-        if (intactEntity.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactEntity.getXrefs());
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                Xref persistentXref = getContext().getEntityXrefSynchronizer().synchronize(xref, false);
-                // we have a different instance because needed to be synchronized
-                if (persistentXref != xref){
-                    intactEntity.getXrefs().remove(xref);
-                    intactEntity.getXrefs().add(persistentXref);
-                }
-            }
-        }
-    }
-
-    protected void prepareAnnotations(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
-        if (intactEntity.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactEntity.getAnnotations());
-            for (Annotation annotation : annotationsToPersist){
-                // do not persist or merge annotations because of cascades
-                Annotation persistentAnnotation = getContext().getEntityAnnotationSynchronizer().synchronize(annotation, false);
-                // we have a different instance because needed to be synchronized
-                if (persistentAnnotation != annotation){
-                    intactEntity.getAnnotations().remove(annotation);
-                    intactEntity.getAnnotations().add(persistentAnnotation);
-                }
-            }
-        }
-    }
-
-    protected void prepareAliases(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
-        if (intactEntity.areAliasesInitialized()){
-            List<Alias> aliasesToPersist = new ArrayList<Alias>(intactEntity.getAliases());
-            for (Alias alias : aliasesToPersist){
-                // do not persist or merge alias because of cascades
-                Alias persistentAlias = getContext().getEntityAliasSynchronizer().synchronize(alias, false);
-                // we have a different instance because needed to be synchronized
-                if (persistentAlias != alias){
-                    intactEntity.getAliases().remove(alias);
-                    intactEntity.getAliases().add(persistentAlias);
                 }
             }
         }
