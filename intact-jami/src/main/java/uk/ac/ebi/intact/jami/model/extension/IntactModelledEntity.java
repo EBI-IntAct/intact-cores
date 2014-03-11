@@ -51,6 +51,7 @@ public class IntactModelledEntity extends AbstractIntactEntity<ModelledFeature> 
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ModelledEntityXref.class)
+    @Override
     public Collection<Xref> getXrefs() {
         return super.getXrefs();
     }
@@ -63,6 +64,7 @@ public class IntactModelledEntity extends AbstractIntactEntity<ModelledFeature> 
             inverseJoinColumns = @JoinColumn( name="annotation_ac")
     )
     @Target(ModelledEntityAnnotation.class)
+    @Override
     /**
      * WARNING: The join table is for backward compatibility with intact-core.
      * When intact-core will be removed, the join table would disappear wnd the relation would become
@@ -76,6 +78,7 @@ public class IntactModelledEntity extends AbstractIntactEntity<ModelledFeature> 
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ModelledEntityAlias.class)
+    @Override
     public Collection<Alias> getAliases() {
         return super.getAliases();
     }
@@ -86,6 +89,15 @@ public class IntactModelledEntity extends AbstractIntactEntity<ModelledFeature> 
     @Target(IntactModelledFeature.class)
     public Collection<ModelledFeature> getFeatures() {
         return super.getFeatures();
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledCausalRelationship.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="modelled_source_ac", referencedColumnName="ac")
+    @Target(ModelledCausalRelationship.class)
+    @Override
+    public Collection<CausalRelationship> getCausalRelationships() {
+        return super.getCausalRelationships();
     }
 
     @Override

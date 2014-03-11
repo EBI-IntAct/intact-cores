@@ -614,6 +614,42 @@ public class EntityDaoImpl<T extends Entity, F extends AbstractIntactEntity> ext
         return query.getResultList();
     }
 
+    public Collection<F> getByCausalRelationType(String typeName, String typeMI) {
+        Query query;
+        if (typeMI != null){
+            query = getEntityManager().createQuery("select distinct e from "+getEntityClass()+" e " +
+                    "join e.causalRelationships as c " +
+                    "join c.relationType as t " +
+                    "join t.persistentXrefs as x " +
+                    "join x.database as d " +
+                    "join x.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and x.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", typeMI);
+        }
+        else{
+            query = getEntityManager().createQuery("select e from "+getEntityClass()+" e " +
+                    "join e.causalRelationships as c " +
+                    "join c.relationType as t " +
+                    "where t.shortName = :unitName");
+            query.setParameter("unitName", typeName);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<F> getByCausalRelationshipTargetAc(String parentAc) {
+        Query query = getEntityManager().createQuery("select e from "+getEntityClass()+" e  " +
+                "join e.causalRelationships as c " +
+                "join c.target as t " +
+                "where t.ac = :ac ");
+        query.setParameter("ac",parentAc);
+        return query.getResultList();
+    }
+
     @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getEntitySynchronizer();

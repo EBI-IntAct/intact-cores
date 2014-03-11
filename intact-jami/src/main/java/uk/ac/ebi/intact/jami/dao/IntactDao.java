@@ -73,8 +73,6 @@ public interface IntactDao {
 
     public BioactiveEntityDao getBioactiveEntityDao();
 
-    public CausalRelationshipDao getCausalRelationshipDao();
-
     public <T extends AbstractIntactParameter> ParameterDao<T> getParameterDao(Class<T> parameterClass);
 
     public ParameterDao<ComplexParameter> getComplexParameterDao();

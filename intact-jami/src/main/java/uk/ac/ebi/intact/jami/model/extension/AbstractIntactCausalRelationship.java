@@ -9,7 +9,12 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 /**
- * Abstract IntAct class for causal relationship
+ * Abstract Intact causal relationship.
+ *
+ * Note: as we want to keep a foreign key to the target entity and in the future we would have two tables for entities: one modelled entity table and one experimentsl
+ * entity table, we will need different extensions of causal relationships so we can keep different foreign keys to modelled entity table or experimental entity table
+ *
+ *
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -17,16 +22,18 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "ia_causal_relationship")
-public class IntactCausalRelationship extends AbstractAuditable implements CausalRelationship {
+@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
+@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+public abstract class AbstractIntactCausalRelationship<T extends psidev.psi.mi.jami.model.Entity> extends AbstractAuditable implements CausalRelationship {
 
     private CvTerm relationType;
-    private psidev.psi.mi.jami.model.Entity target;
+    private T target;
     private Long id;
 
-    protected IntactCausalRelationship(){
+    protected AbstractIntactCausalRelationship(){
     }
 
-    public IntactCausalRelationship(CvTerm relationType, psidev.psi.mi.jami.model.Entity target){
+    public AbstractIntactCausalRelationship(CvTerm relationType, T target){
         if (relationType == null){
             throw new IllegalArgumentException("The relationType in a CausalRelationship cannot be null");
         }
@@ -57,11 +64,8 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
         return relationType;
     }
 
-    @ManyToOne(targetEntity = IntactExperimentalEntity.class, optional = false)
-    @JoinColumn( name = "target_ac", referencedColumnName = "ac" )
-    @Target(IntactExperimentalEntity.class)
-    @NotNull
-    public psidev.psi.mi.jami.model.Entity getTarget() {
+    @Transient
+    public T getTarget() {
         return target;
     }
 
@@ -72,9 +76,9 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
         this.relationType = relationType;
     }
 
-    public void setTarget(psidev.psi.mi.jami.model.Entity target) {
+    public void setTarget(T target) {
         if (target == null){
-            throw new IllegalArgumentException("The participat target in a CausalRelationship cannot be null");
+            throw new IllegalArgumentException("The participant target in a CausalRelationship cannot be null");
         }
         this.target = target;
     }

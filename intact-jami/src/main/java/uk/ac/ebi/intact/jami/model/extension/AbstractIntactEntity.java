@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
@@ -109,10 +108,7 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         biologicalRole = bioRole;
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactCausalRelationship.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="source_ac", referencedColumnName="ac")
-    @Target(IntactCausalRelationship.class)
+    @Transient
     public Collection<CausalRelationship> getCausalRelationships() {
         if (this.causalRelationships == null){
             initialiseCausalRelationships();

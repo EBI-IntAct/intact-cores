@@ -172,7 +172,7 @@ public interface SynchronizerContext {
 
     public InteractorSynchronizer<BioactiveEntity, IntactBioactiveEntity> getBioactiveEntitySynchronizer();
 
-    public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getCausalRelationshipSynchronizer();
+    public IntactDbSynchronizer<CausalRelationship, AbstractIntactCausalRelationship> getCausalRelationshipSynchronizer();
 
     public ConfidenceSynchronizer<ModelledConfidence, ComplexConfidence> getComplexConfidenceSynchronizer();
 

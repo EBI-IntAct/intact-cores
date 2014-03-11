@@ -153,6 +153,15 @@ public class IntactExperimentalEntity extends AbstractIntactEntity<FeatureEviden
         return super.getFeatures();
     }
 
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ExperimentalCausalRelationship.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="experimental_source_ac", referencedColumnName="ac")
+    @Target(ExperimentalCausalRelationship.class)
+    @Override
+    public Collection<CausalRelationship> getCausalRelationships() {
+        return super.getCausalRelationships();
+    }
+
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn(name = "ia_experimentalrole_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)

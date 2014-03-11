@@ -28,7 +28,7 @@ import javax.persistence.PersistenceUnit;
  */
 @Repository
 @Lazy
-public class IntactDaoImpl implements IntactDao{
+public class IntactDaoImpl implements IntactDao {
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;
     @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
@@ -36,7 +36,6 @@ public class IntactDaoImpl implements IntactDao{
 
     private SynchronizerContext synchronizerContext;
     private XrefDao xrefDao;
-    private CausalRelationshipDao causalRelationshipDao;
     private ComplexDao complexDao;
     private CooperativityEvidenceDao cooperativityEvidenceDao;
     private CvTermDao cvTermDao;
@@ -204,13 +203,6 @@ public class IntactDaoImpl implements IntactDao{
             this.bioactiveEntityDao = new BioactiveEntityDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.bioactiveEntityDao;
-    }
-
-    public CausalRelationshipDao getCausalRelationshipDao() {
-        if (this.causalRelationshipDao == null){
-            this.causalRelationshipDao = new CausalRelationshipDaoImpl(getEntityManager(), getSynchronizerContext());
-        }
-        return this.causalRelationshipDao;
     }
 
     public <T extends AbstractIntactParameter> ParameterDao<T> getParameterDao(Class<T> parameterClass) {

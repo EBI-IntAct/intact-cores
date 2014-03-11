@@ -1,11 +1,11 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import psidev.psi.mi.jami.model.CausalRelationship;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Entity;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
-import uk.ac.ebi.intact.jami.model.extension.IntactCausalRelationship;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCausalRelationship;
+import uk.ac.ebi.intact.jami.model.extension.ExperimentalCausalRelationship;
+import uk.ac.ebi.intact.jami.model.extension.ModelledCausalRelationship;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -21,18 +21,18 @@ import java.lang.reflect.InvocationTargetException;
  * @since <pre>24/01/14</pre>
  */
 
-public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer<CausalRelationship, IntactCausalRelationship>{
+public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer<CausalRelationship, AbstractIntactCausalRelationship> {
 
 
     public CausalRelationchipSynchronizer(SynchronizerContext context){
-        super(context, IntactCausalRelationship.class);
+        super(context, AbstractIntactCausalRelationship.class);
     }
 
-    public IntactCausalRelationship find(CausalRelationship object) throws FinderException {
+    public AbstractIntactCausalRelationship find(CausalRelationship object) throws FinderException {
         return null;
     }
 
-    public void synchronizeProperties(IntactCausalRelationship object) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(AbstractIntactCausalRelationship object) throws FinderException, PersisterException, SynchronizerException {
         // synchronize relation type
         CvTerm type = object.getRelationType();
         object.setRelationType(getContext().getTopicSynchronizer().synchronize(type, true));
@@ -47,22 +47,35 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
     }
 
     @Override
-    protected Object extractIdentifier(IntactCausalRelationship object) {
+    protected Object extractIdentifier(AbstractIntactCausalRelationship object) {
         return object.getId();
     }
 
     @Override
-    protected IntactCausalRelationship instantiateNewPersistentInstance(CausalRelationship object, Class<? extends IntactCausalRelationship> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return new IntactCausalRelationship(object.getRelationType(), object.getTarget());
+    protected AbstractIntactCausalRelationship instantiateNewPersistentInstance(CausalRelationship object, Class<? extends AbstractIntactCausalRelationship> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+
+        // we have an experimental entity
+        if (object.getTarget() instanceof ExperimentalEntity){
+            return new ExperimentalCausalRelationship(object.getRelationType(), (ExperimentalEntity)object.getTarget());
+        }
+        // we have a modelled entity
+        else if (object.getTarget() instanceof ModelledEntity){
+            return new ModelledCausalRelationship(object.getRelationType(), (ModelledEntity)object.getTarget());
+        }
+        // we don't manage this use case
+        else{
+            throw new InstantiationException("Cannot instantiate an Intact causal relationship if the target is neither an experimental entity nor a modelled entity. The current target type is " +
+                    object.getTarget().getClass());
+        }
     }
 
     @Override
-    protected void storeInCache(CausalRelationship originalObject, IntactCausalRelationship persistentObject, IntactCausalRelationship existingInstance) {
+    protected void storeInCache(CausalRelationship originalObject, AbstractIntactCausalRelationship persistentObject, AbstractIntactCausalRelationship existingInstance) {
         // nothing to do
     }
 
     @Override
-    protected IntactCausalRelationship fetchObjectFromCache(CausalRelationship object) {
+    protected ExperimentalCausalRelationship fetchObjectFromCache(CausalRelationship object) {
         return null;
     }
 
@@ -73,6 +86,6 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<CausalRelationship, IntactCausalRelationship>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<CausalRelationship, AbstractIntactCausalRelationship>(this));
     }
 }

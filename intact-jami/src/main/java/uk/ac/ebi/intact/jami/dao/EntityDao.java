@@ -12,7 +12,7 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 
-public interface EntityDao<F extends AbstractIntactEntity> extends IntactBaseDao<F>{
+public interface EntityDao<F extends AbstractIntactEntity> extends IntactBaseDao<F> {
 
     public F getByAc(String ac);
 
@@ -51,4 +51,8 @@ public interface EntityDao<F extends AbstractIntactEntity> extends IntactBaseDao
     public Collection<F> getByCausalRelationship(String targetAc);
 
     public Collection<F> getByInteractorAc(String ac, int first, int max);
+
+    public Collection<F> getByCausalRelationType(String typeName, String typeMI);
+
+    public Collection<F> getByCausalRelationshipTargetAc(String ac);
 }

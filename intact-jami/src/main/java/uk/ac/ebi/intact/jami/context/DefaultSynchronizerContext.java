@@ -23,7 +23,7 @@ import javax.persistence.EntityManager;
  * @since <pre>19/02/14</pre>
  */
 
-public class DefaultSynchronizerContext implements SynchronizerContext{
+public class DefaultSynchronizerContext implements SynchronizerContext {
     private EntityManager entityManager;
 
     // cv synchronizer
@@ -75,7 +75,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
     private InteractorSynchronizer<InteractorPool, IntactInteractorPool> interactorPoolSynchronizer;
 
     // causal relationship synchronizers
-    private IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> causalRelationshipSynchronizer;
+    private IntactDbSynchronizer<CausalRelationship, AbstractIntactCausalRelationship> causalRelationshipSynchronizer;
 
     // confidence synchronizers
     private ConfidenceSynchronizer confidenceSynchronizer;
@@ -564,7 +564,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         return this.interactorBaseSynchronizer;
     }
 
-    public IntactDbSynchronizer<CausalRelationship, IntactCausalRelationship> getCausalRelationshipSynchronizer() {
+    public IntactDbSynchronizer<CausalRelationship, AbstractIntactCausalRelationship> getCausalRelationshipSynchronizer() {
         if (this.causalRelationshipSynchronizer == null){
             this.causalRelationshipSynchronizer = new CausalRelationchipSynchronizer(this);
         }
