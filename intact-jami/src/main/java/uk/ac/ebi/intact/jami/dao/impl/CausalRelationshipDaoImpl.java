@@ -1,16 +1,13 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CausalRelationshipDao;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
+import uk.ac.ebi.intact.jami.model.extension.IntactCausalRelationship;
 import uk.ac.ebi.intact.jami.model.extension.IntactCausalRelationship;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.CausalRelationchipSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

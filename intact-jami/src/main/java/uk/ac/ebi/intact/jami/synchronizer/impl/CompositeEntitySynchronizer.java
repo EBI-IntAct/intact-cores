@@ -57,7 +57,7 @@ public class CompositeEntitySynchronizer implements EntitySynchronizer<Entity, A
 
     public AbstractIntactEntity persist(AbstractIntactEntity term) throws FinderException, PersisterException, SynchronizerException {
         // experimental
-        if (term instanceof AbstractIntactExperimentalEntity){
+        if (term instanceof IntactExperimentalEntity){
             if (term instanceof IntactExperimentalEntityPool){
                 return this.context.getExperimentalEntityPoolSynchronizer().persist((IntactExperimentalEntityPool)term);
             }
@@ -111,7 +111,7 @@ public class CompositeEntitySynchronizer implements EntitySynchronizer<Entity, A
 
     public void synchronizeProperties(AbstractIntactEntity term) throws FinderException, PersisterException, SynchronizerException {
         // experimental
-        if (term instanceof AbstractIntactExperimentalEntity){
+        if (term instanceof IntactExperimentalEntity){
             if (term instanceof IntactExperimentalEntityPool){
                 this.context.getExperimentalEntityPoolSynchronizer().synchronizeProperties((IntactExperimentalEntityPool)term);
             }

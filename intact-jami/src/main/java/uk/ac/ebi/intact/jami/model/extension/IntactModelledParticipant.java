@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
 
@@ -18,6 +19,7 @@ import java.util.Collection;
  */
 @Entity
 @DiscriminatorValue("modelled_participant")
+@Where(clause = "category = 'modelled_participant' or category = 'modelled_entity_pool'")
 public class IntactModelledParticipant extends IntactModelledEntity implements ModelledParticipant{
 
     private String interactionAc;

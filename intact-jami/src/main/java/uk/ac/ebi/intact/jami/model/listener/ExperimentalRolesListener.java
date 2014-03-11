@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.jami.model.listener;
 
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactExperimentalEntity;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntity;
 
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
@@ -19,7 +19,7 @@ public class ExperimentalRolesListener {
 
     @PrePersist
     @PreUpdate
-    public void preUpdateAndPrePersist(AbstractIntactExperimentalEntity intactEntity){
+    public void preUpdateAndPrePersist(IntactExperimentalEntity intactEntity){
         if (intactEntity.getExperimentalRole() == null && !intactEntity.getExperimentalRoles().isEmpty()){
             intactEntity.getExperimentalRoles().clear();
         }
@@ -30,7 +30,7 @@ public class ExperimentalRolesListener {
     }
 
     @PostLoad
-    public void postLoad(AbstractIntactExperimentalEntity intactEntity){
+    public void postLoad(IntactExperimentalEntity intactEntity){
         if (intactEntity.getExperimentalRole() == null && !intactEntity.getExperimentalRoles().isEmpty()){
             intactEntity.setExperimentalRole(intactEntity.getExperimentalRoles().iterator().next());
         }

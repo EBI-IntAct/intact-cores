@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * Implementation of annotation for entities/participants
+ * Implementation of annotation for modelled entities/participants (used in complexes)
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -14,17 +14,17 @@ import javax.persistence.Table;
  */
 @Entity
 @Table( name = "ia_annotation" )
-public class EntityAnnotation extends AbstractIntactAnnotation{
+public class ModelledEntityAnnotation extends AbstractIntactAnnotation{
 
-    public EntityAnnotation() {
+    public ModelledEntityAnnotation() {
         super();
     }
 
-    public EntityAnnotation(CvTerm topic) {
+    public ModelledEntityAnnotation(CvTerm topic) {
         super(topic);
     }
 
-    public EntityAnnotation(CvTerm topic, String value) {
+    public ModelledEntityAnnotation(CvTerm topic, String value) {
         super(topic, value);
     }
 }

@@ -41,7 +41,7 @@ public interface IntactDao {
 
     public XrefDao<FeatureXref> getFeatureXrefDao();
 
-    public XrefDao<EntityXref> getEntityXrefDao();
+    public XrefDao<ExperimentalEntityXref> getEntityXrefDao();
 
     public XrefDao<ResultingSequenceXref> getResultingSequenceXrefDao();
 

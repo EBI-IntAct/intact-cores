@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 
 import javax.persistence.*;
@@ -10,12 +11,20 @@ import java.util.Collection;
 /**
  * Intact implementation of modelled entity
  *
+ * NOTE: for backward compatibility, modelled entities and experimental entities are in the same table ia_component.
+ * In the future, we will update that so we have two different tables : one for modelled entities and one for experimental entities.
+ * When this is done, we would be able to remove the where clause attached to this entity.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>15/01/14</pre>
  */
-@DiscriminatorValue("modelled_entity")
 @javax.persistence.Entity
+@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
+@Table(name = "ia_component")
+@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("modelled_entity")
+@Where(clause = "category = 'modelled_entity' or category = 'modelled_participant' or category = 'modelled_entity_pool'")
 public class IntactModelledEntity extends AbstractIntactEntity<ModelledFeature> implements ModelledEntity{
 
     protected IntactModelledEntity() {
@@ -36,6 +45,39 @@ public class IntactModelledEntity extends AbstractIntactEntity<ModelledFeature> 
 
     public IntactModelledEntity(Interactor interactor, CvTerm bioRole, Stoichiometry stoichiometry) {
         super(interactor, bioRole, stoichiometry);
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledEntityXref.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(ModelledEntityXref.class)
+    public Collection<Xref> getXrefs() {
+        return super.getXrefs();
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledEntityAnnotation.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinTable(
+            name="ia_component2annot",
+            joinColumns = @JoinColumn( name="component_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
+    @Target(ModelledEntityAnnotation.class)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     */
+    public Collection<Annotation> getAnnotations() {
+        return super.getAnnotations();
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledEntityAlias.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(ModelledEntityAlias.class)
+    public Collection<Alias> getAliases() {
+        return super.getAliases();
     }
 
     @Override

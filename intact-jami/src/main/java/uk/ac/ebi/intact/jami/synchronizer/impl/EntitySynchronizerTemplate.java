@@ -10,7 +10,6 @@ import uk.ac.ebi.intact.jami.merger.EntityMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactEntity;
 import uk.ac.ebi.intact.jami.model.extension.IntactStoichiometry;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -48,8 +47,6 @@ implements EntitySynchronizer<T,I> {
     }
 
     public void synchronizeProperties(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
-        // then check shortlabel/synchronize
-        prepareShortLabel(intactEntity);
         // then check interactor
         prepareInteractor(intactEntity);
         // then check stoichiometry
@@ -195,14 +192,6 @@ implements EntitySynchronizer<T,I> {
         // persist interactor if not there
         Interactor interactor = intactEntity.getInteractor();
         intactEntity.setInteractor(getContext().getInteractorSynchronizer().synchronize(interactor, true));
-    }
-
-    protected void prepareShortLabel(I intactParticipant) {
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < intactParticipant.getShortLabel().length()){
-            log.warn("Participant shortLabel too long: "+intactParticipant.getShortLabel()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            intactParticipant.setShortLabel(intactParticipant.getShortLabel().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
     }
 
     @Override

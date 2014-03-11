@@ -384,9 +384,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         return this.aliasSynchronizer;
     }
 
-    public AliasSynchronizer<EntityAlias> getEntityAliasSynchronizer() {
+    public AliasSynchronizer<ExperimentalEntityAlias> getEntityAliasSynchronizer() {
         initialiseAliasTemplateIfNotDone();
-        this.aliasSynchronizer.setIntactClass(EntityAlias.class);
+        this.aliasSynchronizer.setIntactClass(ExperimentalEntityAlias.class);
         return this.aliasSynchronizer;
     }
 
@@ -426,9 +426,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         return this.xrefSynchronizer;
     }
 
-    public XrefSynchronizer<EntityXref> getEntityXrefSynchronizer() {
+    public XrefSynchronizer<ExperimentalEntityXref> getEntityXrefSynchronizer() {
         initialiseXrefTemplateIfNotDone();
-        this.xrefSynchronizer.setIntactClass(EntityXref.class);
+        this.xrefSynchronizer.setIntactClass(ExperimentalEntityXref.class);
         return this.xrefSynchronizer;
     }
 
@@ -468,9 +468,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext{
         return this.annotationSynchronizer;
     }
 
-    public AnnotationSynchronizer<EntityAnnotation> getEntityAnnotationSynchronizer() {
+    public AnnotationSynchronizer<ExperimentalEntityAnnotation> getEntityAnnotationSynchronizer() {
         initialiseAnnotationTemplateIfNodDone();
-        this.annotationSynchronizer.setIntactClass(EntityAnnotation.class);
+        this.annotationSynchronizer.setIntactClass(ExperimentalEntityAnnotation.class);
         return this.annotationSynchronizer;
     }
 

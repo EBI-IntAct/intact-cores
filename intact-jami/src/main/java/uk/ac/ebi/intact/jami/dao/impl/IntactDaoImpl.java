@@ -116,8 +116,8 @@ public class IntactDaoImpl implements IntactDao{
         return getXrefDao(FeatureXref.class);
     }
 
-    public XrefDao<EntityXref> getEntityXrefDao() {
-        return getXrefDao(EntityXref.class);
+    public XrefDao<ExperimentalEntityXref> getEntityXrefDao() {
+        return getXrefDao(ExperimentalEntityXref.class);
     }
 
     public XrefDao<ResultingSequenceXref> getResultingSequenceXrefDao() {

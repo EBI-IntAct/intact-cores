@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * Implementation of xref for entities/participants
+ * Implementation of xref for modelled entities/participants (used in complexes)
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -14,24 +14,24 @@ import javax.persistence.Table;
  */
 @Entity
 @Table( name = "ia_component_xref" )
-public class EntityXref extends AbstractIntactXref{
+public class ModelledEntityXref extends AbstractIntactXref{
 
-    public EntityXref() {
+    public ModelledEntityXref() {
     }
 
-    public EntityXref(CvTerm database, String id, CvTerm qualifier) {
+    public ModelledEntityXref(CvTerm database, String id, CvTerm qualifier) {
         super(database, id, qualifier);
     }
 
-    public EntityXref(CvTerm database, String id, String version, CvTerm qualifier) {
+    public ModelledEntityXref(CvTerm database, String id, String version, CvTerm qualifier) {
         super(database, id, version, qualifier);
     }
 
-    public EntityXref(CvTerm database, String id, String version) {
+    public ModelledEntityXref(CvTerm database, String id, String version) {
         super(database, id, version);
     }
 
-    public EntityXref(CvTerm database, String id) {
+    public ModelledEntityXref(CvTerm database, String id) {
         super(database, id);
     }
 }

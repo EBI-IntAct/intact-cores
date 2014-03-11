@@ -5,7 +5,7 @@ import psidev.psi.mi.jami.enricher.ParticipantEvidenceEnricher;
 import psidev.psi.mi.jami.enricher.impl.full.FullParticipantEvidenceEnricher;
 import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.FeatureEvidence;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactExperimentalEntity;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperimentalEntity;
 
 /**
  * Experimental Entity merger based on the jami participant evidence enricher.
@@ -16,15 +16,15 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactExperimentalEntity;
  * @since <pre>29/01/14</pre>
  */
 
-public class ExperimentalEntityMergerEnrichOnly<E extends ExperimentalEntity, I extends AbstractIntactExperimentalEntity>
+public class ExperimentalEntityMergerEnrichOnly<E extends ExperimentalEntity, I extends IntactExperimentalEntity>
         extends EntityMergerEnrichOnly<E, I, FeatureEvidence> implements ParticipantEvidenceEnricher<E> {
 
     public ExperimentalEntityMergerEnrichOnly() {
-        super((Class<I>)AbstractIntactExperimentalEntity.class, new FullParticipantEvidenceEnricher<E>());
+        super((Class<I>)IntactExperimentalEntity.class, new FullParticipantEvidenceEnricher<E>());
     }
 
     public ExperimentalEntityMergerEnrichOnly(ParticipantEvidenceEnricher<E> basicEnricher) {
-        super((Class<I>)AbstractIntactExperimentalEntity.class, basicEnricher);
+        super((Class<I>)IntactExperimentalEntity.class, basicEnricher);
     }
 
     public ExperimentalEntityMergerEnrichOnly(Class<I> intactClass) {

@@ -117,9 +117,9 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
         this.resultingSequence = resultingSequence;
     }
 
-    @ManyToOne(targetEntity = AbstractIntactEntity.class)
+    @ManyToOne(targetEntity = IntactExperimentalEntity.class)
     @JoinColumn(name = "participant_ac", referencedColumnName = "ac")
-    @Target(AbstractIntactEntity.class)
+    @Target(IntactExperimentalEntity.class)
     public Entity getParticipant() {
         return this.participant;
     }

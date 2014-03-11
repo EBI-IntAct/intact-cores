@@ -58,18 +58,4 @@ public class EntityMergerEnrichOnly<E extends Entity, I extends AbstractIntactEn
     public ParticipantEnricherListener getParticipantEnricherListener() {
         return null;
     }
-
-    @Override
-    public I merge(I exp1, I exp2) {
-
-        // obj2 is mergedExp
-        I mergedExp = super.merge(exp1, exp2);
-
-        // merge shortLabel
-        if (mergedExp.getShortLabel() == null){
-            mergedExp.setShortLabel(exp1.getShortLabel());
-        }
-
-        return mergedExp;
-    }
 }

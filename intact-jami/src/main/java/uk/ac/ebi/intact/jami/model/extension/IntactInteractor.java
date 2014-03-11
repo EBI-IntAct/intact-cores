@@ -254,8 +254,8 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         this.interactorType = interactorType;
     }
 
-    @OneToMany( mappedBy = "interactor", targetEntity = AbstractIntactEntity.class)
-    @Target(AbstractIntactEntity.class)
+    @OneToMany( mappedBy = "interactor", targetEntity = IntactExperimentalEntity.class)
+    @Target(IntactExperimentalEntity.class)
     public Collection<Entity> getActiveInstances() {
         if (this.activeInstances == null){
             this.activeInstances = new ArrayList<Entity>();

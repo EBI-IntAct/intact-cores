@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * Implementation of alias for entities and participants
+ * Implementation of alias for modelled entities and participants (used in complexes)
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -14,16 +14,16 @@ import javax.persistence.Table;
  */
 @Entity
 @Table( name = "ia_component_alias" )
-public class EntityAlias extends AbstractIntactAlias{
+public class ModelledEntityAlias extends AbstractIntactAlias{
 
-    protected EntityAlias() {
+    protected ModelledEntityAlias() {
     }
 
-    public EntityAlias(CvTerm type, String name) {
+    public ModelledEntityAlias(CvTerm type, String name) {
         super(type, name);
     }
 
-    public EntityAlias(String name) {
+    public ModelledEntityAlias(String name) {
         super(name);
     }
 }

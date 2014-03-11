@@ -1,15 +1,15 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.CausalRelationship;
+import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 /**
- * Intact implementation of causal relationship
+ * Abstract IntAct class for causal relationship
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -57,9 +57,9 @@ public class IntactCausalRelationship extends AbstractAuditable implements Causa
         return relationType;
     }
 
-    @ManyToOne(targetEntity = AbstractIntactEntity.class, optional = false)
+    @ManyToOne(targetEntity = IntactExperimentalEntity.class, optional = false)
     @JoinColumn( name = "target_ac", referencedColumnName = "ac" )
-    @Target(AbstractIntactEntity.class)
+    @Target(IntactExperimentalEntity.class)
     @NotNull
     public psidev.psi.mi.jami.model.Entity getTarget() {
         return target;

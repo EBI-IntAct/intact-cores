@@ -19,17 +19,18 @@ import java.util.Collection;
 /**
  * Abstract class for intact entities
  *
- * Note; all entities are in the same column because they can be referenced in many different places
+ * Note; all entities are in the same table for backward compatibility with intact-core. In the future, this will be updated
  * We distinguish entities from participant with interaction property in participants
+ *
+ * NOTE: in the future, we want to separate experimental entities from modelled entities in two different tables. This
+ * will be achievable with a inheritance of type TABLE-PER_CLASS. In the meantime, because of backward compatibility issues,
+ * we use a where statement.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>15/01/14</pre>
  */
-@javax.persistence.Entity
-@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
-@Table(name = "ia_component")
-@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+@MappedSuperclass
 public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIntactPrimaryObject implements Entity<F> {
 
     private Interactor interactor;
@@ -73,16 +74,6 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
     public AbstractIntactEntity(Interactor interactor, CvTerm bioRole, Stoichiometry stoichiometry){
         this(interactor, bioRole);
         this.stoichiometry = stoichiometry;
-    }
-
-    /**
-     *
-     * @param shortName
-     * @deprecated only for backward compatibility with intact core
-     */
-    @Deprecated
-    public void setShortLabel(String shortName) {
-        this.shortName = shortName;
     }
 
     @ManyToOne( targetEntity = IntactInteractor.class, optional = false)
@@ -129,10 +120,7 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         return this.causalRelationships;
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityXref.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(EntityXref.class)
+    @Transient
     public Collection<Xref> getXrefs() {
         if (xrefs == null){
             initialiseXrefs();
@@ -140,14 +128,7 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         return this.xrefs;
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityAnnotation.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinTable(
-            name="ia_component2annot",
-            joinColumns = @JoinColumn( name="component_ac"),
-            inverseJoinColumns = @JoinColumn( name="annotation_ac")
-    )
-    @Target(EntityAnnotation.class)
+    @Transient
     /**
      * WARNING: The join table is for backward compatibility with intact-core.
      * When intact-core will be removed, the join table would disappear wnd the relation would become
@@ -160,10 +141,7 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         return this.annotations;
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = EntityAlias.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(EntityAlias.class)
+    @Transient
     public Collection<Alias> getAliases() {
         if (aliases == null){
             initialiseAliases();
@@ -291,20 +269,6 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         return Hibernate.isInitialized(getCausalRelationships());
     }
 
-    @Column(name = "shortlabel", nullable = false)
-    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
-    @NotNull
-    @Deprecated
-    /**
-     * @deprecated only for backward compatibility with intact core.
-     */
-    public String getShortLabel() {
-        if (this.shortName == null){
-            this.shortName = "N/A";
-        }
-        return shortName;
-    }
-
     protected void initialiseXrefs() {
         this.xrefs = new ArrayList<Xref>();
     }
@@ -325,10 +289,6 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         this.causalRelationships = new ArrayList<CausalRelationship>();
     }
 
-    protected void setAliases(Collection<Alias> aliases) {
-        this.aliases = aliases;
-    }
-
     protected void setAnnotations(Collection<Annotation> annotations) {
         this.annotations = annotations;
     }
@@ -341,7 +301,35 @@ public abstract class AbstractIntactEntity<F extends Feature> extends AbstractIn
         this.xrefs = xrefs;
     }
 
+    protected void setAliases(Collection<Alias> aliases) {
+        this.aliases = aliases;
+    }
+
     protected void setFeatures(Collection<F> features) {
         this.features = features;
+    }
+
+    @Column(name = "shortlabel", nullable = false)
+    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
+    @NotNull
+    @Deprecated
+    /**
+     * @deprecated only for backward compatibility with intact core.
+     */
+    protected String getShortLabel() {
+        if (this.shortName == null){
+            this.shortName = "N/A";
+        }
+        return shortName;
+    }
+
+    /**
+     *
+     * @param shortName
+     * @deprecated only for backward compatibility with intact core
+     */
+    @Deprecated
+    protected void setShortLabel(String shortName) {
+        this.shortName = shortName;
     }
 }

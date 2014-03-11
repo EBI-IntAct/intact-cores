@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -23,6 +24,7 @@ import java.util.Iterator;
  */
 @Entity
 @DiscriminatorValue("modelled_entity_pool")
+@Where(clause = "category = 'modelled_entity_pool'")
 public class IntactModelledEntityPool extends IntactModelledParticipant implements ModelledEntityPool, ParticipantInteractorChangeListener {
     private Collection<ModelledEntity> components;
     private CvTerm type;
