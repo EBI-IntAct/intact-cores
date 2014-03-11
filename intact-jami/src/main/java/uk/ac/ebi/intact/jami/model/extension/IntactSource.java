@@ -22,7 +22,7 @@ import java.util.Collection;
  * should always be stored in the annotations of the institution.
  * NOTE: getAnnotations is not persistent. For HQL queries, the method getDbAnnotations should be used because is annotated with hibernate annotations.
  * However, getDbAnnotations should not be used directly to add/remove annotations because it could mess up with the state of the object. Only the synchronizers
- * can use it this way before persistence.
+ * can use it this way before persistence. The access type of DbAnnotations is private as it does not have to be used by the synchronizers neither.
  * NOTE: getIdentifiers and getXrefs are not persistent methods annotated with hibernate annotations. All the xrefs present in identifiers
  * and xrefs are persisted in the same table for backward compatibility with intact-core. So the persistent xrefs are available with the getDbXrefs method.
  * For HQL queries, the method getDbXrefs should be used because is annotated with hibernate annotations.
@@ -236,27 +236,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return super.getXrefs();
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
-    @JoinTable(
-            name="ia_institution2annot",
-            joinColumns = @JoinColumn( name="institution_ac"),
-            inverseJoinColumns = @JoinColumn( name="annotation_ac")
-    )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(SourceAnnotation.class)
-    /**
-     * WARNING: The join table is for backward compatibility with intact-core.
-     * When intact-core will be removed, the join table would disappear wnd the relation would become
-     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
-     *
-     * This method give direct access to the persistent collection of annotations for this object.
-     * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
-     *
-     */
-    public Collection<Annotation> getDbAnnotations() {
-        return ((SourceAnnotationList)super.getAnnotations()).getWrappedList();
-    }
-
     @Override
     protected void initialiseAnnotations() {
         super.setAnnotations(new SourceAnnotationList(null));
@@ -282,6 +261,27 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         else if (postalAddress != null && postalAddress.equals(removed)){
             postalAddress = null;
         }
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
+    @JoinTable(
+            name="ia_institution2annot",
+            joinColumns = @JoinColumn( name="institution_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(SourceAnnotation.class)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     *
+     * This method give direct access to the persistent collection of annotations for this object.
+     * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
+     *
+     */
+    private Collection<Annotation> getDbAnnotations() {
+        return ((SourceAnnotationList)super.getAnnotations()).getWrappedList();
     }
 
     private void setDbAnnotations(Collection<Annotation> persistentAnnotations) {

@@ -287,14 +287,14 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
 
     protected void prepareAnnotations(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getDbAnnotations());
+            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation cvAnnotation = getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
-                    intactSource.getDbAnnotations().remove(annotation);
-                    intactSource.getDbAnnotations().add(cvAnnotation);
+                    intactSource.getAnnotations().remove(annotation);
+                    intactSource.getAnnotations().add(cvAnnotation);
                 }
             }
         }
