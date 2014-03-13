@@ -41,4 +41,10 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
     public Collection<IntactComplex> getByAllostericMoleculeEffectorAc(String ac);
 
     public Collection<IntactComplex> getByAllostericFeatureModificationEffectorAc(String ac);
+
+    public Collection<IntactComplex> getByParameterType(String typeName, String typeMI);
+
+    public Collection<IntactComplex> getByParameterUnit(String unitName, String unitMI);
+
+    public Collection<IntactComplex> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
 }

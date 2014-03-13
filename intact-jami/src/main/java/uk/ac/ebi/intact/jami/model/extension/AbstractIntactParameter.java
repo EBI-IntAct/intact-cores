@@ -18,21 +18,30 @@ import java.math.BigDecimal;
  * Note: this implementation was chosen because parameters do not make sense without their parents and are not shared by different entities
  * It is then better to have several parameter tables, one for each entity rather than one big parameter table and x join tables.
  *
+ * It would be better to never query for a parameter without involving its parent.
+ *
+ * Future improvements: this class would become an entity with Inheritance=TABLE_PER_CLASS and all subclasses would be a different table.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>13/01/14</pre>
  */
-@Entity
-@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+@MappedSuperclass
 public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObject implements Parameter{
 
     private CvTerm type;
     private BigDecimal uncertainty;
     private CvTerm unit;
     private ParameterValue value;
+    private int base;
+    private int exponent;
+    private double factor;
 
     protected AbstractIntactParameter(){
         super();
+        this.base = 10;
+        this.exponent = 0;
+        this.factor = 0;
     }
 
     public AbstractIntactParameter(CvTerm type, ParameterValue value){
@@ -45,6 +54,9 @@ public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObjec
             throw new IllegalArgumentException("The parameter value is required and cannot be null");
         }
         this.value = value;
+        this.base = (int)this.value.getBase();
+        this.exponent = (int)this.value.getExponent();
+        this.factor = this.value.getFactor().doubleValue();
     }
 
     public AbstractIntactParameter(CvTerm type, ParameterValue value, CvTerm unit){
@@ -71,6 +83,9 @@ public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObjec
 
         Parameter param = ParameterUtils.createParameterFromString(type, value);
         this.value = param.getValue();
+        this.base = (int)this.value.getBase();
+        this.exponent = (int)this.value.getExponent();
+        this.factor = this.value.getFactor().doubleValue();
         this.uncertainty = param.getUncertainty();
     }
 
@@ -116,6 +131,9 @@ public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObjec
 
     @Transient
     public ParameterValue getValue() {
+        if (this.value == null){
+           this.value = new ParameterValue(new BigDecimal(this.factor), (short)this.base, (short)this.exponent);
+        }
         return this.value;
     }
 
@@ -124,6 +142,9 @@ public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObjec
             throw new IllegalArgumentException("The parameter value is required and cannot be null");
         }
         this.value = value;
+        this.base = (int)this.value.getBase();
+        this.exponent = (int)this.value.getExponent();
+        this.factor = this.value.getFactor().doubleValue();
     }
 
     @Override
@@ -151,37 +172,40 @@ public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObjec
 
     @Column(name = "base")
     protected int getBase() {
-        return (int)this.value.getBase();
+        return this.base;
     }
 
     @Column(name = "exponent")
     protected int getExponent() {
-        return (int)this.value.getExponent();
+        return this.exponent;
     }
 
     @Column(name = "factor")
     protected double getFactor() {
-        return this.value.getFactor().doubleValue();
+        return this.factor;
     }
 
     protected void setBase(int base){
-        this.value = new ParameterValue(this.value.getFactor(), (short)base, this.value.getExponent());
+        this.base = base;
+        this.value = null;
     }
 
     protected void setExponent(int exponent){
-        this.value = new ParameterValue(this.value.getFactor(), this.value.getBase(), (short)exponent);
+        this.exponent = exponent;
+        this.value = null;
     }
 
     protected void setFactor(double factor){
-        this.value = new ParameterValue(new BigDecimal(factor), this.value.getBase(), this.value.getExponent());
+        this.factor = factor;
+        this.value = null;
     }
 
     @Column(name = "uncertainty")
-    protected Double getPersistentUncertainty() {
+    protected Double getDbUncertainty() {
         return this.uncertainty != null ? this.uncertainty.doubleValue() : null;
     }
 
-    protected void setPersistentUncertainty(Double uncertainty) {
+    protected void setDbUncertainty(Double uncertainty) {
         this.uncertainty = uncertainty != null ? new BigDecimal(uncertainty) : null;
     }
 }

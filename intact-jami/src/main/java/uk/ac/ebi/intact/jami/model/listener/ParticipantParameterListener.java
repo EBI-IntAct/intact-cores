@@ -32,7 +32,7 @@ public class ParticipantParameterListener {
             for (Parameter param : part.getParameters()){
                 if (param instanceof ParticipantEvidenceParameter){
                     ParticipantEvidenceParameter interParam = (ParticipantEvidenceParameter)param;
-                    interParam.setExperiment(exp);
+                    interParam.setDbExperiment(exp);
                 }
             }
         }

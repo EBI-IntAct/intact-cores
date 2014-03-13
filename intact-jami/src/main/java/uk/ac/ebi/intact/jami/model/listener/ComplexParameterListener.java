@@ -32,7 +32,7 @@ public class ComplexParameterListener {
             for (ModelledParameter param : complex.getModelledParameters()){
                if (param instanceof ComplexParameter){
                    ComplexParameter complexParam = (ComplexParameter)param;
-                   complexParam.setExperiment(exp);
+                   complexParam.setDbExperiment(exp);
                }
            }
         }

@@ -52,7 +52,6 @@ public class IntactDaoImpl implements IntactDao {
     private BioactiveEntityDao bioactiveEntityDao;
     private LifeCycleEventDao lifecycleEventDao;
     private OrganismDao organismDao;
-    private ParameterDao parameterDao;
     private PolymerDao polymerDao;
     private PreferenceDao preferenceDao;
     private UserDao userDao;
@@ -202,25 +201,6 @@ public class IntactDaoImpl implements IntactDao {
         return this.bioactiveEntityDao;
     }
 
-    public <T extends AbstractIntactParameter> ParameterDao<T> getParameterDao(Class<T> parameterClass) {
-        if (this.parameterDao == null){
-            this.parameterDao = new ParameterDaoImpl(AbstractIntactParameter.class, getEntityManager(), getSynchronizerContext());
-        }
-        this.parameterDao.setEntityClass(parameterClass);
-        return this.parameterDao;
-    }
-
-    public ParameterDao<ComplexParameter> getComplexParameterDao() {
-        return getParameterDao(ComplexParameter.class);
-    }
-
-    public ParameterDao<InteractionEvidenceParameter> getInteractionParameterDao() {
-        return getParameterDao(InteractionEvidenceParameter.class);
-    }
-
-    public ParameterDao<ParticipantEvidenceParameter> getEntityParameterDao() {
-        return getParameterDao(ParticipantEvidenceParameter.class);
-    }
 
     public OrganismDao getOrganismDao() {
         if (this.organismDao == null){

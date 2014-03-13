@@ -32,7 +32,7 @@ public class InteractionParameterListener {
             for (Parameter param : interaction.getParameters()){
                 if (param instanceof InteractionEvidenceParameter){
                     InteractionEvidenceParameter interParam = (InteractionEvidenceParameter)param;
-                    interParam.setExperiment(exp);
+                    interParam.setDbExperiment(exp);
                 }
             }
         }

@@ -15,6 +15,10 @@ import java.math.BigDecimal;
 /**
  * Intact implementation of parameter for a participant
  *
+ * NOTE: the experiment property is deprecated and only kept for backward compatibility with intact-core.
+ * It should never be used in any application as it will be deleted as soon as intact-core is removed and
+ * the database is updated
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>13/01/14</pre>
@@ -60,7 +64,7 @@ public class ParticipantEvidenceParameter extends AbstractIntactParameter{
      * we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
      */
     @Deprecated
-    public void setExperiment( Experiment experiment ) {
+    public void setDbExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
 
@@ -71,7 +75,7 @@ public class ParticipantEvidenceParameter extends AbstractIntactParameter{
      * @deprecated we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
      */
     @Deprecated
-    private Experiment getExperiment() {
+    private Experiment getDbExperiment() {
         return this.experiment;
     }
 

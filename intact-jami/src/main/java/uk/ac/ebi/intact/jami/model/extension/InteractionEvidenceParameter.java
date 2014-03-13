@@ -1,23 +1,30 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.exception.IllegalParameterException;
-import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.model.listener.InteractionParameterListener;
+import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Experiment;
+import psidev.psi.mi.jami.model.ParameterValue;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
 /**
  * Intact implementation of interaction evidence parameter
  *
+ * NOTE: the experiment property is deprecated and only kept for backward compatibility with intact-core.
+ * It should never be used in any application as it will be deleted as soon as intact-core is removed and
+ * the database is updated
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>13/01/14</pre>
  */
-@javax.persistence.Entity
-@Table( name = "ia_interaction_evidence_parameter" )
+@Entity
+@Table(name = "ia_interaction_parameter")
 public class InteractionEvidenceParameter extends AbstractIntactParameter{
 
     private Experiment experiment;
@@ -57,7 +64,7 @@ public class InteractionEvidenceParameter extends AbstractIntactParameter{
      * we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
      */
     @Deprecated
-    public void setExperiment( Experiment experiment ) {
+    public void setDbExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
 
@@ -68,7 +75,7 @@ public class InteractionEvidenceParameter extends AbstractIntactParameter{
      * @deprecated we don't need this as we have a back reference to the participant, interaction which has a reference to the experiment
      */
     @Deprecated
-    private Experiment getExperiment() {
+    private Experiment getDbExperiment() {
         return this.experiment;
     }
 }

@@ -27,4 +27,10 @@ public interface ParticipantEvidenceDao<P extends IntactParticipantEvidence> ext
     public Collection<P> getByConfidence(String typeName, String typeMI, String value, int first, int max);
 
     public Collection<P> getByInteractionAc(String ac);
+
+    public Collection<P> getByParameterType(String typeName, String typeMI);
+
+    public Collection<P> getByParameterUnit(String unitName, String unitMI);
+
+    public Collection<P> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
 }

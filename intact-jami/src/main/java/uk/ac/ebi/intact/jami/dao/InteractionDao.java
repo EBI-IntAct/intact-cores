@@ -41,4 +41,10 @@ public interface InteractionDao extends IntactBaseDao<IntactInteractionEvidence>
     public Collection<IntactInteractionEvidence> getByExperimentAc(String ac);
 
     public Collection<IntactInteractionEvidence> getByConfidence(String typeName, String typeMI, String value);
+
+    public Collection<IntactInteractionEvidence> getByParameterType(String typeName, String typeMI);
+
+    public Collection<IntactInteractionEvidence> getByParameterUnit(String unitName, String unitMI);
+
+    public Collection<IntactInteractionEvidence> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
 }
