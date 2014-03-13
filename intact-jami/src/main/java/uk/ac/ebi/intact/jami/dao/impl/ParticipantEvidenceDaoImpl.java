@@ -5,7 +5,6 @@ import psidev.psi.mi.jami.model.ParticipantEvidence;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParticipantEvidenceDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
@@ -41,7 +40,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         if (typeMI != null){
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.experimentalRole as e " +
-                    "join e.persistentXrefs as xref " +
+                    "join e.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -68,7 +67,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         if (mi != null){
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.experimentalPreparations as e " +
-                    "join e.persistentXrefs as xref " +
+                    "join e.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -99,7 +98,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         else if (mi != null){
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.dbIdentificationMethods as i " +
-                    "join i.persistentXrefs as xref " +
+                    "join i.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -151,7 +150,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.confidences as c " +
                     "join c.type as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -196,7 +195,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             query = getEntityManager().createQuery("select distinct i from "+getEntityClass()+" i " +
                     "join i.parameters as p " +
                     "join p.type as t " +
-                    "join t.persistentXrefs as x " +
+                    "join t.dbXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -228,7 +227,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             query = getEntityManager().createQuery("select distinct i from "+getEntityClass()+" i " +
                     "join i.parameters as p " +
                     "join p.unit as u " +
-                    "join u.persistentXrefs as x " +
+                    "join u.dbXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -256,7 +255,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
                 query = getEntityManager().createQuery("select distinct i from "+getEntityClass()+" i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
-                        "join t.persistentXrefs as x " +
+                        "join t.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -272,11 +271,11 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
                 query = getEntityManager().createQuery("select distinct i from "+getEntityClass()+" i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
-                        "join t.persistentXrefs as x " +
+                        "join t.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "join p.unit as u " +
-                        "join u.persistentXrefs as x2 " +
+                        "join u.dbXrefs as x2 " +
                         "join x2.database as d2 " +
                         "join x2.qualifier as q2 " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -295,7 +294,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
                 query = getEntityManager().createQuery("select distinct i from "+getEntityClass()+" i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
-                        "join t.persistentXrefs as x " +
+                        "join t.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "join p.unit as u " +
@@ -324,7 +323,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "join p.unit as u " +
-                        "join u.persistentXrefs as x " +
+                        "join u.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +

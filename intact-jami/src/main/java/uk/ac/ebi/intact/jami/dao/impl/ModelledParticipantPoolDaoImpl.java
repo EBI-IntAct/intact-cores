@@ -37,7 +37,7 @@ public class ModelledParticipantPoolDaoImpl extends ModelledParticipantDaoImpl<M
         if (typeMI != null){
             query = getEntityManager().createQuery("select distinct f from IntactModelledEntityPool f "  +
                     "join f.type as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +

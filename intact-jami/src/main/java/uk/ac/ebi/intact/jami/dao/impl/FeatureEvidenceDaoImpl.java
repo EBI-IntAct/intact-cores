@@ -38,7 +38,7 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
         else if (methodMI != null){
             query = getEntityManager().createQuery("select distinct f from IntactFeatureEvidence f "  +
                     "join f.dbDetectionMethods as det " +
-                    "join det.persistentXrefs as xref " +
+                    "join det.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +

@@ -34,7 +34,7 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
         if (methodMI != null){
             query = getEntityManager().createQuery("select distinct c from IntactCooperativityEvidence c " +
                     "join c.evidenceMethods as t " +
-                    "join t.persistentXrefs as x " +
+                    "join t.dbXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -57,7 +57,7 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
     public Collection<IntactCooperativityEvidence> getByPublicationPubmed(String pubmed) {
         Query query = getEntityManager().createQuery("select distinct c from IntactCooperativityEvidence c " +
                 "join c.publication as p " +
-                "join p.persistentXrefs as x " +
+                "join p.dbXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
                 "where (q.shortName = :identity or q.shortName = :secondaryAc or q.shortName = :primary) " +
@@ -74,7 +74,7 @@ public class CooperativityEvidenceDaoImpl extends AbstractIntactBaseDao<Cooperat
     public Collection<IntactCooperativityEvidence> getByPublicationDoi(String doi) {
         Query query = getEntityManager().createQuery("select distinct c from IntactCooperativityEvidence c " +
                 "join c.publication as p " +
-                "join p.persistentXrefs as x " +
+                "join p.dbXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
                 "where (q.shortName = :identity or q.shortName = :secondaryAc or q.shortName = :primary) " +

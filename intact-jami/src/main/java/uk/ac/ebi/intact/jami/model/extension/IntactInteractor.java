@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
@@ -30,10 +31,11 @@ import java.util.Collection;
  */
 @javax.persistence.Entity
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
-@Table(name = "ia_molecule")
+@Table(name = "ia_interactor")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue( "interactor" )
 @Cacheable
+@Where(clause = "category <> 'interaction_evidence'")
 public class IntactInteractor extends AbstractIntactPrimaryObject implements Interactor{
 
     private String shortName;
@@ -49,7 +51,9 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     private PersistentAnnotationList persistentAnnotations;
     private PersistentAliasList persistentAliases;
     private PersistentXrefList persistentXrefs;
-    private Collection<Participant> activeInstances;
+    private Collection<ParticipantEvidence> relatedParticipantEvidences;
+
+    private Collection<ModelledParticipant> relatedModelledParticipants;
 
     private Xref acRef;
 
@@ -255,11 +259,26 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
     @OneToMany( mappedBy = "interactor", targetEntity = IntactParticipantEvidence.class)
     @Target(IntactParticipantEvidence.class)
-    public Collection<Participant> getActiveInstances() {
-        if (this.activeInstances == null){
-            this.activeInstances = new ArrayList<Participant>();
+    /**
+     * All the participant evidences where the interactor property points to this interactor
+     */
+    public Collection<ParticipantEvidence> getRelatedParticipantEvidences() {
+        if (this.relatedParticipantEvidences == null){
+            this.relatedParticipantEvidences = new ArrayList<ParticipantEvidence>();
         }
-        return activeInstances;
+        return relatedParticipantEvidences;
+    }
+
+    @OneToMany( mappedBy = "interactor", targetEntity = IntactModelledParticipant.class)
+    @Target(IntactModelledParticipant.class)
+    /**
+     * All the modelled participants where the interactor property points to this interactor
+     */
+    public Collection<ModelledParticipant> getRelatedModelledParticipants() {
+        if (this.relatedModelledParticipants == null){
+            this.relatedModelledParticipants = new ArrayList<ModelledParticipant>();
+        }
+        return relatedModelledParticipants;
     }
 
     @Override
@@ -271,7 +290,11 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorXref.class)
-    public Collection<Xref> getPersistentXrefs() {
+    /**
+     * This method give direct access to the persistent collection of xrefs (identifiers and xrefs all together) for this object.
+     * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
+     */
+    public Collection<Xref> getDbXrefs() {
         if (persistentXrefs == null){
             persistentXrefs = new PersistentXrefList(null);
         }
@@ -291,7 +314,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
      * When intact-core will be removed, the join table would disappear wnd the relation would become
      * @JoinColumn(name="parent_ac", referencedColumnName="ac")
      */
-    public Collection<Annotation> getPersistentAnnotations() {
+    public Collection<Annotation> getDbAnnotations() {
         if (persistentAnnotations == null){
             persistentAnnotations = new PersistentAnnotationList(null);
         }
@@ -302,7 +325,11 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractorAlias.class)
-    public Collection<Alias> getPersistentAliases() {
+    /**
+     * This method give direct access to the persistent collection of aliases for this object.
+     * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
+     */
+    public Collection<Alias> getDbAliases() {
         if (persistentAliases == null){
             persistentAliases = new PersistentAliasList(null);
         }
@@ -311,17 +338,17 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
     @Transient
     public boolean areXrefsInitialized(){
-        return Hibernate.isInitialized(getPersistentXrefs());
+        return Hibernate.isInitialized(getDbXrefs());
     }
 
     @Transient
     public boolean areAliasesInitialized(){
-        return Hibernate.isInitialized(getPersistentAliases());
+        return Hibernate.isInitialized(getDbAliases());
     }
 
     @Transient
     public boolean areAnnotationsInitialized(){
-        return Hibernate.isInitialized(getPersistentAnnotations());
+        return Hibernate.isInitialized(getDbAnnotations());
     }
 
     @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
@@ -335,7 +362,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     }
 
     protected void initialiseAnnotations(){
-        this.annotations = getPersistentAnnotations();
+        this.annotations = getDbAnnotations();
     }
 
     protected void initialiseXrefs(){
@@ -370,7 +397,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     }
 
     protected void initialiseAliases(){
-        this.aliases = getPersistentAliases();
+        this.aliases = getDbAliases();
     }
 
     protected void initialiseAnnotationsWith(Collection<Annotation> annotations){
@@ -407,7 +434,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         // nothing
     }
 
-    protected void setPersistentXrefs(Collection<Xref> persistentXrefs) {
+    protected void setDbXrefs(Collection<Xref> persistentXrefs) {
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
         }
@@ -417,7 +444,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         initialiseXrefs();
     }
 
-    protected void setPersistentAliases(Collection<Alias> aliases) {
+    protected void setDbAliases(Collection<Alias> aliases) {
         if (aliases instanceof PersistentAliasList){
             this.persistentAliases = (PersistentAliasList)aliases;
         }
@@ -427,7 +454,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         initialiseAliases();
     }
 
-    protected void setPersistentAnnotations(Collection<Annotation> annotations) {
+    protected void setDbAnnotations(Collection<Annotation> annotations) {
         if (annotations instanceof PersistentAnnotationList){
             this.persistentAnnotations = (PersistentAnnotationList)annotations;
         }
@@ -441,8 +468,11 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         this.interactorType = IntactUtils.createIntactMITerm(Interactor.UNKNOWN_INTERACTOR, Interactor.UNKNOWN_INTERACTOR_MI, IntactUtils.INTERACTOR_TYPE_OBJCLASS);
     }
 
-    protected void setActiveInstances(Collection<Participant> activeInstances) {
-        this.activeInstances = activeInstances;
+    protected void setRelatedParticipantEvidences(Collection<ParticipantEvidence> activeInstances) {
+        this.relatedParticipantEvidences = activeInstances;
+    }
+    protected void setRelatedModelledParticipants(Collection<ModelledParticipant> activeInstances) {
+        this.relatedModelledParticipants = activeInstances;
     }
 
     protected class InteractorIdentifierList extends AbstractListHavingProperties<Xref> {

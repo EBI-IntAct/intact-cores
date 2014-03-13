@@ -575,15 +575,15 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     @Override
     protected void initialiseAnnotations() {
-        super.setPersistentAnnotations(new ComplexAnnotationList(null));
+        super.setDbAnnotations(new ComplexAnnotationList(null));
         for (Annotation check : super.getAnnotations()){
             processAddedAnnotationEvent(check);
         }
     }
 
     @Override
-    protected void setPersistentAnnotations(Collection<Annotation> annotations) {
-        super.setPersistentAnnotations(new ComplexAnnotationList(annotations));
+    protected void setDbAnnotations(Collection<Annotation> annotations) {
+        super.setDbAnnotations(new ComplexAnnotationList(annotations));
     }
 
     @Override
@@ -592,13 +592,13 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     @Override
-    protected void setPersistentAliases(Collection<Alias> aliases) {
-        super.setPersistentAliases(new ComplexAliasList(aliases));
+    protected void setDbAliases(Collection<Alias> aliases) {
+        super.setDbAliases(new ComplexAliasList(aliases));
     }
 
     @Override
     protected void initialiseAliases(){
-        super.setPersistentAliases(new ComplexAliasList(null));
+        super.setDbAliases(new ComplexAliasList(null));
         for (Alias alias : super.getAliases()){
             processAddedAliasEvent(alias);
         }

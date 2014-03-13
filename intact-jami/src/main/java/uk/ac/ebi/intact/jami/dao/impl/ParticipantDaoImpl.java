@@ -69,7 +69,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.xrefs as x " +
                     "join x.database as dat " +
-                    "join dat.persistentXrefs as xref " +
+                    "join dat.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -100,7 +100,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.xrefs as x " +
                     "join x.database as dat " +
-                    "join dat.persistentXrefs as xref " +
+                    "join dat.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -132,7 +132,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where x.qualifier is null " +
@@ -150,9 +150,9 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join x.qualifier as qual " +
-                        "join qual.persistentXrefs as xref2 " +
+                        "join qual.dbXrefs as xref2 " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "join xref2.database as d2 " +
@@ -176,7 +176,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -208,7 +208,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
-                        "join qual.persistentXrefs as xref " +
+                        "join qual.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where dat.shortName = :dbName " +
@@ -246,7 +246,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where x.qualifier is null " +
@@ -264,9 +264,9 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                         "join f.xrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join x.qualifier as qual " +
-                        "join qual.persistentXrefs as xref2 " +
+                        "join qual.dbXrefs as xref2 " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "join xref2.database as d2 " +
@@ -290,7 +290,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -322,7 +322,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
                         "join f.xrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
-                        "join qual.persistentXrefs as xref " +
+                        "join qual.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where dat.shortName = :dbName " +
@@ -359,7 +359,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -386,7 +386,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -442,7 +442,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                     "join f.aliases as s " +
                     "join s.type as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -480,7 +480,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
                     "join f.aliases as s " +
                     "join s.type as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -510,7 +510,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
         if (typeMI != null){
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.biologicalRole as b " +
-                    "join b.persistentXrefs as xref " +
+                    "join b.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -537,7 +537,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
         if (mi != null){
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
                     "join f.causalRelationships as c " +
-                    "join c.persistentXrefs as xref " +
+                    "join c.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     (targetAc != null ? "join c.target as t " : "")+
@@ -591,7 +591,7 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
             query = getEntityManager().createQuery("select distinct e from "+getEntityClass()+" e " +
                     "join e.causalRelationships as c " +
                     "join c.relationType as t " +
-                    "join t.persistentXrefs as x " +
+                    "join t.dbXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +

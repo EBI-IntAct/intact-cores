@@ -238,12 +238,12 @@ public class IntactProtein extends IntactPolymer implements Protein{
 
     @Override
     protected void initialiseAliases() {
-        super.setPersistentAliases(new ProteinAliasList(null));
+        super.setDbAliases(new ProteinAliasList(null));
     }
 
     @Override
-    protected void setPersistentAliases(Collection<Alias> aliases) {
-        super.setPersistentAliases(new ProteinAliasList(aliases));
+    protected void setDbAliases(Collection<Alias> aliases) {
+        super.setDbAliases(new ProteinAliasList(aliases));
         for (Alias alias : super.getAliases()){
             processAddedAliasEvent(alias);
         }

@@ -13,7 +13,6 @@ import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -187,14 +186,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
     protected void prepareXrefs(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getPersistentXrefs());
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref cvXref = getContext().getInteractorXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
-                    intactInteractor.getPersistentXrefs().remove(xref);
-                    intactInteractor.getPersistentXrefs().add(cvXref);
+                    intactInteractor.getDbXrefs().remove(xref);
+                    intactInteractor.getDbXrefs().add(cvXref);
                 }
             }
         }
@@ -202,14 +201,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
     protected void prepareAnnotations(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteractor.getPersistentAnnotations());
+            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteractor.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation cvAnnotation = getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
-                    intactInteractor.getPersistentAnnotations().remove(annotation);
-                    intactInteractor.getPersistentAnnotations().add(cvAnnotation);
+                    intactInteractor.getDbAnnotations().remove(annotation);
+                    intactInteractor.getDbAnnotations().add(cvAnnotation);
                 }
             }
         }
@@ -217,14 +216,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
     protected void prepareAliases(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAliasesInitialized()){
-            List<Alias> aliasesToPersist = new ArrayList<Alias>(intactInteractor.getPersistentAliases());
+            List<Alias> aliasesToPersist = new ArrayList<Alias>(intactInteractor.getDbAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
                 Alias cvAlias = getContext().getInteractorAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
-                    intactInteractor.getPersistentAliases().remove(alias);
-                    intactInteractor.getPersistentAliases().add(cvAlias);
+                    intactInteractor.getDbAliases().remove(alias);
+                    intactInteractor.getDbAliases().add(cvAlias);
                 }
             }
         }

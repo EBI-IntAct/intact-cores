@@ -40,7 +40,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         else if (typeMI != null){
             query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
                     "join f.interactionType as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -105,7 +105,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
             query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
                     "join f.modelledConfidences as c " +
                     "join c.type as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -141,7 +141,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                     "join f.cooperativeEffects as c " +
                     "join c.annotations as a " +
                     "join a.topic as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -170,7 +170,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                     "join f.cooperativeEffects as c " +
                     "join c.annotations as a " +
                     "join a.topic as t " +
-                    "join t.persistentXrefs as xref " +
+                    "join t.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -213,7 +213,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
             query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
                     "join f.cooperativeEffects as coop " +
                     "join coop.outcome as c " +
-                    "join c.persistentXrefs as xref " +
+                    "join c.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -240,7 +240,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
             query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
                     "join f.cooperativeEffects as coop " +
                     "join coop.response as r " +
-                    "join r.persistentXrefs as xref " +
+                    "join r.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -276,7 +276,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
             query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
                     "join f.cooperativeEffects as coop " +
                     "join coop.mechanism as c " +
-                    "join c.persistentXrefs as xref " +
+                    "join c.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -303,7 +303,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
             query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
                     "join f.cooperativeEffects as coop " +
                     "join coop.allosteryType as r " +
-                    "join r.persistentXrefs as xref " +
+                    "join r.dbXrefs as xref " +
                     "join xref.database as d " +
                     "join xref.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -348,7 +348,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
             query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                     "join i.modelledParameters as p " +
                     "join p.type as t " +
-                    "join t.persistentXrefs as x " +
+                    "join t.dbXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -380,7 +380,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
             query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                     "join i.modelledParameters as p " +
                     "join p.unit as u " +
-                    "join u.persistentXrefs as x " +
+                    "join u.dbXrefs as x " +
                     "join x.database as d " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -408,7 +408,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                         "join i.modelledParameters as p " +
                         "join p.type as t " +
-                        "join t.persistentXrefs as x " +
+                        "join t.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -424,11 +424,11 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                         "join i.modelledParameters as p " +
                         "join p.type as t " +
-                        "join t.persistentXrefs as x " +
+                        "join t.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "join p.unit as u " +
-                        "join u.persistentXrefs as x2 " +
+                        "join u.dbXrefs as x2 " +
                         "join x2.database as d2 " +
                         "join x2.qualifier as q2 " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
@@ -447,7 +447,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                         "join i.modelledParameters as p " +
                         "join p.type as t " +
-                        "join t.persistentXrefs as x " +
+                        "join t.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "join p.unit as u " +
@@ -476,7 +476,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                         "join i.modelledParameters as p " +
                         "join p.type as t " +
                         "join p.unit as u " +
-                        "join u.persistentXrefs as x " +
+                        "join u.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where (q.shortName = :identity or q.shortName = :secondaryAc) " +

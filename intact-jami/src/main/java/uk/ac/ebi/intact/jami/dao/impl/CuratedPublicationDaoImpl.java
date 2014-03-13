@@ -30,7 +30,7 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
 
     public IntactCuratedPublication getByIMEx(String value) {
         Query query = getEntityManager().createQuery("select distinct p from IntactCuratedPublication p " +
-                "join p.persistentXrefs as x " +
+                "join p.dbXrefs as x " +
                 "join x.database as dat " +
                 "join x.qualifier as qual " +
                 "where dat.shortName = :imex "+

@@ -199,12 +199,12 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
             Annotation annotSmile = new InteractorAnnotation(smileMethod, smile);
             this.smile = new IntactChecksumWrapper(annotSmile);
             bioactiveEntityChecksums.add(this.smile);
-            getPersistentAnnotations().add(annotSmile);
+            getDbAnnotations().add(annotSmile);
         }
         // remove all smiles if the collection is not empty
         else if (!bioactiveEntityChecksums.isEmpty()) {
             ChecksumUtils.removeAllChecksumWithMethod(bioactiveEntityChecksums, Checksum.SMILE_MI, Checksum.SMILE);
-            AnnotationUtils.removeAllAnnotationsWithTopic(getPersistentAnnotations(), Checksum.SMILE_MI, Checksum.SMILE);
+            AnnotationUtils.removeAllAnnotationsWithTopic(getDbAnnotations(), Checksum.SMILE_MI, Checksum.SMILE);
             this.smile = null;
         }
     }
@@ -226,12 +226,12 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
             Annotation annotInchi = new InteractorAnnotation(inchiKeyMethod, key);
             this.standardInchiKey = new IntactChecksumWrapper(annotInchi);
             bioactiveEntityChecksums.add(this.standardInchiKey);
-            getPersistentAnnotations().add(annotInchi);
+            getDbAnnotations().add(annotInchi);
         }
         // remove all standard inchi keys if the collection is not empty
         else if (!bioactiveEntityChecksums.isEmpty()) {
             ChecksumUtils.removeAllChecksumWithMethod(bioactiveEntityChecksums, Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY);
-            AnnotationUtils.removeAllAnnotationsWithTopic(getPersistentAnnotations(), Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY);
+            AnnotationUtils.removeAllAnnotationsWithTopic(getDbAnnotations(), Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY);
             this.standardInchiKey = null;
         }
     }
@@ -253,12 +253,12 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
             Annotation annotInchi = new InteractorAnnotation(inchiMethod, inchi);
             this.standardInchi = new IntactChecksumWrapper(annotInchi);
             bioactiveEntityChecksums.add(this.standardInchi);
-            getPersistentAnnotations().add(annotInchi);
+            getDbAnnotations().add(annotInchi);
         }
         // remove all standard inchi if the collection is not empty
         else if (!bioactiveEntityChecksums.isEmpty()) {
             ChecksumUtils.removeAllChecksumWithMethod(bioactiveEntityChecksums, Checksum.INCHI_MI, Checksum.INCHI);
-            AnnotationUtils.removeAllAnnotationsWithTopic(getPersistentAnnotations(), Checksum.INCHI_MI, Checksum.INCHI);
+            AnnotationUtils.removeAllAnnotationsWithTopic(getDbAnnotations(), Checksum.INCHI_MI, Checksum.INCHI);
             this.standardInchi = null;
         }
     }
@@ -273,41 +273,41 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         if (standardInchiKey == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY)){
             // the standard inchi key is not set, we can set the standard inchi key
             standardInchiKey = added;
-            getPersistentAnnotations().add(new InteractorAnnotation(standardInchiKey.getMethod(), standardInchiKey.getValue()));
+            getDbAnnotations().add(new InteractorAnnotation(standardInchiKey.getMethod(), standardInchiKey.getValue()));
         }
         else if (smile == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.SMILE_MI, Checksum.SMILE)){
             // the smile is not set, we can set the smile
             smile = added;
-            getPersistentAnnotations().add(new InteractorAnnotation(smile.getMethod(), smile.getValue()));
+            getDbAnnotations().add(new InteractorAnnotation(smile.getMethod(), smile.getValue()));
         }
         else if (standardInchi == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.INCHI_MI, Checksum.INCHI)){
             // the standard inchi is not set, we can set the standard inchi
             standardInchi = added;
-            getPersistentAnnotations().add(new InteractorAnnotation(standardInchi.getMethod(), standardInchi.getValue()));
+            getDbAnnotations().add(new InteractorAnnotation(standardInchi.getMethod(), standardInchi.getValue()));
         }
     }
 
     private void processRemovedChecksumEvent(Checksum removed) {
         // the removed identifier is standard inchi key
         if (standardInchiKey != null && standardInchiKey.equals(removed)){
-            getPersistentAnnotations().remove(new InteractorAnnotation(standardInchiKey.getMethod(), standardInchiKey.getValue()));
+            getDbAnnotations().remove(new InteractorAnnotation(standardInchiKey.getMethod(), standardInchiKey.getValue()));
             standardInchiKey = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY);
             if (standardInchiKey != null){
-                getPersistentAnnotations().add(new InteractorAnnotation(standardInchiKey.getMethod(), standardInchiKey.getValue()));
+                getDbAnnotations().add(new InteractorAnnotation(standardInchiKey.getMethod(), standardInchiKey.getValue()));
             }
         }
         else if (smile != null && smile.equals(removed)){
-            getPersistentAnnotations().remove(new InteractorAnnotation(smile.getMethod(), smile.getValue()));
+            getDbAnnotations().remove(new InteractorAnnotation(smile.getMethod(), smile.getValue()));
             smile = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.SMILE_MI, Checksum.SMILE);
             if (smile != null){
-                getPersistentAnnotations().add(new InteractorAnnotation(smile.getMethod(), smile.getValue()));
+                getDbAnnotations().add(new InteractorAnnotation(smile.getMethod(), smile.getValue()));
             }
         }
         else if (standardInchi != null && standardInchi.equals(removed)){
-            getPersistentAnnotations().remove(new InteractorAnnotation(standardInchi.getMethod(), standardInchi.getValue()));
+            getDbAnnotations().remove(new InteractorAnnotation(standardInchi.getMethod(), standardInchi.getValue()));
             standardInchi = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.INCHI_MI, Checksum.INCHI);
             if (standardInchi != null){
-                getPersistentAnnotations().add(new InteractorAnnotation(standardInchi.getMethod(), standardInchi.getValue()));
+                getDbAnnotations().add(new InteractorAnnotation(standardInchi.getMethod(), standardInchi.getValue()));
             }
         }
     }
@@ -366,7 +366,7 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         checksumList.remove(smile);
         checksumList.remove(key);
 
-        for (Annotation annotation : getPersistentAnnotations()){
+        for (Annotation annotation : getDbAnnotations()){
             // we have a checksum
             if (annotation.getValue() != null
                     && AnnotationUtils.doesAnnotationHaveTopic(annotation, Checksum.SMILE_MI, Checksum.SMILE)){
@@ -406,13 +406,13 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
 
     private void clearPropertiesLinkedToChecksums() {
         if (standardInchiKey != null){
-            getPersistentAnnotations().remove(new InteractorAnnotation(standardInchiKey.getMethod(), standardInchiKey.getValue()));
+            getDbAnnotations().remove(new InteractorAnnotation(standardInchiKey.getMethod(), standardInchiKey.getValue()));
         }
         if (smile != null){
-            getPersistentAnnotations().remove(new InteractorAnnotation(smile.getMethod(), smile.getValue()));
+            getDbAnnotations().remove(new InteractorAnnotation(smile.getMethod(), smile.getValue()));
         }
         if (standardInchi != null){
-            getPersistentAnnotations().remove(new InteractorAnnotation(standardInchi.getMethod(), standardInchi.getValue()));
+            getDbAnnotations().remove(new InteractorAnnotation(standardInchi.getMethod(), standardInchi.getValue()));
         }
 
         this.standardInchiKey = null;
