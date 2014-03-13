@@ -5,8 +5,8 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ExperimentalEntity;
 import psidev.psi.mi.jami.model.FeatureEvidence;
+import psidev.psi.mi.jami.model.ParticipantEvidence;
 import uk.ac.ebi.intact.jami.model.listener.FeatureDetectionMethodListener;
 
 import javax.persistence.*;
@@ -23,27 +23,27 @@ import java.util.Collection;
 @Entity
 @DiscriminatorValue("evidence")
 @EntityListeners(value = {FeatureDetectionMethodListener.class})
-public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEntity,FeatureEvidence> implements FeatureEvidence{
+public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvidence,FeatureEvidence> implements FeatureEvidence{
 
     private Collection<CvTerm> detectionMethods;
     private CvTerm identificationMethod;
 
-    public IntactFeatureEvidence(ExperimentalEntity participant) {
+    public IntactFeatureEvidence(ParticipantEvidence participant) {
         super();
         setParticipant(participant);
     }
 
-    public IntactFeatureEvidence(ExperimentalEntity participant, String shortName, String fullName) {
+    public IntactFeatureEvidence(ParticipantEvidence participant, String shortName, String fullName) {
         super(shortName, fullName);
         setParticipant(participant);
     }
 
-    public IntactFeatureEvidence(ExperimentalEntity participant, CvTerm type) {
+    public IntactFeatureEvidence(ParticipantEvidence participant, CvTerm type) {
         super(type);
         setParticipant(participant);
     }
 
-    public IntactFeatureEvidence(ExperimentalEntity participant, String shortName, String fullName, CvTerm type) {
+    public IntactFeatureEvidence(ParticipantEvidence participant, String shortName, String fullName, CvTerm type) {
         super(shortName, fullName, type);
         setParticipant(participant);
     }
@@ -99,15 +99,15 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
     }
 
     @Override
-    @ManyToOne(targetEntity = IntactExperimentalEntity.class)
+    @ManyToOne(targetEntity = IntactParticipantEvidence.class)
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
-    @Target(IntactExperimentalEntity.class)
-    public ExperimentalEntity getParticipant() {
+    @Target(IntactParticipantEvidence.class)
+    public ParticipantEvidence getParticipant() {
         return super.getParticipant();
     }
 
     @Override
-    public void setParticipant(ExperimentalEntity participant) {
+    public void setParticipant(ParticipantEvidence participant) {
         super.setParticipant(participant);
     }
 

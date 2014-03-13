@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Participant;
 import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 
 import javax.persistence.*;
@@ -24,7 +25,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "ia_causal_relationship")
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
-public abstract class AbstractIntactCausalRelationship<T extends psidev.psi.mi.jami.model.Entity> extends AbstractAuditable implements CausalRelationship {
+public abstract class AbstractIntactCausalRelationship<T extends Participant> extends AbstractAuditable implements CausalRelationship {
 
     private CvTerm relationType;
     private T target;

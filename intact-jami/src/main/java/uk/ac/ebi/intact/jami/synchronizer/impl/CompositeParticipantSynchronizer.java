@@ -1,0 +1,155 @@
+package uk.ac.ebi.intact.jami.synchronizer.impl;
+
+import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
+import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.synchronizer.ParticipantSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+
+/**
+ * Synchronizer for all participants
+ *
+ * @author Marine Dumousseau (marine@ebi.ac.uk)
+ * @version $Id$
+ * @since <pre>12/02/14</pre>
+ */
+
+public class CompositeParticipantSynchronizer implements ParticipantSynchronizer<Participant, AbstractIntactParticipant> {
+
+    private SynchronizerContext context;
+
+    public CompositeParticipantSynchronizer(SynchronizerContext context){
+        if (context == null){
+            throw new IllegalArgumentException("An IntAct database synchronizer needs a non null synchronizer context");
+        }
+        this.context = context;
+    }
+
+    public AbstractIntactParticipant find(Participant term) throws FinderException {
+        // experimental
+        if (term instanceof ParticipantEvidence){
+            if (term instanceof ParticipantEvidencePool){
+                return this.context.getParticipantEvidencePoolSynchronizer().find((ParticipantEvidencePool)term);
+            }
+            else{
+                return this.context.getParticipantEvidenceSynchronizer().find((ParticipantEvidence)term);
+            }
+        }
+        // modelled
+        else {
+            if (term instanceof ModelledParticipantPool){
+                return this.context.getModelledParticipantPoolSynchronizer().find((ModelledParticipantPool)term);
+            }
+            else{
+                return this.context.getModelledParticipantSynchronizer().find((ModelledParticipant)term);
+            }
+        }
+    }
+
+    public AbstractIntactParticipant persist(AbstractIntactParticipant term) throws FinderException, PersisterException, SynchronizerException {
+        // experimental
+        if (term instanceof IntactParticipantEvidence){
+            if (term instanceof IntactParticipantEvidencePool){
+                return this.context.getParticipantEvidencePoolSynchronizer().persist((IntactParticipantEvidencePool)term);
+            }
+            else{
+                return this.context.getParticipantEvidenceSynchronizer().persist((IntactParticipantEvidence)term);
+            }
+        }
+        // modelled
+        else {
+            if (term instanceof IntactModelledParticipantPool){
+                return this.context.getModelledParticipantPoolSynchronizer().persist((IntactModelledParticipantPool)term);
+            }
+            else{
+                return this.context.getModelledParticipantSynchronizer().persist((IntactModelledParticipant)term);
+            }
+        }
+    }
+
+    public AbstractIntactParticipant synchronize(Participant term, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+        // experimental
+        if (term instanceof ParticipantEvidence){
+            if (term instanceof ParticipantEvidencePool){
+                return this.context.getParticipantEvidencePoolSynchronizer().synchronize((ParticipantEvidencePool)term, persist);
+            }
+            else{
+                return this.context.getParticipantEvidenceSynchronizer().synchronize((ParticipantEvidence)term, persist);
+            }
+        }
+        // modelled
+        else {
+            if (term instanceof ModelledParticipantPool){
+                return this.context.getModelledParticipantPoolSynchronizer().synchronize((ModelledParticipantPool)term, persist);
+            }
+            else{
+                return this.context.getModelledParticipantSynchronizer().synchronize((ModelledParticipant)term, persist);
+            }
+        }
+    }
+
+    public void synchronizeProperties(AbstractIntactParticipant term) throws FinderException, PersisterException, SynchronizerException {
+        // experimental
+        if (term instanceof IntactParticipantEvidence){
+            if (term instanceof IntactParticipantEvidencePool){
+                this.context.getParticipantEvidencePoolSynchronizer().synchronizeProperties((IntactParticipantEvidencePool)term);
+            }
+            else{
+                this.context.getParticipantEvidenceSynchronizer().synchronizeProperties((IntactParticipantEvidence)term);
+            }
+        }
+        // modelled
+        else {
+            if (term instanceof IntactModelledParticipantPool){
+                this.context.getModelledParticipantPoolSynchronizer().synchronizeProperties((IntactModelledParticipantPool)term);
+            }
+            else{
+                this.context.getModelledParticipantSynchronizer().synchronizeProperties((IntactModelledParticipant)term);
+            }
+        }
+    }
+
+    public void clearCache() {
+        // nothing to do
+    }
+
+    public IntactDbMerger<Participant, AbstractIntactParticipant> getIntactMerger() {
+        return null;
+    }
+
+    public void setIntactMerger(IntactDbMerger<Participant, AbstractIntactParticipant> intactMerger) {
+        throw new UnsupportedOperationException("The entity synchronizer does not support this method as it is a composite synchronizer");
+    }
+
+    public Class<? extends AbstractIntactParticipant> getIntactClass() {
+        return AbstractIntactParticipant.class;
+    }
+
+    public void setIntactClass(Class<? extends AbstractIntactParticipant> intactClass) {
+        throw new UnsupportedOperationException("The entity synchronizer does not support this method as it is a composite synchronizer");
+    }
+
+    public boolean delete(Participant term) {
+        // experimental
+        if (term instanceof ParticipantEvidence){
+            if (term instanceof ParticipantEvidencePool){
+                return this.context.getParticipantEvidencePoolSynchronizer().delete((ParticipantEvidencePool)term);
+            }
+            else{
+                return this.context.getParticipantEvidenceSynchronizer().delete((ParticipantEvidence)term);
+            }
+        }
+        // modelled
+        else {
+            if (term instanceof ModelledParticipantPool){
+                return this.context.getModelledParticipantPoolSynchronizer().delete((ModelledParticipantPool)term);
+            }
+            else{
+                return this.context.getModelledParticipantSynchronizer().delete((ModelledParticipant)term);
+            }
+        }
+    }
+}

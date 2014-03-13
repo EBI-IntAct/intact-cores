@@ -16,7 +16,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
  */
 
 public class ModelledParticipantMergerEnrichOnly<E extends ModelledParticipant, I extends IntactModelledParticipant>
-        extends EntityMergerEnrichOnly<E, I, ModelledFeature> {
+        extends ParticipantMergerEnrichOnly<E, I, ModelledFeature> {
 
     public ModelledParticipantMergerEnrichOnly() {
         super((Class<I>)IntactModelledParticipant.class, new FullParticipantEnricher<E, ModelledFeature>());

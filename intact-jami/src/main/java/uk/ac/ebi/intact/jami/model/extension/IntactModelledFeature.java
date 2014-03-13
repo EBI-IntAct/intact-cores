@@ -17,7 +17,7 @@ import java.util.Collection;
  */
 @Entity
 @DiscriminatorValue("modelled")
-public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity, ModelledFeature> implements ModelledFeature{
+public class IntactModelledFeature extends AbstractIntactFeature<ModelledParticipant, ModelledFeature> implements ModelledFeature{
 
     public IntactModelledFeature(ModelledParticipant participant) {
         super();
@@ -59,12 +59,12 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity,
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
     @Target(IntactModelledParticipant.class)
-    public ModelledEntity getParticipant() {
+    public ModelledParticipant getParticipant() {
         return super.getParticipant();
     }
 
     @Override
-    public void setParticipant(ModelledEntity participant) {
+    public void setParticipant(ModelledParticipant participant) {
         super.setParticipant(participant);
     }
 

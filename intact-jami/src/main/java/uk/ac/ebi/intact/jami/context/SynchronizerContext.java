@@ -112,9 +112,9 @@ public interface SynchronizerContext {
 
     public AliasSynchronizer<FeatureAlias> getFeatureAliasSynchronizer();
 
-    public AliasSynchronizer<ExperimentalEntityAlias> getExperimentalEntityAliasSynchronizer();
+    public AliasSynchronizer<ParticipantEvidenceAlias> getExperimentalEntityAliasSynchronizer();
 
-    public AliasSynchronizer<ModelledEntityAlias> getModelledEntityAliasSynchronizer();
+    public AliasSynchronizer<ModelledParticipantAlias> getModelledEntityAliasSynchronizer();
 
     public AliasSynchronizer<InteractorAlias> getInteractorAliasSynchronizer();
 
@@ -128,9 +128,9 @@ public interface SynchronizerContext {
 
     public XrefSynchronizer<FeatureXref> getFeatureXrefSynchronizer();
 
-    public XrefSynchronizer<ExperimentalEntityXref> getExperimentalEntityXrefSynchronizer();
+    public XrefSynchronizer<ParticipantEvidenceXref> getExperimentalEntityXrefSynchronizer();
 
-    public XrefSynchronizer<ModelledEntityXref> getModelledEntityXrefSynchronizer();
+    public XrefSynchronizer<ModelledParticipantXref> getModelledEntityXrefSynchronizer();
 
     public XrefSynchronizer<ResultingSequenceXref> getResultingSequenceXrefSynchronizer();
 
@@ -144,9 +144,9 @@ public interface SynchronizerContext {
 
     public AnnotationSynchronizer<FeatureAnnotation> getFeatureAnnotationSynchronizer();
 
-    public AnnotationSynchronizer<ExperimentalEntityAnnotation> getExperimentalEntityAnnotationSynchronizer();
+    public AnnotationSynchronizer<ParticipantEvidenceAnnotation> getExperimentalEntityAnnotationSynchronizer();
 
-    public AnnotationSynchronizer<ModelledEntityAnnotation> getModelledEntityAnnotationSynchronizer();
+    public AnnotationSynchronizer<ModelledParticipantAnnotation> getModelledEntityAnnotationSynchronizer();
 
     public AnnotationSynchronizer<CooperativeEffectAnnotation> getCooperativeEffectAnnotationSynchronizer();
 
@@ -184,13 +184,13 @@ public interface SynchronizerContext {
 
     public ConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence> getInteractionConfidenceSynchronizer();
 
-    public ConfidenceSynchronizer<Confidence, ExperimentalEntityConfidence> getEntityConfidenceSynchronizer();
+    public ConfidenceSynchronizer<Confidence, ParticipantEvidenceConfidence> getEntityConfidenceSynchronizer();
 
     public ParameterSynchronizer<ModelledParameter, ComplexParameter> getComplexParameterSynchronizer();
 
     public ParameterSynchronizer<Parameter, InteractionEvidenceParameter> getInteractionParameterSynchronizer();
 
-    public ParameterSynchronizer<Parameter, ExperimentalEntityParameter> getEntityParameterSynchronizer();
+    public ParameterSynchronizer<Parameter, ParticipantEvidenceParameter> getEntityParameterSynchronizer();
 
     public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer();
 
@@ -226,17 +226,13 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> getVariableParameterValueSetSynchronizer();
 
-    public EntitySynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer();
+    public ParticipantSynchronizer<Participant, AbstractIntactParticipant> getParticipantSynchronizer();
 
-    public EntitySynchronizer<ModelledEntity, IntactModelledEntity> getModelledEntitySynchronizer();
+    public ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer();
 
-    public EntitySynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer();
+    public ParticipantSynchronizer<ModelledParticipantPool, IntactModelledParticipantPool> getModelledParticipantPoolSynchronizer();
 
-    public EntitySynchronizer<ModelledEntityPool, IntactModelledEntityPool> getModelledEntityPoolSynchronizer();
+    public ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer();
 
-    public EntitySynchronizer<ExperimentalEntity, IntactExperimentalEntity> getExperimentalEntitySynchronizer();
-
-    public EntitySynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer();
-
-    public EntitySynchronizer<ExperimentalEntityPool, IntactExperimentalEntityPool> getExperimentalEntityPoolSynchronizer();
+    public ParticipantSynchronizer<ParticipantEvidencePool, IntactParticipantEvidencePool> getParticipantEvidencePoolSynchronizer();
 }

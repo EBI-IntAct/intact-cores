@@ -16,7 +16,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
  */
 
 public class ModelledParticipantMergerOverride<E extends ModelledParticipant, I extends IntactModelledParticipant>
-        extends EntityMergerOverride<E, I, ModelledFeature> {
+        extends ParticipantMergerOverride<E, I, ModelledFeature> {
 
     public ModelledParticipantMergerOverride() {
         super((Class<I>)IntactModelledParticipant.class, new FullParticipantEnricher<E, ModelledFeature>());

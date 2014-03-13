@@ -27,11 +27,11 @@ import java.util.*;
 
 public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex, IntactComplex>{
 
-    private CollectionComparator<ModelledEntity> participantsComparator;
+    private CollectionComparator<ModelledParticipant> participantsComparator;
 
     public ComplexSynchronizer(SynchronizerContext context) {
         super(context, IntactComplex.class);
-        this.participantsComparator = new CollectionComparator<ModelledEntity>(new UnambiguousModelledParticipantComparator());
+        this.participantsComparator = new CollectionComparator<ModelledParticipant>(new UnambiguousModelledParticipantComparator());
     }
 
     @Override
@@ -202,7 +202,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                 // reinit parent
                 participant.setInteraction(intactInteraction);
                 // do not persist or merge participants because of cascades
-                ModelledParticipant expPart = (ModelledParticipant) getContext().getEntitySynchronizer().synchronize(participant, false);
+                ModelledParticipant expPart = (ModelledParticipant) getContext().getParticipantSynchronizer().synchronize(participant, false);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);

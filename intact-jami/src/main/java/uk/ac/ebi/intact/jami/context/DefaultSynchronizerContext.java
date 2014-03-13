@@ -129,11 +129,11 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private IntactDbSynchronizer<VariableParameterValueSet, IntactVariableParameterValueSet> variableParameterValueSetSynchronizer;
 
     // participant synchronizers
-    private EntitySynchronizer<Entity, AbstractIntactEntity> entitySynchronizer;
-    private EntitySynchronizer modelledEntitySynchronizer;
-    private EntitySynchronizer modelledEntityPoolSynchronizer;
-    private EntitySynchronizer experimentalEntitySynchronizer;
-    private EntitySynchronizer experimentalEntityPoolSynchronizer;
+    private ParticipantSynchronizer<Participant, AbstractIntactParticipant> participantSynchronizer;
+    private ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> modelledParticipantSynchronizer;
+    private ParticipantSynchronizer<ModelledParticipantPool, IntactModelledParticipantPool> modelledParticipantPoolSynchronizer;
+    private ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> participantEvidenceSynchronizer;
+    private ParticipantSynchronizer<ParticipantEvidencePool, IntactParticipantEvidencePool> ParticipantEvidencePoolSynchronizer;
 
     public DefaultSynchronizerContext(EntityManager entityManager){
         if (entityManager == null){
@@ -384,15 +384,15 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.aliasSynchronizer;
     }
 
-    public AliasSynchronizer<ExperimentalEntityAlias> getExperimentalEntityAliasSynchronizer() {
+    public AliasSynchronizer<ParticipantEvidenceAlias> getExperimentalEntityAliasSynchronizer() {
         initialiseAliasTemplateIfNotDone();
-        this.aliasSynchronizer.setIntactClass(ExperimentalEntityAlias.class);
+        this.aliasSynchronizer.setIntactClass(ParticipantEvidenceAlias.class);
         return this.aliasSynchronizer;
     }
 
-    public AliasSynchronizer<ModelledEntityAlias> getModelledEntityAliasSynchronizer() {
+    public AliasSynchronizer<ModelledParticipantAlias> getModelledEntityAliasSynchronizer() {
         initialiseAliasTemplateIfNotDone();
-        this.aliasSynchronizer.setIntactClass(ModelledEntityAlias.class);
+        this.aliasSynchronizer.setIntactClass(ModelledParticipantAlias.class);
         return this.aliasSynchronizer;
     }
 
@@ -432,15 +432,15 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.xrefSynchronizer;
     }
 
-    public XrefSynchronizer<ExperimentalEntityXref> getExperimentalEntityXrefSynchronizer() {
+    public XrefSynchronizer<ParticipantEvidenceXref> getExperimentalEntityXrefSynchronizer() {
         initialiseXrefTemplateIfNotDone();
-        this.xrefSynchronizer.setIntactClass(ExperimentalEntityXref.class);
+        this.xrefSynchronizer.setIntactClass(ParticipantEvidenceXref.class);
         return this.xrefSynchronizer;
     }
 
-    public XrefSynchronizer<ModelledEntityXref> getModelledEntityXrefSynchronizer() {
+    public XrefSynchronizer<ModelledParticipantXref> getModelledEntityXrefSynchronizer() {
         initialiseXrefTemplateIfNotDone();
-        this.xrefSynchronizer.setIntactClass(ModelledEntityXref.class);
+        this.xrefSynchronizer.setIntactClass(ModelledParticipantXref.class);
         return this.xrefSynchronizer;
     }
 
@@ -480,15 +480,15 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.annotationSynchronizer;
     }
 
-    public AnnotationSynchronizer<ExperimentalEntityAnnotation> getExperimentalEntityAnnotationSynchronizer() {
+    public AnnotationSynchronizer<ParticipantEvidenceAnnotation> getExperimentalEntityAnnotationSynchronizer() {
         initialiseAnnotationTemplateIfNodDone();
-        this.annotationSynchronizer.setIntactClass(ExperimentalEntityAnnotation.class);
+        this.annotationSynchronizer.setIntactClass(ParticipantEvidenceAnnotation.class);
         return this.annotationSynchronizer;
     }
 
-    public AnnotationSynchronizer<ModelledEntityAnnotation> getModelledEntityAnnotationSynchronizer() {
+    public AnnotationSynchronizer<ModelledParticipantAnnotation> getModelledEntityAnnotationSynchronizer() {
         initialiseAnnotationTemplateIfNodDone();
-        this.annotationSynchronizer.setIntactClass(ModelledEntityAnnotation.class);
+        this.annotationSynchronizer.setIntactClass(ModelledParticipantAnnotation.class);
         return this.annotationSynchronizer;
     }
 
@@ -601,9 +601,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.confidenceSynchronizer;
     }
 
-    public ConfidenceSynchronizer<Confidence, ExperimentalEntityConfidence> getEntityConfidenceSynchronizer() {
+    public ConfidenceSynchronizer<Confidence, ParticipantEvidenceConfidence> getEntityConfidenceSynchronizer() {
         initialiseConfidenceTemplateIfNodDone();
-        this.confidenceSynchronizer.setIntactClass(ExperimentalEntityConfidence.class);
+        this.confidenceSynchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         return this.confidenceSynchronizer;
     }
 
@@ -613,9 +613,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.parameterSynchronizer;
     }
 
-    public ParameterSynchronizer<Parameter, ExperimentalEntityParameter> getEntityParameterSynchronizer(){
+    public ParameterSynchronizer<Parameter, ParticipantEvidenceParameter> getEntityParameterSynchronizer(){
         initialiseParameterTemplateIfNodDone();
-        this.parameterSynchronizer.setIntactClass(ExperimentalEntityParameter.class);
+        this.parameterSynchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         return this.parameterSynchronizer;
     }
 
@@ -749,49 +749,39 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return variableParameterValueSetSynchronizer;
     }
 
-    public EntitySynchronizer<Entity, AbstractIntactEntity> getEntitySynchronizer() {
-        if (this.entitySynchronizer == null){
-            this.entitySynchronizer = new CompositeEntitySynchronizer(this);
+    public ParticipantSynchronizer<Participant, AbstractIntactParticipant> getParticipantSynchronizer() {
+        if (this.participantSynchronizer == null){
+            this.participantSynchronizer = new CompositeParticipantSynchronizer(this);
         }
-        return entitySynchronizer;
+        return participantSynchronizer;
     }
 
-    public EntitySynchronizer<ModelledEntity, IntactModelledEntity> getModelledEntitySynchronizer() {
-        initialiseModelledEntityTemplateIfNodDone();
-        this.modelledEntitySynchronizer.setIntactClass(IntactModelledEntity.class);
-        return this.modelledEntitySynchronizer;
-    }
-
-    public EntitySynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer(){
-        initialiseModelledEntityTemplateIfNodDone();
-        this.modelledEntitySynchronizer.setIntactClass(IntactModelledParticipant.class);
-        return this.modelledEntitySynchronizer;
-    }
-
-    public EntitySynchronizer<ModelledEntityPool, IntactModelledEntityPool> getModelledEntityPoolSynchronizer(){
-        if (this.modelledEntityPoolSynchronizer == null){
-            this.modelledEntityPoolSynchronizer = new ModelledEntityPoolSynchronizer(this);
+    public ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer() {
+        if (this.modelledParticipantSynchronizer == null){
+            this.modelledParticipantSynchronizer = new ModelledParticipantSynchronizerTemplate<ModelledParticipant, IntactModelledParticipant>(this, IntactModelledParticipant.class);
         }
-        return this.modelledEntityPoolSynchronizer;
+        return modelledParticipantSynchronizer;
     }
 
-    public EntitySynchronizer<ExperimentalEntity, IntactExperimentalEntity> getExperimentalEntitySynchronizer(){
-        initialiseExperimentalEntityTemplateIfNodDone();
-        this.experimentalEntitySynchronizer.setIntactClass(IntactExperimentalEntity.class);
-        return this.experimentalEntitySynchronizer;
-    }
-
-    public EntitySynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer(){
-        initialiseExperimentalEntityTemplateIfNodDone();
-        this.experimentalEntitySynchronizer.setIntactClass(IntactParticipantEvidence.class);
-        return this.experimentalEntitySynchronizer;
-    }
-
-    public EntitySynchronizer<ExperimentalEntityPool, IntactExperimentalEntityPool> getExperimentalEntityPoolSynchronizer(){
-        if (this.experimentalEntityPoolSynchronizer == null){
-            this.experimentalEntityPoolSynchronizer = new ExperimentalEntityPoolSynchronizer(this);
+    public ParticipantSynchronizer<ModelledParticipantPool, IntactModelledParticipantPool> getModelledParticipantPoolSynchronizer(){
+        if (this.modelledParticipantPoolSynchronizer == null){
+            this.modelledParticipantPoolSynchronizer = new ModelledParticipantPoolSynchronizer(this);
         }
-        return this.experimentalEntityPoolSynchronizer;
+        return this.modelledParticipantPoolSynchronizer;
+    }
+
+    public ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer(){
+        if (this.participantEvidenceSynchronizer == null){
+            this.participantEvidenceSynchronizer = new ParticipantEvidenceSynchronizerTemplate<ParticipantEvidence, IntactParticipantEvidence>(this, IntactParticipantEvidence.class);
+        }
+        return participantEvidenceSynchronizer;
+    }
+
+    public ParticipantSynchronizer<ParticipantEvidencePool, IntactParticipantEvidencePool> getParticipantEvidencePoolSynchronizer(){
+        if (this.ParticipantEvidencePoolSynchronizer == null){
+            this.ParticipantEvidencePoolSynchronizer = new uk.ac.ebi.intact.jami.synchronizer.impl.ParticipantEvidencePoolSynchronizer(this);
+        }
+        return this.ParticipantEvidencePoolSynchronizer;
     }
 
     public void clearCache() {
@@ -847,11 +837,11 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         clearCache(this.variableParameterSynchronizer);
         clearCache(this.variableParameterValueSynchronizer);
         clearCache(this.variableParameterValueSetSynchronizer);
-        clearCache(this.entitySynchronizer);
-        clearCache(this.modelledEntitySynchronizer);
-        clearCache(this.modelledEntityPoolSynchronizer);
-        clearCache(this.experimentalEntitySynchronizer);
-        clearCache(this.experimentalEntityPoolSynchronizer);
+        clearCache(this.participantSynchronizer);
+        clearCache(this.modelledParticipantSynchronizer);
+        clearCache(this.modelledParticipantPoolSynchronizer);
+        clearCache(this.participantEvidenceSynchronizer);
+        clearCache(this.ParticipantEvidencePoolSynchronizer);
     }
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getGeneralCvSynchronizer() {
@@ -915,18 +905,6 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private void initialiseLifecycleTemplateIfNodDone() {
         if (this.lifecycleSynchronizer == null){
             this.lifecycleSynchronizer = new LifeCycleSynchronizerTemplate(this, AbstractLifecycleEvent.class);
-        }
-    }
-
-    private void initialiseModelledEntityTemplateIfNodDone() {
-        if (this.modelledEntitySynchronizer == null){
-            this.modelledEntitySynchronizer = new ModelledEntitySynchronizerTemplate(this, IntactModelledEntity.class);
-        }
-    }
-
-    private void initialiseExperimentalEntityTemplateIfNodDone() {
-        if (this.experimentalEntitySynchronizer == null){
-            this.experimentalEntitySynchronizer = new ExperimentalEntitySynchronizerTemplate(this, IntactExperimentalEntity.class);
         }
     }
 

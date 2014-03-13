@@ -12,7 +12,7 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 
-public interface ModelledParticipantDao<P extends IntactModelledParticipant> extends ModelledEntityDao<P>{
+public interface ModelledParticipantDao<P extends IntactModelledParticipant> extends ParticipantDao<P>{
 
     public Collection<P> getByInteractionAc(String ac);
 }

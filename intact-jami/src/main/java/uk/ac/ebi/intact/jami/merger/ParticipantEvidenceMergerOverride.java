@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.merger;
 
+import psidev.psi.mi.jami.enricher.OrganismEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEvidenceEnricher;
+import psidev.psi.mi.jami.model.FeatureEvidence;
 import psidev.psi.mi.jami.model.ParticipantEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
 
@@ -14,7 +16,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
  */
 
 public class ParticipantEvidenceMergerOverride<E extends ParticipantEvidence, I extends IntactParticipantEvidence>
-        extends ExperimentalEntityMergerOverride<E, I> {
+        extends ParticipantMergerOverride<E, I, FeatureEvidence> implements ParticipantEvidenceEnricher<E> {
 
     public ParticipantEvidenceMergerOverride() {
         super((Class<I>)IntactParticipantEvidence.class);
@@ -30,6 +32,15 @@ public class ParticipantEvidenceMergerOverride<E extends ParticipantEvidence, I 
 
     public ParticipantEvidenceMergerOverride(Class<I> intactClass, ParticipantEvidenceEnricher<E> basicEnricher) {
         super(intactClass, basicEnricher);
+    }
+
+    @Override
+    protected ParticipantEvidenceEnricher<E> getBasicEnricher() {
+        return (ParticipantEvidenceEnricher<E>)super.getBasicEnricher();
+    }
+
+    public OrganismEnricher getOrganismEnricher() {
+        return null;
     }
 
     @Override

@@ -2,8 +2,10 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Type;
-import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.model.Entity;
+import psidev.psi.mi.jami.model.Participant;
+import psidev.psi.mi.jami.model.Position;
+import psidev.psi.mi.jami.model.Range;
+import psidev.psi.mi.jami.model.ResultingSequence;
 import psidev.psi.mi.jami.utils.comparator.range.UnambiguousRangeAndResultingSequenceComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 
@@ -25,7 +27,7 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
     private boolean isLink;
 
     private ResultingSequence resultingSequence;
-    private Entity participant;
+    private Participant participant;
 
     protected IntactRange(){
 
@@ -50,12 +52,12 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
         this.resultingSequence = resultingSequence;
     }
 
-    public IntactRange(Position start, Position end, Entity participant){
+    public IntactRange(Position start, Position end, Participant participant){
         this(start, end);
         this.participant = participant;
     }
 
-    public IntactRange(Position start, Position end, boolean isLink, Entity participant){
+    public IntactRange(Position start, Position end, boolean isLink, Participant participant){
         this(start, end, isLink);
         this.participant = participant;
     }
@@ -117,14 +119,14 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
         this.resultingSequence = resultingSequence;
     }
 
-    @ManyToOne(targetEntity = IntactExperimentalEntity.class)
+    @ManyToOne(targetEntity = IntactParticipantEvidence.class)
     @JoinColumn(name = "participant_ac", referencedColumnName = "ac")
-    @Target(IntactExperimentalEntity.class)
-    public Entity getParticipant() {
+    @Target(IntactParticipantEvidence.class)
+    public Participant getParticipant() {
         return this.participant;
     }
 
-    public void setParticipant(Entity participant) {
+    public void setParticipant(Participant participant) {
         this.participant = participant;
     }
 

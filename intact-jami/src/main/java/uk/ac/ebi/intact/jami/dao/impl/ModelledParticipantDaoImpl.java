@@ -17,7 +17,7 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends IntactModelledParticipant> extends ModelledEntityDaoImpl<P, I>
+public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends IntactModelledParticipant> extends ParticipantDaoImpl<P, I>
         implements ModelledParticipantDao<I> {
 
     public ModelledParticipantDaoImpl(EntityManager entityManager, SynchronizerContext context) {
@@ -35,7 +35,7 @@ public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends
 
     public Collection<I> getByInteractionAc(String ac) {
         Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                "join f.interaction as i " +
+                "join f.dbParentInteraction as i " +
                 "where i.ac = : interAc");
         query.setParameter("interAc", ac);
         return query.getResultList();

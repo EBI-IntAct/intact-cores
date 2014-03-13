@@ -41,7 +41,7 @@ public interface IntactDao {
 
     public XrefDao<FeatureXref> getFeatureXrefDao();
 
-    public XrefDao<ExperimentalEntityXref> getEntityXrefDao();
+    public XrefDao<ParticipantEvidenceXref> getEntityXrefDao();
 
     public XrefDao<ResultingSequenceXref> getResultingSequenceXrefDao();
 
@@ -79,7 +79,7 @@ public interface IntactDao {
 
     public ParameterDao<InteractionEvidenceParameter> getInteractionParameterDao();
 
-    public ParameterDao<ExperimentalEntityParameter> getEntityParameterDao();
+    public ParameterDao<ParticipantEvidenceParameter> getEntityParameterDao();
 
     public OrganismDao getOrganismDao();
 
@@ -117,17 +117,13 @@ public interface IntactDao {
 
     public VariableParameterValueSetDao getVariableParameterValueSetDao();
 
-    public <T extends AbstractIntactEntity> EntityDao<T> getEntityDao(Class<T> entityClass);
-
-    public ModelledEntityDao<IntactModelledEntity> getModelledEntityDao();
+    public <T extends AbstractIntactParticipant> ParticipantDao<T> getEntityDao(Class<T> entityClass);
 
     public ModelledParticipantDao<IntactModelledParticipant> getModelledParticipantDao();
 
-    public ModelledEntityPoolDao getModelledEntityPoolDao();
-
-    public ExperimentalEntityDao<IntactExperimentalEntity> getExperimentalEntityDao();
+    public ModelledParticipantPoolDao getModelledEntityPoolDao();
 
     public ParticipantEvidenceDao<IntactParticipantEvidence> getParticipantEvidenceDao();
 
-    public ExperimentalEntityPoolDao getExperimentalEntityPoolDao();
+    public ParticipantEvidencePoolDao getExperimentalEntityPoolDao();
 }

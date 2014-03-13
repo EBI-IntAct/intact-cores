@@ -38,8 +38,8 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
         object.setRelationType(getContext().getTopicSynchronizer().synchronize(type, true));
 
         // synchronize target
-        Entity target = object.getTarget();
-        object.setTarget(getContext().getEntitySynchronizer().synchronize(target, false));
+        Participant target = object.getTarget();
+        object.setTarget(getContext().getParticipantSynchronizer().synchronize(target, false));
     }
 
     public void clearCache() {
@@ -55,12 +55,12 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
     protected AbstractIntactCausalRelationship instantiateNewPersistentInstance(CausalRelationship object, Class<? extends AbstractIntactCausalRelationship> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         // we have an experimental entity
-        if (object.getTarget() instanceof ExperimentalEntity){
-            return new ExperimentalCausalRelationship(object.getRelationType(), (ExperimentalEntity)object.getTarget());
+        if (object.getTarget() instanceof ParticipantEvidence){
+            return new ExperimentalCausalRelationship(object.getRelationType(), (ParticipantEvidence)object.getTarget());
         }
         // we have a modelled entity
-        else if (object.getTarget() instanceof ModelledEntity){
-            return new ModelledCausalRelationship(object.getRelationType(), (ModelledEntity)object.getTarget());
+        else if (object.getTarget() instanceof ModelledParticipant){
+            return new ModelledCausalRelationship(object.getRelationType(), (ModelledParticipant)object.getTarget());
         }
         // we don't manage this use case
         else{

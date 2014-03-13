@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractionCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -11,7 +9,6 @@ import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -121,7 +118,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
                 // reinit parent
                 participant.setInteraction(intactInteraction);
                 // do not persist or merge participants because of cascades
-                ParticipantEvidence expPart = (ParticipantEvidence)getContext().getEntitySynchronizer().synchronize(participant, false);
+                ParticipantEvidence expPart = (ParticipantEvidence)getContext().getParticipantSynchronizer().synchronize(participant, false);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);

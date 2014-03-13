@@ -54,7 +54,7 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
                 }
 
                 ModelledParticipant participant = moleculeEffector.getMolecule();
-                ((IntactMoleculeEffector) moleculeEffector).setMolecule((ModelledParticipant)getContext().getEntitySynchronizer().synchronize(participant, false));
+                ((IntactMoleculeEffector) moleculeEffector).setMolecule((ModelledParticipant)getContext().getParticipantSynchronizer().synchronize(participant, false));
                 break;
             case feature_modification:
                 FeatureModificationEffector featureEffector = (FeatureModificationEffector)object.getAllostericEffector();
@@ -89,7 +89,7 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
 
     protected void prepareAllostericMolecule(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
         ModelledParticipant participant = object.getAllostericMolecule();
-        object.setAllostericMolecule((ModelledParticipant)getContext().getEntitySynchronizer().synchronize(participant, false));
+        object.setAllostericMolecule((ModelledParticipant)getContext().getParticipantSynchronizer().synchronize(participant, false));
 
     }
 

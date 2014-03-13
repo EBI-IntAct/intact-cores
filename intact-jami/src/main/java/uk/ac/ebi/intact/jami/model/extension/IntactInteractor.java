@@ -4,7 +4,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
 import psidev.psi.mi.jami.utils.CvTermUtils;
@@ -254,8 +253,8 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         this.interactorType = interactorType;
     }
 
-    @OneToMany( mappedBy = "interactor", targetEntity = IntactExperimentalEntity.class)
-    @Target(IntactExperimentalEntity.class)
+    @OneToMany( mappedBy = "interactor", targetEntity = IntactParticipantEvidence.class)
+    @Target(IntactParticipantEvidence.class)
     public Collection<Entity> getActiveInstances() {
         if (this.activeInstances == null){
             this.activeInstances = new ArrayList<Entity>();

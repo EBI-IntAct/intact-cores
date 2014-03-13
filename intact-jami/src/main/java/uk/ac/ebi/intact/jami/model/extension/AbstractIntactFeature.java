@@ -4,7 +4,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
@@ -37,7 +36,7 @@ import java.util.Collection;
 @Table(name = "ia_feature")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @EntityListeners(value = {LinkedFeatureListener.class})
-public abstract class AbstractIntactFeature<P extends Entity, F extends Feature> extends AbstractIntactPrimaryObject implements Feature<P,F>{
+public abstract class AbstractIntactFeature<P extends Participant, F extends Feature> extends AbstractIntactPrimaryObject implements Feature<P,F>{
 
     private String shortName;
     private String fullName;

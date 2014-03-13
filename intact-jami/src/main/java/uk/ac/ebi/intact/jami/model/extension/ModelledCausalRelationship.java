@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ModelledEntity;
+import psidev.psi.mi.jami.model.ModelledParticipant;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -21,21 +21,21 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @DiscriminatorValue("modelled")
-public class ModelledCausalRelationship extends AbstractIntactCausalRelationship<ModelledEntity> implements CausalRelationship {
+public class ModelledCausalRelationship extends AbstractIntactCausalRelationship<ModelledParticipant> implements CausalRelationship {
 
     protected ModelledCausalRelationship(){
         super();
     }
 
-    public ModelledCausalRelationship(CvTerm relationType, ModelledEntity target){
+    public ModelledCausalRelationship(CvTerm relationType, ModelledParticipant target){
         super(relationType, target);
     }
 
-    @ManyToOne(targetEntity = IntactModelledEntity.class, optional = false)
+    @ManyToOne(targetEntity = IntactModelledParticipant.class, optional = false)
     @JoinColumn( name = "modelled_target_ac", referencedColumnName = "ac" )
-    @Target(IntactModelledEntity.class)
+    @Target(IntactModelledParticipant.class)
     @NotNull
-    public ModelledEntity getTarget() {
+    public ModelledParticipant getTarget() {
         return super.getTarget();
     }
 }

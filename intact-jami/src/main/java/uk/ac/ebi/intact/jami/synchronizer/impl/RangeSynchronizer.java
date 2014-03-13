@@ -76,7 +76,7 @@ public class RangeSynchronizer extends AbstractIntactDbSynchronizer<Range, Intac
 
         // synchronize participant
         if (object.getParticipant() != null){
-            Entity synchronizedParticipant = getContext().getEntitySynchronizer().synchronize(object.getParticipant(), false);
+            Participant synchronizedParticipant = getContext().getParticipantSynchronizer().synchronize(object.getParticipant(), false);
             object.setParticipant(synchronizedParticipant);
         }
     }

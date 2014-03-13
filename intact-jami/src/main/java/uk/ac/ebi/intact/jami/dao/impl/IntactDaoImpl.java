@@ -2,8 +2,6 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
-import psidev.psi.mi.jami.model.ExperimentalEntity;
-import psidev.psi.mi.jami.model.ModelledEntity;
 import psidev.psi.mi.jami.model.ModelledParticipant;
 import psidev.psi.mi.jami.model.ParticipantEvidence;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
@@ -39,13 +37,11 @@ public class IntactDaoImpl implements IntactDao {
     private ComplexDao complexDao;
     private CooperativityEvidenceDao cooperativityEvidenceDao;
     private CvTermDao cvTermDao;
-    private EntityDao entityDao;
-    private ExperimentalEntityDao<IntactExperimentalEntity> experimentalEntityDao;
-    private ExperimentalEntityPoolDao experimentalEntityPoolDao;
+    private ParticipantDao entityDao;
+    private ParticipantEvidencePoolDao experimentalEntityPoolDao;
     private ParticipantEvidenceDao<IntactParticipantEvidence> participantEvidenceDao;
-    private ModelledEntityDao<IntactModelledEntity> modelledEntityDao;
     private ModelledParticipantDao<IntactModelledParticipant> modelledParticipantDao;
-    private ModelledEntityPoolDao modelledEntityPoolDao;
+    private ModelledParticipantPoolDao modelledEntityPoolDao;
     private FeatureDao featureDao;
     private FeatureEvidenceDao featureEvidenceDao;
     private ExperimentDao experimentDao;
@@ -115,8 +111,8 @@ public class IntactDaoImpl implements IntactDao {
         return getXrefDao(FeatureXref.class);
     }
 
-    public XrefDao<ExperimentalEntityXref> getEntityXrefDao() {
-        return getXrefDao(ExperimentalEntityXref.class);
+    public XrefDao<ParticipantEvidenceXref> getEntityXrefDao() {
+        return getXrefDao(ParticipantEvidenceXref.class);
     }
 
     public XrefDao<ResultingSequenceXref> getResultingSequenceXrefDao() {
@@ -221,8 +217,8 @@ public class IntactDaoImpl implements IntactDao {
         return getParameterDao(InteractionEvidenceParameter.class);
     }
 
-    public ParameterDao<ExperimentalEntityParameter> getEntityParameterDao() {
-        return getParameterDao(ExperimentalEntityParameter.class);
+    public ParameterDao<ParticipantEvidenceParameter> getEntityParameterDao() {
+        return getParameterDao(ParticipantEvidenceParameter.class);
     }
 
     public OrganismDao getOrganismDao() {
@@ -344,19 +340,12 @@ public class IntactDaoImpl implements IntactDao {
         return this.variableParameterValueSetDao;
     }
 
-    public <T extends AbstractIntactEntity> EntityDao<T> getEntityDao(Class<T> entityClass) {
+    public <T extends AbstractIntactParticipant> ParticipantDao<T> getEntityDao(Class<T> entityClass) {
         if (this.entityDao == null){
-            this.entityDao = new EntityDaoImpl(AbstractIntactEntity.class, getEntityManager(), getSynchronizerContext());
+            this.entityDao = new ParticipantDaoImpl(AbstractIntactParticipant.class, getEntityManager(), getSynchronizerContext());
         }
         this.entityDao.setEntityClass(entityClass);
         return this.entityDao;
-    }
-
-    public ModelledEntityDao<IntactModelledEntity> getModelledEntityDao() {
-        if (this.modelledEntityDao == null){
-            this.modelledEntityDao = new ModelledEntityDaoImpl<ModelledEntity, IntactModelledEntity>(IntactModelledEntity.class, getEntityManager(), getSynchronizerContext());
-        }
-        return this.modelledEntityDao;
     }
 
     public ModelledParticipantDao<IntactModelledParticipant> getModelledParticipantDao() {
@@ -366,18 +355,11 @@ public class IntactDaoImpl implements IntactDao {
         return this.modelledParticipantDao;
     }
 
-    public ModelledEntityPoolDao getModelledEntityPoolDao() {
+    public ModelledParticipantPoolDao getModelledEntityPoolDao() {
         if (this.modelledEntityPoolDao == null){
-            this.modelledEntityPoolDao = new ModelledEntityPoolDaoImpl(getEntityManager(), getSynchronizerContext());
+            this.modelledEntityPoolDao = new ModelledParticipantPoolDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.modelledEntityPoolDao;
-    }
-
-    public ExperimentalEntityDao<IntactExperimentalEntity> getExperimentalEntityDao() {
-        if (this.experimentalEntityDao == null){
-            this.experimentalEntityDao = new ExperimentalEntityDaoImpl<ExperimentalEntity, IntactExperimentalEntity>(IntactExperimentalEntity.class, getEntityManager(), getSynchronizerContext());
-        }
-        return this.experimentalEntityDao;
     }
 
     public ParticipantEvidenceDao<IntactParticipantEvidence> getParticipantEvidenceDao() {
@@ -387,9 +369,9 @@ public class IntactDaoImpl implements IntactDao {
         return this.participantEvidenceDao;
     }
 
-    public ExperimentalEntityPoolDao getExperimentalEntityPoolDao() {
+    public ParticipantEvidencePoolDao getExperimentalEntityPoolDao() {
         if (this.experimentalEntityPoolDao == null){
-            this.experimentalEntityPoolDao = new ExperimentalEntityPoolDaoImpl(getEntityManager(), getSynchronizerContext());
+            this.experimentalEntityPoolDao = new ParticipantEvidencePoolDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.experimentalEntityPoolDao;
     }

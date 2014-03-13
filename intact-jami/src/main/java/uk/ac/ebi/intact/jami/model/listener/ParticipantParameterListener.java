@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.model.listener;
 
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Parameter;
-import uk.ac.ebi.intact.jami.model.extension.ExperimentalEntityParameter;
+import uk.ac.ebi.intact.jami.model.extension.ParticipantEvidenceParameter;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
 
 import javax.persistence.PostLoad;
@@ -30,8 +30,8 @@ public class ParticipantParameterListener {
             Experiment exp = part.getInteraction() != null ? part.getInteraction().getExperiment() : null;
 
             for (Parameter param : part.getParameters()){
-                if (param instanceof ExperimentalEntityParameter){
-                    ExperimentalEntityParameter interParam = (ExperimentalEntityParameter)param;
+                if (param instanceof ParticipantEvidenceParameter){
+                    ParticipantEvidenceParameter interParam = (ParticipantEvidenceParameter)param;
                     interParam.setExperiment(exp);
                 }
             }

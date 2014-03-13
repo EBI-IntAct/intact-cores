@@ -197,7 +197,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         this.interactionType = term;
     }
 
-    @OneToMany( mappedBy = "interaction", orphanRemoval = true,
+    @OneToMany( mappedBy = "dbParentInteraction", orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = IntactParticipantEvidence.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactParticipantEvidence.class)

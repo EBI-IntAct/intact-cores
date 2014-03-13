@@ -3,9 +3,12 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ExperimentalEntity;
+import psidev.psi.mi.jami.model.ParticipantEvidence;
 
-import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -17,21 +20,21 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @DiscriminatorValue("experimental")
-public class ExperimentalCausalRelationship extends AbstractIntactCausalRelationship<ExperimentalEntity> implements CausalRelationship {
+public class ExperimentalCausalRelationship extends AbstractIntactCausalRelationship<ParticipantEvidence> implements CausalRelationship {
 
     protected ExperimentalCausalRelationship(){
         super();
     }
 
-    public ExperimentalCausalRelationship(CvTerm relationType, ExperimentalEntity target){
+    public ExperimentalCausalRelationship(CvTerm relationType, ParticipantEvidence target){
         super(relationType, target);
     }
 
-    @ManyToOne(targetEntity = IntactExperimentalEntity.class, optional = false)
+    @ManyToOne(targetEntity = IntactParticipantEvidence.class, optional = false)
     @JoinColumn( name = "experimental_target_ac", referencedColumnName = "ac" )
-    @Target(IntactExperimentalEntity.class)
+    @Target(IntactParticipantEvidence.class)
     @NotNull
-    public ExperimentalEntity getTarget() {
+    public ParticipantEvidence getTarget() {
         return super.getTarget();
     }
 }

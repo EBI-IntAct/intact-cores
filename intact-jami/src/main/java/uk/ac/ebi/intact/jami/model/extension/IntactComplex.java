@@ -225,7 +225,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
         this.evidenceType = evidenceType;
     }
 
-    @OneToMany( mappedBy = "interaction", orphanRemoval = true,
+    @OneToMany( mappedBy = "dbParentInteraction", orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = IntactModelledParticipant.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactModelledParticipant.class)
