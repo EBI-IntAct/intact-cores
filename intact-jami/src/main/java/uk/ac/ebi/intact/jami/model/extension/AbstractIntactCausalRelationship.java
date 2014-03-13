@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.ForceDiscriminator;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
@@ -24,6 +25,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "ia_causal_relationship")
 @Inheritance( strategy = InheritanceType.SINGLE_TABLE )
+@ForceDiscriminator
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 public abstract class AbstractIntactCausalRelationship<T extends Participant> extends AbstractAuditable implements CausalRelationship {
 

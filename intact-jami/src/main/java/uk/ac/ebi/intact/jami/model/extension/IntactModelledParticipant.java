@@ -103,8 +103,11 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
         return super.getCausalRelationships();
     }
 
-    @OneToMany( mappedBy = "source", targetEntity = AbstractIntactCausalRelationship.class)
-    @Target(AbstractIntactCausalRelationship.class)
+    @OneToMany( mappedBy = "target", targetEntity = ModelledCausalRelationship.class)
+    @Target(ModelledCausalRelationship.class)
+    /**
+     * List of experimental causal relationships having this participant as target
+     */
     public Collection<CausalRelationship> getRelatedCausalRelationships(){
         if (this.relatedCausalRelationships == null){
             this.relatedCausalRelationships = new ArrayList<CausalRelationship>();

@@ -24,6 +24,9 @@ import java.util.Collection;
  * NOTE: The participants have the ownership of the relation between interaction and participants. It means that to persist the relationship between interaction and participants,
  * the property getInteraction must be pointing to the right interaction.
  * NOTE: if the participant is not a direct participant of an interaction but is part of a participantSet, the interaction back reference will not be persistent.
+ * NOTE: The features have the ownership of the relation between participant and features. It means that to persist the relationship between participant and features,
+ * the property getParticipant in the feature must be pointing to the right participant. It is then recommended to use the provided addFeature and removeFeature methods to add/remove features
+ * from the participant
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -187,6 +190,11 @@ public abstract class AbstractIntactParticipant<I extends Interaction, F extends
     }
 
     @Transient
+    /**
+     *  NOTE: The features have the ownership of the relation between participant and features. It means that to persist the relationship between participant and features,
+     * the property getParticipant in the feature must be pointing to the right participant. It is then recommended to use the provided addFeature and removeFeature methods to add/remove features
+     * from the participant
+     */
     public Collection<F> getFeatures() {
         if (features == null){
             initialiseFeatures();

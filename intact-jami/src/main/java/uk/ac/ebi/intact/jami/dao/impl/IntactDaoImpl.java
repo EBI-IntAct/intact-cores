@@ -44,6 +44,7 @@ public class IntactDaoImpl implements IntactDao {
     private ModelledParticipantPoolDao modelledEntityPoolDao;
     private FeatureDao featureDao;
     private FeatureEvidenceDao featureEvidenceDao;
+    private FeatureDao<IntactModelledFeature> modelledFeatureDao;
     private ExperimentDao experimentDao;
     private InteractionDao interactionDao;
     private InteractorDao interactorDao;
@@ -107,8 +108,8 @@ public class IntactDaoImpl implements IntactDao {
         return getXrefDao(InteractorXref.class);
     }
 
-    public XrefDao<FeatureXref> getFeatureXrefDao() {
-        return getXrefDao(FeatureXref.class);
+    public XrefDao<FeatureEvidenceXref> getFeatureXrefDao() {
+        return getXrefDao(FeatureEvidenceXref.class);
     }
 
     public XrefDao<ParticipantEvidenceXref> getEntityXrefDao() {
@@ -316,7 +317,10 @@ public class IntactDaoImpl implements IntactDao {
     }
 
     public FeatureDao<IntactModelledFeature> getModelledFeatureDao() {
-        return getFeatureDao(IntactModelledFeature.class);
+        if (this.modelledFeatureDao == null){
+            this.modelledFeatureDao = new ModelledFeatureDaoImpl(getEntityManager(), getSynchronizerContext());
+        }
+        return this.modelledFeatureDao;
     }
 
     public VariableParameterDao getVariableParameterDao() {
@@ -340,7 +344,7 @@ public class IntactDaoImpl implements IntactDao {
         return this.variableParameterValueSetDao;
     }
 
-    public <T extends AbstractIntactParticipant> ParticipantDao<T> getEntityDao(Class<T> entityClass) {
+    public <T extends AbstractIntactParticipant> ParticipantDao<T> getParticipantDao(Class<T> entityClass) {
         if (this.entityDao == null){
             this.entityDao = new ParticipantDaoImpl(AbstractIntactParticipant.class, getEntityManager(), getSynchronizerContext());
         }
@@ -355,7 +359,7 @@ public class IntactDaoImpl implements IntactDao {
         return this.modelledParticipantDao;
     }
 
-    public ModelledParticipantPoolDao getModelledEntityPoolDao() {
+    public ModelledParticipantPoolDao getModelledParticipantPoolDao() {
         if (this.modelledEntityPoolDao == null){
             this.modelledEntityPoolDao = new ModelledParticipantPoolDaoImpl(getEntityManager(), getSynchronizerContext());
         }
@@ -369,7 +373,7 @@ public class IntactDaoImpl implements IntactDao {
         return this.participantEvidenceDao;
     }
 
-    public ParticipantEvidencePoolDao getExperimentalEntityPoolDao() {
+    public ParticipantEvidencePoolDao getParticipantEvidencePoolDao() {
         if (this.experimentalEntityPoolDao == null){
             this.experimentalEntityPoolDao = new ParticipantEvidencePoolDaoImpl(getEntityManager(), getSynchronizerContext());
         }

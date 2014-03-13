@@ -110,11 +110,13 @@ public interface SynchronizerContext {
 
     public AliasSynchronizer<OrganismAlias> getOrganismAliasSynchronizer();
 
-    public AliasSynchronizer<FeatureAlias> getFeatureAliasSynchronizer();
+    public AliasSynchronizer<FeatureEvidenceAlias> getFeatureEvidenceAliasSynchronizer();
 
-    public AliasSynchronizer<ParticipantEvidenceAlias> getExperimentalEntityAliasSynchronizer();
+    public AliasSynchronizer<ModelledFeatureAlias> getModelledFeatureAliasSynchronizer();
 
-    public AliasSynchronizer<ModelledParticipantAlias> getModelledEntityAliasSynchronizer();
+    public AliasSynchronizer<ParticipantEvidenceAlias> getParticipantEvidenceAliasSynchronizer();
+
+    public AliasSynchronizer<ModelledParticipantAlias> getModelledParticipantAliasSynchronizer();
 
     public AliasSynchronizer<InteractorAlias> getInteractorAliasSynchronizer();
 
@@ -126,11 +128,13 @@ public interface SynchronizerContext {
 
     public XrefSynchronizer<InteractorXref> getInteractorXrefSynchronizer();
 
-    public XrefSynchronizer<FeatureXref> getFeatureXrefSynchronizer();
+    public XrefSynchronizer<FeatureEvidenceXref> getFeatureEvidenceXrefSynchronizer();
 
-    public XrefSynchronizer<ParticipantEvidenceXref> getExperimentalEntityXrefSynchronizer();
+    public XrefSynchronizer<ModelledFeatureXref> getModelledFeatureXrefSynchronizer();
 
-    public XrefSynchronizer<ModelledParticipantXref> getModelledEntityXrefSynchronizer();
+    public XrefSynchronizer<ParticipantEvidenceXref> getParticipantEvidenceXrefSynchronizer();
+
+    public XrefSynchronizer<ModelledParticipantXref> getModelledParticipantXrefSynchronizer();
 
     public XrefSynchronizer<ResultingSequenceXref> getResultingSequenceXrefSynchronizer();
 
@@ -142,11 +146,13 @@ public interface SynchronizerContext {
 
     public AnnotationSynchronizer<InteractorAnnotation> getInteractorAnnotationSynchronizer();
 
-    public AnnotationSynchronizer<FeatureAnnotation> getFeatureAnnotationSynchronizer();
+    public AnnotationSynchronizer<FeatureEvidenceAnnotation> getFeatureEvidenceAnnotationSynchronizer();
 
-    public AnnotationSynchronizer<ParticipantEvidenceAnnotation> getExperimentalEntityAnnotationSynchronizer();
+    public AnnotationSynchronizer<ModelledFeatureAnnotation> getModelledFeatureAnnotationSynchronizer();
 
-    public AnnotationSynchronizer<ModelledParticipantAnnotation> getModelledEntityAnnotationSynchronizer();
+    public AnnotationSynchronizer<ParticipantEvidenceAnnotation> getParticipantEvidenceAnnotationSynchronizer();
+
+    public AnnotationSynchronizer<ModelledParticipantAnnotation> getModelledParticipantAnnotationSynchronizer();
 
     public AnnotationSynchronizer<CooperativeEffectAnnotation> getCooperativeEffectAnnotationSynchronizer();
 

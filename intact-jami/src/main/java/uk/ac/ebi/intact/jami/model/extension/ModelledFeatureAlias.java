@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * Implementation of alias for features
+ * Implementation of alias for features that are part of a modelled interaction
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -14,16 +14,16 @@ import javax.persistence.Table;
  */
 @Entity
 @Table( name = "ia_feature_alias" )
-public class FeatureAlias extends AbstractIntactAlias{
+public class ModelledFeatureAlias extends AbstractIntactAlias{
 
-    protected FeatureAlias() {
+    protected ModelledFeatureAlias() {
     }
 
-    public FeatureAlias(CvTerm type, String name) {
+    public ModelledFeatureAlias(CvTerm type, String name) {
         super(type, name);
     }
 
-    public FeatureAlias(String name) {
+    public ModelledFeatureAlias(String name) {
         super(name);
     }
 }

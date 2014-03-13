@@ -378,19 +378,25 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.aliasSynchronizer;
     }
 
-    public AliasSynchronizer<FeatureAlias> getFeatureAliasSynchronizer() {
+    public AliasSynchronizer<FeatureEvidenceAlias> getFeatureEvidenceAliasSynchronizer() {
         initialiseAliasTemplateIfNotDone();
-        this.aliasSynchronizer.setIntactClass(FeatureAlias.class);
+        this.aliasSynchronizer.setIntactClass(FeatureEvidenceAlias.class);
         return this.aliasSynchronizer;
     }
 
-    public AliasSynchronizer<ParticipantEvidenceAlias> getExperimentalEntityAliasSynchronizer() {
+    public AliasSynchronizer<ModelledFeatureAlias> getModelledFeatureAliasSynchronizer() {
+        initialiseAliasTemplateIfNotDone();
+        this.aliasSynchronizer.setIntactClass(ModelledFeatureAlias.class);
+        return this.aliasSynchronizer;
+    }
+
+    public AliasSynchronizer<ParticipantEvidenceAlias> getParticipantEvidenceAliasSynchronizer() {
         initialiseAliasTemplateIfNotDone();
         this.aliasSynchronizer.setIntactClass(ParticipantEvidenceAlias.class);
         return this.aliasSynchronizer;
     }
 
-    public AliasSynchronizer<ModelledParticipantAlias> getModelledEntityAliasSynchronizer() {
+    public AliasSynchronizer<ModelledParticipantAlias> getModelledParticipantAliasSynchronizer() {
         initialiseAliasTemplateIfNotDone();
         this.aliasSynchronizer.setIntactClass(ModelledParticipantAlias.class);
         return this.aliasSynchronizer;
@@ -426,19 +432,25 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.xrefSynchronizer;
     }
 
-    public XrefSynchronizer<FeatureXref> getFeatureXrefSynchronizer() {
+    public XrefSynchronizer<FeatureEvidenceXref> getFeatureEvidenceXrefSynchronizer() {
         initialiseXrefTemplateIfNotDone();
-        this.xrefSynchronizer.setIntactClass(FeatureXref.class);
+        this.xrefSynchronizer.setIntactClass(FeatureEvidenceXref.class);
         return this.xrefSynchronizer;
     }
 
-    public XrefSynchronizer<ParticipantEvidenceXref> getExperimentalEntityXrefSynchronizer() {
+    public XrefSynchronizer<ModelledFeatureXref> getModelledFeatureXrefSynchronizer() {
+        initialiseXrefTemplateIfNotDone();
+        this.xrefSynchronizer.setIntactClass(ModelledFeatureXref.class);
+        return this.xrefSynchronizer;
+    }
+
+    public XrefSynchronizer<ParticipantEvidenceXref> getParticipantEvidenceXrefSynchronizer() {
         initialiseXrefTemplateIfNotDone();
         this.xrefSynchronizer.setIntactClass(ParticipantEvidenceXref.class);
         return this.xrefSynchronizer;
     }
 
-    public XrefSynchronizer<ModelledParticipantXref> getModelledEntityXrefSynchronizer() {
+    public XrefSynchronizer<ModelledParticipantXref> getModelledParticipantXrefSynchronizer() {
         initialiseXrefTemplateIfNotDone();
         this.xrefSynchronizer.setIntactClass(ModelledParticipantXref.class);
         return this.xrefSynchronizer;
@@ -474,19 +486,25 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.annotationSynchronizer;
     }
 
-    public AnnotationSynchronizer<FeatureAnnotation> getFeatureAnnotationSynchronizer() {
+    public AnnotationSynchronizer<FeatureEvidenceAnnotation> getFeatureEvidenceAnnotationSynchronizer() {
         initialiseAnnotationTemplateIfNodDone();
-        this.annotationSynchronizer.setIntactClass(FeatureAnnotation.class);
+        this.annotationSynchronizer.setIntactClass(FeatureEvidenceAnnotation.class);
         return this.annotationSynchronizer;
     }
 
-    public AnnotationSynchronizer<ParticipantEvidenceAnnotation> getExperimentalEntityAnnotationSynchronizer() {
+    public AnnotationSynchronizer<ModelledFeatureAnnotation> getModelledFeatureAnnotationSynchronizer() {
+        initialiseAnnotationTemplateIfNodDone();
+        this.annotationSynchronizer.setIntactClass(ModelledFeatureAnnotation.class);
+        return this.annotationSynchronizer;
+    }
+
+    public AnnotationSynchronizer<ParticipantEvidenceAnnotation> getParticipantEvidenceAnnotationSynchronizer() {
         initialiseAnnotationTemplateIfNodDone();
         this.annotationSynchronizer.setIntactClass(ParticipantEvidenceAnnotation.class);
         return this.annotationSynchronizer;
     }
 
-    public AnnotationSynchronizer<ModelledParticipantAnnotation> getModelledEntityAnnotationSynchronizer() {
+    public AnnotationSynchronizer<ModelledParticipantAnnotation> getModelledParticipantAnnotationSynchronizer() {
         initialiseAnnotationTemplateIfNodDone();
         this.annotationSynchronizer.setIntactClass(ModelledParticipantAnnotation.class);
         return this.annotationSynchronizer;

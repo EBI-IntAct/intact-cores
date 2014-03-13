@@ -1,11 +1,12 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import java.util.Collection;
 
 /**
@@ -16,7 +17,8 @@ import java.util.Collection;
  * @since <pre>15/01/14</pre>
  */
 @Entity
-@DiscriminatorValue("modelled")
+@Table(name = "ia_feature")
+@Where(clause = "category = 'modelled'")
 public class IntactModelledFeature extends AbstractIntactFeature<ModelledParticipant, ModelledFeature> implements ModelledFeature{
 
     public IntactModelledFeature(ModelledParticipant participant) {
@@ -55,6 +57,42 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
         super(shortName, fullName, type);
     }
 
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledFeatureXref.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
+    @Target(ModelledFeatureXref.class)
+    @Override
+    /**
+     * This method give direct access to the persistent collection of xrefs (identifiers and xrefs all together) for this object.
+     * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
+     */
+    public Collection<Xref> getDbXrefs() {
+        return super.getDbXrefs();
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledFeatureAnnotation.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
+    @Target(ModelledFeatureAnnotation.class)
+    @Override
+    /**
+    * WARNING: The join table is for backward compatibility with intact-core.
+    * When intact-core will be removed, the join table would disappear wnd the relation would become
+    * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     * **/
+    public Collection<Annotation> getAnnotations() {
+        return super.getAnnotations();
+    }
+
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledFeatureAlias.class)
+    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(ModelledFeatureAlias.class)
+    @Override
+    public Collection<Alias> getAliases() {
+        return super.getAliases();
+    }
+
     @Override
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
@@ -71,13 +109,13 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
     @Override
     @ManyToMany( targetEntity = IntactModelledFeature.class)
     @JoinTable(
-            name="ia_feature2linkedfeature",
-            joinColumns = @JoinColumn( name="feature_ac"),
-            inverseJoinColumns = @JoinColumn( name="linkedfeature_ac")
+            name="ia_modelled_feature2linked_feature",
+            joinColumns = @JoinColumn( name="modelled_feature_ac"),
+            inverseJoinColumns = @JoinColumn( name="linked_feature_ac")
     )
     @Target(IntactModelledFeature.class)
-    public Collection<ModelledFeature> getLinkedFeatures() {
-        return super.getLinkedFeatures();
+    public Collection<ModelledFeature> getDbLinkedFeatures() {
+        return super.getDbLinkedFeatures();
     }
 
     @Override
@@ -96,10 +134,5 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
     @Override
     protected void initialiseDefaultType() {
         super.setType(IntactUtils.createMIFeatureType(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI));
-    }
-
-    @Override
-    protected void setLinkedFeatures(Collection<ModelledFeature> linkedFeatures) {
-        super.setLinkedFeatures(linkedFeatures);
     }
 }

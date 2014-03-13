@@ -126,7 +126,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactEntity.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref persistentXref = getContext().getExperimentalEntityXrefSynchronizer().synchronize(xref, false);
+                Xref persistentXref = getContext().getParticipantEvidenceXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentXref != xref){
                     intactEntity.getXrefs().remove(xref);
@@ -141,7 +141,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactEntity.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation persistentAnnotation = getContext().getExperimentalEntityAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation persistentAnnotation = getContext().getParticipantEvidenceAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentAnnotation != annotation){
                     intactEntity.getAnnotations().remove(annotation);
@@ -156,7 +156,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactEntity.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias persistentAlias = getContext().getExperimentalEntityAliasSynchronizer().synchronize(alias, false);
+                Alias persistentAlias = getContext().getParticipantEvidenceAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentAlias != alias){
                     intactEntity.getAliases().remove(alias);

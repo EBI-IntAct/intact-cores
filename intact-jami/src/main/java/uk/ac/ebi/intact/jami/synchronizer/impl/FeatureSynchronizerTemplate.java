@@ -53,6 +53,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         prepareAndSynchronizeShortLabel(intactFeature);
         // then check full name
         prepareFullName(intactFeature);
+        // synchronize feature type
         prepareType(intactFeature);
         // then check def
         prepareInteractionEffectAndDependencies(intactFeature);
@@ -79,6 +80,9 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     protected void prepareLinkedFeatures(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        if (intactFeature.getBinds() != null){
+            intactFeature.setBinds(synchronize((F)intactFeature.getBinds(), false));
+        }
         if (intactFeature.areLinkedFeaturesInitialized()){
             List<I> featureToSynchronize = new ArrayList<I>(intactFeature.getLinkedFeatures());
             for (I feature : featureToSynchronize){
@@ -122,14 +126,14 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
 
     protected void prepareXrefs(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getPersistentXrefs());
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref featureXref = getContext().getFeatureXrefSynchronizer().synchronize(xref, false);
+                Xref featureXref = getContext().getFeatureEvidenceXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (featureXref != xref){
-                    intactFeature.getPersistentXrefs().remove(xref);
-                    intactFeature.getPersistentXrefs().add(featureXref);
+                    intactFeature.getDbXrefs().remove(xref);
+                    intactFeature.getDbXrefs().add(featureXref);
                 }
             }
         }
@@ -140,7 +144,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation featureAnnotation = getContext().getFeatureAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation featureAnnotation = getContext().getFeatureEvidenceAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (featureAnnotation != annotation){
                     intactFeature.getAnnotations().remove(annotation);
@@ -155,7 +159,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias featureAlias = getContext().getFeatureAliasSynchronizer().synchronize(alias, false);
+                Alias featureAlias = getContext().getFeatureEvidenceAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (featureAlias != alias){
                     intactFeature.getAliases().remove(alias);

@@ -6,7 +6,6 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
@@ -14,7 +13,6 @@ import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
-import uk.ac.ebi.intact.jami.model.listener.LinkedFeatureListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -26,16 +24,29 @@ import java.util.Collection;
 /**
  * Abstract class for intact features
  *
+ * NOTE: The feature ac is automatically added as an identifier in getIdentifiers but is not persisted in getDbXrefs.
+ * The getIdentifiers.remove will thrown an UnsupportedOperationException if someone tries to remove the AC identifier from the list of identifiers
+ * NOTE: getIdentifiers and getXrefs are not persistent methods annotated with hibernate annotations. All the xrefs present in identifiers
+ * and xrefs are persisted in the same table for backward compatibility with intact-core. So the persistent xrefs are available with the getDbXrefs method.
+ * For HQL queries, the method getDbXrefs should be used because is annotated with hibernate annotations.
+ * However, getDbXrefs should not be used directly to add/remove xrefs because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence.
+ * However, it is not recommended to use this method to directly add/remove xrefs as it may mess up with the state of the object.
+ * NOTE: getLinkedFeatures is not a persistent method annotated with hibernate annotations. All the features present in linkedFeatures
+ * are persisted in the same table but with different columns for backward compatibility with intact-core. So the persistent features are available with the getDbLinkedFeatures and getBinds method.
+ * For HQL queries, the method getDbLinkedFeatures and getBinds should be used because are annotated with hibernate annotations.
+ * However, getDbLinkedFeatures and getDbBinds should not be used directly to add/remove features because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence.
+ * NOTE: The features have the ownership of the relation between participant and features. It means that to persist the relationship between participant and features,
+ * the property getParticipant must be pointing to the right participant.
+ * NOTE; all features are in the same table for backward compatibility with intact-core. In the future, this will be updated
+ * In the meantime, because of backward compatibility issues,we use a where statement in IntActModelledFeature and IntactFeatureEvidence.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
-@javax.persistence.Entity
-@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
-@Table(name = "ia_feature")
-@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
-@EntityListeners(value = {LinkedFeatureListener.class})
+@MappedSuperclass
 public abstract class AbstractIntactFeature<P extends Participant, F extends Feature> extends AbstractIntactPrimaryObject implements Feature<P,F>{
 
     private String shortName;
@@ -52,12 +63,10 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     private CvTerm interactionDependency;
 
     private P participant;
-    private Collection<F> linkedFeatures;
 
+    private LinkedFeatureList linkedFeatures;
     private PersistentXrefList persistentXrefs;
-
-    private Xref acRef;
-
+    private PersistentLinkedFeatureList persistentLinkedFeatures;
     /**
      * <p/>
      * A feature may bind to another feature, usually on a different
@@ -72,9 +81,13 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
      * Interactores which only interact in the second complex. As this method
      * creates ambiguities and difficult data structures, it is deprecated.
      * </p>
-     * @deprecated this is only for backward compatibility with intact core. Look at linkedFeatures instead
+     * @deprecated this is only for backward compatibility with intact core. Look at linkedFeatures instead.
+     * When intact-core is removed, getLinkedFeatures could become persistent and we could remove getDbLinkedFeatures after updating
+     * the database so all 'binds' are also in the dbLinkedFeatures collection.
      */
     private F binds;
+
+    private Xref acRef;
 
     public AbstractIntactFeature(){
     }
@@ -147,7 +160,9 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     @Transient
     public String getInterpro() {
         // initialise identifiers if not done yet
-        getIdentifiers();
+        if (identifiers == null){
+            initialiseXrefs();
+        }
         return this.interpro != null ? this.interpro.getId() : null;
     }
 
@@ -162,7 +177,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
             if (this.interpro != null){
                 featureIdentifiers.remove(this.interpro);
             }
-            this.interpro = new FeatureXref(interproDatabase, interpro, identityQualifier);
+            this.interpro = new FeatureEvidenceXref(interproDatabase, interpro, identityQualifier);
             featureIdentifiers.add(this.interpro);
         }
         // remove all interpro if the collection is not empty
@@ -188,10 +203,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
         return this.xrefs;
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureAnnotation.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
-    @Target(FeatureAnnotation.class)
+    @Transient
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
             initialiseAnnotations();
@@ -199,10 +211,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
         return this.annotations;
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureAlias.class)
-    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(FeatureAlias.class)
+    @Transient
     public Collection<Alias> getAliases() {
         if (this.aliases == null){
             initialiseAliases();
@@ -244,15 +253,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     }
 
     public void setInteractionEffect(CvTerm effect) {
-        if (effect == null && this.interactionEffect != null){
-            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), this.interactionEffect.getMIIdentifier(), this.interactionEffect.getShortName());
-            this.interactionEffect = null;
-        }
-        else if (effect != null && effect != this.interactionEffect){
-            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), this.interactionEffect.getMIIdentifier(), this.interactionEffect.getShortName());
-            this.interactionEffect = effect;
-            getAnnotations().add(new FeatureAnnotation(this.interactionEffect));
-        }
+        this.interactionEffect = effect;
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
@@ -263,15 +264,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     }
 
     public void setInteractionDependency(CvTerm interactionDependency) {
-        if (interactionDependency == null && this.interactionDependency != null){
-            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), this.interactionDependency.getMIIdentifier(), this.interactionDependency.getShortName());
-            this.interactionDependency = null;
-        }
-        else if (interactionDependency != null && interactionDependency != this.interactionDependency){
-            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), this.interactionDependency.getMIIdentifier(), this.interactionDependency.getShortName());
-            this.interactionDependency = interactionDependency;
-            getAnnotations().add(new FeatureAnnotation(this.interactionDependency));
-        }
+        this.interactionDependency = interactionDependency;
     }
 
     @Transient
@@ -301,34 +294,21 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
         return this.linkedFeatures;
     }
 
+    @Transient
+    public Collection<F> getDbLinkedFeatures() {
+        if(persistentLinkedFeatures == null){
+            this.persistentLinkedFeatures = new PersistentLinkedFeatureList(null);
+        }
+        return this.persistentLinkedFeatures.getWrappedList();
+    }
+
     @Override
     public String toString() {
         return type != null ? type.toString() : (!ranges.isEmpty() ? "("+ranges.iterator().next().toString()+"...)" : " (-)");
     }
 
     @Transient
-    /**
-     * @deprecated for intact-core backward compatibility only. Use linkedFeatures instead
-     */
-    @Deprecated
-    public F getBinds() {
-        return binds;
-    }
-
-    /**
-     *
-     * @param binds
-     * @deprecated for intact-core backward compatibility only. Use linkedFeatures instead
-     */
-    public void setBinds(F binds) {
-        this.binds = binds;
-    }
-
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureXref.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
-    @Target(FeatureXref.class)
-    public Collection<Xref> getPersistentXrefs() {
+    public Collection<Xref> getDbXrefs() {
         if (this.persistentXrefs == null){
             this.persistentXrefs = new PersistentXrefList(null);
         }
@@ -337,7 +317,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
 
     @Transient
     public boolean areXrefsInitialized(){
-        return Hibernate.isInitialized(getPersistentXrefs());
+        return Hibernate.isInitialized(getDbXrefs());
     }
 
     @Transient
@@ -357,7 +337,26 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
 
     @Transient
     public boolean areLinkedFeaturesInitialized(){
-        return Hibernate.isInitialized(getLinkedFeatures());
+        return Hibernate.isInitialized(getDbLinkedFeatures());
+    }
+
+    @Transient
+    /**
+     * @deprecated for intact-core backward compatibility only. Use linkedFeatures instead
+     */
+    @Deprecated
+    public F getBinds() {
+        return binds;
+    }
+
+    /**
+     *
+     * @param binds
+     * @deprecated for intact-core backward compatibility only. Use linkedFeatures instead
+     */
+    @Deprecated
+    public void setBinds(F binds) {
+        this.binds = binds;
     }
 
     protected void initialiseDefaultType(){
@@ -434,11 +433,33 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     }
 
     protected void initialiseLinkedFeatures(){
-        this.linkedFeatures = new ArrayList<F>();
+        this.linkedFeatures = new LinkedFeatureList();
+        // add binds if not null
+        if (this.binds != null){
+            this.linkedFeatures.addOnly(this.binds);
+        }
+        // initialise persistent feature and content
+        if (this.persistentLinkedFeatures != null){
+            for (F linked : this.persistentLinkedFeatures){
+                this.linkedFeatures.addOnly(linked);
+            }
+        }
+        else{
+            this.persistentLinkedFeatures = new PersistentLinkedFeatureList(null);
+        }
     }
 
-    protected void setPersistentXrefs(Collection<Xref> persistentXrefs){
-        this.persistentXrefs = new PersistentXrefList(persistentXrefs);
+    protected void setDbXrefs(Collection<Xref> persistentXrefs){
+        if (persistentXrefs instanceof AbstractIntactFeature.PersistentXrefList){
+            this.persistentXrefs = (PersistentXrefList)persistentXrefs;
+            this.identifiers = null;
+            this.xrefs = null;
+        }
+        else{
+            this.persistentXrefs = new PersistentXrefList(persistentXrefs);
+            this.identifiers = null;
+            this.xrefs = null;
+        }
     }
 
     protected void setAnnotations(Collection<Annotation> annotations) {
@@ -457,8 +478,15 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
         this.ranges = ranges;
     }
 
-    protected void setLinkedFeatures(Collection<F> linkedFeatures) {
-        this.linkedFeatures = linkedFeatures;
+    protected void setDbLinkedFeatures(Collection<F> linkedFeatures) {
+        if (linkedFeatures instanceof AbstractIntactFeature.PersistentLinkedFeatureList){
+            this.persistentLinkedFeatures = (PersistentLinkedFeatureList)linkedFeatures;
+            this.linkedFeatures = null;
+        }
+        else{
+            this.persistentLinkedFeatures = new PersistentLinkedFeatureList(linkedFeatures);
+            this.linkedFeatures = null;
+        }
     }
 
     protected class FeatureIdentifierList extends AbstractListHavingProperties<Xref> {
@@ -530,6 +558,68 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
 
         @Override
         protected Xref processOrWrapElementToAdd(Xref added) {
+            return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // nothing to do
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
+        }
+    }
+
+    protected class LinkedFeatureList extends AbstractListHavingProperties<F> {
+        public LinkedFeatureList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(F added) {
+            if (binds == null){
+                binds = added;
+            }
+            else{
+                persistentLinkedFeatures.add(added);
+            }
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(F removed) {
+            if (binds == removed){
+                binds = null;
+                if (!persistentLinkedFeatures.isEmpty()){
+                    binds = persistentLinkedFeatures.iterator().next();
+                }
+            }
+            else{
+                persistentLinkedFeatures.remove(removed);
+            }
+        }
+
+        @Override
+        protected void clearProperties() {
+            binds = null;
+            persistentLinkedFeatures.clear();
+        }
+    }
+
+    protected class PersistentLinkedFeatureList extends AbstractCollectionWrapper<F> {
+
+        public PersistentLinkedFeatureList(Collection<F> persistentBag){
+            super(persistentBag);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToAdd(F added) {
+            return false;
+        }
+
+        @Override
+        protected F processOrWrapElementToAdd(F added) {
             return added;
         }
 

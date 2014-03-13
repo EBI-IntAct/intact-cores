@@ -6,7 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * Implementation of annotation for features
+ * Implementation of annotation for features that are part of an interaction evidence
+ *
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -14,17 +15,17 @@ import javax.persistence.Table;
  */
 @Entity
 @Table( name = "ia_annotation" )
-public class FeatureAnnotation extends AbstractIntactAnnotation{
+public class FeatureEvidenceAnnotation extends AbstractIntactAnnotation{
 
-    public FeatureAnnotation() {
+    public FeatureEvidenceAnnotation() {
         super();
     }
 
-    public FeatureAnnotation(CvTerm topic) {
+    public FeatureEvidenceAnnotation(CvTerm topic) {
         super(topic);
     }
 
-    public FeatureAnnotation(CvTerm topic, String value) {
+    public FeatureEvidenceAnnotation(CvTerm topic, String value) {
         super(topic, value);
     }
 }

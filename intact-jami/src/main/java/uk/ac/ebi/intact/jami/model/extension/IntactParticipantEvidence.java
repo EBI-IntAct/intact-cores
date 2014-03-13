@@ -171,8 +171,11 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         return super.getCausalRelationships();
     }
 
-    @OneToMany( mappedBy = "source", targetEntity = AbstractIntactCausalRelationship.class)
-    @Target(AbstractIntactCausalRelationship.class)
+    @OneToMany( mappedBy = "target", targetEntity = ExperimentalCausalRelationship.class)
+    @Target(ExperimentalCausalRelationship.class)
+    /**
+     * List of experimental causal relationships having this participant as target
+     */
     public Collection<CausalRelationship> getRelatedCausalRelationships(){
         if (this.relatedCausalRelationships == null){
             this.relatedCausalRelationships = new ArrayList<CausalRelationship>();
@@ -384,7 +387,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
      * Only this method is persistent because we want to exclude the participant identification method which is persisted at the experiment
      * level
      */
-    protected Collection<CvTerm> getDbIdentificationMethods() {
+    private Collection<CvTerm> getDbIdentificationMethods() {
         if (persistentIdentificationMethods == null){
             persistentIdentificationMethods = new ArrayList<CvTerm>(getIdentificationMethods());
             if (getInteraction() != null && getInteraction().getExperiment() instanceof IntactExperiment){
@@ -399,7 +402,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         this.relatedCausalRelationships = relatedCausalRelationships;
     }
 
-    private class IdentificationMethodList extends AbstractListHavingProperties<CvTerm> {
+    protected class IdentificationMethodList extends AbstractListHavingProperties<CvTerm> {
         public IdentificationMethodList(){
             super();
         }

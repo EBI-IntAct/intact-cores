@@ -29,7 +29,6 @@ implements ParticipantSynchronizer<T,I> {
     private Map<T, I> persistedObjects;
 
     private static final Log log = LogFactory.getLog(ParticipantSynchronizerTemplate.class);
-    private IntactDbSynchronizer featureSynchronizer;
 
     public ParticipantSynchronizerTemplate(SynchronizerContext context, Class<I> intactClass){
         super(context, intactClass);

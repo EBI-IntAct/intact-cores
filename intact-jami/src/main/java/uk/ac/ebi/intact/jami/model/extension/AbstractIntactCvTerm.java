@@ -27,6 +27,8 @@ import java.util.Collection;
  * Abstract class for intact cv terms
  *
  * Note: we don't want to mix source with other cv terms as IntAct institution need to be separate entities
+ * NOTE: The cv term ac is automatically added as an identifier in getIdentifiers but is not persisted in getDbXrefs.
+ * The getIdentifiers.remove will thrown an UnsupportedOperationException if someone tries to remove the AC identifier from the list of identifiers
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

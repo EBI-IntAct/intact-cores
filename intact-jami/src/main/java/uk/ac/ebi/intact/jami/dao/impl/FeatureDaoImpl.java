@@ -67,7 +67,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         Query query;
         if (dbMI != null){
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                    "join f.persistentXrefs as x " +
+                    "join f.dbXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -84,7 +84,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         }
         else{
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                    "join f.persistentXrefs as x " +
+                    "join f.dbXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and x.id = :primary");
@@ -98,7 +98,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         Query query;
         if (dbMI != null){
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                    "join f.persistentXrefs as x " +
+                    "join f.dbXrefs as x " +
                     "join x.database as dat " +
                     "join dat.persistentXrefs as xref " +
                     "join xref.database as d " +
@@ -115,7 +115,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         }
         else{
             query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                    "join f.persistentXrefs as x " +
+                    "join f.dbXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
                     "and upper(x.id) like :primary");
@@ -130,7 +130,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -148,7 +148,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
             else if (qualifierMI != null){
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -173,7 +173,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
             else{
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -195,7 +195,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         else{
             if (qualifierName == null && qualifierMI == null){
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
                         "and x.qualifier is null " +
@@ -205,7 +205,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
             else if (qualifierMI != null){
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -225,7 +225,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
             else{
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +
@@ -244,7 +244,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join xref.database as d " +
@@ -262,7 +262,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
             else if (qualifierMI != null){
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.persistentXrefs as xref " +
                         "join x.qualifier as qual " +
@@ -287,7 +287,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
             else{
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join dat.persistentXrefs as xref " +
@@ -309,7 +309,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         else{
             if (qualifierName == null && qualifierMI == null){
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
                         "and x.qualifier is null " +
@@ -319,7 +319,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
             else if (qualifierMI != null){
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
                         "join qual.persistentXrefs as xref " +
@@ -339,7 +339,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
             else{
                 query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +

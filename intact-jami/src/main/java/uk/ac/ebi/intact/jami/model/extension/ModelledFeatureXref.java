@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * Implementation of xref for features
+ * Implementation of xref for features that are part of complexes
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -14,24 +14,24 @@ import javax.persistence.Table;
  */
 @Entity
 @Table( name = "ia_feature_xref" )
-public class FeatureXref extends AbstractIntactXref{
+public class ModelledFeatureXref extends AbstractIntactXref{
 
-    public FeatureXref() {
+    public ModelledFeatureXref() {
     }
 
-    public FeatureXref(CvTerm database, String id, CvTerm qualifier) {
+    public ModelledFeatureXref(CvTerm database, String id, CvTerm qualifier) {
         super(database, id, qualifier);
     }
 
-    public FeatureXref(CvTerm database, String id, String version, CvTerm qualifier) {
+    public ModelledFeatureXref(CvTerm database, String id, String version, CvTerm qualifier) {
         super(database, id, version, qualifier);
     }
 
-    public FeatureXref(CvTerm database, String id, String version) {
+    public ModelledFeatureXref(CvTerm database, String id, String version) {
         super(database, id, version);
     }
 
-    public FeatureXref(CvTerm database, String id) {
+    public ModelledFeatureXref(CvTerm database, String id) {
         super(database, id);
     }
 }

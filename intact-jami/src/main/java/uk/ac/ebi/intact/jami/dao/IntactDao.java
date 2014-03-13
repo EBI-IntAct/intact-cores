@@ -39,7 +39,7 @@ public interface IntactDao {
 
     public XrefDao<InteractorXref> getInteractorXrefDao();
 
-    public XrefDao<FeatureXref> getFeatureXrefDao();
+    public XrefDao<FeatureEvidenceXref> getFeatureXrefDao();
 
     public XrefDao<ParticipantEvidenceXref> getEntityXrefDao();
 
@@ -117,13 +117,13 @@ public interface IntactDao {
 
     public VariableParameterValueSetDao getVariableParameterValueSetDao();
 
-    public <T extends AbstractIntactParticipant> ParticipantDao<T> getEntityDao(Class<T> entityClass);
+    public <T extends AbstractIntactParticipant> ParticipantDao<T> getParticipantDao(Class<T> entityClass);
 
     public ModelledParticipantDao<IntactModelledParticipant> getModelledParticipantDao();
 
-    public ModelledParticipantPoolDao getModelledEntityPoolDao();
+    public ModelledParticipantPoolDao getModelledParticipantPoolDao();
 
     public ParticipantEvidenceDao<IntactParticipantEvidence> getParticipantEvidenceDao();
 
-    public ParticipantEvidencePoolDao getExperimentalEntityPoolDao();
+    public ParticipantEvidencePoolDao getParticipantEvidencePoolDao();
 }

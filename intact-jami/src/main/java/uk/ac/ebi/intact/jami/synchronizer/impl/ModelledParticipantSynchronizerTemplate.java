@@ -46,13 +46,13 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
 
     protected void prepareExperimentalRoles(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areExperimentalRolesInitialized()){
-            List<CvTerm> rolesToPersist = new ArrayList<CvTerm>(intactEntity.getExperimentalRoles());
+            List<CvTerm> rolesToPersist = new ArrayList<CvTerm>(intactEntity.getDbExperimentalRoles());
             for (CvTerm role : rolesToPersist){
                 CvTerm persistentRole = getContext().getExperimentalRoleSynchronizer().synchronize(role, true);
                 // we have a different instance because needed to be synchronized
                 if (persistentRole != role){
-                    intactEntity.getExperimentalRoles().remove(role);
-                    intactEntity.getExperimentalRoles().add(persistentRole);
+                    intactEntity.getDbExperimentalRoles().remove(role);
+                    intactEntity.getDbExperimentalRoles().add(persistentRole);
                 }
             }
         }
@@ -63,7 +63,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactEntity.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref persistentXref = getContext().getModelledEntityXrefSynchronizer().synchronize(xref, false);
+                Xref persistentXref = getContext().getModelledParticipantXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentXref != xref){
                     intactEntity.getXrefs().remove(xref);
@@ -78,7 +78,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactEntity.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation persistentAnnotation = getContext().getModelledEntityAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation persistentAnnotation = getContext().getModelledParticipantAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentAnnotation != annotation){
                     intactEntity.getAnnotations().remove(annotation);
@@ -93,7 +93,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactEntity.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias persistentAlias = getContext().getModelledEntityAliasSynchronizer().synchronize(alias, false);
+                Alias persistentAlias = getContext().getModelledParticipantAliasSynchronizer().synchronize(alias, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentAlias != alias){
                     intactEntity.getAliases().remove(alias);
