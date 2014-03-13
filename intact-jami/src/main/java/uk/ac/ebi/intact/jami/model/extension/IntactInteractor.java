@@ -49,7 +49,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     private PersistentAnnotationList persistentAnnotations;
     private PersistentAliasList persistentAliases;
     private PersistentXrefList persistentXrefs;
-    private Collection<Entity> activeInstances;
+    private Collection<Participant> activeInstances;
 
     private Xref acRef;
 
@@ -255,9 +255,9 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
     @OneToMany( mappedBy = "interactor", targetEntity = IntactParticipantEvidence.class)
     @Target(IntactParticipantEvidence.class)
-    public Collection<Entity> getActiveInstances() {
+    public Collection<Participant> getActiveInstances() {
         if (this.activeInstances == null){
-            this.activeInstances = new ArrayList<Entity>();
+            this.activeInstances = new ArrayList<Participant>();
         }
         return activeInstances;
     }
@@ -441,7 +441,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         this.interactorType = IntactUtils.createIntactMITerm(Interactor.UNKNOWN_INTERACTOR, Interactor.UNKNOWN_INTERACTOR_MI, IntactUtils.INTERACTOR_TYPE_OBJCLASS);
     }
 
-    protected void setActiveInstances(Collection<Entity> activeInstances) {
+    protected void setActiveInstances(Collection<Participant> activeInstances) {
         this.activeInstances = activeInstances;
     }
 

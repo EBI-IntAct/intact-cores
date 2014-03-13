@@ -19,6 +19,14 @@ import java.util.List;
 /**
  * Intact implementation of participant evidence
  *
+ * NOTE: if the participant is not a direct participant of an interaction but is part of a participantSet,
+ * the interaction back reference will not be persistent. Only getDbParentPool will be persisted and getDbParentInteraction will return null
+ * even if the participant has a back reference to the interaction.
+ * NOTE: For backward compatibility with intact-core, a method getDbExperimentalRoles (deprecated) is present but only protected as getExperimentalRole should always be used instead.
+ * This method should never be used in any applications.
+ * NOTE: getIdentificationMethods is not persistent and getDbIdentificationMethods should be used in HQL queries when we want to check identification methods in the participant which
+ * override the identification method in the experiment. The method getDbIdentificationMethods only contain the identification methods that override the one in the experiment if any.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>15/01/14</pre>
@@ -29,6 +37,7 @@ import java.util.List;
 @Table(name = "ia_component")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("participant_evidence")
+@ForceDiscriminator
 @Where(clause = "category = 'participant_evidence' or category = 'participant_evidence_pool'")
 public class IntactParticipantEvidence extends AbstractIntactParticipant<InteractionEvidence, FeatureEvidence, ParticipantEvidencePool> implements ParticipantEvidence{
 
@@ -39,6 +48,8 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
     private Collection<Confidence> confidences;
     private Collection<Parameter> parameters;
     private List<CvTerm> experimentalRoles;
+
+    private Collection<CausalRelationship> relatedCausalRelationships;
 
     protected IntactParticipantEvidence() {
     }
@@ -160,17 +171,26 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         return super.getCausalRelationships();
     }
 
+    @OneToMany( mappedBy = "source", targetEntity = AbstractIntactCausalRelationship.class)
+    @Target(AbstractIntactCausalRelationship.class)
+    public Collection<CausalRelationship> getRelatedCausalRelationships(){
+        if (this.relatedCausalRelationships == null){
+            this.relatedCausalRelationships = new ArrayList<CausalRelationship>();
+        }
+        return this.relatedCausalRelationships;
+    }
+
     @Transient
     public CvTerm getExperimentalRole() {
         // the experimental role list is never empty
-        if (getExperimentalRoles().isEmpty()){
+        if (getDbExperimentalRoles().isEmpty()){
             this.experimentalRoles.add(IntactUtils.createMIExperimentalRole(Participant.UNSPECIFIED_ROLE, Participant.UNSPECIFIED_ROLE_MI));
         }
         return this.experimentalRoles.iterator().next();
     }
 
     public void setExperimentalRole(CvTerm expRole) {
-        if (!getExperimentalRoles().isEmpty()){
+        if (!getDbExperimentalRoles().isEmpty()){
              this.experimentalRoles.remove(0);
         }
 
@@ -298,7 +318,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
      */
     @Deprecated
     @LazyCollection(LazyCollectionOption.FALSE)
-    protected List<CvTerm> getExperimentalRoles() {
+    protected List<CvTerm> getDbExperimentalRoles() {
         if (this.experimentalRoles == null){
             this.experimentalRoles = new ArrayList<CvTerm>();
             this.experimentalRoles.add(IntactUtils.createMIExperimentalRole(Participant.UNSPECIFIED_ROLE, Participant.UNSPECIFIED_ROLE_MI));
@@ -318,7 +338,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         this.parameters = new ArrayList<Parameter>();
     }
 
-    protected void setExperimentalRoles(List<CvTerm> experimentalRoles) {
+    protected void setDbExperimentalRoles(List<CvTerm> experimentalRoles) {
         this.experimentalRoles = experimentalRoles;
     }
 
@@ -360,6 +380,10 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
             inverseJoinColumns = {@JoinColumn( name = "cvobject_ac" )}
     )
     @Target(IntactCvTerm.class)
+    /**
+     * Only this method is persistent because we want to exclude the participant identification method which is persisted at the experiment
+     * level
+     */
     protected Collection<CvTerm> getDbIdentificationMethods() {
         if (persistentIdentificationMethods == null){
             persistentIdentificationMethods = new ArrayList<CvTerm>(getIdentificationMethods());
@@ -369,6 +393,10 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
             }
         }
         return persistentIdentificationMethods;
+    }
+
+    protected void setRelatedCausalRelationships(Collection<CausalRelationship> relatedCausalRelationships) {
+        this.relatedCausalRelationships = relatedCausalRelationships;
     }
 
     private class IdentificationMethodList extends AbstractListHavingProperties<CvTerm> {

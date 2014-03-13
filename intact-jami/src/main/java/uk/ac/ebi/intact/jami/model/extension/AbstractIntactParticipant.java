@@ -17,12 +17,13 @@ import java.util.Collection;
 /**
  * Abstract class for intact participants
  *
- * Note; all entities are in the same table for backward compatibility with intact-core. In the future, this will be updated
- * We distinguish entities from participant with interaction property in participants
- *
- * NOTE: in the future, we want to separate experimental entities from modelled entities in two different tables. This
- * will be achievable with a inheritance of type TABLE-PER_CLASS. In the meantime, because of backward compatibility issues,
- * we use a where statement.
+ * NOTE; all entities are in the same table for backward compatibility with intact-core. In the future, this will be updated
+ * We distinguish entities from participant with interaction property in participants. That is why this abstract class is only @MappedSupperClass and
+ * the inheritance stratedy is delegated to IntActModelledParticipant and IntactParticipantEvidence
+ * In the meantime, because of backward compatibility issues,we use a where statement in IntActModelledParticipant and IntactParticipantEvidence.
+ * NOTE: The participants have the ownership of the relation between interaction and participants. It means that to persist the relationship between interaction and participants,
+ * the property getInteraction must be pointing to the right interaction.
+ * NOTE: if the participant is not a direct participant of an interaction but is part of a participantSet, the interaction back reference will not be persistent.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

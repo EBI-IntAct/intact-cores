@@ -14,7 +14,16 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Intact implementation of Experimental entity pool
+ * Intact implementation of  participantEvidencePool
+ *
+ * NOTE: if the participant is not a direct participant of an interaction but is part of a participantSet,
+ * the interaction back reference will not be persistent. Only getDbParentPool will be persisted and getDbParentInteraction will return null
+ * even if the participant has a back reference to the interaction.
+ * NOTE: For backward compatibility with intact-core, a method getDbExperimentalRoles (deprecated) is present but only protected as getExperimentalRole should always be used instead.
+ * This method should never be used in any applications.
+ * NOTE: getIdentificationMethods is not persistent and getDbIdentificationMethods should be used in HQL queries when we want to check identification methods in the participant which
+ * override the identification method in the experiment. The method getDbIdentificationMethods only contain the identification methods that override the one in the experiment if any.
+ * NOTE: the methods add and remove will automatically set/reset the dbParentPool property of the sub participants
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -102,16 +111,26 @@ public class IntactParticipantEvidencePool extends IntactParticipantEvidence imp
         return getComponents().toArray(ts);
     }
 
-    public boolean add(ParticipantEvidence interactor) {
-        if (getComponents().add(interactor)){
-            interactor.setChangeListener(this);
-            getInteractor().add(interactor.getInteractor());
-            interactor.setInteraction(getInteraction());
+    /**
+     * NOTE: This method will automatically set/reset the dbParentPool property of the sub participants to this current participant pool object
+     * @param participant
+     * @return
+     */
+    public boolean add(ParticipantEvidence participant) {
+        if (getComponents().add(participant)){
+            participant.setChangeListener(this);
+            getInteractor().add(participant.getInteractor());
+            participant.setInteraction(getInteraction());
             return true;
         }
         return false;
     }
 
+    /**
+     * NOTE: This method will automatically set the dbParentPool propert of the sub participants to null
+     * @param o
+     * @return
+     */
     public boolean remove(Object o) {
         if (getComponents().remove(o)){
             ParticipantEvidence entity = (ParticipantEvidence)o;
@@ -127,6 +146,11 @@ public class IntactParticipantEvidencePool extends IntactParticipantEvidence imp
         return getComponents().containsAll(objects);
     }
 
+    /**
+     * NOTE: This method will automatically set/reset the dbParentPool property of the sub participants to this current participant pool object
+     * @param participants
+     * @return
+     */
     public boolean addAll(Collection<? extends ParticipantEvidence> participants) {
         boolean added = false;
         for (ParticipantEvidence entity : participants){
@@ -137,6 +161,11 @@ public class IntactParticipantEvidencePool extends IntactParticipantEvidence imp
         return added;
     }
 
+    /**
+     * NOTE: This method will automatically set the dbParentPool propert of the sub participants to null if the participant is removed
+     * @param objects
+     * @return
+     */
     public boolean retainAll(Collection<?> objects) {
         for (ParticipantEvidence entity : this){
             if (!objects.contains(entity)){
@@ -148,6 +177,11 @@ public class IntactParticipantEvidencePool extends IntactParticipantEvidence imp
         return components.retainAll(objects);
     }
 
+    /**
+     * NOTE: This method will automatically set the dbParentPool propert of the sub participants to null
+     * @param objects
+     * @return
+     */
     public boolean removeAll(Collection<?> objects) {
         boolean removed = false;
         for (Object entity : objects){
@@ -158,6 +192,10 @@ public class IntactParticipantEvidencePool extends IntactParticipantEvidence imp
         return removed;
     }
 
+    /**
+     * NOTE: This method will automatically set the dbParentPool propert of the sub participants to null before clearing the collection of
+     * sub participants
+     */
     public void clear() {
         for (ParticipantEvidence entity : this){
             entity.setChangeListener(null);

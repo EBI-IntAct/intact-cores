@@ -14,7 +14,15 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Intact implementation of ModelledEntitySet
+ * Intact implementation of ModelledParticipantPool
+ *
+ * NOTE: if the participant is not a direct participant of an interaction but is part of a participantSet,
+ * the interaction back reference will not be persistent. Only getDbParentPool will be persisted and getDbParentInteraction will return null
+ * even if the participant has a back reference to the interaction.
+ * NOTE: For backward compatibility with intact-core, a method getDbExperimentalRoles (deprecated) is present so the synchronizers can fill up a
+ * 'neutral component' role for all modelled participants. This method should never be used in any applications and is public only so the synchronizers can
+ * synchronize this property.
+ * NOTE: the methods add and remove will automatically set/reset the dbParentPool property of the sub participants
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -104,6 +112,11 @@ public class IntactModelledParticipantPool extends IntactModelledParticipant imp
         return getComponents().toArray(a);
     }
 
+    /**
+     * NOTE: This method will automatically set/reset the dbParentPool property of the sub participants to this current participant pool object
+     * @param participant
+     * @return
+     */
     public boolean add(ModelledParticipant participant) {
         if (getComponents().add(participant)){
             // update listener
@@ -121,6 +134,11 @@ public class IntactModelledParticipantPool extends IntactModelledParticipant imp
         return false;
     }
 
+    /**
+     * NOTE: This method will automatically set the dbParentPool propert of the sub participants to null
+     * @param o
+     * @return
+     */
     public boolean remove(Object o) {
         if (getComponents().remove(o)){
             // update listener
@@ -143,6 +161,11 @@ public class IntactModelledParticipantPool extends IntactModelledParticipant imp
         return getComponents().containsAll(objects);
     }
 
+    /**
+     * NOTE: This method will automatically set/reset the dbParentPool property of the sub participants to this current participant pool object
+     * @param participants
+     * @return
+     */
     public boolean addAll(Collection<? extends ModelledParticipant> participants) {
         boolean added = false;
         for (ModelledParticipant entity : participants){
@@ -153,6 +176,11 @@ public class IntactModelledParticipantPool extends IntactModelledParticipant imp
         return added;
     }
 
+    /**
+     * NOTE: This method will automatically set the dbParentPool propert of the sub participants to null if the participant is removed
+     * @param objects
+     * @return
+     */
     public boolean retainAll(Collection<?> objects) {
         for (ModelledParticipant entity : this){
             if (!objects.contains(entity)){
@@ -164,6 +192,11 @@ public class IntactModelledParticipantPool extends IntactModelledParticipant imp
         return components.retainAll(objects);
     }
 
+    /**
+     * NOTE: This method will automatically set the dbParentPool propert of the sub participants to null
+     * @param objects
+     * @return
+     */
     public boolean removeAll(Collection<?> objects) {
         boolean removed = false;
         for (Object entity : objects){
@@ -174,6 +207,10 @@ public class IntactModelledParticipantPool extends IntactModelledParticipant imp
         return removed;
     }
 
+    /**
+     * NOTE: This method will automatically set the dbParentPool propert of the sub participants to null before clearing the collection of
+     * sub participants
+     */
     public void clear() {
         for (ModelledParticipant entity : this){
             entity.setChangeListener(null);
