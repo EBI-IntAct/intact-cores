@@ -25,26 +25,6 @@ public interface IntactDao {
 
     public SynchronizerContext getSynchronizerContext();
 
-    public <T extends AbstractIntactXref> XrefDao<T> getXrefDao(Class<T> xrefClass);
-
-    public XrefDao<CvTermXref> getCvXrefDao();
-
-    public XrefDao<SourceXref> getSourceXrefDao();
-
-    public XrefDao<PublicationXref> getPublicationXrefDao();
-
-    public XrefDao<ExperimentXref> getExperimentXrefDao();
-
-    public XrefDao<InteractionXref> getInteractionXrefDao();
-
-    public XrefDao<InteractorXref> getInteractorXrefDao();
-
-    public XrefDao<FeatureEvidenceXref> getFeatureXrefDao();
-
-    public XrefDao<ParticipantEvidenceXref> getEntityXrefDao();
-
-    public XrefDao<ResultingSequenceXref> getResultingSequenceXrefDao();
-
     public CvTermDao getCvTermDao();
 
     public SourceDao getSourceDao();

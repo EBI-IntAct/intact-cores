@@ -9,14 +9,14 @@ import javax.persistence.Entity;
  *
  * Note: for backward compatibility, experimental entity aliases and modelled entity aliases are in the same table.
  * In the future, we plan to have different tables and that is why we have different implementations of alias for experimental
- * and modelled entities. In the future, this class will not extend ModelledParticipantAlias but will extend AbstractIntactAlias
+ * and modelled entities.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
  */
 @Entity
-public class ParticipantEvidenceAlias extends ModelledParticipantAlias {
+public class ParticipantEvidenceAlias extends AbstractIntactAlias {
 
     protected ParticipantEvidenceAlias() {
     }

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import psidev.psi.mi.jami.model.CvTerm;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Implementation of xref for entities/participants
@@ -16,7 +17,8 @@ import javax.persistence.Entity;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-public class ParticipantEvidenceXref extends ModelledParticipantXref {
+@Table( name = "ia_component_xref" )
+public class ParticipantEvidenceXref extends AbstractIntactXref {
 
     public ParticipantEvidenceXref() {
     }

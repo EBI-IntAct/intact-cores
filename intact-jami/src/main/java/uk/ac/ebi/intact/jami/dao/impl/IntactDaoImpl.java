@@ -33,7 +33,6 @@ public class IntactDaoImpl implements IntactDao {
     private EntityManagerFactory intactEntityManagerFactory;
 
     private SynchronizerContext synchronizerContext;
-    private XrefDao xrefDao;
     private ComplexDao complexDao;
     private CooperativityEvidenceDao cooperativityEvidenceDao;
     private CvTermDao cvTermDao;
@@ -73,50 +72,6 @@ public class IntactDaoImpl implements IntactDao {
             this.synchronizerContext = new DefaultSynchronizerContext(getEntityManager());
         }
         return this.synchronizerContext;
-    }
-
-    public <T extends AbstractIntactXref> XrefDao<T> getXrefDao(Class<T> xrefClass) {
-        if (this.xrefDao == null){
-           this.xrefDao = new XrefDaoImpl(AbstractIntactXref.class, getEntityManager(), getSynchronizerContext());
-        }
-        this.xrefDao.setEntityClass(xrefClass);
-        return this.xrefDao;
-    }
-
-    public XrefDao<CvTermXref> getCvXrefDao() {
-        return getXrefDao(CvTermXref.class);
-    }
-
-    public XrefDao<SourceXref> getSourceXrefDao() {
-        return getXrefDao(SourceXref.class);
-    }
-
-    public XrefDao<PublicationXref> getPublicationXrefDao() {
-        return getXrefDao(PublicationXref.class);
-    }
-
-    public XrefDao<ExperimentXref> getExperimentXrefDao() {
-        return getXrefDao(ExperimentXref.class);
-    }
-
-    public XrefDao<InteractionXref> getInteractionXrefDao() {
-        return getXrefDao(InteractionXref.class);
-    }
-
-    public XrefDao<InteractorXref> getInteractorXrefDao() {
-        return getXrefDao(InteractorXref.class);
-    }
-
-    public XrefDao<FeatureEvidenceXref> getFeatureXrefDao() {
-        return getXrefDao(FeatureEvidenceXref.class);
-    }
-
-    public XrefDao<ParticipantEvidenceXref> getEntityXrefDao() {
-        return getXrefDao(ParticipantEvidenceXref.class);
-    }
-
-    public XrefDao<ResultingSequenceXref> getResultingSequenceXrefDao() {
-        return getXrefDao(ResultingSequenceXref.class);
     }
 
     public CvTermDao getCvTermDao() {

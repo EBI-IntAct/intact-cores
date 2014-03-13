@@ -15,13 +15,15 @@ import javax.validation.constraints.Size;
  * Abstract IntAct implementation of Xref
  * Note: this implementation was chosen because xrefs do not make sense without their parents and are not shared by different entities
  * It is then better to have several xref tables, one for each entity rather than one big xref table and x join tables.
+ * It would be better to never query for a xref without involving its parent.
+ *
+ * NOTE: in the future, it would be a Inheritance = TABLE_PER_CLASS
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>18/12/13</pre>
  */
-@Entity
-@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+@MappedSuperclass
 public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject implements Xref{
 
     ///////////////////////////////////////

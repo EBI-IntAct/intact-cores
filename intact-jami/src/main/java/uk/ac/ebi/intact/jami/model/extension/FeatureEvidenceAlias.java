@@ -3,13 +3,14 @@ package uk.ac.ebi.intact.jami.model.extension;
 import psidev.psi.mi.jami.model.CvTerm;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Implementation of alias for features that are part of an interaction evidence
  *
  * Note: for backward compatibility, experimental feature aliases and modelled feature aliases are in the same table.
  * In the future, we plan to have different tables and that is why we have different implementations of alias for experimental
- * and modelled features. In the future, this class will not extend ModelledFeatureAlias but will extend AbstractIntactAlias
+ * and modelled features.
  *
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
@@ -17,7 +18,8 @@ import javax.persistence.Entity;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-public class FeatureEvidenceAlias extends ModelledFeatureAlias{
+@Table( name = "ia_feature_alias" )
+public class FeatureEvidenceAlias extends AbstractIntactAlias{
 
     protected FeatureEvidenceAlias() {
     }

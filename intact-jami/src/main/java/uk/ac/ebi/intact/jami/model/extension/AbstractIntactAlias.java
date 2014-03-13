@@ -19,12 +19,13 @@ import javax.validation.constraints.Size;
  * In addition to that, it is backward compatible with previous intact-core data model
  * It would be better to never query for an alias without involving its parent.
  *
+ * NOTE: in the future, it would be a Inheritance = TABLE_PER_CLASS
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>18/12/13</pre>
  */
-@Entity
-@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+@MappedSuperclass
 public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject implements Alias{
 
     private CvTerm type;

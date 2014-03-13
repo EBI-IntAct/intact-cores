@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import psidev.psi.mi.jami.model.CvTerm;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Implementation of xref for features that are part of interaction evidences
@@ -17,7 +18,8 @@ import javax.persistence.Entity;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-public class FeatureEvidenceXref extends ModelledFeatureXref{
+@Table(name = "ia_feature_xref")
+public class FeatureEvidenceXref extends AbstractIntactXref{
 
     public FeatureEvidenceXref() {
     }
