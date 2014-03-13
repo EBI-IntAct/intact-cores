@@ -7,6 +7,7 @@ import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -20,6 +21,9 @@ import java.util.Collection;
 @Table(name = "ia_feature")
 @Where(clause = "category = 'modelled'")
 public class IntactModelledFeature extends AbstractIntactFeature<ModelledParticipant, ModelledFeature> implements ModelledFeature{
+
+    private Collection<ModelledFeature> relatedLinkedFeatures;
+    private Collection<ModelledFeature> relatedBindings;
 
     public IntactModelledFeature(ModelledParticipant participant) {
         super();
@@ -126,6 +130,30 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
         return super.getBinds();
     }
 
+    @ManyToMany( mappedBy = "dbLinkedFeatures", targetEntity = IntactModelledFeature.class)
+    @Target(IntactModelledFeature.class)
+    /**
+     * The collection of features that have this feature in their dbLinkedFeatures collection
+     */
+    public Collection<ModelledFeature> getRelatedLinkedFeatures() {
+        if (this.relatedLinkedFeatures == null){
+           this.relatedLinkedFeatures = new ArrayList<ModelledFeature>();
+        }
+        return this.relatedLinkedFeatures;
+    }
+
+    @OneToMany( mappedBy = "binds", targetEntity = IntactModelledFeature.class)
+    @Target(IntactModelledFeature.class)
+    /**
+     * The collection of features that have this feature in their binds property
+     */
+    public Collection<ModelledFeature> getRelatedBindings() {
+        if (this.relatedBindings == null){
+            this.relatedBindings = new ArrayList<ModelledFeature>();
+        }
+        return this.relatedBindings;
+    }
+
     @Override
     public void setBinds(ModelledFeature binds) {
         super.setBinds(binds);
@@ -134,5 +162,13 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
     @Override
     protected void initialiseDefaultType() {
         super.setType(IntactUtils.createMIFeatureType(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI));
+    }
+
+    private void setRelatedLinkedFeatures(Collection<ModelledFeature> relatedLinkedFeatures) {
+        this.relatedLinkedFeatures = relatedLinkedFeatures;
+    }
+
+    private void setRelatedBindings(Collection<ModelledFeature> relatedBindings) {
+        this.relatedBindings = relatedBindings;
     }
 }
