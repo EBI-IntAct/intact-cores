@@ -14,7 +14,6 @@ import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationCom
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
@@ -103,10 +102,6 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
     public void synchronizeProperties(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
         // then check full name
         prepareTitle(intactPublication);
-        // then check journal
-        prepareJournal(intactPublication);
-        // then check publicationDate
-        preparePublicationDate(intactPublication);
         // then check authors
         preparePublicationAuthors(intactPublication);
         // then check annotations
@@ -307,33 +302,16 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
         }
     }
 
-    protected void prepareJournal(I intactPublication) {
-        if (intactPublication.getJournal() == null){
-            AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.PUBLICATION_JOURNAL_MI, Annotation.PUBLICATION_JOURNAL);
-        }
-        else{
-            Annotation journal = AnnotationUtils.collectFirstAnnotationWithTopic(intactPublication.getAnnotations(), Annotation.PUBLICATION_JOURNAL_MI, Annotation.PUBLICATION_JOURNAL);
-            if (journal != null){
-                if (!intactPublication.getJournal().equalsIgnoreCase(journal.getValue())){
-                    journal.setValue(intactPublication.getJournal());
-                }
-            }
-            else{
-                intactPublication.getAnnotations().add(new CvTermAnnotation(IntactUtils.createMITopic(Annotation.PUBLICATION_JOURNAL, Annotation.PUBLICATION_JOURNAL_MI), intactPublication.getJournal()));
-            }
-        }
-    }
-
     protected void prepareXrefs(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
         if (intactPublication.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactPublication.getPersistentXrefs());
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactPublication.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref pubRef = getContext().getPublicationXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (pubRef != xref){
-                    intactPublication.getPersistentXrefs().remove(xref);
-                    intactPublication.getPersistentXrefs().add(pubRef);
+                    intactPublication.getDbXrefs().remove(xref);
+                    intactPublication.getDbXrefs().add(pubRef);
                 }
             }
         }
@@ -341,38 +319,15 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
 
     protected void prepareAnnotations(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
         if (intactPublication.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactPublication.getPersistentAnnotations());
+            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactPublication.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation pubAnnotation = getContext().getPublicationAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (pubAnnotation != annotation){
-                    intactPublication.getPersistentAnnotations().remove(annotation);
-                    intactPublication.getPersistentAnnotations().add(pubAnnotation);
+                    intactPublication.getDbAnnotations().remove(annotation);
+                    intactPublication.getDbAnnotations().add(pubAnnotation);
                 }
-            }
-        }
-    }
-
-    protected void preparePublicationDate(I intactPublication) throws FinderException, PersisterException, SynchronizerException {
-        if (intactPublication.getPublicationDate() == null){
-            AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR);
-        }
-        else{
-            Annotation year = AnnotationUtils.collectFirstAnnotationWithTopic(intactPublication.getAnnotations(), Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR);
-            String yearValue = IntactUtils.YEAR_FORMAT.format(intactPublication.getPublicationDate());
-            if (year != null){
-                if (year.getValue() != null){
-                    if (!yearValue.equalsIgnoreCase(year.getValue())){
-                        year.setValue(yearValue);
-                    }
-                }
-                else{
-                    year.setValue(yearValue);
-                }
-            }
-            else{
-                intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.PUBLICATION_YEAR, Annotation.PUBLICATION_YEAR_MI), yearValue));
             }
         }
     }

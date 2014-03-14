@@ -511,7 +511,7 @@ public class PublicationDaoImpl<I extends IntactPublication> extends AbstractInt
         }
         else{
             query = getEntityManager().createQuery("select distinct p from "+getEntityClass()+" p "  +
-                    "join p.persistentAnnotations as a " +
+                    "join p.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
             query.setParameter("topicName", topicName);

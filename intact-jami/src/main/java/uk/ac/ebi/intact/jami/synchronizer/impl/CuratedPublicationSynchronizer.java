@@ -3,14 +3,12 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.CuratedPublicationMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
-import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.PublicationXref;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
@@ -43,8 +41,6 @@ public class CuratedPublicationSynchronizer extends PublicationSynchronizer<Inta
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactPublication);
         super.synchronizeProperties(intactPublication);
-        // then check curation depth
-        prepareCurationDepth(intactPublication);
         // then check source
         prepareSource(intactPublication);
         // then check experiments
@@ -116,45 +112,6 @@ public class CuratedPublicationSynchronizer extends PublicationSynchronizer<Inta
                     intactPublication.addExperiment(pubExperiment);
                 }
             }
-        }
-    }
-
-    protected void prepareCurationDepth(IntactCuratedPublication intactPublication) {
-        Annotation depth = AnnotationUtils.collectFirstAnnotationWithTopic(intactPublication.getAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
-        switch (intactPublication.getCurationDepth()){
-            case IMEx:
-                if (depth != null){
-                    if (!Annotation.IMEX_CURATION.equalsIgnoreCase(depth.getValue())){
-                        depth.setValue(Annotation.IMEX_CURATION);
-                    }
-                }
-                else{
-                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.IMEX_CURATION));
-                }
-                break;
-            case MIMIx:
-                if (depth != null){
-                    if (!Annotation.MIMIX_CURATION.equalsIgnoreCase(depth.getValue())){
-                        depth.setValue(Annotation.MIMIX_CURATION);
-                    }
-                }
-                else{
-                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.MIMIX_CURATION));
-                }
-                break;
-            case rapid_curation:
-                if (depth != null){
-                    if (!Annotation.RAPID_CURATION.equalsIgnoreCase(depth.getValue())){
-                        depth.setValue(Annotation.RAPID_CURATION);
-                    }
-                }
-                else{
-                    intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI),Annotation.RAPID_CURATION));
-                }
-                break;
-            default:
-                AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
-                break;
         }
     }
 

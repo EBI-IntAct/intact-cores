@@ -4,9 +4,11 @@ import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CuratedPublicationDao;
+import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CuratedPublicationSynchronizer;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -55,28 +57,40 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
         Query query;
         if (date == null){
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p " +
-                    "where p.releasedDate is null");
+                    "join p.lifecycleEvents as l " +
+                    "join l.event as t " +
+                    "where l.when is null and t.shortName = :released");
+            query.setParameter("released", LifeCycleEvent.RELEASED);
         }
         else{
             query = getEntityManager().createQuery("select p from IntactCuratedPublication p " +
-                    "where p.releasedDate = :datePub");
+                    "join p.lifecycleEvents as l " +
+                    "join l.event as t " +
+                    "where l.when = :datePub and t.shortName = :released");
             query.setParameter("datePub",date);
         }
         return query.getResultList();
     }
 
     public Collection<IntactCuratedPublication> getByCurationDepth(CurationDepth depth, int first, int max){
-        Query query;
-        if (depth != null){
-            query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
-                    "where p.curationDepth is null or p.curationDepth = :unspecified order by p.ac");
-            query.setParameter("unspecified", CurationDepth.undefined);
+        Query query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
+                "join p.dbAnnotations as a " +
+                "join a.topic as t " +
+                "where t.shortName = :depthName and t.value = :curation order by p.ac");
+        switch (depth){
+            case IMEx:
+                query.setParameter("curation", Annotation.IMEX_CURATION);
+                break;
+            case MIMIx:
+                query.setParameter("curation", Annotation.MIMIX_CURATION);
+                break;
+            case rapid_curation:
+                query.setParameter("curation", Annotation.RAPID_CURATION);
+                break;
+            default:
+                break;
         }
-        else{
-            query = getEntityManager().createQuery("select p from IntactCuratedPublication p "  +
-                    "where p.curationDepth = :depth order by p.ac");
-            query.setParameter("depth", depth);
-        }
+        query.setParameter("depthName", Annotation.CURATION_DEPTH);
         query.setFirstResult(first);
         query.setMaxResults(max);
         return query.getResultList();
@@ -165,6 +179,39 @@ public class CuratedPublicationDaoImpl extends PublicationDaoImpl<IntactCuratedP
         }
         query.setFirstResult(first);
         query.setMaxResults(max);
+        return query.getResultList();
+    }
+
+    public Collection<IntactCuratedPublication> getByJournal(String value) {
+        Query query = getEntityManager().createQuery("select distinct p from IntactCuratedPublication p " +
+                "join p.dbAnnotations as a " +
+                "join a.topic as t " +
+                "where t.shortName = :journalName and a.value = :journal");
+        query.setParameter("journalName", Annotation.PUBLICATION_JOURNAL);
+        query.setParameter("journal",value);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<IntactCuratedPublication> getByJournalLike(String value) {
+        Query query = getEntityManager().createQuery("select distinct p from IntactCuratedPublication p  " +
+                "join p.dbAnnotations as a " +
+                "join a.topic as t " +
+                "where t.shortName = :journalName and upper(t.value) like :journal");
+        query.setParameter("journalName", Annotation.PUBLICATION_JOURNAL);
+        query.setParameter("journal","%"+value.toUpperCase()+"%");
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<IntactCuratedPublication> getByPublicationDate(Date date) {
+        Query query = getEntityManager().createQuery("select distinct p from IntactCuratedPublication p " +
+                "join p.dbAnnotations as a " +
+                "join a.topic as t " +
+                "where t.shortName = :pubDateName and t.value = :datePub");
+        query.setParameter("pubDateName", Annotation.PUBLICATION_YEAR);
+        query.setParameter("datePub", IntactUtils.YEAR_FORMAT.format(date));
         return query.getResultList();
     }
 

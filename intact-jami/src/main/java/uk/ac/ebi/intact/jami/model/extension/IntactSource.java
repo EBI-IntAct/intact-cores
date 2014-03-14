@@ -28,6 +28,8 @@ import java.util.Collection;
  * For HQL queries, the method getDbXrefs should be used because is annotated with hibernate annotations.
  * However, getDbXrefs should not be used directly to add/remove xrefs because it could mess up with the state of the object. Only the synchronizers
  * can use it this way before persistence.
+ * NOTE: The source ac is automatically added as an identifier in getIdentifiers but is not persisted in getDbXrefs.
+ * The getIdentifiers.remove will thrown an UnsupportedOperationException if someone tries to remove the AC identifier from the list of identifiers
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

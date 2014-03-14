@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
@@ -26,16 +25,32 @@ import java.util.*;
 /**
  * IntAct implementation of publication.
  *
+ * NOTE: The publication ac is automatically added as an identifier in getIdentifiers but is not persisted in getDbXrefs.
+ * The getIdentifiers.remove will thrown an UnsupportedOperationException if someone tries to remove the AC identifier from the list of identifiers
+ * NOTE: for backward compatibility, journal, publication date and released date are not persistent. When intact-core is removed, they should become persistent and
+ * removed from the persistentAnnotations
+ * NOTE: getIdentifiers and getXrefs are not persistent methods annotated with hibernate annotations. All the xrefs present in identifiers
+ * and xrefs are persisted in the same table for backward compatibility with intact-core. So the persistent xrefs are available with the getDbXrefs method.
+ * For HQL queries, the method getDbXrefs should be used because is annotated with hibernate annotations.
+ * However, getDbXrefs should not be used directly to add/remove xrefs because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence.
+ * NOTE: getAnnotations is not persistent. For HQL queries, the method getDbAnnotations should be used because is annotated with hibernate annotations.
+ * However, getDbAnnotations should not be used directly to add/remove annotations because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence. The access type of DbAnnotations is private as it does not have to be used by the synchronizers neither.
+ * NOTE: authors are stored as an annotation
+ *
+ * Future improvements: it would be nice to have both curated publications and simple publications in the same table in the future with
+ * @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+ * @DiscriminatorValue("simple_publication")
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>13/01/14</pre>
  */
 @javax.persistence.Entity
-@Table( name = "ia_publication" )
+@Table( name = "ia_simple_publication" )
 @Cacheable
-@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
-@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("simple_publication")
+@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
     private String title;
     private String journal;
@@ -43,17 +58,18 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private List<String> authors;
     private PublicationIdentifierList identifiers;
     private PublicationXrefList xrefs;
-    private PublicationAnnotationList annotations;
     private Collection<Experiment> experiments;
     private CurationDepth curationDepth;
     private Date releasedDate;
     private Source source;
+    private PublicationAnnotationList annotations;
 
     private Xref pubmedId;
     private Xref doi;
     private Xref imexId;
 
     private PersistentXrefList persistentXrefs;
+    private PersistentAnnotationList persistentAnnotations;
 
     private Xref acRef;
 
@@ -229,7 +245,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    @Column( name = "fullname", length = IntactUtils.MAX_FULL_NAME_LEN )
+    @Column( name = "title", length = IntactUtils.MAX_FULL_NAME_LEN )
     @Size( max = IntactUtils.MAX_FULL_NAME_LEN )
     public String getTitle() {
         return this.title;
@@ -238,6 +254,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     public void setTitle(String title) {
         this.title = title;
     }
+
 
     @Column( name = "journal", length = IntactUtils.MAX_FULL_NAME_LEN )
     @Size( max = IntactUtils.MAX_FULL_NAME_LEN )
@@ -249,6 +266,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.journal = journal;
     }
 
+    /**
+     * For backward compatibility, it is not persistent and kept as annotation.
+     * In the future, should become
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "publication_date")
     public Date getPublicationDate() {
@@ -407,21 +428,21 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
      * When intact-core will be removed, the join table would disappear wnd the relation would become
      * @JoinColumn(name="parent_ac", referencedColumnName="ac")
      */
-    public Collection<Annotation> getPersistentAnnotations() {
-        if (this.annotations == null){
-            this.annotations = new PublicationAnnotationList(null);
+    public Collection<Annotation> getDbAnnotations() {
+        if (this.persistentAnnotations == null){
+            this.persistentAnnotations = new PersistentAnnotationList(null);
         }
-        return this.annotations.getWrappedList();
+        return this.persistentAnnotations.getWrappedList();
     }
 
     @Transient
     public boolean areXrefsInitialized(){
-        return Hibernate.isInitialized(getPersistentXrefs());
+        return Hibernate.isInitialized(getDbXrefs());
     }
 
     @Transient
     public boolean areAnnotationsInitialized(){
-        return Hibernate.isInitialized(getPersistentAnnotations());
+        return Hibernate.isInitialized(getDbAnnotations());
     }
 
     @Transient
@@ -433,14 +454,14 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(PublicationXref.class)
-    public Collection<Xref> getPersistentXrefs() {
+    public Collection<Xref> getDbXrefs() {
         if (this.persistentXrefs == null){
             this.persistentXrefs = new PersistentXrefList(null);
         }
         return this.persistentXrefs.getWrappedList();
     }
 
-    private void initialiseXrefs(){
+    protected void initialiseXrefs(){
         this.identifiers = new PublicationIdentifierList();
         this.xrefs = new PublicationXrefList();
         if (this.persistentXrefs != null){
@@ -471,11 +492,11 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private void initialiseExperiments(){
+    protected void initialiseExperiments(){
         this.experiments = new ArrayList<Experiment>();
     }
 
-    private void processAddedIdentifierEvent(Xref added) {
+    protected void processAddedIdentifierEvent(Xref added) {
 
         // the added identifier is pubmed and it is not the current pubmed identifier
         if (pubmedId != added && XrefUtils.isXrefFromDatabase(added, Xref.PUBMED_MI, Xref.PUBMED)){
@@ -515,7 +536,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private void processRemovedIdentifierEvent(Xref removed) {
+    protected void processRemovedIdentifierEvent(Xref removed) {
         // the removed identifier is pubmed
         if (pubmedId != null && pubmedId.equals(removed)){
             pubmedId = XrefUtils.collectFirstIdentifierWithDatabase(getIdentifiers(), Xref.PUBMED_MI, Xref.PUBMED);
@@ -526,12 +547,12 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private void clearPropertiesLinkedToIdentifiers() {
+    protected void clearPropertiesLinkedToIdentifiers() {
         pubmedId = null;
         doi = null;
     }
 
-    private void processAddedXrefEvent(Xref added) {
+    protected void processAddedXrefEvent(Xref added) {
 
         // the added identifier is imex and the current imex is not set
         if (imexId == null && XrefUtils.isXrefFromDatabase(added, Xref.IMEX_MI, Xref.IMEX)){
@@ -542,14 +563,14 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private void processRemovedXrefEvent(Xref removed) {
+    protected void processRemovedXrefEvent(Xref removed) {
         // the removed identifier is pubmed
         if (imexId != null && imexId.equals(removed)){
             imexId = null;
         }
     }
 
-    private void clearPropertiesLinkedToXrefs() {
+    protected void clearPropertiesLinkedToXrefs() {
         imexId = null;
     }
 
@@ -557,7 +578,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.authors = new ArrayList<String>();
     }
 
-    private void setPersistentXrefs(Collection<Xref> persistentXrefs){
+    protected void setDbXrefs(Collection<Xref> persistentXrefs){
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
         }
@@ -566,15 +587,23 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private void initialiseAnnotations() {
-        this.annotations = new PublicationAnnotationList(null);
-        for (Annotation annot : this.annotations){
-            processAddedAnnotationEvent(annot);
+    protected void initialiseAnnotations() {
+        this.annotations = new PublicationAnnotationList();
+        this.authors = new ArrayList<String>();
+
+        // initialise persistent annot and content
+        if (this.persistentAnnotations != null){
+            for (Annotation annot : this.persistentAnnotations){
+                 processAddedAnnotationEvent(annot);
+            }
+        }
+        else{
+            this.persistentAnnotations = new PersistentAnnotationList(null);
         }
     }
 
-    private void processAddedAnnotationEvent(Annotation added) {
-        if (added.getValue() != null && getAuthors().isEmpty() && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.AUTHOR_MI, Annotation.AUTHOR)){
+    protected void processAddedAnnotationEvent(Annotation added) {
+        if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.AUTHOR_MI, Annotation.AUTHOR) && added.getValue() != null){
             if (added.getValue().contains(", ")){
                 getAuthors().addAll(Arrays.asList(added.getValue().split(", ")));
             }
@@ -584,28 +613,32 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private void processRemovedAnnotationEvent(Annotation removed) {
-        if (!getAuthors().isEmpty() && AnnotationUtils.doesAnnotationHaveTopic(removed, Annotation.AUTHOR_MI, Annotation.AUTHOR)){
-            String author = StringUtils.join(getAuthors(), ", ");
-            if (author.equalsIgnoreCase(removed.getValue())){
-                getAuthors().clear();
-            }
-        }
-    }
-
     protected void clearPropertiesLinkedToAnnotations() {
-        getAuthors().clear();
+        Annotation authorList = AnnotationUtils.collectFirstAnnotationWithTopic(getDbAnnotations(), Annotation.AUTHOR_MI, Annotation.AUTHOR);
+        this.persistentAnnotations.clear();
+        if (authorList != null){
+            this.persistentAnnotations.add(authorList);
+        }
     }
 
     protected void setExperiments(Collection<Experiment> experiments) {
         this.experiments = experiments;
     }
 
-    private void setPersistentAnnotations(Collection<Annotation> annotations) {
-        this.annotations = new PublicationAnnotationList(annotations);
+    protected void setDbAnnotations(Collection<Annotation> annotations) {
+        if (annotations instanceof PersistentAnnotationList){
+            this.persistentAnnotations = (PersistentAnnotationList)annotations;
+            this.annotations = null;
+            this.authors = null;
+        }
+        else{
+            this.persistentAnnotations = new PersistentAnnotationList(annotations);
+            this.annotations = null;
+            this.authors = null;
+        }
     }
 
-    private class PublicationIdentifierList extends AbstractListHavingProperties<Xref> {
+    protected class PublicationIdentifierList extends AbstractListHavingProperties<Xref> {
         public PublicationIdentifierList(){
             super();
         }
@@ -638,7 +671,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private class PublicationXrefList extends AbstractListHavingProperties<Xref> {
+    protected class PublicationXrefList extends AbstractListHavingProperties<Xref> {
         public PublicationXrefList(){
             super();
         }
@@ -663,7 +696,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private class PersistentXrefList extends AbstractCollectionWrapper<Xref> {
+    protected class PersistentXrefList extends AbstractCollectionWrapper<Xref> {
 
         public PersistentXrefList(Collection<Xref> persistentBag){
             super(persistentBag);
@@ -690,81 +723,50 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    private class PublicationAnnotationList extends AbstractCollectionWrapper<Annotation> {
-        public PublicationAnnotationList(Collection<Annotation> annots){
+    protected class PublicationAnnotationList extends AbstractListHavingProperties<Annotation> {
+        public PublicationAnnotationList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(Annotation added) {
+            persistentAnnotations.add(added);
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(Annotation removed) {
+            persistentAnnotations.remove(removed);
+        }
+
+        @Override
+        protected void clearProperties() {
+            clearPropertiesLinkedToAnnotations();
+        }
+    }
+
+    protected class PersistentAnnotationList extends AbstractCollectionWrapper<Annotation> {
+        public PersistentAnnotationList(Collection<Annotation> annots){
             super(annots);
         }
 
         @Override
-        public boolean add(Annotation xref) {
-            if(super.add(xref)){
-                processAddedAnnotationEvent(xref);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            if (super.remove(o)){
-                processRemovedAnnotationEvent((Annotation)o);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            boolean hasChanged = false;
-            for (Object annot : c){
-                if (remove(annot)){
-                    hasChanged = true;
-                }
-            }
-            return hasChanged;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            List<Annotation> existingObject = new ArrayList<Annotation>(this);
-
-            boolean removed = false;
-            for (Annotation o : existingObject){
-                if (!c.contains(o)){
-                    if (remove(o)){
-                        removed = true;
-                    }
-                }
-            }
-
-            return removed;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            clearPropertiesLinkedToAnnotations();
-        }
-
-        @Override
         protected boolean needToPreProcessElementToAdd(Annotation added) {
-            return true;
+            return false;
         }
 
         @Override
         protected Annotation processOrWrapElementToAdd(Annotation added) {
-            processAddedAnnotationEvent(added);
             return added;
         }
 
         @Override
         protected void processElementToRemove(Object o) {
-            processRemovedAnnotationEvent((Annotation)o);
+            // nothing to do
         }
 
         @Override
         protected boolean needToPreProcessElementToRemove(Object o) {
-            return o instanceof Annotation;
+            return false;
         }
     }
 }
