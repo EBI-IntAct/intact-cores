@@ -22,6 +22,7 @@ import java.util.Iterator;
 @Entity
 @DiscriminatorValue( "interactor_pool" )
 @Where(clause = "category = 'interactor_pool'")
+@Cacheable
 public class IntactInteractorPool extends IntactInteractor implements InteractorPool {
 
     private Collection<Interactor> interactors;

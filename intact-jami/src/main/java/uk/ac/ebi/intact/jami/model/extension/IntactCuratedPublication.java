@@ -25,7 +25,7 @@ import java.util.List;
  * @version $Id$
  * @since <pre>13/01/14</pre>
  */
-@javax.persistence.Entity
+@Entity
 @DiscriminatorValue("curated_publication")
 @Cacheable
 public class IntactCuratedPublication extends IntactPublication{

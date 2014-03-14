@@ -44,6 +44,7 @@ import java.util.List;
 @DiscriminatorValue( "complex" )
 @EntityListeners(value = {ComplexParameterListener.class})
 @Where(clause = "category = 'complex'")
+@Cacheable
 public class IntactComplex extends IntactInteractor implements Complex{
     private Collection<InteractionEvidence> interactionEvidences;
     private Collection<ModelledParticipant> components;

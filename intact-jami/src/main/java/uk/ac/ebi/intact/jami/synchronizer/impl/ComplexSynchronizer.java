@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
@@ -109,6 +110,16 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         prepareLifeCycleEvents(intactComplex);
         // then prepare experiment for backward compatibility
         prepareExperiments(intactComplex);
+    }
+
+    @Override
+    protected void prepareAnnotations(IntactComplex intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+        if (intactInteractor.areAnnotationsInitialized()){
+            if (AnnotationUtils.collectFirstAnnotationWithTopic(intactInteractor.getAnnotations(), null, "curated-complex") == null){
+                intactInteractor.getAnnotations().add(new InteractorAnnotation(IntactUtils.createMITopic("curated-complex", null)));
+            }
+        }
+        super.prepareAnnotations(intactInteractor);
     }
 
     protected void prepareEvidenceType(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
