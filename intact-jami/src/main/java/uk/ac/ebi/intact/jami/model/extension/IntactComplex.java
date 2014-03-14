@@ -15,8 +15,8 @@ import uk.ac.ebi.intact.jami.model.listener.ComplexParameterListener;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.*;
 import javax.persistence.CascadeType;
+import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.validation.constraints.NotNull;
@@ -28,6 +28,14 @@ import java.util.List;
 /**
  * Intact implementation of complex
  *
+ * NOTE: The participants have the ownership of the relation between complex and participants. It means that to persist the relationship between interaction and participants,
+ * the property getInteraction in the participant must be pointing to the right complex. It is then recommended to use the provided addParticipant and removeParticipant methods to add/remove participants
+ * from the complex
+ * NOTE: the method getExperiments has been kept only for backward compatibility with intact-core. As soon as intact-core is removed, the getExperiments can be removed.
+ * This method should never been used in any applications
+ * NOTE: getCreatedDate and getUpdatedDate are transient methods as the AbstractIntactAudit parent class contains the relevant persistent audit methods.
+ * NOTE: checksums are not persistent for complexes
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>17/01/14</pre>
@@ -35,6 +43,7 @@ import java.util.List;
 @Entity
 @DiscriminatorValue( "complex" )
 @EntityListeners(value = {ComplexParameterListener.class})
+@Where(clause = "category = 'complex'")
 public class IntactComplex extends IntactInteractor implements Complex{
     private Collection<InteractionEvidence> interactionEvidences;
     private Collection<ModelledParticipant> components;
@@ -191,7 +200,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     @OneToMany( orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinColumn(name="complex_ac", referencedColumnName="ac")
     @ForeignKey(name="FK_LIFECYCLE_EVENT_COMPLEX")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @OrderBy("when, created")
@@ -215,7 +224,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "evidencetype_ac", referencedColumnName = "ac", nullable = false )
+    @JoinColumn( name = "evidence_type_ac", referencedColumnName = "ac", nullable = false )
     @Target(IntactCvTerm.class)
     public CvTerm getEvidenceType() {
         return evidenceType;
@@ -229,6 +238,11 @@ public class IntactComplex extends IntactInteractor implements Complex{
             cascade = {CascadeType.ALL}, targetEntity = IntactModelledParticipant.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactModelledParticipant.class)
+    /**
+    * NOTE: The participants have the ownership of the relation between complex and participants. It means that to persist the relationship between interaction and participants,
+    * the property getInteraction in the participant must be pointing to the right complex. It is then recommended to use the provided addParticipant and removeParticipant methods to add/remove participants
+    * from the complex
+    **/
     public Collection<ModelledParticipant> getParticipants() {
         if (components == null){
             initialiseComponents();
@@ -419,6 +433,8 @@ public class IntactComplex extends IntactInteractor implements Complex{
     @LazyCollection(LazyCollectionOption.FALSE)
     @Deprecated
     /**
+     * This method should not be used in any applications. It is only for synchronization with the database and backward compatibility
+     * with intact-core
      * @deprecated Only kept for backward compatibility with intact core. Complexes should not have experiments
      */
     public Collection<Experiment> getExperiments() {
@@ -575,8 +591,8 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     @Override
     protected void initialiseAnnotations() {
-        super.setDbAnnotations(new ComplexAnnotationList(null));
-        for (Annotation check : super.getAnnotations()){
+        super.initialiseAnnotationsWith(new ComplexAnnotationList(null));
+        for (Annotation check : super.getDbAnnotations()){
             processAddedAnnotationEvent(check);
         }
     }
@@ -598,8 +614,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     @Override
     protected void initialiseAliases(){
-        super.setDbAliases(new ComplexAliasList(null));
-        for (Alias alias : super.getAliases()){
+        super.initialiseAliasesWith(new ComplexAliasList(null));
+        // initialise persistent aliases and content
+        for (Alias alias : getDbAliases()){
             processAddedAliasEvent(alias);
         }
     }
@@ -715,8 +732,6 @@ public class IntactComplex extends IntactInteractor implements Complex{
         protected void clearProperties() {
             clearPropertiesLinkedToChecksums();
         }
-
-
     }
 
     private class ComplexAliasList extends PersistentAliasList {

@@ -1,28 +1,30 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultChecksum;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
-import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 /**
- * Intact implementation of checksum
+ * Intact implementation of protein.
+ *
+ * Only the crc64 is persisted as a checksum
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>17/01/14</pre>
  */
-@javax.persistence.Entity
+@Entity
 @DiscriminatorValue( "protein" )
+@Cacheable
+@Where(clause = "category = 'protein'")
 public class IntactProtein extends IntactPolymer implements Protein{
 
     private Xref uniprotkb;
@@ -232,11 +234,6 @@ public class IntactProtein extends IntactPolymer implements Protein{
     }
 
     @Override
-    protected void initialiseChecksums() {
-        super.initialiseChecksumsWith(new ProteinChecksumList());
-    }
-
-    @Override
     protected void initialiseAliases() {
         super.setDbAliases(new ProteinAliasList(null));
     }
@@ -266,20 +263,26 @@ public class IntactProtein extends IntactPolymer implements Protein{
         geneName = null;
     }
 
+    @Override
     protected void processAddedChecksumEvent(Checksum added) {
+        super.processAddedChecksumEvent(added);
         if (rogid == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.ROGID_MI, Checksum.ROGID)){
             // the rogid is not set, we can set the rogid
             rogid = added;
         }
     }
 
+    @Override
     protected void processRemovedChecksumEvent(Checksum removed) {
+        super.processRemovedChecksumEvent(removed);
         if (rogid != null && rogid.equals(removed)){
             rogid = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.ROGID_MI, Checksum.ROGID);
         }
     }
 
+    @Override
     protected void clearPropertiesLinkedToChecksums() {
+        super.clearPropertiesLinkedToChecksums();
         rogid = null;
     }
 
@@ -341,30 +344,7 @@ public class IntactProtein extends IntactPolymer implements Protein{
 
     @Override
     public String toString() {
-        return geneName != null ? geneName.getName() : (uniprotkb != null ? uniprotkb.getId() : (refseq != null ? refseq.getId() : super.toString()));
-    }
-
-    protected class ProteinChecksumList extends AbstractListHavingProperties<Checksum> {
-        public ProteinChecksumList(){
-            super();
-        }
-
-        @Override
-        protected void processAddedObjectEvent(Checksum checksum) {
-            processAddedChecksumEvent(checksum);
-        }
-
-        @Override
-        protected void processRemovedObjectEvent(Checksum checksum) {
-            processRemovedChecksumEvent(checksum);
-        }
-
-        @Override
-        protected void clearProperties() {
-            clearPropertiesLinkedToChecksums();
-        }
-
-
+        return getGeneName() != null ? geneName.getName() : (getUniprotkb() != null ? uniprotkb.getId() : (getRefseq() != null ? refseq.getId() : super.toString()));
     }
 
     protected class ProteinAliasList extends PersistentAliasList {

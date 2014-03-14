@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
@@ -7,14 +8,19 @@ import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Intact implementation of bioactive entity
+ *
+ * Smile, standard inchi and standard inchi key are stored as annotations for backward compatibility with IntAct core
+ * but when intact-core is removed, it may be good to add these checksum as columns in the interactor table
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -22,6 +28,7 @@ import java.util.Collection;
  */
 @Entity
 @DiscriminatorValue( "bioactive_entity" )
+@Where(clause = "category = 'bioactive_entity'")
 public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEntity{
 
     private Xref chebi;
@@ -211,6 +218,8 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
 
     @Transient
     public String getStandardInchiKey() {
+        // initialise checksum if not done yet
+        getChecksums();
         return standardInchiKey != null ? standardInchiKey.getValue() : null;
     }
 
@@ -238,6 +247,8 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
 
     @Transient
     public String getStandardInchi() {
+        // initialise checksum if not done yet
+        getChecksums();
         return standardInchi != null ? standardInchi.getValue() : null;
     }
 
@@ -265,7 +276,7 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
 
     @Override
     public String toString() {
-        return chebi != null ? chebi.getId() : (standardInchiKey != null ? standardInchiKey.getValue() : (smile != null ? smile.getValue() : (standardInchi != null ? standardInchi.getValue() : super.toString())));
+        return getChebi() != null ? getChebi() : (getStandardInchiKey() != null ? standardInchiKey.getValue() : (getSmile() != null ? smile.getValue() : (standardInchi != null ? standardInchi.getValue() : super.toString())));
     }
 
     private void processAddedChecksumEvent(Checksum added) {
@@ -355,7 +366,7 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
 
     @Override
     protected void initialiseAnnotations() {
-        super.initialiseAnnotationsWith(new ArrayList<Annotation>());
+        super.initialiseAnnotationsWith(new BioactiveEntityAnnotationList());
         BioactiveEntityChecksumList checksumList = (BioactiveEntityChecksumList)getChecksums();
 
         Checksum inchi = this.standardInchi;
@@ -383,7 +394,6 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
                     AnnotationUtils.doesAnnotationHaveTopic(annotation, Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY)){
                 this.standardInchiKey = new IntactChecksumWrapper(annotation);
                 checksumList.addOnly(this.standardInchiKey);
-
             }
             // we have a simple annotation
             else{
@@ -395,6 +405,12 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
     @Override
     protected void initialiseDefaultInteractorType() {
         super.setInteractorType(IntactUtils.createIntactMITerm(BioactiveEntity.BIOACTIVE_ENTITY, BioactiveEntity.BIOACTIVE_ENTITY_MI, IntactUtils.INTERACTOR_TYPE_OBJCLASS));
+    }
+
+    @Override
+    protected void setDbAnnotations(Collection<Annotation> annotations) {
+        super.setDbAnnotations(annotations);
+        initialiseChecksumsWith(null);
     }
 
     @Override
@@ -438,6 +454,49 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         @Override
         protected void clearProperties() {
             clearPropertiesLinkedToChecksums();
+        }
+
+    }
+
+    private class BioactiveEntityAnnotationList extends AbstractListHavingProperties<Annotation> {
+        public BioactiveEntityAnnotationList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(Annotation annotation) {
+            getDbAnnotations().add(annotation);
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(Annotation annotation) {
+            getDbAnnotations().remove(annotation);
+        }
+
+        @Override
+        protected void clearProperties() {
+            Iterator<Annotation> dbAnnotationsIterator = getDbAnnotations().iterator();
+            while(dbAnnotationsIterator.hasNext()){
+                Annotation dbAnnot = dbAnnotationsIterator.next();
+
+                // we have a checksum
+                if (dbAnnot.getValue() != null
+                        && AnnotationUtils.doesAnnotationHaveTopic(dbAnnot, Checksum.SMILE_MI, Checksum.SMILE)){
+                    // nothing to do
+                }
+                else if (dbAnnot.getValue() != null
+                        && AnnotationUtils.doesAnnotationHaveTopic(dbAnnot, Checksum.INCHI_MI, Checksum.INCHI)){
+                    // nothing to do
+
+                }
+                else if (dbAnnot.getValue() != null &&
+                        AnnotationUtils.doesAnnotationHaveTopic(dbAnnot, Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY)){
+                    // nothing to do
+                }
+                else{
+                    dbAnnotationsIterator.remove();
+                }
+            }
         }
 
     }

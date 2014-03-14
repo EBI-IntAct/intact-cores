@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Gene;
 import psidev.psi.mi.jami.model.Organism;
@@ -15,12 +16,15 @@ import java.util.Collection;
 /**
  * Intact implementation of Gene
  *
+ * A gene does not have a sequence.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>16/01/14</pre>
  */
 @Entity
 @DiscriminatorValue( "gene" )
+@Where(clause = "category = 'gene'")
 public class IntactGene extends IntactMolecule implements Gene{
 
     private Xref ensembl;
@@ -265,7 +269,7 @@ public class IntactGene extends IntactMolecule implements Gene{
 
     @Override
     public String toString() {
-        return ensembl != null ? ensembl.getId() : (ensemblGenome != null ? ensemblGenome.getId() : (entrezGeneId != null ? entrezGeneId.getId() : (refseq != null ? refseq.getId() : super.toString())));
+        return getEnsembl() != null ? ensembl.getId() : (getEnsemblGenome() != null ? ensemblGenome.getId() : (getEntrezGeneId() != null ? entrezGeneId.getId() : (getRefseq() != null ? refseq.getId() : super.toString())));
     }
 
     protected void processAddedIdentifierEvent(Xref added) {

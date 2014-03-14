@@ -7,8 +7,6 @@ import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.util.Collection;
 
 /**
  * Implementation of polymerDao
@@ -27,18 +25,12 @@ public class PolymerDaoImpl<T extends Polymer, P extends IntactPolymer> extends 
         super(entityClass, entityManager, context);
     }
 
-    public Collection<P> getBySequence(String seq) {
-        Query query;
-        if (seq != null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "join f.sequence = :seq");
-            query.setParameter("seq", seq);
+    public String getSequenceByPolymerAc(String ac) {
+        IntactPolymer polymer = getEntityManager().find(IntactPolymer.class, ac);
+        if (polymer == null){
+            return null;
         }
-        else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
-                    "where f.seq is null");
-        }
-        return query.getResultList();
+        return polymer.getSequence();
     }
 
     @Override

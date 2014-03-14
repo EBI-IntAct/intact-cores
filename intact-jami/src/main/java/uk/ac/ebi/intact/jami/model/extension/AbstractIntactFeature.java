@@ -295,6 +295,10 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     }
 
     @Transient
+    @Deprecated
+    /**
+     * @deprecated use getLinkedFeatures instead
+     */
     public Collection<F> getDbLinkedFeatures() {
         if(persistentLinkedFeatures == null){
             this.persistentLinkedFeatures = new PersistentLinkedFeatureList(null);

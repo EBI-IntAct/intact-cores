@@ -140,6 +140,10 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
             inverseJoinColumns = @JoinColumn( name="method_ac")
     )
     @Target(IntactCvTerm.class)
+    @Deprecated
+    /**
+     * @deprecated use getLinkedFeatures instead
+     */
     public Collection<CvTerm> getDbDetectionMethods() {
         if (persistentDetectionMethods == null){
             persistentDetectionMethods = new PersistentDetectionMethodList(null);

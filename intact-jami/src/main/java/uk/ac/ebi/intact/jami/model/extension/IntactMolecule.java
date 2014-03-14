@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Molecule;
 import psidev.psi.mi.jami.model.Organism;
@@ -17,6 +18,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue( "molecule" )
+@Where(clause = "category = 'molecule'")
 public class IntactMolecule extends IntactInteractor implements Molecule{
 
     protected IntactMolecule() {

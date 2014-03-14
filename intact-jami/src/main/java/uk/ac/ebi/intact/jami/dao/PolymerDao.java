@@ -2,8 +2,6 @@ package uk.ac.ebi.intact.jami.dao;
 
 import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
 
-import java.util.Collection;
-
 /**
  * Interactor DAO
  *
@@ -13,6 +11,6 @@ import java.util.Collection;
  */
 
 public interface PolymerDao<I extends IntactPolymer> extends InteractorDao<I> {
-    public Collection<I> getBySequence(String seq);
 
+    String getSequenceByPolymerAc( String polymerAc );
 }

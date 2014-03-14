@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactComplexComparator;
@@ -90,6 +91,8 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     @Override
     public void synchronizeProperties(IntactComplex intactComplex) throws FinderException, PersisterException, SynchronizerException {
         super.synchronizeProperties(intactComplex);
+        // prepare evidence type
+        prepareEvidenceType(intactComplex);
         // prepare interaction evidences
         prepareInteractionEvidences(intactComplex);
         // then check confidences
@@ -104,9 +107,15 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         prepareStatusAndCurators(intactComplex);
         // prepare lifecycle
         prepareLifeCycleEvents(intactComplex);
-
         // then prepare experiment for backward compatibility
         prepareExperiments(intactComplex);
+    }
+
+    protected void prepareEvidenceType(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+
+       if (intactComplex.getEvidenceType() != null){
+           intactComplex.setEvidenceType(getContext().getTopicSynchronizer().synchronize(intactComplex.getEvidenceType(), true));
+       }
     }
 
     protected void prepareInteractionEvidences(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {

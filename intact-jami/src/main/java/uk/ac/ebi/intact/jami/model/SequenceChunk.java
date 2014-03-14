@@ -12,14 +12,18 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Represents a sequence chunk of a polymer.
+ *
+ * @deprecated in the future, the polymer will have a proper sequence column and we would not need the SequenceChunk class anymore
  *
  * @author marine Dumousseau
  */
 @Entity
 @Table( name = "ia_sequence_chunk", uniqueConstraints = {@UniqueConstraint(columnNames={"parent_ac", "sequence_index"})} )
+@Deprecated
 public class SequenceChunk extends AbstractIntactPrimaryObject {
 
     ///////////////////////////////////////
@@ -53,6 +57,7 @@ public class SequenceChunk extends AbstractIntactPrimaryObject {
 
     @Column( name = "sequence_chunk", length = IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK, nullable = false)
     @NotNull
+    @Size(max = IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK)
     public String getSequenceChunk() {
         return sequenceChunk;
     }

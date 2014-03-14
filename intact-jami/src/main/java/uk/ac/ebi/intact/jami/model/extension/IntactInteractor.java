@@ -25,6 +25,17 @@ import java.util.Collection;
 /**
  * Intact basic implementation of interactors
  *
+ * NOTE: getIdentifiers and getXrefs are not persistent methods annotated with hibernate annotations. All the xrefs present in identifiers
+ * and xrefs are persisted in the same table for backward compatibility with intact-core. So the persistent xrefs are available with the getDbXrefs method.
+ * For HQL queries, the method getDbXrefs should be used because is annotated with hibernate annotations.
+ * However, getDbXrefs should not be used directly to add/remove xrefs because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence.
+ * NOTE: getAliases is not a persistent method annotated with hibernate annotations. For HQL query, we must use getDbAliases. The method getDbAliases should not
+ * be used to add/remove aliases as it may mess up with the object state.
+ * NOTE: getAnnotations is not a persistent method annotated with hibernate annotations. For HQL query, we must use getDbAnnotations. The method getDbAnnotations should not
+ * be used to add/remove annotations as it may mess up with the object state.
+ * NOTE: getChecksum is not persistent as checksums are not persisted in the database (exception for polymers and bioactive entities)
+ * NOTE: for backward compatibility with intact-core, getObjClass is a property that cannot be inserted nor updated. When intact-core is removed, this property can be removed as well
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>16/01/14</pre>
@@ -400,6 +411,15 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         this.aliases = getDbAliases();
     }
 
+    protected void initialiseAliasesWith(Collection<Alias> aliases){
+        if (aliases == null){
+            this.aliases = new ArrayList<Alias>();
+        }
+        else{
+            this.aliases = aliases;
+        }
+    }
+
     protected void initialiseAnnotationsWith(Collection<Annotation> annotations){
         if (annotations == null){
             this.annotations = new ArrayList<Annotation>();
@@ -414,12 +434,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     }
 
     protected void initialiseChecksumsWith(Collection<Checksum> checksum){
-        if (checksum == null){
-            this.checksums = new ArrayList<Checksum>();
-        }
-        else{
-            this.checksums = checksum;
-        }
+        this.checksums = checksum;
     }
 
     protected void processAddedIdentifierEvent(Xref added) {
@@ -441,7 +456,8 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         else{
             this.persistentXrefs = new PersistentXrefList(persistentXrefs);
         }
-        initialiseXrefs();
+        this.identifiers = null;
+        this.xrefs = null;
     }
 
     protected void setDbAliases(Collection<Alias> aliases) {
@@ -451,7 +467,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         else{
             this.persistentAliases = new PersistentAliasList(aliases);
         }
-        initialiseAliases();
+        this.aliases = null;
     }
 
     protected void setDbAnnotations(Collection<Annotation> annotations) {
@@ -461,7 +477,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         else{
             this.persistentAnnotations = new PersistentAnnotationList(annotations);
         }
-        initialiseAnnotations();
+        this.annotations = null;
     }
 
     protected void initialiseDefaultInteractorType() {

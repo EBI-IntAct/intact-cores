@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
@@ -259,6 +261,7 @@ public class IntactModelledParticipantPool extends IntactModelledParticipant imp
             inverseJoinColumns=@JoinColumn(name="participant_ac")
     )
     @Target(IntactModelledParticipant.class)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private Collection<ModelledParticipant> getComponents() {
         if (this.components == null){
             this.components = new ArrayList<ModelledParticipant>();

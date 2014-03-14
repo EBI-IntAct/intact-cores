@@ -1,14 +1,12 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Target;
+import org.hibernate.annotations.*;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +21,7 @@ import java.util.Iterator;
  */
 @Entity
 @DiscriminatorValue( "interactor_pool" )
+@Where(clause = "category = 'interactor_pool'")
 public class IntactInteractorPool extends IntactInteractor implements InteractorPool {
 
     private Collection<Interactor> interactors;

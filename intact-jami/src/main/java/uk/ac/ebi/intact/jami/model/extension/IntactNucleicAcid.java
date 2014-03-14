@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.NucleicAcid;
 import psidev.psi.mi.jami.model.Organism;
@@ -16,12 +17,15 @@ import java.util.Collection;
 /**
  * Intact implementation of nucleic acid
  *
+ * Only the crc64 is persisted as a checksum
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>17/01/14</pre>
  */
 @javax.persistence.Entity
 @DiscriminatorValue( "nucleic_acid" )
+@Where(clause = "category = 'nucleic_acid'")
 public class IntactNucleicAcid extends IntactPolymer implements NucleicAcid{
     private Xref ddbjEmblGenbank;
     private Xref refseq;
@@ -229,6 +233,6 @@ public class IntactNucleicAcid extends IntactPolymer implements NucleicAcid{
 
     @Override
     public String toString() {
-        return ddbjEmblGenbank != null ? ddbjEmblGenbank.getId() : (refseq != null ? refseq.getId() : super.toString());
+        return getDdbjEmblGenbank() != null ? ddbjEmblGenbank.getId() : (getRefseq() != null ? refseq.getId() : super.toString());
     }
 }

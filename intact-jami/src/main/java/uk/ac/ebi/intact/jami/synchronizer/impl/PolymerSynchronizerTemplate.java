@@ -5,11 +5,8 @@ import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactPolymerComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.PolymerMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
 
-import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +46,8 @@ public class PolymerSynchronizerTemplate<T extends Polymer, P extends IntactPoly
         }
     }
 
-    @Override
+    // TODO uncomment this method when intact-core is removed and the sequence property of a polymer is persisted as a lob
+    /*@Override
     protected Collection<P> findByOtherProperties(T term, IntactCvTerm existingType, IntactOrganism existingOrganism) {
         Query query;
         if (existingOrganism == null){
@@ -75,7 +73,7 @@ public class PolymerSynchronizerTemplate<T extends Polymer, P extends IntactPoly
             }
         }
         return query.getResultList();
-    }
+    }*/
 
     @Override
     protected void initialisePersistedObjectMap() {
