@@ -47,4 +47,12 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
     public Collection<IntactComplex> getByParameterUnit(String unitName, String unitMI);
 
     public Collection<IntactComplex> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
+
+    public Collection<IntactComplex> getByCooperativityEvidenceMethod(String methodName, String methodMI);
+
+    public Collection<IntactComplex> getByCooperativityEvidencePublicationPubmed(String pubmed);
+
+    public Collection<IntactComplex> getByCooperativityEvidencePublicationDoi(String doi);
+
+    public Collection<IntactComplex> getByCooperativityEvidencePublicationAc(String ac);
 }

@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ComplexDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
+import uk.ac.ebi.intact.jami.model.extension.IntactCooperativityEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
@@ -500,6 +501,83 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 query.setParameter("typeName", typeName);
             }
         }
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByCooperativityEvidenceMethod(String methodName, String methodMI) {
+        Query query;
+        if (methodMI != null){
+            query = getEntityManager().createQuery("select distinct comp from IntactComplex comp " +
+                    "join comp.cooperativeEffects as c " +
+                    "join c.cooperativityEvidences as e " +
+                    "join e.evidenceMethods as t " +
+                    "join t.dbXrefs as x " +
+                    "join x.database as d " +
+                    "join x.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and x.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", methodMI);
+        }
+        else{
+            query = getEntityManager().createQuery("select distinct comp from IntactComplex comp " +
+                    "join comp.cooperativeEffects as c " +
+                    "join c.cooperativityEvidences as e " +
+                    "join e.evidenceMethods as t " +
+                    "where t.shortName = :methodName");
+            query.setParameter("methodName", methodName);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByCooperativityEvidencePublicationPubmed(String pubmed) {
+        Query query = getEntityManager().createQuery("select distinct comp from IntactComplex comp " +
+                "join comp.cooperativeEffects as c " +
+                "join c.cooperativityEvidences as e " +
+                "join e.publication as p " +
+                "join p.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc or q.shortName = :primary) " +
+                "and d.shortName = :pubmed " +
+                "and x.id = :identifier");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("primary", Xref.PRIMARY);
+        query.setParameter("pubmed", Xref.PUBMED);
+        query.setParameter("identifier", pubmed);
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByCooperativityEvidencePublicationDoi(String doi) {
+        Query query = getEntityManager().createQuery("select distinct comp from IntactComplex comp " +
+                "join comp.cooperativeEffects as c " +
+                "join c.cooperativityEvidences as e " +
+                "join e.publication as p " +
+                "join p.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc or q.shortName = :primary) " +
+                "and d.shortName = :doi " +
+                "and x.id = :identifier");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("primary", Xref.PRIMARY);
+        query.setParameter("doi", Xref.DOI);
+        query.setParameter("identifier", doi);
+        return query.getResultList();
+    }
+
+    public Collection<IntactComplex> getByCooperativityEvidencePublicationAc(String ac) {
+        Query query = getEntityManager().createQuery("select distinct comp from IntactComplex comp " +
+                "join comp.cooperativeEffects as c " +
+                "join c.cooperativityEvidences as e " +
+                "join e.publication as p " +
+                "where p.ac = :pubAc");
+        query.setParameter("pubAc", ac);
         return query.getResultList();
     }
 }

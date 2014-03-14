@@ -34,7 +34,6 @@ public class IntactDaoImpl implements IntactDao {
 
     private SynchronizerContext synchronizerContext;
     private ComplexDao complexDao;
-    private CooperativityEvidenceDao cooperativityEvidenceDao;
     private CvTermDao cvTermDao;
     private ParticipantDao entityDao;
     private ParticipantEvidencePoolDao experimentalEntityPoolDao;
@@ -86,13 +85,6 @@ public class IntactDaoImpl implements IntactDao {
             this.sourceDao = new SourceDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.sourceDao;
-    }
-
-    public CooperativityEvidenceDao getCooperativityEvidenceDao() {
-        if (this.cooperativityEvidenceDao == null){
-            this.cooperativityEvidenceDao = new CooperativityEvidenceDaoImpl(getEntityManager(), getSynchronizerContext());
-        }
-        return this.cooperativityEvidenceDao;
     }
 
     public <T extends IntactInteractor> InteractorDao<T> getInteractorDao(Class<T> interactorClass) {

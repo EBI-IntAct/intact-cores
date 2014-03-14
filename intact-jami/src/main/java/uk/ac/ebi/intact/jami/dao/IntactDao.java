@@ -29,8 +29,6 @@ public interface IntactDao {
 
     public SourceDao getSourceDao();
 
-    public CooperativityEvidenceDao getCooperativityEvidenceDao();
-
     public <T extends IntactInteractor> InteractorDao<T> getInteractorDao(Class<T> interactorClass);
 
     public ComplexDao getComplexDao();
