@@ -20,6 +20,9 @@ import java.util.Collection;
 /**
  * Intact implementation of organism
  *
+ * NOTE: for backward compatibility, getTaxid is not persistent and we should use getDbTaxid for HQL queries.
+ * NOTE: getCompartment is not persistent and should not be used in HQL queries
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>14/01/14</pre>
@@ -82,27 +85,6 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
 
     protected void initialiseAliases(){
         this.aliases = new ArrayList<Alias>();
-    }
-
-    @PrePersist
-    @PreUpdate
-    public void prePersistAndPreUpdate(){
-        if (this.commonName == null){
-            this.commonName = this.scientificName != null ? this.scientificName : Integer.toString(this.taxId);
-            if (this.cellType != null){
-                this.commonName = this.commonName+"-"+this.cellType.getShortName();
-            }
-            else if (this.tissue != null){
-                this.commonName = this.commonName+"-"+this.tissue.getShortName();
-            }
-            else if (this.compartment != null){
-                this.commonName = this.commonName+"-"+this.compartment.getShortName();
-            }
-
-            if (IntactUtils.MAX_SHORT_LABEL_LEN < commonName.length()){
-                setCommonName(this.commonName.substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-            }
-        }
     }
 
     @Column(name = "shortlabel", nullable = false, unique = true)
@@ -214,11 +196,12 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
 
     @Column( name="taxid", length = 30, nullable = false)
     @NotNull
-    private String getPersistentTaxid(){
+    @Size(max = 30)
+    private String getDbTaxid(){
         return Integer.toString(this.taxId);
     }
 
-    private void setPersistentTaxid(String taxid){
+    private void setDbTaxid(String taxid){
         if (taxid == null){
            this.taxId = -3;
         }

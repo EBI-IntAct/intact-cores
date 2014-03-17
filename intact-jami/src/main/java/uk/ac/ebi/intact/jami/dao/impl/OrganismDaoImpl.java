@@ -71,14 +71,14 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
 
     public Collection<IntactOrganism> getByTaxid(int taxid) {
         Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
-                "where o.persistentTaxid = :taxid");
+                "where o.dbTaxid = :taxid");
         query.setParameter("taxid",Integer.toString(taxid));
         return query.getResultList();
     }
 
     public IntactOrganism getByTaxidOnly(int taxid) {
         Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
-                "where o.persistentTaxid = :taxid " +
+                "where o.dbTaxid = :taxid " +
                 "and o.cellType is null " +
                 "and o.tissue is null");
         query.setParameter("taxid",Integer.toString(taxid));

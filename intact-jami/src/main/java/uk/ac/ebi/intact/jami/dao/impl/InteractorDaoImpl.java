@@ -544,7 +544,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     public Collection<F> getByTaxId(int taxid) {
         Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
                 "join f.organism as o " +
-                "where o.persistentTaxid = :taxid");
+                "where o.dbTaxid = :taxid");
         query.setParameter("taxid",Integer.toString(taxid));
         return query.getResultList();
     }

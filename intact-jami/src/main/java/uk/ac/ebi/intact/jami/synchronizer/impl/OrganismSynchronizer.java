@@ -50,7 +50,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
             query = getEntityManager().createQuery("select o from IntactOrganism o " +
                     "where o.cellType is null " +
                     "and o.tissue is null " +
-                    "and o.persistentTaxid = :taxid");
+                    "and o.dbTaxid = :taxid");
             query.setParameter("taxid", Integer.toString(term.getTaxId()));
         }
         // we have a celltype/tissue to find first
@@ -68,7 +68,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                             "join o.tissue as t " +
                             "where cell.ac = :cellAc " +
                             "and t.ac = :tissueAc " +
-                            "and o.persistentTaxid = :taxid");
+                            "and o.dbTaxid = :taxid");
                     query.setParameter("cellAc", ((IntactCvTerm)existingCell).getAc());
                     query.setParameter("tissueAc", ((IntactCvTerm)existingTissue).getAc());
                     query.setParameter("taxid", Integer.toString(term.getTaxId()));
@@ -84,7 +84,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                     query = getEntityManager().createQuery("select o from IntactOrganism o " +
                             "join o.cellType as cell " +
                             "where cell.ac = :cellAc " +
-                            "and o.persistentTaxid = :taxid");
+                            "and o.dbTaxid = :taxid");
                     query.setParameter("cellAc", ((IntactCvTerm)existingCell).getAc());
                     query.setParameter("taxid", Integer.toString(term.getTaxId()));
                 }
@@ -99,7 +99,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                     query = getEntityManager().createQuery("select o from IntactOrganism o " +
                             "join o.tissue as t " +
                             "where t.ac = :tissueAc " +
-                            "and o.persistentTaxid = :taxid");
+                            "and o.dbTaxid = :taxid");
                     query.setParameter("tissueAc", ((IntactCvTerm)existingTissue).getAc());
                     query.setParameter("taxid", Integer.toString(term.getTaxId()));
                 }
@@ -134,7 +134,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         Query query = getEntityManager().createQuery("select o from IntactOrganism o " +
                 "where o.cellType is null " +
                 "and o.tissue is null " +
-                "and o.persistentTaxid = :taxid");
+                "and o.dbTaxid = :taxid");
         query.setParameter("taxid", Integer.toString(taxID));
         Collection<IntactOrganism> organism = query.getResultList();
         if (organism.size() == 1){

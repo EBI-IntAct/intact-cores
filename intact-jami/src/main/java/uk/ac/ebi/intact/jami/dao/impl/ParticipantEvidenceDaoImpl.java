@@ -123,7 +123,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
     public Collection<I> getByExpressedInTaxid(String taxid, int first, int max) {
         Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
                 "join f.expressedInOrganism as o " +
-                "where o.persistentTaxid = :taxid order by f.ac");
+                "where o.dbTaxid = :taxid order by f.ac");
         query.setParameter("taxid", taxid);
         query.setFirstResult(first);
         query.setMaxResults(max);
