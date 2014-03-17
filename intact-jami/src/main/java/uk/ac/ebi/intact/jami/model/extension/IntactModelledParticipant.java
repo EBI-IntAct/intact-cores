@@ -116,8 +116,8 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
         return this.relatedCausalRelationships;
     }
 
-    @OneToMany( mappedBy = "target", targetEntity = ExperimentalCausalRelationshipWithExperimentalTarget.class)
-    @Target(ExperimentalCausalRelationshipWithExperimentalTarget.class)
+    @OneToMany( mappedBy = "modelledTarget", targetEntity = ExperimentalCausalRelationship.class)
+    @Target(ExperimentalCausalRelationship.class)
     /**
      * List of experimental causal relationships having this participant as target
      */

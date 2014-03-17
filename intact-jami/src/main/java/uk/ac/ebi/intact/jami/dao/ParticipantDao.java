@@ -44,15 +44,7 @@ public interface ParticipantDao<F extends AbstractIntactParticipant> extends Int
 
     public Collection<F> getByAliasTypeAndNameLike(String typeName, String typeMI, String name);
 
-    public Collection<F> getByBiologicalRole(String typeName, String typeMI, int first, int max);
-
-    public Collection<F> getByCausalRelationship(String effectName, String effectMI, String targetAc);
-
-    public Collection<F> getByCausalRelationship(String targetAc);
-
     public Collection<F> getByInteractorAc(String ac, int first, int max);
 
-    public Collection<F> getByCausalRelationType(String typeName, String typeMI);
-
-    public Collection<F> getByCausalRelationshipTargetAc(String ac);
+    public Collection<F> getByBiologicalRole(String typeName, String typeMI, int first, int max);
 }

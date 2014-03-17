@@ -1,11 +1,12 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.CausalRelationship;
+import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Participant;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCausalRelationship;
-import uk.ac.ebi.intact.jami.model.extension.ExperimentalCausalRelationshipWithExperimentalTarget;
-import uk.ac.ebi.intact.jami.model.extension.ModelledCausalRelationship;
+import uk.ac.ebi.intact.jami.model.extension.ExperimentalCausalRelationship;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -53,20 +54,7 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
 
     @Override
     protected AbstractIntactCausalRelationship instantiateNewPersistentInstance(CausalRelationship object, Class<? extends AbstractIntactCausalRelationship> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-
-        // we have an experimental entity
-        if (object.getTarget() instanceof ParticipantEvidence){
-            return new ExperimentalCausalRelationshipWithExperimentalTarget(object.getRelationType(), (ParticipantEvidence)object.getTarget());
-        }
-        // we have a modelled entity
-        else if (object.getTarget() instanceof ModelledParticipant){
-            return new ModelledCausalRelationship(object.getRelationType(), (ModelledParticipant)object.getTarget());
-        }
-        // we don't manage this use case
-        else{
-            throw new InstantiationException("Cannot instantiate an Intact causal relationship if the target is neither an experimental entity nor a modelled entity. The current target type is " +
-                    object.getTarget().getClass());
-        }
+        return  intactClass.getConstructor(CvTerm.class, Participant.class).newInstance(object.getRelationType(), object.getTarget());
     }
 
     @Override
@@ -75,7 +63,7 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
     }
 
     @Override
-    protected ExperimentalCausalRelationshipWithExperimentalTarget fetchObjectFromCache(CausalRelationship object) {
+    protected ExperimentalCausalRelationship fetchObjectFromCache(CausalRelationship object) {
         return null;
     }
 

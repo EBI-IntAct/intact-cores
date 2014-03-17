@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
@@ -233,11 +232,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
         this.type = type;
     }
 
-    @OneToMany( orphanRemoval = true,
-            cascade = {CascadeType.ALL}, targetEntity = IntactRange.class)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name = "feature_ac", referencedColumnName = "ac")
-    @Target(IntactRange.class)
+    @Transient
     public Collection<Range> getRanges() {
         if (ranges == null){
             initialiseRanges();

@@ -21,7 +21,8 @@ import javax.validation.constraints.NotNull;
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
-@MappedSuperclass
+@Entity
+@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
 public abstract class AbstractIntactCausalRelationship<T extends Participant> extends AbstractAuditable implements CausalRelationship {
 
     private CvTerm relationType;
@@ -31,7 +32,7 @@ public abstract class AbstractIntactCausalRelationship<T extends Participant> ex
     protected AbstractIntactCausalRelationship(){
     }
 
-    public AbstractIntactCausalRelationship(CvTerm relationType, T target){
+    public AbstractIntactCausalRelationship(CvTerm relationType, Participant target){
         if (relationType == null){
             throw new IllegalArgumentException("The relationType in a CausalRelationship cannot be null");
         }
@@ -40,7 +41,7 @@ public abstract class AbstractIntactCausalRelationship<T extends Participant> ex
         if (target == null){
             throw new IllegalArgumentException("The participat target in a CausalRelationship cannot be null");
         }
-        this.target = target;
+        this.target = (T)target;
     }
 
     @Id

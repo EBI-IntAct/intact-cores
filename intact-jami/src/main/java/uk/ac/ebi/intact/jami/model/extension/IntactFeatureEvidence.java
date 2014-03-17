@@ -82,6 +82,16 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
         super(shortName, fullName, type);
     }
 
+    @OneToMany( orphanRemoval = true,
+            cascade = {CascadeType.ALL}, targetEntity = ExperimentalRange.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name = "feature_ac", referencedColumnName = "ac")
+    @Target(ExperimentalRange.class)
+    @Override
+    public Collection<Range> getRanges() {
+        return super.getRanges();
+    }
+
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureEvidenceXref.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @JoinColumn(name = "parent_ac", referencedColumnName = "ac")

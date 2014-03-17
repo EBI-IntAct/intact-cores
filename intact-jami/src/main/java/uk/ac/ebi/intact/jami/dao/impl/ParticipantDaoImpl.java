@@ -532,49 +532,6 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
         return query.getResultList();
     }
 
-    public Collection<F> getByCausalRelationship(String name, String mi, String targetAc) {
-        Query query;
-        if (mi != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                    "join f.causalRelationships as c " +
-                    "join c.dbXrefs as xref " +
-                    "join xref.database as d " +
-                    "join xref.qualifier as q " +
-                    (targetAc != null ? "join c.target as t " : "")+
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psimi " +
-                    "and xref.id = :mi"+(targetAc != null ? " and t.ac = :tarAc" : ""));
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", mi);
-            if (targetAc != null){
-                query.setParameter("tarAc", targetAc);
-            }
-        }
-        else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                    "join f.causalRelationships as c " +
-                    (targetAc != null ? "join c.target as t " : "")+
-                    "where c.shortName = :effectName"+(targetAc != null ? " and t.ac = :tarAc" : ""));
-            query.setParameter("effectName", name);
-            if (targetAc != null){
-                query.setParameter("tarAc", targetAc);
-            }
-        }
-        return query.getResultList();
-    }
-
-    public Collection<F> getByCausalRelationship(String targetAc) {
-        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
-                "join f.causalRelationships as c " +
-                "join c.target as t " +
-                "where t.ac = :tarAc");
-        query.setParameter("tarAc", targetAc);
-
-        return query.getResultList();
-    }
-
     public Collection<F> getByInteractorAc(String ac, int first, int max) {
         Query query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
                 "join f.interactor as i " +
@@ -582,42 +539,6 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
         query.setParameter("ac",ac);
         query.setFirstResult(first);
         query.setMaxResults(max);
-        return query.getResultList();
-    }
-
-    public Collection<F> getByCausalRelationType(String typeName, String typeMI) {
-        Query query;
-        if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct e from "+getEntityClass()+" e " +
-                    "join e.causalRelationships as c " +
-                    "join c.relationType as t " +
-                    "join t.dbXrefs as x " +
-                    "join x.database as d " +
-                    "join x.qualifier as q " +
-                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                    "and d.shortName = :psimi " +
-                    "and x.id = :mi");
-            query.setParameter("identity", Xref.IDENTITY);
-            query.setParameter("secondaryAc", Xref.SECONDARY);
-            query.setParameter("psimi", CvTerm.PSI_MI);
-            query.setParameter("mi", typeMI);
-        }
-        else{
-            query = getEntityManager().createQuery("select e from "+getEntityClass()+" e " +
-                    "join e.causalRelationships as c " +
-                    "join c.relationType as t " +
-                    "where t.shortName = :unitName");
-            query.setParameter("unitName", typeName);
-        }
-        return query.getResultList();
-    }
-
-    public Collection<F> getByCausalRelationshipTargetAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select e from "+getEntityClass()+" e  " +
-                "join e.causalRelationships as c " +
-                "join c.target as t " +
-                "where t.ac = :ac ");
-        query.setParameter("ac",parentAc);
         return query.getResultList();
     }
 

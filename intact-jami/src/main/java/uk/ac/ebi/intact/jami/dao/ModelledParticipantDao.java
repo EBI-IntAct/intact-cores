@@ -15,4 +15,10 @@ import java.util.Collection;
 public interface ModelledParticipantDao<P extends IntactModelledParticipant> extends ParticipantDao<P>{
 
     public Collection<P> getByInteractionAc(String ac);
+
+    public Collection<P> getByCausalRelationship(String effectName, String effectMI, String targetAc);
+
+    public Collection<P> getByCausalRelationType(String typeName, String typeMI);
+
+    public Collection<P> getByCausalRelationshipTargetAc(String ac);
 }

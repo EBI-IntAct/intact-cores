@@ -349,4 +349,69 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         }
         return query.getResultList();
     }
+
+    public Collection<I> getByCausalRelationType(String typeName, String typeMI) {
+        Query query;
+        if (typeMI != null){
+            query = getEntityManager().createQuery("select distinct e from "+getEntityClass()+" e " +
+                    "join e.causalRelationships as c " +
+                    "join c.relationType as t " +
+                    "join t.dbXrefs as x " +
+                    "join x.database as d " +
+                    "join x.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and x.id = :mi");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", typeMI);
+        }
+        else{
+            query = getEntityManager().createQuery("select e from "+getEntityClass()+" e " +
+                    "join e.causalRelationships as c " +
+                    "join c.relationType as t " +
+                    "where t.shortName = :unitName");
+            query.setParameter("unitName", typeName);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<I> getByCausalRelationshipTargetAc(String parentAc, boolean isExperimental) {
+        Query query = getEntityManager().createQuery("select e from "+getEntityClass()+" e  " +
+                "join e.causalRelationships as c " +
+                (isExperimental ? "join c.experimentalTarget as t " : "join c.modelledTarget as t ")+
+                "where t.ac = :ac ");
+        query.setParameter("ac",parentAc);
+        return query.getResultList();
+    }
+
+    public Collection<I> getByCausalRelationship(String name, String mi, String targetAc, boolean isExperimental) {
+        Query query;
+        if (mi != null){
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                    "join f.causalRelationships as c " +
+                    "join c.dbXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    (isExperimental ? "join c.experimentalTarget as t " : "join c.modelledTarget as t ")+
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi"+(targetAc != null ? " and t.ac = :tarAc" : ""));
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", mi);
+            query.setParameter("tarAc", targetAc);
+        }
+        else{
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                    "join f.causalRelationships as c " +
+                    (isExperimental ? "join c.experimentalTarget as t " : "join c.modelledTarget as t ")+
+                    "where c.shortName = :effectName"+(targetAc != null ? " and t.ac = :tarAc" : ""));
+            query.setParameter("effectName", name);
+            query.setParameter("tarAc", targetAc);
+        }
+        return query.getResultList();
+    }
 }

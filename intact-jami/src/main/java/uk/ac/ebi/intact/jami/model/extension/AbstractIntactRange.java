@@ -22,14 +22,14 @@ import javax.persistence.*;
  * @since <pre>10/01/14</pre>
  */
 @MappedSuperclass
-public abstract class AbstractIntactRange extends AbstractIntactPrimaryObject implements Range{
+public abstract class AbstractIntactRange<P extends Participant> extends AbstractIntactPrimaryObject implements Range{
 
     private Position start;
     private Position end;
     private boolean isLink;
 
     private ResultingSequence resultingSequence;
-    private Participant participant;
+    private P participant;
 
     protected AbstractIntactRange(){
 
@@ -54,12 +54,12 @@ public abstract class AbstractIntactRange extends AbstractIntactPrimaryObject im
         this.resultingSequence = resultingSequence;
     }
 
-    public AbstractIntactRange(Position start, Position end, Participant participant){
+    public AbstractIntactRange(Position start, Position end, P participant){
         this(start, end);
         this.participant = participant;
     }
 
-    public AbstractIntactRange(Position start, Position end, boolean isLink, Participant participant){
+    public AbstractIntactRange(Position start, Position end, boolean isLink, P participant){
         this(start, end, isLink);
         this.participant = participant;
     }
@@ -122,12 +122,12 @@ public abstract class AbstractIntactRange extends AbstractIntactPrimaryObject im
     }
 
     @Transient
-    public Participant getParticipant() {
+    public P getParticipant() {
         return this.participant;
     }
 
     public void setParticipant(Participant participant) {
-        this.participant = participant;
+        this.participant = (P)participant;
     }
 
     @Override

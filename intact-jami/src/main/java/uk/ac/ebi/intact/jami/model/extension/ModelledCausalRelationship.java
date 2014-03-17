@@ -9,7 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 /**
- * Intact causal relationship for modelled entities. The can only have a modelled target.
+ * Intact causal relationship having a modelled entity as target.
  *
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
@@ -29,7 +29,7 @@ public class ModelledCausalRelationship extends AbstractIntactCausalRelationship
     }
 
     @ManyToOne(targetEntity = IntactModelledParticipant.class, optional = false)
-    @JoinColumn( name = "modelled_target_ac", referencedColumnName = "ac" )
+    @JoinColumn( name = "target_ac", referencedColumnName = "ac" )
     @Target(IntactModelledParticipant.class)
     @NotNull
     public ModelledParticipant getTarget() {

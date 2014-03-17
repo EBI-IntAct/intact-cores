@@ -166,17 +166,17 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         return super.getFeatures();
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = AbstractExperimentalCausalRelationship.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ExperimentalCausalRelationship.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="source_ac", referencedColumnName="ac")
-    @Target(AbstractExperimentalCausalRelationship.class)
+    @Target(ExperimentalCausalRelationship.class)
     @Override
     public Collection<CausalRelationship> getCausalRelationships() {
         return super.getCausalRelationships();
     }
 
-    @OneToMany( mappedBy = "target", targetEntity = ExperimentalCausalRelationshipWithExperimentalTarget.class)
-    @Target(ExperimentalCausalRelationshipWithExperimentalTarget.class)
+    @OneToMany( mappedBy = "experimentalTarget", targetEntity = ExperimentalCausalRelationship.class)
+    @Target(ExperimentalCausalRelationship.class)
     /**
      * List of experimental causal relationships having this participant as target
      */

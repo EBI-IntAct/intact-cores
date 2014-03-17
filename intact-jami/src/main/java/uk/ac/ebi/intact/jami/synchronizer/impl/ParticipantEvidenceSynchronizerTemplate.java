@@ -36,6 +36,8 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         prepareAnnotations(intactEntity);
         // then check xrefs
         prepareXrefs(intactEntity);
+        // then check causal relationships
+        prepareCausalRelationships(intactEntity);
         // check expressed in organism
         prepareOrganism(intactEntity);
         // then check experimentalRole
@@ -55,6 +57,21 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         I newParticipant = intactClass.getConstructor(Interactor.class).newInstance(object.getInteractor());
         ParticipantCloner.copyAndOverrideParticipantEvidenceProperties(object, newParticipant, false);
         return newParticipant;
+    }
+
+    protected void prepareCausalRelationships(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+        if (intactEntity.areCausalRelationshipsInitialized()){
+            List<CausalRelationship> relationshipsToPersist = new ArrayList<CausalRelationship>(intactEntity.getCausalRelationships());
+            for (CausalRelationship causalRelationship : relationshipsToPersist){
+                // do not persist or merge causalRelationship because of cascades
+                CausalRelationship persistentRelationship = getContext().getExperimentalCausalRelationshipSynchronizer().synchronize(causalRelationship, false);
+                // we have a different instance because needed to be synchronized
+                if (persistentRelationship != causalRelationship){
+                    intactEntity.getCausalRelationships().remove(causalRelationship);
+                    intactEntity.getCausalRelationships().add(persistentRelationship);
+                }
+            }
+        }
     }
 
     protected void prepareOrganism(I intactEntity) throws PersisterException, FinderException, SynchronizerException {

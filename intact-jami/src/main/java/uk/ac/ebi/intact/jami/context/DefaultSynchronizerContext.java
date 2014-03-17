@@ -75,7 +75,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private InteractorSynchronizer<InteractorPool, IntactInteractorPool> interactorPoolSynchronizer;
 
     // causal relationship synchronizers
-    private IntactDbSynchronizer<CausalRelationship, AbstractIntactCausalRelationship> causalRelationshipSynchronizer;
+    private IntactDbSynchronizer causalRelationshipSynchronizer;
 
     // confidence synchronizers
     private ConfidenceSynchronizer confidenceSynchronizer;
@@ -300,7 +300,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     public <A extends AbstractIntactAnnotation> AnnotationSynchronizer<A> getAnnotationSynchronizer(Class<A> annotationclass) {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(annotationclass);
         return this.annotationSynchronizer;
     }
@@ -312,19 +312,19 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     public <A extends AbstractIntactConfidence> ConfidenceSynchronizer<Confidence, A> getConfidenceSynchronizer(Class<A> confidenceclass) {
-        initialiseConfidenceTemplateIfNodDone();
+        initialiseConfidenceTemplateIfNotDone();
         this.confidenceSynchronizer.setIntactClass(confidenceclass);
         return this.confidenceSynchronizer;
     }
 
     public <A extends AbstractIntactParameter> ParameterSynchronizer<Parameter, A> getParameterSynchronizer(Class<A> parameterclass) {
-        initialiseParameterTemplateIfNodDone();
+        initialiseParameterTemplateIfNotDone();
         this.parameterSynchronizer.setIntactClass(parameterclass);
         return this.parameterSynchronizer;
     }
 
     public <A extends AbstractLifecycleEvent> LifecycleEventSynchronizer<A> getLifecycleSynchronizer(Class<A> eventclass) {
-        initialiseLifecycleTemplateIfNodDone();
+        initialiseLifecycleTemplateIfNotDone();
         this.lifecycleSynchronizer.setIntactClass(eventclass);
         return this.lifecycleSynchronizer;
     }
@@ -342,7 +342,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     public AnnotationSynchronizer<CvTermAnnotation> getCvAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(CvTermAnnotation.class);
         return this.annotationSynchronizer;
     }
@@ -367,7 +367,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     public AnnotationSynchronizer<SourceAnnotation> getSourceAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(SourceAnnotation.class);
         return this.annotationSynchronizer;
     }
@@ -463,55 +463,55 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     public AnnotationSynchronizer<PublicationAnnotation> getPublicationAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(PublicationAnnotation.class);
         return this.annotationSynchronizer;
     }
 
     public AnnotationSynchronizer<ExperimentAnnotation> getExperimentAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(ExperimentAnnotation.class);
         return this.annotationSynchronizer;
     }
 
     public AnnotationSynchronizer<InteractionAnnotation> getInteractionAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(InteractionAnnotation.class);
         return this.annotationSynchronizer;
     }
 
     public AnnotationSynchronizer<InteractorAnnotation> getInteractorAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(InteractorAnnotation.class);
         return this.annotationSynchronizer;
     }
 
     public AnnotationSynchronizer<FeatureEvidenceAnnotation> getFeatureEvidenceAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(FeatureEvidenceAnnotation.class);
         return this.annotationSynchronizer;
     }
 
     public AnnotationSynchronizer<ModelledFeatureAnnotation> getModelledFeatureAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(ModelledFeatureAnnotation.class);
         return this.annotationSynchronizer;
     }
 
     public AnnotationSynchronizer<ParticipantEvidenceAnnotation> getParticipantEvidenceAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(ParticipantEvidenceAnnotation.class);
         return this.annotationSynchronizer;
     }
 
     public AnnotationSynchronizer<ModelledParticipantAnnotation> getModelledParticipantAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(ModelledParticipantAnnotation.class);
         return this.annotationSynchronizer;
     }
 
     public AnnotationSynchronizer<CooperativeEffectAnnotation> getCooperativeEffectAnnotationSynchronizer() {
-        initialiseAnnotationTemplateIfNodDone();
+        initialiseAnnotationTemplateIfNotDone();
         this.annotationSynchronizer.setIntactClass(CooperativeEffectAnnotation.class);
         return this.annotationSynchronizer;
     }
@@ -600,45 +600,52 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.interactorBaseSynchronizer;
     }
 
-    public IntactDbSynchronizer<CausalRelationship, AbstractIntactCausalRelationship> getCausalRelationshipSynchronizer() {
-        if (this.causalRelationshipSynchronizer == null){
-            this.causalRelationshipSynchronizer = new CausalRelationchipSynchronizer(this);
-        }
-        return causalRelationshipSynchronizer;
+    public <T extends AbstractIntactCausalRelationship> IntactDbSynchronizer<CausalRelationship, T> getCausalRelationshipSynchronizer(Class<T> intactClass) {
+        initializeCausalRelationshipSynchronizerIfNotDone();
+        this.causalRelationshipSynchronizer.setIntactClass(intactClass);
+        return this.causalRelationshipSynchronizer;
+    }
+
+    public IntactDbSynchronizer<CausalRelationship, ModelledCausalRelationship> getModelledCausalRelationshipSynchronizer() {
+        return getCausalRelationshipSynchronizer(ModelledCausalRelationship.class);
+    }
+
+    public IntactDbSynchronizer<CausalRelationship, ExperimentalCausalRelationship> getExperimentalCausalRelationshipSynchronizer() {
+        return getCausalRelationshipSynchronizer(ExperimentalCausalRelationship.class);
     }
 
     public ConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence> getInteractionConfidenceSynchronizer() {
-        initialiseConfidenceTemplateIfNodDone();
+        initialiseConfidenceTemplateIfNotDone();
         this.confidenceSynchronizer.setIntactClass(InteractionEvidenceConfidence.class);
         return this.confidenceSynchronizer;
     }
 
     public ConfidenceSynchronizer<ModelledConfidence, ComplexConfidence> getComplexConfidenceSynchronizer() {
-        initialiseConfidenceTemplateIfNodDone();
+        initialiseConfidenceTemplateIfNotDone();
         this.confidenceSynchronizer.setIntactClass(ComplexConfidence.class);
         return this.confidenceSynchronizer;
     }
 
     public ConfidenceSynchronizer<Confidence, ParticipantEvidenceConfidence> getEntityConfidenceSynchronizer() {
-        initialiseConfidenceTemplateIfNodDone();
+        initialiseConfidenceTemplateIfNotDone();
         this.confidenceSynchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         return this.confidenceSynchronizer;
     }
 
     public ParameterSynchronizer<Parameter, InteractionEvidenceParameter> getInteractionParameterSynchronizer(){
-        initialiseParameterTemplateIfNodDone();
+        initialiseParameterTemplateIfNotDone();
         this.parameterSynchronizer.setIntactClass(InteractionEvidenceParameter.class);
         return this.parameterSynchronizer;
     }
 
     public ParameterSynchronizer<Parameter, ParticipantEvidenceParameter> getEntityParameterSynchronizer(){
-        initialiseParameterTemplateIfNodDone();
+        initialiseParameterTemplateIfNotDone();
         this.parameterSynchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         return this.parameterSynchronizer;
     }
 
     public ParameterSynchronizer<ModelledParameter, ComplexParameter> getComplexParameterSynchronizer() {
-        initialiseParameterTemplateIfNodDone();
+        initialiseParameterTemplateIfNotDone();
         this.parameterSynchronizer.setIntactClass(ComplexParameter.class);
         return this.parameterSynchronizer;
     }
@@ -714,13 +721,13 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer() {
-        initialiseLifecycleTemplateIfNodDone();
+        initialiseLifecycleTemplateIfNotDone();
         this.lifecycleSynchronizer.setIntactClass(ComplexLifecycleEvent.class);
         return this.lifecycleSynchronizer;
     }
 
     public IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> getPublicationLifecycleSynchronizer() {
-        initialiseLifecycleTemplateIfNodDone();
+        initialiseLifecycleTemplateIfNotDone();
         this.lifecycleSynchronizer.setIntactClass(PublicationLifecycleEvent.class);
         return this.lifecycleSynchronizer;
     }
@@ -896,7 +903,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         }
     }
 
-    private void initialiseAnnotationTemplateIfNodDone() {
+    private void initialiseAnnotationTemplateIfNotDone() {
         if (this.annotationSynchronizer == null){
             this.annotationSynchronizer = new AnnotationSynchronizerTemplate(this, AbstractIntactAnnotation.class);
         }
@@ -908,21 +915,27 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         }
     }
 
-    private void initialiseConfidenceTemplateIfNodDone() {
+    private void initialiseConfidenceTemplateIfNotDone() {
         if (this.confidenceSynchronizer == null){
             this.confidenceSynchronizer = new ConfidenceSynchronizerTemplate(this, AbstractIntactConfidence.class);
         }
     }
 
-    private void initialiseParameterTemplateIfNodDone() {
+    private void initialiseParameterTemplateIfNotDone() {
         if (this.parameterSynchronizer == null){
             this.parameterSynchronizer = new ParameterSynchronizerTemplate(this, AbstractIntactParameter.class);
         }
     }
 
-    private void initialiseLifecycleTemplateIfNodDone() {
+    private void initialiseLifecycleTemplateIfNotDone() {
         if (this.lifecycleSynchronizer == null){
             this.lifecycleSynchronizer = new LifeCycleSynchronizerTemplate(this, AbstractLifecycleEvent.class);
+        }
+    }
+
+    private void initializeCausalRelationshipSynchronizerIfNotDone() {
+        if (this.causalRelationshipSynchronizer == null){
+            this.causalRelationshipSynchronizer = new CausalRelationchipSynchronizer(this);
         }
     }
 

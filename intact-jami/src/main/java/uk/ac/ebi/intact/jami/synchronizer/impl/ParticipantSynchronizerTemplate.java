@@ -52,8 +52,6 @@ implements ParticipantSynchronizer<T,I> {
         prepareStoichiometry(intactEntity);
         // then check features
         prepareFeatures(intactEntity);
-        // then check causal relationships
-        prepareCausalRelationships(intactEntity);
     }
 
     public void clearCache() {
@@ -90,21 +88,6 @@ implements ParticipantSynchronizer<T,I> {
     @Override
     protected boolean isObjectStoredInCache(T object) {
         return this.persistedObjects.containsKey(object);
-    }
-
-    protected void prepareCausalRelationships(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
-        if (intactEntity.areCausalRelationshipsInitialized()){
-            List<CausalRelationship> relationshipsToPersist = new ArrayList<CausalRelationship>(intactEntity.getCausalRelationships());
-            for (CausalRelationship causalRelationship : relationshipsToPersist){
-                // do not persist or merge causalRelationship because of cascades
-                CausalRelationship persistentRelationship = getContext().getCausalRelationshipSynchronizer().synchronize(causalRelationship, false);
-                // we have a different instance because needed to be synchronized
-                if (persistentRelationship != causalRelationship){
-                    intactEntity.getCausalRelationships().remove(causalRelationship);
-                    intactEntity.getCausalRelationships().add(persistentRelationship);
-                }
-            }
-        }
     }
 
     protected void prepareStoichiometry(I intactEntity) throws PersisterException, FinderException, SynchronizerException {

@@ -33,4 +33,10 @@ public interface ParticipantEvidenceDao<P extends IntactParticipantEvidence> ext
     public Collection<P> getByParameterUnit(String unitName, String unitMI);
 
     public Collection<P> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
+
+    public Collection<P> getByCausalRelationship(String effectName, String effectMI, String targetAc, boolean isExperimental);
+
+    public Collection<P> getByCausalRelationType(String typeName, String typeMI);
+
+    public Collection<P> getByCausalRelationshipTargetAc(String ac, boolean isExperimental);
 }
