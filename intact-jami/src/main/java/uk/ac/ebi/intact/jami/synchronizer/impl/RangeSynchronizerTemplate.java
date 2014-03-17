@@ -5,8 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactRange;
 import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
-import uk.ac.ebi.intact.jami.model.extension.IntactRange;
 import uk.ac.ebi.intact.jami.model.extension.IntactResultingSequence;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
@@ -25,18 +25,18 @@ import java.util.List;
  * @since <pre>27/01/14</pre>
  */
 
-public class RangeSynchronizer extends AbstractIntactDbSynchronizer<Range, IntactRange> {
-    private static final Log log = LogFactory.getLog(RangeSynchronizer.class);
+public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends AbstractIntactDbSynchronizer<Range, I> {
+    private static final Log log = LogFactory.getLog(RangeSynchronizerTemplate.class);
 
-    public RangeSynchronizer(SynchronizerContext context){
-        super(context, IntactRange.class);
+    public RangeSynchronizerTemplate(SynchronizerContext context, Class<? extends I> intactClass){
+        super(context, intactClass);
     }
 
-    public IntactRange find(Range object) throws FinderException {
+    public I find(Range object) throws FinderException {
         return null;
     }
 
-    public void synchronizeProperties(IntactRange object) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(I object) throws FinderException, PersisterException, SynchronizerException {
         // prepare start position
         IntactPosition start;
         if (!(object.getStart() instanceof IntactPosition)){
@@ -86,22 +86,22 @@ public class RangeSynchronizer extends AbstractIntactDbSynchronizer<Range, Intac
     }
 
     @Override
-    protected Object extractIdentifier(IntactRange object) {
+    protected Object extractIdentifier(I object) {
         return object.getAc();
     }
 
     @Override
-    protected IntactRange instantiateNewPersistentInstance(Range object, Class<? extends IntactRange> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    protected I instantiateNewPersistentInstance(Range object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return intactClass.getConstructor(Position.class, Position.class, Boolean.class, ResultingSequence.class).newInstance(object.getStart(), object.getEnd(), object.isLink(), object.getResultingSequence());
     }
 
     @Override
-    protected void storeInCache(Range originalObject, IntactRange persistentObject, IntactRange existingInstance) {
+    protected void storeInCache(Range originalObject, I persistentObject, I existingInstance) {
         // nothing to do
     }
 
     @Override
-    protected IntactRange fetchObjectFromCache(Range object) {
+    protected I fetchObjectFromCache(Range object) {
         return null;
     }
 
@@ -127,6 +127,6 @@ public class RangeSynchronizer extends AbstractIntactDbSynchronizer<Range, Intac
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Range, IntactRange>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Range, I>(this));
     }
 }

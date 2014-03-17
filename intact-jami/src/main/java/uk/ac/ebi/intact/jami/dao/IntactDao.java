@@ -53,8 +53,6 @@ public interface IntactDao {
 
     public OrganismDao getOrganismDao();
 
-    public RangeDao getRangeDao();
-
     public PreferenceDao getPreferenceDao();
 
     public RoleDao getRoleDao();

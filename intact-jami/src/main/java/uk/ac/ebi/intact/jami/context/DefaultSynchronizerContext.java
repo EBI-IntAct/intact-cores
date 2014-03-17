@@ -87,7 +87,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private IntactDbSynchronizer<Organism, IntactOrganism> organismSynchronizer;
 
     // range synchronizers
-    private IntactDbSynchronizer<Range, IntactRange> rangeSynchronizer;
+    private IntactDbSynchronizer rangeSynchronizer;
 
     // preference synchronizers
     private IntactDbSynchronizer<Preference, Preference> preferenceSynchronizer;
@@ -657,11 +657,20 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return organismSynchronizer;
     }
 
-    public IntactDbSynchronizer<Range, IntactRange> getRangeSynchronizer() {
+    public <I extends AbstractIntactRange> IntactDbSynchronizer<Range, I> getRangeSynchronizer(Class<I> intactClass) {
         if (this.rangeSynchronizer == null){
-            this.rangeSynchronizer = new RangeSynchronizer(this);
+            this.rangeSynchronizer = new RangeSynchronizerTemplate(this, AbstractIntactRange.class);
         }
+        this.rangeSynchronizer.setIntactClass(intactClass);
         return rangeSynchronizer;
+    }
+
+    public IntactDbSynchronizer<Range, ModelledRange> getModelledRangeSynchronizer() {
+        return getRangeSynchronizer(ModelledRange.class);
+    }
+
+    public IntactDbSynchronizer<Range, ExperimentalRange> getExperimentalRangeSynchronizer() {
+        return getRangeSynchronizer(ExperimentalRange.class);
     }
 
     public IntactDbSynchronizer<Preference, Preference> getPreferenceSynchronizer() {
@@ -935,7 +944,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
 
     private void initializeCausalRelationshipSynchronizerIfNotDone() {
         if (this.causalRelationshipSynchronizer == null){
-            this.causalRelationshipSynchronizer = new CausalRelationchipSynchronizer(this);
+            this.causalRelationshipSynchronizer = new CausalRelationchipSynchronizerTemplate(this, AbstractIntactCausalRelationship.class);
         }
     }
 

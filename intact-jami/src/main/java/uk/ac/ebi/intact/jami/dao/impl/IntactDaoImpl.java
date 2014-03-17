@@ -56,7 +56,6 @@ public class IntactDaoImpl implements IntactDao {
     private RoleDao roleDao;
     private PublicationDao<IntactPublication> publicationDao;
     private CuratedPublicationDao curatedPublicationDao;
-    private RangeDao rangeDao;
     private SourceDao sourceDao;
     private VariableParameterDao variableParameterDao;
     private VariableParameterValueDao variableParameterValueDao;
@@ -154,13 +153,6 @@ public class IntactDaoImpl implements IntactDao {
             this.organismDao = new OrganismDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.organismDao;
-    }
-
-    public RangeDao getRangeDao() {
-        if (this.rangeDao == null){
-            this.rangeDao = new RangeDaoImpl(getEntityManager(), getSynchronizerContext());
-        }
-        return this.rangeDao;
     }
 
     public PreferenceDao getPreferenceDao() {

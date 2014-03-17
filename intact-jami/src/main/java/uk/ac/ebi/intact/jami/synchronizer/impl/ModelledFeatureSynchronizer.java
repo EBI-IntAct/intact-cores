@@ -1,9 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import psidev.psi.mi.jami.model.Alias;
-import psidev.psi.mi.jami.model.Annotation;
-import psidev.psi.mi.jami.model.ModelledFeature;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
@@ -43,6 +40,8 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
         prepareAnnotations(intactFeature);
         // then check xrefs
         prepareXrefs(intactFeature);
+        // then check ranges
+        prepareRanges(intactFeature);
     }
 
     @Override
@@ -51,6 +50,21 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
         FeatureCloner.copyAndOverrideModelledFeaturesProperties(object, newFeature);
         newFeature.setParticipant(object.getParticipant());
         return newFeature;
+    }
+
+    protected void prepareRanges(IntactModelledFeature intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        if (intactFeature.areRangesInitialized()){
+            List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
+            for (Range range : rangesToPersist){
+                // do not persist or merge ranges because of cascades
+                Range featureRange = getContext().getModelledRangeSynchronizer().synchronize(range, false);
+                // we have a different instance because needed to be synchronized
+                if (featureRange != range){
+                    intactFeature.getRanges().remove(range);
+                    intactFeature.getRanges().add(featureRange);
+                }
+            }
+        }
     }
 
     protected void prepareXrefs(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {

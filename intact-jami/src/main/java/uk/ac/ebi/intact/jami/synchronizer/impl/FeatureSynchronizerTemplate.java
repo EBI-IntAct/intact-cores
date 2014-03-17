@@ -63,8 +63,6 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         prepareAnnotations(intactFeature);
         // then check xrefs
         prepareXrefs(intactFeature);
-        // then check ranges
-        prepareRanges(intactFeature);
         // then check linkedFeatures
         prepareLinkedFeatures(intactFeature);
     }
@@ -94,21 +92,6 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
                         intactFeature.getLinkedFeatures().remove(feature);
                         intactFeature.getLinkedFeatures().add(linkedFeature);
                     }
-                }
-            }
-        }
-    }
-
-    protected void prepareRanges(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
-        if (intactFeature.areRangesInitialized()){
-            List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
-            for (Range range : rangesToPersist){
-                // do not persist or merge ranges because of cascades
-                Range featureRange = getContext().getRangeSynchronizer().synchronize(range, false);
-                // we have a different instance because needed to be synchronized
-                if (featureRange != range){
-                    intactFeature.getRanges().remove(range);
-                    intactFeature.getRanges().add(featureRange);
                 }
             }
         }

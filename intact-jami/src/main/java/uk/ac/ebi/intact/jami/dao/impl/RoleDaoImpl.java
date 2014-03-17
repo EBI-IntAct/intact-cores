@@ -1,14 +1,9 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.RoleDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactRange;
-import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.RoleSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;

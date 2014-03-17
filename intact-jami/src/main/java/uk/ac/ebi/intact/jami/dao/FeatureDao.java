@@ -53,4 +53,24 @@ public interface FeatureDao<F extends AbstractIntactFeature> extends IntactBaseD
     public Collection<F> getByInterproIdentifier(String primaryId);
 
     public Collection<F> getByParticipantAc(String ac);
+
+    public Collection<F> getByIsLinkProperty(boolean isLinked);
+
+    public Collection<F> getByRangeStartStatus(String statusName, String statusMI);
+
+    public Collection<F> getByEndStatus(String statusName, String statusMI);
+
+    public Collection<F> getByStartAndEndStatus(String startName, String startMI, String endName, String endMI);
+
+    public Collection<F> getByResultingSequenceXref(String primaryId);
+
+    public Collection<F> getByResultingSequenceXrefLike(String primaryId);
+
+    public Collection<F> getByResultingSequenceXref(String dbName, String dbMI, String primaryId);
+
+    public Collection<F> getByResultingSequenceXrefLike(String dbName, String dbMI, String primaryId);
+
+    public Collection<F> getByResultingSequenceXref(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI);
+
+    public Collection<F> getByResultingSequenceXrefLike(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI);
 }

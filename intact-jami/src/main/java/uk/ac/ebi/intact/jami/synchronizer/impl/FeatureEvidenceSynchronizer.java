@@ -42,6 +42,23 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         prepareXrefs(intactFeature);
         // then detection methods
         prepareDetectionMethods(intactFeature);
+        // then check ranges
+        prepareRanges(intactFeature);
+    }
+
+    protected void prepareRanges(IntactFeatureEvidence intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        if (intactFeature.areRangesInitialized()){
+            List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
+            for (Range range : rangesToPersist){
+                // do not persist or merge ranges because of cascades
+                Range featureRange = getContext().getExperimentalRangeSynchronizer().synchronize(range, false);
+                // we have a different instance because needed to be synchronized
+                if (featureRange != range){
+                    intactFeature.getRanges().remove(range);
+                    intactFeature.getRanges().add(featureRange);
+                }
+            }
+        }
     }
 
     protected void prepareDetectionMethods(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {

@@ -204,7 +204,11 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer();
 
-    public IntactDbSynchronizer<Range, IntactRange> getRangeSynchronizer();
+    public <I extends AbstractIntactRange> IntactDbSynchronizer<Range, I> getRangeSynchronizer(Class<I> intactClass);
+
+    public IntactDbSynchronizer<Range, ModelledRange> getModelledRangeSynchronizer();
+
+    public IntactDbSynchronizer<Range, ExperimentalRange> getExperimentalRangeSynchronizer();
 
     public IntactDbSynchronizer<Preference, Preference> getPreferenceSynchronizer();
 
