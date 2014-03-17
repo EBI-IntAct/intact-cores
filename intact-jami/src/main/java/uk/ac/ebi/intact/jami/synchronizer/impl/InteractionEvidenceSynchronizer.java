@@ -167,14 +167,14 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
 
     protected void prepareAnnotations(IntactInteractionEvidence intactInteraction) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteraction.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteraction.getAnnotations());
+            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteraction.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation expAnnotation = getContext().getInteractionAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (expAnnotation != annotation){
-                    intactInteraction.getAnnotations().remove(annotation);
-                    intactInteraction.getAnnotations().add(expAnnotation);
+                    intactInteraction.getDbAnnotations().remove(annotation);
+                    intactInteraction.getDbAnnotations().add(expAnnotation);
                 }
             }
         }

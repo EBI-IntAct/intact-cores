@@ -47,6 +47,10 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
     private Organism expressedIn;
     private Collection<Confidence> confidences;
     private Collection<Parameter> parameters;
+    /**
+     * @deprecated
+     */
+    @Deprecated
     private List<CvTerm> experimentalRoles;
 
     private Collection<CausalRelationship> relatedCausalRelationships;

@@ -1,8 +1,7 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Target;
+import org.hibernate.annotations.*;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.impl.DefaultChecksum;
@@ -17,49 +16,77 @@ import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
-import uk.ac.ebi.intact.jami.model.listener.InteractionExperimentListener;
 import uk.ac.ebi.intact.jami.model.listener.InteractionParameterListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Intact implementation of interaction evidence
+ *
+ * NOTE: for backward compatibility with intact-core, interaction evidences are stored in same table as interactors.
+ * When intact-core is removed, it may be good to move all interaction evidences to a separate table, remove the property 'category'
+ * and remove the where clause attached to this entity
+ * NOTE: for backward compatibility with intact-core, getObjClass is a property that cannot be inserted nor updated. When intact-core is removed, this property can be removed as well
+ * NOTE: checksums are not persistent and cannot be used in HQL queries
+ * NOTE: getIdentifiers and getXrefs are not persistent methods annotated with hibernate annotations. All the xrefs present in identifiers
+ * and xrefs are persisted in the same table for backward compatibility with intact-core. So the persistent xrefs are available with the getDbXrefs method.
+ * For HQL queries, the method getDbXrefs should be used because is annotated with hibernate annotations.
+ * However, getDbXrefs should not be used directly to add/remove xrefs because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence.
+ * NOTE: getCreatedDate and getUpdatedDate are transient methods as the AbstractIntactAudit parent class contains the relevant persistent audit methods.
+ * NOTE: The participants have the ownership of the relation between participant and interaction. It means that to persist the relationship between participant and interaction,
+ * the property getInteraction in the participant must be pointing to the right interaction. It is then recommended to use the provided addParticipant and removeParticipant methods to add/remove participants
+ * from the interaction
+ * NOTE: The interaction evidences have the ownership of the relation between experiment and interactions. It means that to persist the relationship between interaction and experiment,
+ * the property getExperiment in the interaction must be pointing to the right experiment. It is then recommended to use the provided addInteractionEvidence and removeInteractionEvidence methods to add/remove interactions
+ * from the experiment
+ * NOTE: getAvailability is transient and cannot be used in HQL
+ * NOTE: isInferred is transient and cannot be used in HQL
+ * NOTE: getAnnotations is not persistent. For HQL queries, the method getDbAnnotations should be used because is annotated with hibernate annotations.
+ * However, getDbAnnotations should not be used directly to add/remove annotations because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence. The access type of DbAnnotations is private as it does not have to be used by the synchronizers neither.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>17/01/14</pre>
  */
 @Entity
-@Table(name = "ia_interaction")
-@EntityListeners(value = {InteractionExperimentListener.class, InteractionParameterListener.class})
+@Table(name = "ia_interactor")
+@EntityListeners(value = {InteractionParameterListener.class})
+@Where(clause = "category = 'interaction_evidence'")
 public class IntactInteractionEvidence extends AbstractIntactPrimaryObject implements InteractionEvidence{
     private Xref imexId;
-    private Experiment experiment;
     private String availability;
     private Collection<Parameter> parameters;
     private boolean isInferred = false;
     private Collection<Confidence> confidences;
-    private boolean isNegative;
+    private Annotation isNegative;
 
     private Collection<VariableParameterValueSet> variableParameterValueSets;
     private String shortName;
     private Checksum rigid;
-    private Collection<Checksum> checksums;
+    private InteractionChecksumList checksums;
     private InteractionIdentifierList identifiers;
     private InteractionXrefList xrefs;
-    private Collection<Annotation> annotations;
+    private InteractionAnnotationList annotations;
     private CvTerm interactionType;
     private Collection<ParticipantEvidence> participants;
 
     private PersistentXrefList persistentXrefs;
-    private Collection<Experiment> experiments;
+    private PersistentAnnotationList persistentAnnotations;
+
+    /**
+     * @deprecated
+     */
+    @Deprecated
+    private List<Experiment> experiments;
 
     private Xref acRef;
 
@@ -148,18 +175,9 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return this.checksums;
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionAnnotation.class)
-    @JoinTable(
-            name="ia_int2annot",
-            joinColumns = @JoinColumn( name="interactor_ac"),
-            inverseJoinColumns = @JoinColumn( name="annotation_ac")
-    )
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractionAnnotation.class)
+    @Transient
     /**
-     * WARNING: The join table is for backward compatibility with intact-core.
-     * When intact-core will be removed, the join table would disappear wnd the relation would become
-     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     * WARNING: The property is transient for backward compatibility with intact-core. When it is removed, getDbAnnotations and getAnnotations should be the same
      */
     public Collection<Annotation> getAnnotations() {
         if (annotations == null){
@@ -288,20 +306,34 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
-    @ManyToOne(targetEntity = IntactExperiment.class)
-    @JoinColumn( name = "experiment_ac", referencedColumnName = "ac")
-    @Target(IntactExperiment.class)
+    /**
+     * NOTE: it is transient for backward compatibility with intact-core. In the future, it should be
+     * @ManyToOne(targetEntity = IntactExperiment.class)
+     * @JoinColumn( name = "experiment_ac", referencedColumnName = "ac")
+     * @Target(IntactExperiment.class)
+     */
+    @Transient
     public Experiment getExperiment() {
-        return this.experiment;
+        // the experimental role list is never empty
+        if (getDbExperiments().isEmpty()){
+            return null;
+        }
+        return this.experiments.iterator().next();
     }
 
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
+        if (!getDbExperiments().isEmpty()){
+            getDbExperiments().remove(0);
+        }
+
+        if (experiment != null){
+            this.experiments.add(0, experiment);
+        }
     }
 
     public void setExperimentAndAddInteractionEvidence(Experiment experiment) {
-        if (this.experiment != null){
-            this.experiment.removeInteractionEvidence(this);
+        if (getExperiment() != null){
+            getExperiment().removeInteractionEvidence(this);
         }
 
         if (experiment != null){
@@ -343,17 +375,20 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     }
 
     public boolean isNegative() {
-        return this.isNegative;
+        if (this.annotations == null){
+            initialiseAnnotations();
+        }
+        return this.isNegative != null ? true : false;
     }
 
     public void setNegative(boolean negative) {
-        this.isNegative = negative;
-
-        if (!isNegative()){
-            AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "negative");
+        if (!negative){
+            AnnotationUtils.removeAllAnnotationsWithTopic(getDbAnnotations(), null, "negative");
+            this.isNegative = null;
         }
-        else{
-            getAnnotations().add(new InteractionAnnotation(IntactUtils.createMITopic("negative", null)));
+        else if (this.isNegative == null){
+            this.isNegative = new InteractionAnnotation(IntactUtils.createMITopic("negative", null));
+            getDbAnnotations().add(this.isNegative);
         }
     }
 
@@ -378,24 +413,6 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         this.isInferred = inferred;
     }
 
-    @ManyToMany(targetEntity = IntactExperiment.class)
-    @JoinTable(
-            name = "ia_int2exp",
-            joinColumns = {@JoinColumn( name = "interaction_ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "experiment_ac" )}
-    )
-    @Target(IntactExperiment.class)
-    @Deprecated
-    /**
-     * @deprecated see getExperiment instead. Only kept for backward compatibility with intact core
-     */
-    public Collection<Experiment> getExperiments() {
-        if (experiments == null){
-            experiments = new ArrayList<Experiment>();
-        }
-        return experiments;
-    }
-
     @Transient
     public boolean areVariableParameterValuesInitialized(){
         return Hibernate.isInitialized(getVariableParameterValues());
@@ -413,12 +430,12 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
     @Transient
     public boolean areXrefsInitialized(){
-        return Hibernate.isInitialized(getPersistentXrefs());
+        return Hibernate.isInitialized(getDbXrefs());
     }
 
     @Transient
     public boolean areAnnotationsInitialized(){
-        return Hibernate.isInitialized(getAnnotations());
+        return Hibernate.isInitialized(getDbAnnotations());
     }
 
     @Transient
@@ -430,39 +447,82 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionXref.class)
-    public Collection<Xref> getPersistentXrefs() {
+    public Collection<Xref> getDbXrefs() {
         if (persistentXrefs == null){
             persistentXrefs = new PersistentXrefList(null);
         }
         return persistentXrefs.getWrappedList();
     }
 
-    protected void processAddedChecksumEvent(Checksum added) {
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = InteractionAnnotation.class)
+    @JoinTable(
+            name="ia_int2annot",
+            joinColumns = @JoinColumn( name="interactor_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(InteractionAnnotation.class)
+    /**
+     * WARNING: The join table is for backward compatibility with intact-core.
+     * When intact-core will be removed, the join table would disappear wnd the relation would become
+     * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+     */
+    public Collection<Annotation> getDbAnnotations() {
+        if (persistentAnnotations == null){
+            this.persistentAnnotations = new PersistentAnnotationList(null);
+        }
+        return this.persistentAnnotations;
+    }
+
+    @ManyToMany(targetEntity = IntactExperiment.class)
+    @JoinTable(
+            name = "ia_int2exp",
+            joinColumns = {@JoinColumn( name = "interaction_ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "experiment_ac" )}
+    )
+    @Target(IntactExperiment.class)
+    @Deprecated
+    @LazyCollection(LazyCollectionOption.FALSE)
+    /**
+     * @deprecated see getExperiment instead. Only kept for backward compatibility with intact core
+     */
+    private List<Experiment> getDbExperiments() {
+        if (experiments == null){
+            experiments = new ArrayList<Experiment>();
+        }
+        return experiments;
+    }
+
+    private void processAddedChecksumEvent(Checksum added) {
         if (rigid == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.RIGID_MI, Checksum.RIGID)){
             // the rigid is not set, we can set the rigid
             rigid = added;
         }
     }
 
-    protected void processRemovedChecksumEvent(Checksum removed) {
+    private void processRemovedChecksumEvent(Checksum removed) {
         if (rigid == removed){
             rigid = ChecksumUtils.collectFirstChecksumWithMethod(getChecksums(), Checksum.RIGID_MI, Checksum.RIGID);
         }
     }
 
-    protected void initialiseExperimentalConfidences(){
+    private void clearPropertiesLinkedToChecksums() {
+        this.rigid = null;
+    }
+
+    private void initialiseExperimentalConfidences(){
         this.confidences = new ArrayList<Confidence>();
     }
 
-    protected void initialiseVariableParameterValueSets(){
+    private void initialiseVariableParameterValueSets(){
         this.variableParameterValueSets = new ArrayList<VariableParameterValueSet>();
     }
 
-    protected void initialiseExperimentalParameters(){
+    private void initialiseExperimentalParameters(){
         this.parameters = new ArrayList<Parameter>();
     }
 
-    protected void processAddedXrefEvent(Xref added) {
+    private void processAddedXrefEvent(Xref added) {
 
         // the added identifier is imex and the current imex is not set
         if (imexId == null && XrefUtils.isXrefFromDatabase(added, Xref.IMEX_MI, Xref.IMEX)){
@@ -473,7 +533,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
-    protected void processRemovedXrefEvent(Xref removed) {
+    private void processRemovedXrefEvent(Xref removed) {
         // the removed identifier is pubmed
         if (imexId != null && imexId.equals(removed)){
             imexId = null;
@@ -485,7 +545,21 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     }
 
     private void initialiseAnnotations(){
-        this.annotations = new ArrayList<Annotation>();
+        this.annotations = new InteractionAnnotationList();
+        this.isNegative = null;
+        if (this.persistentAnnotations != null){
+            for (Annotation annot : this.persistentAnnotations){
+                if (AnnotationUtils.doesAnnotationHaveTopic(annot, null, "negative")){
+                    isNegative = annot;
+                }
+                else{
+                    this.annotations.addOnly(annot);
+                }
+            }
+        }
+        else{
+            this.persistentAnnotations = new PersistentAnnotationList(null);
+        }
     }
 
     private void initialiseParticipants(){
@@ -493,7 +567,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     }
 
     private void initialiseChecksums(){
-        this.checksums = new ArrayList<Checksum>();
+        this.checksums = new InteractionChecksumList();
     }
 
     private void initialiseXrefs(){
@@ -537,15 +611,39 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         // nothing to do
     }
 
-    private void setPersistentXrefs(Collection<Xref> persistentXrefs) {
-        this.persistentXrefs = new PersistentXrefList(persistentXrefs);
+    @Column(name = "category", nullable = false, insertable = false, updatable = false)
+    @NotNull
+    private String getCategory() {
+        return "interaction_evidence";
     }
 
-    private void setAnnotations(Collection<Annotation> annotations) {
-        this.annotations = annotations;
+    private void setCategory(String value){
+        // nothing to do
     }
 
-    private void setExperiments(Collection<Experiment> experiments) {
+    private void setDbXrefs(Collection<Xref> persistentXrefs) {
+        if (persistentXrefs instanceof PersistentXrefList){
+            this.persistentXrefs = (PersistentXrefList)persistentXrefs;
+        }
+        else{
+            this.persistentXrefs = new PersistentXrefList(persistentXrefs);
+        }
+        this.identifiers = null;
+        this.xrefs = null;
+    }
+
+    private void setDbAnnotations(Collection<Annotation> annotations) {
+        if (annotations instanceof PersistentAnnotationList){
+            this.persistentAnnotations = (PersistentAnnotationList)annotations;
+        }
+        else{
+            this.persistentAnnotations = new PersistentAnnotationList(annotations);
+        }
+        this.annotations = null;
+        this.isNegative = null;
+    }
+
+    private void setDbExperiments(List<Experiment> experiments) {
         this.experiments = experiments;
     }
 
@@ -653,4 +751,77 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
+    private class InteractionAnnotationList extends AbstractListHavingProperties<Annotation> {
+        public InteractionAnnotationList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(Annotation added) {
+            persistentAnnotations.add(added);
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(Annotation removed) {
+            persistentAnnotations.remove(removed);
+        }
+
+        @Override
+        protected void clearProperties() {
+            if (isNegative == null){
+                persistentAnnotations.clear();
+            }
+            else{
+                persistentAnnotations.retainAll(Collections.singleton(isNegative));
+            }
+        }
+    }
+
+    private class PersistentAnnotationList extends AbstractCollectionWrapper<Annotation> {
+
+        public PersistentAnnotationList(Collection<Annotation> persistentBag){
+            super(persistentBag);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToAdd(Annotation added) {
+            return false;
+        }
+
+        @Override
+        protected Annotation processOrWrapElementToAdd(Annotation added) {
+            return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // do nothing
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
+        }
+    }
+
+    private class InteractionChecksumList extends AbstractListHavingProperties<Checksum> {
+        public InteractionChecksumList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(Checksum added) {
+            processAddedChecksumEvent(added);
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(Checksum removed) {
+            processRemovedChecksumEvent(removed);
+        }
+
+        @Override
+        protected void clearProperties() {
+            clearPropertiesLinkedToChecksums();
+        }
+    }
 }

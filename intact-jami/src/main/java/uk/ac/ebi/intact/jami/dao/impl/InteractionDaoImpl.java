@@ -369,7 +369,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         Query query;
         if (topicMI != null){
             query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
-                    "join f.annotations as a " +
+                    "join f.dbAnnotations as a " +
                     "join a.topic as t " +
                     "join t.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -384,7 +384,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         }
         else{
             query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
-                    "join f.annotations as a " +
+                    "join f.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
             query.setParameter("topicName", topicName);
@@ -396,7 +396,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         Query query;
         if (topicMI != null){
             query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
-                    "join f.annotations as a " +
+                    "join f.dbAnnotations as a " +
                     "join a.topic as t " +
                     "join t.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -414,7 +414,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         }
         else{
             query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
-                    "join f.annotations as a " +
+                    "join f.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
             query.setParameter("topicName", topicName);
@@ -456,7 +456,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
 
     public Collection<IntactInteractionEvidence> getByExperimentAc(String ac) {
         Query query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
-                "join f.experiment as e " +
+                "join f.dbExperiments as e " +
                 "where e.ac = :expAc");
         query.setParameter("expAc",ac);
         return query.getResultList();

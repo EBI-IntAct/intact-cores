@@ -178,9 +178,12 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
         this.hostOrganism = organism;
     }
 
-    @OneToMany( mappedBy = "experiment", targetEntity = IntactInteractionEvidence.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany( mappedBy = "dbExperiments", targetEntity = IntactInteractionEvidence.class, cascade = CascadeType.ALL)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactInteractionEvidence.class)
+    /**
+     * NOTE: ManyToMany relatiosnhip for backward compatibility with intact-core only. In the future, it should be oneToMany
+     */
     public Collection<InteractionEvidence> getInteractionEvidences() {
         if (interactions == null){
             initialiseInteractions();
