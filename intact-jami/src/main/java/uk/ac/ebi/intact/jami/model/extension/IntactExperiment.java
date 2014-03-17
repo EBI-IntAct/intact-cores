@@ -17,6 +17,14 @@ import java.util.Collection;
 /**
  * Intact implementation of experiment
  *
+ * NOTE: confidences of an experiment are transient and cannot be used in HQL queries
+ * NOTE: The interaction evidences have the ownership of the relation between experiment and interactions. It means that to persist the relationship between interaction and experiment,
+ * the property getExperiment in the interaction must be pointing to the right experiment. It is then recommended to use the provided addInteractionEvidence and removeInteractionEvidence methods to add/remove interactions
+ * from the experiment
+ * NOTE: The variable parameters have the ownership of the relation between experiment and variable parameters. It means that to persist the relationship between variable parameter and experiment,
+ * the property getExperiment in the variable parameter must be pointing to the right experiment. It is then recommended to use the provided addVariableParameter and removeVariableParameter methods to add/remove variable parameters
+ * from the experiment
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>16/01/14</pre>
@@ -148,6 +156,9 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "identmethod_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
+    /**
+     * This method should be avoided and use the getIdentificationMethods of each participant instead
+     */
     public CvTerm getParticipantIdentificationMethod() {
         return participantIdentificationMethod;
     }
@@ -169,7 +180,6 @@ public class IntactExperiment extends AbstractIntactPrimaryObject implements Exp
 
     @OneToMany( mappedBy = "experiment", targetEntity = IntactInteractionEvidence.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @OrderBy("created")
     @Target(IntactInteractionEvidence.class)
     public Collection<InteractionEvidence> getInteractionEvidences() {
         if (interactions == null){
