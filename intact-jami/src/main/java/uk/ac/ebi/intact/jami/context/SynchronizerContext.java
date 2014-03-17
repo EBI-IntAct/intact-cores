@@ -136,7 +136,9 @@ public interface SynchronizerContext {
 
     public XrefSynchronizer<ModelledParticipantXref> getModelledParticipantXrefSynchronizer();
 
-    public XrefSynchronizer<ResultingSequenceXref> getResultingSequenceXrefSynchronizer();
+    public XrefSynchronizer<ExperimentalResultingSequenceXref> getExperimentalResultingSequenceXrefSynchronizer();
+
+    public XrefSynchronizer<ModelledResultingSequenceXref> getModelledResultingSequenceXrefSynchronizer();
 
     public AnnotationSynchronizer<PublicationAnnotation> getPublicationAnnotationSynchronizer();
 

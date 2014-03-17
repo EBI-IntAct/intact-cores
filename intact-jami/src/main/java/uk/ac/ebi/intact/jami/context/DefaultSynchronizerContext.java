@@ -456,9 +456,15 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.xrefSynchronizer;
     }
 
-    public XrefSynchronizer<ResultingSequenceXref> getResultingSequenceXrefSynchronizer() {
+    public XrefSynchronizer<ExperimentalResultingSequenceXref> getExperimentalResultingSequenceXrefSynchronizer() {
         initialiseXrefTemplateIfNotDone();
-        this.xrefSynchronizer.setIntactClass(ResultingSequenceXref.class);
+        this.xrefSynchronizer.setIntactClass(ExperimentalResultingSequenceXref.class);
+        return this.xrefSynchronizer;
+    }
+
+    public XrefSynchronizer<ModelledResultingSequenceXref> getModelledResultingSequenceXrefSynchronizer() {
+        initialiseXrefTemplateIfNotDone();
+        this.xrefSynchronizer.setIntactClass(ModelledResultingSequenceXref.class);
         return this.xrefSynchronizer;
     }
 

@@ -5,9 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactRange;
-import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
-import uk.ac.ebi.intact.jami.model.extension.IntactResultingSequence;
+import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -64,14 +62,25 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         object.setPositions(start, end);
 
         // prepare ResultingSequence
-        if (object.getResultingSequence() != null && !(object.getResultingSequence() instanceof IntactResultingSequence)){
+        boolean experimental = getIntactClass().equals(ExperimentalRange.class);
+        if (object.getResultingSequence() != null
+                && (experimental && !(object.getResultingSequence() instanceof ExperimentalResultingSequence))){
             ResultingSequence reSeq = object.getResultingSequence();
-            object.setResultingSequence(new IntactResultingSequence(reSeq.getOriginalSequence(), reSeq.getNewSequence()));
+            object.setResultingSequence(new ExperimentalResultingSequence(reSeq.getOriginalSequence(), reSeq.getNewSequence()));
             object.getResultingSequence().getXrefs().addAll(reSeq.getXrefs());
 
             // prepare xrefs of resulting sequence
-            prepareXrefs((IntactResultingSequence)object.getResultingSequence());
+            prepareXrefs((ExperimentalResultingSequence)object.getResultingSequence(), experimental);
 
+        }
+        else if (object.getResultingSequence() != null
+                && (!experimental && !(object.getResultingSequence() instanceof ModelledResultingSequence))){
+            ResultingSequence reSeq = object.getResultingSequence();
+            object.setResultingSequence(new ModelledResultingSequence(reSeq.getOriginalSequence(), reSeq.getNewSequence()));
+            object.getResultingSequence().getXrefs().addAll(reSeq.getXrefs());
+
+            // prepare xrefs of resulting sequence
+            prepareXrefs((ExperimentalResultingSequence)object.getResultingSequence(), experimental);
         }
 
         // synchronize participant
@@ -110,12 +119,12 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         return false;
     }
 
-    protected void prepareXrefs(IntactResultingSequence intactObj) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(ExperimentalResultingSequence intactObj, boolean experimental) throws FinderException, PersisterException, SynchronizerException {
         if (intactObj.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref objRef = getContext().getResultingSequenceXrefSynchronizer().synchronize(xref, false);
+                Xref objRef = experimental ? getContext().getExperimentalResultingSequenceXrefSynchronizer().synchronize(xref, false) : getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false);
                 // we have a different instance because needed to be synchronized
                 if (objRef != xref){
                     intactObj.getXrefs().remove(xref);

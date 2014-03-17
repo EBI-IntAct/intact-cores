@@ -111,8 +111,7 @@ public abstract class AbstractIntactRange<P extends Participant> extends Abstrac
         this.isLink = link;
     }
 
-    @Embedded
-    @Target(IntactResultingSequence.class)
+    @Transient
     public ResultingSequence getResultingSequence() {
         return this.resultingSequence;
     }

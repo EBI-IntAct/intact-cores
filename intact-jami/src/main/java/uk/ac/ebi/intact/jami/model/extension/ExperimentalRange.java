@@ -4,10 +4,7 @@ import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Intact implementation of range attached to feature evidences
@@ -48,6 +45,13 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
 
     public ExperimentalRange(Position start, Position end, boolean isLink, ModelledParticipant participant) {
         super(start, end, isLink, participant);
+    }
+
+    @Override
+    @Embedded
+    @Target(ExperimentalResultingSequence.class)
+    public ResultingSequence getResultingSequence() {
+        return super.getResultingSequence();
     }
 
     @ManyToOne(targetEntity = IntactModelledParticipant.class)

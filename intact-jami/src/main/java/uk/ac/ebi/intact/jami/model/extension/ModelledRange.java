@@ -7,10 +7,7 @@ import psidev.psi.mi.jami.model.Participant;
 import psidev.psi.mi.jami.model.Position;
 import psidev.psi.mi.jami.model.ResultingSequence;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Intact implementation of range attached to modelled features
@@ -51,6 +48,13 @@ public class ModelledRange extends AbstractIntactRange<ModelledParticipant> {
 
     public ModelledRange(Position start, Position end, boolean isLink, ModelledParticipant participant) {
         super(start, end, isLink, participant);
+    }
+
+    @Override
+    @Embedded
+    @Target(ModelledResultingSequence.class)
+    public ResultingSequence getResultingSequence() {
+        return super.getResultingSequence();
     }
 
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
