@@ -21,10 +21,7 @@ import javax.validation.constraints.NotNull;
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
-@Entity
-@Table(name = "ia_causal_relationship")
-@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
-@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+@MappedSuperclass
 public abstract class AbstractIntactCausalRelationship<T extends Participant> extends AbstractAuditable implements CausalRelationship {
 
     private CvTerm relationType;

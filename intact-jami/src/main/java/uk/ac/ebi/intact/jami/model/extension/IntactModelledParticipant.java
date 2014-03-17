@@ -37,6 +37,7 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
 
     private Collection<CvTerm> experimentalRoles;
     private Collection<CausalRelationship> relatedCausalRelationships;
+    private Collection<CausalRelationship> relatedExperimentalCausalRelationships;
 
     protected IntactModelledParticipant() {
         super();
@@ -96,7 +97,7 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledCausalRelationship.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="modelled_source_ac", referencedColumnName="ac")
+    @JoinColumn(name="source_ac", referencedColumnName="ac")
     @Target(ModelledCausalRelationship.class)
     @Override
     public Collection<CausalRelationship> getCausalRelationships() {
@@ -106,13 +107,25 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
     @OneToMany( mappedBy = "target", targetEntity = ModelledCausalRelationship.class)
     @Target(ModelledCausalRelationship.class)
     /**
-     * List of experimental causal relationships having this participant as target
+     * List of modelled causal relationships having this participant as target
      */
     public Collection<CausalRelationship> getRelatedCausalRelationships(){
         if (this.relatedCausalRelationships == null){
             this.relatedCausalRelationships = new ArrayList<CausalRelationship>();
         }
         return this.relatedCausalRelationships;
+    }
+
+    @OneToMany( mappedBy = "target", targetEntity = ExperimentalCausalRelationshipWithExperimentalTarget.class)
+    @Target(ExperimentalCausalRelationshipWithExperimentalTarget.class)
+    /**
+     * List of experimental causal relationships having this participant as target
+     */
+    public Collection<CausalRelationship> getRelatedExperimentalCausalRelationships(){
+        if (this.relatedExperimentalCausalRelationships== null){
+            this.relatedExperimentalCausalRelationships = new ArrayList<CausalRelationship>();
+        }
+        return this.relatedExperimentalCausalRelationships;
     }
 
     @Override
@@ -184,4 +197,9 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
     protected void setRelatedCausalRelationships(Collection<CausalRelationship> relatedCausalRelationships) {
         this.relatedCausalRelationships = relatedCausalRelationships;
     }
+
+    protected void setRelatedExperimentalCausalRelationships(Collection<CausalRelationship> relatedCausalRelationships) {
+        this.relatedExperimentalCausalRelationships = relatedCausalRelationships;
+    }
+
 }

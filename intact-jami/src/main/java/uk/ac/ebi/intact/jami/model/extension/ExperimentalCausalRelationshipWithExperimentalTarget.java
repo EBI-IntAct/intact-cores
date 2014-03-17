@@ -5,14 +5,11 @@ import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ParticipantEvidence;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 /**
- * Abstract IntAct class for causal relationship
+ * IntAct class for causal relationship having participant evidences as target
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -20,13 +17,13 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @DiscriminatorValue("experimental")
-public class ExperimentalCausalRelationship extends AbstractIntactCausalRelationship<ParticipantEvidence> implements CausalRelationship {
+public class ExperimentalCausalRelationshipWithExperimentalTarget extends AbstractExperimentalCausalRelationship<ParticipantEvidence> implements CausalRelationship {
 
-    protected ExperimentalCausalRelationship(){
+    protected ExperimentalCausalRelationshipWithExperimentalTarget(){
         super();
     }
 
-    public ExperimentalCausalRelationship(CvTerm relationType, ParticipantEvidence target){
+    public ExperimentalCausalRelationshipWithExperimentalTarget(CvTerm relationType, ParticipantEvidence target){
         super(relationType, target);
     }
 

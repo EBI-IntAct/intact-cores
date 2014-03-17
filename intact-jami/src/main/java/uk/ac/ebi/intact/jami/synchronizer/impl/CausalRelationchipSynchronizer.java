@@ -4,7 +4,7 @@ import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCausalRelationship;
-import uk.ac.ebi.intact.jami.model.extension.ExperimentalCausalRelationship;
+import uk.ac.ebi.intact.jami.model.extension.ExperimentalCausalRelationshipWithExperimentalTarget;
 import uk.ac.ebi.intact.jami.model.extension.ModelledCausalRelationship;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
@@ -56,7 +56,7 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
 
         // we have an experimental entity
         if (object.getTarget() instanceof ParticipantEvidence){
-            return new ExperimentalCausalRelationship(object.getRelationType(), (ParticipantEvidence)object.getTarget());
+            return new ExperimentalCausalRelationshipWithExperimentalTarget(object.getRelationType(), (ParticipantEvidence)object.getTarget());
         }
         // we have a modelled entity
         else if (object.getTarget() instanceof ModelledParticipant){
@@ -75,7 +75,7 @@ public class CausalRelationchipSynchronizer extends AbstractIntactDbSynchronizer
     }
 
     @Override
-    protected ExperimentalCausalRelationship fetchObjectFromCache(CausalRelationship object) {
+    protected ExperimentalCausalRelationshipWithExperimentalTarget fetchObjectFromCache(CausalRelationship object) {
         return null;
     }
 

@@ -5,26 +5,28 @@ import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ModelledParticipant;
 
-import javax.persistence.*;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 /**
- * Intact causal relationship for modelled entities. The can only have a modelled target.
- *
+ * IntAct class for causal relationship having participant evidences as target
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>14/01/14</pre>
  */
 @Entity
-@Table(name = "ia_modelled_causal_relationship")
-public class ModelledCausalRelationship extends AbstractIntactCausalRelationship<ModelledParticipant> implements CausalRelationship {
+@DiscriminatorValue("modelled")
+public class ExperimentalCausalRelationshipWithModelledTarget extends AbstractExperimentalCausalRelationship<ModelledParticipant> implements CausalRelationship {
 
-    protected ModelledCausalRelationship(){
+    protected ExperimentalCausalRelationshipWithModelledTarget(){
         super();
     }
 
-    public ModelledCausalRelationship(CvTerm relationType, ModelledParticipant target){
+    public ExperimentalCausalRelationshipWithModelledTarget(CvTerm relationType, ModelledParticipant target){
         super(relationType, target);
     }
 

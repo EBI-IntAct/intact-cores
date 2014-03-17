@@ -12,15 +12,17 @@ import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import javax.persistence.*;
 
 /**
- * Intact implementation of range
+ * abstract Intact implementation of range
+ *
+ * NOTE: for backward compatibility with intact-core, all the ranges are stored in same table but in the future, we will store ranges in two different tables depending if they are attached to feature evidences
+ * and/or modelled features
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>10/01/14</pre>
  */
-@Entity
-@Table(name = "ia_range")
-public class IntactRange extends AbstractIntactPrimaryObject implements Range{
+@MappedSuperclass
+public abstract class AbstractIntactRange extends AbstractIntactPrimaryObject implements Range{
 
     private Position start;
     private Position end;
@@ -29,35 +31,35 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
     private ResultingSequence resultingSequence;
     private Participant participant;
 
-    protected IntactRange(){
+    protected AbstractIntactRange(){
 
     }
 
-    public IntactRange(Position start, Position end){
+    public AbstractIntactRange(Position start, Position end){
         setPositions(start, end);
     }
 
-    public IntactRange(Position start, Position end, boolean isLink){
+    public AbstractIntactRange(Position start, Position end, boolean isLink){
         this(start, end);
         this.isLink = isLink;
     }
 
-    public IntactRange(Position start, Position end, ResultingSequence resultingSequence){
+    public AbstractIntactRange(Position start, Position end, ResultingSequence resultingSequence){
         this(start, end);
         this.resultingSequence = resultingSequence;
     }
 
-    public IntactRange(Position start, Position end, boolean isLink, ResultingSequence resultingSequence){
+    public AbstractIntactRange(Position start, Position end, boolean isLink, ResultingSequence resultingSequence){
         this(start, end, isLink);
         this.resultingSequence = resultingSequence;
     }
 
-    public IntactRange(Position start, Position end, Participant participant){
+    public AbstractIntactRange(Position start, Position end, Participant participant){
         this(start, end);
         this.participant = participant;
     }
 
-    public IntactRange(Position start, Position end, boolean isLink, Participant participant){
+    public AbstractIntactRange(Position start, Position end, boolean isLink, Participant participant){
         this(start, end, isLink);
         this.participant = participant;
     }
@@ -119,9 +121,7 @@ public class IntactRange extends AbstractIntactPrimaryObject implements Range{
         this.resultingSequence = resultingSequence;
     }
 
-    @ManyToOne(targetEntity = IntactParticipantEvidence.class)
-    @JoinColumn(name = "participant_ac", referencedColumnName = "ac")
-    @Target(IntactParticipantEvidence.class)
+    @Transient
     public Participant getParticipant() {
         return this.participant;
     }
