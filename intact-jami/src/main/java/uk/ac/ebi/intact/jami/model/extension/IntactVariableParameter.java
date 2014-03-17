@@ -20,6 +20,11 @@ import java.util.Collection;
 /**
  * Intact implementation of variable parameter
  *
+ * NOTE: variable parameter has the ownership of experiment-variable parameter relationship so to persist the relationship, the method getExperiment must
+ * point to the right experiment. It is recommended to use addVariableParameter and removeVariableParameter in experiment to add/remove parameters from an experiment
+ * NOTE: variable parameter value has the ownership of variable parameter value-variable parameter relationship so to persist the relationship, the method getVariableParameter must
+ * point to the right variable parameter.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>09/01/14</pre>

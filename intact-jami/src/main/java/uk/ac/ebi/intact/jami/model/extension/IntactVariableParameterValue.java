@@ -16,6 +16,9 @@ import java.util.Collection;
 /**
  * Intact implementation of VariableParameterValue
  *
+ * NOTE: variable parameter value has the ownership of variable parameter value-variable parameter relationship so to persist the relationship, the method getVariableParameter must
+ * point to the right variable parameter.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>09/01/14</pre>
