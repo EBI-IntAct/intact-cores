@@ -249,4 +249,15 @@ public class InteractionDaoTest extends IntactBasicTestCase {
         Assert.assertNotNull( interactions );
         Assert.assertEquals( 3, interactions.size() ); // 20, 21, 22
     }
+
+    @Test
+    public void test_count_complexes() throws Exception {
+        Interaction mockInteraction = getMockBuilder().createInteractionRandomBinary();
+        mockInteraction.getAnnotations().add(new Annotation(new CvTopic("curated-complex")));
+        getCorePersister().saveOrUpdate(mockInteraction);
+
+        Assert.assertTrue(1 == getDaoFactory().getInteractionDao().countAllComplexes());
+
+
+    }
 }
