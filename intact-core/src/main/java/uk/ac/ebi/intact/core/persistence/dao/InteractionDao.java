@@ -6,7 +6,6 @@
 package uk.ac.ebi.intact.core.persistence.dao;
 
 import uk.ac.ebi.intact.annotation.Mockable;
-import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
 
@@ -23,6 +22,8 @@ import java.util.List;
 public interface InteractionDao extends InteractorDao<InteractionImpl> {
 
     Integer countInteractorsByInteractionAc( String interactionAc );
+
+    Integer countAllComplexes();
 
     List<String> getNestedInteractionAcsByInteractionAc( String interactionAc );
 

@@ -65,6 +65,19 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         return count.intValue();
     }
 
+    public Integer countAllComplexes( ) {
+        if ( log.isDebugEnabled() ) {
+            log.debug( "Counting all complexes" );
+        }
+
+        final Long count = (Long) getSession().createCriteria(InteractionImpl.class)
+                .createAlias("annotations", "a")
+                .createAlias("a.cvTopic", "cv")
+                .add(Restrictions.eq("cv.shortLabel", "curated-complex"))
+                .setProjection(Projections.count("ac")).uniqueResult();
+        return count.intValue();
+    }
+
     public List<String> getNestedInteractionAcsByInteractionAc( String interactionAc ) {
         if ( log.isDebugEnabled() ) {
             log.debug( "Getting nested interactions for interaction with ac: " + interactionAc );
