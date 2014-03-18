@@ -33,7 +33,7 @@ public class ExperimentReader extends JpaPagingItemReader {
         String query = "select e from Experiment e ";
 
         if (isExcludeInferredByCurators()) {
-            query = query + " where e.cvInteraction.shortName <> 'inferred by curator' " +
+            query = query + " where e.cvInteraction.shortLabel <> 'inferred by curator' " +
                     "order by e.ac";
         }
         else {
