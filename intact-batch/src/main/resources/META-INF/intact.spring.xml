@@ -74,6 +74,10 @@
         <property name="excludeInferredByCurators" value="true"/>
     </bean>
 
+    <bean id="experimentReaderOnlyInferredByCurator" class="uk.ac.ebi.intact.core.batch.reader.ExperimentReader" parent="baseModelReader">
+        <property name="onlyInferredByCurators" value="true"/>
+    </bean>
+
     <bean id="publicationReader" class="uk.ac.ebi.intact.core.batch.reader.PublicationReader" parent="baseModelReader"/>
 
     <bean id="publicationReaderOrderedByCreated" class="uk.ac.ebi.intact.core.batch.reader.PublicationReader" parent="baseModelReader">
