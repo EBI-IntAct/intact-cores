@@ -18,32 +18,26 @@ package uk.ac.ebi.intact.core.batch.reader;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 
 /**
- * @author Bruno Aranda (baranda@ebi.ac.uk)
- * @version $Id$
+ * @author Marine Dumousseau (marine@ebi.ac.uk)
  */
-public class InteractionReader extends JpaPagingItemReader {
+public class ExperimentReader extends JpaPagingItemReader {
 
-    private boolean excludeNegative = false;
+    private boolean excludeInferredByCurators = false;
 
-
-    public InteractionReader() {
+    public ExperimentReader() {
         super();
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String query = "select i from InteractionImpl i " +
-                "where i.ac not in " +
-                "(select distinct i2.ac from InteractionImpl i2 join i2.annotations as a1 " +
-                "where a1.cvTopic.shortLabel = 'curated-complex')";
+        String query = "select e from Experiment e ";
 
-        if (isExcludeNegative()) {
-            query = query + " and i.ac not in " +
-                    "(select distinct i3.ac from InteractionImpl i3 join i3.annotations as annot where annot.cvTopic.shortLabel = 'negative') " +
-                    "order by i.ac";
+        if (isExcludeInferredByCurators()) {
+            query = query + " where e.cvInteraction.shortName <> 'inferred by curator' " +
+                    "order by e.ac";
         }
         else {
-            query += " order by i.ac";
+            query += " order by e.ac";
         }
 
         setQueryString(query);
@@ -51,11 +45,11 @@ public class InteractionReader extends JpaPagingItemReader {
         super.afterPropertiesSet();
     }
 
-    public boolean isExcludeNegative() {
-        return excludeNegative;
+    public boolean isExcludeInferredByCurators() {
+        return this.excludeInferredByCurators;
     }
 
-    public void setExcludeNegative(boolean excludeNegative) {
-        this.excludeNegative = excludeNegative;
+    public void setExcludeInferredByCurators(boolean excludeInferred) {
+        this.excludeInferredByCurators = excludeInferred;
     }
 }

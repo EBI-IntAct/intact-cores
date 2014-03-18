@@ -68,12 +68,25 @@
         <property name="intactObjectClass" value="uk.ac.ebi.intact.model.CvObject"/>
     </bean>
 
-    <bean id="experimentReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
-        <property name="intactObjectClass" value="uk.ac.ebi.intact.model.Experiment"/>
+    <bean id="experimentReader" class="uk.ac.ebi.intact.core.batch.reader.ExperimentReader" parent="baseModelReader"/>
+
+    <bean id="experimentReaderExcludingInferredByCurator" class="uk.ac.ebi.intact.core.batch.reader.ExperimentReader" parent="baseModelReader">
+        <property name="excludeInferredByCurators" value="true"/>
     </bean>
 
-    <bean id="publicationReader" class="uk.ac.ebi.intact.core.batch.reader.IntactObjectPagingItemReader" parent="baseModelReader">
-        <property name="intactObjectClass" value="uk.ac.ebi.intact.model.Publication"/>
+    <bean id="publicationReader" class="uk.ac.ebi.intact.core.batch.reader.PublicationReader" parent="baseModelReader"/>
+
+    <bean id="publicationReaderOrderedByCreated" class="uk.ac.ebi.intact.core.batch.reader.PublicationReader" parent="baseModelReader">
+        <property name="orderedByCreated" value="true"/>
+    </bean>
+
+    <bean id="publicationReaderExcludeIntactPaper" class="uk.ac.ebi.intact.core.batch.reader.PublicationReader" parent="baseModelReader">
+          <property name="excludeIntactPaper" value="true"/>
+    </bean>
+
+    <bean id="publicationReaderOrderedByCreatedExcludeIntactPaper" class="uk.ac.ebi.intact.core.batch.reader.PublicationReader" parent="baseModelReader">
+        <property name="orderedByCreated" value="true"/>
+        <property name="excludeIntactPaper" value="true"/>
     </bean>
 
     <bean id="interactorReader" class="uk.ac.ebi.intact.core.batch.reader.InteractorReader" parent="baseModelReader"/>
@@ -81,6 +94,8 @@
     <bean id="interactorReaderOnlyInteracting" class="uk.ac.ebi.intact.core.batch.reader.InteractorReader" parent="baseModelReader">
         <property name="interacting" value="true"/>
     </bean>
+
+    <bean id="complexReader" class="uk.ac.ebi.intact.core.batch.reader.ComplexReader" parent="baseModelReader"/>
 
     <bean id="interactionReader" class="uk.ac.ebi.intact.core.batch.reader.InteractionReader" parent="baseModelReader"/>
 
