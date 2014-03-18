@@ -18,32 +18,30 @@ package uk.ac.ebi.intact.core.batch.reader;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 
 /**
- * @author Bruno Aranda (baranda@ebi.ac.uk)
- * @version $Id$
+ * @author Marine Dumousseau (marine@ebi.ac.uk)
  */
-public class InteractionReader extends JpaPagingItemReader {
+public class PublicationReader extends JpaPagingItemReader {
 
-    private boolean excludeNegative = false;
+    private boolean excludeIntactPaper = false;
+    private boolean orderedByCreated = false;
 
-
-    public InteractionReader() {
+    public PublicationReader() {
         super();
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String query = "select i from InteractionImpl i " +
-                "where i.ac not in " +
-                "(select distinct i2.ac from InteractionImpl i2 join i2.annotations as a1 " +
-                "where a1.cvTopic.shortLabel = 'curated-complex')";
+        String query = "select p from Publication p ";
 
-        if (isExcludeNegative()) {
-            query = query + " and i.ac not in " +
-                    "(select distinct i3.ac from InteractionImpl i3 join i3.annotations as annot where annot.cvTopic.shortLabel = 'negative') " +
-                    "order by i.ac";
+        if (isExcludeIntactPaper()) {
+            query = query + "where p.shortLabel <> '14681455' ";
+        }
+
+        if(isOrderedByCreated()){
+            query += " order by p.created, p.ac";
         }
         else {
-            query += " order by i.ac";
+            query += " order by p.ac";
         }
 
         setQueryString(query);
@@ -51,11 +49,19 @@ public class InteractionReader extends JpaPagingItemReader {
         super.afterPropertiesSet();
     }
 
-    public boolean isExcludeNegative() {
-        return excludeNegative;
+    public boolean isExcludeIntactPaper() {
+        return this.excludeIntactPaper;
     }
 
-    public void setExcludeNegative(boolean excludeNegative) {
-        this.excludeNegative = excludeNegative;
+    public void setExcludeIntactPaper(boolean excludeIntactPaper) {
+        this.excludeIntactPaper = excludeIntactPaper;
+    }
+
+    public boolean isOrderedByCreated() {
+        return orderedByCreated;
+    }
+
+    public void setOrderedByCreated(boolean orderedByCreated) {
+        this.orderedByCreated = orderedByCreated;
     }
 }
