@@ -23,6 +23,7 @@ import org.springframework.batch.item.database.JpaPagingItemReader;
 public class ExperimentReader extends JpaPagingItemReader {
 
     private boolean excludeInferredByCurators = false;
+    private boolean onlyInferredByCurators = false;
 
     public ExperimentReader() {
         super();
@@ -34,6 +35,10 @@ public class ExperimentReader extends JpaPagingItemReader {
 
         if (isExcludeInferredByCurators()) {
             query = query + " where e.cvInteraction.shortLabel <> 'inferred by curator' " +
+                    "order by e.ac";
+        }
+        else if (isOnlyInferredByCurators()) {
+            query = query + " where e.cvInteraction.shortLabel = 'inferred by curator' " +
                     "order by e.ac";
         }
         else {
@@ -51,5 +56,13 @@ public class ExperimentReader extends JpaPagingItemReader {
 
     public void setExcludeInferredByCurators(boolean excludeInferred) {
         this.excludeInferredByCurators = excludeInferred;
+    }
+
+    public boolean isOnlyInferredByCurators() {
+        return onlyInferredByCurators;
+    }
+
+    public void setOnlyInferredByCurators(boolean onlyInferredByCurators) {
+        this.onlyInferredByCurators = onlyInferredByCurators;
     }
 }
