@@ -149,6 +149,16 @@ public class CvTopic extends CvDagObject implements Editable {
     public static final String INVALID_RANGE = "invalid-range";
     public static final String INVALID_RANGE_ID = "IA:0923";
 
+
+    public static final String COMPLEX_PROPERTIES = "properties";
+    public static final String COMPLEX_PROPERTIES_MI_REF = "MI:0629";
+
+    public static final String COMPLEX_DISEASE = "disease";
+    public static final String COMPLEX_DISEASE_MI_REF = "MI:0617";
+
+    public static final String COMPLEX_LIGAND = "ligand";
+    public static final String COMPLEX_ASSEMBLY = "complex-assembly";
+
     public static final String CORRECTION_COMMENT = "correction comment";
 
 
