@@ -110,6 +110,12 @@ public final class ComplexUtils {
     public static String getLigand(InteractionImpl complex)             { return getAnnotation(complex, "IA:2738"); }
     public static String getComplexAssembly(InteractionImpl complex)    { return getAnnotation(complex, "IA:2783"); }
 
-
-
+    public static boolean isComplex(Interaction interaction){
+        for (Annotation annot : interaction.getAnnotations()){
+            if (annot.getCvTopic() != null && annot.getCvTopic().getShortLabel().equalsIgnoreCase("curated-complex")){
+                return true;
+            }
+        }
+        return false;
+    }
 }
