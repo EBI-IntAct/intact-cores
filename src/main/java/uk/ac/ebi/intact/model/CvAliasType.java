@@ -53,6 +53,15 @@ public class CvAliasType extends CvDagObject implements Editable {
     public static final String IUPAC_NAME = "iupac name";
     public static final String IUPAC_NAME_MI_REF = "MI:2007";
 
+    public static final String COMPLEX_SYSTEMATIC_NAME = "systematic name";
+    public static final String COMPLEX_SYSTEMATIC_NAME_MI_REF = "MI:1316";
+
+    public static final String COMPLEX_RECOMMENDED_NAME = "recommended name";
+    public static final String COMPLEX_RECOMMENDED_NAME_MI_REF = "MI:1315";
+
+    public static final String COMPLEX_SYNONYM_NAME = "synonym name";
+    public static final String COMPLEX_SYNONYM_NAME_MI_REF = "MI:0673";
+
     /**
      * This constructor should <b>not</b> be used as it could
      * result in objects with invalid state. It is here for object mapping
