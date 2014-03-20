@@ -248,6 +248,8 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         defaultExperiment.setInteractionDetectionMethod(IntactUtils.createMIInteractionDetectionMethod(Experiment.INFERRED_BY_CURATOR, Experiment.INFERRED_BY_CURATOR_MI));
         // use host organism of interaction
         defaultExperiment.setHostOrganism(intactComplex.getOrganism());
+        // use predetermined participant identification method
+        defaultExperiment.setParticipantIdentificationMethod(IntactUtils.createMIParticipantIdentificationMethod(Participant.PREDETERMINED, Participant.PREDETERMINED_MI));
         // persist this experiment
         getContext().getExperimentSynchronizer().persist(defaultExperiment);
         // then add this complex
