@@ -8,12 +8,13 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
 /**
  * Default finder/persister of confidenceClass
+ * It does not cache persisted confidences. It only synchronize the confidence type (with persist = true) to make sure that the confidence type
+ * is persisted before so the confidence can be persisted
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -37,12 +38,6 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
         // type first
         CvTerm type = object.getType();
         object.setType(getContext().getConfidenceTypeSynchronizer().synchronize(type, true));
-
-        // check confidenceClass value
-        if (object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-            log.warn("Confidence value too long: "+object.getValue()+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");
-            object.setValue(object.getValue().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
-        }
     }
 
     public void clearCache() {

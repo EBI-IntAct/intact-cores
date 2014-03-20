@@ -3,8 +3,6 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -97,10 +95,6 @@ public class XrefSynchronizerTemplateTest {
         IntactCvTerm qualifier = (IntactCvTerm)interactorXref.getQualifier();
         Assert.assertNotNull(qualifier.getAc());
         Assert.assertEquals(interactorXref.getQualifier(), IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -155,10 +149,6 @@ public class XrefSynchronizerTemplateTest {
         IntactCvTerm qualifier = (IntactCvTerm)interactorXref.getQualifier();
         Assert.assertNotNull(qualifier.getAc());
         Assert.assertEquals(((IntactCvTerm) interactorXref.getQualifier()).getAc(), existingQualifier.getAc());
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -217,10 +207,6 @@ public class XrefSynchronizerTemplateTest {
         IntactCvTerm qualifier = (IntactCvTerm)interactorXref.getQualifier();
         Assert.assertNotNull(qualifier.getAc());
         Assert.assertEquals(((IntactCvTerm) interactorXref.getQualifier()).getAc(), existingQualifier.getAc());
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -240,6 +226,25 @@ public class XrefSynchronizerTemplateTest {
 
         Assert.assertNull(this.synchronizer.find(cvXrefNotPersisted));
         Assert.assertNull(this.synchronizer.find(cvXrefPersisted));
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_delete() throws PersisterException, FinderException, SynchronizerException {
+        this.context = new DefaultSynchronizerContext(this.entityManager);
+        this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
+
+        CvTermXref cvXrefNotPersisted = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "test synonym");
+        this.synchronizer.setIntactClass(CvTermXref.class);
+        this.synchronizer.persist(cvXrefNotPersisted);
+        entityManager.flush();
+        this.context.clearCache();
+
+        System.out.println("flush");
+
+        this.synchronizer.delete(cvXrefNotPersisted);
+        Assert.assertNull(entityManager.find(CvTermXref.class, cvXrefNotPersisted.getAc()));
     }
 
     @Transactional
@@ -290,10 +295,6 @@ public class XrefSynchronizerTemplateTest {
         IntactCvTerm qualifier = (IntactCvTerm)interactorXref.getQualifier();
         Assert.assertNotNull(qualifier.getAc());
         Assert.assertEquals(interactorXref.getQualifier(), IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -344,10 +345,6 @@ public class XrefSynchronizerTemplateTest {
         IntactCvTerm qualifier = (IntactCvTerm)newRef3.getQualifier();
         Assert.assertNotNull(qualifier.getAc());
         Assert.assertEquals(newRef3.getQualifier(), IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -398,10 +395,6 @@ public class XrefSynchronizerTemplateTest {
         IntactCvTerm qualifier = (IntactCvTerm)newRef3.getQualifier();
         Assert.assertNotNull(qualifier.getAc());
         Assert.assertEquals(newRef3.getQualifier(), IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -452,10 +445,6 @@ public class XrefSynchronizerTemplateTest {
         IntactCvTerm qualifier = (IntactCvTerm)newRef3.getQualifier();
         Assert.assertNotNull(qualifier.getAc());
         Assert.assertEquals(newRef3.getQualifier(), IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     private IntactCvTerm createExistingDatabase() {

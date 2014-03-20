@@ -8,12 +8,13 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
 /**
  * Finder/persister for xrefs
+ * It does not cache persisted xrefs. It only synchronize the xref database and qualifier (with persist = true) to make sure that the database and qualifier
+ * are persisted before so the xref can be persisted
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -38,21 +39,6 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
         CvTerm db = object.getDatabase();
         object.setDatabase(getContext().getDatabaseSynchronizer().synchronize(db, true));
 
-        // check primaryId
-        if (object.getId().length() > IntactUtils.MAX_ID_LEN){
-            log.warn("Xref id too long: "+object.getId()+", will be truncated to "+ IntactUtils.MAX_ID_LEN+" characters.");
-            object.setId(object.getId().substring(0, IntactUtils.MAX_ID_LEN));
-        }
-        // check secondaryId
-        if (object.getSecondaryId() != null && object.getSecondaryId().length() > IntactUtils.MAX_SECONDARY_ID_LEN){
-            log.warn("Xref secondaryId too long: "+object.getSecondaryId()+", will be truncated to "+ IntactUtils.MAX_SECONDARY_ID_LEN+" characters.");
-            object.setSecondaryId(object.getSecondaryId().substring(0, IntactUtils.MAX_SECONDARY_ID_LEN));
-        }
-        // check version
-        if (object.getVersion() != null && object.getVersion().length() > IntactUtils.MAX_DB_RELEASE_LEN){
-            log.warn("Xref version too long: "+object.getVersion()+", will be truncated to "+ IntactUtils.MAX_DB_RELEASE_LEN+" characters.");
-            object.setVersion(object.getVersion().substring(0, IntactUtils.MAX_DB_RELEASE_LEN));
-        }
         // check qualifier
         if (object.getQualifier() != null){
             CvTerm qualifier = object.getQualifier();
