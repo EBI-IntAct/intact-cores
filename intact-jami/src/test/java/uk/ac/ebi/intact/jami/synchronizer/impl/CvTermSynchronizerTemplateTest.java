@@ -220,6 +220,21 @@ public class CvTermSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
+    public void test_delete() throws PersisterException, FinderException, SynchronizerException {
+        this.context = new DefaultSynchronizerContext(this.entityManager);
+        this.synchronizer = new CvTermSynchronizer(this.context);
+
+        IntactCvTerm existingType = createExistingType();
+
+        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.synchronizer.delete(existingType);
+
+        Assert.assertNull(entityManager.find(IntactCvTerm.class, existingType.getAc()));
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
     public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new CvTermSynchronizer(this.context);

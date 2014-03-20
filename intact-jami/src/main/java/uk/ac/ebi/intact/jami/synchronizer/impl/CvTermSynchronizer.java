@@ -244,6 +244,46 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         this.objClass = objClass != null ? objClass : IntactUtils.TOPIC_OBJCLASS;
     }
 
+    public void prepareAndSynchronizeShortLabel(IntactCvTerm intactCv) {
+        // truncate if necessary
+        if (IntactUtils.MAX_SHORT_LABEL_LEN < intactCv.getShortName().length()){
+            log.warn("Cv term shortLabel too long: "+intactCv.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
+            intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
+        }
+        boolean first = true;
+        String name;
+        List<String> existingCvs;
+        do{
+            name = intactCv.getShortName().trim().toLowerCase();
+            existingCvs = Collections.EMPTY_LIST;
+            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
+
+            if (first){
+                first = false;
+            }
+            else if (originalName.length() > 1){
+                name = originalName.substring(0, originalName.length() - 1);
+            }
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = getEntityManager().createQuery("select cv.shortName from IntactCvTerm cv " +
+                    "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
+                    + (this.objClass != null ? " and cv.objClass = :objclass " : " ")
+                    + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (this.objClass != null){
+                query.setParameter("objclass", this.objClass);
+            }
+            if (intactCv.getAc() != null){
+                query.setParameter("cvAc", intactCv.getAc());
+            }
+            existingCvs = query.getResultList();
+            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+            intactCv.setShortName(nameInSync);
+        }
+        while(name.length() > 1 && !existingCvs.isEmpty());
+    }
+
     protected IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {
         Query query;
         if (checkAc){
@@ -429,46 +469,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                 }
             }
         }
-    }
-
-    protected void prepareAndSynchronizeShortLabel(IntactCvTerm intactCv) {
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < intactCv.getShortName().length()){
-            log.warn("Cv term shortLabel too long: "+intactCv.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
-        boolean first = true;
-        String name;
-        List<String> existingCvs;
-        do{
-            name = intactCv.getShortName().trim().toLowerCase();
-            existingCvs = Collections.EMPTY_LIST;
-            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
-
-            if (first){
-                first = false;
-            }
-            else if (originalName.length() > 1){
-                name = originalName.substring(0, originalName.length() - 1);
-            }
-            // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select cv.shortName from IntactCvTerm cv " +
-                    "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
-                    + (this.objClass != null ? " and cv.objClass = :objclass " : " ")
-                    + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
-            query.setParameter("name", name);
-            query.setParameter("nameWithSuffix", name+"-%");
-            if (this.objClass != null){
-                query.setParameter("objclass", this.objClass);
-            }
-            if (intactCv.getAc() != null){
-                query.setParameter("cvAc", intactCv.getAc());
-            }
-            existingCvs = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-            intactCv.setShortName(nameInSync);
-        }
-        while(name.length() > 1 && !existingCvs.isEmpty());
     }
 
     protected void initialiseObjClass(IntactCvTerm intactCv) {
