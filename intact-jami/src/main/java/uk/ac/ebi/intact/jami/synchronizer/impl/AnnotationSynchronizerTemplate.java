@@ -8,13 +8,14 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
 /**
  * Finder/persister for annotations
  *
+ * It does not cache persisted annotations. It only synchronize the annotation topic (with persist = true) to make sure that the annotation topic
+ * is persisted before so the annotation can be persisted
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>24/01/14</pre>
@@ -36,12 +37,6 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
         // topic first
         CvTerm topic = object.getTopic();
         object.setTopic(getContext().getTopicSynchronizer().synchronize(topic, true));
-
-        // check annotation value
-        if (object.getValue() != null && object.getValue().length() > IntactUtils.MAX_DESCRIPTION_LEN){
-            log.warn("Annotation value too long: "+object.getValue()+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");
-            object.setValue(object.getValue().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
-        }
     }
 
     public void clearCache() {

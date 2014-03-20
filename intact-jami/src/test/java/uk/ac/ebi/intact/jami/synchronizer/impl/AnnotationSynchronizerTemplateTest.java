@@ -92,10 +92,6 @@ public class AnnotationSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAnnotation.getTopic() == aliasType2);
         Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -138,10 +134,30 @@ public class AnnotationSynchronizerTemplateTest {
         IntactCvTerm aliasType2 = (IntactCvTerm)interactorAnnotation.getTopic();
         Assert.assertEquals(aliasType2.getAc(), annotationTopic.getAc());
         Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_delete() throws PersisterException, FinderException, SynchronizerException {
+        this.context = new DefaultSynchronizerContext(this.entityManager);
+        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
+
+        IntactCvTerm annotationTopic = createExistingTopic();
+
+        CvTermAnnotation cvAnnotation = new CvTermAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment");
+
+        this.synchronizer.setIntactClass(CvTermAnnotation.class);
+        this.synchronizer.persist(cvAnnotation);
+
+        Assert.assertNotNull(cvAnnotation.getTopic());
+        IntactCvTerm aliasType = (IntactCvTerm)cvAnnotation.getTopic();
+        Assert.assertEquals(aliasType.getAc(), annotationTopic.getAc());
 
         entityManager.flush();
 
-        System.out.println("flush");
+        this.synchronizer.delete(cvAnnotation);
+        Assert.assertNull(entityManager.find(CvTermAnnotation.class, cvAnnotation.getAc()));
     }
 
     @Transactional
@@ -187,10 +203,6 @@ public class AnnotationSynchronizerTemplateTest {
         IntactCvTerm aliasType2 = (IntactCvTerm)interactorAnnotation.getTopic();
         Assert.assertEquals(aliasType2.getAc(), existingTopic.getAc());
         Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -252,8 +264,6 @@ public class AnnotationSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAnnotation.getTopic() == aliasType2);
         Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
-
-        entityManager.flush();
     }
 
     @Transactional
@@ -296,8 +306,6 @@ public class AnnotationSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAnnotation.getTopic() == aliasType2);
         Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
-
-        entityManager.flush();
     }
 
     @Transactional
@@ -340,8 +348,6 @@ public class AnnotationSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAnnotation.getTopic() == aliasType2);
         Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
-
-        entityManager.flush();
     }
 
     @Transactional
@@ -384,8 +390,6 @@ public class AnnotationSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(newAnnot.getTopic() == aliasType2);
         Assert.assertEquals("test comment 2", newAnnot3.getValue());
-
-        entityManager.flush();
     }
 
     private IntactCvTerm createExistingTopic() {
