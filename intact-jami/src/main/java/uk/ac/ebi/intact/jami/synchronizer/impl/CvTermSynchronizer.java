@@ -31,6 +31,9 @@ import java.util.*;
 /**
  * Default synchronizer for cv terms
  *
+ * - The cv term synchronizer does not follow the same strategy of the other synchronizers : it synchronizes its parents but not its children.
+ * This is because we don't want to persist a full ontology, we just want to persist the parent relationships. To persist the children, the synchronizer must be called for each children first.
+ * - The cv term synchronizer can truncate the shortlabel if it is too long. It can also append a suffix if the shortlabel already exist in the database
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>21/01/14</pre>
@@ -108,10 +111,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         initialiseObjClass(intactCv);
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactCv);
-        // then check full name
-        prepareFullName(intactCv);
-        // then check def
-        prepareDefinition(intactCv);
         // then check aliases
         prepareAliases(intactCv);
         // then check annotations
@@ -120,10 +119,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         initialiseIdentifier(intactCv);
         // then check xrefs
         prepareXrefs(intactCv);
-        // do synchronize children
-        prepareChildren(intactCv);
         // do not synchronize parent
-        //prepareParents(intactCv);
+        prepareParents(intactCv);
     }
 
     public OntologyTerm fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
@@ -359,29 +356,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         }
     }
 
-    protected void prepareDefinition(IntactCvTerm intactCv) {
-        if (intactCv.getDefinition() == null){
-            AnnotationUtils.removeAllAnnotationsWithTopic(intactCv.getAnnotations(), null, "definition");
-        }
-        else{
-            // truncate if necessary
-            if (IntactUtils.MAX_DESCRIPTION_LEN < intactCv.getDefinition().length()){
-                log.warn("Cv term definition too long: "+intactCv.getDefinition()+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");
-                intactCv.setDefinition(intactCv.getDefinition().substring(0, IntactUtils.MAX_DESCRIPTION_LEN));
-            }
-            Annotation def = AnnotationUtils.collectFirstAnnotationWithTopic(intactCv.getAnnotations(), null, "definition");
-            if (def != null){
-                if (!intactCv.getDefinition().equalsIgnoreCase(def.getValue())){
-                    def.setValue(intactCv.getDefinition());
-                }
-            }
-            else{
-                intactCv.getAnnotations().add(new CvTermAnnotation(IntactUtils.createMITopic("definition", null), intactCv.getDefinition()));
-            }
-        }
-    }
-
-    protected void prepareChildren(IntactCvTerm intactCv) throws PersisterException, FinderException, SynchronizerException {
+    /*protected void prepareChildren(IntactCvTerm intactCv) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactCv.areChildrenInitialized()){
             List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getChildren());
@@ -394,9 +369,9 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                 }
             }
         }
-    }
+    }*/
 
-    /*protected void prepareParents(IntactCvTerm intactCv) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareParents(IntactCvTerm intactCv) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactCv.areParentsInitialized()){
             List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getParents());
@@ -409,7 +384,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                 }
             }
         }
-    }*/
+    }
 
     protected void prepareXrefs(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areXrefsInitialized()){
@@ -428,14 +403,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     protected void prepareAnnotations(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getAnnotations());
+            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 CvTermAnnotation cvAnnotation = getContext().getCvAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
-                    intactCv.getAnnotations().remove(annotation);
-                    intactCv.getAnnotations().add(cvAnnotation);
+                    intactCv.getDbAnnotations().remove(annotation);
+                    intactCv.getDbAnnotations().add(cvAnnotation);
                 }
             }
         }
@@ -453,14 +428,6 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                     intactCv.getSynonyms().add(cvAlias);
                 }
             }
-        }
-    }
-
-    protected void prepareFullName(IntactCvTerm intactCv) {
-        // truncate if necessary
-        if (intactCv.getFullName() != null && IntactUtils.MAX_FULL_NAME_LEN < intactCv.getFullName().length()){
-            log.warn("Cv term fullName too long: "+intactCv.getFullName()+", will be truncated to "+ IntactUtils.MAX_FULL_NAME_LEN+" characters.");
-            intactCv.setFullName(intactCv.getFullName().substring(0, IntactUtils.MAX_FULL_NAME_LEN));
         }
     }
 
@@ -508,6 +475,10 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         if (this.objClass != null){
             intactCv.setObjClass(this.objClass);
         }
+        // CvTopic objclass by default if no other choices
+        else if (intactCv.getObjClass() == null){
+            intactCv.setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        }
     }
 
     @Override
@@ -520,7 +491,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         // first remove all dependencies to other cv terms to avoid cycle dependencies when persisting the objects
         Collection<Alias> cvAliases = new ArrayList<Alias>(existingInstance.getSynonyms());
         existingInstance.getSynonyms().clear();
-        Collection<Annotation> cvAnnotations = new ArrayList<Annotation>(existingInstance.getAnnotations());
+        Collection<Annotation> cvAnnotations = new ArrayList<Annotation>(existingInstance.getDbAnnotations());
         existingInstance.getAnnotations().clear();
         Collection<Xref> cvRefs = new ArrayList<Xref>(existingInstance.getDbXrefs());
         existingInstance.getDbXrefs().clear();
@@ -531,10 +502,10 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
         super.persistObject(existingInstance);
 
-        // after persistence, re-attach dependent objects
+        // after persistence, re-attach dependent objects to avoid internal loops when cvs are called by each other
         existingInstance.getSynonyms().addAll(cvAliases);
         existingInstance.getDbXrefs().addAll(cvRefs);
-        existingInstance.getAnnotations().addAll(cvAnnotations);
+        existingInstance.getDbAnnotations().addAll(cvAnnotations);
         existingInstance.getChildren().addAll(children);
         existingInstance.getParents().addAll(parents);
     }

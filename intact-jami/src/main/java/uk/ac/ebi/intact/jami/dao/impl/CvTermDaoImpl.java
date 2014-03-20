@@ -376,7 +376,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         Query query;
         if (topicMI != null){
             query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
-                    "join cv.annotations as a " +
+                    "join cv.dbAnnotations as a " +
                     "join a.topic as t " +
                     "join t.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -403,7 +403,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         Query query;
         if (topicMI != null){
             query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
-                    "join cv.annotations as a " +
+                    "join cv.dbAnnotations as a " +
                     "join a.topic as t " +
                     "join t.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -421,7 +421,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         }
         else{
             query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
-                    "join cv.annotations as a " +
+                    "join cv.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
             query.setParameter("topicName", topicName);
@@ -525,30 +525,22 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByDefinition(String des) {
-        Query query;
-        if (des == null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where cv.definition is null");
-        }
-        else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where cv.definition = :def ");
-            query.setParameter("def", des);
-        }
+        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                    "join cv.dbAnnotations as a " +
+                    "join a.topic as t " +
+                    "where t.shortLabel = :defTopic and a.value = :def ");
+        query.setParameter("defTopic", "definition");
+        query.setParameter("def", des);
         return query.getResultList();
     }
 
     public Collection<IntactCvTerm> getByDescriptionLike(String des) {
-        Query query;
-        if (des == null){
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where cv.definition is null");
-        }
-        else{
-            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
-                    "where upper(cv.definition) like :def ");
-            query.setParameter("def", "%"+des.toUpperCase()+"%");
-        }
+        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                "join cv.dbAnnotations as a " +
+                "join a.topic as t " +
+                    "where t.shortLabel = :defTopic and upper(a.value) like :def ");
+        query.setParameter("defTopic", "definition");
+        query.setParameter("def", "%"+des.toUpperCase()+"%");
         return query.getResultList();
     }
 

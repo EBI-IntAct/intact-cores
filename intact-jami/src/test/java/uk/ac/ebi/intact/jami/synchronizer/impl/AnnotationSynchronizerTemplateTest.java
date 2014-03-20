@@ -3,8 +3,6 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -42,8 +40,6 @@ import javax.persistence.PersistenceUnit;
 @TransactionConfiguration
 public class AnnotationSynchronizerTemplateTest {
 
-    @Autowired
-    private ApplicationContext applicationContext;
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;
     @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")

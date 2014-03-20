@@ -3,8 +3,6 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,8 +42,6 @@ import javax.persistence.PersistenceUnit;
 @TransactionConfiguration
 public class CvTermSynchronizerTemplateTest {
 
-    @Autowired
-    private ApplicationContext applicationContext;
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;
     @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
@@ -98,7 +94,7 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertEquals(aliasType.getAc(), XrefUtils.collectFirstIdentifierWithDatabase(aliasType.getIdentifiers(), null, "intact").getId());
 
         this.synchronizer.setObjClass(IntactUtils.TOPIC_OBJCLASS);
-        this.synchronizer.persist(annotationTopicParent);
+        this.synchronizer.persist(annotationTopic);
 
         Assert.assertNotNull(annotationTopic.getAc());
         Assert.assertEquals("test", annotationTopic.getShortName());
@@ -163,7 +159,8 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertEquals("test3", cvConfidenceType.getShortName());
         Assert.assertEquals("Test Confidence", cvConfidenceType.getFullName());
         Assert.assertEquals("Test Definition", cvConfidenceType.getDefinition());
-        Assert.assertEquals(1, cvConfidenceType.getAnnotations().size());
+        Assert.assertEquals(0, cvConfidenceType.getAnnotations().size());
+        Assert.assertEquals(1, cvConfidenceType.getDbAnnotations().size());
         Assert.assertTrue(cvConfidenceType.getSynonyms().isEmpty());
         Assert.assertEquals(1, cvConfidenceType.getDbXrefs().size());
         Assert.assertTrue(cvConfidenceType.getChildren().isEmpty());
@@ -173,7 +170,7 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertNull(ref.getAc());
         Assert.assertEquals("intact", ref.getDatabase().getShortName());
         Assert.assertTrue(ref.getId().startsWith("IA:"));
-        annot = (CvTermAnnotation) cvConfidenceType.getAnnotations().iterator().next();
+        annot = (CvTermAnnotation) cvConfidenceType.getDbAnnotations().iterator().next();
         Assert.assertNull(annot.getAc());
         Assert.assertEquals(annot.getValue(), cvConfidenceType.getDefinition());
         Assert.assertEquals("definition", annot.getTopic().getShortName());
@@ -232,7 +229,6 @@ public class CvTermSynchronizerTemplateTest {
         // cvs with parent/children
         IntactCvTerm annotationTopic = IntactUtils.createMITopic("teST", null);
         IntactCvTerm annotationTopicParent = IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI);
-        annotationTopic.addParent(annotationTopicParent);
         // cvs with annotations and aliases
         IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
         cvDatabase.getAnnotations().add(new CvTermAnnotation(annotationTopicParent));
@@ -274,28 +270,12 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertTrue(annotationTopic.getSynonyms().isEmpty());
         Assert.assertEquals(1, annotationTopic.getDbXrefs().size());
         Assert.assertTrue(annotationTopic.getChildren().isEmpty());
-        Assert.assertEquals(1, annotationTopic.getParents().size());
+        Assert.assertEquals(0, annotationTopic.getParents().size());
         Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, annotationTopic.getObjClass());
-        Assert.assertTrue(annotationTopicParent == annotationTopic.getParents().iterator().next());
         ref = (CvTermXref) annotationTopic.getDbXrefs().iterator().next();
         Assert.assertNull(ref.getAc());
         Assert.assertEquals("intact", ref.getDatabase().getShortName());
         Assert.assertTrue(ref.getId().startsWith("IA:"));
-
-        Assert.assertNull(annotationTopicParent.getAc());
-        Assert.assertEquals(Annotation.CAUTION, annotationTopicParent.getShortName());
-        Assert.assertNull(annotationTopicParent.getFullName());
-        Assert.assertNull(annotationTopicParent.getDefinition());
-        Assert.assertTrue(annotationTopicParent.getAnnotations().isEmpty());
-        Assert.assertTrue(annotationTopicParent.getSynonyms().isEmpty());
-        Assert.assertEquals(1, annotationTopicParent.getDbXrefs().size());
-        Assert.assertTrue(annotationTopicParent.getParents().isEmpty());
-        Assert.assertEquals(1, annotationTopicParent.getChildren().size());
-        Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, annotationTopicParent.getObjClass());
-        ref = (CvTermXref) annotationTopicParent.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals(Annotation.CAUTION_MI, ref.getId());
-        Assert.assertTrue(annotationTopic == annotationTopicParent.getChildren().iterator().next());
 
         this.synchronizer.setObjClass(IntactUtils.DATABASE_OBJCLASS);
         this.synchronizer.synchronizeProperties(cvDatabase);
@@ -329,7 +309,8 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertEquals("test3", cvConfidenceType.getShortName());
         Assert.assertEquals("Test Confidence", cvConfidenceType.getFullName());
         Assert.assertEquals("Test Definition", cvConfidenceType.getDefinition());
-        Assert.assertEquals(1, cvConfidenceType.getAnnotations().size());
+        Assert.assertEquals(0, cvConfidenceType.getAnnotations().size());
+        Assert.assertEquals(1, cvConfidenceType.getDbAnnotations().size());
         Assert.assertTrue(cvConfidenceType.getSynonyms().isEmpty());
         Assert.assertEquals(1, cvConfidenceType.getDbXrefs().size());
         Assert.assertTrue(cvConfidenceType.getChildren().isEmpty());
@@ -339,7 +320,7 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertNull(ref.getAc());
         Assert.assertEquals("intact", ref.getDatabase().getShortName());
         Assert.assertTrue(ref.getId().startsWith("IA:"));
-        annot = (CvTermAnnotation) cvConfidenceType.getAnnotations().iterator().next();
+        annot = (CvTermAnnotation) cvConfidenceType.getDbAnnotations().iterator().next();
         Assert.assertNull(annot.getAc());
         Assert.assertEquals(annot.getValue(), cvConfidenceType.getDefinition());
         Assert.assertEquals("definition", annot.getTopic().getShortName());
@@ -361,7 +342,6 @@ public class CvTermSynchronizerTemplateTest {
         // cvs with parent/children
         IntactCvTerm annotationTopic = IntactUtils.createMITopic("teST", null);
         IntactCvTerm annotationTopicParent = IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI);
-        annotationTopic.addParent(annotationTopicParent);
         // cvs with annotations and aliases
         IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
         cvDatabase.getAnnotations().add(new CvTermAnnotation(annotationTopicParent));
@@ -403,9 +383,8 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertTrue(newCv2.getSynonyms().isEmpty());
         Assert.assertEquals(1, newCv2.getDbXrefs().size());
         Assert.assertTrue(newCv2.getChildren().isEmpty());
-        Assert.assertEquals(1, newCv2.getParents().size());
+        Assert.assertEquals(0, newCv2.getParents().size());
         Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, newCv2.getObjClass());
-        Assert.assertTrue(annotationTopicParent == newCv2.getParents().iterator().next());
         ref = (CvTermXref) newCv2.getDbXrefs().iterator().next();
         Assert.assertNull(ref.getAc());
         Assert.assertEquals("intact", ref.getDatabase().getShortName());
@@ -432,7 +411,8 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertEquals("test3", newCv4.getShortName());
         Assert.assertEquals("Test Confidence", newCv4.getFullName());
         Assert.assertEquals("Test Definition", newCv4.getDefinition());
-        Assert.assertEquals(1, newCv4.getAnnotations().size());
+        Assert.assertEquals(0, newCv4.getAnnotations().size());
+        Assert.assertEquals(1, newCv4.getDbAnnotations().size());
         Assert.assertTrue(newCv4.getSynonyms().isEmpty());
         Assert.assertEquals(1, newCv4.getDbXrefs().size());
         Assert.assertTrue(newCv4.getChildren().isEmpty());
@@ -442,7 +422,7 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertNull(ref.getAc());
         Assert.assertEquals("intact", ref.getDatabase().getShortName());
         Assert.assertTrue(ref.getId().startsWith("IA:"));
-        CvTermAnnotation annot = (CvTermAnnotation) newCv4.getAnnotations().iterator().next();
+        CvTermAnnotation annot = (CvTermAnnotation) newCv4.getDbAnnotations().iterator().next();
         Assert.assertNull(annot.getAc());
         Assert.assertEquals(annot.getValue(), newCv4.getDefinition());
         Assert.assertEquals("definition", annot.getTopic().getShortName());

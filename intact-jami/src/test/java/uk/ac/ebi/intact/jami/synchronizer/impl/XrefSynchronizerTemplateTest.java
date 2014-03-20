@@ -41,8 +41,6 @@ import javax.persistence.PersistenceUnit;
 @DirtiesContext
 public class XrefSynchronizerTemplateTest {
 
-    @Autowired
-    private ApplicationContext applicationContext;
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;
     @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")

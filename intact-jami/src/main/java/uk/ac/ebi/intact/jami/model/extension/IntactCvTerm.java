@@ -54,7 +54,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
      * @deprecated the objclass is only kept for backward compatibility with intact-core
      */
     private String objClass;
-    private String definition;
+    private Annotation definition;
 
     private Collection<OntologyTerm> parents;
     private Collection<OntologyTerm> children;
@@ -96,7 +96,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     public IntactCvTerm(String shortName, String fullName, Xref ontologyId, String def){
         this(shortName, fullName, ontologyId);
-        this.definition = def;
+        setDefinition(def);
     }
 
     @Column(name = "shortlabel", nullable = false)
@@ -126,6 +126,15 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         this.objClass = objClass;
     }
 
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAlias.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(CvTermAlias.class)
+    @Override
+    public Collection<Alias> getSynonyms() {
+        return super.getSynonyms();
+    }
+
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAnnotation.class)
     @JoinTable(
             name="ia_cvobject2annot",
@@ -140,17 +149,22 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
      * When intact-core will be removed, the join table would disappear wnd the relation would become
      * @JoinColumn(name="parent_ac", referencedColumnName="ac")
      */
-    public Collection<Annotation> getAnnotations() {
-        return super.getAnnotations();
+    public Collection<Annotation> getDbAnnotations() {
+        return super.getDbAnnotations();
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = CvTermAlias.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
-    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(CvTermAlias.class)
     @Override
-    public Collection<Alias> getSynonyms() {
-        return super.getSynonyms();
+    protected boolean processAddedAnnotations(Annotation annot) {
+        if (annot.getTopic().getShortName().equalsIgnoreCase("definition")){
+            this.definition = annot;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void resetFieldsLinkedToAnnotations() {
+        this.definition = null;
     }
 
     /**
@@ -221,14 +235,25 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         }
     }
 
-    @Column(name = "definition", length = IntactUtils.MAX_DESCRIPTION_LEN )
-    @Size( max = IntactUtils.MAX_DESCRIPTION_LEN )
+    /**
+     * NOTE: This field is currently transient for backward compatibility with intact-core.
+     * In the future, we plan to have a proper column
+     * @Column(name = "definition", length = IntactUtils.MAX_DESCRIPTION_LEN )
+     * @Size( max = IntactUtils.MAX_DESCRIPTION_LEN )
+     */
+    @Transient
     public String getDefinition() {
-        return this.definition;
+        // initialise annot first
+        getAnnotations();
+        return this.definition != null ? this.definition.getValue() : null;
     }
 
     public void setDefinition(String def) {
-        this.definition = def;
+        if (this.definition != null){
+            getDbAnnotations().remove(this.definition);
+        }
+        this.definition = new CvTermAnnotation(IntactUtils.createMITopic("definition", null), def);
+        getDbAnnotations().add(this.definition);
     }
 
     @Column( name = "objclass", nullable = false)
@@ -251,7 +276,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     @Transient
     public boolean areAnnotationsInitialized(){
-        return Hibernate.isInitialized(getAnnotations());
+        return Hibernate.isInitialized(getDbAnnotations());
     }
 
     @Transient

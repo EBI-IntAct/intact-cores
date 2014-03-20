@@ -29,7 +29,9 @@ import java.util.Collection;
  * Note: we don't want to mix source with other cv terms as IntAct institution need to be separate entities
  * NOTE: The cv term ac is automatically added as an identifier in getIdentifiers but is not persisted in getDbXrefs.
  * The getIdentifiers.remove will thrown an UnsupportedOperationException if someone tries to remove the AC identifier from the list of identifiers
- *
+ * NOTE: getAnnotations is not persistent. For HQL queries, the method getDbAnnotations should be used because is annotated with hibernate annotations.
+ * However, getDbAnnotations should not be used directly to add/remove annotations because it could mess up with the state of the object. Only the synchronizers
+ * can use it this way before persistence. The access type of DbAnnotations is private as it does not have to be used by the synchronizers neither.
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>08/01/14</pre>
@@ -45,7 +47,8 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     private Xref parIdentifier;
 
     private PersistentXrefList persistentXrefs;
-    private Collection<Annotation> annotations;
+    private CvTermAnnotationList annotations;
+    private PersistentAnnotationList persistentAnnotations;
     private Collection<Alias> synonyms;
 
     private Xref acRef;
@@ -305,6 +308,14 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         return this.persistentXrefs.getWrappedList();
     }
 
+    @javax.persistence.Transient
+    protected Collection<Annotation> getDbAnnotations() {
+        if (this.persistentAnnotations == null){
+            this.persistentAnnotations = new PersistentAnnotationList(null);
+        }
+        return this.persistentAnnotations.getWrappedList();
+    }
+
     protected void setDbXrefs(Collection<Xref> persistentXrefs){
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
@@ -319,16 +330,45 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     }
 
     protected void initialiseAnnotations(){
-        this.annotations = new ArrayList<Annotation>();
+        this.annotations = new CvTermAnnotationList();
+
+        // initialise persistent annotations and content
+        if (this.persistentAnnotations != null){
+            for (Annotation annot : this.persistentAnnotations){
+                if (!processAddedAnnotations(annot)){
+                    this.annotations.addOnly(annot);
+                }
+            }
+        }
+        else{
+            this.persistentAnnotations = new PersistentAnnotationList(null);
+        }
     }
+
+    protected abstract boolean processAddedAnnotations(Annotation annot);
 
     protected void initialiseSynonyms(){
         this.synonyms = new ArrayList<Alias>();
     }
 
-    protected void setAnnotations(Collection<Annotation> annotations){
+    protected void initialiseAnnotationsWith(CvTermAnnotationList annotations){
         this.annotations = annotations;
     }
+
+    protected void setDbAnnotations(Collection<Annotation> annotations){
+        if (annotations instanceof PersistentAnnotationList){
+            this.persistentAnnotations = (PersistentAnnotationList)annotations;
+            resetFieldsLinkedToAnnotations();
+            this.annotations = null;
+        }
+        else{
+            this.persistentAnnotations = new PersistentAnnotationList(annotations);
+            resetFieldsLinkedToAnnotations();
+            this.annotations = null;
+        }
+    }
+
+    protected abstract void resetFieldsLinkedToAnnotations();
 
     protected void setSynonyms(Collection<Alias> aliases){
         this.synonyms = aliases;
@@ -480,6 +520,54 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
         @Override
         protected Xref processOrWrapElementToAdd(Xref added) {
+            return added;
+        }
+
+        @Override
+        protected void processElementToRemove(Object o) {
+            // nothing to do
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToRemove(Object o) {
+            return false;
+        }
+    }
+
+    protected class CvTermAnnotationList extends AbstractListHavingProperties<Annotation> {
+        public CvTermAnnotationList(){
+            super();
+        }
+
+        @Override
+        protected void processAddedObjectEvent(Annotation added) {
+            persistentAnnotations.add(added);
+        }
+
+        @Override
+        protected void processRemovedObjectEvent(Annotation removed) {
+            persistentAnnotations.remove(removed);
+        }
+
+        @Override
+        protected void clearProperties() {
+            persistentAnnotations.retainAll(getIdentifiers());
+        }
+    }
+
+    protected class PersistentAnnotationList extends AbstractCollectionWrapper<Annotation> {
+
+        public PersistentAnnotationList(Collection<Annotation> persistentBag){
+            super(persistentBag);
+        }
+
+        @Override
+        protected boolean needToPreProcessElementToAdd(Annotation added) {
+            return false;
+        }
+
+        @Override
+        protected Annotation processOrWrapElementToAdd(Annotation added) {
             return added;
         }
 

@@ -5,11 +5,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
-import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
@@ -235,34 +233,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
      * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
      */
     public Collection<Xref> getDbXrefs() {
-        return super.getXrefs();
-    }
-
-    @Override
-    protected void initialiseAnnotations() {
-        super.setAnnotations(new SourceAnnotationList(null));
-
-        for (Annotation annot : super.getAnnotations()){
-            processAddedAnnotationEvent(annot);
-        }
-    }
-
-    private void processAddedAnnotationEvent(Annotation added) {
-        if (url == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.URL_MI, Annotation.URL)){
-            url = added;
-        }
-        else if (postalAddress == null && AnnotationUtils.doesAnnotationHaveTopic(added, null, Annotation.POSTAL_ADDRESS)){
-            postalAddress = added;
-        }
-    }
-
-    private void processRemovedAnnotationEvent(Annotation removed) {
-        if (url != null && url.equals(removed)){
-            url = null;
-        }
-        else if (postalAddress != null && postalAddress.equals(removed)){
-            postalAddress = null;
-        }
+        return super.getDbXrefs();
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAnnotation.class)
@@ -282,14 +253,52 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
      * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).
      *
      */
-    private Collection<Annotation> getDbAnnotations() {
-        return ((SourceAnnotationList)super.getAnnotations()).getWrappedList();
+    @Override
+    public Collection<Annotation> getDbAnnotations() {
+        return super.getDbAnnotations();
     }
 
-    private void setDbAnnotations(Collection<Annotation> persistentAnnotations) {
-        super.setAnnotations(new SourceAnnotationList(persistentAnnotations));
-        for (Annotation annot : super.getAnnotations()){
+    @Override
+    protected void resetFieldsLinkedToAnnotations() {
+        this.url = null;
+        this.postalAddress = null;
+    }
+
+    @Override
+    protected void initialiseAnnotations() {
+        super.initialiseAnnotationsWith(new SourceAnnotationList(null));
+
+        for (Annotation annot : super.getDbAnnotations()){
             processAddedAnnotationEvent(annot);
+        }
+    }
+
+    @Override
+    protected boolean processAddedAnnotations(Annotation annot) {
+        if (url == null && AnnotationUtils.doesAnnotationHaveTopic(annot, Annotation.URL_MI, Annotation.URL)){
+            url = annot;
+        }
+        else if (postalAddress == null && AnnotationUtils.doesAnnotationHaveTopic(annot, null, Annotation.POSTAL_ADDRESS)){
+            postalAddress = annot;
+        }
+        return false;
+    }
+
+    private void processAddedAnnotationEvent(Annotation added) {
+        if (url == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.URL_MI, Annotation.URL)){
+            url = added;
+        }
+        else if (postalAddress == null && AnnotationUtils.doesAnnotationHaveTopic(added, null, Annotation.POSTAL_ADDRESS)){
+            postalAddress = added;
+        }
+    }
+
+    private void processRemovedAnnotationEvent(Annotation removed) {
+        if (url != null && url.equals(removed)){
+            url = null;
+        }
+        else if (postalAddress != null && postalAddress.equals(removed)){
+            postalAddress = null;
         }
     }
 
@@ -332,30 +341,28 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     }
 
 
-    private class SourceAnnotationList extends AbstractCollectionWrapper<Annotation> {
+    private class SourceAnnotationList extends CvTermAnnotationList {
         public SourceAnnotationList(Collection<Annotation> annots){
-            super(annots);
+            super();
         }
 
         @Override
-        protected boolean needToPreProcessElementToAdd(Annotation added) {
-            return true;
-        }
-
-        @Override
-        protected Annotation processOrWrapElementToAdd(Annotation added) {
+        protected void processAddedObjectEvent(Annotation added) {
+            super.processAddedObjectEvent(added);
             processAddedAnnotationEvent(added);
-            return added;
         }
 
         @Override
-        protected void processElementToRemove(Object o) {
-            processRemovedAnnotationEvent((Annotation)o);
+        protected void processRemovedObjectEvent(Annotation removed) {
+            super.processRemovedObjectEvent(removed);
+            processRemovedAnnotationEvent(removed);
         }
 
         @Override
-        protected boolean needToPreProcessElementToRemove(Object o) {
-            return o instanceof Annotation;
+        protected void clearProperties() {
+            super.clearProperties();
+            url = null;
+            postalAddress = null;
         }
     }
 }
