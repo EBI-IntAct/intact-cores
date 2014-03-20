@@ -8,12 +8,14 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
 /**
  * Finder/persister for alias
+ *
+ * It does not cache persisted aliases. It only synchronize the alias type (with persist = true) to make sure that the alias type
+ * is persisted before so the alias can be persisted
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -36,11 +38,6 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
         if (object.getType() != null){
             CvTerm type = object.getType();
             object.setType(getContext().getAliasTypeSynchronizer().synchronize(type, true));
-        }
-        // check alias name
-        if (object.getName().length() > IntactUtils.MAX_ALIAS_NAME_LEN){
-            log.warn("Alias name too long: "+object.getName()+", will be truncated to "+ IntactUtils.MAX_ALIAS_NAME_LEN+" characters.");
-            object.setName(object.getName().substring(0, IntactUtils.MAX_ALIAS_NAME_LEN));
         }
     }
 

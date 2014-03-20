@@ -91,10 +91,6 @@ public class AliasSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -135,10 +131,6 @@ public class AliasSynchronizerTemplateTest {
         IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
         Assert.assertEquals(aliasType2.getAc(), aliasSynonym.getAc());
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
-
-        entityManager.flush();
-
-        System.out.println("flush");
     }
 
     @Transactional
@@ -182,10 +174,35 @@ public class AliasSynchronizerTemplateTest {
         IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
         Assert.assertEquals(aliasType2.getAc(), aliasSynonym.getAc());
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_alias_deleted() throws PersisterException, FinderException, SynchronizerException {
+        this.context = new DefaultSynchronizerContext(this.entityManager);
+        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
+
+        // pre persist alias synonym
+        IntactCvTerm aliasSynonym = createExistingType();
+
+        entityManager.detach(aliasSynonym);
+
+        CvTermAlias cvAliasWithType = new CvTermAlias(aliasSynonym, "test synonym");
+
+        this.synchronizer.setIntactClass(CvTermAlias.class);
+        this.synchronizer.persist(cvAliasWithType);
+
+        Assert.assertNotNull(cvAliasWithType.getType());
+        IntactCvTerm aliasType = (IntactCvTerm)cvAliasWithType.getType();
+        Assert.assertEquals(aliasType.getAc(), aliasSynonym.getAc());
 
         entityManager.flush();
-
         System.out.println("flush");
+
+        this.synchronizer.delete(cvAliasWithType);
+
+        Assert.assertNull(entityManager.find(CvTermAlias.class, cvAliasWithType.getAc()));
     }
 
     @Transactional
@@ -200,8 +217,6 @@ public class AliasSynchronizerTemplateTest {
         this.synchronizer.persist(cvAliasNotPersisted);
         entityManager.flush();
         this.context.clearCache();
-
-        System.out.println("flush");
 
         Assert.assertNull(this.synchronizer.find(cvAliasNotPersisted));
         Assert.assertNull(this.synchronizer.find(cvAliasPersisted));
@@ -246,8 +261,6 @@ public class AliasSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
-
-        entityManager.flush();
     }
 
     @Transactional
@@ -289,8 +302,6 @@ public class AliasSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
-
-        entityManager.flush();
     }
 
     @Transactional
@@ -332,8 +343,6 @@ public class AliasSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
-
-        entityManager.flush();
     }
 
     @Transactional
@@ -375,8 +384,6 @@ public class AliasSynchronizerTemplateTest {
         Assert.assertNotNull(aliasType2.getAc());
         Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
-
-        entityManager.flush();
     }
 
     private IntactCvTerm createExistingType() {
