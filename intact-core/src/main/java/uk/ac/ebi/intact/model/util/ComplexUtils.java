@@ -108,7 +108,7 @@ public final class ComplexUtils {
     //Generic method to retrieve information stored in the annotations
     private static String getAnnotationById(InteractionImpl complex, String id) {
         for (Annotation annotation : complex.getAnnotations()) {
-            if (annotation.getCvTopic() != null && annotation.getCvTopic().getIdentifier() != null && annotation.getCvTopic().getIdentifier().equals(id)) {
+            if (annotation.getCvTopic() != null && annotation.getCvTopic().getIdentifier() != null && annotation.getCvTopic().getIdentifier().equalsIgnoreCase(id)) {
                 return annotation.getAnnotationText();
             }
         }
@@ -125,7 +125,7 @@ public final class ComplexUtils {
 
     private static String getAnnotationByShortLabel(InteractionImpl complex, String shortLabel) {
         for (Annotation annotation : complex.getAnnotations()) {
-            if (annotation.getCvTopic() != null && annotation.getCvTopic().getShortLabel() != null && annotation.getCvTopic().getShortLabel().equals(shortLabel)) {
+            if (annotation.getCvTopic() != null && annotation.getCvTopic().getShortLabel() != null && annotation.getCvTopic().getShortLabel().equalsIgnoreCase(shortLabel)) {
                 return annotation.getAnnotationText();
             }
         }
@@ -140,9 +140,13 @@ public final class ComplexUtils {
         return getAnnotationByShortLabel(complex, CvTopic.COMPLEX_ASSEMBLY);
     }
 
+    public static String getFunction(InteractionImpl complex) {
+        return getAnnotationByShortLabel(complex, CvTopic.CURATED_COMPLEX);
+    }
+
     public static boolean isComplex(Interaction interaction) {
         for (Annotation annot : interaction.getAnnotations()) {
-            if (annot.getCvTopic() != null && annot.getCvTopic().getShortLabel().equalsIgnoreCase("curated-complex")) {
+            if (annot.getCvTopic() != null && annot.getCvTopic().getShortLabel().equalsIgnoreCase(CvTopic.CURATED_COMPLEX)) {
                 return true;
             }
         }
