@@ -70,7 +70,7 @@ public final class ComplexUtils {
         name = getSystematicName(complex);
         if (name != null) return name;
         List<String> synonyms = getSynonyms(complex);
-        if (synonyms != Collections.EMPTY_LIST) return synonyms.get(0);
+        if (! synonyms.isEmpty()) return synonyms.get(0);
         name = getFirstAlias(complex);
         if (name != null) return name;
         return complex.getShortLabel();
