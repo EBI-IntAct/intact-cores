@@ -50,12 +50,12 @@ public class InteractorImplTest extends IntactBasicTestCase {
     
     @Test
     public void correctObjClass2() throws Exception {
-        InteractorImpl interactor = (InteractorImpl) getMockBuilder().createProteinRandom();
+        InteractorImpl interactor = (InteractorImpl) getMockBuilder().createPeptideRandom();
         interactor.setCvInteractorType(getMockBuilder().createCvObject(CvInteractorType.class, "MI:0904", "polysaccharide"));
 
         Assert.assertEquals(ProteinImpl.class.getName(), interactor.getObjClass());
         interactor.correctObjClass();
-        Assert.assertEquals(PolymerImpl.class.getName(), interactor.getObjClass());
+        Assert.assertEquals(SmallMoleculeImpl.class.getName(), interactor.getObjClass());
     }
 
     @Test
