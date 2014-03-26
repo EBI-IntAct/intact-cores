@@ -3,8 +3,8 @@ package uk.ac.ebi.intact.jami.model;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.user.User;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -14,7 +14,7 @@ import java.util.Date;
  * @version $Id$
  */
 @Entity
-@DiscriminatorValue("publication")
+@Table( name = "ia_lifecycle_event" )
 public class PublicationLifecycleEvent extends AbstractLifecycleEvent {
 
     public PublicationLifecycleEvent() {

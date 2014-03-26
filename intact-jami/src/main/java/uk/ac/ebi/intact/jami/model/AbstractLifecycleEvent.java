@@ -17,9 +17,7 @@ import java.util.Date;
  * @version $Id$
  */
 @Entity
-@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
-@Table( name = "ia_lifecycle_event" )
-@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
 public abstract class AbstractLifecycleEvent extends AbstractIntactPrimaryObject implements LifeCycleEvent {
 
     private CvTerm event;
