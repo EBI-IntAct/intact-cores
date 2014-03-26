@@ -28,6 +28,10 @@ public class SchemaUtilsTest {
     public void testGenerateCreateSchemaDDLForOracle() throws Exception {
         String[] strings = SchemaUtils.generateCreateSchemaDDLForOracle();
 
+        for (String val : strings){
+            System.out.println(val);
+        }
+
         Assert.assertEquals(183, strings.length);
         Assert.assertEquals(183, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length);
         Assert.assertEquals(183, SchemaUtils.generateCreateSchemaDDLForHSQL().length);

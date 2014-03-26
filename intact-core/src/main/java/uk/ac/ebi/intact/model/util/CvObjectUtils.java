@@ -116,6 +116,18 @@ public final class CvObjectUtils {
         return isChildOfType(type, CvInteractorType.PROTEIN_MI_REF, true);
     }
 
+    public static boolean isGeneType(CvInteractorType type) {
+        return isChildOfType(type, CvInteractorType.GENE_MI_REF, true);
+    }
+
+    public static boolean isComplexType(CvInteractorType type) {
+        return isChildOfType(type, CvInteractorType.COMPLEX_MI_REF, true);
+    }
+
+    public static boolean isMoleculeSetType(CvInteractorType type) {
+        return isChildOfType(type, CvInteractorType.MOLECULE_SET_MI_REF, true);
+    }
+
     public static boolean isPeptideType(CvInteractorType type) {
         return isChildOfType(type, CvInteractorType.PEPTIDE_MI_REF, true);
     }

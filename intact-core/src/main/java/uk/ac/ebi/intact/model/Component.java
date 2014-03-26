@@ -8,11 +8,14 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import uk.ac.ebi.intact.core.util.HashCodeUtils;
+import uk.ac.ebi.intact.model.util.ComplexUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -105,6 +108,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      */
     private Collection<ComponentConfidence> confidences;
 
+    /**
+     * The category property has been created for compatibility with intact-jami
+     */
+    private String category;
+
     ///////////////////////
     // Constructor
 
@@ -183,6 +191,35 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     public Component( Institution owner, String shortLabel, Interaction interaction, Interactor interactor,
                       CvExperimentalRole experimentalRole, CvBiologicalRole biologicalRole ) {
         this(shortLabel, interaction, interactor, experimentalRole, biologicalRole);
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void correctCategory() {
+        if (this.interaction != null){
+           if (Hibernate.isInitialized(this.interaction.getAnnotations())){
+               if (ComplexUtils.isComplex(this.interaction)){
+                   if (this.category == null || !this.category.endsWith("_pool")){
+                       this.category = "modelled_participant";
+                   }
+                   else {
+                       this.category = "modelled_participant_pool";
+                   }
+               }
+               else if (this.category == null || !this.category.endsWith("_pool")){
+                   this.category = "participant_evidence";
+               }
+               else {
+                   this.category = "participant_evidence_pool";
+               }
+           }
+           else if (this.category == null){
+               this.category = "participant_evidence";
+           }
+        }
+        else if (this.category == null){
+            this.category = "participant_evidence";
+        }
     }
 
     ///////////////////////////////////////
@@ -853,5 +890,15 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 //			copy.confidences.add( copyConfidence );
 //		}
         return copy;
+    }
+
+    @Column(name = "category", nullable = false)
+    @NotNull
+    private String getCategory() {
+        return category;
+    }
+
+    private void setCategory(String category) {
+        this.category = category;
     }
 }

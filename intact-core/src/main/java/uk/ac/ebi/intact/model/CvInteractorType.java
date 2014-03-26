@@ -48,6 +48,11 @@ public class CvInteractorType extends CvDagObject {
     public static final String GENE = "gene";
     public static final String GENE_MI_REF = "MI:0250";
 
+    public static final String COMPLEX = "complex";
+    public static final String COMPLEX_MI_REF = "MI:0314";
+
+    public static final String MOLECULE_SET = "molecule set";
+    public static final String MOLECULE_SET_MI_REF = "MI:1304";
 
     public static final String UNKNOWN_PARTICIPANT = "unknown participant";
     public static final String UNKNOWN_PARTICIPANT_MI_REF = "MI:0329";

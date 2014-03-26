@@ -6,10 +6,13 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.core.util.HashCodeUtils;
+import uk.ac.ebi.intact.model.util.ComplexUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -68,6 +71,10 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      * TODO comments
      */
     private CvFeatureType cvFeatureType;
+    /**
+     * The category property has been created for compatibility with intact-jami
+     */
+    private String category;
 
 
     //---------------------------- constructors -----------------------------------
@@ -111,6 +118,32 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     public Feature( Institution owner, String shortLabel,
                     Component component, CvFeatureType type ) {
         this( shortLabel, component, type );
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void correctCategory() {
+        if (this.component != null){
+            if (this.component.getInteraction() != null){
+                if (Hibernate.isInitialized(this.component.getInteraction().getAnnotations())){
+                    if (ComplexUtils.isComplex(this.component.getInteraction())){
+                        this.category = "modelled";
+                    }
+                    else {
+                        this.category = "evidence";
+                    }
+                }
+                else if (this.category == null){
+                    this.category = "evidence";
+                }
+            }
+            else if (this.category == null){
+                this.category = "evidence";
+            }
+        }
+        else if (this.category == null){
+            this.category = "evidence";
+        }
     }
 
     //----------------------- public methods ------------------------------
@@ -370,6 +403,16 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
      */
     void setComponentForClone( Component component ) {
         this.component = component;
+    }
+
+    @Column(name = "category", nullable = false)
+    @NotNull
+    private String getCategory() {
+        return category;
+    }
+
+    private void setCategory(String category) {
+        this.category = category;
     }
 }
 

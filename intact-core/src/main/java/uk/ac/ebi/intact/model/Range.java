@@ -7,10 +7,13 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
+import uk.ac.ebi.intact.model.util.ComplexUtils;
 import uk.ac.ebi.intact.model.util.FeatureUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * <p/>
@@ -127,6 +130,10 @@ public class Range extends BasicObjectImpl {
     private CvFuzzyType toCvFuzzyType;
 
     private Feature feature;
+    /**
+     * The category property has been created for compatibility with intact-jami
+     */
+    private String category;
 
     /**
      * Sets the bean's from range
@@ -313,6 +320,36 @@ public class Range extends BasicObjectImpl {
 
     //------------------------- public methods --------------------------------------
 
+    @PrePersist
+    @PreUpdate
+    protected void correctCategory() {
+        if (this.feature != null){
+            if (this.feature.getComponent() != null){
+                if (this.feature.getComponent().getInteraction() != null){
+                    if (Hibernate.isInitialized(this.feature.getComponent().getInteraction().getAnnotations())){
+                        if (ComplexUtils.isComplex(this.feature.getComponent().getInteraction())){
+                            this.category = "modelled";
+                        }
+                        else {
+                            this.category = "evidence";
+                        }
+                    }
+                    else if (this.category == null){
+                        this.category = "evidence";
+                    }
+                }
+                else if (this.category == null){
+                    this.category = "evidence";
+                }
+            }
+            else if (this.category == null){
+                this.category = "evidence";
+            }
+        }
+        else if (this.category == null){
+            this.category = "evidence";
+        }
+    }
 
     private void setRangePositions(int fromStart, int fromEnd, int toStart, int toEnd, String seq ){
         if (fromStart < 0){
@@ -1097,6 +1134,16 @@ public boolean isUndetermined() {
         }
 
         this.downStreamSequence = downStreamSequence;
+    }
+
+    @Column(name = "category", nullable = false)
+    @NotNull
+    private String getCategory() {
+        return category;
+    }
+
+    private void setCategory(String category) {
+        this.category = category;
     }
 }
 
