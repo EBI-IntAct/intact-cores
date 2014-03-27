@@ -141,8 +141,6 @@ public class PreferenceSynchronizerTest {
     @Test
     @DirtiesContext
     public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
 
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
@@ -171,8 +169,6 @@ public class PreferenceSynchronizerTest {
     @Test
     @DirtiesContext
     public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
 
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);

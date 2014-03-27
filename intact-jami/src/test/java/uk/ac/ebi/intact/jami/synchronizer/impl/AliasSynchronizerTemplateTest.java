@@ -382,6 +382,60 @@ public class AliasSynchronizerTemplateTest {
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
     }
 
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException {
+
+        this.context = new DefaultSynchronizerContext(this.entityManager);
+        this.synchronizer = new AliasSynchronizerTemplate(this.context, CvTermAlias.class);
+
+        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        this.synchronizer.synchronize(cvAliasWithType, true);
+
+        Assert.assertNotNull(cvAliasWithType.getAc());
+        String ac = cvAliasWithType.getAc();
+        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+
+        this.entityManager.flush();
+        this.entityManager.detach(cvAliasWithType);
+
+        cvAliasWithType.setName("value2");
+
+        CvTermAlias newPref = (CvTermAlias)this.synchronizer.synchronize(cvAliasWithType, true);
+
+        Assert.assertEquals(ac, newPref.getAc());
+        Assert.assertEquals("value2", newPref.getName());
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException {
+
+        this.context = new DefaultSynchronizerContext(this.entityManager);
+        this.synchronizer = new AliasSynchronizerTemplate(this.context, CvTermAlias.class);
+
+        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        this.synchronizer.synchronize(cvAliasWithType, true);
+
+        Assert.assertNotNull(cvAliasWithType.getAc());
+        String ac = cvAliasWithType.getAc();
+        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+
+        this.entityManager.flush();
+        this.entityManager.detach(cvAliasWithType);
+
+        CvTermAlias pref = this.entityManager.find(CvTermAlias.class, ac);
+        pref.setName("value2");
+        this.entityManager.detach(pref);
+
+        CvTermAlias newPref = (CvTermAlias)this.synchronizer.synchronize(pref, true);
+
+        Assert.assertEquals(ac, newPref.getAc());
+        Assert.assertEquals("value2", newPref.getName());
+    }
+
     private IntactCvTerm createExistingType() {
         // pre persist alias synonym
         IntactCvTerm aliasSynonym = new IntactCvTerm(Alias.SYNONYM);
