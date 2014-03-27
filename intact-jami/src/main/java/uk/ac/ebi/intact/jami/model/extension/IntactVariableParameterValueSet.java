@@ -131,7 +131,7 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
     )
     @Target(IntactVariableParameterValue.class)
     @LazyCollection(LazyCollectionOption.FALSE)
-    private Set<VariableParameterValue> getVariableParameterValues() {
+    protected Set<VariableParameterValue> getVariableParameterValues() {
         if (this.variableParameterValues == null){
             this.variableParameterValues = new HashSet<VariableParameterValue>();
         }

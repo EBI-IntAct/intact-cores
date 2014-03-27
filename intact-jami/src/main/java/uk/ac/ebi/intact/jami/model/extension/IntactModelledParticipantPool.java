@@ -262,7 +262,7 @@ public class IntactModelledParticipantPool extends IntactModelledParticipant imp
     )
     @Target(IntactModelledParticipant.class)
     @LazyCollection(LazyCollectionOption.FALSE)
-    private Collection<ModelledParticipant> getComponents() {
+    protected Collection<ModelledParticipant> getComponents() {
         if (this.components == null){
             this.components = new ArrayList<ModelledParticipant>();
         }

@@ -247,7 +247,7 @@ public class IntactParticipantEvidencePool extends IntactParticipantEvidence imp
     )
     @Target(IntactParticipantEvidence.class)
     @LazyCollection(LazyCollectionOption.FALSE)
-    private Collection<ParticipantEvidence> getComponents() {
+    protected Collection<ParticipantEvidence> getComponents() {
         if (components == null){
             components = new ArrayList<ParticipantEvidence>();
         }

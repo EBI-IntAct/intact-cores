@@ -12,6 +12,7 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -447,89 +448,133 @@ public class CvTermSynchronizerTemplateTest {
         System.out.println("flush");
     }
 
-    /*@Transactional
+    @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
+        this.synchronizer = new CvTermSynchronizer(this.context);
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        // simple cv with xrefs
+        IntactCvTerm aliasType = IntactUtils.createMIAliasType(Alias.GENE_NAME+ " ", Alias.GENE_NAME_MI);
+        // cvs with parent/children
+        IntactCvTerm annotationTopic = IntactUtils.createMITopic("teST", null);
+        IntactCvTerm annotationTopicParent = IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI);
+        // cvs with annotations and aliases
+        IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
+        cvDatabase.getAnnotations().add(new CvTermAnnotation(annotationTopicParent));
+        cvDatabase.getSynonyms().add(new CvTermAlias(aliasType, "test synonym"));
+        // cvs with fullname and definition
+        IntactCvTerm cvConfidenceType = IntactUtils.createMIConfidenceType("test3", null);
+        cvConfidenceType.setFullName("Test Confidence");
+        cvConfidenceType.setDefinition("Test Definition");
+        cvConfidenceType.setObjClass(null);
 
-        OrganismAlias organismAlias = new OrganismAlias("test synonym 2");
+        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        IntactCvTerm newCv = this.synchronizer.synchronize(aliasType, true);
 
-        InteractorAlias interactorAlias = new InteractorAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
+        Assert.assertNotNull(newCv.getAc());
+        Assert.assertEquals(Alias.GENE_NAME, newCv.getShortName());
+        Assert.assertNull(newCv.getFullName());
+        Assert.assertNull(newCv.getDefinition());
+        Assert.assertTrue(newCv.getAnnotations().isEmpty());
+        Assert.assertTrue(newCv.getSynonyms().isEmpty());
+        Assert.assertTrue(newCv.getParents().isEmpty());
+        Assert.assertTrue(newCv.getChildren().isEmpty());
+        Assert.assertEquals(1, newCv.getDbXrefs().size());
+        Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, newCv.getObjClass());
+        CvTermXref ref = (CvTermXref) newCv.getDbXrefs().iterator().next();
+        Assert.assertNull(ref.getAc());
+        Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
 
-        this.synchronizer.setIntactClass(CvTermAlias.class);
-        this.synchronizer.synchronize(cvAliasWithType, true);
+        Assert.assertEquals(2, newCv.getIdentifiers().size());
+        Assert.assertNotNull(XrefUtils.collectFirstIdentifierWithDatabase(newCv.getIdentifiers(), null, "intact"));
 
-        Assert.assertNotNull(cvAliasWithType.getAc());
-        Assert.assertNotNull(cvAliasWithType.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAliasWithType.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAliasWithType.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+        this.synchronizer.setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        IntactCvTerm newCv2 = this.synchronizer.synchronize(annotationTopic, true);
 
-        this.synchronizer.setIntactClass(OrganismAlias.class);
-        this.synchronizer.synchronize(organismAlias, true);
+        Assert.assertNotNull(newCv2.getAc());
+        Assert.assertEquals("test", newCv2.getShortName());
+        Assert.assertNull(newCv2.getFullName());
+        Assert.assertNull(newCv2.getDefinition());
+        Assert.assertTrue(newCv2.getAnnotations().isEmpty());
+        Assert.assertTrue(newCv2.getSynonyms().isEmpty());
+        Assert.assertEquals(1, newCv2.getDbXrefs().size());
+        Assert.assertTrue(newCv2.getChildren().isEmpty());
+        Assert.assertEquals(0, newCv2.getParents().size());
+        Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, newCv2.getObjClass());
+        ref = (CvTermXref) newCv2.getDbXrefs().iterator().next();
+        Assert.assertNull(ref.getAc());
+        Assert.assertEquals("intact", ref.getDatabase().getShortName());
+        Assert.assertTrue(ref.getId().startsWith("IA:"));
 
-        Assert.assertNotNull(organismAlias.getAc());
-        Assert.assertNull(organismAlias.getType());
-        Assert.assertEquals("test synonym 2", organismAlias.getName());
+        this.synchronizer.setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        IntactCvTerm newCv3 = this.synchronizer.synchronize(cvDatabase, true);
 
-        this.synchronizer.setIntactClass(InteractorAlias.class);
-        this.synchronizer.synchronize(interactorAlias, true);
+        Assert.assertNotNull(newCv3.getAc());
+        Assert.assertEquals("test", newCv3.getShortName());
+        Assert.assertNull(newCv3.getFullName());
+        Assert.assertNull(newCv3.getDefinition());
+        Assert.assertEquals(1, newCv3.getAnnotations().size());
+        Assert.assertTrue(newCv3.getParents().isEmpty());
+        Assert.assertEquals(1, newCv3.getDbXrefs().size());
+        Assert.assertTrue(newCv3.getChildren().isEmpty());
+        Assert.assertEquals(1, newCv3.getSynonyms().size());
+        Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, newCv3.getObjClass());
 
-        Assert.assertNotNull(interactorAlias.getAc());
-        Assert.assertNotNull(interactorAlias.getType());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
-        Assert.assertEquals("test synonym 3", interactorAlias.getName());
+        this.synchronizer.setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        IntactCvTerm newCv4 = this.synchronizer.synchronize(cvConfidenceType, true);
 
-        entityManager.flush();
+        Assert.assertNotNull(newCv4.getAc());
+        Assert.assertEquals("test3", newCv4.getShortName());
+        Assert.assertEquals("Test Confidence", newCv4.getFullName());
+        Assert.assertEquals("Test Definition", newCv4.getDefinition());
+        Assert.assertEquals(0, newCv4.getAnnotations().size());
+        Assert.assertEquals(1, newCv4.getDbAnnotations().size());
+        Assert.assertTrue(newCv4.getSynonyms().isEmpty());
+        Assert.assertEquals(1, newCv4.getDbXrefs().size());
+        Assert.assertTrue(newCv4.getChildren().isEmpty());
+        Assert.assertTrue(newCv4.getParents().isEmpty());
+        Assert.assertEquals(IntactUtils.CONFIDENCE_TYPE_OBJCLASS, newCv4.getObjClass());
+        ref = (CvTermXref) newCv4.getDbXrefs().iterator().next();
+        Assert.assertNull(ref.getAc());
+        Assert.assertEquals("intact", ref.getDatabase().getShortName());
+        Assert.assertTrue(ref.getId().startsWith("IA:"));
+        CvTermAnnotation annot = (CvTermAnnotation) newCv4.getDbAnnotations().iterator().next();
+        Assert.assertNull(annot.getAc());
+        Assert.assertEquals(annot.getValue(), newCv4.getDefinition());
+        Assert.assertEquals("definition", annot.getTopic().getShortName());
     }
 
     @Transactional
     @Test
+    @DirtiesContext
     public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
+        this.synchronizer = new CvTermSynchronizer(this.context);
 
-        Alias cvAliasWithType = new DefaultAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        // simple cv with xrefs
+        CvTerm aliasType = CvTermUtils.createMICvTerm(Alias.GENE_NAME + " ", Alias.GENE_NAME_MI);
+        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        IntactCvTerm newCv = this.synchronizer.synchronize(aliasType, true);
 
-        Alias organismAlias = new DefaultAlias("test synonym 2");
+        Assert.assertNotNull(newCv.getAc());
+        Assert.assertEquals(Alias.GENE_NAME, newCv.getShortName());
+        Assert.assertNull(newCv.getFullName());
+        Assert.assertNull(newCv.getDefinition());
+        Assert.assertTrue(newCv.getAnnotations().isEmpty());
+        Assert.assertTrue(newCv.getSynonyms().isEmpty());
+        Assert.assertTrue(newCv.getParents().isEmpty());
+        Assert.assertTrue(newCv.getChildren().isEmpty());
+        Assert.assertEquals(1, newCv.getDbXrefs().size());
+        Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, newCv.getObjClass());
+        CvTermXref ref = (CvTermXref) newCv.getDbXrefs().iterator().next();
+        Assert.assertNull(ref.getAc());
+        Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
 
-        Alias interactorAlias = new DefaultAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
-
-        this.synchronizer.setIntactClass(CvTermAlias.class);
-        CvTermAlias newAlias = (CvTermAlias)this.synchronizer.synchronize(cvAliasWithType, true);
-
-        Assert.assertNotNull(newAlias.getAc());
-        Assert.assertNotNull(newAlias.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)newAlias.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAliasWithType.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
-
-        this.synchronizer.setIntactClass(OrganismAlias.class);
-        OrganismAlias newAlias2 = (OrganismAlias)this.synchronizer.synchronize(organismAlias, true);
-
-        Assert.assertNotNull(newAlias2.getAc());
-        Assert.assertNull(newAlias2.getType());
-        Assert.assertEquals("test synonym 2", newAlias2.getName());
-
-        this.synchronizer.setIntactClass(InteractorAlias.class);
-        InteractorAlias newAlias3 = (InteractorAlias)this.synchronizer.synchronize(interactorAlias, true);
-
-        Assert.assertNotNull(newAlias3.getAc());
-        Assert.assertNotNull(newAlias3.getType());
-        IntactCvTerm aliasType2 = (IntactCvTerm)newAlias3.getType();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
-        Assert.assertEquals("test synonym 3", interactorAlias.getName());
-
-        entityManager.flush();
-    } */
+        Assert.assertEquals(2, newCv.getIdentifiers().size());
+        Assert.assertNotNull(XrefUtils.collectFirstIdentifierWithDatabase(newCv.getIdentifiers(), null, "intact"));
+    }
 
     private IntactCvTerm createExistingType() {
         // pre persist alias synonym

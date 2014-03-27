@@ -284,6 +284,24 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return false;
     }
 
+    @Column(name = "url")
+    /**
+     * @deprecated use getURL instead
+     */
+    @Deprecated
+    protected String getDbURL() {
+        return persistentUrl;
+    }
+
+    @Column(name = "postaladdress")
+    /**
+     * @deprecated use getPostalAdress instead
+     */
+    @Deprecated
+    protected String getDbPostalAddress() {
+        return persistentPostalAddress;
+    }
+
     private void processAddedAnnotationEvent(Annotation added) {
         if (url == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.URL_MI, Annotation.URL)){
             url = added;
@@ -300,24 +318,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         else if (postalAddress != null && postalAddress.equals(removed)){
             postalAddress = null;
         }
-    }
-
-    @Column(name = "url")
-    /**
-     * @deprecated use getURL instead
-     */
-    @Deprecated
-    private String getDbURL() {
-        return persistentUrl;
-    }
-
-    @Column(name = "postaladdress")
-    /**
-     * @deprecated use getPostalAdress instead
-     */
-    @Deprecated
-    private String getDbPostalAddress() {
-        return persistentPostalAddress;
     }
 
     /**

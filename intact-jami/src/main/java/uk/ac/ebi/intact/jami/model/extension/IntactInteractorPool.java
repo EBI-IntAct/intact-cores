@@ -162,7 +162,7 @@ public class IntactInteractorPool extends IntactInteractor implements Interactor
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactInteractor.class)
     @LazyCollection(LazyCollectionOption.FALSE)
-    private Collection<Interactor> getInteractors() {
+    protected Collection<Interactor> getInteractors() {
         if (interactors == null){
             interactors = new ArrayList<Interactor>();
         }

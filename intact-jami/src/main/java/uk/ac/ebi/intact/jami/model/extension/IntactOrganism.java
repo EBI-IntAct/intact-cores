@@ -197,7 +197,7 @@ public class IntactOrganism extends AbstractIntactPrimaryObject implements Organ
     @Column( name="taxid", length = 30, nullable = false)
     @NotNull
     @Size(max = 30)
-    private String getDbTaxid(){
+    protected String getDbTaxid(){
         return Integer.toString(this.taxId);
     }
 

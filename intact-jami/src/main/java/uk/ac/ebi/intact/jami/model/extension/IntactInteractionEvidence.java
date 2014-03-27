@@ -474,6 +474,18 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return this.persistentAnnotations;
     }
 
+    @Column(name = "category", nullable = false, insertable = false, updatable = false)
+    @NotNull
+    protected String getCategory() {
+        return "interaction_evidence";
+    }
+
+    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
+    @NotNull
+    protected String getObjClass() {
+        return "uk.ac.ebi.intact.model.InteractionImpl";
+    }
+
     @ManyToMany(targetEntity = IntactExperiment.class)
     @JoinTable(
             name = "ia_int2exp",
@@ -486,7 +498,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     /**
      * @deprecated see getExperiment instead. Only kept for backward compatibility with intact core
      */
-    private List<Experiment> getDbExperiments() {
+    protected List<Experiment> getDbExperiments() {
         if (experiments == null){
             experiments = new ArrayList<Experiment>();
         }
@@ -601,20 +613,8 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
     }
 
-    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
-    @NotNull
-    private String getObjClass() {
-        return "uk.ac.ebi.intact.model.InteractionImpl";
-    }
-
     private void setObjClass(String value){
         // nothing to do
-    }
-
-    @Column(name = "category", nullable = false, insertable = false, updatable = false)
-    @NotNull
-    private String getCategory() {
-        return "interaction_evidence";
     }
 
     private void setCategory(String value){

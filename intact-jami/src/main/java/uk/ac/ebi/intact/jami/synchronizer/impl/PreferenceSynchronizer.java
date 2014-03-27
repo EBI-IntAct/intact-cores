@@ -9,7 +9,6 @@ import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -34,12 +33,7 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     public void synchronizeProperties(Preference object) throws FinderException, PersisterException, SynchronizerException {
-        // check key
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < object.getKey().length()){
-            log.warn("Preference key too long: "+object.getKey()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            object.setKey(object.getKey().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
+        // nothing to do here
     }
 
     public void clearCache() {

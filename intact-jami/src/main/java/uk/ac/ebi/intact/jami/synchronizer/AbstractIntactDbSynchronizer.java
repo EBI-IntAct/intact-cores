@@ -94,7 +94,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             else{
                 // cache object to persist if allowed
-                storeInCache((I)intactObject, intactObject, intactObject);
+                storeInCache(object, intactObject, intactObject);
                 // synchronize properties
                 synchronizeProperties(intactObject);
                 return intactObject;
@@ -166,7 +166,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             else{
                 // synchronize properties first
                 synchronizeProperties(intactObject);
-                // merge
+                // merge because no existing instances
                 return this.entityManager.merge(intactObject);
             }
         }
@@ -198,9 +198,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
-                getIntactMerger().merge(persistentObject, existingInstance);
+                return getIntactMerger().merge(persistentObject, existingInstance);
             }
-            // we only return the existing instance after merging
+            // we only return the existing instance if no merge allowed
             return existingInstance;
         }
         else{

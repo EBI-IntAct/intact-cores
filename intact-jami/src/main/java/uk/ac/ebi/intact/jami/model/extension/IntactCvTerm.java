@@ -302,14 +302,6 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         return super.getDbXrefs();
     }
 
-    private void setChildren( Collection<OntologyTerm> children ) {
-        this.children = children;
-    }
-
-    private void setParents( Collection<OntologyTerm> parents ) {
-        this.parents = parents;
-    }
-
     /**
      * Identifier for this object, which is a de-normalization of the
      * value contained in the 'identity' xref from the 'psimi' database
@@ -321,8 +313,16 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Size(max = 30)
     @Index(name = "cvobject_id_idx")
     @Deprecated
-    private String getIdentifier() {
+    protected String getIdentifier() {
         return this.identifier;
+    }
+
+    private void setChildren( Collection<OntologyTerm> children ) {
+        this.children = children;
+    }
+
+    private void setParents( Collection<OntologyTerm> parents ) {
+        this.parents = parents;
     }
 
 }
