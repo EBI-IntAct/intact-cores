@@ -60,12 +60,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     public void synchronizeProperties(Role object) throws FinderException, PersisterException, SynchronizerException {
-        // check name
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < object.getName().length()){
-            log.warn("Role name too long: "+object.getName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            object.setName(object.getName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
+        // nothing to do here
     }
 
     public void clearCache() {

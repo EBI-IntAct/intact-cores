@@ -21,7 +21,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
 /**
- * Unit test for AliasSynchronizerTemplate
+ * Unit test for PreferenceSynchronizerTemplate
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -123,8 +123,6 @@ public class PreferenceSynchronizerTest {
     @Test
     @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
 
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
