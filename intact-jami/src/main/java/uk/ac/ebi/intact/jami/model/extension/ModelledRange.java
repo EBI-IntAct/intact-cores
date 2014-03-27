@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.ModelledParticipant;
 import psidev.psi.mi.jami.model.Participant;
 import psidev.psi.mi.jami.model.Position;
@@ -19,7 +18,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ia_range")
-@Where(clause = "category = 'modelled'")
 public class ModelledRange extends AbstractIntactRange<ModelledParticipant> {
 
     protected ModelledRange() {

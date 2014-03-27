@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 
 import javax.persistence.*;
@@ -16,7 +15,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ia_range")
-@Where(clause = "category = 'evidence'")
 public class ExperimentalRange extends AbstractIntactRange<Participant> {
 
     protected ExperimentalRange() {

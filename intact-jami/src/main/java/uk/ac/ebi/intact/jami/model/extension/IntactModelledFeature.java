@@ -7,6 +7,7 @@ import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -174,11 +175,21 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
         super.setType(IntactUtils.createMIFeatureType(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI));
     }
 
+    @Column(name = "category", nullable = false, insertable = false, updatable = false)
+    @NotNull
+    protected String getCategory() {
+        return "modelled";
+    }
+
     private void setRelatedLinkedFeatures(Collection<ModelledFeature> relatedLinkedFeatures) {
         this.relatedLinkedFeatures = relatedLinkedFeatures;
     }
 
     private void setRelatedBindings(Collection<ModelledFeature> relatedBindings) {
         this.relatedBindings = relatedBindings;
+    }
+
+    private void setCategory(String value){
+        // nothing to do
     }
 }

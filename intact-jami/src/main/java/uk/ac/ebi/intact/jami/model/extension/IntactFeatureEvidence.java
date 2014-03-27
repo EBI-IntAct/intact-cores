@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.*;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -247,6 +248,12 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
         return Hibernate.isInitialized(getDbDetectionMethods());
     }
 
+    @Column(name = "category", nullable = false, insertable = false, updatable = false)
+    @NotNull
+    protected String getCategory() {
+        return "evidence";
+    }
+
     private void initialiseDetectionMethods(){
         this.detectionMethods = new DetectionMethodList();
         // add binds if not null
@@ -281,6 +288,10 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
             this.persistentDetectionMethods = new PersistentDetectionMethodList(detectionMethods);
             this.detectionMethods = null;
         }
+    }
+
+    private void setCategory(String value){
+        // nothing to do
     }
 
     private class DetectionMethodList extends AbstractListHavingProperties<CvTerm> {
