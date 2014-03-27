@@ -140,6 +140,7 @@ public class RoleSynchronizerTest {
 
         Role role = new Role("CURATOR");
         this.synchronizer.synchronize(role, true);
+        this.synchronizer.clearCache();
 
         Assert.assertNotNull(role.getAc());
         String ac = role.getAc();
@@ -153,7 +154,7 @@ public class RoleSynchronizerTest {
         Role newRole = this.synchronizer.synchronize(role, true);
 
         Assert.assertEquals(ac, newRole.getAc());
-        Assert.assertEquals("value2", newRole.getName());
+        Assert.assertEquals("VALUE2", newRole.getName());
     }
 
     @Transactional
@@ -166,6 +167,7 @@ public class RoleSynchronizerTest {
 
         Role role = new Role("CURATOR");
         this.synchronizer.synchronize(role, true);
+        this.synchronizer.clearCache();
 
         Assert.assertNotNull(role.getAc());
         String ac = role.getAc();
@@ -175,12 +177,12 @@ public class RoleSynchronizerTest {
         this.entityManager.detach(role);
 
         Role ro = this.entityManager.find(Role.class, ac);
-        ro.setName("value2");
+        ro.setName("VALUE2");
         this.entityManager.detach(ro);
 
         Role newRole = this.synchronizer.synchronize(ro, true);
 
         Assert.assertEquals(ac, newRole.getAc());
-        Assert.assertEquals("value2", newRole.getName());
+        Assert.assertEquals("VALUE2", newRole.getName());
     }
 }

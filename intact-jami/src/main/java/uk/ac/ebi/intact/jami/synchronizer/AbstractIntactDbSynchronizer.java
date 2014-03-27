@@ -2,8 +2,8 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
-import uk.ac.ebi.intact.jami.merger.IntactDbMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 import javax.persistence.EntityManager;
@@ -181,7 +181,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     protected void initialiseDefaultMerger() {
-        this.intactMerger = new IntactDbMergerEnrichOnly<I,T>();
+        this.intactMerger = new IntactDbMergerIgnoringPersistentObject<I, T>(this);
     }
 
     protected abstract Object extractIdentifier(T object);

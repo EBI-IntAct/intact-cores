@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.model.audit.Auditable;
  * Interface for finders that can retrieve existing instances in the DB given an object
  * that can be transient.
  * It can also persist new Intact objects
+ * If an object is cached, it will return the cached object and ignore changes to the object to synchronize
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
