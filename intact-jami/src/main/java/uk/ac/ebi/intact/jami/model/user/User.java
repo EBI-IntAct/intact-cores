@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
 
@@ -60,6 +61,7 @@ public class User extends AbstractIntactPrimaryObject {
     @Column(nullable = false, unique = true, length = IntactUtils.MAX_SHORT_LABEL_LEN)
     @Index(name = "idx_user_login")
     @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
+    @NotNull
     public String getLogin() {
         return login;
     }
@@ -82,6 +84,7 @@ public class User extends AbstractIntactPrimaryObject {
 
     @Column(nullable = false, length = IntactUtils.MAX_SHORT_LABEL_LEN)
     @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
+    @NotNull
     public String getFirstName() {
         return firstName;
     }
@@ -95,6 +98,7 @@ public class User extends AbstractIntactPrimaryObject {
 
     @Column(nullable = false, length = IntactUtils.MAX_SHORT_LABEL_LEN)
     @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
+    @NotNull
     public String getLastName() {
         return lastName;
     }
@@ -109,6 +113,7 @@ public class User extends AbstractIntactPrimaryObject {
     @Column(nullable = false, unique = true, length = IntactUtils.MAX_SHORT_LABEL_LEN)
     @Index(name = "idx_user_email")
     @Size( max = IntactUtils.MAX_SHORT_LABEL_LEN)
+    @NotNull
     public String getEmail() {
         return email;
     }
@@ -259,4 +264,18 @@ public class User extends AbstractIntactPrimaryObject {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( !( o instanceof User ) ) return false;
+
+        User user = ( User ) o;
+
+        return login.equals(user.login);
+    }
+
+    @Override
+    public int hashCode() {
+        return login.hashCode();
+    }
 }

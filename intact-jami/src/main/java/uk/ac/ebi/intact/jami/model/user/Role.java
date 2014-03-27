@@ -56,7 +56,7 @@ public class Role extends AbstractIntactPrimaryObject {
         if ( name == null || name.trim().length() == 0 ) {
             throw new IllegalArgumentException( "You must give a non empty/null role name" );
         }
-        this.name = name;
+        this.name = name.trim().toUpperCase();
     }
 
     //////////////////////////

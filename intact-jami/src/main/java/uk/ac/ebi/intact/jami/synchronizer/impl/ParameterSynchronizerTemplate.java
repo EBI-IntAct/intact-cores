@@ -14,6 +14,9 @@ import java.math.BigDecimal;
 /**
  * default finder/Synchronizer for parameter
  *
+ * It does not cache persisted parameters. It only synchronize the parameter type and parameter unit (with persist = true) to make sure that the parameter type
+ * and unit are persisted before so the parameter can be persisted
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>27/01/14</pre>

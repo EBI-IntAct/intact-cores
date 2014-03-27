@@ -5,7 +5,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.Source;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
+import uk.ac.ebi.intact.jami.merger.UserMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
@@ -16,13 +18,14 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Finder/persister for users
+ *
+ * It does cache the persisted users using a HashMap.
+ * It retrieves identical Users based on the user login.
+ *
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -37,7 +40,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
 
     public UserSynchronizer(SynchronizerContext context){
         super(context, User.class);
-        this.persistedUsers = new IdentityMap();
+        this.persistedUsers = new HashMap<User, User>();
     }
 
     public User find(User user) throws FinderException {
@@ -65,19 +68,6 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     public void synchronizeProperties(User object) throws FinderException, PersisterException, SynchronizerException {
-        // check first name
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < object.getFirstName().length()){
-            log.warn("User first name too long: "+object.getFirstName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            object.setFirstName(object.getFirstName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
-        // check full name
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < object.getLastName().length()){
-            log.warn("User last name too long: "+object.getLastName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            object.setLastName(object.getLastName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-        }
-
         // synchronize preferences
         preparePreferences(object);
         // synchronize roles
@@ -153,7 +143,6 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
 
     @Override
     protected void initialiseDefaultMerger() {
-        // never update a user that exist in the database!!! If it exists, use the existing instance
-        super.setIntactMerger(new IntactDbMergerIgnoringLocalObject<User, User>(this));
+        super.setIntactMerger(new UserMergerEnrichOnly());
     }
 }

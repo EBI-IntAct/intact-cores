@@ -39,7 +39,7 @@ implements LifecycleEventSynchronizer<A>{
         // check user
         if (object.getWho() != null){
             User who = object.getWho();
-            object.setWho(getContext().getUserSynchronizer().synchronize(who, false));
+            object.setWho(getContext().getUserReadOnlySynchronizer().synchronize(who, false));
         }
     }
 

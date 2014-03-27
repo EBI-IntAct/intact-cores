@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Finder/persister for user preferences
+ * It does not cache persisted preferences.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

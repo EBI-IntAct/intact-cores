@@ -173,13 +173,13 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         User curator = intactComplex.getCurrentOwner();
         // do not persist user if not there
         if (curator != null){
-            intactComplex.setCurrentOwner(getContext().getUserSynchronizer().synchronize(curator, false));
+            intactComplex.setCurrentOwner(getContext().getUserReadOnlySynchronizer().synchronize(curator, false));
         }
 
         // then reviewer
         User reviewer = intactComplex.getCurrentReviewer();
         if (reviewer != null){
-            intactComplex.setCurrentReviewer(getContext().getUserSynchronizer().synchronize(reviewer, false));
+            intactComplex.setCurrentReviewer(getContext().getUserReadOnlySynchronizer().synchronize(reviewer, false));
         }
     }
 

@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.context;
 
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
+import uk.ac.ebi.intact.jami.merger.UserMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
@@ -697,6 +699,17 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         if (this.userSynchronizer == null){
             this.userSynchronizer = new UserSynchronizer(this);
         }
+        else{
+            this.userSynchronizer.setIntactMerger(new UserMergerEnrichOnly());
+        }
+        return userSynchronizer;
+    }
+
+    public IntactDbSynchronizer<User, User> getUserReadOnlySynchronizer() {
+        if (this.userSynchronizer == null){
+            this.userSynchronizer = new UserSynchronizer(this);
+        }
+        this.userSynchronizer.setIntactMerger(new IntactDbMergerIgnoringLocalObject<User, User>(this.userSynchronizer));
         return userSynchronizer;
     }
 

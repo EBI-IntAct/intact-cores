@@ -60,13 +60,13 @@ public class CuratedPublicationSynchronizer extends PublicationSynchronizer<Inta
         User curator = intactPublication.getCurrentOwner();
         // do not persist user if not there
         if (curator != null){
-            intactPublication.setCurrentOwner(getContext().getUserSynchronizer().synchronize(curator, false));
+            intactPublication.setCurrentOwner(getContext().getUserReadOnlySynchronizer().synchronize(curator, false));
         }
 
         // then reviewer
         User reviewer = intactPublication.getCurrentReviewer();
         if (reviewer != null){
-            intactPublication.setCurrentReviewer(getContext().getUserSynchronizer().synchronize(reviewer, false));
+            intactPublication.setCurrentReviewer(getContext().getUserReadOnlySynchronizer().synchronize(reviewer, false));
         }
     }
 

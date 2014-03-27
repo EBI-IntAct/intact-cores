@@ -20,6 +20,9 @@ import java.util.Map;
 /**
  * Finder/persister for roles
  *
+ * It does cache the persisted roles using a HashMap.
+ * It retrieves existing roles based on the role name.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>24/01/14</pre>

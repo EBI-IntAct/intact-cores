@@ -218,6 +218,8 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<User, User> getUserSynchronizer();
 
+    public IntactDbSynchronizer<User, User> getUserReadOnlySynchronizer();
+
     public IntactDbSynchronizer<Publication, IntactPublication> getSimplePublicationSynchronizer();
 
     public IntactDbSynchronizer<Publication, IntactCuratedPublication> getPublicationSynchronizer();
