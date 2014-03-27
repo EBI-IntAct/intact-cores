@@ -90,6 +90,8 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
 
     // range synchronizers
     private IntactDbSynchronizer rangeSynchronizer;
+    private IntactDbSynchronizer modelledRangeSynchronizer;
+    private IntactDbSynchronizer experimentalRangeSynchronizer;
 
     // preference synchronizers
     private IntactDbSynchronizer<Preference, Preference> preferenceSynchronizer;
@@ -674,11 +676,17 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     public IntactDbSynchronizer<Range, ModelledRange> getModelledRangeSynchronizer() {
-        return getRangeSynchronizer(ModelledRange.class);
+        if (this.modelledRangeSynchronizer == null){
+            this.modelledRangeSynchronizer = new ModelledRangeSynchronizer(this);
+        }
+        return this.modelledRangeSynchronizer;
     }
 
     public IntactDbSynchronizer<Range, ExperimentalRange> getExperimentalRangeSynchronizer() {
-        return getRangeSynchronizer(ExperimentalRange.class);
+        if (this.experimentalRangeSynchronizer == null){
+            this.experimentalRangeSynchronizer = new ExperimentalRangeSynchronizer(this);
+        }
+        return this.experimentalRangeSynchronizer;
     }
 
     public IntactDbSynchronizer<Preference, Preference> getPreferenceSynchronizer() {
@@ -876,6 +884,8 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         clearCache(this.parameterSynchronizer);
         clearCache(this.organismSynchronizer);
         clearCache(this.rangeSynchronizer);
+        clearCache(this.modelledRangeSynchronizer);
+        clearCache(this.experimentalRangeSynchronizer);
         clearCache(this.preferenceSynchronizer);
         clearCache(this.roleSynchronizer);
         clearCache(this.userSynchronizer);
