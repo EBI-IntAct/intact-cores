@@ -366,7 +366,11 @@ public class IntactUtils {
         return currentLabel;
     }
 
-    public static IntactCvTerm createExperimentalPreparation(String name, String MI){
+    public static IntactCvTerm createMIUnit(String name, String MI){
+        return createIntactMITerm(name, MI, UNIT_OBJCLASS);
+    }
+
+    public static IntactCvTerm createMIExperimentalPreparation(String name, String MI){
         return createIntactMITerm(name, MI, PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS);
     }
 

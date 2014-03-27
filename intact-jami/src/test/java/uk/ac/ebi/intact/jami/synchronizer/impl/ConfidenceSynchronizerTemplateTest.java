@@ -8,8 +8,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.impl.DefaultConfidence;
+import psidev.psi.mi.jami.model.impl.DefaultModelledConfidence;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -137,22 +140,22 @@ public class ConfidenceSynchronizerTemplateTest {
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
         // pre persist alias synonym
-        IntactCvTerm aliasSynonym = createExistingType();
+        IntactCvTerm authorScore = createExistingType();
 
-        entityManager.detach(aliasSynonym);
+        entityManager.detach(authorScore);
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(authorScore, "high");
 
-        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
+        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(authorScore, "low");
 
-        ComplexConfidence complexConfidence = new ComplexConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
+        ComplexConfidence complexConfidence = new ComplexConfidence(authorScore, "0.5");
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         this.synchronizer.persist(participantConfidence);
 
         Assert.assertNotNull(participantConfidence.getType());
         IntactCvTerm confType = (IntactCvTerm)participantConfidence.getType();
-        Assert.assertEquals(confType.getAc(), aliasSynonym.getAc());
+        Assert.assertEquals(confType.getAc(), authorScore.getAc());
         Assert.assertEquals("high", participantConfidence.getValue());
 
         this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
@@ -168,7 +171,7 @@ public class ConfidenceSynchronizerTemplateTest {
         Assert.assertNotNull(complexConfidence.getAc());
         Assert.assertNotNull(complexConfidence.getType());
         IntactCvTerm confType2 = (IntactCvTerm)complexConfidence.getType();
-        Assert.assertEquals(confType2.getAc(), aliasSynonym.getAc());
+        Assert.assertEquals(confType2.getAc(), authorScore.getAc());
         Assert.assertEquals("0.5", complexConfidence.getValue());
     }
 
@@ -348,11 +351,11 @@ public class ConfidenceSynchronizerTemplateTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        Confidence participantConfidence = new DefaultConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
 
-        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
+        Confidence interactionConfidence = new DefaultConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
 
-        ComplexConfidence complexConfidence = new ComplexConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
+        Confidence complexConfidence = new DefaultModelledConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         ParticipantEvidenceConfidence newConf = (ParticipantEvidenceConfidence)this.synchronizer.synchronize(participantConfidence, true);
