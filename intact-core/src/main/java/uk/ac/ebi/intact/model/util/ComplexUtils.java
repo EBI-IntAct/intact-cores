@@ -47,7 +47,7 @@ public final class ComplexUtils {
     public static List<String> getSynonyms(InteractionImpl complex) {
         List<String> synosyms = new ArrayList<String>();
         for (Alias alias : complex.getAliases()) {
-            if (alias.getName() != null && alias.getCvAliasType() != null && alias.getCvAliasType().getIdentifier().equals(CvAliasType.COMPLEX_SYSTEMATIC_NAME_MI_REF)) {
+            if (alias.getName() != null && alias.getCvAliasType() != null && alias.getCvAliasType().getIdentifier().equals(CvAliasType.COMPLEX_SYNONYM_NAME_MI_REF)) {
                 synosyms.add(alias.getName());
             }
         }
