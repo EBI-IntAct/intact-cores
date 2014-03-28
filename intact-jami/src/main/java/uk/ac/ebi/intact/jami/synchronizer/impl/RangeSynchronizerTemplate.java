@@ -18,6 +18,10 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Default synchronizer/finder for Ranges
  *
+ * It does not cache persisted ranges. It only synchronize the start and end range status (with persist = true) to make sure that the start/end range status
+ * are persisted before so the range can be persisted.
+ * It also synchronize the resulting sequence and its xrefs.
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>27/01/14</pre>

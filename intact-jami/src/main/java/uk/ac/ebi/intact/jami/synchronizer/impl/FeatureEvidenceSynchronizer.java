@@ -1,9 +1,11 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.RangeUtils;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.FeatureEvidenceMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.ExperimentalResultingSequence;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -50,6 +52,14 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         if (intactFeature.areRangesInitialized()){
             List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
             for (Range range : rangesToPersist){
+                // initialise resulting sequence
+                if (intactFeature.getParticipant() != null){
+                    Interactor interactor = intactFeature.getParticipant().getInteractor();
+                    if (interactor instanceof Polymer){
+                        prepareRangeResultingSequence((Polymer)interactor, range);
+                    }
+                }
+
                 // do not persist or merge ranges because of cascades
                 Range featureRange = getContext().getExperimentalRangeSynchronizer().synchronize(range, false);
                 // we have a different instance because needed to be synchronized
@@ -57,6 +67,18 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                     intactFeature.getRanges().remove(range);
                     intactFeature.getRanges().add(featureRange);
                 }
+            }
+        }
+    }
+
+    protected void prepareRangeResultingSequence(Polymer polymer, Range range) {
+        if (polymer != null){
+            String sequence = polymer.getSequence();
+            if (range.getResultingSequence() == null){
+                range.setResultingSequence(new ExperimentalResultingSequence(RangeUtils.extractRangeSequence(range, sequence), null));
+            }
+            else{
+                range.getResultingSequence().setOriginalSequence(RangeUtils.extractRangeSequence(range, sequence));
             }
         }
     }
