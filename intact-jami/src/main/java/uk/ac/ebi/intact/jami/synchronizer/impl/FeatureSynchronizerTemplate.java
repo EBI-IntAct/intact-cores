@@ -3,7 +3,10 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Feature;
+import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.FeatureMergerEnrichOnly;
@@ -12,7 +15,6 @@ import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -49,10 +51,6 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     public void synchronizeProperties(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
-        // then check shortlabel/synchronize
-        prepareAndSynchronizeShortLabel(intactFeature);
-        // then check full name
-        prepareFullName(intactFeature);
         // synchronize feature type
         prepareType(intactFeature);
         // then check def
@@ -149,25 +147,6 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
                     intactFeature.getAliases().add(featureAlias);
                 }
             }
-        }
-    }
-
-    protected void prepareFullName(I intactFeature) {
-        // truncate if necessary
-        if (intactFeature.getFullName() != null && IntactUtils.MAX_FULL_NAME_LEN < intactFeature.getFullName().length()){
-            log.warn("Feature fullName too long: "+intactFeature.getFullName()+", will be truncated to "+ IntactUtils.MAX_FULL_NAME_LEN+" characters.");
-            intactFeature.setFullName(intactFeature.getFullName().substring(0, IntactUtils.MAX_FULL_NAME_LEN));
-        }
-    }
-
-    protected void prepareAndSynchronizeShortLabel(I intactFeature) {
-        // truncate if necessary
-        if (intactFeature.getShortName() == null){
-            intactFeature.setShortName("N/A");
-        }
-        else if (IntactUtils.MAX_SHORT_LABEL_LEN < intactFeature.getShortName().length()){
-            log.warn("Feature shortLabel too long: "+intactFeature.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            intactFeature.setShortName(intactFeature.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
     }
 

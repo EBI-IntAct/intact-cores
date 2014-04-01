@@ -140,6 +140,9 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
     @NotNull
     public String getShortName() {
+        if (this.shortName == null){
+            this.shortName = "N/A";
+        }
         return this.shortName;
     }
 
