@@ -55,7 +55,7 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
     @JoinColumn(name = "modelled_participant_ac", referencedColumnName = "ac")
     @Target(IntactModelledParticipant.class)
-    private ModelledParticipant getModelledParticipant() {
+    protected ModelledParticipant getModelledParticipant() {
         Participant target = getParticipant();
         return target instanceof ModelledParticipant ? (ModelledParticipant)target : null;
     }
@@ -67,7 +67,7 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
     @JoinColumn(name = "experimental_participant_ac", referencedColumnName = "ac")
     @Target(IntactModelledParticipant.class)
-    private ParticipantEvidence getExperimentalParticipant() {
+    protected ParticipantEvidence getExperimentalParticipant() {
         Participant target = getParticipant();
         return target instanceof ParticipantEvidence ? (ParticipantEvidence)target : null;
     }

@@ -65,7 +65,7 @@ public class ModelledRange extends AbstractIntactRange<ModelledParticipant> {
 
     @Override
     public void setParticipant(Participant participant) {
-        if (!(participant instanceof ModelledParticipant)){
+        if (participant != null && !(participant instanceof ModelledParticipant)){
             throw new IllegalArgumentException("A range attached to a modelled participant can only refer to a modelled participant.");
         }
         super.setParticipant(participant);
