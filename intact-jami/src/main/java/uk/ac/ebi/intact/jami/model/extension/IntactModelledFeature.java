@@ -8,7 +8,6 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -22,9 +21,6 @@ import java.util.Collection;
 @Table(name = "ia_feature")
 @Where(clause = "category = 'modelled'")
 public class IntactModelledFeature extends AbstractIntactFeature<ModelledParticipant, ModelledFeature> implements ModelledFeature{
-
-    private Collection<ModelledFeature> relatedLinkedFeatures;
-    private Collection<ModelledFeature> relatedBindings;
 
     public IntactModelledFeature(ModelledParticipant participant) {
         super();
@@ -143,26 +139,22 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
 
     @ManyToMany( mappedBy = "dbLinkedFeatures", targetEntity = IntactModelledFeature.class)
     @Target(IntactModelledFeature.class)
+    @Override
     /**
      * The collection of features that have this feature in their dbLinkedFeatures collection
      */
     public Collection<ModelledFeature> getRelatedLinkedFeatures() {
-        if (this.relatedLinkedFeatures == null){
-           this.relatedLinkedFeatures = new ArrayList<ModelledFeature>();
-        }
-        return this.relatedLinkedFeatures;
+        return super.getRelatedLinkedFeatures();
     }
 
     @OneToMany( mappedBy = "binds", targetEntity = IntactModelledFeature.class)
     @Target(IntactModelledFeature.class)
+    @Override
     /**
      * The collection of features that have this feature in their binds property
      */
     public Collection<ModelledFeature> getRelatedBindings() {
-        if (this.relatedBindings == null){
-            this.relatedBindings = new ArrayList<ModelledFeature>();
-        }
-        return this.relatedBindings;
+        return super.getRelatedBindings();
     }
 
     @Override
@@ -175,18 +167,10 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
         super.setType(IntactUtils.createMIFeatureType(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI));
     }
 
-    @Column(name = "category", nullable = false, insertable = false, updatable = false)
+    @Column(name = "category", nullable = false, updatable = false)
     @NotNull
     protected String getCategory() {
         return "modelled";
-    }
-
-    private void setRelatedLinkedFeatures(Collection<ModelledFeature> relatedLinkedFeatures) {
-        this.relatedLinkedFeatures = relatedLinkedFeatures;
-    }
-
-    private void setRelatedBindings(Collection<ModelledFeature> relatedBindings) {
-        this.relatedBindings = relatedBindings;
     }
 
     private void setCategory(String value){

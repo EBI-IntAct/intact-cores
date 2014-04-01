@@ -1,17 +1,15 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.persistence.*;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -34,8 +32,6 @@ import java.util.Collection;
 @Where(clause = "category = 'evidence'")
 public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvidence,FeatureEvidence> implements FeatureEvidence{
 
-    private Collection<FeatureEvidence> relatedLinkedFeatures;
-    private Collection<FeatureEvidence> relatedBindings;
     private DetectionMethodList detectionMethods;
     /**
      * Only for backward compatibility with intact-core
@@ -190,11 +186,6 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
     }
 
     @Override
-    public void setParticipant(ParticipantEvidence participant) {
-        super.setParticipant(participant);
-    }
-
-    @Override
     @ManyToMany( targetEntity = IntactFeatureEvidence.class)
     @JoinTable(
             name="ia_feature_evidence2linkedfeature",
@@ -214,33 +205,24 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
         return super.getBinds();
     }
 
-    @Override
-    public void setBinds(FeatureEvidence binds) {
-        super.setBinds(binds);
-    }
-
     @ManyToMany( mappedBy = "dbLinkedFeatures", targetEntity = IntactFeatureEvidence.class)
     @Target(IntactFeatureEvidence.class)
+    @Override
     /**
      * The collection of features that have this feature in their dbLinkedFeatures collection
      */
     public Collection<FeatureEvidence> getRelatedLinkedFeatures() {
-        if (this.relatedLinkedFeatures == null){
-            this.relatedLinkedFeatures = new ArrayList<FeatureEvidence>();
-        }
-        return this.relatedLinkedFeatures;
+        return super.getRelatedLinkedFeatures();
     }
 
     @OneToMany( mappedBy = "binds", targetEntity = IntactFeatureEvidence.class)
     @Target(IntactFeatureEvidence.class)
+    @Override
     /**
      * The collection of features that have this feature in their binds property
      */
     public Collection<FeatureEvidence> getRelatedBindings() {
-        if (this.relatedBindings == null){
-            this.relatedBindings = new ArrayList<FeatureEvidence>();
-        }
-        return this.relatedBindings;
+        return super.getRelatedBindings();
     }
 
     @Transient
@@ -248,7 +230,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
         return Hibernate.isInitialized(getDbDetectionMethods());
     }
 
-    @Column(name = "category", nullable = false, insertable = false, updatable = false)
+    @Column(name = "category", nullable = false, updatable = false)
     @NotNull
     protected String getCategory() {
         return "evidence";
@@ -269,14 +251,6 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
         else{
             this.persistentDetectionMethods = new PersistentDetectionMethodList(null);
         }
-    }
-
-    private void setRelatedLinkedFeatures(Collection<FeatureEvidence> relatedLinkedFeatures) {
-        this.relatedLinkedFeatures = relatedLinkedFeatures;
-    }
-
-    private void setRelatedBindings(Collection<FeatureEvidence> relatedBindings) {
-        this.relatedBindings = relatedBindings;
     }
 
     private void setDbDetectionMethods(Collection<CvTerm> detectionMethods) {

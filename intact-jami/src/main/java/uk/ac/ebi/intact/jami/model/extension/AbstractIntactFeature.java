@@ -67,6 +67,9 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     private LinkedFeatureList linkedFeatures;
     private PersistentXrefList persistentXrefs;
     private PersistentLinkedFeatureList persistentLinkedFeatures;
+
+    private Collection<F> relatedLinkedFeatures;
+    private Collection<F> relatedBindings;
     /**
      * <p/>
      * A feature may bind to another feature, usually on a different
@@ -377,6 +380,25 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
         this.binds = binds;
     }
 
+    @Transient
+    public Collection<F> getRelatedLinkedFeatures() {
+        if (this.relatedLinkedFeatures == null){
+            this.relatedLinkedFeatures = new ArrayList<F>();
+        }
+        return this.relatedLinkedFeatures;
+    }
+
+    @Transient
+    /**
+     * The collection of features that have this feature in their binds property
+     */
+    public Collection<F> getRelatedBindings() {
+        if (this.relatedBindings == null){
+            this.relatedBindings = new ArrayList<F>();
+        }
+        return this.relatedBindings;
+    }
+
     protected void initialiseDefaultType(){
         // by default do not initialise default type
     }
@@ -506,6 +528,15 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
             this.linkedFeatures = null;
         }
     }
+
+    protected void setRelatedLinkedFeatures(Collection<F> relatedLinkedFeatures) {
+        this.relatedLinkedFeatures = relatedLinkedFeatures;
+    }
+
+    protected void setRelatedBindings(Collection<F> relatedBindings) {
+        this.relatedBindings = relatedBindings;
+    }
+
 
     protected class FeatureIdentifierList extends AbstractListHavingProperties<Xref> {
         public FeatureIdentifierList(){

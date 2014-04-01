@@ -474,13 +474,13 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return this.persistentAnnotations;
     }
 
-    @Column(name = "category", nullable = false, insertable = false, updatable = false)
+    @Column(name = "category", nullable = false, updatable = false)
     @NotNull
     protected String getCategory() {
         return "interaction_evidence";
     }
 
-    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
+    @Column(name = "objclass", nullable = false, updatable = false)
     @NotNull
     protected String getObjClass() {
         return "uk.ac.ebi.intact.model.InteractionImpl";

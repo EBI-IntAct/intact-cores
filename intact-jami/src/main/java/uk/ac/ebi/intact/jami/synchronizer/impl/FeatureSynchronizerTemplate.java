@@ -18,6 +18,7 @@ import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -65,14 +66,28 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         prepareLinkedFeatures(intactFeature);
     }
 
-    protected void prepareType(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
-        if (intactFeature.getType() != null){
-            intactFeature.setType(getContext().getFeatureTypeSynchronizer().synchronize(intactFeature.getType(), true));
+    @Override
+    public void deleteRelatedProperties(I intactFeature){
+        for (Object f : intactFeature.getRelatedBindings()){
+            I feature = (I)f;
+            feature.getLinkedFeatures().remove(intactFeature);
         }
+        intactFeature.getRelatedBindings().clear();
+        for (Object f : intactFeature.getRelatedLinkedFeatures()){
+            I feature = (I)f;
+            feature.getLinkedFeatures().remove(intactFeature);
+        }
+        intactFeature.getLinkedFeatures().clear();
     }
 
     public void clearCache() {
         this.persistedObjects.clear();
+    }
+
+    protected void prepareType(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        if (intactFeature.getType() != null){
+            intactFeature.setType(getContext().getFeatureTypeSynchronizer().synchronize(intactFeature.getType(), true));
+        }
     }
 
     protected void prepareLinkedFeatures(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
@@ -80,15 +95,15 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
             intactFeature.setBinds(synchronize((F)intactFeature.getBinds(), false));
         }
         if (intactFeature.areLinkedFeaturesInitialized()){
-            List<I> featureToSynchronize = new ArrayList<I>(intactFeature.getLinkedFeatures());
-            for (I feature : featureToSynchronize){
+            List<F> featureToSynchronize = new ArrayList<F>(intactFeature.getDbLinkedFeatures());
+            for (F feature : featureToSynchronize){
                 if (intactFeature != feature){
                     // do not persist or merge features because of cascades
                     I linkedFeature = synchronize((F) feature, false);
                     // we have a different instance because needed to be synchronized
                     if (linkedFeature != feature){
-                        intactFeature.getLinkedFeatures().remove(feature);
-                        intactFeature.getLinkedFeatures().add(linkedFeature);
+                        intactFeature.getDbLinkedFeatures().remove(feature);
+                        intactFeature.getDbLinkedFeatures().add(linkedFeature);
                     }
                 }
             }
@@ -186,5 +201,20 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new FeatureMergerEnrichOnly<F, I>());
+    }
+
+    @Override
+    protected void persistObject(I existingInstance) {
+        // first remove all dependencies to other features to avoid cycle dependencies when persisting the objects
+        Collection<F> linkedFeatures = new ArrayList<F>(existingInstance.getDbLinkedFeatures());
+        F bind = (F)existingInstance.getBinds();
+        existingInstance.getDbLinkedFeatures().clear();
+        existingInstance.setBinds(null);
+
+        super.persistObject(existingInstance);
+
+        // after persistence, re-attach dependent objects to avoid internal loops when cvs are called by each other
+        existingInstance.getDbLinkedFeatures().addAll(linkedFeatures);
+        existingInstance.setBinds(bind);
     }
 }
