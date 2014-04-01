@@ -20,7 +20,8 @@ import java.lang.reflect.InvocationTargetException;
  *
  * It does not cache persisted ranges. It only synchronize the start and end range status (with persist = true) to make sure that the start/end range status
  * are persisted before so the range can be persisted.
- * It also synchronize the resulting sequence and its xrefs.
+ * It does not synchronize the resulting sequence and its xrefs. This job is delegated to the sub classes ExperimentalRangeSynchronizer and
+ * ModelledRangeSynchronizer
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -88,7 +89,10 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
 
     @Override
     protected I instantiateNewPersistentInstance(Range object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return intactClass.getConstructor(Position.class, Position.class, Boolean.class, ResultingSequence.class).newInstance(object.getStart(), object.getEnd(), object.isLink(), object.getResultingSequence());
+        I newRange = intactClass.getConstructor(Position.class, Position.class, ResultingSequence.class).newInstance(object.getStart(), object.getEnd(), object.getResultingSequence());
+        newRange.setParticipant(object.getParticipant());
+        newRange.setLink(object.isLink());
+        return newRange;
     }
 
     @Override

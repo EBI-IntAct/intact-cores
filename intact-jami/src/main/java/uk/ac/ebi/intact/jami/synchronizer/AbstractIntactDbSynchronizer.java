@@ -63,7 +63,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             return fetchObjectFromCache(object);
         }
 
-        if (!object.getClass().isAssignableFrom(this.intactClass)){
+        if (!this.intactClass.isAssignableFrom(object.getClass())){
             T newObject = null;
             try {
                 newObject = instantiateNewPersistentInstance(object, this.intactClass);
@@ -125,7 +125,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     public boolean delete(I object) {
-        if (!object.getClass().isAssignableFrom(this.intactClass)){
+        if (!this.intactClass.isAssignableFrom(object.getClass())){
             return false;
         }
         else{
