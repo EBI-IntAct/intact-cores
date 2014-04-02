@@ -49,6 +49,11 @@ public class CvTermMergerOverride extends IntactDbMergerOverride<CvTerm, IntactC
         if (obj1.areParentsInitialized()){
             mergeParents(mergedCv, mergedCv.getParents(), obj1.getParents());
         }
+        // merge definition
+        if ((mergedCv.getDefinition() == null && obj1.getDefinition() != null)
+                || (mergedCv.getDefinition() != null && !mergedCv.getDefinition().equals(obj1.getDefinition()))){
+            mergedCv.setDefinition(obj1.getDefinition());
+        }
         return mergedCv;
     }
 

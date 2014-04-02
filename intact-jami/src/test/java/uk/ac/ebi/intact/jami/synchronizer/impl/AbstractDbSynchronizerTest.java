@@ -153,12 +153,17 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
         this.synchronizer.clearCache();
 
         T reloadedObject = findObject(objectToTest);
+        initPropertiesBeforeDetaching(reloadedObject);
         entityManager.detach(reloadedObject);
         updatePropertieDetachedInstance(reloadedObject);
 
         T newObjToTest = (T)this.synchronizer.synchronize(reloadedObject, true);
 
         testUpdatedPropertiesAfterMerge(objectToTest, newObjToTest);
+    }
+
+    protected void initPropertiesBeforeDetaching(T reloadedObject){
+       // nothing to do here
     }
 
     protected void persist(T objectToTest) throws FinderException, PersisterException, SynchronizerException {

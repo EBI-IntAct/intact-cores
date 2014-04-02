@@ -248,7 +248,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     }
 
     public void setDefinition(String def) {
-        if (this.definition != null){
+        if (getDefinition() != null){
             getDbAnnotations().remove(this.definition);
         }
         this.definition = new CvTermAnnotation(IntactUtils.createMITopic("definition", null), def);

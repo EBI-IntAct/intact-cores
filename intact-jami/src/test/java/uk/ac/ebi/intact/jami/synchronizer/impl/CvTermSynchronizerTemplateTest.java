@@ -1,12 +1,9 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import junit.framework.Assert;
+import org.hibernate.Hibernate;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
@@ -16,7 +13,6 @@ import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
-import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
@@ -26,10 +22,6 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -39,140 +31,29 @@ import java.lang.reflect.InvocationTargetException;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
-@TransactionConfiguration
-public class CvTermSynchronizerTemplateTest {
+public class CvTermSynchronizerTemplateTest extends AbstractDbSynchronizerTest<CvTerm, IntactCvTerm>{
 
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
-
-    private CvTermSynchronizer synchronizer;
-    private SynchronizerContext context;
+    private int testNumber=1;
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new CvTermSynchronizer(this.context);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        persist();
 
-        // simple cv with xrefs
-        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
-        // cvs with parent/children
-        IntactCvTerm annotationTopic = IntactTestUtils.createCvTermWithParent();
-        IntactCvTerm annotationTopicParent = (IntactCvTerm)annotationTopic.getParents().iterator().next();
-        // cvs with annotations and aliases
-        IntactCvTerm cvDatabase = IntactTestUtils.createCvTermWithAnnotationsAndAliases();
-        // cvs with fullname and definition
-        IntactCvTerm cvConfidenceType = IntactTestUtils.createCvWithDefinition();
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        this.testNumber = 2;
+        persist();
 
-        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-        this.synchronizer.persist(aliasType);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        this.testNumber = 3;
+        persist();
 
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(Alias.GENE_NAME, aliasType.getShortName());
-        Assert.assertNull(aliasType.getFullName());
-        Assert.assertNull(aliasType.getDefinition());
-        Assert.assertTrue(aliasType.getAnnotations().isEmpty());
-        Assert.assertTrue(aliasType.getSynonyms().isEmpty());
-        Assert.assertTrue(aliasType.getParents().isEmpty());
-        Assert.assertTrue(aliasType.getChildren().isEmpty());
-        Assert.assertEquals(1, aliasType.getDbXrefs().size());
-        Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, aliasType.getObjClass());
-        CvTermXref ref = (CvTermXref) aliasType.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
-
-        Assert.assertEquals(2, aliasType.getIdentifiers().size());
-        Assert.assertEquals(aliasType.getAc(), XrefUtils.collectFirstIdentifierWithDatabase(aliasType.getIdentifiers(), null, "intact").getId());
-
-        this.synchronizer.setObjClass(IntactUtils.TOPIC_OBJCLASS);
-        this.synchronizer.persist(annotationTopic);
-
-        Assert.assertNotNull(annotationTopic.getAc());
-        Assert.assertEquals("test", annotationTopic.getShortName());
-        Assert.assertNull(annotationTopic.getFullName());
-        Assert.assertNull(annotationTopic.getDefinition());
-        Assert.assertTrue(annotationTopic.getAnnotations().isEmpty());
-        Assert.assertTrue(annotationTopic.getSynonyms().isEmpty());
-        Assert.assertEquals(1, annotationTopic.getDbXrefs().size());
-        Assert.assertTrue(annotationTopic.getChildren().isEmpty());
-        Assert.assertEquals(1, annotationTopic.getParents().size());
-        Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, annotationTopic.getObjClass());
-        Assert.assertTrue(annotationTopicParent == annotationTopic.getParents().iterator().next());
-        ref = (CvTermXref) annotationTopic.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-
-        Assert.assertNotNull(annotationTopicParent.getAc());
-        Assert.assertEquals(Annotation.CAUTION, annotationTopicParent.getShortName());
-        Assert.assertNull(annotationTopicParent.getFullName());
-        Assert.assertNull(annotationTopicParent.getDefinition());
-        Assert.assertTrue(annotationTopicParent.getAnnotations().isEmpty());
-        Assert.assertTrue(annotationTopicParent.getSynonyms().isEmpty());
-        Assert.assertEquals(1, annotationTopicParent.getDbXrefs().size());
-        Assert.assertTrue(annotationTopicParent.getParents().isEmpty());
-        Assert.assertEquals(1, annotationTopicParent.getChildren().size());
-        Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, annotationTopicParent.getObjClass());
-        ref = (CvTermXref) annotationTopicParent.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals(Annotation.CAUTION_MI, ref.getId());
-        Assert.assertTrue(annotationTopic == annotationTopicParent.getChildren().iterator().next());
-
-        this.synchronizer.setObjClass(IntactUtils.DATABASE_OBJCLASS);
-        this.synchronizer.persist(cvDatabase);
-
-        Assert.assertNotNull(cvDatabase.getAc());
-        Assert.assertEquals("test", cvDatabase.getShortName());
-        Assert.assertNull(cvDatabase.getFullName());
-        Assert.assertNull(cvDatabase.getDefinition());
-        Assert.assertEquals(1, cvDatabase.getAnnotations().size());
-        Assert.assertTrue(cvDatabase.getParents().isEmpty());
-        Assert.assertEquals(1, cvDatabase.getDbXrefs().size());
-        Assert.assertTrue(cvDatabase.getChildren().isEmpty());
-        Assert.assertEquals(1, cvDatabase.getSynonyms().size());
-        Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, cvDatabase.getObjClass());
-        CvTermAnnotation annot = (CvTermAnnotation) cvDatabase.getAnnotations().iterator().next();
-        Assert.assertNull(annot.getAc());
-        CvTermAlias alias = (CvTermAlias) cvDatabase.getSynonyms().iterator().next();
-        Assert.assertNull(alias.getAc());
-        Assert.assertEquals("test synonym", alias.getName());
-        ref = (CvTermXref) cvDatabase.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-
-        this.synchronizer.setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
-        this.synchronizer.persist(cvConfidenceType);
-
-        Assert.assertNotNull(cvConfidenceType.getAc());
-        Assert.assertEquals("test3", cvConfidenceType.getShortName());
-        Assert.assertEquals("Test Confidence", cvConfidenceType.getFullName());
-        Assert.assertEquals("Test Definition", cvConfidenceType.getDefinition());
-        Assert.assertEquals(0, cvConfidenceType.getAnnotations().size());
-        Assert.assertEquals(1, cvConfidenceType.getDbAnnotations().size());
-        Assert.assertTrue(cvConfidenceType.getSynonyms().isEmpty());
-        Assert.assertEquals(1, cvConfidenceType.getDbXrefs().size());
-        Assert.assertTrue(cvConfidenceType.getChildren().isEmpty());
-        Assert.assertTrue(cvConfidenceType.getParents().isEmpty());
-        Assert.assertEquals(IntactUtils.CONFIDENCE_TYPE_OBJCLASS, cvConfidenceType.getObjClass());
-        ref = (CvTermXref) cvConfidenceType.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-        annot = (CvTermAnnotation) cvConfidenceType.getDbAnnotations().iterator().next();
-        Assert.assertNull(annot.getAc());
-        Assert.assertEquals(annot.getValue(), cvConfidenceType.getDefinition());
-        Assert.assertEquals("definition", annot.getTopic().getShortName());
-
-        entityManager.flush();
-
-        System.out.println("flush");
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        this.testNumber = 4;
+        persist();
     }
 
     @Transactional
@@ -187,8 +68,8 @@ public class CvTermSynchronizerTemplateTest {
         // simple cv with xrefs
         IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
 
-        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-        IntactCvTerm newAliasType = this.synchronizer.synchronize(aliasType, true);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        IntactCvTerm newAliasType = (IntactCvTerm)this.synchronizer.synchronize(aliasType, true);
 
         Assert.assertEquals(newAliasType.getAc(), existingType.getAc());
 
@@ -197,363 +78,157 @@ public class CvTermSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new CvTermSynchronizer(this.context);
+    public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        find_local_cache(false);
 
-        IntactCvTerm existingType = createExistingType();
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        this.testNumber = 2;
+        find_local_cache(false);
 
-        // simple cv with xrefs
-        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        this.testNumber = 3;
+        find_local_cache(false);
 
-        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-        IntactCvTerm newAliasType = this.synchronizer.find(aliasType);
-
-        Assert.assertEquals(newAliasType.getAc(), existingType.getAc());
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        this.testNumber = 4;
+        find_local_cache(false);
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_delete() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new CvTermSynchronizer(this.context);
+    public void test_delete() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        delete();
 
-        IntactCvTerm existingType = createExistingType();
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        this.testNumber = 2;
+        delete();
 
-        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-        this.synchronizer.delete(existingType);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        this.testNumber = 3;
+        delete();
 
-        Assert.assertNull(entityManager.find(IntactCvTerm.class, existingType.getAc()));
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        this.testNumber = 4;
+        delete();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new CvTermSynchronizer(this.context);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        synchronizeProperties();
 
-        // simple cv with xrefs
-        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
-        // cvs with parent/children
-        IntactCvTerm annotationTopic = IntactTestUtils.createCvTermWithParent();
-        IntactCvTerm annotationTopicParent = (IntactCvTerm)annotationTopic.getParents().iterator().next();
-        // cvs with annotations and aliases
-        IntactCvTerm cvDatabase = IntactTestUtils.createCvTermWithAnnotationsAndAliases();
-        // cvs with fullname and definition
-        IntactCvTerm cvConfidenceType = IntactTestUtils.createCvWithDefinition();
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        this.testNumber = 2;
+        synchronizeProperties();
 
-        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-        this.synchronizer.synchronizeProperties(aliasType);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        this.testNumber = 3;
+        synchronizeProperties();
 
-        Assert.assertNull(aliasType.getAc());
-        Assert.assertEquals(Alias.GENE_NAME, aliasType.getShortName());
-        Assert.assertNull(aliasType.getFullName());
-        Assert.assertNull(aliasType.getDefinition());
-        Assert.assertTrue(aliasType.getAnnotations().isEmpty());
-        Assert.assertTrue(aliasType.getSynonyms().isEmpty());
-        Assert.assertTrue(aliasType.getParents().isEmpty());
-        Assert.assertTrue(aliasType.getChildren().isEmpty());
-        Assert.assertEquals(1, aliasType.getDbXrefs().size());
-        Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, aliasType.getObjClass());
-        CvTermXref ref = (CvTermXref) aliasType.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
-
-        Assert.assertEquals(1, aliasType.getIdentifiers().size());
-        Assert.assertNull(XrefUtils.collectFirstIdentifierWithDatabase(aliasType.getIdentifiers(), null, "intact"));
-
-        this.synchronizer.setObjClass(IntactUtils.TOPIC_OBJCLASS);
-        this.synchronizer.synchronizeProperties(annotationTopic);
-
-        Assert.assertNull(annotationTopic.getAc());
-        Assert.assertEquals("test", annotationTopic.getShortName());
-        Assert.assertNull(annotationTopic.getFullName());
-        Assert.assertNull(annotationTopic.getDefinition());
-        Assert.assertTrue(annotationTopic.getAnnotations().isEmpty());
-        Assert.assertTrue(annotationTopic.getSynonyms().isEmpty());
-        Assert.assertEquals(1, annotationTopic.getDbXrefs().size());
-        Assert.assertTrue(annotationTopic.getChildren().isEmpty());
-        Assert.assertEquals(1, annotationTopic.getParents().size());
-        Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, annotationTopic.getObjClass());
-        ref = (CvTermXref) annotationTopic.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-
-        this.synchronizer.clearCache();
-
-        this.synchronizer.setObjClass(IntactUtils.DATABASE_OBJCLASS);
-        this.synchronizer.synchronizeProperties(cvDatabase);
-
-        Assert.assertNull(cvDatabase.getAc());
-        Assert.assertEquals("test", cvDatabase.getShortName());
-        Assert.assertNull(cvDatabase.getFullName());
-        Assert.assertNull(cvDatabase.getDefinition());
-        Assert.assertEquals(1, cvDatabase.getAnnotations().size());
-        Assert.assertTrue(cvDatabase.getParents().isEmpty());
-        Assert.assertEquals(1, cvDatabase.getDbXrefs().size());
-        Assert.assertTrue(cvDatabase.getChildren().isEmpty());
-        Assert.assertEquals(1, cvDatabase.getSynonyms().size());
-        Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, cvDatabase.getObjClass());
-        CvTermAnnotation annot = (CvTermAnnotation) cvDatabase.getAnnotations().iterator().next();
-        Assert.assertNull(annot.getAc());
-        CvTermAlias alias = (CvTermAlias) cvDatabase.getSynonyms().iterator().next();
-        Assert.assertNull(alias.getAc());
-        Assert.assertEquals("test synonym", alias.getName());
-        ref = (CvTermXref) cvDatabase.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-
-        this.synchronizer.setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
-        this.synchronizer.synchronizeProperties(cvConfidenceType);
-
-        Assert.assertNull(cvConfidenceType.getAc());
-        Assert.assertEquals("test3", cvConfidenceType.getShortName());
-        Assert.assertEquals("Test Confidence", cvConfidenceType.getFullName());
-        Assert.assertEquals("Test Definition", cvConfidenceType.getDefinition());
-        Assert.assertEquals(0, cvConfidenceType.getAnnotations().size());
-        Assert.assertEquals(1, cvConfidenceType.getDbAnnotations().size());
-        Assert.assertTrue(cvConfidenceType.getSynonyms().isEmpty());
-        Assert.assertEquals(1, cvConfidenceType.getDbXrefs().size());
-        Assert.assertTrue(cvConfidenceType.getChildren().isEmpty());
-        Assert.assertTrue(cvConfidenceType.getParents().isEmpty());
-        Assert.assertEquals(IntactUtils.CONFIDENCE_TYPE_OBJCLASS, cvConfidenceType.getObjClass());
-        ref = (CvTermXref) cvConfidenceType.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-        annot = (CvTermAnnotation) cvConfidenceType.getDbAnnotations().iterator().next();
-        Assert.assertNull(annot.getAc());
-        Assert.assertEquals(annot.getValue(), cvConfidenceType.getDefinition());
-        Assert.assertEquals("definition", annot.getTopic().getShortName());
-
-        entityManager.flush();
-
-        System.out.println("flush");
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        this.testNumber = 4;
+        synchronizeProperties();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new CvTermSynchronizer(this.context);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        synchronize_not_persist();
 
-        // simple cv with xrefs
-        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
-        // cvs with parent/children
-        IntactCvTerm annotationTopic = IntactTestUtils.createCvTermWithParent();
-        IntactCvTerm annotationTopicParent = (IntactCvTerm)annotationTopic.getParents().iterator().next();
-        // cvs with annotations and aliases
-        IntactCvTerm cvDatabase = IntactTestUtils.createCvTermWithAnnotationsAndAliases();
-        // cvs with fullname and definition
-        IntactCvTerm cvConfidenceType = IntactTestUtils.createCvWithDefinition();
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        this.testNumber = 2;
+        synchronize_not_persist();
 
-        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-        IntactCvTerm newCv = this.synchronizer.synchronize(aliasType, false);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        this.testNumber = 3;
+        synchronize_not_persist();
 
-        Assert.assertNull(newCv.getAc());
-        Assert.assertEquals(Alias.GENE_NAME, newCv.getShortName());
-        Assert.assertNull(newCv.getFullName());
-        Assert.assertNull(newCv.getDefinition());
-        Assert.assertTrue(newCv.getAnnotations().isEmpty());
-        Assert.assertTrue(newCv.getSynonyms().isEmpty());
-        Assert.assertTrue(newCv.getParents().isEmpty());
-        Assert.assertTrue(newCv.getChildren().isEmpty());
-        Assert.assertEquals(1, newCv.getDbXrefs().size());
-        Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, newCv.getObjClass());
-        CvTermXref ref = (CvTermXref) newCv.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
-
-        Assert.assertEquals(1, newCv.getIdentifiers().size());
-        Assert.assertNull(XrefUtils.collectFirstIdentifierWithDatabase(newCv.getIdentifiers(), null, "intact"));
-
-        this.synchronizer.setObjClass(IntactUtils.TOPIC_OBJCLASS);
-        IntactCvTerm newCv2 = this.synchronizer.synchronize(annotationTopic, false);
-
-        Assert.assertNull(newCv2.getAc());
-        Assert.assertEquals("test", newCv2.getShortName());
-        Assert.assertNull(newCv2.getFullName());
-        Assert.assertNull(newCv2.getDefinition());
-        Assert.assertTrue(newCv2.getAnnotations().isEmpty());
-        Assert.assertTrue(newCv2.getSynonyms().isEmpty());
-        Assert.assertEquals(1, newCv2.getDbXrefs().size());
-        Assert.assertTrue(newCv2.getChildren().isEmpty());
-        Assert.assertEquals(1, newCv2.getParents().size());
-        Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, newCv2.getObjClass());
-        ref = (CvTermXref) newCv2.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-
-        this.synchronizer.clearCache();
-        this.synchronizer.setObjClass(IntactUtils.DATABASE_OBJCLASS);
-        IntactCvTerm newCv3 = this.synchronizer.synchronize(cvDatabase, false);
-
-        Assert.assertNull(newCv3.getAc());
-        Assert.assertEquals("test", newCv3.getShortName());
-        Assert.assertNull(newCv3.getFullName());
-        Assert.assertNull(newCv3.getDefinition());
-        Assert.assertEquals(1, newCv3.getAnnotations().size());
-        Assert.assertTrue(newCv3.getParents().isEmpty());
-        Assert.assertEquals(1, newCv3.getDbXrefs().size());
-        Assert.assertTrue(newCv3.getChildren().isEmpty());
-        Assert.assertEquals(1, newCv3.getSynonyms().size());
-        Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, newCv3.getObjClass());
-
-        this.synchronizer.setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
-        IntactCvTerm newCv4 = this.synchronizer.synchronize(cvConfidenceType, false);
-
-        Assert.assertNull(newCv4.getAc());
-        Assert.assertEquals("test3", newCv4.getShortName());
-        Assert.assertEquals("Test Confidence", newCv4.getFullName());
-        Assert.assertEquals("Test Definition", newCv4.getDefinition());
-        Assert.assertEquals(0, newCv4.getAnnotations().size());
-        Assert.assertEquals(1, newCv4.getDbAnnotations().size());
-        Assert.assertTrue(newCv4.getSynonyms().isEmpty());
-        Assert.assertEquals(1, newCv4.getDbXrefs().size());
-        Assert.assertTrue(newCv4.getChildren().isEmpty());
-        Assert.assertTrue(newCv4.getParents().isEmpty());
-        Assert.assertEquals(IntactUtils.CONFIDENCE_TYPE_OBJCLASS, newCv4.getObjClass());
-        ref = (CvTermXref) newCv4.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-        CvTermAnnotation annot = (CvTermAnnotation) newCv4.getDbAnnotations().iterator().next();
-        Assert.assertNull(annot.getAc());
-        Assert.assertEquals(annot.getValue(), newCv4.getDefinition());
-        Assert.assertEquals("definition", annot.getTopic().getShortName());
-
-        entityManager.flush();
-
-        System.out.println("flush");
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        this.testNumber = 4;
+        synchronize_not_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new CvTermSynchronizer(this.context);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        synchronize_persist();
 
-        // simple cv with xrefs
-        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
-        // cvs with parent/children
-        IntactCvTerm annotationTopic = IntactTestUtils.createCvTermWithParent();
-        IntactCvTerm annotationTopicParent = (IntactCvTerm)annotationTopic.getParents().iterator().next();
-        // cvs with annotations and aliases
-        IntactCvTerm cvDatabase = IntactTestUtils.createCvTermWithAnnotationsAndAliases();
-        // cvs with fullname and definition
-        IntactCvTerm cvConfidenceType = IntactTestUtils.createCvWithDefinition();
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        this.testNumber = 2;
+        synchronize_persist();
 
-        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-        IntactCvTerm newCv = this.synchronizer.synchronize(aliasType, true);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        this.testNumber = 3;
+        synchronize_persist();
 
-        Assert.assertNotNull(newCv.getAc());
-        Assert.assertEquals(Alias.GENE_NAME, newCv.getShortName());
-        Assert.assertNull(newCv.getFullName());
-        Assert.assertNull(newCv.getDefinition());
-        Assert.assertTrue(newCv.getAnnotations().isEmpty());
-        Assert.assertTrue(newCv.getSynonyms().isEmpty());
-        Assert.assertTrue(newCv.getParents().isEmpty());
-        Assert.assertTrue(newCv.getChildren().isEmpty());
-        Assert.assertEquals(1, newCv.getDbXrefs().size());
-        Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, newCv.getObjClass());
-        CvTermXref ref = (CvTermXref) newCv.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
-
-        Assert.assertEquals(2, newCv.getIdentifiers().size());
-        Assert.assertNotNull(XrefUtils.collectFirstIdentifierWithDatabase(newCv.getIdentifiers(), null, "intact"));
-
-        this.synchronizer.setObjClass(IntactUtils.TOPIC_OBJCLASS);
-        IntactCvTerm newCv2 = this.synchronizer.synchronize(annotationTopic, true);
-
-        Assert.assertNotNull(newCv2.getAc());
-        Assert.assertEquals("test", newCv2.getShortName());
-        Assert.assertNull(newCv2.getFullName());
-        Assert.assertNull(newCv2.getDefinition());
-        Assert.assertTrue(newCv2.getAnnotations().isEmpty());
-        Assert.assertTrue(newCv2.getSynonyms().isEmpty());
-        Assert.assertEquals(1, newCv2.getDbXrefs().size());
-        Assert.assertTrue(newCv2.getChildren().isEmpty());
-        Assert.assertEquals(1, newCv2.getParents().size());
-        Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, newCv2.getObjClass());
-        ref = (CvTermXref) newCv2.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-
-        this.synchronizer.setObjClass(IntactUtils.DATABASE_OBJCLASS);
-        IntactCvTerm newCv3 = this.synchronizer.synchronize(cvDatabase, true);
-
-        Assert.assertNotNull(newCv3.getAc());
-        Assert.assertEquals("test", newCv3.getShortName());
-        Assert.assertNull(newCv3.getFullName());
-        Assert.assertNull(newCv3.getDefinition());
-        Assert.assertEquals(1, newCv3.getAnnotations().size());
-        Assert.assertTrue(newCv3.getParents().isEmpty());
-        Assert.assertEquals(1, newCv3.getDbXrefs().size());
-        Assert.assertTrue(newCv3.getChildren().isEmpty());
-        Assert.assertEquals(1, newCv3.getSynonyms().size());
-        Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, newCv3.getObjClass());
-
-        this.synchronizer.setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
-        IntactCvTerm newCv4 = this.synchronizer.synchronize(cvConfidenceType, true);
-
-        Assert.assertNotNull(newCv4.getAc());
-        Assert.assertEquals("test3", newCv4.getShortName());
-        Assert.assertEquals("Test Confidence", newCv4.getFullName());
-        Assert.assertEquals("Test Definition", newCv4.getDefinition());
-        Assert.assertEquals(0, newCv4.getAnnotations().size());
-        Assert.assertEquals(1, newCv4.getDbAnnotations().size());
-        Assert.assertTrue(newCv4.getSynonyms().isEmpty());
-        Assert.assertEquals(1, newCv4.getDbXrefs().size());
-        Assert.assertTrue(newCv4.getChildren().isEmpty());
-        Assert.assertTrue(newCv4.getParents().isEmpty());
-        Assert.assertEquals(IntactUtils.CONFIDENCE_TYPE_OBJCLASS, newCv4.getObjClass());
-        ref = (CvTermXref) newCv4.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals("intact", ref.getDatabase().getShortName());
-        Assert.assertTrue(ref.getId().startsWith("IA:"));
-        CvTermAnnotation annot = (CvTermAnnotation) newCv4.getDbAnnotations().iterator().next();
-        Assert.assertNull(annot.getAc());
-        Assert.assertEquals(annot.getValue(), newCv4.getDefinition());
-        Assert.assertEquals("definition", annot.getTopic().getShortName());
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        this.testNumber = 4;
+        synchronize_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new CvTermSynchronizer(this.context);
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        persist_jami();
+    }
 
-        // simple cv with xrefs
-        CvTerm aliasType = CvTermUtils.createGeneNameAliasType();
-        this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
-        IntactCvTerm newCv = this.synchronizer.synchronize(aliasType, true);
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_merge1() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        merge_test1();
 
-        Assert.assertNotNull(newCv.getAc());
-        Assert.assertEquals(Alias.GENE_NAME, newCv.getShortName());
-        Assert.assertNull(newCv.getFullName());
-        Assert.assertNull(newCv.getDefinition());
-        Assert.assertTrue(newCv.getAnnotations().isEmpty());
-        Assert.assertTrue(newCv.getSynonyms().isEmpty());
-        Assert.assertTrue(newCv.getParents().isEmpty());
-        Assert.assertTrue(newCv.getChildren().isEmpty());
-        Assert.assertEquals(1, newCv.getDbXrefs().size());
-        Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, newCv.getObjClass());
-        CvTermXref ref = (CvTermXref) newCv.getDbXrefs().iterator().next();
-        Assert.assertNull(ref.getAc());
-        Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        this.testNumber = 2;
+        merge_test1();
 
-        Assert.assertEquals(2, newCv.getIdentifiers().size());
-        Assert.assertNotNull(XrefUtils.collectFirstIdentifierWithDatabase(newCv.getIdentifiers(), null, "intact"));
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        this.testNumber = 3;
+        merge_test1();
+
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        this.testNumber = 4;
+        merge_test1();
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_merge2() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        merge_test2();
+
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.TOPIC_OBJCLASS);
+        this.testNumber = 2;
+        merge_test2();
+
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        this.testNumber = 3;
+        merge_test2();
+
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
+        this.testNumber = 4;
+        merge_test2();
     }
 
     private IntactCvTerm createExistingType() {
@@ -577,5 +252,259 @@ public class CvTermSynchronizerTemplateTest {
         entityManager.flush();
         this.context.clearCache();
         return aliasSynonym;
+    }
+
+    @Override
+    protected CvTerm createDefaultJamiObject() {
+        return CvTermUtils.createGeneNameAliasType();
+    }
+
+    @Override
+    protected void testUpdatedPropertiesAfterMerge(IntactCvTerm objectToTest, IntactCvTerm newObjToTest) {
+        Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
+        Assert.assertEquals("updated definition", newObjToTest.getDefinition());
+    }
+
+    @Override
+    protected void updatePropertieDetachedInstance(IntactCvTerm objectToTest) {
+        objectToTest.setDefinition("updated definition");
+    }
+
+    @Override
+    protected void initPropertiesBeforeDetaching(IntactCvTerm reloadedObject){
+        Hibernate.initialize(reloadedObject.getDbAnnotations());
+        Hibernate.initialize(reloadedObject.getDbXrefs());
+    }
+
+    @Override
+    protected IntactCvTerm findObject(IntactCvTerm objectToTest) {
+        return entityManager.find(IntactCvTerm.class, objectToTest.getAc());
+    }
+
+    @Override
+    protected void initSynchronizer() {
+        this.synchronizer = new CvTermSynchronizer(this.context);
+    }
+
+    @Override
+    protected void testPersistedProperties(IntactCvTerm objectToTest) {
+        // simple cv with xrefs
+        if (testNumber == 1){
+            Assert.assertNotNull(objectToTest.getAc());
+            Assert.assertEquals(Alias.GENE_NAME, objectToTest.getShortName());
+            Assert.assertNull(objectToTest.getFullName());
+            Assert.assertNull(objectToTest.getDefinition());
+            Assert.assertTrue(objectToTest.getAnnotations().isEmpty());
+            Assert.assertTrue(objectToTest.getSynonyms().isEmpty());
+            Assert.assertTrue(objectToTest.getParents().isEmpty());
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertEquals(1, objectToTest.getDbXrefs().size());
+            Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, objectToTest.getObjClass());
+            CvTermXref ref = (CvTermXref) objectToTest.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
+
+            Assert.assertEquals(2, objectToTest.getIdentifiers().size());
+            Assert.assertEquals(objectToTest.getAc(), XrefUtils.collectFirstIdentifierWithDatabase(objectToTest.getIdentifiers(), null, "intact").getId());
+
+        }
+        // cvs with parent/children
+        else if (testNumber == 2){
+            Assert.assertNotNull(objectToTest.getAc());
+            Assert.assertEquals("test", objectToTest.getShortName());
+            Assert.assertNull(objectToTest.getFullName());
+            Assert.assertNull(objectToTest.getDefinition());
+            Assert.assertTrue(objectToTest.getAnnotations().isEmpty());
+            Assert.assertTrue(objectToTest.getSynonyms().isEmpty());
+            Assert.assertEquals(1, objectToTest.getDbXrefs().size());
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertEquals(1, objectToTest.getParents().size());
+            Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, objectToTest.getObjClass());
+            CvTermXref ref = (CvTermXref) objectToTest.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals("intact", ref.getDatabase().getShortName());
+            Assert.assertTrue(ref.getId().startsWith("IA:"));
+
+            IntactCvTerm parent = (IntactCvTerm)objectToTest.getParents().iterator().next();
+            Assert.assertNotNull(parent.getAc());
+            Assert.assertEquals(Annotation.CAUTION, parent.getShortName());
+            Assert.assertNull(parent.getFullName());
+            Assert.assertNull(parent.getDefinition());
+            Assert.assertTrue(parent.getAnnotations().isEmpty());
+            Assert.assertTrue(parent.getSynonyms().isEmpty());
+            Assert.assertEquals(1, parent.getDbXrefs().size());
+            Assert.assertTrue(parent.getParents().isEmpty());
+            Assert.assertEquals(1, parent.getChildren().size());
+            Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, parent.getObjClass());
+            ref = (CvTermXref) parent.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals(Annotation.CAUTION_MI, ref.getId());
+            Assert.assertTrue(objectToTest == parent.getChildren().iterator().next());
+        }
+        // cvs with annotations and aliases
+        else if (testNumber == 3){
+            Assert.assertNotNull(objectToTest.getAc());
+            Assert.assertEquals("test", objectToTest.getShortName());
+            Assert.assertNull(objectToTest.getFullName());
+            Assert.assertNull(objectToTest.getDefinition());
+            Assert.assertEquals(1, objectToTest.getAnnotations().size());
+            Assert.assertTrue(objectToTest.getParents().isEmpty());
+            Assert.assertEquals(1, objectToTest.getDbXrefs().size());
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertEquals(1, objectToTest.getSynonyms().size());
+            Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, objectToTest.getObjClass());
+            CvTermAnnotation annot = (CvTermAnnotation) objectToTest.getAnnotations().iterator().next();
+            Assert.assertNull(annot.getAc());
+            CvTermAlias alias = (CvTermAlias) objectToTest.getSynonyms().iterator().next();
+            Assert.assertNull(alias.getAc());
+            Assert.assertEquals("test synonym", alias.getName());
+            CvTermXref ref = (CvTermXref) objectToTest.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals("intact", ref.getDatabase().getShortName());
+            Assert.assertTrue(ref.getId().startsWith("IA:"));
+        }
+        // cvs with fullname and definition
+        else {
+            Assert.assertNotNull(objectToTest.getAc());
+            Assert.assertEquals("test3", objectToTest.getShortName());
+            Assert.assertEquals("Test Confidence", objectToTest.getFullName());
+            Assert.assertEquals("Test Definition", objectToTest.getDefinition());
+            Assert.assertEquals(0, objectToTest.getAnnotations().size());
+            Assert.assertEquals(1, objectToTest.getDbAnnotations().size());
+            Assert.assertTrue(objectToTest.getSynonyms().isEmpty());
+            Assert.assertEquals(1, objectToTest.getDbXrefs().size());
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertTrue(objectToTest.getParents().isEmpty());
+            Assert.assertEquals(IntactUtils.CONFIDENCE_TYPE_OBJCLASS, objectToTest.getObjClass());
+            CvTermXref ref = (CvTermXref) objectToTest.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals("intact", ref.getDatabase().getShortName());
+            Assert.assertTrue(ref.getId().startsWith("IA:"));
+            CvTermAnnotation annot = (CvTermAnnotation) objectToTest.getDbAnnotations().iterator().next();
+            Assert.assertNull(annot.getAc());
+            Assert.assertEquals(annot.getValue(), objectToTest.getDefinition());
+            Assert.assertEquals("definition", annot.getTopic().getShortName());
+        }
+    }
+
+    @Override
+    protected void testNonPersistedProperties(IntactCvTerm objectToTest) {
+        // simple cv with xrefs
+        if (testNumber == 1){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertEquals(Alias.GENE_NAME, objectToTest.getShortName());
+            Assert.assertNull(objectToTest.getFullName());
+            Assert.assertNull(objectToTest.getDefinition());
+            Assert.assertTrue(objectToTest.getAnnotations().isEmpty());
+            Assert.assertTrue(objectToTest.getSynonyms().isEmpty());
+            Assert.assertTrue(objectToTest.getParents().isEmpty());
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertEquals(1, objectToTest.getDbXrefs().size());
+            Assert.assertEquals(IntactUtils.ALIAS_TYPE_OBJCLASS, objectToTest.getObjClass());
+            CvTermXref ref = (CvTermXref) objectToTest.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals(Alias.GENE_NAME_MI, ref.getId());
+
+            Assert.assertEquals(1, objectToTest.getIdentifiers().size());
+            Assert.assertNull(XrefUtils.collectFirstIdentifierWithDatabase(objectToTest.getIdentifiers(), null, "intact"));
+
+        }
+        // cvs with parent/children
+        else if (testNumber == 2){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertEquals("test", objectToTest.getShortName());
+            Assert.assertNull(objectToTest.getFullName());
+            Assert.assertNull(objectToTest.getDefinition());
+            Assert.assertTrue(objectToTest.getAnnotations().isEmpty());
+            Assert.assertTrue(objectToTest.getSynonyms().isEmpty());
+            Assert.assertEquals(1, objectToTest.getDbXrefs().size());
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertEquals(1, objectToTest.getParents().size());
+            Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, objectToTest.getObjClass());
+            CvTermXref ref = (CvTermXref) objectToTest.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals("intact", ref.getDatabase().getShortName());
+            Assert.assertTrue(ref.getId().startsWith("IA:"));
+
+            IntactCvTerm parent = (IntactCvTerm)objectToTest.getParents().iterator().next();
+            Assert.assertNotNull(parent.getAc());
+            Assert.assertEquals(Annotation.CAUTION, parent.getShortName());
+            Assert.assertNull(parent.getFullName());
+            Assert.assertNull(parent.getDefinition());
+            Assert.assertTrue(parent.getAnnotations().isEmpty());
+            Assert.assertTrue(parent.getSynonyms().isEmpty());
+            Assert.assertEquals(1, parent.getDbXrefs().size());
+            Assert.assertTrue(parent.getParents().isEmpty());
+            Assert.assertEquals(1, parent.getChildren().size());
+            Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, parent.getObjClass());
+            ref = (CvTermXref) parent.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals(Annotation.CAUTION_MI, ref.getId());
+            Assert.assertTrue(objectToTest == parent.getChildren().iterator().next());
+        }
+        // cvs with annotations and aliases
+        else if (testNumber == 3){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertEquals("test", objectToTest.getShortName());
+            Assert.assertNull(objectToTest.getFullName());
+            Assert.assertNull(objectToTest.getDefinition());
+            Assert.assertEquals(1, objectToTest.getAnnotations().size());
+            Assert.assertTrue(objectToTest.getParents().isEmpty());
+            Assert.assertEquals(1, objectToTest.getDbXrefs().size());
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertEquals(1, objectToTest.getSynonyms().size());
+            Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, objectToTest.getObjClass());
+            CvTermAnnotation annot = (CvTermAnnotation) objectToTest.getAnnotations().iterator().next();
+            Assert.assertNull(annot.getAc());
+            CvTermAlias alias = (CvTermAlias) objectToTest.getSynonyms().iterator().next();
+            Assert.assertNull(alias.getAc());
+            Assert.assertEquals("test synonym", alias.getName());
+            CvTermXref ref = (CvTermXref) objectToTest.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals("intact", ref.getDatabase().getShortName());
+            Assert.assertTrue(ref.getId().startsWith("IA:"));
+        }
+        // cvs with fullname and definition
+        else {
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertEquals("test3", objectToTest.getShortName());
+            Assert.assertEquals("Test Confidence", objectToTest.getFullName());
+            Assert.assertEquals("Test Definition", objectToTest.getDefinition());
+            Assert.assertEquals(0, objectToTest.getAnnotations().size());
+            Assert.assertEquals(1, objectToTest.getDbAnnotations().size());
+            Assert.assertTrue(objectToTest.getSynonyms().isEmpty());
+            Assert.assertEquals(1, objectToTest.getDbXrefs().size());
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertTrue(objectToTest.getParents().isEmpty());
+            Assert.assertEquals(IntactUtils.CONFIDENCE_TYPE_OBJCLASS, objectToTest.getObjClass());
+            CvTermXref ref = (CvTermXref) objectToTest.getDbXrefs().iterator().next();
+            Assert.assertNull(ref.getAc());
+            Assert.assertEquals("intact", ref.getDatabase().getShortName());
+            Assert.assertTrue(ref.getId().startsWith("IA:"));
+            CvTermAnnotation annot = (CvTermAnnotation) objectToTest.getDbAnnotations().iterator().next();
+            Assert.assertNull(annot.getAc());
+            Assert.assertEquals(annot.getValue(), objectToTest.getDefinition());
+            Assert.assertEquals("definition", annot.getTopic().getShortName());
+        }
+    }
+
+    @Override
+    protected IntactCvTerm createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        // simple cv with xrefs
+        if (testNumber == 1){
+            return IntactTestUtils.createCvTermWithXrefs();
+        }
+        // cvs with parent/children
+        else if (testNumber == 2){
+            return IntactTestUtils.createCvTermWithParent();
+        }
+        // cvs with annotations and aliases
+        else if (testNumber == 3){
+            return IntactTestUtils.createCvTermWithAnnotationsAndAliases();
+        }
+        // cvs with fullname and definition
+        else {
+            return IntactTestUtils.createCvWithDefinition();
+        }
     }
 }
