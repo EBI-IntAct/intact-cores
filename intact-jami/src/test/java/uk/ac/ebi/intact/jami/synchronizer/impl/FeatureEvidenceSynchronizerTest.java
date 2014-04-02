@@ -12,7 +12,9 @@ import psidev.psi.mi.jami.model.ModelledFeature;
 import psidev.psi.mi.jami.model.impl.DefaultModelledFeature;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
-import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactModelledFeature;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -23,7 +25,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
 /**
- * Unit test for FeatureSynchronizerTemplate
+ * Unit test for FeatureEvidenceSynchronizer
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -34,7 +36,7 @@ import javax.persistence.PersistenceUnit;
 @Transactional
 @TransactionConfiguration
 @DirtiesContext
-public class FeatureSynchronizerTemplateTest {
+public class FeatureEvidenceSynchronizerTest {
 
     @PersistenceContext(unitName = "intact-core")
     private EntityManager entityManager;

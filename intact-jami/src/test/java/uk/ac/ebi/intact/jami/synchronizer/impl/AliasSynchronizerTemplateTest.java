@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.model.impl.DefaultAlias;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Unit test for AliasSynchronizerTemplate
@@ -51,15 +52,15 @@ public class AliasSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
 
-        OrganismAlias organismAlias = new OrganismAlias("test synonym 2");
+        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
 
-        InteractorAlias interactorAlias = new InteractorAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
+        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
         this.synchronizer.persist(cvAliasWithType);
@@ -92,17 +93,17 @@ public class AliasSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
         IntactCvTerm aliasSynonym = createExistingType();
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
 
-        OrganismAlias organismAlias = new OrganismAlias("test synonym 2");
+        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
 
-        InteractorAlias interactorAlias = new InteractorAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
+        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
         this.synchronizer.persist(cvAliasWithType);
@@ -132,7 +133,7 @@ public class AliasSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
@@ -141,11 +142,13 @@ public class AliasSynchronizerTemplateTest {
 
         entityManager.detach(aliasSynonym);
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(aliasSynonym, "test synonym");
+        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
+        cvAliasWithType.setType(aliasSynonym);
 
-        OrganismAlias organismAlias = new OrganismAlias("test synonym 2");
+        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
 
-        InteractorAlias interactorAlias = new InteractorAlias(aliasSynonym, "test synonym 3");
+        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
+        interactorAlias.setType(aliasSynonym);
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
         this.synchronizer.persist(cvAliasWithType);
@@ -175,7 +178,7 @@ public class AliasSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_alias_deleted() throws PersisterException, FinderException, SynchronizerException {
+    public void test_alias_deleted() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
@@ -184,7 +187,8 @@ public class AliasSynchronizerTemplateTest {
 
         entityManager.detach(aliasSynonym);
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(aliasSynonym, "test synonym");
+        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
+        cvAliasWithType.setType(aliasSynonym);
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
         this.synchronizer.persist(cvAliasWithType);
@@ -204,12 +208,13 @@ public class AliasSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
+    public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
-        CvTermAlias cvAliasNotPersisted = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
-        CvTermAlias cvAliasPersisted = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 2");
+        CvTermAlias cvAliasNotPersisted = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
+        CvTermAlias cvAliasPersisted = IntactTestUtils.createAliasSynonym(CvTermAlias.class, "test synonym 2");
+
         this.synchronizer.persist(cvAliasNotPersisted);
         entityManager.flush();
         this.context.clearCache();
@@ -221,15 +226,15 @@ public class AliasSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
 
-        OrganismAlias organismAlias = new OrganismAlias("test synonym 2");
+        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
 
-        InteractorAlias interactorAlias = new InteractorAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
+        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
         this.synchronizer.synchronizeProperties(cvAliasWithType);
@@ -262,15 +267,15 @@ public class AliasSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
 
-        OrganismAlias organismAlias = new OrganismAlias("test synonym 2");
+        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
 
-        InteractorAlias interactorAlias = new InteractorAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
+        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
         this.synchronizer.synchronize(cvAliasWithType, false);
@@ -303,15 +308,15 @@ public class AliasSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
 
-        OrganismAlias organismAlias = new OrganismAlias("test synonym 2");
+        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
 
-        InteractorAlias interactorAlias = new InteractorAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
+        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
         this.synchronizer.synchronize(cvAliasWithType, true);
@@ -348,11 +353,11 @@ public class AliasSynchronizerTemplateTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
-        Alias cvAliasWithType = new DefaultAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
+        Alias cvAliasWithType = IntactTestUtils.createAliasSynonym();
 
-        Alias organismAlias = new DefaultAlias("test synonym 2");
+        Alias organismAlias = IntactTestUtils.createAliasNoType();
 
-        Alias interactorAlias = new DefaultAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym 3");
+        Alias interactorAlias = IntactTestUtils.createAliasSynonym("test synonym 3");
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
         CvTermAlias newAlias = (CvTermAlias)this.synchronizer.synchronize(cvAliasWithType, true);
@@ -378,7 +383,7 @@ public class AliasSynchronizerTemplateTest {
         Assert.assertNotNull(newAlias3.getType());
         IntactCvTerm aliasType2 = (IntactCvTerm)newAlias3.getType();
         Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
+        Assert.assertTrue(newAlias.getType() == aliasType2);
         Assert.assertEquals("test synonym 3", interactorAlias.getName());
     }
 
