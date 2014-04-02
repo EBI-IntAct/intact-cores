@@ -11,8 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.model.impl.DefaultConfidence;
-import psidev.psi.mi.jami.model.impl.DefaultModelledConfidence;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -25,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Unit test for ConfidenceSynchronizerTemplate
@@ -51,15 +51,15 @@ public class ConfidenceSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
 
-        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
+        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
 
-        ComplexConfidence complexConfidence = new ComplexConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
+        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         this.synchronizer.persist(participantConfidence);
@@ -92,17 +92,17 @@ public class ConfidenceSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
         IntactCvTerm authorScore = createExistingType();
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
 
-        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
+        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
 
-        ComplexConfidence complexConfidence = new ComplexConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
+        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         this.synchronizer.persist(participantConfidence);
@@ -135,7 +135,7 @@ public class ConfidenceSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
@@ -144,11 +144,12 @@ public class ConfidenceSynchronizerTemplateTest {
 
         entityManager.detach(authorScore);
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(authorScore, "high");
-
-        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(authorScore, "low");
-
-        ComplexConfidence complexConfidence = new ComplexConfidence(authorScore, "0.5");
+        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
+        participantConfidence.setType(authorScore);
+        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
+        interactionConfidence.setType(authorScore);
+        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
+        complexConfidence.setType(authorScore);
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         this.synchronizer.persist(participantConfidence);
@@ -178,7 +179,7 @@ public class ConfidenceSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_confidence_deleted() throws PersisterException, FinderException, SynchronizerException {
+    public void test_confidence_deleted() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
@@ -187,7 +188,7 @@ public class ConfidenceSynchronizerTemplateTest {
 
         entityManager.detach(authorScore);
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(authorScore, "high");
+        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         this.synchronizer.persist(participantConfidence);
@@ -207,12 +208,13 @@ public class ConfidenceSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
+    public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
-        ParticipantEvidenceConfidence participantConfidenceNotPersisted = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
-        ParticipantEvidenceConfidence participantConfidencePersisted = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        ParticipantEvidenceConfidence participantConfidenceNotPersisted = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
+        ParticipantEvidenceConfidence participantConfidencePersisted = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class, "low");
+
         this.synchronizer.persist(participantConfidencePersisted);
         entityManager.flush();
         this.context.clearCache();
@@ -224,15 +226,15 @@ public class ConfidenceSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
 
-        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
+        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
 
-        ComplexConfidence complexConfidence = new ComplexConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
+        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         this.synchronizer.synchronizeProperties(participantConfidence);
@@ -265,15 +267,15 @@ public class ConfidenceSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
 
-        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
+        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
 
-        ComplexConfidence complexConfidence = new ComplexConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
+        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         this.synchronizer.synchronize(participantConfidence, false);
@@ -306,15 +308,15 @@ public class ConfidenceSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
-        ParticipantEvidenceConfidence participantConfidence = new ParticipantEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
 
-        InteractionEvidenceConfidence interactionConfidence = new InteractionEvidenceConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
+        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
 
-        ComplexConfidence complexConfidence = new ComplexConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
+        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         this.synchronizer.synchronize(participantConfidence, true);
@@ -351,11 +353,11 @@ public class ConfidenceSynchronizerTemplateTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
 
-        Confidence participantConfidence = new DefaultConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "high");
+        Confidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore();
 
-        Confidence interactionConfidence = new DefaultConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "low");
+        Confidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore("low");
 
-        Confidence complexConfidence = new DefaultModelledConfidence(IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"), "0.5");
+        Confidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore("0.5");
 
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         ParticipantEvidenceConfidence newConf = (ParticipantEvidenceConfidence)this.synchronizer.synchronize(participantConfidence, true);

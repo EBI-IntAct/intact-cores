@@ -8,11 +8,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.model.impl.DefaultAnnotation;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -26,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Unit test for AnnotationSynchronizerTemplate
@@ -51,15 +51,15 @@ public class AnnotationSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
-        CvTermAnnotation cvAnnotation = new CvTermAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment");
+        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
 
-        InteractionAnnotation interactionAnnotation = new InteractionAnnotation(IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI), null);
+        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
 
-        InteractorAnnotation interactorAnnotation = new InteractorAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment 2");
+        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
 
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
         this.synchronizer.persist(cvAnnotation);
@@ -93,17 +93,17 @@ public class AnnotationSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_existing_topic() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_existing_topic() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
         IntactCvTerm annotationTopic = createExistingTopic();
 
-        CvTermAnnotation cvAnnotation = new CvTermAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment");
+        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
 
-        InteractionAnnotation interactionAnnotation = new InteractionAnnotation(IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI), null);
+        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
 
-        InteractorAnnotation interactorAnnotation = new InteractorAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment 2");
+        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
 
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
         this.synchronizer.persist(cvAnnotation);
@@ -135,13 +135,13 @@ public class AnnotationSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_delete() throws PersisterException, FinderException, SynchronizerException {
+    public void test_delete() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
         IntactCvTerm annotationTopic = createExistingTopic();
 
-        CvTermAnnotation cvAnnotation = new CvTermAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment");
+        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
 
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
         this.synchronizer.persist(cvAnnotation);
@@ -159,7 +159,7 @@ public class AnnotationSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_detached_topic() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_detached_topic() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
@@ -168,11 +168,13 @@ public class AnnotationSynchronizerTemplateTest {
 
         entityManager.detach(existingTopic);
 
-        CvTermAnnotation cvAnnotation = new CvTermAnnotation(existingTopic, "test comment");
+        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
+        cvAnnotation.setTopic(existingTopic);
 
-        InteractionAnnotation interactionAnnotation = new InteractionAnnotation(IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI), null);
+        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
 
-        InteractorAnnotation interactorAnnotation = new InteractorAnnotation(existingTopic, "test comment 2");
+        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
+        interactorAnnotation.setTopic(existingTopic);
 
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
         this.synchronizer.persist(cvAnnotation);
@@ -204,12 +206,13 @@ public class AnnotationSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
+    public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
-        CvTermAnnotation cvAnnotationNotPersisted = new CvTermAnnotation(IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI), "test caution");
-        CvTermAnnotation cvAnnotationPersisted = new CvTermAnnotation(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test caution 2");
+        CvTermAnnotation cvAnnotationNotPersisted = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
+        CvTermAnnotation cvAnnotationPersisted = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class, "test comemnt 2");
+
         this.synchronizer.persist(cvAnnotationNotPersisted);
         entityManager.flush();
         this.context.clearCache();
@@ -223,15 +226,15 @@ public class AnnotationSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
-        CvTermAnnotation cvAnnotation = new CvTermAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment");
+        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
 
-        InteractionAnnotation interactionAnnotation = new InteractionAnnotation(IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI), null);
+        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
 
-        InteractorAnnotation interactorAnnotation = new InteractorAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment 2");
+        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
 
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
         this.synchronizer.synchronizeProperties(cvAnnotation);
@@ -265,15 +268,15 @@ public class AnnotationSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
-        CvTermAnnotation cvAnnotation = new CvTermAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment");
+        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
 
-        InteractionAnnotation interactionAnnotation = new InteractionAnnotation(IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI), null);
+        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
 
-        InteractorAnnotation interactorAnnotation = new InteractorAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment 2");
+        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
 
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
         this.synchronizer.synchronize(cvAnnotation, false);
@@ -307,15 +310,15 @@ public class AnnotationSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
-        CvTermAnnotation cvAnnotation = new CvTermAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment");
+        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
 
-        InteractionAnnotation interactionAnnotation = new InteractionAnnotation(IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI), null);
+        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
 
-        InteractorAnnotation interactorAnnotation = new InteractorAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment 2");
+        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
 
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
         this.synchronizer.synchronize(cvAnnotation, true);
@@ -353,11 +356,11 @@ public class AnnotationSynchronizerTemplateTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
-        Annotation cvAnnotation = new DefaultAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment");
+        Annotation cvAnnotation = IntactTestUtils.createAnnotationComment();
 
-        Annotation interactionAnnotation = new DefaultAnnotation(IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI), null);
+        Annotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription();
 
-        Annotation interactorAnnotation = new DefaultAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test comment 2");
+        Annotation interactorAnnotation = IntactTestUtils.createAnnotationComment("test comment 2");
 
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
         CvTermAnnotation newAnnot = (CvTermAnnotation)this.synchronizer.synchronize(cvAnnotation, true);
