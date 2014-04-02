@@ -12,8 +12,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.ParameterValue;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.model.impl.DefaultModelledParameter;
-import psidev.psi.mi.jami.model.impl.DefaultParameter;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -26,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 /**
@@ -53,16 +53,18 @@ public class ParameterSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
-        ParticipantEvidenceParameter participantParameter = new ParticipantEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
+        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
+                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
 
-        InteractionEvidenceParameter interactionParameter = new InteractionEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(5)),
-                IntactUtils.createMIUnit("molar", "MI:xxx3"));
+        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
+                createKdParameter(InteractionEvidenceParameter.class);
 
-        ComplexParameter complexParameter = new ComplexParameter(IntactUtils.createMIParameterType("molecular weight", "MI:xxx2"), new ParameterValue(new BigDecimal(6)));
+        ComplexParameter complexParameter = IntactTestUtils.
+                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
 
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         this.synchronizer.persist(participantParameter);
@@ -100,18 +102,20 @@ public class ParameterSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
         IntactCvTerm kdType = createExistingType();
 
-        ParticipantEvidenceParameter participantParameter = new ParticipantEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
+        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
+                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
 
-        InteractionEvidenceParameter interactionParameter = new InteractionEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(5)),
-                IntactUtils.createMIUnit("molar", "MI:xxx3"));
+        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
+                createKdParameter(InteractionEvidenceParameter.class);
 
-        ComplexParameter complexParameter = new ComplexParameter(IntactUtils.createMIParameterType("molecular weight", "MI:xxx2"), new ParameterValue(new BigDecimal(6)));
+        ComplexParameter complexParameter = IntactTestUtils.
+                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         this.synchronizer.persist(participantParameter);
 
@@ -148,7 +152,7 @@ public class ParameterSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
@@ -157,10 +161,13 @@ public class ParameterSynchronizerTemplateTest {
 
         entityManager.detach(kdType);
 
-        ParticipantEvidenceParameter participantParameter = new ParticipantEvidenceParameter(kdType, new ParameterValue(new BigDecimal(3)));
+        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
+                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
+        participantParameter.setType(kdType);
 
-        InteractionEvidenceParameter interactionParameter = new InteractionEvidenceParameter(kdType, new ParameterValue(new BigDecimal(5)),
-                IntactUtils.createMIUnit("molar", "MI:xxx3"));
+        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
+                createKdParameter(InteractionEvidenceParameter.class);
+        interactionParameter.setType(kdType);
 
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         this.synchronizer.persist(participantParameter);
@@ -185,7 +192,7 @@ public class ParameterSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_confidence_deleted() throws PersisterException, FinderException, SynchronizerException {
+    public void test_confidence_deleted() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
@@ -194,7 +201,8 @@ public class ParameterSynchronizerTemplateTest {
 
         entityManager.detach(kd);
 
-        ParticipantEvidenceParameter participantParameter = new ParticipantEvidenceParameter(kd, new ParameterValue(new BigDecimal(3)));
+        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
+                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
 
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         this.synchronizer.persist(participantParameter);
@@ -214,12 +222,15 @@ public class ParameterSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
+    public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
-        ParticipantEvidenceParameter participantConfidenceNotPersisted = new ParticipantEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
-        ParticipantEvidenceParameter participantConfidencePersisted = new ParticipantEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
+        ParticipantEvidenceParameter participantConfidenceNotPersisted = IntactTestUtils.
+                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
+        ParticipantEvidenceParameter participantConfidencePersisted = IntactTestUtils.
+                createParameterNoUnit(ParticipantEvidenceParameter.class, "kd", null, 7);
+
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         this.synchronizer.persist(participantConfidencePersisted);
         entityManager.flush();
@@ -232,17 +243,18 @@ public class ParameterSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
-        ParticipantEvidenceParameter participantParameter = new ParticipantEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
+        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
+                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
 
-        InteractionEvidenceParameter interactionParameter = new InteractionEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(5)),
-                IntactUtils.createMIUnit("molar", "MI:xxx3"));
+        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
+                createKdParameter(InteractionEvidenceParameter.class);
 
-        ComplexParameter complexParameter = new ComplexParameter(IntactUtils.createMIParameterType("molecular weight", "MI:xxx2"), new ParameterValue(new BigDecimal(6)));
-
+        ComplexParameter complexParameter = IntactTestUtils.
+                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         this.synchronizer.synchronizeProperties(participantParameter);
 
@@ -277,17 +289,18 @@ public class ParameterSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
-        ParticipantEvidenceParameter participantParameter = new ParticipantEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
+        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
+                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
 
-        InteractionEvidenceParameter interactionParameter = new InteractionEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(5)),
-                IntactUtils.createMIUnit("molar", "MI:xxx3"));
+        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
+                createKdParameter(InteractionEvidenceParameter.class);
 
-        ComplexParameter complexParameter = new ComplexParameter(IntactUtils.createMIParameterType("molecular weight", "MI:xxx2"), new ParameterValue(new BigDecimal(6)));
-
+        ComplexParameter complexParameter = IntactTestUtils.
+                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         this.synchronizer.synchronize(participantParameter, false);
 
@@ -323,16 +336,18 @@ public class ParameterSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
-        ParticipantEvidenceParameter participantParameter = new ParticipantEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
+        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
+                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
 
-        InteractionEvidenceParameter interactionParameter = new InteractionEvidenceParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(5)),
-                IntactUtils.createMIUnit("molar", "MI:xxx3"));
+        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
+                createKdParameter(InteractionEvidenceParameter.class);
 
-        ComplexParameter complexParameter = new ComplexParameter(IntactUtils.createMIParameterType("molecular weight", "MI:xxx2"), new ParameterValue(new BigDecimal(6)));
+        ComplexParameter complexParameter = IntactTestUtils.
+                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
 
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         this.synchronizer.synchronize(participantParameter, true);
@@ -373,12 +388,14 @@ public class ParameterSynchronizerTemplateTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
 
-        Parameter participantParameter = new DefaultParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
+        Parameter participantParameter = IntactTestUtils.
+                createKdParameterNoUnit();
 
-        Parameter interactionParameter = new DefaultParameter(IntactUtils.createMIParameterType("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(5)),
-                IntactUtils.createMIUnit("molar", "MI:xxx3"));
+        Parameter interactionParameter = IntactTestUtils.
+                createKdParameter();
 
-        Parameter complexParameter = new DefaultModelledParameter(IntactUtils.createMIParameterType("molecular weight", "MI:xxx2"), new ParameterValue(new BigDecimal(6)));
+        Parameter complexParameter = IntactTestUtils.
+                createParameterNoUnit("molecular weight", "MI:xxx2", 6);
 
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
         ParticipantEvidenceParameter newConf = (ParticipantEvidenceParameter)this.synchronizer.synchronize(participantParameter, true);
@@ -395,8 +412,8 @@ public class ParameterSynchronizerTemplateTest {
 
         Assert.assertNotNull(newConf2.getAc());
         Assert.assertNotNull(newConf2.getType());
-        Assert.assertNotNull(interactionParameter.getType());
-        IntactCvTerm paramUnit = (IntactCvTerm)interactionParameter.getUnit();
+        Assert.assertNotNull(newConf2.getType());
+        IntactCvTerm paramUnit = (IntactCvTerm)newConf2.getUnit();
         Assert.assertNotNull(paramUnit.getAc());
         Assert.assertEquals(interactionParameter.getUnit(),IntactUtils.createMIUnit("molar", "MI:xxx3"));
         Assert.assertEquals(new ParameterValue(new BigDecimal(5)), newConf2.getValue());

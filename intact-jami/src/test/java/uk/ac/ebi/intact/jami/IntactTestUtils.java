@@ -2,14 +2,14 @@ package uk.ac.ebi.intact.jami;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultAlias;
-import psidev.psi.mi.jami.utils.AliasUtils;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
-import psidev.psi.mi.jami.utils.ConfidenceUtils;
-import psidev.psi.mi.jami.utils.XrefUtils;
+import psidev.psi.mi.jami.model.impl.DefaultModelledParameter;
+import psidev.psi.mi.jami.model.impl.DefaultParameter;
+import psidev.psi.mi.jami.utils.*;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 
 /**
  * Utility class for testing
@@ -163,5 +163,51 @@ public class IntactTestUtils {
 
     public static Xref createXrefSeeAlso(String id) {
         return XrefUtils.createXrefWithQualifier(Xref.IMEX, Xref.IMEX_MI, id, Xref.SEE_ALSO, Xref.SEE_ALSO_MI);
+    }
+
+    public static <T extends AbstractIntactParameter> T createIntactParameter(Class<T> parameterClass, String typeName, String typeMI,
+                                                                    int factor, String unitName, String unitMI)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        T param = parameterClass.getConstructor(CvTerm.class, ParameterValue.class).newInstance(
+                IntactUtils.createMIParameterType(typeName, typeMI),new ParameterValue(new BigDecimal(factor)));
+        if (unitName != null){
+            param.setUnit(IntactUtils.createMIUnit(unitName, unitMI));
+        }
+        return param;
+    }
+
+    public static <T extends AbstractIntactParameter> T createKdParameterNoUnit(Class<T> parameterClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createParameterNoUnit(parameterClass, "kd", "MI:xxx1", 3);
+    }
+
+    public static <T extends AbstractIntactParameter> T createParameterNoUnit(Class<T> parameterClass, String typeName, String typeId, int factor) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createIntactParameter(parameterClass, typeName, typeId, factor, null, null);
+    }
+
+    public static <T extends AbstractIntactParameter> T createKdParameter(Class<T> parameterClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createKdParameter(parameterClass, 5, "molar", "MI:xxx3");
+    }
+
+    public static <T extends AbstractIntactParameter> T createKdParameter(Class<T> parameterClass, int factor, String unitName, String unitMI) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createIntactParameter(parameterClass, "kd", "MI:xxx1", factor, unitName, unitMI);
+    }
+
+    public static Parameter createKdParameterNoUnit() {
+        return new DefaultParameter(CvTermUtils.createMICvTerm("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(3)));
+    }
+
+    public static ModelledParameter createParameterNoUnit(String typeName, String typeId, int factor) {
+        return new DefaultModelledParameter(CvTermUtils.createMICvTerm(typeName, typeId), new ParameterValue(new BigDecimal(factor)));
+    }
+
+    public static Parameter createKdParameter() {
+        return new DefaultParameter(CvTermUtils.createMICvTerm("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(5)),
+                CvTermUtils.createMICvTerm("molar", "MI:xxx3"));
+    }
+
+    public static Parameter createKdParameter(int factor, String unitName, String unitMI) {
+        return new DefaultParameter(CvTermUtils.createMICvTerm("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(factor)),
+                CvTermUtils.createMICvTerm(unitName, unitMI));
     }
 }
