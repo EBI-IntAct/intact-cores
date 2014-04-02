@@ -2,29 +2,19 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
-import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.AnnotationSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -34,60 +24,25 @@ import java.lang.reflect.InvocationTargetException;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
-@TransactionConfiguration
-public class AnnotationSynchronizerTemplateTest {
+public class AnnotationSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Annotation, AbstractIntactAnnotation>{
 
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
-
-    private AnnotationSynchronizer synchronizer;
-    private SynchronizerContext context;
+    private int testNumber = 1;
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
-
-        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
-
-        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
-
-        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
-
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
-        this.synchronizer.persist(cvAnnotation);
-
-        Assert.assertNotNull(cvAnnotation.getAc());
-        Assert.assertNotNull(cvAnnotation.getTopic());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAnnotation.getTopic();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAnnotation.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
-        Assert.assertEquals("test comment", cvAnnotation.getValue());
+        this.testNumber = 1;
+        persist();
 
         this.synchronizer.setIntactClass(InteractionAnnotation.class);
-        this.synchronizer.persist(interactionAnnotation);
-
-        Assert.assertNotNull(interactionAnnotation.getAc());
-        Assert.assertNotNull(interactionAnnotation.getTopic());
-        Assert.assertFalse(cvAnnotation.getTopic() == interactionAnnotation.getTopic());
-        Assert.assertNull(interactionAnnotation.getValue());
+        this.testNumber = 2;
+        persist();
 
         this.synchronizer.setIntactClass(InteractorAnnotation.class);
-        this.synchronizer.persist(interactorAnnotation);
-
-        Assert.assertNotNull(interactorAnnotation.getAc());
-        Assert.assertNotNull(interactorAnnotation.getTopic());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAnnotation.getTopic();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAnnotation.getTopic() == aliasType2);
-        Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
+        this.testNumber = 3;
+        persist();
     }
 
     @Transactional
@@ -136,24 +91,17 @@ public class AnnotationSynchronizerTemplateTest {
     @Test
     @DirtiesContext
     public void test_delete() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
-
-        IntactCvTerm annotationTopic = createExistingTopic();
-
-        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
-
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
-        this.synchronizer.persist(cvAnnotation);
+        this.testNumber = 1;
+        delete();
 
-        Assert.assertNotNull(cvAnnotation.getTopic());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAnnotation.getTopic();
-        Assert.assertEquals(aliasType.getAc(), annotationTopic.getAc());
+        this.synchronizer.setIntactClass(InteractionAnnotation.class);
+        this.testNumber = 2;
+        delete();
 
-        entityManager.flush();
-
-        this.synchronizer.delete(cvAnnotation);
-        Assert.assertNull(entityManager.find(CvTermAnnotation.class, cvAnnotation.getAc()));
+        this.synchronizer.setIntactClass(InteractorAnnotation.class);
+        this.testNumber = 3;
+        delete();
     }
 
     @Transactional
@@ -207,188 +155,119 @@ public class AnnotationSynchronizerTemplateTest {
     @Test
     @DirtiesContext
     public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
+        this.synchronizer.setIntactClass(CvTermAnnotation.class);
+        this.testNumber = 1;
+        find_no_cache();
 
-        CvTermAnnotation cvAnnotationNotPersisted = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
-        CvTermAnnotation cvAnnotationPersisted = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class, "test comemnt 2");
+        this.synchronizer.setIntactClass(InteractionAnnotation.class);
+        this.testNumber = 2;
+        find_no_cache();
 
-        this.synchronizer.persist(cvAnnotationNotPersisted);
-        entityManager.flush();
-        this.context.clearCache();
-
-        System.out.println("flush");
-
-        Assert.assertNull(this.synchronizer.find(cvAnnotationNotPersisted));
-        Assert.assertNull(this.synchronizer.find(cvAnnotationPersisted));
+        this.synchronizer.setIntactClass(InteractorAnnotation.class);
+        this.testNumber = 3;
+        find_no_cache();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
-
-        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
-
-        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
-
-        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
-
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
-        this.synchronizer.synchronizeProperties(cvAnnotation);
-
-        Assert.assertNull(cvAnnotation.getAc());
-        Assert.assertNotNull(cvAnnotation.getTopic());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAnnotation.getTopic();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAnnotation.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
-        Assert.assertEquals("test comment", cvAnnotation.getValue());
+        this.testNumber = 1;
+        synchronizeProperties();
 
         this.synchronizer.setIntactClass(InteractionAnnotation.class);
-        this.synchronizer.synchronizeProperties(interactionAnnotation);
-
-        Assert.assertNull(interactionAnnotation.getAc());
-        Assert.assertNotNull(interactionAnnotation.getTopic());
-        Assert.assertFalse(cvAnnotation.getTopic() == interactionAnnotation.getTopic());
-        Assert.assertNull(interactionAnnotation.getValue());
+        this.testNumber = 2;
+        synchronizeProperties();
 
         this.synchronizer.setIntactClass(InteractorAnnotation.class);
-        this.synchronizer.synchronizeProperties(interactorAnnotation);
-
-        Assert.assertNull(interactorAnnotation.getAc());
-        Assert.assertNotNull(interactorAnnotation.getTopic());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAnnotation.getTopic();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAnnotation.getTopic() == aliasType2);
-        Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
+        this.testNumber = 3;
+        synchronizeProperties();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
-
-        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
-
-        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
-
-        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
-
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
-        this.synchronizer.synchronize(cvAnnotation, false);
-
-        Assert.assertNull(cvAnnotation.getAc());
-        Assert.assertNotNull(cvAnnotation.getTopic());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAnnotation.getTopic();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAnnotation.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
-        Assert.assertEquals("test comment", cvAnnotation.getValue());
+        this.testNumber = 1;
+        synchronize_not_persist();
 
         this.synchronizer.setIntactClass(InteractionAnnotation.class);
-        this.synchronizer.synchronize(interactionAnnotation, false);
-
-        Assert.assertNull(interactionAnnotation.getAc());
-        Assert.assertNotNull(interactionAnnotation.getTopic());
-        Assert.assertFalse(cvAnnotation.getTopic() == interactionAnnotation.getTopic());
-        Assert.assertNull(interactionAnnotation.getValue());
+        this.testNumber = 2;
+        synchronize_not_persist();
 
         this.synchronizer.setIntactClass(InteractorAnnotation.class);
-        this.synchronizer.synchronize(interactorAnnotation, false);
-
-        Assert.assertNull(interactorAnnotation.getAc());
-        Assert.assertNotNull(interactorAnnotation.getTopic());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAnnotation.getTopic();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAnnotation.getTopic() == aliasType2);
-        Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
+        this.testNumber = 3;
+        synchronize_not_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
-
-        CvTermAnnotation cvAnnotation = IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
-
-        InteractionAnnotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
-
-        InteractorAnnotation interactorAnnotation = IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
-
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
-        this.synchronizer.synchronize(cvAnnotation, true);
-
-        Assert.assertNotNull(cvAnnotation.getAc());
-        Assert.assertNotNull(cvAnnotation.getTopic());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAnnotation.getTopic();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAnnotation.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
-        Assert.assertEquals("test comment", cvAnnotation.getValue());
+        this.testNumber = 1;
+        synchronize_persist();
 
         this.synchronizer.setIntactClass(InteractionAnnotation.class);
-        this.synchronizer.synchronize(interactionAnnotation, true);
-
-        Assert.assertNotNull(interactionAnnotation.getAc());
-        Assert.assertNotNull(interactionAnnotation.getTopic());
-        Assert.assertFalse(cvAnnotation.getTopic() == interactionAnnotation.getTopic());
-        Assert.assertNull(interactionAnnotation.getValue());
+        this.testNumber = 2;
+        synchronize_persist();
 
         this.synchronizer.setIntactClass(InteractorAnnotation.class);
-        this.synchronizer.synchronize(interactorAnnotation, true);
-
-        Assert.assertNotNull(interactorAnnotation.getAc());
-        Assert.assertNotNull(interactorAnnotation.getTopic());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAnnotation.getTopic();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAnnotation.getTopic() == aliasType2);
-        Assert.assertEquals("test comment 2", interactorAnnotation.getValue());
+        this.testNumber = 3;
+        synchronize_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
-
-        Annotation cvAnnotation = IntactTestUtils.createAnnotationComment();
-
-        Annotation interactionAnnotation = IntactTestUtils.createAnnotationNoDescription();
-
-        Annotation interactorAnnotation = IntactTestUtils.createAnnotationComment("test comment 2");
-
         this.synchronizer.setIntactClass(CvTermAnnotation.class);
-        CvTermAnnotation newAnnot = (CvTermAnnotation)this.synchronizer.synchronize(cvAnnotation, true);
-
-        Assert.assertNotNull(newAnnot.getAc());
-        Assert.assertNotNull(newAnnot.getTopic());
-        IntactCvTerm aliasType = (IntactCvTerm)newAnnot.getTopic();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAnnotation.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
-        Assert.assertEquals("test comment", newAnnot.getValue());
+        this.testNumber = 1;
+        persist_jami();
 
         this.synchronizer.setIntactClass(InteractionAnnotation.class);
-        InteractionAnnotation newAnnot2 = (InteractionAnnotation)this.synchronizer.synchronize(interactionAnnotation, true);
-
-        Assert.assertNotNull(newAnnot2.getAc());
-        Assert.assertNotNull(newAnnot2.getTopic());
-        Assert.assertFalse(newAnnot.getTopic() == newAnnot2.getTopic());
-        Assert.assertNull(interactionAnnotation.getValue());
+        this.testNumber = 2;
+        persist_jami();
 
         this.synchronizer.setIntactClass(InteractorAnnotation.class);
-        InteractorAnnotation newAnnot3 = (InteractorAnnotation)this.synchronizer.synchronize(interactorAnnotation, true);
+        this.testNumber = 3;
+        persist_jami();
+    }
 
-        Assert.assertNotNull(newAnnot3.getAc());
-        Assert.assertNotNull(newAnnot3.getTopic());
-        IntactCvTerm aliasType2 = (IntactCvTerm)newAnnot3.getTopic();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(newAnnot.getTopic() == aliasType2);
-        Assert.assertEquals("test comment 2", newAnnot3.getValue());
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_merge1() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        this.synchronizer.setIntactClass(CvTermAnnotation.class);
+        this.testNumber = 1;
+        merge_test1();
+
+        this.synchronizer.setIntactClass(InteractionAnnotation.class);
+        this.testNumber = 2;
+        merge_test1();
+
+        this.synchronizer.setIntactClass(InteractorAnnotation.class);
+        this.testNumber = 3;
+        merge_test1();
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_merge2() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        this.synchronizer.setIntactClass(CvTermAnnotation.class);
+        this.testNumber = 1;
+        merge_test2();
+
+        this.synchronizer.setIntactClass(InteractionAnnotation.class);
+        this.testNumber = 2;
+        merge_test2();
+
+        this.synchronizer.setIntactClass(InteractorAnnotation.class);
+        this.testNumber = 3;
+        merge_test2();
     }
 
     private IntactCvTerm createExistingTopic() {
@@ -412,5 +291,112 @@ public class AnnotationSynchronizerTemplateTest {
         entityManager.flush();
         this.context.clearCache();
         return comment;
+    }
+
+    @Override
+    protected Annotation createDefaultJamiObject() {
+        if (testNumber == 1){
+            return IntactTestUtils.createAnnotationComment();
+        }
+        else if(testNumber == 2){
+            return IntactTestUtils.createAnnotationNoDescription();
+        }
+        else{
+            return IntactTestUtils.createAnnotationComment("test comment 2");
+        }
+    }
+
+    @Override
+    protected void testUpdatedPropertiesAfterMerge(AbstractIntactAnnotation objectToTest, AbstractIntactAnnotation newObjToTest) {
+        Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
+        Assert.assertEquals("value2", newObjToTest.getValue());
+    }
+
+    @Override
+    protected void updatePropertieDetachedInstance(AbstractIntactAnnotation objectToTest) {
+         objectToTest.setValue("value2");
+    }
+
+    @Override
+    protected AbstractIntactAnnotation findObject(AbstractIntactAnnotation objectToTest) {
+        if (testNumber == 1){
+            return entityManager.find(CvTermAnnotation.class, objectToTest.getAc());
+        }
+        else if(testNumber == 2){
+            return entityManager.find(InteractionAnnotation.class, objectToTest.getAc());
+        }
+        else{
+            return entityManager.find(InteractorAnnotation.class, objectToTest.getAc());
+        }
+    }
+
+    @Override
+    protected void initSynchronizer() {
+        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
+    }
+
+    @Override
+    protected void testPersistedProperties(AbstractIntactAnnotation persistedObject) {
+        if (testNumber == 1){
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getTopic());
+            IntactCvTerm aliasType = (IntactCvTerm)persistedObject.getTopic();
+            Assert.assertNotNull(aliasType.getAc());
+            Assert.assertEquals(persistedObject.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
+            Assert.assertEquals("test comment", persistedObject.getValue());
+        }
+        else if (testNumber == 2){
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getTopic());
+            Assert.assertEquals(persistedObject.getTopic(), IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI));
+            Assert.assertNull(persistedObject.getValue());
+        }
+        else{
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getTopic());
+            IntactCvTerm aliasType2 = (IntactCvTerm)persistedObject.getTopic();
+            Assert.assertNotNull(aliasType2.getAc());
+            Assert.assertEquals(persistedObject.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
+            Assert.assertEquals("test comment 2", persistedObject.getValue());
+        }
+    }
+
+    @Override
+    protected void testNonPersistedProperties(AbstractIntactAnnotation objectToTest) {
+        if (testNumber == 1){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getTopic());
+            IntactCvTerm aliasType = (IntactCvTerm)objectToTest.getTopic();
+            Assert.assertNotNull(aliasType.getAc());
+            Assert.assertEquals(objectToTest.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
+            Assert.assertEquals("test comment", objectToTest.getValue());
+        }
+        else if (testNumber == 2){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getTopic());
+            Assert.assertEquals(objectToTest.getTopic(), IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI));
+            Assert.assertNull(objectToTest.getValue());
+        }
+        else{
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getTopic());
+            IntactCvTerm aliasType2 = (IntactCvTerm)objectToTest.getTopic();
+            Assert.assertNotNull(aliasType2.getAc());
+            Assert.assertEquals(objectToTest.getTopic(), IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI));
+            Assert.assertEquals("test comment 2", objectToTest.getValue());
+        }
+    }
+
+    @Override
+    protected AbstractIntactAnnotation createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        if (testNumber == 1){
+            return IntactTestUtils.createAnnotationComment(CvTermAnnotation.class);
+        }
+        else if(testNumber == 2){
+            return IntactTestUtils.createAnnotationNoDescription(InteractionAnnotation.class);
+        }
+        else{
+            return IntactTestUtils.createAnnotationComment(InteractorAnnotation.class, "test comment 2");
+        }
     }
 }

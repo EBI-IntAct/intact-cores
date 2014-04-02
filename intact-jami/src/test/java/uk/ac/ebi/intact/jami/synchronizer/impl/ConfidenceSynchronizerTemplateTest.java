@@ -2,28 +2,19 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
-import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -33,60 +24,24 @@ import java.lang.reflect.InvocationTargetException;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
-@TransactionConfiguration
-@DirtiesContext
-public class ConfidenceSynchronizerTemplateTest {
+public class ConfidenceSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Confidence, AbstractIntactConfidence>{
 
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
-
-    private ConfidenceSynchronizerTemplate synchronizer;
-    private SynchronizerContext context;
-
+    private int testNumber = 1;
     @Transactional
     @Test
     @DirtiesContext
     public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
-
-        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
-
-        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
-
-        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
-
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
-        this.synchronizer.persist(participantConfidence);
-
-        Assert.assertNotNull(participantConfidence.getAc());
-        Assert.assertNotNull(participantConfidence.getType());
-        IntactCvTerm confType = (IntactCvTerm)participantConfidence.getType();
-        Assert.assertNotNull(confType.getAc());
-        Assert.assertEquals(participantConfidence.getType(),IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
-        Assert.assertEquals("high", participantConfidence.getValue());
+        this.testNumber = 1;
+        persist();
 
         this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
-        this.synchronizer.persist(interactionConfidence);
-
-        Assert.assertNotNull(interactionConfidence.getAc());
-        Assert.assertNotNull(interactionConfidence.getType());
-        Assert.assertEquals("low", interactionConfidence.getValue());
+        this.testNumber = 2;
+        persist();
 
         this.synchronizer.setIntactClass(ComplexConfidence.class);
-        this.synchronizer.persist(complexConfidence);
-
-        Assert.assertNotNull(complexConfidence.getAc());
-        Assert.assertNotNull(complexConfidence.getType());
-        IntactCvTerm aliasType2 = (IntactCvTerm)complexConfidence.getType();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(complexConfidence.getType() == aliasType2);
-        Assert.assertEquals("0.5", complexConfidence.getValue());
+        this.testNumber = 3;
+        persist();
     }
 
     @Transactional
@@ -180,211 +135,136 @@ public class ConfidenceSynchronizerTemplateTest {
     @Test
     @DirtiesContext
     public void test_confidence_deleted() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
-
-        // pre persist author score
-        IntactCvTerm authorScore = createExistingType();
-
-        entityManager.detach(authorScore);
-
-        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
-
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
-        this.synchronizer.persist(participantConfidence);
+        this.testNumber = 1;
+        delete();
 
-        Assert.assertNotNull(participantConfidence.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)participantConfidence.getType();
-        Assert.assertEquals(aliasType.getAc(), authorScore.getAc());
+        this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
+        this.testNumber = 2;
+        delete();
 
-        entityManager.flush();
-        System.out.println("flush");
-
-        this.synchronizer.delete(participantConfidence);
-
-        Assert.assertNull(entityManager.find(ParticipantEvidenceConfidence.class, participantConfidence.getAc()));
+        this.synchronizer.setIntactClass(ComplexConfidence.class);
+        this.testNumber = 3;
+        delete();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
+        this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
+        this.testNumber = 1;
+        find_no_cache();
 
-        ParticipantEvidenceConfidence participantConfidenceNotPersisted = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
-        ParticipantEvidenceConfidence participantConfidencePersisted = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class, "low");
+        this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
+        this.testNumber = 2;
+        find_no_cache();
 
-        this.synchronizer.persist(participantConfidencePersisted);
-        entityManager.flush();
-        this.context.clearCache();
-
-        Assert.assertNull(this.synchronizer.find(participantConfidenceNotPersisted));
-        Assert.assertNull(this.synchronizer.find(participantConfidencePersisted));
+        this.synchronizer.setIntactClass(ComplexConfidence.class);
+        this.testNumber = 3;
+        find_no_cache();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
-
-        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
-
-        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
-
-        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
-
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
-        this.synchronizer.synchronizeProperties(participantConfidence);
-
-        Assert.assertNull(participantConfidence.getAc());
-        Assert.assertNotNull(participantConfidence.getType());
-        IntactCvTerm confType = (IntactCvTerm)participantConfidence.getType();
-        Assert.assertNotNull(confType.getAc());
-        Assert.assertEquals(participantConfidence.getType(), IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
-        Assert.assertEquals("high", participantConfidence.getValue());
+        this.testNumber = 1;
+        synchronizeProperties();
 
         this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
-        this.synchronizer.synchronizeProperties(interactionConfidence);
-
-        Assert.assertNull(interactionConfidence.getAc());
-        Assert.assertNotNull(interactionConfidence.getType());
-        Assert.assertEquals("low", interactionConfidence.getValue());
+        this.testNumber = 2;
+        synchronizeProperties();
 
         this.synchronizer.setIntactClass(ComplexConfidence.class);
-        this.synchronizer.synchronizeProperties(complexConfidence);
-
-        Assert.assertNull(complexConfidence.getAc());
-        Assert.assertNotNull(complexConfidence.getType());
-        IntactCvTerm confType2 = (IntactCvTerm)complexConfidence.getType();
-        Assert.assertNotNull(confType2.getAc());
-        Assert.assertTrue(complexConfidence.getType() == confType2);
-        Assert.assertEquals("0.5", complexConfidence.getValue());
+        this.testNumber = 3;
+        synchronizeProperties();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
-
-        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
-
-        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
-
-        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
-
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
-        this.synchronizer.synchronize(participantConfidence, false);
-
-        Assert.assertNull(participantConfidence.getAc());
-        Assert.assertNotNull(participantConfidence.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)participantConfidence.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(participantConfidence.getType(), IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
-        Assert.assertEquals("high", participantConfidence.getValue());
+        this.testNumber = 1;
+        synchronize_not_persist();
 
         this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
-        this.synchronizer.synchronize(interactionConfidence, false);
-
-        Assert.assertNull(interactionConfidence.getAc());
-        Assert.assertNotNull(interactionConfidence.getType());
-        Assert.assertEquals("low", interactionConfidence.getValue());
+        this.testNumber = 2;
+        synchronize_not_persist();
 
         this.synchronizer.setIntactClass(ComplexConfidence.class);
-        this.synchronizer.synchronize(complexConfidence, false);
-
-        Assert.assertNull(complexConfidence.getAc());
-        Assert.assertNotNull(complexConfidence.getType());
-        IntactCvTerm confType2 = (IntactCvTerm)complexConfidence.getType();
-        Assert.assertNotNull(confType2.getAc());
-        Assert.assertTrue(complexConfidence.getType() == confType2);
-        Assert.assertEquals("0.5", complexConfidence.getValue());
+        this.testNumber = 3;
+        synchronize_not_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
-
-        ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
-
-        InteractionEvidenceConfidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
-
-        ComplexConfidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
-
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
-        this.synchronizer.synchronize(participantConfidence, true);
-
-        Assert.assertNotNull(participantConfidence.getAc());
-        Assert.assertNotNull(participantConfidence.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)participantConfidence.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(participantConfidence.getType(), IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
-        Assert.assertEquals("high", participantConfidence.getValue());
+        this.testNumber = 1;
+        synchronize_persist();
 
         this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
-        this.synchronizer.synchronize(interactionConfidence, true);
-
-        Assert.assertNotNull(interactionConfidence.getAc());
-        Assert.assertNotNull(interactionConfidence.getType());
-        Assert.assertEquals("low", interactionConfidence.getValue());
+        this.testNumber = 2;
+        synchronize_persist();
 
         this.synchronizer.setIntactClass(ComplexConfidence.class);
-        this.synchronizer.synchronize(complexConfidence, true);
-
-        Assert.assertNotNull(complexConfidence.getAc());
-        Assert.assertNotNull(complexConfidence.getType());
-        IntactCvTerm confType2 = (IntactCvTerm)complexConfidence.getType();
-        Assert.assertNotNull(confType2.getAc());
-        Assert.assertTrue(complexConfidence.getType() == confType2);
-        Assert.assertEquals("0.5", complexConfidence.getValue());
+        this.testNumber = 3;
+        synchronize_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
-
-        Confidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore();
-
-        Confidence interactionConfidence = IntactTestUtils.createConfidenceAuthorScore("low");
-
-        Confidence complexConfidence = IntactTestUtils.createConfidenceAuthorScore("0.5");
-
         this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
-        ParticipantEvidenceConfidence newConf = (ParticipantEvidenceConfidence)this.synchronizer.synchronize(participantConfidence, true);
-
-        Assert.assertNotNull(newConf.getAc());
-        Assert.assertNotNull(newConf.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)newConf.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(participantConfidence.getType(), IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
-        Assert.assertEquals("high", newConf.getValue());
+        this.testNumber = 1;
+        persist_jami();
 
         this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
-        InteractionEvidenceConfidence newConf2 = (InteractionEvidenceConfidence)this.synchronizer.synchronize(interactionConfidence, true);
-
-        Assert.assertNotNull(newConf2.getAc());
-        Assert.assertNotNull(newConf2.getType());
-        Assert.assertEquals("low", newConf2.getValue());
+        this.testNumber = 2;
+        persist_jami();
 
         this.synchronizer.setIntactClass(ComplexConfidence.class);
-        ComplexConfidence newConf3 = (ComplexConfidence)this.synchronizer.synchronize(complexConfidence, true);
+        this.testNumber = 3;
+        persist_jami();
+    }
 
-        Assert.assertNotNull(newConf3.getAc());
-        Assert.assertNotNull(newConf3.getType());
-        IntactCvTerm confType2 = (IntactCvTerm)newConf3.getType();
-        Assert.assertNotNull(confType2.getAc());
-        Assert.assertTrue(newConf3.getType() == confType2);
-        Assert.assertEquals("0.5", newConf3.getValue());
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_merge1() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
+        this.testNumber = 1;
+        merge_test1();
+
+        this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
+        this.testNumber = 2;
+        merge_test1();
+
+        this.synchronizer.setIntactClass(ComplexConfidence.class);
+        this.testNumber = 3;
+        merge_test1();
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_merge2() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        this.synchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
+        this.testNumber = 1;
+        merge_test2();
+
+        this.synchronizer.setIntactClass(InteractionEvidenceConfidence.class);
+        this.testNumber = 2;
+        merge_test2();
+
+        this.synchronizer.setIntactClass(ComplexConfidence.class);
+        this.testNumber = 3;
+        merge_test2();
     }
 
     private IntactCvTerm createExistingType() {
@@ -408,5 +288,110 @@ public class ConfidenceSynchronizerTemplateTest {
         entityManager.flush();
         this.context.clearCache();
         return aliasSynonym;
+    }
+
+    @Override
+    protected Confidence createDefaultJamiObject() {
+        if (testNumber == 1){
+            return IntactTestUtils.createConfidenceAuthorScore();
+        }
+        else if (testNumber == 2){
+            return IntactTestUtils.createConfidenceAuthorScore("low");
+        }
+        else{
+            return IntactTestUtils.createConfidenceAuthorScore("0.5");
+        }
+    }
+
+    @Override
+    protected void testUpdatedPropertiesAfterMerge(AbstractIntactConfidence objectToTest, AbstractIntactConfidence newObjToTest) {
+        Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
+        Assert.assertEquals("value2", newObjToTest.getValue());
+    }
+
+    @Override
+    protected void updatePropertieDetachedInstance(AbstractIntactConfidence objectToTest) {
+        objectToTest.setValue("value2");
+    }
+
+    @Override
+    protected AbstractIntactConfidence findObject(AbstractIntactConfidence objectToTest) {
+        if (testNumber == 1){
+            return entityManager.find(ParticipantEvidenceConfidence.class, objectToTest.getAc());
+        }
+        else if (testNumber == 2){
+            return entityManager.find(InteractionEvidenceConfidence.class, objectToTest.getAc());
+        }
+        else{
+            return entityManager.find(ComplexConfidence.class, objectToTest.getAc());
+        }
+    }
+
+    @Override
+    protected void initSynchronizer() {
+        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
+    }
+
+    @Override
+    protected void testPersistedProperties(AbstractIntactConfidence objectToTest) {
+        if (testNumber == 1){
+            Assert.assertNotNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getType());
+            IntactCvTerm confType = (IntactCvTerm)objectToTest.getType();
+            Assert.assertNotNull(confType.getAc());
+            Assert.assertEquals(objectToTest.getType(),IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
+            Assert.assertEquals("high", objectToTest.getValue());
+        }
+        else if (testNumber == 2){
+            Assert.assertNotNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getType());
+            Assert.assertEquals("low", objectToTest.getValue());
+        }
+        else{
+            Assert.assertNotNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getType());
+            IntactCvTerm aliasType2 = (IntactCvTerm)objectToTest.getType();
+            Assert.assertNotNull(aliasType2.getAc());
+            Assert.assertEquals(objectToTest.getType(),IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
+            Assert.assertEquals("0.5", objectToTest.getValue());
+        }
+    }
+
+    @Override
+    protected void testNonPersistedProperties(AbstractIntactConfidence objectToTest) {
+        if (testNumber == 1){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getType());
+            IntactCvTerm confType = (IntactCvTerm)objectToTest.getType();
+            Assert.assertNotNull(confType.getAc());
+            Assert.assertEquals(objectToTest.getType(),IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
+            Assert.assertEquals("high", objectToTest.getValue());
+        }
+        else if (testNumber == 2){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getType());
+            Assert.assertEquals("low", objectToTest.getValue());
+        }
+        else{
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getType());
+            IntactCvTerm aliasType2 = (IntactCvTerm)objectToTest.getType();
+            Assert.assertNotNull(aliasType2.getAc());
+            Assert.assertEquals(objectToTest.getType(), IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
+            Assert.assertEquals("0.5", objectToTest.getValue());
+        }
+    }
+
+    @Override
+    protected AbstractIntactConfidence createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        if (testNumber == 1){
+            return IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
+        }
+        else if (testNumber == 2){
+            return IntactTestUtils.createConfidenceAuthorScore(InteractionEvidenceConfidence.class, "low");
+        }
+        else{
+            return IntactTestUtils.createConfidenceAuthorScore(ComplexConfidence.class,"0.5");
+        }
     }
 }
