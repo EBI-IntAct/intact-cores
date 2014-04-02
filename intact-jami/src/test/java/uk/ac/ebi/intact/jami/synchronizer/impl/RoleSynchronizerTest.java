@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.user.Role;
@@ -63,7 +64,7 @@ public class RoleSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new RoleSynchronizer(this.context);
 
-        Role role = new Role("CURATOR");
+        Role role = IntactTestUtils.createCuratorRole();
         this.synchronizer.persist(role);
 
         Assert.assertNotNull(role.getAc());
@@ -79,7 +80,7 @@ public class RoleSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new RoleSynchronizer(this.context);
 
-        Role role = new Role("CURATOR");
+        Role role = IntactTestUtils.createCuratorRole();
         this.synchronizer.persist(role);
 
         Assert.assertNotNull(role.getAc());
@@ -94,7 +95,7 @@ public class RoleSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new RoleSynchronizer(this.context);
 
-        Role role = new Role("CURATOR");
+        Role role = IntactTestUtils.createCuratorRole();
         this.synchronizer.synchronizeProperties(role);
 
         Assert.assertNull(role.getAc());
@@ -108,7 +109,7 @@ public class RoleSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new RoleSynchronizer(this.context);
 
-        Role role = new Role("CURATOR");
+        Role role = IntactTestUtils.createCuratorRole();
         this.synchronizer.synchronize(role, false);
 
         Assert.assertNull(role.getAc());
@@ -123,7 +124,7 @@ public class RoleSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new RoleSynchronizer(this.context);
 
-        Role role = new Role("CURATOR");
+        Role role = IntactTestUtils.createCuratorRole();
         this.synchronizer.synchronize(role, true);
 
         Assert.assertNotNull(role.getAc());
@@ -138,7 +139,7 @@ public class RoleSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new RoleSynchronizer(this.context);
 
-        Role role = new Role("CURATOR");
+        Role role = IntactTestUtils.createCuratorRole();
         this.synchronizer.synchronize(role, true);
         this.synchronizer.clearCache();
 
@@ -165,7 +166,7 @@ public class RoleSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new RoleSynchronizer(this.context);
 
-        Role role = new Role("CURATOR");
+        Role role = IntactTestUtils.createCuratorRole();
         this.synchronizer.synchronize(role, true);
         this.synchronizer.clearCache();
 

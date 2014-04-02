@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.user.Preference;
@@ -49,7 +50,7 @@ public class PreferenceSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
 
-        Preference preference = new Preference("key", "value");
+        Preference preference = IntactTestUtils.createPreference();
         this.synchronizer.persist(preference);
 
         Assert.assertNotNull(preference.getAc());
@@ -64,7 +65,7 @@ public class PreferenceSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
 
-        Preference preference = new Preference("key", "value");
+        Preference preference = IntactTestUtils.createPreference();
         this.synchronizer.persist(preference);
 
         Assert.assertNotNull(preference.getAc());
@@ -80,7 +81,7 @@ public class PreferenceSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
 
-        Preference preference = new Preference("key", "value");
+        Preference preference = IntactTestUtils.createPreference();
         this.synchronizer.persist(preference);
 
         Assert.assertNotNull(preference.getAc());
@@ -96,7 +97,7 @@ public class PreferenceSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
 
-        Preference preference = new Preference("key", "value");
+        Preference preference = IntactTestUtils.createPreference();
         this.synchronizer.synchronizeProperties(preference);
 
         Assert.assertNull(preference.getAc());
@@ -111,7 +112,7 @@ public class PreferenceSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
 
-        Preference preference = new Preference("key", "value");
+        Preference preference = IntactTestUtils.createPreference();
         this.synchronizer.synchronize(preference, false);
 
         Assert.assertNull(preference.getAc());
@@ -127,7 +128,7 @@ public class PreferenceSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
 
-        Preference preference = new Preference("key", "value");
+        Preference preference = IntactTestUtils.createPreference();
         this.synchronizer.synchronize(preference, true);
 
         Assert.assertNotNull(preference.getAc());
@@ -143,7 +144,7 @@ public class PreferenceSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
 
-        Preference preference = new Preference("key", "value");
+        Preference preference = IntactTestUtils.createPreference();
         this.synchronizer.synchronize(preference, true);
 
         Assert.assertNotNull(preference.getAc());
@@ -171,7 +172,7 @@ public class PreferenceSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new PreferenceSynchronizer(this.context);
 
-        Preference preference = new Preference("key", "value");
+        Preference preference = IntactTestUtils.createPreference();
         this.synchronizer.synchronize(preference, true);
 
         Assert.assertNotNull(preference.getAc());

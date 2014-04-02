@@ -6,6 +6,8 @@ import psidev.psi.mi.jami.model.impl.DefaultModelledParameter;
 import psidev.psi.mi.jami.model.impl.DefaultParameter;
 import psidev.psi.mi.jami.utils.*;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.user.Preference;
+import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -209,5 +211,13 @@ public class IntactTestUtils {
     public static Parameter createKdParameter(int factor, String unitName, String unitMI) {
         return new DefaultParameter(CvTermUtils.createMICvTerm("kd", "MI:xxx1"), new ParameterValue(new BigDecimal(factor)),
                 CvTermUtils.createMICvTerm(unitName, unitMI));
+    }
+
+    public static Preference createPreference() {
+        return new Preference("key","value");
+    }
+
+    public static Role createCuratorRole() {
+        return new Role("CURATOR");
     }
 }
