@@ -2,29 +2,19 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
-import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.AliasSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -34,60 +24,26 @@ import java.lang.reflect.InvocationTargetException;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
-@TransactionConfiguration
-@DirtiesContext
-public class AliasSynchronizerTemplateTest {
+public class AliasSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Alias, AbstractIntactAlias>{
 
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
-
-    private AliasSynchronizer synchronizer;
-    private SynchronizerContext context;
+    private int testNumber=1;
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
-
-        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
-
-        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
-
-        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
 
         this.synchronizer.setIntactClass(CvTermAlias.class);
-        this.synchronizer.persist(cvAliasWithType);
-
-        Assert.assertNotNull(cvAliasWithType.getAc());
-        Assert.assertNotNull(cvAliasWithType.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAliasWithType.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAliasWithType.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+        this.testNumber = 1;
+        persist();
 
         this.synchronizer.setIntactClass(OrganismAlias.class);
-        this.synchronizer.persist(organismAlias);
-
-        Assert.assertNotNull(organismAlias.getAc());
-        Assert.assertNull(organismAlias.getType());
-        Assert.assertEquals("test synonym 2", organismAlias.getName());
+        this.testNumber = 2;
+        persist();
 
         this.synchronizer.setIntactClass(InteractorAlias.class);
-        this.synchronizer.persist(interactorAlias);
-
-        Assert.assertNotNull(interactorAlias.getAc());
-        Assert.assertNotNull(interactorAlias.getType());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
-        Assert.assertEquals("test synonym 3", interactorAlias.getName());
+        this.testNumber = 3;
+        persist();
     }
 
     @Transactional
@@ -179,266 +135,138 @@ public class AliasSynchronizerTemplateTest {
     @Test
     @DirtiesContext
     public void test_alias_deleted() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
-
-        // pre persist alias synonym
-        IntactCvTerm aliasSynonym = createExistingType();
-
-        entityManager.detach(aliasSynonym);
-
-        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
-        cvAliasWithType.setType(aliasSynonym);
-
         this.synchronizer.setIntactClass(CvTermAlias.class);
-        this.synchronizer.persist(cvAliasWithType);
+        this.testNumber = 1;
+        delete();
 
-        Assert.assertNotNull(cvAliasWithType.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAliasWithType.getType();
-        Assert.assertEquals(aliasType.getAc(), aliasSynonym.getAc());
+        this.synchronizer.setIntactClass(OrganismAlias.class);
+        this.testNumber = 2;
+        delete();
 
-        entityManager.flush();
-        System.out.println("flush");
-
-        this.synchronizer.delete(cvAliasWithType);
-
-        Assert.assertNull(entityManager.find(CvTermAlias.class, cvAliasWithType.getAc()));
+        this.synchronizer.setIntactClass(InteractorAlias.class);
+        this.testNumber = 3;
+        delete();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
+        this.synchronizer.setIntactClass(CvTermAlias.class);
+        this.testNumber = 1;
+        find_no_cache();
 
-        CvTermAlias cvAliasNotPersisted = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
-        CvTermAlias cvAliasPersisted = IntactTestUtils.createAliasSynonym(CvTermAlias.class, "test synonym 2");
+        this.synchronizer.setIntactClass(OrganismAlias.class);
+        this.testNumber = 2;
+        find_no_cache();
 
-        this.synchronizer.persist(cvAliasNotPersisted);
-        entityManager.flush();
-        this.context.clearCache();
-
-        Assert.assertNull(this.synchronizer.find(cvAliasNotPersisted));
-        Assert.assertNull(this.synchronizer.find(cvAliasPersisted));
+        this.synchronizer.setIntactClass(InteractorAlias.class);
+        this.testNumber = 3;
+        find_no_cache();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
-
-        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
-
-        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
-
-        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
-
         this.synchronizer.setIntactClass(CvTermAlias.class);
-        this.synchronizer.synchronizeProperties(cvAliasWithType);
-
-        Assert.assertNull(cvAliasWithType.getAc());
-        Assert.assertNotNull(cvAliasWithType.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAliasWithType.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAliasWithType.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+        this.testNumber = 1;
+        synchronizeProperties();
 
         this.synchronizer.setIntactClass(OrganismAlias.class);
-        this.synchronizer.synchronizeProperties(organismAlias);
-
-        Assert.assertNull(organismAlias.getAc());
-        Assert.assertNull(organismAlias.getType());
-        Assert.assertEquals("test synonym 2", organismAlias.getName());
+        this.testNumber = 2;
+        synchronizeProperties();
 
         this.synchronizer.setIntactClass(InteractorAlias.class);
-        this.synchronizer.synchronizeProperties(interactorAlias);
-
-        Assert.assertNull(interactorAlias.getAc());
-        Assert.assertNotNull(interactorAlias.getType());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
-        Assert.assertEquals("test synonym 3", interactorAlias.getName());
+        this.testNumber = 3;
+        synchronizeProperties();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
-
-        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
-
-        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
-
-        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
-
         this.synchronizer.setIntactClass(CvTermAlias.class);
-        this.synchronizer.synchronize(cvAliasWithType, false);
-
-        Assert.assertNull(cvAliasWithType.getAc());
-        Assert.assertNotNull(cvAliasWithType.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAliasWithType.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAliasWithType.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+        this.testNumber = 1;
+        synchronize_not_persist();
 
         this.synchronizer.setIntactClass(OrganismAlias.class);
-        this.synchronizer.synchronize(organismAlias, false);
-
-        Assert.assertNull(organismAlias.getAc());
-        Assert.assertNull(organismAlias.getType());
-        Assert.assertEquals("test synonym 2", organismAlias.getName());
+        this.testNumber = 2;
+        synchronize_not_persist();
 
         this.synchronizer.setIntactClass(InteractorAlias.class);
-        this.synchronizer.synchronize(interactorAlias, false);
-
-        Assert.assertNull(interactorAlias.getAc());
-        Assert.assertNotNull(interactorAlias.getType());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
-        Assert.assertEquals("test synonym 3", interactorAlias.getName());
+        this.testNumber = 3;
+        synchronize_not_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
-
-        CvTermAlias cvAliasWithType = IntactTestUtils.createAliasSynonym(CvTermAlias.class);
-
-        OrganismAlias organismAlias = IntactTestUtils.createAliasNoType(OrganismAlias.class);
-
-        InteractorAlias interactorAlias = IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
-
         this.synchronizer.setIntactClass(CvTermAlias.class);
-        this.synchronizer.synchronize(cvAliasWithType, true);
-
-        Assert.assertNotNull(cvAliasWithType.getAc());
-        Assert.assertNotNull(cvAliasWithType.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)cvAliasWithType.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAliasWithType.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+        this.testNumber = 1;
+        synchronize_persist();
 
         this.synchronizer.setIntactClass(OrganismAlias.class);
-        this.synchronizer.synchronize(organismAlias, true);
-
-        Assert.assertNotNull(organismAlias.getAc());
-        Assert.assertNull(organismAlias.getType());
-        Assert.assertEquals("test synonym 2", organismAlias.getName());
+        this.testNumber = 2;
+        synchronize_persist();
 
         this.synchronizer.setIntactClass(InteractorAlias.class);
-        this.synchronizer.synchronize(interactorAlias, true);
-
-        Assert.assertNotNull(interactorAlias.getAc());
-        Assert.assertNotNull(interactorAlias.getType());
-        IntactCvTerm aliasType2 = (IntactCvTerm)interactorAlias.getType();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(cvAliasWithType.getType() == aliasType2);
-        Assert.assertEquals("test synonym 3", interactorAlias.getName());
+        this.testNumber = 3;
+        synchronize_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
-
-        Alias cvAliasWithType = IntactTestUtils.createAliasSynonym();
-
-        Alias organismAlias = IntactTestUtils.createAliasNoType();
-
-        Alias interactorAlias = IntactTestUtils.createAliasSynonym("test synonym 3");
-
         this.synchronizer.setIntactClass(CvTermAlias.class);
-        CvTermAlias newAlias = (CvTermAlias)this.synchronizer.synchronize(cvAliasWithType, true);
-
-        Assert.assertNotNull(newAlias.getAc());
-        Assert.assertNotNull(newAlias.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)newAlias.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(cvAliasWithType.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
+        this.testNumber = 1;
+        persist_jami();
 
         this.synchronizer.setIntactClass(OrganismAlias.class);
-        OrganismAlias newAlias2 = (OrganismAlias)this.synchronizer.synchronize(organismAlias, true);
-
-        Assert.assertNotNull(newAlias2.getAc());
-        Assert.assertNull(newAlias2.getType());
-        Assert.assertEquals("test synonym 2", newAlias2.getName());
+        this.testNumber = 2;
+        persist_jami();
 
         this.synchronizer.setIntactClass(InteractorAlias.class);
-        InteractorAlias newAlias3 = (InteractorAlias)this.synchronizer.synchronize(interactorAlias, true);
-
-        Assert.assertNotNull(newAlias3.getAc());
-        Assert.assertNotNull(newAlias3.getType());
-        IntactCvTerm aliasType2 = (IntactCvTerm)newAlias3.getType();
-        Assert.assertNotNull(aliasType2.getAc());
-        Assert.assertTrue(newAlias.getType() == aliasType2);
-        Assert.assertEquals("test synonym 3", interactorAlias.getName());
+        this.testNumber = 3;
+        persist_jami();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, CvTermAlias.class);
+        this.synchronizer.setIntactClass(CvTermAlias.class);
+        this.testNumber = 1;
+        merge_test1();
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
-        this.synchronizer.synchronize(cvAliasWithType, true);
+        this.synchronizer.setIntactClass(OrganismAlias.class);
+        this.testNumber = 2;
+        merge_test1();
 
-        Assert.assertNotNull(cvAliasWithType.getAc());
-        String ac = cvAliasWithType.getAc();
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
-
-        this.entityManager.flush();
-        this.entityManager.detach(cvAliasWithType);
-
-        cvAliasWithType.setName("value2");
-
-        CvTermAlias newPref = (CvTermAlias)this.synchronizer.synchronize(cvAliasWithType, true);
-
-        Assert.assertEquals(ac, newPref.getAc());
-        Assert.assertEquals("value2", newPref.getName());
+        this.synchronizer.setIntactClass(InteractorAlias.class);
+        this.testNumber = 3;
+        merge_test1();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, CvTermAlias.class);
+        this.synchronizer.setIntactClass(CvTermAlias.class);
+        this.testNumber = 1;
+        merge_test2();
 
-        CvTermAlias cvAliasWithType = new CvTermAlias(IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI), "test synonym");
-        this.synchronizer.synchronize(cvAliasWithType, true);
+        this.synchronizer.setIntactClass(OrganismAlias.class);
+        this.testNumber = 2;
+        merge_test2();
 
-        Assert.assertNotNull(cvAliasWithType.getAc());
-        String ac = cvAliasWithType.getAc();
-        Assert.assertEquals("test synonym", cvAliasWithType.getName());
-
-        this.entityManager.flush();
-        this.entityManager.detach(cvAliasWithType);
-
-        CvTermAlias pref = this.entityManager.find(CvTermAlias.class, ac);
-        pref.setName("value2");
-        this.entityManager.detach(pref);
-
-        CvTermAlias newPref = (CvTermAlias)this.synchronizer.synchronize(pref, true);
-
-        Assert.assertEquals(ac, newPref.getAc());
-        Assert.assertEquals("value2", newPref.getName());
+        this.synchronizer.setIntactClass(InteractorAlias.class);
+        this.testNumber = 3;
+        merge_test2();
     }
 
     private IntactCvTerm createExistingType() {
@@ -462,5 +290,110 @@ public class AliasSynchronizerTemplateTest {
         entityManager.flush();
         this.context.clearCache();
         return aliasSynonym;
+    }
+
+    @Override
+    protected Alias createDefaultJamiObject() {
+        if (testNumber == 1){
+            return IntactTestUtils.createAliasSynonym();
+        }
+        else if (testNumber == 2){
+            return IntactTestUtils.createAliasNoType();
+        }
+        else{
+            return IntactTestUtils.createAliasSynonym( "test synonym 3");
+        }
+    }
+
+    @Override
+    protected void testUpdatedPropertiesAfterMerge(AbstractIntactAlias objectToTest, AbstractIntactAlias newObjToTest) {
+        Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
+        Assert.assertEquals("value2", newObjToTest.getName());
+    }
+
+    @Override
+    protected void updatePropertieDetachedInstance(AbstractIntactAlias objectToTest) {
+        objectToTest.setName("value2");
+    }
+
+    @Override
+    protected AbstractIntactAlias findObject(AbstractIntactAlias objectToTest) {
+        if (testNumber == 1){
+            return entityManager.find(CvTermAlias.class, objectToTest.getAc());
+        }
+        else if (testNumber == 2){
+            return entityManager.find(OrganismAlias.class, objectToTest.getAc());
+        }
+        else{
+            return entityManager.find(InteractorAlias.class, objectToTest.getAc());
+        }
+    }
+
+    @Override
+    protected void initSynchronizer() {
+        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
+    }
+
+    @Override
+    protected void testPersistedProperties(AbstractIntactAlias persistedObject) {
+        if (testNumber == 1){
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getType());
+            IntactCvTerm aliasType = (IntactCvTerm)persistedObject.getType();
+            Assert.assertNotNull(aliasType.getAc());
+            Assert.assertEquals(persistedObject.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
+            Assert.assertEquals("test synonym", persistedObject.getName());
+        }
+        else if (testNumber == 2){
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNull(persistedObject.getType());
+            Assert.assertEquals("test synonym 2", persistedObject.getName());
+        }
+        else{
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getType());
+            IntactCvTerm aliasType2 = (IntactCvTerm)persistedObject.getType();
+            Assert.assertNotNull(aliasType2.getAc());
+            Assert.assertEquals(persistedObject.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
+            Assert.assertEquals("test synonym 3", persistedObject.getName());
+        }
+    }
+
+    @Override
+    protected void testNonPersistedProperties(AbstractIntactAlias objectToTest) {
+        if (testNumber == 1){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getType());
+            IntactCvTerm aliasType = (IntactCvTerm)objectToTest.getType();
+            Assert.assertNotNull(aliasType.getAc());
+            Assert.assertEquals(objectToTest.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
+            Assert.assertEquals("test synonym", objectToTest.getName());
+        }
+        else if (testNumber == 2){
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNull(objectToTest.getType());
+            Assert.assertEquals("test synonym 2", objectToTest.getName());
+        }
+        else{
+            Assert.assertNull(objectToTest.getAc());
+            Assert.assertNotNull(objectToTest.getType());
+            IntactCvTerm aliasType2 = (IntactCvTerm)objectToTest.getType();
+            Assert.assertNotNull(aliasType2.getAc());
+            Assert.assertEquals(objectToTest.getType(), IntactUtils.createMIAliasType(Alias.SYNONYM, Alias.SYNONYM_MI));
+            Assert.assertEquals("test synonym 3", objectToTest.getName());
+        }
+    }
+
+    @Override
+    protected AbstractIntactAlias createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        if (testNumber == 1){
+            return IntactTestUtils.createAliasSynonym(CvTermAlias.class);
+        }
+        else if (testNumber == 2){
+           return IntactTestUtils.createAliasNoType(OrganismAlias.class);
+        }
+        else{
+            return IntactTestUtils.createAliasSynonym(InteractorAlias.class, "test synonym 3");
+        }
     }
 }
