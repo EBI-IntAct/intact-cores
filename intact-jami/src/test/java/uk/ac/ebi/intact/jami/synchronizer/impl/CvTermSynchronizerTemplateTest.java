@@ -14,6 +14,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
@@ -29,6 +30,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Unit test for AliasSynchronizerTemplate
@@ -54,25 +56,19 @@ public class CvTermSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new CvTermSynchronizer(this.context);
 
         // simple cv with xrefs
-        IntactCvTerm aliasType = IntactUtils.createMIAliasType(Alias.GENE_NAME+ " ", Alias.GENE_NAME_MI);
+        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
         // cvs with parent/children
-        IntactCvTerm annotationTopic = IntactUtils.createMITopic("teST", null);
-        IntactCvTerm annotationTopicParent = IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI);
-        annotationTopic.addParent(annotationTopicParent);
+        IntactCvTerm annotationTopic = IntactTestUtils.createCvTermWithParent();
+        IntactCvTerm annotationTopicParent = (IntactCvTerm)annotationTopic.getParents().iterator().next();
         // cvs with annotations and aliases
-        IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
-        cvDatabase.getAnnotations().add(new CvTermAnnotation(annotationTopicParent));
-        cvDatabase.getSynonyms().add(new CvTermAlias(aliasType, "test synonym"));
+        IntactCvTerm cvDatabase = IntactTestUtils.createCvTermWithAnnotationsAndAliases();
         // cvs with fullname and definition
-        IntactCvTerm cvConfidenceType = IntactUtils.createMIConfidenceType("test3", null);
-        cvConfidenceType.setFullName("Test Confidence");
-        cvConfidenceType.setDefinition("Test Definition");
-        cvConfidenceType.setObjClass(null);
+        IntactCvTerm cvConfidenceType = IntactTestUtils.createCvWithDefinition();
 
         this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
         this.synchronizer.persist(aliasType);
@@ -143,10 +139,8 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, cvDatabase.getObjClass());
         CvTermAnnotation annot = (CvTermAnnotation) cvDatabase.getAnnotations().iterator().next();
         Assert.assertNull(annot.getAc());
-        Assert.assertTrue(annotationTopicParent == annot.getTopic());
         CvTermAlias alias = (CvTermAlias) cvDatabase.getSynonyms().iterator().next();
         Assert.assertNull(alias.getAc());
-        Assert.assertTrue(aliasType == alias.getType());
         Assert.assertEquals("test synonym", alias.getName());
         ref = (CvTermXref) cvDatabase.getDbXrefs().iterator().next();
         Assert.assertNull(ref.getAc());
@@ -191,7 +185,7 @@ public class CvTermSynchronizerTemplateTest {
         IntactCvTerm existingType = createExistingType();
 
         // simple cv with xrefs
-        IntactCvTerm aliasType = IntactUtils.createMIAliasType(Alias.GENE_NAME+ " ", Alias.GENE_NAME_MI);
+        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
 
         this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
         IntactCvTerm newAliasType = this.synchronizer.synchronize(aliasType, true);
@@ -210,7 +204,7 @@ public class CvTermSynchronizerTemplateTest {
         IntactCvTerm existingType = createExistingType();
 
         // simple cv with xrefs
-        IntactCvTerm aliasType = IntactUtils.createMIAliasType(Alias.GENE_NAME+ " ", Alias.GENE_NAME_MI);
+        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
 
         this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
         IntactCvTerm newAliasType = this.synchronizer.find(aliasType);
@@ -236,24 +230,19 @@ public class CvTermSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new CvTermSynchronizer(this.context);
 
         // simple cv with xrefs
-        IntactCvTerm aliasType = IntactUtils.createMIAliasType(Alias.GENE_NAME+ " ", Alias.GENE_NAME_MI);
+        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
         // cvs with parent/children
-        IntactCvTerm annotationTopic = IntactUtils.createMITopic("teST", null);
-        IntactCvTerm annotationTopicParent = IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI);
+        IntactCvTerm annotationTopic = IntactTestUtils.createCvTermWithParent();
+        IntactCvTerm annotationTopicParent = (IntactCvTerm)annotationTopic.getParents().iterator().next();
         // cvs with annotations and aliases
-        IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
-        cvDatabase.getAnnotations().add(new CvTermAnnotation(annotationTopicParent));
-        cvDatabase.getSynonyms().add(new CvTermAlias(aliasType, "test synonym"));
+        IntactCvTerm cvDatabase = IntactTestUtils.createCvTermWithAnnotationsAndAliases();
         // cvs with fullname and definition
-        IntactCvTerm cvConfidenceType = IntactUtils.createMIConfidenceType("test3", null);
-        cvConfidenceType.setFullName("Test Confidence");
-        cvConfidenceType.setDefinition("Test Definition");
-        cvConfidenceType.setObjClass(null);
+        IntactCvTerm cvConfidenceType = IntactTestUtils.createCvWithDefinition();
 
         this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
         this.synchronizer.synchronizeProperties(aliasType);
@@ -286,12 +275,14 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertTrue(annotationTopic.getSynonyms().isEmpty());
         Assert.assertEquals(1, annotationTopic.getDbXrefs().size());
         Assert.assertTrue(annotationTopic.getChildren().isEmpty());
-        Assert.assertEquals(0, annotationTopic.getParents().size());
+        Assert.assertEquals(1, annotationTopic.getParents().size());
         Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, annotationTopic.getObjClass());
         ref = (CvTermXref) annotationTopic.getDbXrefs().iterator().next();
         Assert.assertNull(ref.getAc());
         Assert.assertEquals("intact", ref.getDatabase().getShortName());
         Assert.assertTrue(ref.getId().startsWith("IA:"));
+
+        this.synchronizer.clearCache();
 
         this.synchronizer.setObjClass(IntactUtils.DATABASE_OBJCLASS);
         this.synchronizer.synchronizeProperties(cvDatabase);
@@ -308,10 +299,8 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertEquals(IntactUtils.DATABASE_OBJCLASS, cvDatabase.getObjClass());
         CvTermAnnotation annot = (CvTermAnnotation) cvDatabase.getAnnotations().iterator().next();
         Assert.assertNull(annot.getAc());
-        Assert.assertTrue(annotationTopicParent == annot.getTopic());
         CvTermAlias alias = (CvTermAlias) cvDatabase.getSynonyms().iterator().next();
         Assert.assertNull(alias.getAc());
-        Assert.assertTrue(aliasType == alias.getType());
         Assert.assertEquals("test synonym", alias.getName());
         ref = (CvTermXref) cvDatabase.getDbXrefs().iterator().next();
         Assert.assertNull(ref.getAc());
@@ -349,24 +338,19 @@ public class CvTermSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new CvTermSynchronizer(this.context);
 
         // simple cv with xrefs
-        IntactCvTerm aliasType = IntactUtils.createMIAliasType(Alias.GENE_NAME+ " ", Alias.GENE_NAME_MI);
+        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
         // cvs with parent/children
-        IntactCvTerm annotationTopic = IntactUtils.createMITopic("teST", null);
-        IntactCvTerm annotationTopicParent = IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI);
+        IntactCvTerm annotationTopic = IntactTestUtils.createCvTermWithParent();
+        IntactCvTerm annotationTopicParent = (IntactCvTerm)annotationTopic.getParents().iterator().next();
         // cvs with annotations and aliases
-        IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
-        cvDatabase.getAnnotations().add(new CvTermAnnotation(annotationTopicParent));
-        cvDatabase.getSynonyms().add(new CvTermAlias(aliasType, "test synonym"));
+        IntactCvTerm cvDatabase = IntactTestUtils.createCvTermWithAnnotationsAndAliases();
         // cvs with fullname and definition
-        IntactCvTerm cvConfidenceType = IntactUtils.createMIConfidenceType("test3", null);
-        cvConfidenceType.setFullName("Test Confidence");
-        cvConfidenceType.setDefinition("Test Definition");
-        cvConfidenceType.setObjClass(null);
+        IntactCvTerm cvConfidenceType = IntactTestUtils.createCvWithDefinition();
 
         this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
         IntactCvTerm newCv = this.synchronizer.synchronize(aliasType, false);
@@ -399,13 +383,14 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertTrue(newCv2.getSynonyms().isEmpty());
         Assert.assertEquals(1, newCv2.getDbXrefs().size());
         Assert.assertTrue(newCv2.getChildren().isEmpty());
-        Assert.assertEquals(0, newCv2.getParents().size());
+        Assert.assertEquals(1, newCv2.getParents().size());
         Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, newCv2.getObjClass());
         ref = (CvTermXref) newCv2.getDbXrefs().iterator().next();
         Assert.assertNull(ref.getAc());
         Assert.assertEquals("intact", ref.getDatabase().getShortName());
         Assert.assertTrue(ref.getId().startsWith("IA:"));
 
+        this.synchronizer.clearCache();
         this.synchronizer.setObjClass(IntactUtils.DATABASE_OBJCLASS);
         IntactCvTerm newCv3 = this.synchronizer.synchronize(cvDatabase, false);
 
@@ -451,24 +436,19 @@ public class CvTermSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new CvTermSynchronizer(this.context);
 
         // simple cv with xrefs
-        IntactCvTerm aliasType = IntactUtils.createMIAliasType(Alias.GENE_NAME+ " ", Alias.GENE_NAME_MI);
+        IntactCvTerm aliasType = IntactTestUtils.createCvTermWithXrefs();
         // cvs with parent/children
-        IntactCvTerm annotationTopic = IntactUtils.createMITopic("teST", null);
-        IntactCvTerm annotationTopicParent = IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI);
+        IntactCvTerm annotationTopic = IntactTestUtils.createCvTermWithParent();
+        IntactCvTerm annotationTopicParent = (IntactCvTerm)annotationTopic.getParents().iterator().next();
         // cvs with annotations and aliases
-        IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
-        cvDatabase.getAnnotations().add(new CvTermAnnotation(annotationTopicParent));
-        cvDatabase.getSynonyms().add(new CvTermAlias(aliasType, "test synonym"));
+        IntactCvTerm cvDatabase = IntactTestUtils.createCvTermWithAnnotationsAndAliases();
         // cvs with fullname and definition
-        IntactCvTerm cvConfidenceType = IntactUtils.createMIConfidenceType("test3", null);
-        cvConfidenceType.setFullName("Test Confidence");
-        cvConfidenceType.setDefinition("Test Definition");
-        cvConfidenceType.setObjClass(null);
+        IntactCvTerm cvConfidenceType = IntactTestUtils.createCvWithDefinition();
 
         this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
         IntactCvTerm newCv = this.synchronizer.synchronize(aliasType, true);
@@ -501,7 +481,7 @@ public class CvTermSynchronizerTemplateTest {
         Assert.assertTrue(newCv2.getSynonyms().isEmpty());
         Assert.assertEquals(1, newCv2.getDbXrefs().size());
         Assert.assertTrue(newCv2.getChildren().isEmpty());
-        Assert.assertEquals(0, newCv2.getParents().size());
+        Assert.assertEquals(1, newCv2.getParents().size());
         Assert.assertEquals(IntactUtils.TOPIC_OBJCLASS, newCv2.getObjClass());
         ref = (CvTermXref) newCv2.getDbXrefs().iterator().next();
         Assert.assertNull(ref.getAc());
@@ -554,7 +534,7 @@ public class CvTermSynchronizerTemplateTest {
         this.synchronizer = new CvTermSynchronizer(this.context);
 
         // simple cv with xrefs
-        CvTerm aliasType = CvTermUtils.createMICvTerm(Alias.GENE_NAME + " ", Alias.GENE_NAME_MI);
+        CvTerm aliasType = CvTermUtils.createGeneNameAliasType();
         this.synchronizer.setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
         IntactCvTerm newCv = this.synchronizer.synchronize(aliasType, true);
 

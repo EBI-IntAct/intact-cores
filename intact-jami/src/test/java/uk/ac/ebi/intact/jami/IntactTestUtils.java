@@ -8,6 +8,7 @@ import psidev.psi.mi.jami.utils.*;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -219,5 +220,39 @@ public class IntactTestUtils {
 
     public static Role createCuratorRole() {
         return new Role("CURATOR");
+    }
+
+    public static User createCuratorUser(){
+        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
+        user.getPreferences().add(new Preference("key", "value"));
+        user.getRoles().add(new Role("CURATOR"));
+        return user;
+    }
+
+    public static IntactCvTerm createCvTermWithXrefs(){
+        return IntactUtils.createMIAliasType(Alias.GENE_NAME+ " ", Alias.GENE_NAME_MI);
+    }
+
+    public static IntactCvTerm createCvTermWithParent(){
+        IntactCvTerm annotationTopic = IntactUtils.createMITopic("teST", null);
+        IntactCvTerm annotationTopicParent = IntactUtils.createMITopic(Annotation.CAUTION, Annotation.CAUTION_MI);
+        annotationTopic.addParent(annotationTopicParent);
+        return annotationTopic;
+    }
+
+    public static IntactCvTerm createCvTermWithAnnotationsAndAliases() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
+        cvDatabase.getAnnotations().add(createAnnotationComment(CvTermAnnotation.class));
+        cvDatabase.getSynonyms().add(createAliasSynonym(CvTermAlias.class));
+        cvDatabase.setObjClass(IntactUtils.DATABASE_OBJCLASS);
+        return cvDatabase;
+    }
+
+    public static IntactCvTerm createCvWithDefinition(){
+        IntactCvTerm cvConfidenceType = IntactUtils.createMIConfidenceType("test3", null);
+        cvConfidenceType.setFullName("Test Confidence");
+        cvConfidenceType.setDefinition("Test Definition");
+        cvConfidenceType.setObjClass(null);
+        return cvConfidenceType;
     }
 }

@@ -29,8 +29,7 @@ import java.util.Collection;
  * property and merge all cvs that were duplicated. The only remaining unique constraint would be the shortlabel.
  * NOTE: The identifier property is deprecated but is automatically set for backward compatibility with intact-core. Once intact-core is removed,
  * we should remove the identifier property and the matching column in the database.
- * NOTE: the children of a CvTerm are responsible for the persistent relationship in the database. It is then recommended to use addChild and removeChild methods
- * to make sure that children are added/removed but also the relationship is persisted in the database.
+ * NOTE: the parents of a CvTerm are responsible for the persistent relationship in the database.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -183,12 +182,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     ///////////////////////////////////////
     // access methods for associations
 
-    @ManyToMany(targetEntity = IntactCvTerm.class)
-    @JoinTable(
-            name = "ia_cv2cv",
-            joinColumns = {@JoinColumn( name = "parent_ac", referencedColumnName = "ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "child_ac", referencedColumnName = "ac" )}
-    )
+    @ManyToMany( mappedBy = "parents", targetEntity = IntactCvTerm.class )
     @Target(IntactCvTerm.class)
     public Collection<OntologyTerm> getChildren() {
         if (children == null){
@@ -213,7 +207,12 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         }
     }
 
-    @ManyToMany( mappedBy = "children", targetEntity = IntactCvTerm.class )
+    @ManyToMany(targetEntity = IntactCvTerm.class)
+    @JoinTable(
+            name = "ia_cv2cv",
+            joinColumns = {@JoinColumn( name = "child_ac", referencedColumnName = "ac" )},
+            inverseJoinColumns = {@JoinColumn( name = "parent_ac", referencedColumnName = "ac" )}
+    )
     @Target(IntactCvTerm.class)
     public Collection<OntologyTerm> getParents() {
         if (parents == null){

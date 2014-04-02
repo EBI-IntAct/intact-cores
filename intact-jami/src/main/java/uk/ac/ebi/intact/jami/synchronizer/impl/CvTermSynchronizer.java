@@ -119,7 +119,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         initialiseIdentifier(intactCv);
         // then check xrefs
         prepareXrefs(intactCv);
-        // do not synchronize parent
+        // do synchronize parent but not children
         prepareParents(intactCv);
     }
 

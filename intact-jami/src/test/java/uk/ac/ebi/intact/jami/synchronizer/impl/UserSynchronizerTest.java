@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.user.Preference;
@@ -52,9 +53,7 @@ public class UserSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new UserSynchronizer(this.context);
 
-        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
-        user.getPreferences().add(new Preference("key", "value"));
-        user.getRoles().add(new Role("CURATOR"));
+        User user = IntactTestUtils.createCuratorUser();
         this.synchronizer.persist(user);
 
         Assert.assertNotNull(user.getAc());
@@ -77,9 +76,7 @@ public class UserSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new UserSynchronizer(this.context);
 
-        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
-        user.getPreferences().add(new Preference("key", "value"));
-        user.getRoles().add(new Role("CURATOR"));
+        User user = IntactTestUtils.createCuratorUser();
         this.synchronizer.persist(user);
         this.entityManager.flush();
 
@@ -96,9 +93,7 @@ public class UserSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new UserSynchronizer(this.context);
 
-        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
-        user.getPreferences().add(new Preference("key", "value"));
-        user.getRoles().add(new Role("CURATOR"));
+        User user = IntactTestUtils.createCuratorUser();
         this.synchronizer.persist(user);
         this.entityManager.flush();
         this.synchronizer.clearCache();
@@ -114,9 +109,7 @@ public class UserSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new UserSynchronizer(this.context);
 
-        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
-        user.getPreferences().add(new Preference("key", "value"));
-        user.getRoles().add(new Role("CURATOR"));
+        User user = IntactTestUtils.createCuratorUser();
         this.synchronizer.synchronizeProperties(user);
 
         Assert.assertNull(user.getAc());
@@ -139,9 +132,7 @@ public class UserSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new UserSynchronizer(this.context);
 
-        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
-        user.getPreferences().add(new Preference("key", "value"));
-        user.getRoles().add(new Role("CURATOR"));
+        User user = IntactTestUtils.createCuratorUser();
         this.synchronizer.synchronize(user, false);
 
         Assert.assertNull(user.getAc());
@@ -165,9 +156,7 @@ public class UserSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new UserSynchronizer(this.context);
 
-        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
-        user.getPreferences().add(new Preference("key", "value"));
-        user.getRoles().add(new Role("CURATOR"));
+        User user = IntactTestUtils.createCuratorUser();
         this.synchronizer.synchronize(user, true);
 
         Assert.assertNotNull(user.getAc());
@@ -190,9 +179,7 @@ public class UserSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new UserSynchronizer(this.context);
 
-        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
-        user.getPreferences().add(new Preference("key", "value"));
-        user.getRoles().add(new Role("CURATOR"));
+        User user = IntactTestUtils.createCuratorUser();
         this.synchronizer.persist(user);
         this.entityManager.flush();
         this.entityManager.detach(user);
@@ -232,9 +219,7 @@ public class UserSynchronizerTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new UserSynchronizer(this.context);
 
-        User user = new User("default", "firstName", "lastName", "name@ebi.ac.uk");
-        user.getPreferences().add(new Preference("key", "value"));
-        user.getRoles().add(new Role("CURATOR"));
+        User user = IntactTestUtils.createCuratorUser();
         this.synchronizer.persist(user);
         this.entityManager.flush();
         this.entityManager.detach(user);
