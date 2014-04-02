@@ -1,13 +1,11 @@
 package uk.ac.ebi.intact.jami;
 
-import psidev.psi.mi.jami.model.Alias;
-import psidev.psi.mi.jami.model.Annotation;
-import psidev.psi.mi.jami.model.Confidence;
-import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultAlias;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ConfidenceUtils;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -122,5 +120,48 @@ public class IntactTestUtils {
 
     public static Confidence createConfidenceAuthorScore(String value) {
         return ConfidenceUtils.createConfidence("author-score", "MI:xxx1", value);
+    }
+
+    public static <T extends AbstractIntactXref> T createIntactXref(Class<T> xrefClass, String dbName, String dbMI,
+                                                                    String dbId, String qualifierName, String qualifierId)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        T xref = xrefClass.getConstructor(CvTerm.class, String.class).newInstance(IntactUtils.createMIDatabase(dbName, dbMI),dbId);
+        if (qualifierName != null){
+            xref.setQualifier(IntactUtils.createMIQualifier(qualifierName, qualifierId));
+        }
+        return xref;
+    }
+
+    public static <T extends AbstractIntactXref> T createPubmedXrefNoQualifier(Class<T> xrefClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createPubmedXrefNoQualifier(xrefClass, "12345");
+    }
+
+    public static <T extends AbstractIntactXref> T createPubmedXrefNoQualifier(Class<T> xrefClass, String id) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createIntactXref(xrefClass, Xref.PUBMED, Xref.PUBMED_MI, id, null, null);
+    }
+
+    public static <T extends AbstractIntactXref> T createXrefSeeAlso(Class<T> xrefClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createXrefSeeAlso(xrefClass, "IM-1-1");
+    }
+
+    public static <T extends AbstractIntactXref> T createXrefSeeAlso(Class<T> xrefClass, String id) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createIntactXref(xrefClass, Xref.IMEX, Xref.IMEX_MI, id, Xref.SEE_ALSO, Xref.SEE_ALSO_MI);
+    }
+
+    public static Xref createPubmedXrefNoQualifier() {
+        return XrefUtils.createXref(Xref.PUBMED, Xref.PUBMED_MI, "12345");
+    }
+
+    public static Xref createPubmedXrefNoQualifier(String id) {
+        return XrefUtils.createXref(Xref.PUBMED, Xref.PUBMED_MI, id);
+    }
+
+    public static Xref createXrefSeeAlso() {
+        return XrefUtils.createXrefWithQualifier(Xref.IMEX, Xref.IMEX_MI, "IM-1-1", Xref.SEE_ALSO, Xref.SEE_ALSO_MI);
+    }
+
+    public static Xref createXrefSeeAlso(String id) {
+        return XrefUtils.createXrefWithQualifier(Xref.IMEX, Xref.IMEX_MI, id, Xref.SEE_ALSO, Xref.SEE_ALSO_MI);
     }
 }

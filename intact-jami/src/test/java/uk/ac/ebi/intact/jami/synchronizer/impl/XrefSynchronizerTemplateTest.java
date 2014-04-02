@@ -10,7 +10,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import psidev.psi.mi.jami.model.impl.DefaultXref;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Unit test for XrefSynchronizerTemplate
@@ -50,15 +51,15 @@ public class XrefSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
-        CvTermXref cvXref = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "12345");
+        CvTermXref cvXref = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class);
 
-        InteractionXref interactionXref = new InteractionXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "123456");
+        InteractionXref interactionXref = IntactTestUtils.createPubmedXrefNoQualifier(InteractionXref.class, "123456");
 
-        InteractorXref interactorXref = new InteractorXref(IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI), "IM-1-1", IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
+        InteractorXref interactorXref = IntactTestUtils.createXrefSeeAlso(InteractorXref.class);
 
         this.synchronizer.setIntactClass(CvTermXref.class);
         this.synchronizer.persist(cvXref);
@@ -100,7 +101,7 @@ public class XrefSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_existing_db_qualifier() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_existing_db_qualifier() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
@@ -108,11 +109,11 @@ public class XrefSynchronizerTemplateTest {
         IntactCvTerm existingQualifier = createExistingQualifier((IntactCvTerm)existingDb.getIdentifiers().iterator().next().getDatabase(),
                 (IntactCvTerm)existingDb.getIdentifiers().iterator().next().getQualifier());
 
-        CvTermXref cvXref = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "12345");
+        CvTermXref cvXref = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class);
 
-        InteractionXref interactionXref = new InteractionXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "123456");
+        InteractionXref interactionXref = IntactTestUtils.createPubmedXrefNoQualifier(InteractionXref.class, "123456");
 
-        InteractorXref interactorXref = new InteractorXref(IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI), "IM-1-1", IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
+        InteractorXref interactorXref = IntactTestUtils.createXrefSeeAlso(InteractorXref.class);
 
         this.synchronizer.setIntactClass(CvTermXref.class);
         this.synchronizer.persist(cvXref);
@@ -154,7 +155,7 @@ public class XrefSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException {
+    public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
@@ -166,11 +167,14 @@ public class XrefSynchronizerTemplateTest {
         entityManager.detach(existingDb);
         entityManager.detach(existingQualifier);
 
-        CvTermXref cvXref = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "12345");
+        CvTermXref cvXref = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class);
+        cvXref.setDatabase(existingDb);
 
-        InteractionXref interactionXref = new InteractionXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "123456");
+        InteractionXref interactionXref = IntactTestUtils.createPubmedXrefNoQualifier(InteractionXref.class, "123456");
+        interactionXref.setDatabase(existingDb);
 
-        InteractorXref interactorXref = new InteractorXref(IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI), "IM-1-1", IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
+        InteractorXref interactorXref = IntactTestUtils.createXrefSeeAlso(InteractorXref.class);
+        interactorXref.setQualifier(existingQualifier);
 
         this.synchronizer.setIntactClass(CvTermXref.class);
         this.synchronizer.persist(cvXref);
@@ -212,12 +216,13 @@ public class XrefSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
+    public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
-        CvTermXref cvXrefNotPersisted = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "test synonym");
-        CvTermXref cvXrefPersisted = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "test synonym 2");
+        CvTermXref cvXrefNotPersisted = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class);
+        CvTermXref cvXrefPersisted = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class, "123456");
+
         this.synchronizer.persist(cvXrefNotPersisted);
         entityManager.flush();
         this.context.clearCache();
@@ -231,11 +236,12 @@ public class XrefSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_delete() throws PersisterException, FinderException, SynchronizerException {
+    public void test_delete() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
-        CvTermXref cvXrefNotPersisted = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "test synonym");
+        CvTermXref cvXrefNotPersisted = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class);
+
         this.synchronizer.setIntactClass(CvTermXref.class);
         this.synchronizer.persist(cvXrefNotPersisted);
         entityManager.flush();
@@ -250,15 +256,15 @@ public class XrefSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
-        CvTermXref cvXref = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "12345");
+        CvTermXref cvXref = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class);
 
-        InteractionXref interactionXref = new InteractionXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "123456");
+        InteractionXref interactionXref = IntactTestUtils.createPubmedXrefNoQualifier(InteractionXref.class, "123456");
 
-        InteractorXref interactorXref = new InteractorXref(IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI), "IM-1-1", IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
+        InteractorXref interactorXref = IntactTestUtils.createXrefSeeAlso(InteractorXref.class);
 
         this.synchronizer.setIntactClass(CvTermXref.class);
         this.synchronizer.synchronizeProperties(cvXref);
@@ -300,15 +306,15 @@ public class XrefSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
-        CvTermXref cvXref = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "12345");
+        CvTermXref cvXref = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class);
 
-        InteractionXref interactionXref = new InteractionXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "123456");
+        InteractionXref interactionXref = IntactTestUtils.createPubmedXrefNoQualifier(InteractionXref.class, "123456");
 
-        InteractorXref interactorXref = new InteractorXref(IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI), "IM-1-1", IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
+        InteractorXref interactorXref = IntactTestUtils.createXrefSeeAlso(InteractorXref.class);
 
         this.synchronizer.setIntactClass(CvTermXref.class);
         CvTermXref newRef = (CvTermXref)this.synchronizer.synchronize(cvXref, false);
@@ -350,15 +356,15 @@ public class XrefSynchronizerTemplateTest {
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
-        CvTermXref cvXref = new CvTermXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "12345");
+        CvTermXref cvXref = IntactTestUtils.createPubmedXrefNoQualifier(CvTermXref.class);
 
-        InteractionXref interactionXref = new InteractionXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "123456");
+        InteractionXref interactionXref = IntactTestUtils.createPubmedXrefNoQualifier(InteractionXref.class, "123456");
 
-        InteractorXref interactorXref = new InteractorXref(IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI), "IM-1-1", IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
+        InteractorXref interactorXref = IntactTestUtils.createXrefSeeAlso(InteractorXref.class);
 
         this.synchronizer.setIntactClass(CvTermXref.class);
         CvTermXref newRef = (CvTermXref)this.synchronizer.synchronize(cvXref, true);
@@ -404,11 +410,11 @@ public class XrefSynchronizerTemplateTest {
         this.context = new DefaultSynchronizerContext(this.entityManager);
         this.synchronizer = new XrefSynchronizerTemplate(this.context, AbstractIntactXref.class);
 
-        Xref cvXref = new DefaultXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "12345");
+        Xref cvXref = IntactTestUtils.createPubmedXrefNoQualifier();
 
-        Xref interactionXref = new DefaultXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), "123456");
+        Xref interactionXref = IntactTestUtils.createPubmedXrefNoQualifier("123456");
 
-        Xref interactorXref = new DefaultXref(IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI), "IM-1-1", IntactUtils.createMIQualifier(Xref.SEE_ALSO, Xref.SEE_ALSO_MI));
+        Xref interactorXref = IntactTestUtils.createXrefSeeAlso();
 
         this.synchronizer.setIntactClass(CvTermXref.class);
         CvTermXref newRef = (CvTermXref)this.synchronizer.synchronize(cvXref, true);
@@ -429,7 +435,7 @@ public class XrefSynchronizerTemplateTest {
         Assert.assertNull(newRef2.getQualifier());
         IntactCvTerm db2 = (IntactCvTerm)newRef2.getDatabase();
         Assert.assertNotNull(db2.getAc());
-        Assert.assertTrue(newRef2.getDatabase() == cvXref.getDatabase());
+        Assert.assertTrue(newRef2.getDatabase() == newRef.getDatabase());
         Assert.assertEquals("123456", newRef2.getId());
 
         this.synchronizer.setIntactClass(InteractorXref.class);

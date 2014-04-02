@@ -158,16 +158,19 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // do not merge existing instance if the merger is a merger ignoring source
         if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){
             T reloaded = getEntityManager().find(getIntactClass(), identifier);
-            // cache object to persist if allowed
-            storeInCache((I)intactObject, intactObject, reloaded);
             if (reloaded != null){
+                // cache object to persist if allowed
+                storeInCache((I)intactObject, intactObject, reloaded);
                 return reloaded;
             }
             else{
                 // synchronize properties first
                 synchronizeProperties(intactObject);
                 // merge because no existing instances
-                return this.entityManager.merge(intactObject);
+                T mergedObject = this.entityManager.merge(intactObject);
+                // cache object to persist if allowed
+                storeInCache((I)intactObject, intactObject, mergedObject);
+                return mergedObject;
             }
         }
         else{
@@ -176,7 +179,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // synchronize properties first
             synchronizeProperties(intactObject);
             // merge
-            return this.entityManager.merge(intactObject);
+            T mergedObject = this.entityManager.merge(intactObject);
+            // cache object to persist if allowed
+            storeInCache((I)intactObject, intactObject, mergedObject);
+            return mergedObject;
         }
     }
 
