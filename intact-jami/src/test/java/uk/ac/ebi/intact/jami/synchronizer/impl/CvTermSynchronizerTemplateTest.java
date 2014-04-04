@@ -12,7 +12,6 @@ import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
@@ -60,9 +59,6 @@ public class CvTermSynchronizerTemplateTest extends AbstractDbSynchronizerTest<C
     @Test
     @DirtiesContext
     public void test_synchronize_with_existing_cv() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new CvTermSynchronizer(this.context);
-
         IntactCvTerm existingType = createExistingType();
 
         // simple cv with xrefs

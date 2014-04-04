@@ -8,7 +8,6 @@ import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -50,8 +49,6 @@ public class AliasSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Al
     @Test
     @DirtiesContext
     public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
         IntactCvTerm aliasSynonym = createExistingType();
 
@@ -90,8 +87,6 @@ public class AliasSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Al
     @Test
     @DirtiesContext
     public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AliasSynchronizerTemplate(this.context, AbstractIntactAlias.class);
 
         // pre persist alias synonym
         IntactCvTerm aliasSynonym = createExistingType();

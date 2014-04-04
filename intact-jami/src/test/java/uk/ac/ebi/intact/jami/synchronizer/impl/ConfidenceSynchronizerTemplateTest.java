@@ -8,7 +8,6 @@ import psidev.psi.mi.jami.model.Confidence;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -48,9 +47,6 @@ public class ConfidenceSynchronizerTemplateTest extends AbstractDbSynchronizerTe
     @Test
     @DirtiesContext
     public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
-
         IntactCvTerm authorScore = createExistingType();
 
         ParticipantEvidenceConfidence participantConfidence = IntactTestUtils.createConfidenceAuthorScore(ParticipantEvidenceConfidence.class);
@@ -91,9 +87,6 @@ public class ConfidenceSynchronizerTemplateTest extends AbstractDbSynchronizerTe
     @Test
     @DirtiesContext
     public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ConfidenceSynchronizerTemplate(this.context, AbstractIntactConfidence.class);
-
         // pre persist alias synonym
         IntactCvTerm authorScore = createExistingType();
 

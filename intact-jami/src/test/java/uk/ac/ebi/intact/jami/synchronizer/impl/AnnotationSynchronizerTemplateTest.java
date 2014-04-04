@@ -8,7 +8,6 @@ import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -49,8 +48,6 @@ public class AnnotationSynchronizerTemplateTest extends AbstractDbSynchronizerTe
     @Test
     @DirtiesContext
     public void test_persist_with_existing_topic() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
 
         IntactCvTerm annotationTopic = createExistingTopic();
 
@@ -108,9 +105,6 @@ public class AnnotationSynchronizerTemplateTest extends AbstractDbSynchronizerTe
     @Test
     @DirtiesContext
     public void test_persist_with_detached_topic() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new AnnotationSynchronizerTemplate(this.context, AbstractIntactAnnotation.class);
-
         // pre persist annotationTopic
         IntactCvTerm existingTopic = createExistingTopic();
 

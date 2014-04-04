@@ -2,24 +2,15 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
-import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Unit test for PreferenceSynchronizerTemplate
@@ -28,169 +19,109 @@ import javax.persistence.PersistenceUnit;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
-@TransactionConfiguration
-@DirtiesContext
-public class PreferenceSynchronizerTest {
-
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
-
-    private PreferenceSynchronizer synchronizer;
-    private SynchronizerContext context;
+public class PreferenceSynchronizerTest extends AbstractDbSynchronizerTest<Preference, Preference>{
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
-
-        Preference preference = IntactTestUtils.createPreference();
-        this.synchronizer.persist(preference);
-
-        Assert.assertNotNull(preference.getAc());
-        Assert.assertEquals("key", preference.getKey());
-        Assert.assertEquals("value", preference.getValue());
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_deleted() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
-
-        Preference preference = IntactTestUtils.createPreference();
-        this.synchronizer.persist(preference);
-
-        Assert.assertNotNull(preference.getAc());
-
-        this.synchronizer.delete(preference);
-        Assert.assertNull(entityManager.find(Preference.class, preference.getAc()));
+    public void test_deleted() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        delete();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
-
-        Preference preference = IntactTestUtils.createPreference();
-        this.synchronizer.persist(preference);
-
-        Assert.assertNotNull(preference.getAc());
-
-        Assert.assertNull(this.synchronizer.find(preference));
-        Assert.assertNull(this.synchronizer.find(new Preference("key", "value")));
+    public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        find_no_cache();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
-
-        Preference preference = IntactTestUtils.createPreference();
-        this.synchronizer.synchronizeProperties(preference);
-
-        Assert.assertNull(preference.getAc());
-        Assert.assertEquals("key", preference.getKey());
-        Assert.assertEquals("value", preference.getValue());
+    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        synchronizeProperties();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
-
-        Preference preference = IntactTestUtils.createPreference();
-        this.synchronizer.synchronize(preference, false);
-
-        Assert.assertNull(preference.getAc());
-        Assert.assertEquals("key", preference.getKey());
-        Assert.assertEquals("value", preference.getValue());
+    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        synchronize_not_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
-
-        Preference preference = IntactTestUtils.createPreference();
-        this.synchronizer.synchronize(preference, true);
-
-        Assert.assertNotNull(preference.getAc());
-        Assert.assertEquals("key", preference.getKey());
-        Assert.assertEquals("value", preference.getValue());
+        synchronize_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new PreferenceSynchronizer(this.context);
-
-        Preference preference = IntactTestUtils.createPreference();
-        this.synchronizer.synchronize(preference, true);
-
-        Assert.assertNotNull(preference.getAc());
-        String ac = preference.getAc();
-        Assert.assertEquals("key", preference.getKey());
-        Assert.assertEquals("value", preference.getValue());
-
-        this.entityManager.flush();
-        this.entityManager.detach(preference);
-
-        preference.setValue("value2");
-
-        Preference newPref = this.synchronizer.synchronize(preference, true);
-
-        Assert.assertEquals(ac, newPref.getAc());
-        Assert.assertEquals("key", newPref.getKey());
-        Assert.assertEquals("value2", newPref.getValue());
+        merge_test1();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-        this.context = new DefaultSynchronizerContext(this.entityManager);
+        merge_test2();
+    }
+
+    @Override
+    protected Preference createDefaultJamiObject() {
+        return null;
+    }
+
+    @Override
+    protected void testUpdatedPropertiesAfterMerge(Preference objectToTest, Preference newObjToTest) {
+        Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
+        Assert.assertEquals("value2", newObjToTest.getValue());
+    }
+
+    @Override
+    protected void updatePropertieDetachedInstance(Preference objectToTest) {
+        objectToTest.setValue("value2");
+    }
+
+    @Override
+    protected Preference findObject(Preference objectToTest) {
+        return entityManager.find(Preference.class, objectToTest.getAc());
+    }
+
+    @Override
+    protected void initSynchronizer() {
         this.synchronizer = new PreferenceSynchronizer(this.context);
+    }
 
-        Preference preference = IntactTestUtils.createPreference();
-        this.synchronizer.synchronize(preference, true);
+    @Override
+    protected void testPersistedProperties(Preference persistedObject) {
+        Assert.assertNotNull(persistedObject.getAc());
+        Assert.assertEquals("key", persistedObject.getKey());
+        Assert.assertEquals("value", persistedObject.getValue());
+    }
 
-        Assert.assertNotNull(preference.getAc());
-        String ac = preference.getAc();
-        Assert.assertEquals("key", preference.getKey());
-        Assert.assertEquals("value", preference.getValue());
+    @Override
+    protected void testNonPersistedProperties(Preference objectToTest) {
+        Assert.assertNull(objectToTest.getAc());
+        Assert.assertEquals("key", objectToTest.getKey());
+        Assert.assertEquals("value", objectToTest.getValue());
+    }
 
-        this.entityManager.flush();
-        this.entityManager.detach(preference);
-
-        Preference pref = this.entityManager.find(Preference.class, ac);
-        pref.setValue("value2");
-        this.entityManager.detach(pref);
-
-        Preference newPref = this.synchronizer.synchronize(pref, true);
-
-        Assert.assertEquals(ac, newPref.getAc());
-        Assert.assertEquals("key", newPref.getKey());
-        Assert.assertEquals("value2", newPref.getValue());
+    @Override
+    protected Preference createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        return IntactTestUtils.createPreference();
     }
 }
