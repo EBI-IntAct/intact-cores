@@ -288,6 +288,11 @@ public class AliasSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Al
     }
 
     @Override
+    protected void testDeleteOtherProperties(AbstractIntactAlias objectToTest) {
+        // nothing to do
+    }
+
+    @Override
     protected Alias createDefaultJamiObject() {
         if (testNumber == 1){
             return IntactTestUtils.createAliasSynonym();

@@ -325,6 +325,11 @@ public class XrefSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Xre
     }
 
     @Override
+    protected void testDeleteOtherProperties(AbstractIntactXref objectToTest) {
+        // nothing to do
+    }
+
+    @Override
     protected Xref createDefaultJamiObject() {
         if (testNumber == 1){
             return IntactTestUtils.createPubmedXrefNoQualifier();

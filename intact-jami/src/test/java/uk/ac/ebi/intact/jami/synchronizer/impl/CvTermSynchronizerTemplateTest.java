@@ -5,10 +5,7 @@ import org.hibernate.Hibernate;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-import psidev.psi.mi.jami.model.Alias;
-import psidev.psi.mi.jami.model.Annotation;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
@@ -264,6 +261,31 @@ public class CvTermSynchronizerTemplateTest extends AbstractDbSynchronizerTest<C
     @Override
     protected void updatePropertieDetachedInstance(IntactCvTerm objectToTest) {
         objectToTest.setDefinition("updated definition");
+    }
+
+    @Override
+    protected void testDeleteOtherProperties(IntactCvTerm objectToTest) {
+        // simple cv with xrefs
+        if (testNumber == 1){
+            Assert.assertNull(entityManager.find(CvTermXref.class, ((CvTermXref) objectToTest.getDbXrefs().iterator().next()).getAc()));
+        }
+        // cvs with parent/children
+        else if (testNumber == 2){
+            Assert.assertNull(entityManager.find(CvTermXref.class, ((CvTermXref)objectToTest.getDbXrefs().iterator().next()).getAc()));
+            Assert.assertTrue(objectToTest.getChildren().isEmpty());
+            Assert.assertTrue(objectToTest.getParents().isEmpty());
+        }
+        // cvs with annotations and aliases
+        else if (testNumber == 3){
+            Assert.assertNull(entityManager.find(CvTermXref.class, ((CvTermXref) objectToTest.getDbXrefs().iterator().next()).getAc()));
+            Assert.assertNull(entityManager.find(CvTermAlias.class, ((CvTermAlias) objectToTest.getSynonyms().iterator().next()).getAc()));
+            Assert.assertNull(entityManager.find(CvTermAnnotation.class, ((CvTermAnnotation) objectToTest.getDbAnnotations().iterator().next()).getAc()));
+        }
+        // cvs with fullname and definition
+        else {
+            Assert.assertNull(entityManager.find(CvTermXref.class, ((CvTermXref) objectToTest.getDbXrefs().iterator().next()).getAc()));
+            Assert.assertNull(entityManager.find(CvTermAnnotation.class, ((CvTermAnnotation) objectToTest.getDbAnnotations().iterator().next()).getAc()));
+        }
     }
 
     @Override

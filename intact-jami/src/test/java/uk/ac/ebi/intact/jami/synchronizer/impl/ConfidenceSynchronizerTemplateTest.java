@@ -284,6 +284,11 @@ public class ConfidenceSynchronizerTemplateTest extends AbstractDbSynchronizerTe
     }
 
     @Override
+    protected void testDeleteOtherProperties(AbstractIntactConfidence objectToTest) {
+        // nothing to do
+    }
+
+    @Override
     protected Confidence createDefaultJamiObject() {
         if (testNumber == 1){
             return IntactTestUtils.createConfidenceAuthorScore();

@@ -69,6 +69,7 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
 
         this.synchronizer.delete(objectToTest);
         Assert.assertNull(findObject(objectToTest));
+        testDeleteOtherProperties(objectToTest);
     }
 
     public void find_no_cache() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -161,6 +162,8 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
 
         testUpdatedPropertiesAfterMerge(objectToTest, newObjToTest);
     }
+
+    protected abstract void testDeleteOtherProperties(T objectToTest);
 
     protected void initPropertiesBeforeDetaching(T reloadedObject){
        // nothing to do here

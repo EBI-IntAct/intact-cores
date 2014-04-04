@@ -2,29 +2,19 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.model.ParameterValue;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
-import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
@@ -35,77 +25,31 @@ import java.math.BigDecimal;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
-@TransactionConfiguration
-@DirtiesContext
-public class ParameterSynchronizerTemplateTest {
+public class ParameterSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Parameter, AbstractIntactParameter>{
 
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
-
-    private ParameterSynchronizerTemplate synchronizer;
-    private SynchronizerContext context;
+    private int testNumber = 1;
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
-        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
-                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
-
-        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
-                createKdParameter(InteractionEvidenceParameter.class);
-
-        ComplexParameter complexParameter = IntactTestUtils.
-                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
-
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
-        this.synchronizer.persist(participantParameter);
-
-        Assert.assertNotNull(participantParameter.getAc());
-        Assert.assertNull(participantParameter.getUnit());
-        Assert.assertNotNull(participantParameter.getType());
-        IntactCvTerm paramType = (IntactCvTerm)participantParameter.getType();
-        Assert.assertNotNull(paramType.getAc());
-        Assert.assertEquals(participantParameter.getType(),IntactUtils.createMIParameterType("kd", "MI:xxx1"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(3)), participantParameter.getValue());
+        this.testNumber = 1;
+        persist();
 
         this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
-        this.synchronizer.persist(interactionParameter);
-
-        Assert.assertNotNull(interactionParameter.getAc());
-        Assert.assertNotNull(interactionParameter.getType());
-        Assert.assertNotNull(interactionParameter.getUnit());
-        IntactCvTerm paramUnit = (IntactCvTerm)interactionParameter.getUnit();
-        Assert.assertNotNull(paramUnit.getAc());
-        Assert.assertEquals(interactionParameter.getUnit(),IntactUtils.createMIUnit("molar", "MI:xxx3"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(5)), interactionParameter.getValue());
+        this.testNumber = 2;
+        persist();
 
         this.synchronizer.setIntactClass(ComplexParameter.class);
-        this.synchronizer.persist(complexParameter);
-
-        Assert.assertNotNull(complexParameter.getAc());
-        Assert.assertNotNull(complexParameter.getType());
-        IntactCvTerm paramType2 = (IntactCvTerm)complexParameter.getType();
-        Assert.assertNotNull(paramType2.getAc());
-        Assert.assertTrue(complexParameter.getType() == paramType2);
-        Assert.assertEquals(new ParameterValue(new BigDecimal(6)), complexParameter.getValue());
+        this.testNumber = 3;
+        persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_persist_with_existing_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
         IntactCvTerm kdType = createExistingType();
 
         ParticipantEvidenceParameter participantParameter = IntactTestUtils.
@@ -153,9 +97,6 @@ public class ParameterSynchronizerTemplateTest {
     @Test
     @DirtiesContext
     public void test_persist_with_detached_type() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
         // pre persist kd
         IntactCvTerm kdType = createExistingType();
 
@@ -193,241 +134,139 @@ public class ParameterSynchronizerTemplateTest {
     @Test
     @DirtiesContext
     public void test_confidence_deleted() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
-        // pre persist kd
-        IntactCvTerm kd = createExistingType();
-
-        entityManager.detach(kd);
-
-        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
-                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
-
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
-        this.synchronizer.persist(participantParameter);
+        this.testNumber = 1;
+        delete();
 
-        Assert.assertNotNull(participantParameter.getType());
-        IntactCvTerm paramType = (IntactCvTerm)participantParameter.getType();
-        Assert.assertEquals(paramType.getAc(), kd.getAc());
+        this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
+        this.testNumber = 2;
+        delete();
 
-        entityManager.flush();
-        System.out.println("flush");
-
-        this.synchronizer.delete(participantParameter);
-
-        Assert.assertNull(entityManager.find(ParticipantEvidenceParameter.class, participantParameter.getAc()));
+        this.synchronizer.setIntactClass(ComplexParameter.class);
+        this.testNumber = 3;
+        delete();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
-        ParticipantEvidenceParameter participantConfidenceNotPersisted = IntactTestUtils.
-                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
-        ParticipantEvidenceParameter participantConfidencePersisted = IntactTestUtils.
-                createParameterNoUnit(ParticipantEvidenceParameter.class, "kd", null, 7);
-
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
-        this.synchronizer.persist(participantConfidencePersisted);
-        entityManager.flush();
-        this.context.clearCache();
+        this.testNumber = 1;
+        find_no_cache();
 
-        Assert.assertNull(this.synchronizer.find(participantConfidenceNotPersisted));
-        Assert.assertNull(this.synchronizer.find(participantConfidencePersisted));
+        this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
+        this.testNumber = 2;
+        find_no_cache();
+
+        this.synchronizer.setIntactClass(ComplexParameter.class);
+        this.testNumber = 3;
+        find_no_cache();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
-        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
-                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
-
-        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
-                createKdParameter(InteractionEvidenceParameter.class);
-
-        ComplexParameter complexParameter = IntactTestUtils.
-                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
-        this.synchronizer.synchronizeProperties(participantParameter);
-
-        Assert.assertNull(participantParameter.getAc());
-        Assert.assertNotNull(participantParameter.getType());
-        IntactCvTerm confType = (IntactCvTerm)participantParameter.getType();
-        Assert.assertNotNull(confType.getAc());
-        Assert.assertEquals(participantParameter.getType(), IntactUtils.createMIParameterType("kd", "MI:xxx1"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(3)), participantParameter.getValue());
+        this.testNumber = 1;
+        synchronizeProperties();
 
         this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
-        this.synchronizer.synchronizeProperties(interactionParameter);
-
-        Assert.assertNull(interactionParameter.getAc());
-        Assert.assertNotNull(interactionParameter.getType());
-        IntactCvTerm paramUnit = (IntactCvTerm)interactionParameter.getUnit();
-        Assert.assertNotNull(paramUnit.getAc());
-        Assert.assertEquals(interactionParameter.getUnit(),IntactUtils.createMIUnit("molar", "MI:xxx3"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(5)), interactionParameter.getValue());
+        this.testNumber = 2;
+        synchronizeProperties();
 
         this.synchronizer.setIntactClass(ComplexParameter.class);
-        this.synchronizer.synchronizeProperties(complexParameter);
-
-        Assert.assertNull(complexParameter.getAc());
-        Assert.assertNotNull(complexParameter.getType());
-        IntactCvTerm confType2 = (IntactCvTerm)complexParameter.getType();
-        Assert.assertNotNull(confType2.getAc());
-        Assert.assertTrue(complexParameter.getType() == confType2);
-        Assert.assertEquals(new ParameterValue(new BigDecimal(6)), complexParameter.getValue());
+        this.testNumber = 3;
+        synchronizeProperties();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
-        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
-                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
-
-        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
-                createKdParameter(InteractionEvidenceParameter.class);
-
-        ComplexParameter complexParameter = IntactTestUtils.
-                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
-        this.synchronizer.synchronize(participantParameter, false);
-
-        Assert.assertNull(participantParameter.getAc());
-        Assert.assertNotNull(participantParameter.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)participantParameter.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(participantParameter.getType(), IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(3)), participantParameter.getValue());
+        this.testNumber = 1;
+        synchronize_not_persist();
 
         this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
-        this.synchronizer.synchronize(interactionParameter, false);
-
-        Assert.assertNull(interactionParameter.getAc());
-        Assert.assertNotNull(interactionParameter.getType());
-        Assert.assertNotNull(interactionParameter.getType());
-        IntactCvTerm paramUnit = (IntactCvTerm)interactionParameter.getUnit();
-        Assert.assertNotNull(paramUnit.getAc());
-        Assert.assertEquals(interactionParameter.getUnit(),IntactUtils.createMIUnit("molar", "MI:xxx3"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(5)), interactionParameter.getValue());
+        this.testNumber = 2;
+        synchronize_not_persist();
 
         this.synchronizer.setIntactClass(ComplexParameter.class);
-        this.synchronizer.synchronize(complexParameter, false);
-
-        Assert.assertNull(complexParameter.getAc());
-        Assert.assertNotNull(complexParameter.getType());
-        IntactCvTerm confType2 = (IntactCvTerm)complexParameter.getType();
-        Assert.assertNotNull(confType2.getAc());
-        Assert.assertTrue(complexParameter.getType() == confType2);
-        Assert.assertEquals(new ParameterValue(new BigDecimal(6)), complexParameter.getValue());
+        this.testNumber = 3;
+        synchronize_not_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
-        ParticipantEvidenceParameter participantParameter = IntactTestUtils.
-                createKdParameterNoUnit(ParticipantEvidenceParameter.class);
-
-        InteractionEvidenceParameter interactionParameter = IntactTestUtils.
-                createKdParameter(InteractionEvidenceParameter.class);
-
-        ComplexParameter complexParameter = IntactTestUtils.
-                createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
-
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
-        this.synchronizer.synchronize(participantParameter, true);
-
-        Assert.assertNotNull(participantParameter.getAc());
-        Assert.assertNotNull(participantParameter.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)participantParameter.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(participantParameter.getType(), IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(3)), participantParameter.getValue());
+        this.testNumber = 1;
+        synchronize_persist();
 
         this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
-        this.synchronizer.synchronize(interactionParameter, true);
-
-        Assert.assertNotNull(interactionParameter.getAc());
-        Assert.assertNotNull(interactionParameter.getType());
-        Assert.assertNotNull(interactionParameter.getType());
-        IntactCvTerm paramUnit = (IntactCvTerm)interactionParameter.getUnit();
-        Assert.assertNotNull(paramUnit.getAc());
-        Assert.assertEquals(interactionParameter.getUnit(),IntactUtils.createMIUnit("molar", "MI:xxx3"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(5)), interactionParameter.getValue());
+        this.testNumber = 2;
+        synchronize_persist();
 
         this.synchronizer.setIntactClass(ComplexParameter.class);
-        this.synchronizer.synchronize(complexParameter, true);
-
-        Assert.assertNotNull(complexParameter.getAc());
-        Assert.assertNotNull(complexParameter.getType());
-        IntactCvTerm confType2 = (IntactCvTerm)complexParameter.getType();
-        Assert.assertNotNull(confType2.getAc());
-        Assert.assertTrue(complexParameter.getType() == confType2);
-        Assert.assertEquals(new ParameterValue(new BigDecimal(6)), complexParameter.getValue());
+        this.testNumber = 3;
+        synchronize_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
     public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
-
-        Parameter participantParameter = IntactTestUtils.
-                createKdParameterNoUnit();
-
-        Parameter interactionParameter = IntactTestUtils.
-                createKdParameter();
-
-        Parameter complexParameter = IntactTestUtils.
-                createParameterNoUnit("molecular weight", "MI:xxx2", 6);
-
         this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
-        ParticipantEvidenceParameter newConf = (ParticipantEvidenceParameter)this.synchronizer.synchronize(participantParameter, true);
-
-        Assert.assertNotNull(newConf.getAc());
-        Assert.assertNotNull(newConf.getType());
-        IntactCvTerm aliasType = (IntactCvTerm)newConf.getType();
-        Assert.assertNotNull(aliasType.getAc());
-        Assert.assertEquals(participantParameter.getType(), IntactUtils.createMIConfidenceType("author-score", "MI:xxx1"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(3)), newConf.getValue());
+        this.testNumber = 1;
+        persist_jami();
 
         this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
-        InteractionEvidenceParameter newConf2 = (InteractionEvidenceParameter)this.synchronizer.synchronize(interactionParameter, true);
-
-        Assert.assertNotNull(newConf2.getAc());
-        Assert.assertNotNull(newConf2.getType());
-        Assert.assertNotNull(newConf2.getType());
-        IntactCvTerm paramUnit = (IntactCvTerm)newConf2.getUnit();
-        Assert.assertNotNull(paramUnit.getAc());
-        Assert.assertEquals(interactionParameter.getUnit(),IntactUtils.createMIUnit("molar", "MI:xxx3"));
-        Assert.assertEquals(new ParameterValue(new BigDecimal(5)), newConf2.getValue());
+        this.testNumber = 2;
+        persist_jami();
 
         this.synchronizer.setIntactClass(ComplexParameter.class);
-        ComplexParameter newConf3 = (ComplexParameter)this.synchronizer.synchronize(complexParameter, true);
-
-        Assert.assertNotNull(newConf3.getAc());
-        Assert.assertNotNull(newConf3.getType());
-        IntactCvTerm confType2 = (IntactCvTerm)newConf3.getType();
-        Assert.assertNotNull(confType2.getAc());
-        Assert.assertTrue(newConf3.getType() == confType2);
-        Assert.assertEquals(new ParameterValue(new BigDecimal(6)), newConf3.getValue());
+        this.testNumber = 3;
+        persist_jami();
     }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_merge1() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
+        this.testNumber = 1;
+        merge_test1();
+
+        this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
+        this.testNumber = 2;
+        merge_test1();
+
+        this.synchronizer.setIntactClass(ComplexParameter.class);
+        this.testNumber = 3;
+        merge_test1();
+    }
+
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_merge2() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        this.synchronizer.setIntactClass(ParticipantEvidenceParameter.class);
+        this.testNumber = 1;
+        merge_test2();
+
+        this.synchronizer.setIntactClass(InteractionEvidenceParameter.class);
+        this.testNumber = 2;
+        merge_test2();
+
+        this.synchronizer.setIntactClass(ComplexParameter.class);
+        this.testNumber = 3;
+        merge_test2();
+    }
+
 
     private IntactCvTerm createExistingType() {
         // pre persist kd
@@ -450,5 +289,131 @@ public class ParameterSynchronizerTemplateTest {
         entityManager.flush();
         this.context.clearCache();
         return kd;
+    }
+
+    @Override
+    protected void testDeleteOtherProperties(AbstractIntactParameter objectToTest) {
+        // nothing to do
+    }
+
+    @Override
+    protected Parameter createDefaultJamiObject() {
+        if (testNumber == 1){
+            return IntactTestUtils.
+                    createKdParameterNoUnit();
+        }
+        else if (testNumber == 2){
+            return IntactTestUtils.
+                    createKdParameter();
+        }
+        else{
+            return IntactTestUtils.
+                    createParameterNoUnit("molecular weight", "MI:xxx2", 6);
+        }
+    }
+
+    @Override
+    protected void testUpdatedPropertiesAfterMerge(AbstractIntactParameter objectToTest, AbstractIntactParameter newObjToTest) {
+        Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
+        Assert.assertEquals(new BigDecimal(3), newObjToTest.getUncertainty());
+    }
+
+    @Override
+    protected void updatePropertieDetachedInstance(AbstractIntactParameter objectToTest) {
+        objectToTest.setUncertainty(new BigDecimal(3));
+    }
+
+    @Override
+    protected AbstractIntactParameter findObject(AbstractIntactParameter objectToTest) {
+        if (testNumber == 1){
+            return entityManager.find(ParticipantEvidenceParameter.class, objectToTest.getAc());
+        }
+        else if (testNumber == 2){
+            return entityManager.find(InteractionEvidenceParameter.class, objectToTest.getAc());
+        }
+        else{
+            return entityManager.find(ComplexParameter.class, objectToTest.getAc());
+        }
+    }
+
+    @Override
+    protected void initSynchronizer() {
+        this.synchronizer = new ParameterSynchronizerTemplate(this.context, AbstractIntactParameter.class);
+    }
+
+    @Override
+    protected void testPersistedProperties(AbstractIntactParameter persistedObject) {
+        if (testNumber == 1){
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNull(persistedObject.getUnit());
+            Assert.assertNotNull(persistedObject.getType());
+            IntactCvTerm paramType = (IntactCvTerm)persistedObject.getType();
+            Assert.assertNotNull(paramType.getAc());
+            Assert.assertEquals(persistedObject.getType(),IntactUtils.createMIParameterType("kd", "MI:xxx1"));
+            Assert.assertEquals(new ParameterValue(new BigDecimal(3)), persistedObject.getValue());
+        }
+        else if (testNumber == 2){
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getType());
+            Assert.assertNotNull(persistedObject.getUnit());
+            IntactCvTerm paramUnit = (IntactCvTerm)persistedObject.getUnit();
+            Assert.assertNotNull(paramUnit.getAc());
+            Assert.assertEquals(persistedObject.getUnit(),IntactUtils.createMIUnit("molar", "MI:xxx3"));
+            Assert.assertEquals(new ParameterValue(new BigDecimal(5)), persistedObject.getValue());
+        }
+        else{
+            Assert.assertNotNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getType());
+            IntactCvTerm paramType2 = (IntactCvTerm)persistedObject.getType();
+            Assert.assertNotNull(paramType2.getAc());
+            Assert.assertEquals(persistedObject.getType(), IntactUtils.createMIParameterType("molecular weight", "MI:xxx2"));
+            Assert.assertEquals(new ParameterValue(new BigDecimal(6)), persistedObject.getValue());
+        }
+    }
+
+    @Override
+    protected void testNonPersistedProperties(AbstractIntactParameter persistedObject) {
+        if (testNumber == 1){
+            Assert.assertNull(persistedObject.getAc());
+            Assert.assertNull(persistedObject.getUnit());
+            Assert.assertNotNull(persistedObject.getType());
+            IntactCvTerm paramType = (IntactCvTerm)persistedObject.getType();
+            Assert.assertNotNull(paramType.getAc());
+            Assert.assertEquals(persistedObject.getType(),IntactUtils.createMIParameterType("kd", "MI:xxx1"));
+            Assert.assertEquals(new ParameterValue(new BigDecimal(3)), persistedObject.getValue());
+        }
+        else if (testNumber == 2){
+            Assert.assertNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getType());
+            Assert.assertNotNull(persistedObject.getUnit());
+            IntactCvTerm paramUnit = (IntactCvTerm)persistedObject.getUnit();
+            Assert.assertNotNull(paramUnit.getAc());
+            Assert.assertEquals(persistedObject.getUnit(),IntactUtils.createMIUnit("molar", "MI:xxx3"));
+            Assert.assertEquals(new ParameterValue(new BigDecimal(5)), persistedObject.getValue());
+        }
+        else{
+            Assert.assertNull(persistedObject.getAc());
+            Assert.assertNotNull(persistedObject.getType());
+            IntactCvTerm paramType2 = (IntactCvTerm)persistedObject.getType();
+            Assert.assertNotNull(paramType2.getAc());
+            Assert.assertEquals(persistedObject.getType(),IntactUtils.createMIParameterType("molecular weight", "MI:xxx2"));
+            Assert.assertEquals(new ParameterValue(new BigDecimal(6)), persistedObject.getValue());
+        }
+    }
+
+    @Override
+    protected AbstractIntactParameter createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        if (testNumber == 1){
+            return IntactTestUtils.
+                    createKdParameterNoUnit(ParticipantEvidenceParameter.class);
+        }
+        else if (testNumber == 2){
+            return IntactTestUtils.
+                    createKdParameter(InteractionEvidenceParameter.class);
+        }
+        else{
+            return IntactTestUtils.
+                    createParameterNoUnit(ComplexParameter.class, "molecular weight", "MI:xxx2", 6);
+        }
     }
 }

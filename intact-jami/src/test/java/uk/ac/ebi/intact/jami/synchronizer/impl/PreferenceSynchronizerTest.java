@@ -81,6 +81,11 @@ public class PreferenceSynchronizerTest extends AbstractDbSynchronizerTest<Prefe
     }
 
     @Override
+    protected void testDeleteOtherProperties(Preference objectToTest) {
+        // nothing to do
+    }
+
+    @Override
     protected Preference createDefaultJamiObject() {
         return null;
     }

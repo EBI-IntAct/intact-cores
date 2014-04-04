@@ -2,15 +2,9 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
-import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -18,10 +12,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 
 /**
@@ -31,221 +22,141 @@ import java.util.Iterator;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
-@TransactionConfiguration
-@DirtiesContext
-public class UserSynchronizerTest {
-
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
-
-    private UserSynchronizer synchronizer;
-    private SynchronizerContext context;
+public class UserSynchronizerTest extends AbstractDbSynchronizerTest<User,User>{
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new UserSynchronizer(this.context);
-
-        User user = IntactTestUtils.createCuratorUser();
-        this.synchronizer.persist(user);
-
-        Assert.assertNotNull(user.getAc());
-        Assert.assertEquals("default", user.getLogin());
-        Assert.assertEquals("firstName", user.getFirstName());
-        Assert.assertEquals("lastName", user.getLastName());
-        Assert.assertEquals("name@ebi.ac.uk", user.getEmail());
-        Assert.assertEquals(1, user.getRoles().size());
-        Role role = user.getRoles().iterator().next();
-        Assert.assertNotNull(role.getAc());
-        Assert.assertEquals(1, user.getPreferences().size());
-        Preference pref = user.getPreferences().iterator().next();
-        Assert.assertNotNull(pref.getAc());
+    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_deleted() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new UserSynchronizer(this.context);
-
-        User user = IntactTestUtils.createCuratorUser();
-        this.synchronizer.persist(user);
-        this.entityManager.flush();
-
-        this.synchronizer.delete(user);
-        Assert.assertNull(entityManager.find(User.class, user.getAc()));
-        Assert.assertNull(entityManager.find(Preference.class, user.getPreferences().iterator().next().getAc()));
-        Assert.assertNotNull(entityManager.find(Role.class, user.getRoles().iterator().next().getAc()));
+    public void test_deleted() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        delete();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new UserSynchronizer(this.context);
-
-        User user = IntactTestUtils.createCuratorUser();
-        this.synchronizer.persist(user);
-        this.entityManager.flush();
-        this.synchronizer.clearCache();
-
-        Assert.assertNotNull(this.synchronizer.find(user));
-        Assert.assertEquals(this.synchronizer.find(user), this.synchronizer.find(new User("default", "firstName2", "lastName2", "name2@ebi.ac.uk")));
+    public void test_find() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        find_local_cache(false);
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new UserSynchronizer(this.context);
-
-        User user = IntactTestUtils.createCuratorUser();
-        this.synchronizer.synchronizeProperties(user);
-
-        Assert.assertNull(user.getAc());
-        Assert.assertEquals("default", user.getLogin());
-        Assert.assertEquals("firstName", user.getFirstName());
-        Assert.assertEquals("lastName", user.getLastName());
-        Assert.assertEquals("name@ebi.ac.uk", user.getEmail());
-        Assert.assertEquals(1, user.getRoles().size());
-        Role role = user.getRoles().iterator().next();
-        Assert.assertNotNull(role.getAc());
-        Assert.assertEquals(1, user.getPreferences().size());
-        Preference pref = user.getPreferences().iterator().next();
-        Assert.assertNull(pref.getAc());
+    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        synchronizeProperties();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new UserSynchronizer(this.context);
-
-        User user = IntactTestUtils.createCuratorUser();
-        this.synchronizer.synchronize(user, false);
-
-        Assert.assertNull(user.getAc());
-        Assert.assertEquals("default", user.getLogin());
-        Assert.assertEquals("firstName", user.getFirstName());
-        Assert.assertEquals("lastName", user.getLastName());
-        Assert.assertEquals("name@ebi.ac.uk", user.getEmail());
-        Assert.assertEquals(1, user.getRoles().size());
-        Role role = user.getRoles().iterator().next();
-        Assert.assertNotNull(role.getAc());
-        Assert.assertEquals(1, user.getPreferences().size());
-        Preference pref = user.getPreferences().iterator().next();
-        Assert.assertNull(pref.getAc());
+    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        synchronize_not_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
+    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new UserSynchronizer(this.context);
-
-        User user = IntactTestUtils.createCuratorUser();
-        this.synchronizer.synchronize(user, true);
-
-        Assert.assertNotNull(user.getAc());
-        Assert.assertEquals("default", user.getLogin());
-        Assert.assertEquals("firstName", user.getFirstName());
-        Assert.assertEquals("lastName", user.getLastName());
-        Assert.assertEquals("name@ebi.ac.uk", user.getEmail());
-        Assert.assertEquals(1, user.getRoles().size());
-        Role role = user.getRoles().iterator().next();
-        Assert.assertNotNull(role.getAc());
-        Assert.assertEquals(1, user.getPreferences().size());
-        Preference pref = user.getPreferences().iterator().next();
-        Assert.assertNotNull(pref.getAc());
+        synchronize_persist();
     }
 
     @Transactional
     @Test
     @DirtiesContext
-    public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new UserSynchronizer(this.context);
+    public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        merge_test1();
+    }
 
-        User user = IntactTestUtils.createCuratorUser();
-        this.synchronizer.persist(user);
-        this.entityManager.flush();
-        this.entityManager.detach(user);
-        this.synchronizer.clearCache();
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        merge_test2();
+    }
 
-        Assert.assertNotNull(user.getAc());
-        String ac = user.getAc();
-        Assert.assertEquals(1, user.getRoles().size());
-        Role role = user.getRoles().iterator().next();
-        Assert.assertNotNull(role.getAc());
-        Assert.assertEquals(1, user.getPreferences().size());
-        Preference pref = user.getPreferences().iterator().next();
-        Assert.assertNotNull(pref.getAc());
-        user.setLastName("lastName2");
-        user.getRoles().add(new Role("REVIEWER"));
-        user.getPreferences().add(new Preference("key2", "value2"));
+    @Override
+    protected void testDeleteOtherProperties(User objectToTest) {
+        Assert.assertNull(entityManager.find(Preference.class, objectToTest.getPreferences().iterator().next().getAc()));
+        Assert.assertNotNull(entityManager.find(Role.class, objectToTest.getRoles().iterator().next().getAc()));
+    }
 
-        User newUser = this.synchronizer.synchronize(user, true);
-        Assert.assertEquals(ac, newUser.getAc());
-        Assert.assertEquals(2, newUser.getRoles().size());
-        Iterator<Role> roleIterator = newUser.getRoles().iterator();
+    @Override
+    protected User createDefaultJamiObject() {
+        return null;
+    }
+
+    @Override
+    protected void testUpdatedPropertiesAfterMerge(User objectToTest, User newObjToTest) {
+        Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
+        Assert.assertEquals(2, newObjToTest.getRoles().size());
+        Iterator<Role> roleIterator = newObjToTest.getRoles().iterator();
         Role role2 = roleIterator.next();
         Assert.assertNotNull(role2.getAc());
         Assert.assertNotNull(roleIterator.next().getAc());
-        Assert.assertEquals(2, newUser.getPreferences().size());
-        Iterator<Preference> preferenceIterator = newUser.getPreferences().iterator();
+        Assert.assertEquals(2, newObjToTest.getPreferences().size());
+        Iterator<Preference> preferenceIterator = newObjToTest.getPreferences().iterator();
         Preference pref2 = preferenceIterator.next();
         Assert.assertNotNull(pref2.getAc());
         Assert.assertNotNull(preferenceIterator.next().getAc());
-        Assert.assertEquals("lastName2", newUser.getLastName());
+        Assert.assertEquals("lastName2", newObjToTest.getLastName());
     }
 
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
+    @Override
+    protected void updatePropertieDetachedInstance(User objectToTest) {
+        objectToTest.setLastName("lastName2");
+        objectToTest.getRoles().add(new Role("REVIEWER"));
+        objectToTest.getPreferences().add(new Preference("key2", "value2"));
+    }
+
+    @Override
+    protected User findObject(User objectToTest) {
+        return entityManager.find(User.class, objectToTest.getAc());
+    }
+
+    @Override
+    protected void initSynchronizer() {
         this.synchronizer = new UserSynchronizer(this.context);
+    }
 
-        User user = IntactTestUtils.createCuratorUser();
-        this.synchronizer.persist(user);
-        this.entityManager.flush();
-        this.entityManager.detach(user);
-        this.synchronizer.clearCache();
+    @Override
+    protected void testPersistedProperties(User persistedObject) {
+        Assert.assertNotNull(persistedObject.getAc());
+        Assert.assertEquals("default", persistedObject.getLogin());
+        Assert.assertEquals("firstName", persistedObject.getFirstName());
+        Assert.assertEquals("lastName", persistedObject.getLastName());
+        Assert.assertEquals("name@ebi.ac.uk", persistedObject.getEmail());
+        Assert.assertEquals(1, persistedObject.getRoles().size());
+        Role role = persistedObject.getRoles().iterator().next();
+        Assert.assertNotNull(role.getAc());
+        Assert.assertEquals(1, persistedObject.getPreferences().size());
+        Preference pref = persistedObject.getPreferences().iterator().next();
+        Assert.assertNotNull(pref.getAc());
+    }
 
-        Assert.assertNotNull(user.getAc());
-        String ac = user.getAc();
+    @Override
+    protected void testNonPersistedProperties(User persistedObject) {
+        Assert.assertNull(persistedObject.getAc());
+        Assert.assertEquals("default", persistedObject.getLogin());
+        Assert.assertEquals("firstName", persistedObject.getFirstName());
+        Assert.assertEquals("lastName", persistedObject.getLastName());
+        Assert.assertEquals("name@ebi.ac.uk", persistedObject.getEmail());
+        Assert.assertEquals(1, persistedObject.getRoles().size());
+        Role role = persistedObject.getRoles().iterator().next();
+        Assert.assertNotNull(role.getAc());
+        Assert.assertEquals(1, persistedObject.getPreferences().size());
+        Preference pref = persistedObject.getPreferences().iterator().next();
+        Assert.assertNull(pref.getAc());
+    }
 
-        User us = this.entityManager.find(User.class, ac);
-        this.entityManager.detach(us);
-        us.setLastName("lastName2");
-        us.getRoles().add(new Role("REVIEWER"));
-        us.getPreferences().add(new Preference("key2", "value2"));
-
-        User newUser = this.synchronizer.synchronize(us, true);
-        Assert.assertEquals(ac, newUser.getAc());
-        Assert.assertEquals(2, newUser.getRoles().size());
-        Iterator<Role> roleIterator = newUser.getRoles().iterator();
-        Role role2 = roleIterator.next();
-        Assert.assertNotNull(role2.getAc());
-        Assert.assertNotNull(roleIterator.next().getAc());
-        Assert.assertEquals(2, newUser.getPreferences().size());
-        Iterator<Preference> preferenceIterator = newUser.getPreferences().iterator();
-        Preference pref2 = preferenceIterator.next();
-        Assert.assertNotNull(pref2.getAc());
-        Assert.assertNotNull(preferenceIterator.next().getAc());
-        Assert.assertEquals("lastName2", newUser.getLastName());
+    @Override
+    protected User createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        return IntactTestUtils.createCuratorUser();
     }
 }

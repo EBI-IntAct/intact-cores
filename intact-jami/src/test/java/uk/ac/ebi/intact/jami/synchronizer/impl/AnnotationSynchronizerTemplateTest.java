@@ -288,6 +288,11 @@ public class AnnotationSynchronizerTemplateTest extends AbstractDbSynchronizerTe
     }
 
     @Override
+    protected void testDeleteOtherProperties(AbstractIntactAnnotation objectToTest) {
+        // nothing to do
+    }
+
+    @Override
     protected Annotation createDefaultJamiObject() {
         if (testNumber == 1){
             return IntactTestUtils.createAnnotationComment();

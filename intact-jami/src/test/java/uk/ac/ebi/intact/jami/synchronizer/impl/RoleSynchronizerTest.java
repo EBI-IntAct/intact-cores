@@ -81,6 +81,11 @@ public class RoleSynchronizerTest extends AbstractDbSynchronizerTest<Role, Role>
     }
 
     @Override
+    protected void testDeleteOtherProperties(Role objectToTest) {
+        // nothing to do
+    }
+
+    @Override
     protected Role createDefaultJamiObject() {
         return null;
     }
