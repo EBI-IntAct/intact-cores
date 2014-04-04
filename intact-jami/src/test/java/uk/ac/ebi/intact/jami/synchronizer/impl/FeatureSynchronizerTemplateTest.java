@@ -100,7 +100,17 @@ public class FeatureSynchronizerTemplateTest extends AbstractDbSynchronizerTest<
 
     @Override
     protected Feature createDefaultJamiObject() {
-        return IntactTestUtils.createBasicFeature(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI);
+        Feature f = IntactTestUtils.createBasicModelledFeature(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI);
+        try {
+            this.synchronizer.synchronize(f.getLinkedFeatures().iterator().next(), true);
+        } catch (FinderException e) {
+            e.printStackTrace();
+        } catch (PersisterException e) {
+            e.printStackTrace();
+        } catch (SynchronizerException e) {
+            e.printStackTrace();
+        }
+        return f;
     }
 
     @Override

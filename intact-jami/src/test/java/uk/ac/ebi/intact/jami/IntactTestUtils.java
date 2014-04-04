@@ -345,6 +345,32 @@ public class IntactTestUtils {
         return feature;
     }
 
+    public static Feature createBasicModelledFeature(String type, String typeMI) {
+        Feature feature = new DefaultModelledFeature("test feature", "full test feature");
+        Feature feature2 = new DefaultModelledFeature("test feature 2", "full test feature 2");
+        if (type != null){
+            feature.setType(CvTermUtils.createMICvTerm(type, typeMI));
+            feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
+        }
+        feature.getLinkedFeatures().add(feature2);
+        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
+        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        return feature;
+    }
+
+    public static Feature createBasicFeatureEvidence(String type, String typeMI) {
+        Feature feature = new DefaultFeatureEvidence("test feature", "full test feature");
+        Feature feature2 = new DefaultFeatureEvidence("test feature 2", "full test feature 2");
+        if (type != null){
+            feature.setType(CvTermUtils.createMICvTerm(type, typeMI));
+            feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
+        }
+        feature.getLinkedFeatures().add(feature2);
+        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
+        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        return feature;
+    }
+
     public static ModelledFeature createFullModelledFeature(String type, String typeMI) {
         ModelledFeature feature = new DefaultModelledFeature("test feature", "full test feature");
         ModelledFeature feature2 = new DefaultModelledFeature("test feature 2", "full test feature 2");
