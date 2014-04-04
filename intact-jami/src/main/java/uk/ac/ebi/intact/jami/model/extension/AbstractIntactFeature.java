@@ -378,6 +378,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     @Deprecated
     public void setBinds(F binds) {
         this.binds = binds;
+        this.linkedFeatures = null;
     }
 
     @Transient

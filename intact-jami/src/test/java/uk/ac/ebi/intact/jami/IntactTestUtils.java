@@ -329,6 +329,8 @@ public class IntactTestUtils {
         feature.getAnnotations().add(createAnnotationComment(FeatureEvidenceAnnotation.class));
         feature.setInteractionEffect(IntactUtils.createMITopic("interaction effect",null));
         feature.setInteractionDependency(IntactUtils.createMITopic("interaction dependency",null));
+        feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection", null));
+        feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection 2", null));
         return feature;
     }
 
@@ -345,9 +347,9 @@ public class IntactTestUtils {
         return feature;
     }
 
-    public static Feature createBasicModelledFeature(String type, String typeMI) {
-        Feature feature = new DefaultModelledFeature("test feature", "full test feature");
-        Feature feature2 = new DefaultModelledFeature("test feature 2", "full test feature 2");
+    public static ModelledFeature createBasicModelledFeature(String type, String typeMI) {
+        ModelledFeature feature = new DefaultModelledFeature("test feature", "full test feature");
+        ModelledFeature feature2 = new DefaultModelledFeature("test feature 2", "full test feature 2");
         if (type != null){
             feature.setType(CvTermUtils.createMICvTerm(type, typeMI));
             feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
@@ -358,9 +360,9 @@ public class IntactTestUtils {
         return feature;
     }
 
-    public static Feature createBasicFeatureEvidence(String type, String typeMI) {
-        Feature feature = new DefaultFeatureEvidence("test feature", "full test feature");
-        Feature feature2 = new DefaultFeatureEvidence("test feature 2", "full test feature 2");
+    public static FeatureEvidence createBasicFeatureEvidence(String type, String typeMI) {
+        FeatureEvidence feature = new DefaultFeatureEvidence("test feature", "full test feature");
+        FeatureEvidence feature2 = new DefaultFeatureEvidence("test feature 2", "full test feature 2");
         if (type != null){
             feature.setType(CvTermUtils.createMICvTerm(type, typeMI));
             feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
@@ -368,6 +370,8 @@ public class IntactTestUtils {
         feature.getLinkedFeatures().add(feature2);
         feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
         feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection", null));
+        feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection 2", null));
         return feature;
     }
 
@@ -396,13 +400,14 @@ public class IntactTestUtils {
             feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
         }
         feature.getLinkedFeatures().add(feature2);
-        feature.getLinkedFeatures().add(feature2);
         feature.getRanges().add(createCertainRangeNoResultingSequence());
         feature.getAliases().add(createAliasSynonym());
         feature.getXrefs().add(createPubmedXrefNoQualifier());
         feature.getAnnotations().add(createAnnotationComment());
         feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
         feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection", null));
+        feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection 2", null));
         return feature;
     }
 }

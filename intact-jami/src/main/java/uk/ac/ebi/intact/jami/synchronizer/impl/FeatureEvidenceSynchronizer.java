@@ -88,13 +88,13 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
             intactFeature.setFeatureIdentification(getContext().getFeatureDetectionMethodSynchronizer().synchronize(intactFeature.getFeatureIdentification(), true));
         }
         if (intactFeature.areDetectionMethodsInitialized()){
-            List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactFeature.getDetectionMethods());
+            List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactFeature.getDbDetectionMethods());
             for (CvTerm method : methodsToPersist){
                 CvTerm featureTerm = getContext().getFeatureDetectionMethodSynchronizer().synchronize(method, true);
                 // we have a different instance because needed to be synchronized
                 if (featureTerm != method){
-                    intactFeature.getDetectionMethods().remove(method);
-                    intactFeature.getDetectionMethods().add(featureTerm);
+                    intactFeature.getDbDetectionMethods().remove(method);
+                    intactFeature.getDbDetectionMethods().add(featureTerm);
                 }
             }
         }

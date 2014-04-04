@@ -102,10 +102,10 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
         return super.getDbXrefs();
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledFeatureAnnotation.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureEvidenceAnnotation.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
-    @Target(ModelledFeatureAnnotation.class)
+    @Target(FeatureEvidenceAnnotation.class)
     @Override
     /**
      * WARNING: The join table is for backward compatibility with intact-core.
@@ -116,10 +116,10 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
         return super.getAnnotations();
     }
 
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledFeatureAlias.class)
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = FeatureEvidenceAlias.class)
     @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(ModelledFeatureAlias.class)
+    @Target(FeatureEvidenceAlias.class)
     @Override
     public Collection<Alias> getAliases() {
         return super.getAliases();
