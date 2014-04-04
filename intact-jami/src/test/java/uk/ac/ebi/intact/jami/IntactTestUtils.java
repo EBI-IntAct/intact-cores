@@ -4,6 +4,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultAlias;
 import psidev.psi.mi.jami.model.impl.DefaultModelledParameter;
 import psidev.psi.mi.jami.model.impl.DefaultParameter;
+import psidev.psi.mi.jami.model.impl.DefaultResultingSequence;
 import psidev.psi.mi.jami.utils.*;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
@@ -255,4 +256,36 @@ public class IntactTestUtils {
         cvConfidenceType.setObjClass(null);
         return cvConfidenceType;
     }
+
+    public static <T extends AbstractIntactRange> T createIntactRange(Class<T> rangeClass, int start, int end, ResultingSequence seq) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        T alias = rangeClass.getConstructor(Position.class, Position.class).newInstance(new IntactPosition(start), new IntactPosition(end));
+        if (seq != null){
+            alias.setResultingSequence(seq);
+        }
+        return alias;
+    }
+
+    public static <T extends AbstractIntactRange> T createCertainRangeNoResultingSequence(Class<T> rangeClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createIntactRange(rangeClass, 1, 2, null);
+    }
+
+    public static ExperimentalRange createExperimentalRangeWithResultingSequence() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createIntactRange(ExperimentalRange.class, 1,2, new ExperimentalResultingSequence("AAGA", "ACGA"));
+    }
+
+    public static ModelledRange createModelledRangeWithResultingSequence() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createIntactRange(ModelledRange.class, 1,2, new ModelledResultingSequence("AAGA", "ACGA"));
+    }
+
+    public static Range createCertainRangeNoResultingSequence() {
+        return RangeUtils.createCertainRange(1,2);
+    }
+
+    public static Range createCertainRangeWithResultingSequence() {
+        Range range = createCertainRangeNoResultingSequence();
+        range.setResultingSequence(new DefaultResultingSequence("AAGA", "ACGA"));
+        return range;
+    }
+
 }
