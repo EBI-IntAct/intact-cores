@@ -102,11 +102,12 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
         this.entityManager.flush();
 
         // test without cache
-        Assert.assertNotNull(this.synchronizer.find(objectToTest));
         if (!identityComparison){
+            Assert.assertNotNull(this.synchronizer.find(objectToTest));
             Assert.assertNotNull(this.synchronizer.find(newObject));
         }
         else{
+            Assert.assertNull(this.synchronizer.find(objectToTest));
             Assert.assertNull(this.synchronizer.find(newObject));
         }
     }

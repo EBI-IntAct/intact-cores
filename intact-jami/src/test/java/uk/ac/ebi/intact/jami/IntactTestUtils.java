@@ -1,10 +1,7 @@
 package uk.ac.ebi.intact.jami;
 
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.model.impl.DefaultAlias;
-import psidev.psi.mi.jami.model.impl.DefaultModelledParameter;
-import psidev.psi.mi.jami.model.impl.DefaultParameter;
-import psidev.psi.mi.jami.model.impl.DefaultResultingSequence;
+import psidev.psi.mi.jami.model.impl.*;
 import psidev.psi.mi.jami.utils.*;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
@@ -259,11 +256,11 @@ public class IntactTestUtils {
 
     public static <T extends AbstractIntactRange> T createIntactRange(Class<T> rangeClass, int start, int end, ResultingSequence seq) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
-        T alias = rangeClass.getConstructor(Position.class, Position.class).newInstance(new IntactPosition(start), new IntactPosition(end));
+        T range = rangeClass.getConstructor(Position.class, Position.class).newInstance(new IntactPosition(start), new IntactPosition(end));
         if (seq != null){
-            alias.setResultingSequence(seq);
+            range.setResultingSequence(seq);
         }
-        return alias;
+        return range;
     }
 
     public static <T extends AbstractIntactRange> T createCertainRangeNoResultingSequence(Class<T> rangeClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -288,4 +285,98 @@ public class IntactTestUtils {
         return range;
     }
 
+    public static <T extends AbstractIntactFeature> T createIntactFeature(Class<T> featureClass, String type, String typeMI) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        T feature = featureClass.getConstructor(String.class, String.class).newInstance("test feature", "full test feature");
+        T feature2 = featureClass.getConstructor(String.class, String.class).newInstance("test feature 2", "full test feature 2");
+        if (type != null){
+            feature.setType(IntactUtils.createMIFeatureType(type, typeMI));
+            feature2.setType(IntactUtils.createMIFeatureType(type, typeMI));
+        }
+        feature.getLinkedFeatures().add(feature2);
+        feature.setInteractionEffect(IntactUtils.createMITopic("interaction effect",null));
+        feature.setInteractionDependency(IntactUtils.createMITopic("interaction dependency",null));
+        return feature;
+    }
+
+    public static IntactModelledFeature createFullModelledFeatureWithRanges(String type, String typeMI) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
+        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
+        if (type != null){
+            feature.setType(IntactUtils.createMIFeatureType(type, typeMI));
+            feature2.setType(IntactUtils.createMIFeatureType(type, typeMI));
+        }
+        feature.getLinkedFeatures().add(feature2);
+        feature.getRanges().add(createCertainRangeNoResultingSequence(ModelledRange.class));
+        feature.getAliases().add(createAliasSynonym(ModelledFeatureAlias.class));
+        feature.getXrefs().add(createPubmedXrefNoQualifier(ModelledFeatureXref.class));
+        feature.getAnnotations().add(createAnnotationComment(ModelledFeatureAnnotation.class));
+        feature.setInteractionEffect(IntactUtils.createMITopic("interaction effect",null));
+        feature.setInteractionDependency(IntactUtils.createMITopic("interaction dependency",null));
+        return feature;
+    }
+
+    public static IntactFeatureEvidence createFullFeatureEvidenceWithRanges(String type, String typeMI) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        IntactFeatureEvidence feature = new IntactFeatureEvidence("test feature", "full test feature");
+        IntactFeatureEvidence feature2 = new IntactFeatureEvidence("test feature 2", "full test feature 2");
+        if (type != null){
+            feature.setType(IntactUtils.createMIFeatureType(type, typeMI));
+            feature2.setType(IntactUtils.createMIFeatureType(type, typeMI));
+        }
+        feature.getLinkedFeatures().add(feature2);
+        feature.getRanges().add(createCertainRangeNoResultingSequence(ExperimentalRange.class));
+        feature.getAliases().add(createAliasSynonym(FeatureEvidenceAlias.class));
+        feature.getXrefs().add(createPubmedXrefNoQualifier(FeatureEvidenceXref.class));
+        feature.getAnnotations().add(createAnnotationComment(FeatureEvidenceAnnotation.class));
+        feature.setInteractionEffect(IntactUtils.createMITopic("interaction effect",null));
+        feature.setInteractionDependency(IntactUtils.createMITopic("interaction dependency",null));
+        return feature;
+    }
+
+    public static Feature createBasicFeature(String type, String typeMI) {
+        Feature feature = new DefaultFeature("test feature", "full test feature");
+        Feature feature2 = new DefaultFeature("test feature 2", "full test feature 2");
+        if (type != null){
+            feature.setType(CvTermUtils.createMICvTerm(type, typeMI));
+            feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
+        }
+        feature.getLinkedFeatures().add(feature2);
+        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
+        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        return feature;
+    }
+
+    public static ModelledFeature createFullModelledFeature(String type, String typeMI) {
+        ModelledFeature feature = new DefaultModelledFeature("test feature", "full test feature");
+        ModelledFeature feature2 = new DefaultModelledFeature("test feature 2", "full test feature 2");
+        if (type != null){
+            feature.setType(CvTermUtils.createMICvTerm(type, typeMI));
+            feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
+        }
+        feature.getLinkedFeatures().add(feature2);
+        feature.getRanges().add(createCertainRangeNoResultingSequence());
+        feature.getAliases().add(createAliasSynonym());
+        feature.getXrefs().add(createPubmedXrefNoQualifier());
+        feature.getAnnotations().add(createAnnotationComment());
+        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
+        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        return feature;
+    }
+
+    public static FeatureEvidence createFullFeatureEvidence(String type, String typeMI) {
+        FeatureEvidence feature = new DefaultFeatureEvidence("test feature", "full test feature");
+        FeatureEvidence feature2 = new DefaultFeatureEvidence("test feature 2", "full test feature 2");
+        if (type != null){
+            feature.setType(CvTermUtils.createMICvTerm(type, typeMI));
+            feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
+        }
+        feature.getLinkedFeatures().add(feature2);
+        feature.getLinkedFeatures().add(feature2);
+        feature.getRanges().add(createCertainRangeNoResultingSequence());
+        feature.getAliases().add(createAliasSynonym());
+        feature.getXrefs().add(createPubmedXrefNoQualifier());
+        feature.getAnnotations().add(createAnnotationComment());
+        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
+        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        return feature;
+    }
 }

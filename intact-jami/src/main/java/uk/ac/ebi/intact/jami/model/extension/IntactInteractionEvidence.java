@@ -692,6 +692,9 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         @Override
         protected void clearProperties() {
             persistentXrefs.retainAll(getXrefs());
+            if (acRef != null){
+                super.addOnly(acRef);
+            }
 
         }
     }

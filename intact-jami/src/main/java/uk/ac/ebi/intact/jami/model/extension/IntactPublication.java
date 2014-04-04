@@ -668,6 +668,9 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         protected void clearProperties() {
             clearPropertiesLinkedToIdentifiers();
             persistentXrefs.retainAll(getXrefs());
+            if (acRef != null){
+                super.addOnly(acRef);
+            }
         }
     }
 

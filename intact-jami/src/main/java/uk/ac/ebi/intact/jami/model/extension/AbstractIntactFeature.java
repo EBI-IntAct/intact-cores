@@ -567,6 +567,9 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
         protected void clearProperties() {
             clearPropertiesLinkedToIdentifiers();
             persistentXrefs.retainAll(getXrefs());
+            if (acRef != null){
+                super.addOnly(acRef);
+            }
         }
     }
 
@@ -577,19 +580,16 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
 
         @Override
         protected void processAddedObjectEvent(Xref added) {
-            processAddedIdentifierEvent(added);
             persistentXrefs.add(added);
         }
 
         @Override
         protected void processRemovedObjectEvent(Xref removed) {
-            processRemovedIdentifierEvent(removed);
             persistentXrefs.remove(removed);
         }
 
         @Override
         protected void clearProperties() {
-            clearPropertiesLinkedToIdentifiers();
             persistentXrefs.retainAll(getIdentifiers());
         }
     }

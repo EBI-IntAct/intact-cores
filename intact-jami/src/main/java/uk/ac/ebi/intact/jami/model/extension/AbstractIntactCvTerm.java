@@ -482,7 +482,9 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         protected void clearProperties() {
             clearPropertiesLinkedToIdentifiers();
             persistentXrefs.retainAll(getXrefs());
-            super.addOnly(acRef);
+            if (acRef != null){
+                super.addOnly(acRef);
+            }
         }
     }
 

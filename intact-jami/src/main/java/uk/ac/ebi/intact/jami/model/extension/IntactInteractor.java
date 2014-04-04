@@ -520,6 +520,9 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         protected void clearProperties() {
             clearPropertiesLinkedToIdentifiers();
             persistentXrefs.retainAll(getXrefs());
+            if (acRef != null){
+                super.addOnly(acRef);
+            }
         }
     }
 
