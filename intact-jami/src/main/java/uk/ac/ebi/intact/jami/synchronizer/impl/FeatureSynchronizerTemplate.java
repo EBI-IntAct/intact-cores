@@ -3,10 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import psidev.psi.mi.jami.model.Alias;
-import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.Feature;
-import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.FeatureMergerEnrichOnly;
@@ -56,12 +53,6 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         prepareType(intactFeature);
         // then check def
         prepareInteractionEffectAndDependencies(intactFeature);
-        // then check aliases
-        prepareAliases(intactFeature);
-        // then check annotations
-        prepareAnnotations(intactFeature);
-        // then check xrefs
-        prepareXrefs(intactFeature);
         // then check linkedFeatures
         prepareLinkedFeatures(intactFeature);
     }
@@ -117,51 +108,6 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
 
         if (intactFeature.getInteractionEffect() != null){
             intactFeature.setInteractionEffect(getContext().getTopicSynchronizer().synchronize(intactFeature.getInteractionEffect(), true));
-        }
-    }
-
-    protected void prepareXrefs(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
-        if (intactFeature.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getDbXrefs());
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                Xref featureXref = getContext().getFeatureEvidenceXrefSynchronizer().synchronize(xref, false);
-                // we have a different instance because needed to be synchronized
-                if (featureXref != xref){
-                    intactFeature.getDbXrefs().remove(xref);
-                    intactFeature.getDbXrefs().add(featureXref);
-                }
-            }
-        }
-    }
-
-    protected void prepareAnnotations(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
-        if (intactFeature.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
-            for (Annotation annotation : annotationsToPersist){
-                // do not persist or merge annotations because of cascades
-                Annotation featureAnnotation = getContext().getFeatureEvidenceAnnotationSynchronizer().synchronize(annotation, false);
-                // we have a different instance because needed to be synchronized
-                if (featureAnnotation != annotation){
-                    intactFeature.getAnnotations().remove(annotation);
-                    intactFeature.getAnnotations().add(featureAnnotation);
-                }
-            }
-        }
-    }
-
-    protected void prepareAliases(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
-        if (intactFeature.areAliasesInitialized()){
-            List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
-            for (Alias alias : aliasesToPersist){
-                // do not persist or merge alias because of cascades
-                Alias featureAlias = getContext().getFeatureEvidenceAliasSynchronizer().synchronize(alias, false);
-                // we have a different instance because needed to be synchronized
-                if (featureAlias != alias){
-                    intactFeature.getAliases().remove(alias);
-                    intactFeature.getAliases().add(featureAlias);
-                }
-            }
         }
     }
 

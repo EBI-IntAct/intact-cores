@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Feature;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -151,6 +152,8 @@ public class FeatureSynchronizerTemplateTest extends AbstractDbSynchronizerTest<
         Assert.assertEquals("interaction effect", persistedObject.getInteractionEffect().getShortName());
         Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionDependency()).getAc());
         Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionEffect()).getAc());
+        Assert.assertEquals(1, persistedObject.getIdentifiers().size());
+        Assert.assertNotNull(XrefUtils.collectFirstIdentifierWithDatabase(persistedObject.getIdentifiers(), null, "intact"));
 
         AbstractIntactFeature feature2 = (AbstractIntactFeature)persistedObject.getLinkedFeatures().iterator().next();
         Assert.assertNotNull(feature2.getAc());
@@ -177,6 +180,7 @@ public class FeatureSynchronizerTemplateTest extends AbstractDbSynchronizerTest<
         Assert.assertEquals("interaction effect", objectToTest.getInteractionEffect().getShortName());
         Assert.assertNotNull(((IntactCvTerm)objectToTest.getInteractionDependency()).getAc());
         Assert.assertNotNull(((IntactCvTerm)objectToTest.getInteractionEffect()).getAc());
+        Assert.assertTrue(objectToTest.getIdentifiers().isEmpty());
 
         AbstractIntactFeature feature2 = (AbstractIntactFeature)objectToTest.getLinkedFeatures().iterator().next();
         Assert.assertNotNull(feature2.getAc());

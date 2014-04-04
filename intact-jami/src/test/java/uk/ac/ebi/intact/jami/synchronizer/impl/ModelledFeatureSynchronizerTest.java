@@ -1,27 +1,16 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import junit.framework.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-import psidev.psi.mi.jami.model.Annotation;
-import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
-import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import psidev.psi.mi.jami.model.Feature;
+import psidev.psi.mi.jami.model.ModelledFeature;
+import psidev.psi.mi.jami.utils.XrefUtils;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Unit test for ModelledFeatureSynchronizerTemplate
@@ -30,229 +19,69 @@ import javax.persistence.PersistenceUnit;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
-@TransactionConfiguration
-@DirtiesContext
-public class ModelledFeatureSynchronizerTest {
+public class ModelledFeatureSynchronizerTest extends FeatureSynchronizerTemplateTest{
 
-    @PersistenceContext(unitName = "intact-core")
-    private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
-    private EntityManagerFactory intactEntityManagerFactory;
-
-    private ModelledFeatureSynchronizer synchronizer;
-    private SynchronizerContext context;
-
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_persist_all() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ModelledFeatureSynchronizer(this.context);
-
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-
-        this.synchronizer.persist(feature2);
-        Assert.assertNotNull(feature2.getAc());
-        Assert.assertNotNull(feature2.getType());
-        Assert.assertNotNull(((IntactCvTerm) feature2.getType()).getAc());
-        Assert.assertEquals("test feature 2", feature2.getShortName());
-        Assert.assertEquals("full test feature 2", feature2.getFullName());
-        Assert.assertNull(feature2.getBinds());
-        Assert.assertTrue(feature2.getDbLinkedFeatures().isEmpty());
-        this.synchronizer.persist(feature);
-        Assert.assertNotNull(feature.getAc());
-        Assert.assertNotNull(feature.getType());
-        Assert.assertNotNull(((IntactCvTerm) feature.getType()).getAc());
-        Assert.assertEquals("test feature", feature.getShortName());
-        Assert.assertEquals("full test feature", feature.getFullName());
-        Assert.assertNotNull(feature.getBinds());
-        Assert.assertTrue(feature.getBinds() == feature2);
-        Assert.assertTrue(feature.getDbLinkedFeatures().isEmpty());
-        Assert.assertEquals(1, feature.getLinkedFeatures().size());
-        Assert.assertNotNull(feature.getInteractionEffect());
-        Assert.assertNotNull(((IntactCvTerm)feature.getInteractionEffect()).getAc());
-        Assert.assertNotNull(feature.getInteractionDependency());
-        Assert.assertNotNull(((IntactCvTerm) feature.getInteractionDependency()).getAc());
-        Assert.assertEquals(2, feature.getIdentifiers().size());
-        Assert.assertEquals(1, feature.getXrefs().size());
-        Assert.assertEquals(1, feature.getAliases().size());
-        Assert.assertEquals(1, feature.getAnnotations().size());
-        Assert.assertEquals(1, feature.getRanges().size());
-        this.entityManager.flush();
+    @Override
+    protected void testDeleteOtherProperties(AbstractIntactFeature objectToTest) {
+        super.testDeleteOtherProperties(objectToTest);
+        Assert.assertNull(entityManager.find(ModelledFeatureXref.class, ((ModelledFeatureXref) objectToTest.getDbXrefs().iterator().next()).getAc()));
+        Assert.assertNull(entityManager.find(ModelledFeatureAlias.class, ((ModelledFeatureAlias) objectToTest.getAliases().iterator().next()).getAc()));
+        Assert.assertNull(entityManager.find(ModelledFeatureAnnotation.class, ((ModelledFeatureAnnotation) objectToTest.getAnnotations().iterator().next()).getAc()));
+        Assert.assertNull(entityManager.find(ModelledRange.class, ((ModelledRange) objectToTest.getRanges().iterator().next()).getAc()));
     }
 
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_deleted() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ModelledFeatureSynchronizer(this.context);
-
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-
-        this.synchronizer.persist(feature2);
-        Assert.assertNotNull(feature2.getAc());
-        this.synchronizer.persist(feature);
-        Assert.assertNotNull(feature.getAc());
-        this.entityManager.flush();
-
-        this.synchronizer.delete(feature);
-        Assert.assertNull(entityManager.find(IntactModelledFeature.class, feature.getAc()));
-        Assert.assertNotNull(entityManager.find(IntactModelledFeature.class, feature2.getAc()));
-        this.synchronizer.delete(feature2);
-        Assert.assertNull(entityManager.find(IntactModelledFeature.class, feature2.getAc()));
+    @Override
+    protected Feature createDefaultJamiObject() {
+        ModelledFeature f = IntactTestUtils.createFullModelledFeature(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI);
+        try {
+            this.synchronizer.synchronize((ModelledFeature)f.getLinkedFeatures().iterator().next(), true);
+        } catch (FinderException e) {
+            e.printStackTrace();
+        } catch (PersisterException e) {
+            e.printStackTrace();
+        } catch (SynchronizerException e) {
+            e.printStackTrace();
+        }
+        return f;
     }
 
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_find() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ModelledFeatureSynchronizer(this.context);
-
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-        this.synchronizer.persist(feature2);
-        this.synchronizer.persist(feature);
-        this.entityManager.flush();
-
-        // cache, identity map
-        Assert.assertNotNull(this.synchronizer.find(feature2));
-        Assert.assertNull(this.synchronizer.find(new IntactModelledFeature("test feature 2", "full test feature 2")));
-        Assert.assertNotNull(this.synchronizer.find(feature));
-        Assert.assertNull(this.synchronizer.find(new IntactModelledFeature("test feature", "full test feature")));
-
-        this.synchronizer.clearCache();
-        // after clearing cache, cannot find
-        Assert.assertNull(this.synchronizer.find(feature2));
-        Assert.assertNull(this.synchronizer.find(feature));
+    @Override
+    protected AbstractIntactFeature findObject(AbstractIntactFeature objectToTest) {
+        return entityManager.find(IntactModelledFeature.class, objectToTest.getAc());
     }
 
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_synchronize_properties() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
+    @Override
+    protected void initSynchronizer() {
         this.synchronizer = new ModelledFeatureSynchronizer(this.context);
-
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-
-        this.synchronizer.synchronizeProperties(feature2);
-        Assert.assertNull(feature2.getAc());
-        Assert.assertNotNull(feature2.getType());
-        Assert.assertNotNull(((IntactCvTerm)feature2.getType()).getAc());
-        Assert.assertEquals("test feature 2", feature2.getShortName());
-        Assert.assertEquals("full test feature 2", feature2.getFullName());
-        Assert.assertNull(feature2.getBinds());
-        Assert.assertTrue(feature2.getDbLinkedFeatures().isEmpty());
-        this.synchronizer.synchronizeProperties(feature);
-        Assert.assertNull(feature.getAc());
-        Assert.assertNotNull(feature.getType());
-        Assert.assertNotNull(((IntactCvTerm)feature.getType()).getAc());
-        Assert.assertEquals("test feature", feature.getShortName());
-        Assert.assertEquals("full test feature", feature.getFullName());
-        Assert.assertNotNull(feature.getBinds());
-        Assert.assertTrue(feature.getBinds() == feature2);
-        Assert.assertTrue(feature.getDbLinkedFeatures().isEmpty());
-        Assert.assertEquals(1, feature.getLinkedFeatures().size());
     }
 
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException {
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ModelledFeatureSynchronizer(this.context);
+    @Override
+    protected void testPersistedProperties(AbstractIntactFeature persistedObject) {
+        Assert.assertNotNull(persistedObject.getAc());
+        Assert.assertNotNull(persistedObject.getType());
+        Assert.assertNotNull(((IntactCvTerm)persistedObject.getType()).getAc());
+        Assert.assertEquals("test feature", persistedObject.getShortName());
+        Assert.assertEquals("full test feature", persistedObject.getFullName());
+        Assert.assertNotNull(persistedObject.getBinds());
+        Assert.assertTrue(persistedObject.getBinds() == persistedObject.getLinkedFeatures().iterator().next());
+        Assert.assertTrue(persistedObject.getDbLinkedFeatures().isEmpty());
+        Assert.assertEquals(1, persistedObject.getLinkedFeatures().size());
+        Assert.assertEquals("interaction dependency", persistedObject.getInteractionDependency().getShortName());
+        Assert.assertEquals("interaction effect", persistedObject.getInteractionEffect().getShortName());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionDependency()).getAc());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionEffect()).getAc());
+        Assert.assertEquals(1, persistedObject.getIdentifiers().size());
+        Assert.assertNotNull(XrefUtils.collectFirstIdentifierWithDatabase(persistedObject.getIdentifiers(), null, "intact"));
+        Assert.assertEquals(1, persistedObject.getXrefs().size());
+        Assert.assertNotNull(((ModelledFeatureXref)persistedObject.getXrefs().iterator().next()).getAc());
+        Assert.assertEquals(1, persistedObject.getAliases().size());
+        Assert.assertNotNull(((ModelledFeatureAlias)persistedObject.getAliases().iterator().next()).getAc());
+        Assert.assertEquals(1, persistedObject.getAnnotations().size());
+        Assert.assertNotNull(((ModelledFeatureAnnotation)persistedObject.getAnnotations().iterator().next()).getAc());
+        Assert.assertEquals(1, persistedObject.getRanges().size());
+        Assert.assertNotNull(((ModelledRange)persistedObject.getRanges().iterator().next()).getAc());
 
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-
-        this.synchronizer.synchronize(feature2, false);
-        Assert.assertNull(feature2.getAc());
-        Assert.assertNotNull(feature2.getType());
-        Assert.assertNotNull(((IntactCvTerm)feature2.getType()).getAc());
-        Assert.assertEquals("test feature 2", feature2.getShortName());
-        Assert.assertEquals("full test feature 2", feature2.getFullName());
-        Assert.assertNull(feature2.getBinds());
-        Assert.assertTrue(feature2.getDbLinkedFeatures().isEmpty());
-        this.synchronizer.synchronize(feature, false);
-        Assert.assertNull(feature.getAc());
-        Assert.assertNotNull(feature.getType());
-        Assert.assertNotNull(((IntactCvTerm)feature.getType()).getAc());
-        Assert.assertEquals("test feature", feature.getShortName());
-        Assert.assertEquals("full test feature", feature.getFullName());
-        Assert.assertNotNull(feature.getBinds());
-        Assert.assertTrue(feature.getBinds() == feature2);
-        Assert.assertTrue(feature.getDbLinkedFeatures().isEmpty());
-        Assert.assertEquals(1, feature.getLinkedFeatures().size());
-    }
-
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_synchronize_persist() throws PersisterException, FinderException, SynchronizerException {
-
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ModelledFeatureSynchronizer(this.context);
-
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-
-        this.synchronizer.synchronize(feature2, true);
+        AbstractIntactFeature feature2 = (AbstractIntactFeature)persistedObject.getLinkedFeatures().iterator().next();
         Assert.assertNotNull(feature2.getAc());
         Assert.assertNotNull(feature2.getType());
         Assert.assertNotNull(((IntactCvTerm)feature2.getType()).getAc());
@@ -260,142 +89,55 @@ public class ModelledFeatureSynchronizerTest {
         Assert.assertEquals("full test feature 2", feature2.getFullName());
         Assert.assertNull(feature2.getBinds());
         Assert.assertTrue(feature2.getDbLinkedFeatures().isEmpty());
-        this.synchronizer.synchronize(feature, true);
-        Assert.assertNotNull(feature.getAc());
-        Assert.assertNotNull(feature.getType());
-        Assert.assertNotNull(((IntactCvTerm)feature.getType()).getAc());
-        Assert.assertEquals("test feature", feature.getShortName());
-        Assert.assertEquals("full test feature", feature.getFullName());
-        Assert.assertNotNull(feature.getBinds());
-        Assert.assertTrue(feature.getBinds() == feature2);
-        Assert.assertTrue(feature.getDbLinkedFeatures().isEmpty());
-        Assert.assertEquals(1, feature.getLinkedFeatures().size());
     }
 
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_synchronize_merge() throws PersisterException, FinderException, SynchronizerException {
+    @Override
+    protected void testNonPersistedProperties(AbstractIntactFeature persistedObject) {
+        Assert.assertNull(persistedObject.getAc());
+        Assert.assertNotNull(persistedObject.getType());
+        Assert.assertNotNull(((IntactCvTerm)persistedObject.getType()).getAc());
+        Assert.assertEquals("test feature", persistedObject.getShortName());
+        Assert.assertEquals("full test feature", persistedObject.getFullName());
+        Assert.assertNotNull(persistedObject.getBinds());
+        Assert.assertTrue(persistedObject.getBinds() == persistedObject.getLinkedFeatures().iterator().next());
+        Assert.assertTrue(persistedObject.getDbLinkedFeatures().isEmpty());
+        Assert.assertEquals(1, persistedObject.getLinkedFeatures().size());
+        Assert.assertEquals("interaction dependency", persistedObject.getInteractionDependency().getShortName());
+        Assert.assertEquals("interaction effect", persistedObject.getInteractionEffect().getShortName());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionDependency()).getAc());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionEffect()).getAc());
+        Assert.assertEquals(0, persistedObject.getIdentifiers().size());
+        Assert.assertEquals(1, persistedObject.getXrefs().size());
+        Assert.assertNull(((ModelledFeatureXref)persistedObject.getXrefs().iterator().next()).getAc());
+        Assert.assertEquals(1, persistedObject.getAliases().size());
+        Assert.assertNull(((ModelledFeatureAlias)persistedObject.getAliases().iterator().next()).getAc());
+        Assert.assertEquals(1, persistedObject.getAnnotations().size());
+        Assert.assertNull(((ModelledFeatureAnnotation)persistedObject.getAnnotations().iterator().next()).getAc());
+        Assert.assertEquals(1, persistedObject.getRanges().size());
+        Assert.assertNull(((ModelledRange)persistedObject.getRanges().iterator().next()).getAc());
 
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ModelledFeatureSynchronizer(this.context);
-
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-
-        this.synchronizer.synchronize(feature2, true);
+        AbstractIntactFeature feature2 = (AbstractIntactFeature)persistedObject.getLinkedFeatures().iterator().next();
         Assert.assertNotNull(feature2.getAc());
-        this.synchronizer.synchronize(feature, true);
-        Assert.assertNotNull(feature.getAc());
-
-        this.entityManager.flush();
-        this.entityManager.detach(feature2);
-        this.entityManager.detach(feature);
-        this.synchronizer.clearCache();
-
-        feature.setShortName("test");
-        feature2.setShortName("test2");
-
-        IntactModelledFeature newFeature2 = (IntactModelledFeature)this.synchronizer.synchronize(feature2, true);
-        Assert.assertNotNull(newFeature2.getAc());
-        Assert.assertEquals("test2", newFeature2.getShortName());
-        Assert.assertEquals(feature2.getAc(), newFeature2.getAc());
-        IntactModelledFeature newFeature = (IntactModelledFeature)this.synchronizer.synchronize(feature, true);
-        Assert.assertNotNull(newFeature.getAc());
-        Assert.assertEquals("test", newFeature.getShortName());
-        Assert.assertEquals(feature.getAc(), newFeature.getAc());
-
+        Assert.assertNotNull(feature2.getType());
+        Assert.assertNotNull(((IntactCvTerm)feature2.getType()).getAc());
+        Assert.assertEquals("test feature 2", feature2.getShortName());
+        Assert.assertEquals("full test feature 2", feature2.getFullName());
+        Assert.assertNull(feature2.getBinds());
+        Assert.assertTrue(feature2.getDbLinkedFeatures().isEmpty());
     }
 
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_synchronize_merge2() throws PersisterException, FinderException, SynchronizerException {
-
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ModelledFeatureSynchronizer(this.context);
-
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-
-        this.synchronizer.synchronize(feature2, true);
-        Assert.assertNotNull(feature2.getAc());
-        this.synchronizer.synchronize(feature, true);
-        Assert.assertNotNull(feature.getAc());
-
-        this.entityManager.flush();
-        this.entityManager.detach(feature2);
-        this.entityManager.detach(feature);
-        this.synchronizer.clearCache();
-
-        IntactModelledFeature f = entityManager.find(IntactModelledFeature.class, feature.getAc());
-        f.setShortName("test");
-        this.entityManager.detach(f);
-        IntactModelledFeature f2 = entityManager.find(IntactModelledFeature.class, feature2.getAc());
-        f2.setShortName("test2");
-
-        IntactModelledFeature newFeature2 = this.synchronizer.synchronize(f2, true);
-        Assert.assertNotNull(newFeature2.getAc());
-        Assert.assertEquals("test2", newFeature2.getShortName());
-        Assert.assertEquals(feature2.getAc(), newFeature2.getAc());
-        IntactModelledFeature newFeature = this.synchronizer.synchronize(f, true);
-        Assert.assertNotNull(newFeature.getAc());
-        Assert.assertEquals("test", newFeature.getShortName());
-        Assert.assertEquals(feature.getAc(), newFeature.getAc());
-    }
-
-    @Transactional
-    @Test
-    @DirtiesContext
-    public void test_synchronize_jami() throws PersisterException, FinderException, SynchronizerException {
-
-        this.context = new DefaultSynchronizerContext(this.entityManager);
-        this.synchronizer = new ModelledFeatureSynchronizer(this.context);
-
-        IntactModelledFeature feature = new IntactModelledFeature("test feature", "full test feature");
-        IntactModelledFeature feature2 = new IntactModelledFeature("test feature 2", "full test feature 2");
-        feature.getLinkedFeatures().add(feature2);
-        feature.setInterpro("IP-xxxx");
-        feature.getXrefs().add(new ModelledFeatureXref(IntactUtils.createMIDatabase(Xref.ISOFORM_PARENT, Xref.ISOFORM_PARENT_MI), "EBI-xxx"));
-        feature.getAliases().add(new ModelledFeatureAlias("test synonym"));
-        feature.getAnnotations().add(new ModelledFeatureAnnotation(IntactUtils.createMITopic(Annotation.COMMENT, Annotation.COMMENT_MI), "test annotation"));
-        feature.getRanges().add(new ModelledRange(new IntactPosition(1), new IntactPosition(2)));
-        feature.setInteractionDependency(IntactUtils.createMITopic("test dependency", null));
-        feature.setInteractionEffect(IntactUtils.createMITopic("test effect", null));
-
-        IntactModelledFeature newFeature2 = this.synchronizer.synchronize(feature2, true);
-        Assert.assertNotNull(newFeature2.getAc());
-        Assert.assertNotNull(newFeature2.getType());
-        Assert.assertNotNull(((IntactCvTerm)newFeature2.getType()).getAc());
-        Assert.assertEquals("test feature 2", newFeature2.getShortName());
-        Assert.assertEquals("full test feature 2", newFeature2.getFullName());
-        Assert.assertNull(newFeature2.getBinds());
-        Assert.assertTrue(newFeature2.getDbLinkedFeatures().isEmpty());
-        IntactModelledFeature newFeature = this.synchronizer.synchronize(feature, true);
-        Assert.assertNotNull(newFeature.getAc());
-        Assert.assertNotNull(newFeature.getType());
-        Assert.assertNotNull(((IntactCvTerm)newFeature.getType()).getAc());
-        Assert.assertEquals("test feature", newFeature.getShortName());
-        Assert.assertEquals("full test feature", newFeature.getFullName());
-        Assert.assertNotNull(newFeature.getBinds());
-        Assert.assertTrue(newFeature.getBinds() == newFeature2);
-        Assert.assertTrue(newFeature.getDbLinkedFeatures().isEmpty());
-        Assert.assertEquals(1, newFeature.getLinkedFeatures().size());
+    @Override
+    protected AbstractIntactFeature createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        AbstractIntactFeature f= IntactTestUtils.createFullModelledFeatureWithRanges(Feature.BIOLOGICAL_FEATURE, Feature.BIOLOGICAL_FEATURE_MI);
+        try {
+            this.synchronizer.persist((AbstractIntactFeature)f.getLinkedFeatures().iterator().next());
+        } catch (FinderException e) {
+            e.printStackTrace();
+        } catch (PersisterException e) {
+            e.printStackTrace();
+        } catch (SynchronizerException e) {
+            e.printStackTrace();
+        }
+        return f;
     }
 }

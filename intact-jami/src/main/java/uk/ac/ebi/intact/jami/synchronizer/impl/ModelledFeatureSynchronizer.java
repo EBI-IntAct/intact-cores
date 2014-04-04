@@ -4,7 +4,6 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.RangeUtils;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
-import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledFeature;
 import uk.ac.ebi.intact.jami.model.extension.ModelledResultingSequence;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
@@ -88,7 +87,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
         }
     }
 
-    protected void prepareXrefs(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(IntactModelledFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getDbXrefs());
             for (Xref xref : xrefsToPersist){
@@ -103,7 +102,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
         }
     }
 
-    protected void prepareAnnotations(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(IntactModelledFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
@@ -118,7 +117,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
         }
     }
 
-    protected void prepareAliases(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(IntactModelledFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
             for (Alias alias : aliasesToPersist){
