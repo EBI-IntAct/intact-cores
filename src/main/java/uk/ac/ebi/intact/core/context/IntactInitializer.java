@@ -232,7 +232,6 @@ public class IntactInitializer implements ApplicationContextAware{
             addUsedInClass(onhold, usedInClass, Publication.class.getName() + "," + Experiment.class.getName());
 
             CvTopic correctionComment = createCvIfMissing(CvTopic.class, null, CvTopic.CORRECTION_COMMENT, null);
-            markAsHidden(correctionComment, hidden);
             addUsedInClass(correctionComment, usedInClass, Experiment.class.getName());
 
             // Creating publication status
