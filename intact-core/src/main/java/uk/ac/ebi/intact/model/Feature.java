@@ -6,13 +6,10 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import uk.ac.ebi.intact.core.util.HashCodeUtils;
-import uk.ac.ebi.intact.model.util.ComplexUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -74,7 +71,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     /**
      * The category property has been created for compatibility with intact-jami
      */
-    private String category;
+    //private String category;
 
 
     //---------------------------- constructors -----------------------------------
@@ -120,7 +117,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         this( shortLabel, component, type );
     }
 
-    @PrePersist
+    /*@PrePersist
     @PreUpdate
     protected void correctCategory() {
         if (this.component != null){
@@ -144,7 +141,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         else if (this.category == null){
             this.category = "evidence";
         }
-    }
+    }*/
 
     //----------------------- public methods ------------------------------
 
@@ -405,7 +402,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         this.component = component;
     }
 
-    @Column(name = "category", nullable = false)
+    /*@Column(name = "category", nullable = false)
     @NotNull
     private String getCategory() {
         return category;
@@ -413,7 +410,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
 
     private void setCategory(String category) {
         this.category = category;
-    }
+    } */
 }
 
 

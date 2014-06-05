@@ -12,7 +12,6 @@ import org.hibernate.annotations.DiscriminatorFormula;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -65,7 +64,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
     /**
      * The category property has been created for compatibility with intact-jami
      */
-    private String category;
+    //private String category;
 
 
     /**
@@ -122,7 +121,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         if (CvObjectUtils.isProteinType(interactorType)
                 || CvObjectUtils.isPeptideType(interactorType)) {
             setObjClass(ProteinImpl.class.getName());
-            setCategory("protein");
+            //setCategory("protein");
         } else if (CvObjectUtils.isInteractionType(interactorType)) {
             setObjClass(InteractionImpl.class.getName());
 
@@ -136,43 +135,43 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
                     }
                 }
 
-                if (hasCuratedComplex){
+                /*if (hasCuratedComplex){
                     setCategory("complex");
                 }
                 else{
                     setCategory("interaction_evidence");
-                }
+                }*/
             }
             // we consider that we have an interaction evidence if the category is not set
-            else if (this.category == null){
+            /*else if (this.category == null){
                 setCategory("interaction_evidence");
-            }
+            }*/
 
         } else if (CvObjectUtils.isSmallMoleculeType(interactorType)
                 || CvObjectUtils.isPolysaccharideType(interactorType)) {
             setObjClass(SmallMoleculeImpl.class.getName());
-            setCategory("bioactive_entity");
+            //setCategory("bioactive_entity");
         } else if (CvObjectUtils.isNucleicAcidType(interactorType)) {
             setObjClass(NucleicAcidImpl.class.getName());
-            setCategory("nucleic_acid");
+            //setCategory("nucleic_acid");
         } else if (CvObjectUtils.isGeneType(interactorType)) {
             setObjClass(InteractorImpl.class.getName());
-            setCategory("gene");
+            //setCategory("gene");
         } else if (CvObjectUtils.isComplexType(interactorType)) {
             // only set the type to interactorImpl if it is not set and/or is not interactionImpl
             if (this.objClass == null || !this.objClass.equals(InteractionImpl.class.getName())){
                 setObjClass(InteractorImpl.class.getName());
             }
-            setCategory("complex");
+            //setCategory("complex");
         }else if (CvObjectUtils.isMoleculeSetType(interactorType)) {
             setObjClass(InteractorImpl.class.getName());
-            setCategory("interactor_pool");
+            //setCategory("interactor_pool");
         }else if (this instanceof Polymer) {
             setObjClass(PolymerImpl.class.getName());
-            setCategory("polymer");
+            //setCategory("polymer");
         } else {
             setObjClass(InteractorImpl.class.getName());
-            setCategory("interactor");
+            //setCategory("interactor");
         }
     }
 
@@ -362,7 +361,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         return result;
     }
 
-    @Column(name = "category", nullable = false)
+    /*@Column(name = "category", nullable = false)
     @NotNull
     private String getCategory() {
         return category;
@@ -370,7 +369,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
 
     private void setCategory(String category) {
         this.category = category;
-    }
+    }*/
 } // end Interactor
 
 
