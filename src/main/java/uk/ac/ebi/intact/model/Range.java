@@ -7,13 +7,10 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
-import uk.ac.ebi.intact.model.util.ComplexUtils;
 import uk.ac.ebi.intact.model.util.FeatureUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 /**
  * <p/>
@@ -133,7 +130,7 @@ public class Range extends BasicObjectImpl {
     /**
      * The category property has been created for compatibility with intact-jami
      */
-    private String category;
+    //private String category;
 
     /**
      * Sets the bean's from range
@@ -320,7 +317,7 @@ public class Range extends BasicObjectImpl {
 
     //------------------------- public methods --------------------------------------
 
-    @PrePersist
+    /*@PrePersist
     @PreUpdate
     protected void correctCategory() {
         if (this.feature != null){
@@ -349,7 +346,7 @@ public class Range extends BasicObjectImpl {
         else if (this.category == null){
             this.category = "evidence";
         }
-    }
+    }*/
 
     private void setRangePositions(int fromStart, int fromEnd, int toStart, int toEnd, String seq ){
         if (fromStart < 0){
@@ -1136,7 +1133,7 @@ public boolean isUndetermined() {
         this.downStreamSequence = downStreamSequence;
     }
 
-    @Column(name = "category", nullable = false)
+    /*@Column(name = "category", nullable = false)
     @NotNull
     private String getCategory() {
         return category;
@@ -1144,7 +1141,7 @@ public boolean isUndetermined() {
 
     private void setCategory(String category) {
         this.category = category;
-    }
+    } */
 }
 
 

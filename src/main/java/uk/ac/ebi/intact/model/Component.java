@@ -8,14 +8,11 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import uk.ac.ebi.intact.core.util.HashCodeUtils;
-import uk.ac.ebi.intact.model.util.ComplexUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -111,7 +108,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     /**
      * The category property has been created for compatibility with intact-jami
      */
-    private String category;
+    //private String category;
 
     ///////////////////////
     // Constructor
@@ -193,7 +190,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         this(shortLabel, interaction, interactor, experimentalRole, biologicalRole);
     }
 
-    @PrePersist
+    /*@PrePersist
     @PreUpdate
     protected void correctCategory() {
         if (this.interaction != null){
@@ -220,7 +217,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         else if (this.category == null){
             this.category = "participant_evidence";
         }
-    }
+    }*/
 
     ///////////////////////////////////////
     // getters and setters
@@ -892,7 +889,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         return copy;
     }
 
-    @Column(name = "category", nullable = false)
+    /*@Column(name = "category", nullable = false)
     @NotNull
     private String getCategory() {
         return category;
@@ -900,5 +897,5 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
 
     private void setCategory(String category) {
         this.category = category;
-    }
+    }*/
 }
