@@ -1,10 +1,15 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Organism;
+import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
+import uk.ac.ebi.intact.jami.IntactTestUtils;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
+import uk.ac.ebi.intact.jami.model.extension.OrganismAlias;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -86,125 +91,85 @@ public class OrganismSynchronizerTest extends AbstractDbSynchronizerTest<Organis
 
     @Override
     protected void testDeleteOtherProperties(IntactOrganism objectToTest) {
-
+        Assert.assertNull(entityManager.find(IntactOrganism.class, ((OrganismAlias)objectToTest.getAliases().iterator().next()).getAc()));
+        Assert.assertNotNull(entityManager.find(IntactCvTerm.class, ((IntactCvTerm)objectToTest.getCellType()).getAc()));
+        Assert.assertNotNull(entityManager.find(IntactCvTerm.class, ((IntactCvTerm)objectToTest.getTissue()).getAc()));
     }
 
     @Override
     protected Organism createDefaultJamiObject() {
-        return null;
+        return IntactTestUtils.createOrganism();
     }
 
     @Override
-    protected void testUpdatedPropertiesAfterMerge(IntactOrganism objectToTest, IntactOrganism newObjToTest) {
-
-    }
-
-    @Override
-    protected void updatePropertieDetachedInstance(IntactOrganism objectToTest) {
-
-    }
-
-    @Override
-    protected IntactOrganism findObject(IntactOrganism objectToTest) {
-        return null;
-    }
-
-    @Override
-    protected void initSynchronizer() {
-
-    }
-
-    @Override
-    protected void testPersistedProperties(IntactOrganism persistedObject) {
-
-    }
-
-    @Override
-    protected void testNonPersistedProperties(IntactOrganism objectToTest) {
-
-    }
-
-    @Override
-    protected IntactOrganism createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return null;
-    }
-
-    /*@Override
-    protected void testDeleteOtherProperties(IntactOrganism objectToTest) {
-        Assert.assertNull(entityManager.find(Preference.class, objectToTest.getPreferences().iterator().next().getAc()));
-        Assert.assertNotNull(entityManager.find(Role.class, objectToTest.getRoles().iterator().next().getAc()));
-    }
-
-    @Override
-    protected Organism createDefaultJamiObject() {
-        return null;
-    }
-
-    @Override
-    protected void testUpdatedPropertiesAfterMerge(IntactOrganism objectToTest, IntactOrganism newObjToTest) {
-        Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
-        Assert.assertEquals(2, newObjToTest.getRoles().size());
-        Iterator<Role> roleIterator = newObjToTest.getRoles().iterator();
-        Role role2 = roleIterator.next();
-        Assert.assertNotNull(role2.getAc());
-        Assert.assertNotNull(roleIterator.next().getAc());
-        Assert.assertEquals(2, newObjToTest.getPreferences().size());
-        Iterator<Preference> preferenceIterator = newObjToTest.getPreferences().iterator();
-        Preference pref2 = preferenceIterator.next();
-        Assert.assertNotNull(pref2.getAc());
-        Assert.assertNotNull(preferenceIterator.next().getAc());
-        Assert.assertEquals("lastName2", newObjToTest.getLastName());
+    protected void testUpdatedPropertiesAfterMerge(IntactOrganism objectToTest, IntactOrganism persistedObject) {
+        Assert.assertEquals(objectToTest.getAc(), persistedObject.getAc());
+        Assert.assertEquals("new name", persistedObject.getCommonName());
+        Assert.assertEquals("Homo Sapiens", persistedObject.getScientificName());
+        Assert.assertEquals(9606, persistedObject.getTaxId());
+        Assert.assertEquals(1, persistedObject.getAliases().size());
+        Assert.assertNotNull(((OrganismAlias) persistedObject.getAliases().iterator().next()).getAc());
+        Assert.assertNotNull(persistedObject.getCellType());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getCellType()).getAc());
+        Assert.assertEquals("new cell type", persistedObject.getCellType().getShortName());
+        Assert.assertNotNull(persistedObject.getTissue());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getTissue()).getAc());
+        Assert.assertEquals("test tissue", persistedObject.getTissue().getShortName());
+        Assert.assertNull(persistedObject.getCompartment());
     }
 
     @Override
     protected void updatePropertieDetachedInstance(IntactOrganism objectToTest) {
-        objectToTest.setLastName("lastName2");
-        objectToTest.getRoles().add(new Role("REVIEWER"));
-        objectToTest.getPreferences().add(new Preference("key2", "value2"));
+        objectToTest.setCommonName("new name");
+        objectToTest.setCellType(new DefaultCvTerm("new cell type"));
     }
 
     @Override
     protected IntactOrganism findObject(IntactOrganism objectToTest) {
-        return entityManager.find(User.class, objectToTest.getAc());
+        return entityManager.find(IntactOrganism.class, objectToTest.getAc());
     }
 
     @Override
     protected void initSynchronizer() {
-        this.synchronizer = new UserSynchronizer(this.context);
+        this.synchronizer = new OrganismSynchronizer(this.context);
     }
 
     @Override
     protected void testPersistedProperties(IntactOrganism persistedObject) {
         Assert.assertNotNull(persistedObject.getAc());
-        Assert.assertEquals("default", persistedObject.getLogin());
-        Assert.assertEquals("firstName", persistedObject.getFirstName());
-        Assert.assertEquals("lastName", persistedObject.getLastName());
-        Assert.assertEquals("name@ebi.ac.uk", persistedObject.getEmail());
-        Assert.assertEquals(1, persistedObject.getRoles().size());
-        Role role = persistedObject.getRoles().iterator().next();
-        Assert.assertNotNull(role.getAc());
-        Assert.assertEquals(1, persistedObject.getPreferences().size());
-        Preference pref = persistedObject.getPreferences().iterator().next();
-        Assert.assertNotNull(pref.getAc());
+        Assert.assertEquals("human", persistedObject.getCommonName());
+        Assert.assertEquals("Homo Sapiens", persistedObject.getScientificName());
+        Assert.assertEquals(9606, persistedObject.getTaxId());
+        Assert.assertEquals(1, persistedObject.getAliases().size());
+        Assert.assertNotNull(((OrganismAlias) persistedObject.getAliases().iterator().next()).getAc());
+        Assert.assertNotNull(persistedObject.getCellType());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getCellType()).getAc());
+        Assert.assertEquals("293t", persistedObject.getCellType().getShortName());
+        Assert.assertNotNull(persistedObject.getTissue());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getTissue()).getAc());
+        Assert.assertEquals("test tissue", persistedObject.getTissue().getShortName());
+        Assert.assertNull(persistedObject.getCompartment());
     }
 
     @Override
     protected void testNonPersistedProperties(IntactOrganism persistedObject) {
         Assert.assertNull(persistedObject.getAc());
-        Assert.assertEquals("default", persistedObject.getLogin());
-        Assert.assertEquals("firstName", persistedObject.getFirstName());
-        Assert.assertEquals("lastName", persistedObject.getLastName());
-        Assert.assertEquals("name@ebi.ac.uk", persistedObject.getEmail());
-        Assert.assertEquals(1, persistedObject.getRoles().size());
-        Role role = persistedObject.getRoles().iterator().next();
-        Assert.assertNotNull(role.getAc());
-        Assert.assertEquals(1, persistedObject.getPreferences().size());
-        Preference pref = persistedObject.getPreferences().iterator().next();
-        Assert.assertNull(pref.getAc());
+        Assert.assertEquals("human", persistedObject.getCommonName());
+        Assert.assertEquals("Homo Sapiens", persistedObject.getScientificName());
+        Assert.assertEquals(9606, persistedObject.getTaxId());
+        Assert.assertEquals(1, persistedObject.getAliases().size());
+        Assert.assertNull(((OrganismAlias) persistedObject.getAliases().iterator().next()).getAc());
+        Assert.assertNotNull(persistedObject.getCellType());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getCellType()).getAc());
+        Assert.assertEquals("293t", persistedObject.getCellType().getShortName());
+        Assert.assertNotNull(persistedObject.getTissue());
+        Assert.assertNotNull(((IntactCvTerm)persistedObject.getTissue()).getAc());
+        Assert.assertEquals("test tissue", persistedObject.getTissue().getShortName());
+        Assert.assertNull(persistedObject.getCompartment());
     }
 
     @Override
     protected IntactOrganism createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return IntactTestUtils.createCuratorUser();
-    }*/
+        return IntactTestUtils.createIntactOrganismWithCellAndTissue();
+    }
 }

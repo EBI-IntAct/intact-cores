@@ -410,7 +410,7 @@ public class IntactTestUtils {
         organism.getAliases().add(createAliasSynonym(OrganismAlias.class));
 
         organism.setCellType(IntactUtils.createCellType("293t"));
-        organism.setTissue(IntactUtils.createCellType("test tissue"));
+        organism.setTissue(IntactUtils.createTissue("test tissue"));
 
         return organism;
     }
@@ -424,7 +424,7 @@ public class IntactTestUtils {
         return organism;
     }
 
-    public static Organism createOrganism() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static Organism createOrganism() {
         Organism organism = new DefaultOrganism(9606);
         organism.setCommonName("human");
         organism.setScientificName("Homo Sapiens");

@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.clone.OrganismCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -227,13 +228,13 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 name = originalName.substring(0, originalName.length() - 1);
             }
             // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select o.shortName from IntactOrganism o " +
-                    "where o.commonName = :name or o.commonName like :nameWithSuffix"
+            Query query = getEntityManager().createQuery("select o.commonName from IntactOrganism o " +
+                    "where (o.commonName = :name or o.commonName like :nameWithSuffix) "
                     + (intactOrganism.getAc() != null ? "and o.ac <> :organismAc" : ""));
             query.setParameter("name", name);
             query.setParameter("nameWithSuffix", name+"-%");
             if (intactOrganism.getAc() != null){
-                query.setParameter("interactorAc", intactOrganism.getAc());
+                query.setParameter("organismAc", intactOrganism.getAc());
             }
             existingOrganism = query.getResultList();
             String nameInSync = IntactUtils.synchronizeShortlabel(name, existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN, false);
@@ -249,7 +250,9 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
 
     @Override
     protected IntactOrganism instantiateNewPersistentInstance(Organism object, Class<? extends IntactOrganism> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return intactClass.getConstructor(Integer.class).newInstance(object.getTaxId());
+        IntactOrganism o = intactClass.getConstructor(Integer.TYPE).newInstance(object.getTaxId());
+        OrganismCloner.copyAndOverrideOrganismProperties(object, o);
+        return o;
     }
 
     @Override
