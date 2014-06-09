@@ -167,7 +167,7 @@ public class IntactTestUtils {
     }
 
     public static <T extends AbstractIntactParameter> T createIntactParameter(Class<T> parameterClass, String typeName, String typeMI,
-                                                                    int factor, String unitName, String unitMI)
+                                                                              int factor, String unitName, String unitMI)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
         T param = parameterClass.getConstructor(CvTerm.class, ParameterValue.class).newInstance(
@@ -293,8 +293,7 @@ public class IntactTestUtils {
             feature2.setType(IntactUtils.createMIFeatureType(type, typeMI));
         }
         feature.getLinkedFeatures().add(feature2);
-        feature.setInteractionEffect(IntactUtils.createMITopic("interaction effect",null));
-        feature.setInteractionDependency(IntactUtils.createMITopic("interaction dependency",null));
+        feature.setRole(IntactUtils.createMITopic("interaction effect", null));
         return feature;
     }
 
@@ -310,8 +309,7 @@ public class IntactTestUtils {
         feature.getAliases().add(createAliasSynonym(ModelledFeatureAlias.class));
         feature.getXrefs().add(createPubmedXrefNoQualifier(ModelledFeatureXref.class));
         feature.getAnnotations().add(createAnnotationComment(ModelledFeatureAnnotation.class));
-        feature.setInteractionEffect(IntactUtils.createMITopic("interaction effect",null));
-        feature.setInteractionDependency(IntactUtils.createMITopic("interaction dependency",null));
+        feature.setRole(IntactUtils.createMITopic("interaction effect", null));
         return feature;
     }
 
@@ -327,8 +325,7 @@ public class IntactTestUtils {
         feature.getAliases().add(createAliasSynonym(FeatureEvidenceAlias.class));
         feature.getXrefs().add(createPubmedXrefNoQualifier(FeatureEvidenceXref.class));
         feature.getAnnotations().add(createAnnotationComment(FeatureEvidenceAnnotation.class));
-        feature.setInteractionEffect(IntactUtils.createMITopic("interaction effect",null));
-        feature.setInteractionDependency(IntactUtils.createMITopic("interaction dependency",null));
+        feature.setRole(IntactUtils.createMITopic("interaction effect", null));
         feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection", null));
         feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection 2", null));
         return feature;
@@ -342,8 +339,7 @@ public class IntactTestUtils {
             feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
         }
         feature.getLinkedFeatures().add(feature2);
-        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
-        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        feature.setRole(CvTermUtils.createMICvTerm("interaction effect",null));
         return feature;
     }
 
@@ -355,8 +351,7 @@ public class IntactTestUtils {
             feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
         }
         feature.getLinkedFeatures().add(feature2);
-        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
-        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        feature.setRole(CvTermUtils.createMICvTerm("interaction effect",null));
         return feature;
     }
 
@@ -368,8 +363,7 @@ public class IntactTestUtils {
             feature2.setType(CvTermUtils.createMICvTerm(type, typeMI));
         }
         feature.getLinkedFeatures().add(feature2);
-        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
-        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        feature.setRole(CvTermUtils.createMICvTerm("interaction effect",null));
         feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection", null));
         feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection 2", null));
         return feature;
@@ -387,8 +381,7 @@ public class IntactTestUtils {
         feature.getAliases().add(createAliasSynonym());
         feature.getXrefs().add(createPubmedXrefNoQualifier());
         feature.getAnnotations().add(createAnnotationComment());
-        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
-        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        feature.setRole(CvTermUtils.createMICvTerm("interaction effect",null));
         return feature;
     }
 
@@ -404,10 +397,42 @@ public class IntactTestUtils {
         feature.getAliases().add(createAliasSynonym());
         feature.getXrefs().add(createPubmedXrefNoQualifier());
         feature.getAnnotations().add(createAnnotationComment());
-        feature.setInteractionEffect(CvTermUtils.createMICvTerm("interaction effect",null));
-        feature.setInteractionDependency(CvTermUtils.createMICvTerm("interaction dependency",null));
+        feature.setRole(CvTermUtils.createMICvTerm("interaction effect",null));
         feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection", null));
         feature.getDetectionMethods().add(IntactUtils.createMIFeatureDetectionMethod("feature detection 2", null));
         return feature;
+    }
+
+    public static IntactOrganism createIntactOrganismWithCellAndTissue() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactOrganism organism = new IntactOrganism(9606);
+        organism.setCommonName("human");
+        organism.setScientificName("Homo Sapiens");
+        organism.getAliases().add(createAliasSynonym(OrganismAlias.class));
+
+        organism.setCellType(IntactUtils.createCellType("293t"));
+        organism.setTissue(IntactUtils.createCellType("test tissue"));
+
+        return organism;
+    }
+
+    public static IntactOrganism createIntactOrganism() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactOrganism organism = new IntactOrganism(9606);
+        organism.setCommonName("human");
+        organism.setScientificName("Homo Sapiens");
+        organism.getAliases().add(createAliasSynonym(OrganismAlias.class));
+
+        return organism;
+    }
+
+    public static Organism createOrganism() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Organism organism = new DefaultOrganism(9606);
+        organism.setCommonName("human");
+        organism.setScientificName("Homo Sapiens");
+        organism.getAliases().add(createAliasSynonym());
+
+        organism.setCellType(new DefaultCvTerm("293t"));
+        organism.setTissue(new DefaultCvTerm("test tissue"));
+
+        return organism;
     }
 }

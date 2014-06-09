@@ -65,10 +65,8 @@ public class FeatureEvidenceSynchronizerTest extends FeatureSynchronizerTemplate
         Assert.assertTrue(persistedObject.getBinds() == persistedObject.getLinkedFeatures().iterator().next());
         Assert.assertTrue(persistedObject.getDbLinkedFeatures().isEmpty());
         Assert.assertEquals(1, persistedObject.getLinkedFeatures().size());
-        Assert.assertEquals("interaction dependency", persistedObject.getInteractionDependency().getShortName());
-        Assert.assertEquals("interaction effect", persistedObject.getInteractionEffect().getShortName());
-        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionDependency()).getAc());
-        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionEffect()).getAc());
+        Assert.assertEquals("interaction effect", persistedObject.getRole().getShortName());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getRole()).getAc());
         Assert.assertEquals(1, persistedObject.getIdentifiers().size());
         Assert.assertNotNull(XrefUtils.collectFirstIdentifierWithDatabase(persistedObject.getIdentifiers(), null, "intact"));
         Assert.assertEquals(1, persistedObject.getXrefs().size());
@@ -107,10 +105,8 @@ public class FeatureEvidenceSynchronizerTest extends FeatureSynchronizerTemplate
         Assert.assertTrue(persistedObject.getBinds() == persistedObject.getLinkedFeatures().iterator().next());
         Assert.assertTrue(persistedObject.getDbLinkedFeatures().isEmpty());
         Assert.assertEquals(1, persistedObject.getLinkedFeatures().size());
-        Assert.assertEquals("interaction dependency", persistedObject.getInteractionDependency().getShortName());
-        Assert.assertEquals("interaction effect", persistedObject.getInteractionEffect().getShortName());
-        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionDependency()).getAc());
-        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionEffect()).getAc());
+        Assert.assertEquals("interaction effect", persistedObject.getRole().getShortName());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getRole()).getAc());
         Assert.assertEquals(0, persistedObject.getIdentifiers().size());
         Assert.assertEquals(1, persistedObject.getXrefs().size());
         Assert.assertNull(((FeatureEvidenceXref)persistedObject.getXrefs().iterator().next()).getAc());

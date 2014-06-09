@@ -117,13 +117,13 @@ public class FeatureSynchronizerTemplateTest extends AbstractDbSynchronizerTest<
     @Override
     protected void testUpdatedPropertiesAfterMerge(AbstractIntactFeature objectToTest, AbstractIntactFeature newObjToTest) {
         Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
-        Assert.assertEquals("interaction effect 2", newObjToTest.getInteractionEffect().getShortName());
+        Assert.assertEquals("interaction effect 2", newObjToTest.getRole().getShortName());
         Assert.assertEquals("updated feature", newObjToTest.getShortName());
     }
 
     @Override
     protected void updatePropertieDetachedInstance(AbstractIntactFeature objectToTest) {
-         objectToTest.setInteractionEffect(IntactUtils.createMITopic("interaction effect 2", null));
+         objectToTest.setRole(IntactUtils.createMITopic("interaction effect 2", null));
          objectToTest.setShortName("updated feature");
     }
 
@@ -148,10 +148,8 @@ public class FeatureSynchronizerTemplateTest extends AbstractDbSynchronizerTest<
         Assert.assertTrue(persistedObject.getBinds() == persistedObject.getLinkedFeatures().iterator().next());
         Assert.assertTrue(persistedObject.getDbLinkedFeatures().isEmpty());
         Assert.assertEquals(1, persistedObject.getLinkedFeatures().size());
-        Assert.assertEquals("interaction dependency", persistedObject.getInteractionDependency().getShortName());
-        Assert.assertEquals("interaction effect", persistedObject.getInteractionEffect().getShortName());
-        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionDependency()).getAc());
-        Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractionEffect()).getAc());
+        Assert.assertEquals("interaction effect", persistedObject.getRole().getShortName());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getRole()).getAc());
         Assert.assertEquals(1, persistedObject.getIdentifiers().size());
         Assert.assertNotNull(XrefUtils.collectFirstIdentifierWithDatabase(persistedObject.getIdentifiers(), null, "intact"));
 
@@ -176,10 +174,8 @@ public class FeatureSynchronizerTemplateTest extends AbstractDbSynchronizerTest<
         Assert.assertTrue(objectToTest.getBinds() == objectToTest.getLinkedFeatures().iterator().next());
         Assert.assertTrue(objectToTest.getDbLinkedFeatures().isEmpty());
         Assert.assertEquals(1, objectToTest.getLinkedFeatures().size());
-        Assert.assertEquals("interaction dependency", objectToTest.getInteractionDependency().getShortName());
-        Assert.assertEquals("interaction effect", objectToTest.getInteractionEffect().getShortName());
-        Assert.assertNotNull(((IntactCvTerm)objectToTest.getInteractionDependency()).getAc());
-        Assert.assertNotNull(((IntactCvTerm)objectToTest.getInteractionEffect()).getAc());
+        Assert.assertEquals("interaction effect", objectToTest.getRole().getShortName());
+        Assert.assertNotNull(((IntactCvTerm)objectToTest.getRole()).getAc());
         Assert.assertTrue(objectToTest.getIdentifiers().isEmpty());
 
         AbstractIntactFeature feature2 = (AbstractIntactFeature)objectToTest.getLinkedFeatures().iterator().next();

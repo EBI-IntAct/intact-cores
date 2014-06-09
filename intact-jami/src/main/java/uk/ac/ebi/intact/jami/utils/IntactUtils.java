@@ -378,6 +378,14 @@ public class IntactUtils {
         return new IntactCvTerm(name, (String)null, (String)null, LIFECYCLE_EVENT_OBJCLASS);
     }
 
+    public static IntactCvTerm createCellType(String name){
+        return new IntactCvTerm(name, (String)null, (String)null, CELL_TYPE_OBJCLASS);
+    }
+
+    public static IntactCvTerm createTissue(String name){
+        return new IntactCvTerm(name, (String)null, (String)null, TISSUE_OBJCLASS);
+    }
+
     public static IntactCvTerm createLifecycleStatus(String name){
         return new IntactCvTerm(name, (String)null, (String)null, PUBLICATION_STATUS_OBJCLASS);
     }

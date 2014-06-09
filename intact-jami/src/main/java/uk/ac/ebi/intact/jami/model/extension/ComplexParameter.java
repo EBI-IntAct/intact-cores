@@ -6,8 +6,6 @@ import psidev.psi.mi.jami.model.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Intact implementation of parameter for modelled interactions
@@ -23,7 +21,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "ia_interaction_parameter")
 public class ComplexParameter extends AbstractIntactParameter implements ModelledParameter{
-    private Collection<Publication> publications;
+    private Publication publication;
 
     private Experiment experiment;
 
@@ -56,11 +54,12 @@ public class ComplexParameter extends AbstractIntactParameter implements Modelle
     }
 
     @Transient
-    public Collection<Publication> getPublications() {
-        if (this.publications == null){
-            this.publications = new ArrayList<Publication>();
-        }
-        return this.publications;
+    public Publication getPublication() {
+        return this.publication;
+    }
+
+    public void setPublication(Publication publication) {
+        this.publication = publication;
     }
 
     /**

@@ -89,9 +89,5 @@ public interface IntactDao {
 
     public ModelledParticipantDao<IntactModelledParticipant> getModelledParticipantDao();
 
-    public ModelledParticipantPoolDao getModelledParticipantPoolDao();
-
     public ParticipantEvidenceDao<IntactParticipantEvidence> getParticipantEvidenceDao();
-
-    public ParticipantEvidencePoolDao getParticipantEvidencePoolDao();
 }

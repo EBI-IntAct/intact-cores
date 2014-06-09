@@ -33,7 +33,7 @@ import java.util.Collection;
 @DiscriminatorValue("modelled_participant")
 @ForceDiscriminator
 @Where(clause = "category = 'modelled_participant' or category = 'modelled_participant_pool'")
-public class IntactModelledParticipant extends AbstractIntactParticipant<ModelledInteraction, ModelledFeature, ModelledParticipantPool> implements ModelledParticipant{
+public class IntactModelledParticipant extends AbstractIntactParticipant<ModelledInteraction, ModelledFeature> implements ModelledParticipant{
 
     private Collection<CvTerm> experimentalRoles;
     private Collection<CausalRelationship> relatedCausalRelationships;
@@ -164,28 +164,10 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
         return experimentalRoles;
     }
 
-    @ManyToOne( targetEntity = IntactModelledParticipantPool.class )
-    @JoinColumn( name = "modelled_parent_pool_ac" )
-    @Target(IntactModelledParticipantPool.class)
-    @Override
-    /**
-     * The parent pool is not null if this participant is part of a participant pool and not a direct participant of an interaction.
-     * The parent pool is important as it is used to decide if we persist the interaction_ac or not.
-     * We only persist the interaction_ac if the participant is not part of a participant pool
-     */
-    protected ModelledParticipantPool getDbParentPool() {
-        return super.getDbParentPool();
-    }
-
     @ManyToOne( targetEntity = IntactComplex.class )
     @JoinColumn( name = "interaction_ac" )
     @Target(IntactComplex.class)
     @Override
-    /**
-     * The parent interaction is not null if this participant is not part of a participant pool and is a direct participant of an interaction.
-     * The parent pool is important as it is used to decide if we persist the interaction_ac or not.
-     * We only persist the interaction_ac if the participant is not part of a participant pool
-     */
     protected ModelledInteraction getDbParentInteraction() {
         return super.getDbParentInteraction();
     }

@@ -135,9 +135,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     // participant synchronizers
     private ParticipantSynchronizer<Participant, AbstractIntactParticipant> participantSynchronizer;
     private ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> modelledParticipantSynchronizer;
-    private ParticipantSynchronizer<ModelledParticipantPool, IntactModelledParticipantPool> modelledParticipantPoolSynchronizer;
     private ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> participantEvidenceSynchronizer;
-    private ParticipantSynchronizer<ParticipantEvidencePool, IntactParticipantEvidencePool> ParticipantEvidencePoolSynchronizer;
 
     public DefaultSynchronizerContext(EntityManager entityManager){
         if (entityManager == null){
@@ -636,7 +634,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.confidenceSynchronizer;
     }
 
-    public ConfidenceSynchronizer<Confidence, ParticipantEvidenceConfidence> getEntityConfidenceSynchronizer() {
+    public ConfidenceSynchronizer<Confidence, ParticipantEvidenceConfidence> getParticipantEvidenceConfidenceSynchronizer() {
         initialiseConfidenceTemplateIfNotDone();
         this.confidenceSynchronizer.setIntactClass(ParticipantEvidenceConfidence.class);
         return this.confidenceSynchronizer;
@@ -648,9 +646,15 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.parameterSynchronizer;
     }
 
-    public ParameterSynchronizer<Parameter, ParticipantEvidenceParameter> getEntityParameterSynchronizer(){
+    public ParameterSynchronizer<Parameter, ParticipantEvidenceParameter> getParticipantEvidenceParameterSynchronizer(){
         initialiseParameterTemplateIfNotDone();
         this.parameterSynchronizer.setIntactClass(ParticipantEvidenceParameter.class);
+        return this.parameterSynchronizer;
+    }
+
+    public ParameterSynchronizer<Parameter, FeatureEvidenceParameter> getFeatureParameterSynchronizer() {
+        initialiseParameterTemplateIfNotDone();
+        this.parameterSynchronizer.setIntactClass(FeatureEvidenceParameter.class);
         return this.parameterSynchronizer;
     }
 
@@ -824,25 +828,12 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return modelledParticipantSynchronizer;
     }
 
-    public ParticipantSynchronizer<ModelledParticipantPool, IntactModelledParticipantPool> getModelledParticipantPoolSynchronizer(){
-        if (this.modelledParticipantPoolSynchronizer == null){
-            this.modelledParticipantPoolSynchronizer = new ModelledParticipantPoolSynchronizer(this);
-        }
-        return this.modelledParticipantPoolSynchronizer;
-    }
 
     public ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer(){
         if (this.participantEvidenceSynchronizer == null){
             this.participantEvidenceSynchronizer = new ParticipantEvidenceSynchronizerTemplate<ParticipantEvidence, IntactParticipantEvidence>(this, IntactParticipantEvidence.class);
         }
         return participantEvidenceSynchronizer;
-    }
-
-    public ParticipantSynchronizer<ParticipantEvidencePool, IntactParticipantEvidencePool> getParticipantEvidencePoolSynchronizer(){
-        if (this.ParticipantEvidencePoolSynchronizer == null){
-            this.ParticipantEvidencePoolSynchronizer = new uk.ac.ebi.intact.jami.synchronizer.impl.ParticipantEvidencePoolSynchronizer(this);
-        }
-        return this.ParticipantEvidencePoolSynchronizer;
     }
 
     public void clearCache() {
@@ -902,9 +893,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         clearCache(this.variableParameterValueSetSynchronizer);
         clearCache(this.participantSynchronizer);
         clearCache(this.modelledParticipantSynchronizer);
-        clearCache(this.modelledParticipantPoolSynchronizer);
         clearCache(this.participantEvidenceSynchronizer);
-        clearCache(this.ParticipantEvidencePoolSynchronizer);
     }
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getGeneralCvSynchronizer() {

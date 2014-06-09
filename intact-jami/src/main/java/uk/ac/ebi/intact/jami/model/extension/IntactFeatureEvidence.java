@@ -5,11 +5,13 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Parameter;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -42,6 +44,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
     @Deprecated
     private CvTerm identificationMethod;
     private PersistentDetectionMethodList persistentDetectionMethods;
+    private Collection<Parameter> parameters;
 
     public IntactFeatureEvidence(ParticipantEvidence participant) {
         super();
@@ -77,6 +80,11 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
 
     public IntactFeatureEvidence(String shortName, String fullName, CvTerm type) {
         super(shortName, fullName, type);
+    }
+
+    @Transient
+    public boolean areParametersInitialized(){
+        return Hibernate.isInitialized(getParameters());
     }
 
     @OneToMany( orphanRemoval = true,
@@ -266,6 +274,22 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
 
     private void setCategory(String value){
         // nothing to do
+    }
+
+    @OneToMany( orphanRemoval = true,
+            cascade = {CascadeType.ALL}, targetEntity = FeatureEvidenceParameter.class)
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(FeatureEvidenceParameter.class)
+    public Collection<Parameter> getParameters() {
+        if (parameters == null){
+            this.parameters = new ArrayList<Parameter>();
+        }
+        return this.parameters;
+    }
+
+    private void setParameters(Collection<Parameter> parameters) {
+        this.parameters = parameters;
     }
 
     private class DetectionMethodList extends AbstractListHavingProperties<CvTerm> {

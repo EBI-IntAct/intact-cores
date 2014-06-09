@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.jami.utils;
 
-import psidev.psi.mi.jami.datasource.InteractionWriterOptions;
+import psidev.psi.mi.jami.factory.options.InteractionWriterOptions;
 
 /**
  * Class that lists all the options for a IntAct database writer.

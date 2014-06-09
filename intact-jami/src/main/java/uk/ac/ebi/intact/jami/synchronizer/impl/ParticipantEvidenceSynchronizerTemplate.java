@@ -86,7 +86,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
             List<Confidence> confidencesToPersist = new ArrayList<Confidence>(intactEntity.getConfidences());
             for (Confidence confidence : confidencesToPersist){
                 // do not persist or merge confidences because of cascades
-                Confidence persistentConfidence = getContext().getEntityConfidenceSynchronizer().synchronize(confidence, false);
+                Confidence persistentConfidence = getContext().getParticipantEvidenceConfidenceSynchronizer().synchronize(confidence, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentConfidence != confidence){
                     intactEntity.getConfidences().remove(confidence);
@@ -114,7 +114,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         if (intactEntity.areParametersInitialized()){
             List<Parameter> parametersToPersist = new ArrayList<Parameter>(intactEntity.getParameters());
             for (Parameter parameter : parametersToPersist){
-                Parameter persistentParameter = getContext().getEntityParameterSynchronizer().synchronize(parameter, false);
+                Parameter persistentParameter = getContext().getParticipantEvidenceParameterSynchronizer().synchronize(parameter, false);
                 // we have a different instance because needed to be synchronized
                 if (persistentParameter != parameter){
                     intactEntity.getParameters().remove(parameter);

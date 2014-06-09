@@ -46,6 +46,22 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         prepareDetectionMethods(intactFeature);
         // then check ranges
         prepareRanges(intactFeature);
+        // then synchronize parameters
+        prepareParameters(intactFeature);
+    }
+
+    private void prepareParameters(IntactFeatureEvidence intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        if (intactFeature.areParametersInitialized()){
+            List<Parameter> parametersToPersist = new ArrayList<Parameter>(intactFeature.getParameters());
+            for (Parameter parameter : parametersToPersist){
+                Parameter persistentParameter = getContext().getFeatureParameterSynchronizer().synchronize(parameter, false);
+                // we have a different instance because needed to be synchronized
+                if (persistentParameter != parameter){
+                    intactFeature.getParameters().remove(parameter);
+                    intactFeature.getParameters().add(persistentParameter);
+                }
+            }
+        }
     }
 
     protected void prepareRanges(IntactFeatureEvidence intactFeature) throws PersisterException, FinderException, SynchronizerException {

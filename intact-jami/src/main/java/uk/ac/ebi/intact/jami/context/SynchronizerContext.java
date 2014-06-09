@@ -196,13 +196,15 @@ public interface SynchronizerContext {
 
     public ConfidenceSynchronizer<Confidence, InteractionEvidenceConfidence> getInteractionConfidenceSynchronizer();
 
-    public ConfidenceSynchronizer<Confidence, ParticipantEvidenceConfidence> getEntityConfidenceSynchronizer();
+    public ConfidenceSynchronizer<Confidence, ParticipantEvidenceConfidence> getParticipantEvidenceConfidenceSynchronizer();
 
     public ParameterSynchronizer<ModelledParameter, ComplexParameter> getComplexParameterSynchronizer();
 
     public ParameterSynchronizer<Parameter, InteractionEvidenceParameter> getInteractionParameterSynchronizer();
 
-    public ParameterSynchronizer<Parameter, ParticipantEvidenceParameter> getEntityParameterSynchronizer();
+    public ParameterSynchronizer<Parameter, ParticipantEvidenceParameter> getParticipantEvidenceParameterSynchronizer();
+
+    public ParameterSynchronizer<Parameter, FeatureEvidenceParameter> getFeatureParameterSynchronizer();
 
     public IntactDbSynchronizer<Organism, IntactOrganism> getOrganismSynchronizer();
 
@@ -248,9 +250,5 @@ public interface SynchronizerContext {
 
     public ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer();
 
-    public ParticipantSynchronizer<ModelledParticipantPool, IntactModelledParticipantPool> getModelledParticipantPoolSynchronizer();
-
     public ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer();
-
-    public ParticipantSynchronizer<ParticipantEvidencePool, IntactParticipantEvidencePool> getParticipantEvidencePoolSynchronizer();
 }

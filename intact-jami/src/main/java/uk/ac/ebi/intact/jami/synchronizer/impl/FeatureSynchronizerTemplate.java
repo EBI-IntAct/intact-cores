@@ -102,12 +102,9 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     protected void prepareInteractionEffectAndDependencies(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
-        if (intactFeature.getInteractionDependency() != null){
-            intactFeature.setInteractionDependency(getContext().getTopicSynchronizer().synchronize(intactFeature.getInteractionDependency(), true));
-        }
 
-        if (intactFeature.getInteractionEffect() != null){
-            intactFeature.setInteractionEffect(getContext().getTopicSynchronizer().synchronize(intactFeature.getInteractionEffect(), true));
+        if (intactFeature.getRole() != null){
+            intactFeature.setRole(getContext().getTopicSynchronizer().synchronize(intactFeature.getRole(), true));
         }
     }
 

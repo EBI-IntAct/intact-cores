@@ -59,8 +59,7 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     private CvTerm type;
     private Collection<Range> ranges;
 
-    private CvTerm interactionEffect;
-    private CvTerm interactionDependency;
+    private CvTerm role;
 
     private P participant;
 
@@ -248,25 +247,14 @@ public abstract class AbstractIntactFeature<P extends Participant, F extends Fea
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "interaction_effect_ac", referencedColumnName = "ac")
+    @JoinColumn( name = "role_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
-    public CvTerm getInteractionEffect() {
-        return this.interactionEffect;
+    public CvTerm getRole() {
+        return this.role;
     }
 
-    public void setInteractionEffect(CvTerm effect) {
-        this.interactionEffect = effect;
-    }
-
-    @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "interaction_dependency_ac", referencedColumnName = "ac")
-    @Target(IntactCvTerm.class)
-    public CvTerm getInteractionDependency() {
-        return this.interactionDependency;
-    }
-
-    public void setInteractionDependency(CvTerm interactionDependency) {
-        this.interactionDependency = interactionDependency;
+    public void setRole(CvTerm effect) {
+        this.role = effect;
     }
 
     @Transient

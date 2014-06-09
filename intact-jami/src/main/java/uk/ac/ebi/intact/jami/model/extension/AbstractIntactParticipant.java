@@ -34,7 +34,7 @@ import java.util.Collection;
  * @since <pre>15/01/14</pre>
  */
 @MappedSuperclass
-public abstract class AbstractIntactParticipant<I extends Interaction, F extends Feature, P extends ParticipantPool> extends AbstractIntactPrimaryObject implements Participant<I, F> {
+public abstract class AbstractIntactParticipant<I extends Interaction, F extends Feature> extends AbstractIntactPrimaryObject implements Participant<I, F> {
 
     private Interactor interactor;
     private CvTerm biologicalRole;
@@ -47,7 +47,6 @@ public abstract class AbstractIntactParticipant<I extends Interaction, F extends
     private ParticipantInteractorChangeListener changeListener;
 
     private I interaction;
-    private P parentPool;
 
     private String shortName;
 
@@ -322,26 +321,12 @@ public abstract class AbstractIntactParticipant<I extends Interaction, F extends
 
     @Transient
     /**
-     * The parent pool is not null if this participant is part of a participant pool and not a direct participant of an interaction.
-     * The parent pool is important as it is used to decide if we persist the interaction_ac or not.
-     * We only persist the interaction_ac if the participant is not part of a participant pool
-     */
-    protected P getDbParentPool() {
-        return parentPool;
-    }
-
-    protected void setDbParentPool(P parentPool) {
-        this.parentPool = parentPool;
-    }
-
-    @Transient
-    /**
      * The parent interaction is not null if this participant is not part of a participant pool and is a direct participant of an interaction.
      * The parent pool is important as it is used to decide if we persist the interaction_ac or not.
      * We only persist the interaction_ac if the participant is not part of a participant pool
      */
     protected I getDbParentInteraction() {
-        return parentPool == null ? interaction : null;
+        return interaction;
     }
 
     protected void setDbParentInteraction(I parentInteraction) {

@@ -39,7 +39,7 @@ import java.util.List;
 @DiscriminatorValue("participant_evidence")
 @ForceDiscriminator
 @Where(clause = "category = 'participant_evidence' or category = 'participant_evidence_pool'")
-public class IntactParticipantEvidence extends AbstractIntactParticipant<InteractionEvidence, FeatureEvidence, ParticipantEvidencePool> implements ParticipantEvidence{
+public class IntactParticipantEvidence extends AbstractIntactParticipant<InteractionEvidence, FeatureEvidence> implements ParticipantEvidence{
 
     private Collection<CvTerm> persistentIdentificationMethods;
     private Collection<CvTerm> identificationMethods;
@@ -295,14 +295,6 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
     @Transient
     public boolean areExperimentalPreparationsInitialized(){
         return Hibernate.isInitialized(getExperimentalPreparations());
-    }
-
-    @ManyToOne( targetEntity = IntactParticipantEvidencePool.class )
-    @JoinColumn( name = "experimental_parent_pool_ac" )
-    @Target(IntactParticipantEvidencePool.class)
-    @Override
-    protected ParticipantEvidencePool getDbParentPool() {
-        return super.getDbParentPool();
     }
 
     @ManyToOne( targetEntity = IntactInteractionEvidence.class )

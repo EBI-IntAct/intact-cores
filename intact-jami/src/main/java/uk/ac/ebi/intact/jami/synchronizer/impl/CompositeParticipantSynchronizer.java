@@ -31,84 +31,44 @@ public class CompositeParticipantSynchronizer implements ParticipantSynchronizer
     public AbstractIntactParticipant find(Participant term) throws FinderException {
         // experimental
         if (term instanceof ParticipantEvidence){
-            if (term instanceof ParticipantEvidencePool){
-                return this.context.getParticipantEvidencePoolSynchronizer().find((ParticipantEvidencePool)term);
-            }
-            else{
-                return this.context.getParticipantEvidenceSynchronizer().find((ParticipantEvidence)term);
-            }
+            return this.context.getParticipantEvidenceSynchronizer().find((ParticipantEvidence)term);
         }
         // modelled
         else {
-            if (term instanceof ModelledParticipantPool){
-                return this.context.getModelledParticipantPoolSynchronizer().find((ModelledParticipantPool)term);
-            }
-            else{
-                return this.context.getModelledParticipantSynchronizer().find((ModelledParticipant)term);
-            }
+            return this.context.getModelledParticipantSynchronizer().find((ModelledParticipant)term);
         }
     }
 
     public AbstractIntactParticipant persist(AbstractIntactParticipant term) throws FinderException, PersisterException, SynchronizerException {
         // experimental
         if (term instanceof IntactParticipantEvidence){
-            if (term instanceof IntactParticipantEvidencePool){
-                return this.context.getParticipantEvidencePoolSynchronizer().persist((IntactParticipantEvidencePool)term);
-            }
-            else{
-                return this.context.getParticipantEvidenceSynchronizer().persist((IntactParticipantEvidence)term);
-            }
+            return this.context.getParticipantEvidenceSynchronizer().persist((IntactParticipantEvidence)term);
         }
         // modelled
         else {
-            if (term instanceof IntactModelledParticipantPool){
-                return this.context.getModelledParticipantPoolSynchronizer().persist((IntactModelledParticipantPool)term);
-            }
-            else{
-                return this.context.getModelledParticipantSynchronizer().persist((IntactModelledParticipant)term);
-            }
+            return this.context.getModelledParticipantSynchronizer().persist((IntactModelledParticipant)term);
         }
     }
 
     public AbstractIntactParticipant synchronize(Participant term, boolean persist) throws FinderException, PersisterException, SynchronizerException {
         // experimental
         if (term instanceof ParticipantEvidence){
-            if (term instanceof ParticipantEvidencePool){
-                return this.context.getParticipantEvidencePoolSynchronizer().synchronize((ParticipantEvidencePool)term, persist);
-            }
-            else{
-                return this.context.getParticipantEvidenceSynchronizer().synchronize((ParticipantEvidence)term, persist);
-            }
+            return this.context.getParticipantEvidenceSynchronizer().synchronize((ParticipantEvidence)term, persist);
         }
         // modelled
         else {
-            if (term instanceof ModelledParticipantPool){
-                return this.context.getModelledParticipantPoolSynchronizer().synchronize((ModelledParticipantPool)term, persist);
-            }
-            else{
-                return this.context.getModelledParticipantSynchronizer().synchronize((ModelledParticipant)term, persist);
-            }
+            return this.context.getModelledParticipantSynchronizer().synchronize((ModelledParticipant)term, persist);
         }
     }
 
     public void synchronizeProperties(AbstractIntactParticipant term) throws FinderException, PersisterException, SynchronizerException {
         // experimental
         if (term instanceof IntactParticipantEvidence){
-            if (term instanceof IntactParticipantEvidencePool){
-                this.context.getParticipantEvidencePoolSynchronizer().synchronizeProperties((IntactParticipantEvidencePool)term);
-            }
-            else{
-                this.context.getParticipantEvidenceSynchronizer().synchronizeProperties((IntactParticipantEvidence)term);
-            }
+            this.context.getParticipantEvidenceSynchronizer().synchronizeProperties((IntactParticipantEvidence)term);
         }
         // modelled
         else {
-            if (term instanceof IntactModelledParticipantPool){
-                this.context.getModelledParticipantPoolSynchronizer().synchronizeProperties((IntactModelledParticipantPool)term);
-            }
-            else{
-                this.context.getModelledParticipantSynchronizer().synchronizeProperties((IntactModelledParticipant)term);
-            }
+            this.context.getModelledParticipantSynchronizer().synchronizeProperties((IntactModelledParticipant)term);
         }
     }
 
@@ -135,21 +95,11 @@ public class CompositeParticipantSynchronizer implements ParticipantSynchronizer
     public boolean delete(Participant term) {
         // experimental
         if (term instanceof ParticipantEvidence){
-            if (term instanceof ParticipantEvidencePool){
-                return this.context.getParticipantEvidencePoolSynchronizer().delete((ParticipantEvidencePool)term);
-            }
-            else{
-                return this.context.getParticipantEvidenceSynchronizer().delete((ParticipantEvidence)term);
-            }
+            return this.context.getParticipantEvidenceSynchronizer().delete((ParticipantEvidence)term);
         }
         // modelled
         else {
-            if (term instanceof ModelledParticipantPool){
-                return this.context.getModelledParticipantPoolSynchronizer().delete((ModelledParticipantPool)term);
-            }
-            else{
-                return this.context.getModelledParticipantSynchronizer().delete((ModelledParticipant)term);
-            }
+            return this.context.getModelledParticipantSynchronizer().delete((ModelledParticipant)term);
         }
     }
 }

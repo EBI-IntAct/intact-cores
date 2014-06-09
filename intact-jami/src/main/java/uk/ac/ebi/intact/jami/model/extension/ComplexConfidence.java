@@ -7,8 +7,6 @@ import psidev.psi.mi.jami.model.Publication;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Intact implementation of complex confidence
@@ -26,7 +24,7 @@ import java.util.Collection;
 @Table(name = "ia_confidence")
 public class ComplexConfidence extends AbstractIntactConfidence implements ModelledConfidence{
 
-    private Collection<Publication> publications;
+    private Publication publication;
 
     public ComplexConfidence() {
     }
@@ -36,10 +34,11 @@ public class ComplexConfidence extends AbstractIntactConfidence implements Model
     }
 
     @Transient
-    public Collection<Publication> getPublications() {
-        if (this.publications == null){
-            this.publications = new ArrayList<Publication>();
-        }
-        return this.publications;
+    public Publication getPublication() {
+        return this.publication;
+    }
+
+    public void setPublication(Publication publication) {
+        this.publication = publication;
     }
 }
