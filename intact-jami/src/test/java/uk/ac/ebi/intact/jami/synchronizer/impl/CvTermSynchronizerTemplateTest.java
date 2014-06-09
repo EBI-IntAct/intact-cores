@@ -224,6 +224,21 @@ public class CvTermSynchronizerTemplateTest extends AbstractDbSynchronizerTest<C
         merge_test2();
     }
 
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_shortlabel_synch() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        ((CvTermSynchronizer)this.synchronizer).setObjClass(IntactUtils.ALIAS_TYPE_OBJCLASS);
+        this.testNumber = 1;
+        persist();
+        this.entityManager.flush();
+
+       CvTerm sameLabel = CvTermUtils.createMICvTerm(Alias.GENE_NAME, Alias.GENE_NAME_SYNONYM_MI);
+       sameLabel = ((CvTermSynchronizer) this.synchronizer).synchronize(sameLabel, true);
+        this.entityManager.flush();
+       Assert.assertEquals(Alias.GENE_NAME+"-1", sameLabel.getShortName());
+    }
+
     private IntactCvTerm createExistingType() {
         // pre persist alias synonym
         IntactCvTerm aliasSynonym = new IntactCvTerm(Alias.GENE_NAME);

@@ -202,37 +202,11 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         }
 
         // then synchronize with database
-        boolean first = true;
         String name;
         List<String> existingInteractions;
         do{
             name = intactInteraction.getShortName().trim().toLowerCase();
             existingInteractions = Collections.EMPTY_LIST;
-            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
-
-            if (first){
-                first = false;
-            }
-            // don't truncate all bait-prey label, keeps at least one character for bait, one for - and one for prey
-            else if (originalName.contains("-") && originalName.length() > 3){
-                int lastIndex = originalName.lastIndexOf("-");
-                String label1 = originalName.substring(0, lastIndex);
-                String label2 = originalName.substring(lastIndex+1);
-
-                if (label1.length() >= label2.length() && label1.length() > 1){
-                    label1 = label1.substring(0, label1.length() - 1);
-                }
-                else if (label2.length() > label1.length() && label2.length() > 1){
-                    label2 = label2.substring(0, label2.length() - 1);
-                }
-                name = label1 + "-" + label2;
-            }
-            else if (originalName.length() > 1){
-                name = originalName.substring(0, originalName.length() - 1);
-            }
-            else {
-                break;
-            }
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select i.shortName from IntactInteractionEvidence i " +
@@ -244,10 +218,20 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
                 query.setParameter("interAc", intactInteraction.getAc());
             }
             existingInteractions = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractions, IntactUtils.MAX_SHORT_LABEL_LEN, true);
-            intactInteraction.setShortName(nameInSync);
+            if (!existingInteractions.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractions, IntactUtils.MAX_SHORT_LABEL_LEN, true);
+                if (!nameInSync.equals(name)){
+                    intactInteraction.setShortName(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactInteraction.setShortName(name);
+            }
         }
-        while(name.length() > 6 && !existingInteractions.isEmpty());
+        while(!existingInteractions.isEmpty());
     }
 
     @Override

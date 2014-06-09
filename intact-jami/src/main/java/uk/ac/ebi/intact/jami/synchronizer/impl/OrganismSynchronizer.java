@@ -213,20 +213,12 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
             log.warn("Organism shortLabel too long: "+intactOrganism.getCommonName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactOrganism.setCommonName(intactOrganism.getCommonName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        boolean first = true;
         String name;
         List<String> existingOrganism;
         do{
             name = intactOrganism.getCommonName().trim().toLowerCase();
             existingOrganism = Collections.EMPTY_LIST;
-            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
 
-            if (first){
-                first = false;
-            }
-            else if (originalName.length() > 1){
-                name = originalName.substring(0, originalName.length() - 1);
-            }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select o.commonName from IntactOrganism o " +
                     "where (o.commonName = :name or o.commonName like :nameWithSuffix) "
@@ -237,10 +229,20 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 query.setParameter("organismAc", intactOrganism.getAc());
             }
             existingOrganism = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-            intactOrganism.setCommonName(nameInSync);
+            if (!existingOrganism.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactOrganism.setCommonName(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactOrganism.setCommonName(name);
+            }
         }
-        while(name.length() > 1 && !existingOrganism.isEmpty());
+        while(!existingOrganism.isEmpty());
     }
 
     @Override

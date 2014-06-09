@@ -6,6 +6,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
+import psidev.psi.mi.jami.model.impl.DefaultOrganism;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
@@ -87,6 +88,19 @@ public class OrganismSynchronizerTest extends AbstractDbSynchronizerTest<Organis
     @DirtiesContext
     public void test_jami() throws PersisterException, FinderException, SynchronizerException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         persist_jami();
+    }
+
+    @Transactional
+    @Test
+    @DirtiesContext
+    public void test_commonName_synch() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        persist();
+        this.entityManager.flush();
+
+        Organism sameLabel = new DefaultOrganism(9607,"human");
+        sameLabel = ((OrganismSynchronizer) this.synchronizer).synchronize(sameLabel, true);
+        this.entityManager.flush();
+        Assert.assertEquals("human-1", sameLabel.getCommonName());
     }
 
     @Override

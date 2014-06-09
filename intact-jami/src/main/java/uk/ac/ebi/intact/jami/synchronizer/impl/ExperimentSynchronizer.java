@@ -272,24 +272,11 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         }
 
         // then synchronize with database
-        boolean first = true;
         String name;
         List<String> existingExperiments;
         do{
             name = intactExperiment.getShortLabel().trim().toLowerCase();
             existingExperiments = Collections.EMPTY_LIST;
-            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
-
-            if (first){
-                first = false;
-            }
-            // don't truncate year so we remove year (4 characters + 1 for the '-') in addition to the last character of the author (total remove 6 characters)
-            else if (originalName.length() > 6){
-                name = originalName.substring(0, name.length() - 6);
-            }
-            else {
-                break;
-            }
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select e.shortLabel from IntactExperiment e " +
@@ -301,10 +288,20 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 query.setParameter("expAc", intactExperiment.getAc());
             }
             existingExperiments = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
-            intactExperiment.setShortLabel(nameInSync);
+            if (!existingExperiments.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
+                if (!nameInSync.equals(name)){
+                    intactExperiment.setShortLabel(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactExperiment.setShortLabel(name);
+            }
         }
-        while(name.length() > 6 && !existingExperiments.isEmpty());
+        while(!existingExperiments.isEmpty());
     }
 
     @Override

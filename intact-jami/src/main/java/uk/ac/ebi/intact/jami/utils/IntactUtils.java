@@ -360,7 +360,7 @@ public class IntactUtils {
             Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
 
             if (matcher.matches()){
-                return currentLabel.substring(0, index);
+                return currentLabel.substring(0, index-1);
             }
         }
         return currentLabel;

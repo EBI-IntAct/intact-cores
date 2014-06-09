@@ -351,21 +351,12 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             log.warn("Source shortLabel too long: "+intactSource.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        boolean first = true;
         String name;
         List<String> existingSource;
         do{
             name = intactSource.getShortName().trim().toLowerCase();
             existingSource = Collections.EMPTY_LIST;
 
-            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
-
-            if (first){
-                first = false;
-            }
-            else if (originalName.length() > 1){
-                name = originalName.substring(0, originalName.length() - 1);
-            }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select s.shortName from IntactSource s " +
                     "where (s.shortName = :name or s.shortName like :nameWithSuffix) "
@@ -376,10 +367,20 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                 query.setParameter("sourceAc", intactSource.getAc());
             }
             existingSource = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingSource, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-            intactSource.setShortName(nameInSync);
+            if (!existingSource.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingSource, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactSource.setShortName(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactSource.setShortName(name);
+            }
         }
-        while(name.length() > 1 && !existingSource.isEmpty());
+        while(!existingSource.isEmpty());
     }
 
     @Override

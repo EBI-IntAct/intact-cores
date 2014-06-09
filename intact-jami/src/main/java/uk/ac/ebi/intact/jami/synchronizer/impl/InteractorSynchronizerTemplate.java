@@ -242,20 +242,12 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             log.warn("Interactor shortLabel too long: "+intactInteractor.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactInteractor.setShortName(intactInteractor.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        boolean first = true;
         String name;
         List<String> existingInteractors;
         do{
             name = intactInteractor.getShortName().trim().toLowerCase();
             existingInteractors = Collections.EMPTY_LIST;
-            String originalName = first ? name : IntactUtils.excludeLastNumberInShortLabel(name);
 
-            if (first){
-                first = false;
-            }
-            else if (originalName.length() > 1){
-                name = originalName.substring(0, originalName.length() - 1);
-            }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select i.shortName from IntactInteractor i " +
                     "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
@@ -266,10 +258,20 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                 query.setParameter("interactorAc", intactInteractor.getAc());
             }
             existingInteractors = query.getResultList();
-            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-            intactInteractor.setShortName(nameInSync);
+            if (!existingInteractors.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactInteractor.setShortName(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactInteractor.setShortName(name);
+            }
         }
-        while(name.length() > 1 && !existingInteractors.isEmpty());
+        while(!existingInteractors.isEmpty());
     }
 
     protected Collection<I> findByIdentifier(T term, IntactOrganism existingOrganism, IntactCvTerm existingType) throws FinderException {
