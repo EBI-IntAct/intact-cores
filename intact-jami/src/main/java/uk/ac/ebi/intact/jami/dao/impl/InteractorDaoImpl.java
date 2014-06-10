@@ -36,7 +36,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     public F getByShortName(String value) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f " +
                 "where f.shortName = :name");
         query.setParameter("name",value);
         List<F> results = query.getResultList();
@@ -52,14 +52,14 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     public Collection<F> getByShortNameLike(String value) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f " +
                 "where upper(f.shortName) like :name");
         query.setParameter("name","%"+value.toUpperCase()+"%");
         return query.getResultList();
     }
 
     public Collection<F> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.dbXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -67,7 +67,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     public Collection<F> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.dbXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
@@ -77,7 +77,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     public Collection<F> getByXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbXrefs as x " +
                     "join x.database as dat " +
                     "join dat.dbXrefs as xref " +
@@ -94,7 +94,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -108,7 +108,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     public Collection<F> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbXrefs as x " +
                     "join x.database as dat " +
                     "join dat.dbXrefs as xref " +
@@ -125,7 +125,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -140,7 +140,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.dbXrefs as xref " +
@@ -158,7 +158,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.dbXrefs as xref " +
@@ -183,7 +183,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -205,7 +205,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -215,7 +215,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -235,7 +235,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -254,7 +254,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.dbXrefs as xref " +
@@ -272,7 +272,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.dbXrefs as xref " +
@@ -297,7 +297,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -319,7 +319,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                         "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -329,7 +329,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -349,7 +349,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -367,7 +367,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     public Collection<F> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbAnnotations as a " +
                     "join a.topic as t " +
                     "join t.dbXrefs as xref " +
@@ -382,7 +382,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
@@ -394,7 +394,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     public Collection<F> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbAnnotations as a " +
                     "join a.topic as t " +
                     "join t.dbXrefs as xref " +
@@ -412,7 +412,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
             }
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
@@ -425,7 +425,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     public Collection<F> getByAliasName(String name) {
-        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.dbAliases as s " +
                 "where s.name = :name");
         query.setParameter("name", name);
@@ -433,7 +433,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     public Collection<F> getByAliasNameLike(String name) {
-        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                 "join f.dbAliases as s " +
                 "where upper(s.name) = :name");
         query.setParameter("name", "%"+name.toUpperCase()+"%");
@@ -443,14 +443,14 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     public Collection<F> getByAliasTypeAndName(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.dbAliases as s " +
                     "where s.type is null " +
                     "and s.name = :name");
             query.setParameter("name", name);
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.dbAliases as s " +
                     "join s.type as t " +
                     "join t.dbXrefs as xref " +
@@ -467,7 +467,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
             query.setParameter("name", name);
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.dbAliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -481,14 +481,14 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     public Collection<F> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.dbAliases as s " +
                     "where s.type is null " +
                     "and upper(s.name) like :name");
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.dbAliases as s " +
                     "join s.type as t " +
                     "join t.dbXrefs as xref " +
@@ -505,7 +505,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbAliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -519,7 +519,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     public Collection<F> getByInteractorType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.interactorType as t " +
                     "join t.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -533,7 +533,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
             query.setParameter("mi", typeMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.interactorType as t " +
                     "where t.shortName = :typeName");
             query.setParameter("typeName", typeName);
@@ -542,7 +542,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     public Collection<F> getByTaxId(int taxid) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.organism as o " +
                 "where o.dbTaxid = :taxid");
         query.setParameter("taxid",Integer.toString(taxid));

@@ -71,7 +71,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
             query.setParameter("participantSize", term.getParticipants().size());
         }
         else{
-            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+            query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
                     "join i.interactorType as t " +
                     "join i.organism as o " +
                     "where o.ac = :orgAc " +

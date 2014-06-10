@@ -137,7 +137,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
     }
 
     public int deleteAll() {
-        return getEntityManager().createQuery("delete from "+getEntityClass()).executeUpdate();
+        return getEntityManager().createQuery("delete from "+getEntityClass().getSimpleName()).executeUpdate();
     }
 
     public void refresh(T obj) {

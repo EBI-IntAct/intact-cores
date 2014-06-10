@@ -265,12 +265,8 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     }
 
     @Override
-    protected void initialiseAnnotations() {
+    protected void instantiateAnnotations() {
         super.initialiseAnnotationsWith(new SourceAnnotationList(null));
-
-        for (Annotation annot : super.getDbAnnotations()){
-            processAddedAnnotationEvent(annot);
-        }
     }
 
     @Override
@@ -303,12 +299,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     }
 
     private void processAddedAnnotationEvent(Annotation added) {
-        if (url == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.URL_MI, Annotation.URL)){
-            url = added;
-        }
-        else if (postalAddress == null && AnnotationUtils.doesAnnotationHaveTopic(added, null, Annotation.POSTAL_ADDRESS)){
-            postalAddress = added;
-        }
+        processAddedAnnotations(added);
     }
 
     private void processRemovedAnnotationEvent(Annotation removed) {

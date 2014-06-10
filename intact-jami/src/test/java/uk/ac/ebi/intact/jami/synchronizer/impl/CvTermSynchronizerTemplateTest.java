@@ -21,7 +21,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Unit test for AliasSynchronizerTemplate
+ * Unit test for CvTermSynchronizerTemplate
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
@@ -287,14 +288,14 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
 
     protected void prepareAnnotations(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areAnnotationsInitialized()){
-            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getAnnotations());
+            List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation cvAnnotation = getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
-                    intactSource.getAnnotations().remove(annotation);
-                    intactSource.getAnnotations().add(cvAnnotation);
+                    intactSource.getDbAnnotations().remove(annotation);
+                    intactSource.getDbAnnotations().add(cvAnnotation);
                 }
             }
         }
@@ -317,6 +318,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
 
     protected void preparePublication(IntactSource intactSource) throws PersisterException, FinderException, SynchronizerException {
        Publication pub = intactSource.getPublication();
+        XrefUtils.collectAllXrefsHavingQualifier(intactSource.getXrefs(), Xref.PRIMARY_MI, Xref.PRIMARY);
         if (pub != null){
             intactSource.setPublication(getContext().getSimplePublicationSynchronizer().synchronize(pub, true));
 
@@ -354,7 +356,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         String name;
         List<String> existingSource;
         do{
-            name = intactSource.getShortName().trim().toLowerCase();
+            name = intactSource.getShortName().trim();
             existingSource = Collections.EMPTY_LIST;
 
             // check if short name already exist, if yes, synchronize with existing label

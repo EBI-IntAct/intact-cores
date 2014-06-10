@@ -99,7 +99,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected Query findByName(T term, IntactCvTerm existingType, IntactOrganism existingOrganism) {
         Query query;
         if (existingOrganism == null){
-            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+            query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
                     "join i.interactorType as t " +
                     "where i.shortName = :name " +
                     "and i.organism is null " +
@@ -108,7 +108,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             query.setParameter("typeAc", existingType.getAc());
         }
         else{
-            query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+            query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
                     "join i.interactorType as t " +
                     "join i.organism as o " +
                     "where i.shortName = :name " +
@@ -283,7 +283,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         // no organism for this interactor.
         if (existingOrganism == null){
             for (Xref ref : term.getIdentifiers()){
-                query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+                query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
                         "join i.interactorType as t " +
                         "where i.ac = :id " +
                         "and i.organism is null " +
@@ -295,8 +295,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                     return interactors;
                 }
                 else{
-                    query = getEntityManager().createQuery("select distinct i from "+getIntactClass()+" i " +
-                            "join i.persistentXrefs as x " +
+                    query = getEntityManager().createQuery("select distinct i from "+getIntactClass().getSimpleName()+" i " +
+                            "join i.dbXrefs as x " +
                             "join x.database as d " +
                             "join x.qualifier as q " +
                             "join i.interactorType as t " +
@@ -324,7 +324,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         // organism for this interactor
         else{
             for (Xref ref : term.getIdentifiers()){
-                query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+                query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
                         "join i.organism as o " +
                         "join i.interactorType as t " +
                         "where i.ac = :id " +
@@ -338,7 +338,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                     return interactors;
                 }
                 else{
-                    query = getEntityManager().createQuery("select distinct i from "+getIntactClass()+" i " +
+                    query = getEntityManager().createQuery("select distinct i from "+getIntactClass().getSimpleName()+" i " +
                             "join i.persistentXrefs as x " +
                             "join x.database as d " +
                             "join x.qualifier as q " +
@@ -374,7 +374,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         if (identifier == null){
             throw new IllegalArgumentException("The identifier cannot be null.");
         }
-        Query query = getEntityManager().createQuery("select i from "+getIntactClass()+" i " +
+        Query query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
                 "where i.ac = :id");
         query.setParameter("id", identifier);
         Collection<T> interactors = query.getResultList();
@@ -382,8 +382,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             return interactors;
         }
         else{
-            query = getEntityManager().createQuery("select distinct i from "+getIntactClass()+" i " +
-                    "join i.persistentXrefs as x " +
+            query = getEntityManager().createQuery("select distinct i from "+getIntactClass().getSimpleName()+" i " +
+                    "join i.dbXrefs as x " +
                     "join x.qualifier as q " +
                     "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
                     "and x.id = :id");

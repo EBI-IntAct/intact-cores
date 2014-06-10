@@ -6,7 +6,6 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -35,21 +34,21 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByShortName(String value) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f " +
                 "where f.shortName = :name");
         query.setParameter("name",value);
         return query.getResultList();
     }
 
     public Collection<F> getByShortNameLike(String value) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass()+" f " +
+        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f " +
                 "where upper(f.shortName) like :name");
         query.setParameter("name","%"+value.toUpperCase()+"%");
         return query.getResultList();
     }
 
     public Collection<F> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.dbXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -57,7 +56,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.dbXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
@@ -98,7 +97,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbXrefs as x " +
                     "join x.database as dat " +
                     "join dat.dbXrefs as xref " +
@@ -115,7 +114,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.dbXrefs as x " +
                     "join x.database as d " +
                     "where d.shortName = :dbName " +
@@ -130,7 +129,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.dbXrefs as xref " +
@@ -148,7 +147,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.dbXrefs as xref " +
@@ -173,7 +172,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -195,7 +194,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -205,7 +204,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -225,7 +224,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -244,7 +243,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.dbXrefs as xref " +
@@ -262,7 +261,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join dat.dbXrefs as xref " +
@@ -287,7 +286,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -309,7 +308,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                         "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "where d.shortName = :dbName " +
@@ -319,7 +318,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
                         "join x.qualifier as qual " +
@@ -339,7 +338,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+                query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
@@ -357,7 +356,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "join t.dbXrefs as xref " +
@@ -372,7 +371,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("mi", topicMI);
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
@@ -384,7 +383,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByAnnotationTopicAndValue(String topicName, String topicMI, String value) {
         Query query;
         if (topicMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "join t.dbXrefs as xref " +
@@ -402,7 +401,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.annotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName"+(value != null ? " and a.value = :annotValue" : ""));
@@ -415,7 +414,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByAliasName(String name) {
-        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.aliases as s " +
                 "where s.name = :name");
         query.setParameter("name", name);
@@ -423,7 +422,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByAliasNameLike(String name) {
-        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                 "join f.aliases as s " +
                 "where upper(s.name) = :name");
         query.setParameter("name", "%"+name.toUpperCase()+"%");
@@ -433,14 +432,14 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByAliasTypeAndName(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.aliases as s " +
                     "where s.type is null " +
                     "and s.name = :name");
             query.setParameter("name", name);
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.aliases as s " +
                     "join s.type as t " +
                     "join t.dbXrefs as xref " +
@@ -457,7 +456,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("name", name);
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.aliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -471,14 +470,14 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByAliasTypeAndNameLike(String typeName, String typeMI, String name) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.aliases as s " +
                     "where s.type is null " +
                     "and upper(s.name) like :name");
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                     "join f.aliases as s " +
                     "join s.type as t " +
                     "join t.dbXrefs as xref " +
@@ -495,7 +494,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("name", "%"+name.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.aliases as s " +
                     "join s.type as t " +
                     "where t.shortName = :typeName " +
@@ -507,8 +506,8 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByInterproIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f " +
-                "join f.persistentXrefs as x " +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
+                "join f.dbXrefs as x " +
                 "join x.database as dat " +
                 "join dat.dbXrefs as xref " +
                 "join x.qualifier as qual " +
@@ -536,11 +535,11 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByFeatureType(String typeName, String typeMI) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                     "where f.type is null");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.type as t " +
                     "join t.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -554,7 +553,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("mi", typeMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.type as t " +
                     "where t.shortName = :typeName");
             query.setParameter("typeName", typeName);
@@ -565,11 +564,11 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByInteractionEffect(String effectName, String effectMI) {
         Query query;
         if (effectName == null && effectMI == null){
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                     "where f.interactionEffect is null");
         }
         else if (effectMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.interactionEffect as ie " +
                     "join ie.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -583,7 +582,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("mi", effectMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.interactionEffect as ie " +
                     "where ie.shortName = :effectName");
             query.setParameter("effectName", effectName);
@@ -598,7 +597,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                     "where f.interactionDependency is null");
         }
         else if (dependencyMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.interactionDependency as id " +
                     "join id.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -612,7 +611,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("mi", dependencyMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from "+getEntityClass()+" f "  +
+            query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
                     "join f.interactionDependency as id " +
                     "where id.shortName = :dependencyName");
             query.setParameter("dependencyName", dependencyName);
@@ -621,7 +620,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByParticipantAc(String ac) {
-        Query query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+        Query query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                 "join f.participant as p " +
                 "where p.ac = :ac ");
         query.setParameter("ac",ac);
@@ -629,7 +628,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByIsLinkProperty(boolean isLinked) {
-        Query query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+        Query query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                 "where r.link = :isLinked ");
         query.setParameter("isLinked",isLinked);
         return query.getResultList();
@@ -638,7 +637,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByRangeStartStatus(String statusName, String statusMI) {
         Query query;
         if (statusMI != null){
-            query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join r.start.status as s " +
                     "join s.dbXrefs as x " +
@@ -653,7 +652,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("mi", statusMI);
         }
         else{
-            query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join r.start.status as s " +
                     "where s.shortName = :statusName");
@@ -665,7 +664,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByEndStatus(String statusName, String statusMI) {
         Query query;
         if (statusMI != null){
-            query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join r.end.status as s " +
                     "join s.dbXrefs as x " +
@@ -680,7 +679,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("mi", statusMI);
         }
         else{
-            query = getEntityManager().createQuery("select r from IntactRange r " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join r.end.status as s " +
                     "where s.shortName = :statusName");
@@ -693,7 +692,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         Query query;
         if (startMI != null){
             if (endMI != null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.start.status as s " +
                         "join r.end.status as s2 " +
@@ -716,7 +715,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("mi2", endMI);
             }
             else{
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.start.status as s " +
                         "join r.end.status as s2 " +
@@ -735,13 +734,13 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             }
         }
         else{
-            query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join r.start.status as s " +
                     "where s.shortName = :startName");
             query.setParameter("startName", startName);
             if (endMI != null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.start.status as s2 " +
                         "join r.end.status as s " +
@@ -759,7 +758,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("startName", startName);
             }
             else{
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.end.status as s " +
                         "join r.start.status as s2 " +
@@ -773,7 +772,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByResultingSequenceXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+        Query query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                 "join f.ranges as r " +
                 "join r.resultingSequence.xrefs as x " +
                 "where x.id = :primaryId");
@@ -782,7 +781,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     public Collection<F> getByResultingSequenceXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+        Query query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                 "join f.ranges as r " +
                 "join r.resultingSequence.xrefs as x " +
                 "where upper(x.id) like :primaryId");
@@ -793,7 +792,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByResultingSequenceXref(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join r.resultingSequence.xrefs as x " +
                     "join x.database as dat " +
@@ -811,7 +810,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("primary", primaryId);
         }
         else{
-            query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join cv.dbXrefs as x " +
                     "join x.database as d " +
@@ -826,7 +825,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     public Collection<F> getByResultingSequenceXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
-            query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join r.resultingSequence.xrefs as x " +
                     "join x.database as dat " +
@@ -844,7 +843,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
             query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
         }
         else{
-            query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+            query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                     "join f.ranges as r " +
                     "join r.dbXrefs as x " +
                     "join x.database as d " +
@@ -860,7 +859,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
@@ -879,7 +878,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
@@ -905,7 +904,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
@@ -928,7 +927,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as d " +
@@ -939,7 +938,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", primaryId);
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
@@ -960,7 +959,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", primaryId);
             }
             else{
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as d " +
@@ -980,7 +979,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         Query query;
         if (dbMI != null){
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
@@ -999,7 +998,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
@@ -1025,7 +1024,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
@@ -1048,7 +1047,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
         }
         else{
             if (qualifierName == null && qualifierMI == null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as d " +
@@ -1059,7 +1058,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else if (qualifierMI != null){
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as dat " +
@@ -1080,7 +1079,7 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
             else{
-                query = getEntityManager().createQuery("select f from " + getEntityClass() + " f " +
+                query = getEntityManager().createQuery("select f from " + getEntityClass().getSimpleName() + " f " +
                         "join f.ranges as r " +
                         "join r.resultingSequence.xrefs as x " +
                         "join x.database as d " +

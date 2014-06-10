@@ -144,7 +144,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                         "join f.dbXrefs as x " +
                         "join x.database as dat " +
-                        "join dat.persistentXrefs as xref " +
+                        "join dat.dbXrefs as xref " +
                         "join xref.database as d " +
                         "join xref.qualifier as q " +
                         "where x.qualifier is null " +

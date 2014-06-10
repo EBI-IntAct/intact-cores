@@ -435,4 +435,26 @@ public class IntactTestUtils {
 
         return organism;
     }
+
+    public static IntactSource createIntactSource() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactSource source = new IntactSource("IntAct","MI:0469");
+        source.setFullName("Molecular Interaction Database");
+        source.getSynonyms().add(createAliasSynonym(SourceAlias.class));
+        source.getXrefs().add(createXrefSeeAlso(SourceXref.class));
+        source.setUrl("http://www.ebi.ac.uk/intact/");
+        source.setPostalAddress("postalAddress");
+        source.setPublication(new IntactPublication("12345"));
+        return source;
+    }
+
+    public static Source createSource() {
+        Source source = new DefaultSource("IntAct","MI:0469");
+        source.setFullName("Molecular Interaction Database");
+        source.getSynonyms().add(createAliasSynonym());
+        source.getXrefs().add(createXrefSeeAlso());
+        source.setUrl("http://www.ebi.ac.uk/intact/");
+        source.setPostalAddress("postalAddress");
+        source.setPublication(new DefaultPublication("12345"));
+        return source;
+    }
 }

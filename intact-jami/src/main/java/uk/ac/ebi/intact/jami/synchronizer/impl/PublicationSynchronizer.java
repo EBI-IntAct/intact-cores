@@ -143,7 +143,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
            return null;
         }
         else if (authors.isEmpty()){
-            query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
+            query = getEntityManager().createQuery("select p from "+getIntactClass().getSimpleName()+" p " +
                     "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
                     "and "+(journal != null ? "upper(p.journal) = :journal":"p.journal is null ") +
                     "and p.publicationDate "+(publicationDate != null ? "= :pubDate":"is null "));
@@ -158,8 +158,8 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
             }
         }
         else {
-            query = getEntityManager().createQuery("select distinct p from "+getIntactClass()+" p " +
-                    "join p.persistentAnnotations as a "+
+            query = getEntityManager().createQuery("select distinct p from "+getIntactClass().getSimpleName()+" p " +
+                    "join p.dbAnnotations as a "+
                     "join a.topic as topic "+
                     "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
                     "and "+(journal != null ? "upper(p.journal) = :journal ":"p.journal is null ") +
@@ -192,7 +192,7 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
     protected I fetchByIdentifier(String identifier, String source, boolean checkAc) throws BridgeFailedException {
         Query query;
         if (checkAc){
-            query = getEntityManager().createQuery("select p from "+getIntactClass()+" p " +
+            query = getEntityManager().createQuery("select p from "+getIntactClass().getSimpleName()+" p " +
                     "where p.ac = :id");
             query.setParameter("id", identifier);
             Collection<I> publications = query.getResultList();
@@ -201,8 +201,8 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
             }
         }
 
-        query = getEntityManager().createQuery("select distinct p from "+getIntactClass()+" p " +
-                "join p.persistentXrefs as x " +
+        query = getEntityManager().createQuery("select distinct p from "+getIntactClass().getSimpleName()+" p " +
+                "join p.dbXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
                 "where (q.shortName = :identity or q.shortName = :secondaryAc or q.shortName = :primary) " +
@@ -226,8 +226,8 @@ public class PublicationSynchronizer<I extends IntactPublication> extends Abstra
 
     protected I fetchByImexId(String imex) throws FinderException {
 
-        Query query = getEntityManager().createQuery("select distinct p from "+getIntactClass()+" p " +
-                "join p.persistentXrefs as x " +
+        Query query = getEntityManager().createQuery("select distinct p from "+getIntactClass().getSimpleName()+" p " +
+                "join p.dbXrefs as x " +
                 "join x.database as d " +
                 "join x.qualifier as q " +
                 "where q.shortName = :imexPrimary " +

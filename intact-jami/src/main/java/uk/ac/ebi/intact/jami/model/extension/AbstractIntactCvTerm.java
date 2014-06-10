@@ -330,7 +330,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     }
 
     protected void initialiseAnnotations(){
-        this.annotations = new CvTermAnnotationList();
+        instantiateAnnotations();
 
         // initialise persistent annotations and content
         if (this.persistentAnnotations != null){
@@ -343,6 +343,10 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         else{
             this.persistentAnnotations = new PersistentAnnotationList(null);
         }
+    }
+
+    protected void instantiateAnnotations() {
+        this.annotations = new CvTermAnnotationList();
     }
 
     protected abstract boolean processAddedAnnotations(Annotation annot);
