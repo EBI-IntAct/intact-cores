@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.*;
 import psidev.psi.mi.jami.utils.*;
+import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
@@ -456,5 +457,18 @@ public class IntactTestUtils {
         source.setPostalAddress("postalAddress");
         source.setPublication(new DefaultPublication("12345"));
         return source;
+    }
+
+    public static <T extends AbstractLifecycleEvent> T createIntactLifeCycleEvent(Class<T> lifecycleEventClass, String evtName, User user, String note)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        T evt = lifecycleEventClass.getConstructor(CvTerm.class, User.class, String.class).newInstance(IntactUtils.createLifecycleEvent(evtName),
+                user, note);
+        return evt;
+    }
+
+    public static <T extends AbstractLifecycleEvent> T createIntactNewLifeCycleEvent(Class<T> lifecycleEventClass)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return createIntactLifeCycleEvent(lifecycleEventClass, "NEW", createCuratorUser(), "new event");
     }
 }
