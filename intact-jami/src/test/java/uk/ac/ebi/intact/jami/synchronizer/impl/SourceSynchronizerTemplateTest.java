@@ -96,8 +96,7 @@ public class SourceSynchronizerTemplateTest extends AbstractDbSynchronizerTest<S
     public void test_shortlabel_synch() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         persist();
         this.entityManager.flush();
-        this.synchronizer.clearCache();
-       Source sameLabel = IntactTestUtils.createIntactSource();
+        Source sameLabel = IntactTestUtils.createIntactSource();
         sameLabel.setMIIdentifier("MI:xxxx");
        sameLabel = ((SourceSynchronizer) this.synchronizer).synchronize(sameLabel, true);
         this.entityManager.flush();
