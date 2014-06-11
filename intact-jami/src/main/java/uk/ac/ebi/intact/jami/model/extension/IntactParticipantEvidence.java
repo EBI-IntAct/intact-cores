@@ -38,7 +38,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("participant_evidence")
 @ForceDiscriminator
-@Where(clause = "category = 'participant_evidence' or category = 'participant_evidence_pool'")
+@Where(clause = "category = 'participant_evidence'")
 public class IntactParticipantEvidence extends AbstractIntactParticipant<InteractionEvidence, FeatureEvidence> implements ParticipantEvidence{
 
     private Collection<CvTerm> persistentIdentificationMethods;

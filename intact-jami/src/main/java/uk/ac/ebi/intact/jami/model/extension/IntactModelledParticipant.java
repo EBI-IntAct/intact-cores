@@ -32,7 +32,7 @@ import java.util.Collection;
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("modelled_participant")
 @ForceDiscriminator
-@Where(clause = "category = 'modelled_participant' or category = 'modelled_participant_pool'")
+@Where(clause = "category = 'modelled_participant'")
 public class IntactModelledParticipant extends AbstractIntactParticipant<ModelledInteraction, ModelledFeature> implements ModelledParticipant{
 
     private Collection<CvTerm> experimentalRoles;
