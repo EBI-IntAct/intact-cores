@@ -22,6 +22,9 @@ import java.util.*;
 /**
  * Default synchronizer for complexes
  *
+ * NOTE: when we want to persist cooperative effects, we would remove the transcient property in the IntActConmplex
+ * and uncomment the prepareCooperativeEffects
+ *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>21/01/14</pre>
@@ -103,7 +106,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         // then check participants
         prepareParticipants(intactComplex);
         // then check cooperative effects
-        prepareCooperativeEffects(intactComplex);
+        //prepareCooperativeEffects(intactComplex);
         // prepare status
         prepareStatusAndCurators(intactComplex);
         // prepare lifecycle

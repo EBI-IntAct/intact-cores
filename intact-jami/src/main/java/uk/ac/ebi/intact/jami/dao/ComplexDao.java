@@ -22,7 +22,7 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
 
     public Collection<IntactComplex> getByConfidence(String typeName, String typeMI, String value);
 
-    public Collection<IntactComplex> getByCooperativeEffectAnnotationTopic(String topicName, String topicMI);
+    /*public Collection<IntactComplex> getByCooperativeEffectAnnotationTopic(String topicName, String topicMI);
 
     public Collection<IntactComplex> getByCooperativeEffectAnnotationTopicAndValue(String topicName, String topicMI, String value);
 
@@ -40,7 +40,7 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
 
     public Collection<IntactComplex> getByAllostericMoleculeEffectorAc(String ac);
 
-    public Collection<IntactComplex> getByAllostericFeatureModificationEffectorAc(String ac);
+    public Collection<IntactComplex> getByAllostericFeatureModificationEffectorAc(String ac);*/
 
     public Collection<IntactComplex> getByParameterType(String typeName, String typeMI);
 
@@ -48,11 +48,11 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
 
     public Collection<IntactComplex> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
 
-    public Collection<IntactComplex> getByCooperativityEvidenceMethod(String methodName, String methodMI);
+    /*public Collection<IntactComplex> getByCooperativityEvidenceMethod(String methodName, String methodMI);
 
     public Collection<IntactComplex> getByCooperativityEvidencePublicationPubmed(String pubmed);
 
     public Collection<IntactComplex> getByCooperativityEvidencePublicationDoi(String doi);
 
-    public Collection<IntactComplex> getByCooperativityEvidencePublicationAc(String ac);
+    public Collection<IntactComplex> getByCooperativityEvidencePublicationAc(String ac);*/
 }

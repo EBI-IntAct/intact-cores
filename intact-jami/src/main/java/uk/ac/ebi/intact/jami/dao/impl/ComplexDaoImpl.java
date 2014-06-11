@@ -135,7 +135,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         return query.getResultList();
     }
 
-    public Collection<IntactComplex> getByCooperativeEffectAnnotationTopic(String topicName, String topicMI) {
+    /*public Collection<IntactComplex> getByCooperativeEffectAnnotationTopic(String topicName, String topicMI) {
         Query query;
         if (topicMI != null){
             query = getEntityManager().createQuery("select distinct f from IntactComplex f "  +
@@ -341,7 +341,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 "where c.ac = :featureAc");
         query.setParameter("featureAc", ac);
         return query.getResultList();
-    }
+    } */
 
     public Collection<IntactComplex> getByParameterType(String typeName, String typeMI) {
         Query query;
@@ -504,7 +504,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         return query.getResultList();
     }
 
-    public Collection<IntactComplex> getByCooperativityEvidenceMethod(String methodName, String methodMI) {
+    /*public Collection<IntactComplex> getByCooperativityEvidenceMethod(String methodName, String methodMI) {
         Query query;
         if (methodMI != null){
             query = getEntityManager().createQuery("select distinct comp from IntactComplex comp " +
@@ -579,5 +579,5 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 "where p.ac = :pubAc");
         query.setParameter("pubAc", ac);
         return query.getResultList();
-    }
+    } */
 }

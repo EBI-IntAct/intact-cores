@@ -328,11 +328,15 @@ public class IntactComplex extends IntactInteractor implements Complex{
         return this.parameters;
     }
 
-    @OneToMany( orphanRemoval = true,
+    /*@OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = AbstractIntactCooperativeEffect.class)
     @JoinColumn(name="complex_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(AbstractIntactCooperativeEffect.class)
+    @Target(AbstractIntactCooperativeEffect.class)*/
+    @Transient
+    /**
+     * For the time being, cooperative effects are not persisted in IntAct. We may want to do so in the future using the commented hibernate mapping
+     */
     public Collection<CooperativeEffect> getCooperativeEffects() {
         if (cooperativeEffects == null){
             initialiseCooperativeEffects();
