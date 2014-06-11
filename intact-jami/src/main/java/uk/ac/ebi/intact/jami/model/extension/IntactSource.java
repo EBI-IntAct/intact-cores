@@ -41,9 +41,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     private Annotation postalAddress;
     private Publication bibRef;
 
-    private String persistentUrl;
-    private String persistentPostalAddress;
-
     protected IntactSource(){
         super();
     }
@@ -101,28 +98,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         setUrl(url);
         setPostalAddress(address);
         this.bibRef = bibRef;
-    }
-
-    @PrePersist
-    @PreUpdate
-    /**
-     * This method is only for backward compatibility with intact-core. Once intact-core is removed (or editor updated) and the database columns removed,
-     * this method can be safely deleted
-     */
-    public void prePersist() {
-        if (this.url != null){
-            this.persistentUrl = this.url.getValue();
-        }
-        else{
-            this.persistentUrl = null;
-        }
-
-        if (this.postalAddress != null){
-            this.persistentPostalAddress = this.postalAddress.getValue();
-        }
-        else{
-            this.persistentPostalAddress = null;
-        }
     }
 
     @Column(name = "shortlabel", nullable = false, unique = true)
@@ -280,24 +255,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         return false;
     }
 
-    @Column(name = "url")
-    /**
-     * @deprecated use getURL instead
-     */
-    @Deprecated
-    protected String getDbURL() {
-        return persistentUrl;
-    }
-
-    @Column(name = "postaladdress")
-    /**
-     * @deprecated use getPostalAdress instead
-     */
-    @Deprecated
-    protected String getDbPostalAddress() {
-        return persistentPostalAddress;
-    }
-
     private void processAddedAnnotationEvent(Annotation added) {
         processAddedAnnotations(added);
     }
@@ -309,26 +266,6 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         else if (postalAddress != null && postalAddress.equals(removed)){
             postalAddress = null;
         }
-    }
-
-    /**
-     *
-     * @param persistentURL
-     * @deprecated this method is used only for backward compatibility with intact-core. Use setURL instead
-     */
-    @Deprecated
-    private void setDbURL(String persistentURL) {
-        this.persistentUrl = persistentURL;
-    }
-
-    /**
-     *
-     * @param persistentPostalAddress
-     * @deprecated this method is used only for backward compatibility with intact-core. Use setPostalAddress instead
-     */
-    @Deprecated
-    private void setDbPostalAddress(String persistentPostalAddress) {
-        this.persistentPostalAddress = persistentPostalAddress;
     }
 
 
