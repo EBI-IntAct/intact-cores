@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import psidev.psi.mi.jami.model.CvTerm;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Implementation of alias for entities and participants
@@ -16,6 +17,7 @@ import javax.persistence.Entity;
  * @since <pre>08/01/14</pre>
  */
 @Entity
+@Table(name = "ia_component_alias")
 public class ParticipantEvidenceAlias extends AbstractIntactAlias {
 
     protected ParticipantEvidenceAlias() {
