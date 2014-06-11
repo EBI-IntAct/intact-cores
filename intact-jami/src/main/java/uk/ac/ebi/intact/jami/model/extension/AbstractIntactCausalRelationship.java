@@ -56,7 +56,7 @@ public abstract class AbstractIntactCausalRelationship<T extends Participant> ex
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class, optional = false)
-    @JoinColumn( name = "relationtype_ac", referencedColumnName = "ac" )
+    @JoinColumn( name = "relation_type_ac", referencedColumnName = "ac" )
     @Target(IntactCvTerm.class)
     @NotNull
     public CvTerm getRelationType() {
