@@ -374,6 +374,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         this.availability = availability;
     }
 
+    @Transient
     public boolean isNegative() {
         if (this.annotations == null){
             initialiseAnnotations();
