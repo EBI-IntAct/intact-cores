@@ -48,7 +48,7 @@ import java.util.*;
  * @since <pre>13/01/14</pre>
  */
 @javax.persistence.Entity
-@Table( name = "ia_simple_publication" )
+@Table( name = "ia_publication_summary" )
 @Cacheable
 @Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
