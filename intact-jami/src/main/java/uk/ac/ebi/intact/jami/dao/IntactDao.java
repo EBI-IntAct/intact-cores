@@ -59,9 +59,7 @@ public interface IntactDao {
 
     public UserDao getUserDao();
 
-    public PublicationDao<IntactPublication> getPublicationDao();
-
-    public CuratedPublicationDao getCuratedPublicationDao();
+    public PublicationDao getPublicationDao();
 
     public ExperimentDao getExperimentDao();
 

@@ -5,6 +5,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -165,15 +166,28 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         }
     }
 
-    @ManyToOne( targetEntity = IntactPublication.class)
+    /*@ManyToOne( targetEntity = IntactPublication.class)
     @JoinColumn( name = "publication_ac", referencedColumnName = "ac")
-    @Target(IntactPublication.class)
+    @Target(IntactPublication.class) */
+    @Transient
     public Publication getPublication() {
+        // initialise refs
+        getXrefs();
         return this.bibRef;
     }
 
     public void setPublication(Publication ref) {
+        if (this.bibRef != null){
+            getDbXrefs().removeAll(this.bibRef.getIdentifiers());
+        }
         this.bibRef = ref;
+        if (!ref.getIdentifiers().isEmpty()){
+            resetXrefs();
+            for (Xref primary : this.bibRef.getIdentifiers()){
+                getDbXrefs().add(new SourceXref(primary.getDatabase(), primary.getId(), primary.getVersion(),
+                        IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI)));
+            }
+        }
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = SourceAlias.class)
@@ -253,6 +267,37 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
             postalAddress = annot;
         }
         return false;
+    }
+
+    @Override
+    protected void processAddedXrefEvent(Xref ref) {
+        if (this.bibRef == null && XrefUtils.doesXrefHaveQualifier(ref, Xref.PRIMARY_MI, Xref.PRIMARY)){
+             this.bibRef = new IntactPublication(ref);
+        }
+        else if (XrefUtils.doesXrefHaveQualifier(ref, Xref.PRIMARY_MI, Xref.PRIMARY)){
+            this.bibRef.getIdentifiers().add(ref);
+        }
+    }
+
+    @Override
+    protected void processRemovedXrefEvent(Xref removed) {
+        if (this.bibRef != null && this.bibRef.getIdentifiers().contains(removed)){
+            this.bibRef.getIdentifiers().remove(removed);
+            if (this.bibRef.getIdentifiers().isEmpty()){
+                this.bibRef = null;
+            }
+        }
+    }
+
+    @Override
+    protected void clearPropertiesLinkedToXrefs() {
+        this.bibRef = null;
+    }
+
+    @Override
+    protected void setDbXrefs(Collection<Xref> persistentXrefs) {
+        super.setDbXrefs(persistentXrefs);
+        this.bibRef = null;
     }
 
     private void processAddedAnnotationEvent(Annotation added) {

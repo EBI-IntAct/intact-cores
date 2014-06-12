@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.dao;
 
-import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 
 import java.util.Collection;
@@ -42,7 +41,7 @@ public interface ExperimentDao extends IntactBaseDao<IntactExperiment> {
 
     public Collection<IntactExperiment> getByAnnotationTopicAndValue(String topicName, String topicMI, String value);
 
-    public Collection<IntactCuratedPublication> getByVariableParameterDescription(String description);
+    public Collection<IntactExperiment> getByVariableParameterDescription(String description);
 
     public Collection<IntactExperiment> getByPublicationAc(String ac);
 }

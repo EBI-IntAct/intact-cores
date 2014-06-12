@@ -5,8 +5,8 @@ import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ExperimentDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -470,7 +470,7 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
         return query.getResultList();
     }
 
-    public Collection<IntactCuratedPublication> getByVariableParameterDescription(String description) {
+    public Collection<IntactExperiment> getByVariableParameterDescription(String description) {
         Query query = getEntityManager().createQuery("select distinct e from IntactExperiment e " +
                 "join e.variableParameters as p " +
                 "where p.description = :desc");

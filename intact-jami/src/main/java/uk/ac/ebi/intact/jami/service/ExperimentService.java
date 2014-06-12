@@ -9,7 +9,7 @@ import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactCuratedPublication;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -66,12 +66,12 @@ public class ExperimentService implements IntactService<Experiment>{
         // create publication first in the database if not done
         if (pub != null){
             // transcient publication to persist first
-            if (!(pub instanceof IntactCuratedPublication)
-                    || intactDAO.getCuratedPublicationDao().isTransient((IntactCuratedPublication)pub)){
-                IntactCuratedPublication intactCuratedPub = new IntactCuratedPublication();
+            if (!(pub instanceof IntactPublication)
+                    || intactDAO.getPublicationDao().isTransient((IntactPublication)pub)){
+                IntactPublication intactCuratedPub = new IntactPublication();
                 PublicationCloner.copyAndOverridePublicationProperties(pub, intactCuratedPub);
 
-                intactDAO.getCuratedPublicationDao().persist(intactCuratedPub);
+                intactDAO.getPublicationDao().persist(intactCuratedPub);
                 intactCuratedPub.addExperiment(object);
             }
         }

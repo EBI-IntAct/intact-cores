@@ -222,9 +222,7 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<User, User> getUserReadOnlySynchronizer();
 
-    public IntactDbSynchronizer<Publication, IntactPublication> getSimplePublicationSynchronizer();
-
-    public IntactDbSynchronizer<Publication, IntactCuratedPublication> getPublicationSynchronizer();
+    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer();
 
     public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer();
 

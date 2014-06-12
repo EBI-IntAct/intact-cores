@@ -1,11 +1,9 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Target;
+import org.hibernate.annotations.*;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
@@ -16,10 +14,19 @@ import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
+import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -39,18 +46,14 @@ import java.util.*;
  * can use it this way before persistence. The access type of DbAnnotations is private as it does not have to be used by the synchronizers neither.
  * NOTE: authors are stored as an annotation
  *
- * Future improvements: it would be nice to have both curated publications and simple publications in the same table in the future with
- * @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
- * @DiscriminatorValue("simple_publication")
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>13/01/14</pre>
  */
-@javax.persistence.Entity
-@Table( name = "ia_publication_summary" )
+@Entity
+@Table(name = "ia_publication")
 @Cacheable
-@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
     private String title;
     private String journal;
@@ -72,6 +75,12 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private PersistentAnnotationList persistentAnnotations;
 
     private Xref acRef;
+
+    private String shortLabel;
+    private List<LifeCycleEvent> lifecycleEvents;
+    private CvTerm status;
+    private User currentOwner;
+    private User currentReviewer;
 
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
@@ -245,7 +254,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    @Column( name = "title", length = IntactUtils.MAX_FULL_NAME_LEN )
+    @Column( name = "fullname", length = IntactUtils.MAX_FULL_NAME_LEN )
     @Size( max = IntactUtils.MAX_FULL_NAME_LEN )
     public String getTitle() {
         return this.title;
@@ -256,28 +265,110 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
 
-    @Column( name = "journal", length = IntactUtils.MAX_FULL_NAME_LEN )
-    @Size( max = IntactUtils.MAX_FULL_NAME_LEN )
+    /**
+     * For backward compatibility, it is not persistent and kept as annotation.
+     * In the future, should become
+     * @Column( name = "journal", length = IntactUtils.MAX_FULL_NAME_LEN )
+     * @Size( max = IntactUtils.MAX_FULL_NAME_LEN )
+     */
+    @Transient
     public String getJournal() {
+        // initialise annotations first
+        getAnnotations();
         return this.journal;
     }
 
     public void setJournal(String journal) {
-        this.journal = journal;
+        Collection<Annotation> dbAnnots = getDbAnnotations();
+
+        // add new journal if not null
+        if (journal != null){
+            CvTerm journalTopic = IntactUtils.createMITopic(Annotation.PUBLICATION_JOURNAL, Annotation.PUBLICATION_JOURNAL_MI);
+            // first remove old journal if not null
+            if (getJournal() != null){
+                Annotation oldJournal = AnnotationUtils.collectFirstAnnotationWithTopicAndValue(getDbAnnotations(), Annotation.PUBLICATION_JOURNAL_MI, Annotation.PUBLICATION_JOURNAL, this.journal);
+                if (oldJournal != null){
+                    oldJournal.setValue(journal);
+                }
+                else{
+                    getDbAnnotations().add(new PublicationAnnotation(journalTopic, journal));
+                }
+            }
+            else{
+                getDbAnnotations().add(new PublicationAnnotation(journalTopic, journal));
+            }
+            this.journal = journal;
+        }
+        // remove all journal if the collection is not empty
+        else if (!dbAnnots.isEmpty()) {
+            AnnotationUtils.removeAllAnnotationsWithTopic(getDbAnnotations(), Annotation.PUBLICATION_JOURNAL_MI, Annotation.PUBLICATION_JOURNAL);
+            this.journal = null;
+        }
     }
 
     /**
      * For backward compatibility, it is not persistent and kept as annotation.
      * In the future, should become
+     * @Temporal(TemporalType.TIMESTAMP)
+     * @Column(name = "publication_date")
      */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "publication_date")
+    @Transient
     public Date getPublicationDate() {
+        // initialise annotations first
+        getAnnotations();
         return this.publicationDate;
     }
 
     public void setPublicationDate(Date date) {
-        this.publicationDate = date;
+        Collection<Annotation> dbAnnots = getDbAnnotations();
+
+        // add new journal if not null
+        if (date != null){
+            CvTerm yearTopic = IntactUtils.createMITopic(Annotation.PUBLICATION_YEAR, Annotation.PUBLICATION_YEAR_MI);
+            // first remove old journal if not null
+            if (getPublicationDate() != null){
+                Annotation oldDate = AnnotationUtils.collectFirstAnnotationWithTopicAndValue(getDbAnnotations(), Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR, IntactUtils.YEAR_FORMAT.format(this.publicationDate));
+                if (oldDate != null){
+                    oldDate.setValue(IntactUtils.YEAR_FORMAT.format(this.publicationDate));
+                }
+                else{
+                    getDbAnnotations().add(new PublicationAnnotation(yearTopic, IntactUtils.YEAR_FORMAT.format(date)));
+                }
+            }
+            else{
+                getDbAnnotations().add(new PublicationAnnotation(yearTopic, IntactUtils.YEAR_FORMAT.format(date)));
+            }
+            this.publicationDate = date;
+        }
+        // remove all pub dates if the collection is not empty
+        else if (!dbAnnots.isEmpty()) {
+            AnnotationUtils.removeAllAnnotationsWithTopic(getDbAnnotations(), Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR);
+            this.publicationDate = null;
+        }
+    }
+
+    @Column(name = "shortLabel", nullable = false, unique = true)
+    @Size( min = 1, max = IntactUtils.MAX_SHORT_LABEL_LEN )
+    @NotNull
+    /**
+     * @deprecated the publication shortLabel is deprecated. We should use getPubmedId or getDoi or getIdentifiers
+     */
+    @Deprecated
+    public String getShortLabel() {
+        return shortLabel;
+    }
+
+    /**
+     * Set the shortlabel
+     * @param shortLabel
+     * @deprecated the shortlabel is deprecated and getPubmedId/getDOI should be used instead
+     */
+    @Deprecated
+    public void setShortLabel( String shortLabel ) {
+        if (shortLabel == null){
+            throw new IllegalArgumentException("The short name cannot be null");
+        }
+        this.shortLabel = shortLabel.trim().toLowerCase();
     }
 
     @Transient
@@ -304,7 +395,9 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.xrefs;
     }
 
-    @Transient
+    @OneToMany( mappedBy = "publication", cascade = { CascadeType.ALL }, targetEntity = IntactExperiment.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(IntactExperiment.class)
     public Collection<Experiment> getExperiments() {
         if (experiments == null){
             initialiseExperiments();
@@ -312,8 +405,16 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return this.experiments;
     }
 
+    /**
+     * For backward compatibility, it is not persistent and kept as annotation.
+     * In the future, should become
+     *  @Enumerated(EnumType.STRING)
+     * @Column(name = "curation_depth", length = IntactUtils.MAX_SHORT_LABEL_LEN)
+     */
     @Transient
     public CurationDepth getCurationDepth() {
+        // initialise annotations first
+        getAnnotations();
         if (this.curationDepth == null){
             this.curationDepth = CurationDepth.undefined;
         }
@@ -322,27 +423,96 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     public void setCurationDepth(CurationDepth curationDepth) {
 
-        if (curationDepth == null && imexId != null) {
-            this.curationDepth = CurationDepth.IMEx;
-        }
-        else if (curationDepth == null) {
-            this.curationDepth = CurationDepth.undefined;
-        }
-        else {
+        Collection<Annotation> dbAnnots = getDbAnnotations();
+
+        // add new curation depth if not null
+        if (curationDepth != null && !curationDepth.equals(CurationDepth.undefined)){
+            CvTerm depthTopic = IntactUtils.createMITopic(Annotation.CURATION_DEPTH, Annotation.CURATION_DEPTH_MI);
+            // first remove old curation depth if not null
+            if (getCurationDepth() != null && !getCurationDepth().equals(CurationDepth.undefined)){
+                Annotation oldDepth = AnnotationUtils.collectFirstAnnotationWithTopic(getDbAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
+                if (oldDepth != null){
+                    switch (curationDepth){
+                        case IMEx:
+                            oldDepth.setValue(Annotation.IMEX_CURATION);
+                            break;
+                        case MIMIx:
+                            oldDepth.setValue(Annotation.MIMIX_CURATION);
+                            break;
+                        case rapid_curation:
+                            oldDepth.setValue(Annotation.RAPID_CURATION);
+                            break;
+                        default:
+                            getDbAnnotations().remove(oldDepth);
+                    }
+                }
+                else{
+                    switch (curationDepth){
+                        case IMEx:
+                            getDbAnnotations().add(new PublicationAnnotation(depthTopic, Annotation.IMEX_CURATION));
+                            break;
+                        case MIMIx:
+                            getDbAnnotations().add(new PublicationAnnotation(depthTopic, Annotation.MIMIX_CURATION));
+                            break;
+                        case rapid_curation:
+                            getDbAnnotations().add(new PublicationAnnotation(depthTopic, Annotation.CURATION_DEPTH));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            else{
+                switch (curationDepth){
+                    case IMEx:
+                        getDbAnnotations().add(new PublicationAnnotation(depthTopic, Annotation.IMEX_CURATION));
+                        break;
+                    case MIMIx:
+                        getDbAnnotations().add(new PublicationAnnotation(depthTopic, Annotation.MIMIX_CURATION));
+                        break;
+                    case rapid_curation:
+                        getDbAnnotations().add(new PublicationAnnotation(depthTopic, Annotation.CURATION_DEPTH));
+                        break;
+                    default:
+                        break;
+                }
+            }
             this.curationDepth = curationDepth;
+        }
+        // remove all curation depth if the collection is not empty
+        else if (!dbAnnots.isEmpty()) {
+            AnnotationUtils.removeAllAnnotationsWithTopic(getDbAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
+            this.curationDepth = CurationDepth.undefined;
         }
     }
 
     @Transient
+    /**
+     * For backward compatibility, it is not persistent and kept as annotation.
+     * In the future, should become
+     * @Temporal(TemporalType.TIMESTAMP)
+     * @Column(name = "released_date")
+     */
     public Date getReleasedDate() {
+        // initialise lifecycle events first
+        if (this.releasedDate == null && !getLifecycleEvents().isEmpty()){
+            initialiseReleasedDate();
+        }
         return this.releasedDate;
     }
 
     public void setReleasedDate(Date released) {
         this.releasedDate = released;
+        for (LifeCycleEvent evt : getLifecycleEvents()){
+            if (LifeCycleEvent.RELEASED.equalsIgnoreCase(evt.getEvent().getShortName())){
+                evt.setWhen(released);
+            }
+        }
     }
 
-    @Transient
+    @ManyToOne(targetEntity = IntactSource.class)
+    @JoinColumn( name = "owner_ac", nullable = false, referencedColumnName = "ac" )
+    @Target(IntactSource.class)
     public Source getSource() {
         return this.source;
     }
@@ -407,6 +577,59 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             }
             return removed;
         }
+    }
+
+    @OneToMany( orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifecycleEvent.class)
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @OrderBy("when, created")
+    @Target(PublicationLifecycleEvent.class)
+    public List<LifeCycleEvent> getLifecycleEvents() {
+        if (this.lifecycleEvents == null){
+            this.lifecycleEvents = new ArrayList<LifeCycleEvent>();
+        }
+        return lifecycleEvents;
+    }
+
+    @ManyToOne(targetEntity = IntactCvTerm.class)
+    @JoinColumn( name = "status_ac", referencedColumnName = "ac" )
+    @ForeignKey(name="FK_PUBLICATION_STATUS")
+    @Target(IntactCvTerm.class)
+    public CvTerm getStatus() {
+        return status;
+    }
+
+    public void setStatus( CvTerm status ) {
+        this.status = status;
+    }
+
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "owner_pk", referencedColumnName = "ac" )
+    @ForeignKey(name="FK_PUBLICATION_OWNER")
+    @Target(User.class)
+    public User getCurrentOwner() {
+        return currentOwner;
+    }
+
+    public void setCurrentOwner( User currentOwner ) {
+        this.currentOwner = currentOwner;
+    }
+
+    @ManyToOne( targetEntity = User.class )
+    @JoinColumn( name = "reviewer_pk", referencedColumnName = "ac" )
+    @ForeignKey(name="FK_PUBLICATION_REVIEWER")
+    @Target(User.class)
+    public User getCurrentReviewer() {
+        return currentReviewer;
+    }
+
+    public void setCurrentReviewer( User currentReviewer ) {
+        this.currentReviewer = currentReviewer;
+    }
+
+    @Transient
+    public boolean areLifecycleEventsInitialized(){
+        return Hibernate.isInitialized(getLifecycleEvents());
     }
 
     @Override
@@ -611,6 +834,34 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
                 getAuthors().add(added.getValue());
             }
         }
+        // journal
+        else if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.PUBLICATION_JOURNAL_MI, Annotation.PUBLICATION_JOURNAL) && added.getValue() != null){
+            this.journal = added.getValue();
+        }
+        // publication year
+        else if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR) && added.getValue() != null){
+            try {
+                this.publicationDate = IntactUtils.YEAR_FORMAT.parse(added.getValue());
+            } catch (ParseException e) {
+                e.printStackTrace();
+                this.publicationDate = null;
+            }
+        }
+        // curation depth
+        else if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH) && added.getValue() != null){
+            if (Annotation.IMEX_CURATION.equalsIgnoreCase(added.getValue())){
+                this.curationDepth = CurationDepth.IMEx;
+            }
+            else if (Annotation.MIMIX_CURATION.equalsIgnoreCase(added.getValue())){
+                this.curationDepth = CurationDepth.MIMIx;
+            }
+            else if (Annotation.RAPID_CURATION.equalsIgnoreCase(added.getValue())){
+                this.curationDepth = CurationDepth.rapid_curation;
+            }
+            else{
+                this.curationDepth = CurationDepth.undefined;
+            }
+        }
     }
 
     protected void clearPropertiesLinkedToAnnotations() {
@@ -619,6 +870,32 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         if (authorList != null){
             this.persistentAnnotations.add(authorList);
         }
+
+        Annotation publicationJournal = AnnotationUtils.collectFirstAnnotationWithTopic(getDbAnnotations(), Annotation.PUBLICATION_JOURNAL_MI, Annotation.PUBLICATION_JOURNAL);
+        Annotation publicationYear = AnnotationUtils.collectFirstAnnotationWithTopic(getDbAnnotations(), Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR);
+        Annotation curationDepth = AnnotationUtils.collectFirstAnnotationWithTopic(getDbAnnotations(), Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH);
+
+        if (publicationJournal != null){
+            getDbAnnotations().add(publicationJournal);
+        }
+        if (publicationYear != null){
+            getDbAnnotations().add(publicationYear);
+        }
+        if (curationDepth != null){
+            getDbAnnotations().add(curationDepth);
+        }
+    }
+
+    private void initialiseReleasedDate() {
+        for (LifeCycleEvent evt : getLifecycleEvents()){
+            if (LifeCycleEvent.RELEASED.equalsIgnoreCase(evt.getEvent().getShortName())){
+                this.releasedDate = evt.getWhen();
+            }
+        }
+    }
+
+    private void setLifecycleEvents( List<LifeCycleEvent> lifecycleEvents ) {
+        this.lifecycleEvents = lifecycleEvents;
     }
 
     protected void setExperiments(Collection<Experiment> experiments) {

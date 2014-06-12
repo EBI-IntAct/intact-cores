@@ -160,15 +160,15 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
             if (exp == null){
                 createExperiment(intactComplex, "14681455");
                 exp = intactComplex.getExperiments().iterator().next();
-                ((IntactCuratedPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
             }
             else if (exp.getPublication() == null){
-                exp.setPublication(new IntactCuratedPublication("14681455"));
-                ((IntactCuratedPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+                exp.setPublication(new IntactPublication("14681455"));
+                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
             }
             else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("14681455")){
-                exp.setPublication(new IntactCuratedPublication("14681455"));
-                ((IntactCuratedPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
+                exp.setPublication(new IntactPublication("14681455"));
+                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
             }
         }
 
@@ -246,7 +246,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     private void createExperiment(IntactComplex intactComplex, String pubmed) throws FinderException, PersisterException, SynchronizerException {
         // create default experiment with publication unassigned for complexes
-        IntactExperiment defaultExperiment = new IntactExperiment(new IntactCuratedPublication(pubmed));
+        IntactExperiment defaultExperiment = new IntactExperiment(new IntactPublication(pubmed));
         // inferred by curator
         defaultExperiment.setInteractionDetectionMethod(IntactUtils.createMIInteractionDetectionMethod(Experiment.INFERRED_BY_CURATOR, Experiment.INFERRED_BY_CURATOR_MI));
         // use host organism of interaction

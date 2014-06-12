@@ -91,8 +91,6 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         prepareAliases(intactSource);
         // then check annotations
         prepareAnnotations(intactSource);
-        // then publication
-        preparePublication(intactSource);
         // then check xrefs
         prepareXrefs(intactSource);
     }
@@ -311,30 +309,6 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                 if (cvAlias != alias){
                     intactSource.getSynonyms().remove(alias);
                     intactSource.getSynonyms().add(cvAlias);
-                }
-            }
-        }
-    }
-
-    protected void preparePublication(IntactSource intactSource) throws PersisterException, FinderException, SynchronizerException {
-       Publication pub = intactSource.getPublication();
-        XrefUtils.collectAllXrefsHavingQualifier(intactSource.getXrefs(), Xref.PRIMARY_MI, Xref.PRIMARY);
-        if (pub != null){
-            intactSource.setPublication(getContext().getSimplePublicationSynchronizer().synchronize(pub, true));
-
-            // add primary ref
-            if (pub.getPubmedId() != null){
-                Xref primaryRef = new SourceXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), pub.getPubmedId(),
-                        IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI));
-                if (!intactSource.getXrefs().contains(primaryRef)){
-                    intactSource.getXrefs().add(primaryRef);
-                }
-            }
-            else if (pub.getDoi() != null){
-                Xref primaryRef = new SourceXref(IntactUtils.createMIDatabase(Xref.DOI, Xref.DOI_MI), pub.getDoi(),
-                        IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI));
-                if (!intactSource.getXrefs().contains(primaryRef)){
-                    intactSource.getXrefs().add(primaryRef);
                 }
             }
         }

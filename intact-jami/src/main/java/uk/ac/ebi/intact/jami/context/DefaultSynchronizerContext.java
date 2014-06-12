@@ -103,8 +103,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private IntactDbSynchronizer<User, User> userSynchronizer;
 
     // publication synchronizers
-    private IntactDbSynchronizer<Publication, IntactPublication> simplePublicationSynchronizer;
-    private IntactDbSynchronizer<Publication, IntactCuratedPublication> publicationSynchronizer;
+    private IntactDbSynchronizer<Publication, IntactPublication> publicationSynchronizer;
 
     // experiment synchronizers
     private IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer;
@@ -725,16 +724,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return userSynchronizer;
     }
 
-    public IntactDbSynchronizer<Publication, IntactPublication> getSimplePublicationSynchronizer() {
-        if (this.simplePublicationSynchronizer == null){
-            this.simplePublicationSynchronizer = new PublicationSynchronizer<IntactPublication>(this, IntactPublication.class);
-        }
-        return simplePublicationSynchronizer;
-    }
-
-    public IntactDbSynchronizer<Publication, IntactCuratedPublication> getPublicationSynchronizer() {
+    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer() {
         if (this.publicationSynchronizer == null){
-            this.publicationSynchronizer = new CuratedPublicationSynchronizer(this);
+            this.publicationSynchronizer = new PublicationSynchronizer(this);
         }
         return publicationSynchronizer;
     }

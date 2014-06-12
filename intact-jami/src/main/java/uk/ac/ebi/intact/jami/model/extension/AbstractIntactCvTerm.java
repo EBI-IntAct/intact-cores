@@ -281,6 +281,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
                 }
                 else{
                     this.xrefs.addOnly(ref);
+                    processAddedXrefEvent(ref);
                 }
             }
         }
@@ -298,6 +299,10 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             }
             this.identifiers.addOnly(this.acRef);
         }
+    }
+
+    protected void processAddedXrefEvent(Xref ref) {
+        // nothing to do
     }
 
     @javax.persistence.Transient
@@ -319,13 +324,11 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
     protected void setDbXrefs(Collection<Xref> persistentXrefs){
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
-            this.identifiers = null;
-            this.xrefs = null;
+            resetXrefs();
         }
         else{
             this.persistentXrefs = new PersistentXrefList(persistentXrefs);
-            this.identifiers = null;
-            this.xrefs = null;
+            resetXrefs();
         }
     }
 
@@ -451,10 +454,26 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         }
     }
 
+    protected void processRemovedXrefEvent(Xref removed) {
+        // nothing to do
+    }
+
     protected void clearPropertiesLinkedToIdentifiers() {
         miIdentifier = null;
         modIdentifier = null;
         parIdentifier = null;
+    }
+
+    protected void clearPropertiesLinkedToXrefs() {
+        // nothing to do
+    }
+
+    protected void resetXrefs(){
+        this.identifiers = null;
+        this.xrefs = null;
+        this.miIdentifier = null;
+        this.modIdentifier = null;
+        this.parIdentifier = null;
     }
 
     protected class CvTermIdentifierList extends AbstractListHavingProperties<Xref> {
@@ -499,16 +518,19 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
 
         @Override
         protected void processAddedObjectEvent(Xref added) {
+            processAddedXrefEvent(added);
             persistentXrefs.add(added);
         }
 
         @Override
         protected void processRemovedObjectEvent(Xref removed) {
+            processRemovedXrefEvent(removed);
             persistentXrefs.remove(removed);
         }
 
         @Override
         protected void clearProperties() {
+            clearPropertiesLinkedToXrefs();
             persistentXrefs.retainAll(getIdentifiers());
         }
     }

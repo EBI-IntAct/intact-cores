@@ -48,7 +48,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
             return this.persistedObjects.get(experiment);
         }
         else{
-            IntactCuratedPublication fetchedPublication = null;
+            IntactPublication fetchedPublication = null;
             if (experiment.getPublication() != null){
                 fetchedPublication = getContext().getPublicationSynchronizer().find(experiment.getPublication());
                 // the publication does not exist so the experiment does not exist

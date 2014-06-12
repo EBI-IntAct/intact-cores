@@ -29,7 +29,7 @@ public class PublicationService implements IntactService<Publication>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll() {
-        return this.intactDAO.getCuratedPublicationDao().countAll();
+        return this.intactDAO.getPublicationDao().countAll();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -39,12 +39,12 @@ public class PublicationService implements IntactService<Publication>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Publication> fetchIntactObjects(int first, int max) {
-        return new ArrayList<Publication>(this.intactDAO.getCuratedPublicationDao().getAll("ac", first, max));
+        return new ArrayList<Publication>(this.intactDAO.getPublicationDao().getAll("ac", first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public long countAll(String countQuery, Map<String, Object> parameters) {
-        return this.intactDAO.getCuratedPublicationDao().countByQuery(countQuery, parameters);
+        return this.intactDAO.getPublicationDao().countByQuery(countQuery, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -54,7 +54,7 @@ public class PublicationService implements IntactService<Publication>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Publication> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
-        return new ArrayList<Publication>(this.intactDAO.getCuratedPublicationDao().getByQuery(query, parameters, first, max));
+        return new ArrayList<Publication>(this.intactDAO.getPublicationDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

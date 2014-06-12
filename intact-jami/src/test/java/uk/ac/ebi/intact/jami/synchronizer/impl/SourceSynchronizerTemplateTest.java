@@ -127,7 +127,6 @@ public class SourceSynchronizerTemplateTest extends AbstractDbSynchronizerTest<S
         Assert.assertNull(entityManager.find(SourceAlias.class, ((SourceAlias) objectToTest.getSynonyms().iterator().next()).getAc()));
         Assert.assertNull(entityManager.find(SourceXref.class, ((SourceXref) objectToTest.getDbXrefs().iterator().next()).getAc()));
         Assert.assertNull(entityManager.find(SourceAnnotation.class, ((SourceAnnotation) objectToTest.getDbAnnotations().iterator().next()).getAc()));
-        Assert.assertNotNull(entityManager.find(IntactPublication.class, ((IntactPublication) objectToTest.getPublication()).getAc()));
     }
 
     @Override
@@ -160,7 +159,7 @@ public class SourceSynchronizerTemplateTest extends AbstractDbSynchronizerTest<S
         Assert.assertEquals(2, objectToTest.getIdentifiers().size());
         Assert.assertEquals(3, objectToTest.getDbXrefs().size());
         Assert.assertNotNull(objectToTest.getPublication());
-        Assert.assertNotNull(((IntactPublication)objectToTest.getPublication()).getAc());
+        Assert.assertNull(((IntactPublication)objectToTest.getPublication()).getAc());
         Assert.assertTrue(objectToTest.getXrefs().contains(XrefUtils.createPrimaryXref(Xref.PUBMED, Xref.PUBMED_MI, "12345")));
         Assert.assertTrue(objectToTest.getXrefs().contains(XrefUtils.createXrefWithQualifier(Xref.IMEX, Xref.IMEX_MI, "IM-1-1",
                 Xref.SEE_ALSO, Xref.SEE_ALSO_MI)));
@@ -186,7 +185,7 @@ public class SourceSynchronizerTemplateTest extends AbstractDbSynchronizerTest<S
         Assert.assertEquals(1, objectToTest.getIdentifiers().size());
         Assert.assertEquals(3, objectToTest.getDbXrefs().size());
         Assert.assertNotNull(objectToTest.getPublication());
-        Assert.assertNotNull(((IntactPublication)objectToTest.getPublication()).getAc());
+        Assert.assertNull(((IntactPublication)objectToTest.getPublication()).getAc());
         Assert.assertTrue(objectToTest.getXrefs().contains(XrefUtils.createPrimaryXref(Xref.PUBMED, Xref.PUBMED_MI, "12345")));
         Assert.assertTrue(objectToTest.getXrefs().contains(XrefUtils.createXrefWithQualifier(Xref.IMEX, Xref.IMEX_MI, "IM-1-1",
                 Xref.SEE_ALSO, Xref.SEE_ALSO_MI)));
