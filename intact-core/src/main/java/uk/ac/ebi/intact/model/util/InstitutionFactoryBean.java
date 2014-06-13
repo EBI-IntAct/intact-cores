@@ -50,8 +50,6 @@ public class InstitutionFactoryBean implements FactoryBean {
 
         Institution institution = new Institution(name);
         institution.setFullName(description);
-        institution.setPostalAddress(address);
-        institution.setUrl(url);
 
         IntactMockBuilder mockBuilder = new IntactMockBuilder(institution);
 
@@ -70,6 +68,13 @@ public class InstitutionFactoryBean implements FactoryBean {
             CvTopic cvUrl = CvObjectUtils.createCvObject(institution, CvTopic.class, CvTopic.URL_MI_REF, CvTopic.URL);
 
             Annotation annotation = mockBuilder.createAnnotation( url, cvUrl);
+            institution.addAnnotation(annotation);
+        }
+
+        if (address != null) {
+            CvTopic cvAddress = new CvTopic("postaladdress");
+
+            Annotation annotation = new Annotation( cvAddress, address);
             institution.addAnnotation(annotation);
         }
 

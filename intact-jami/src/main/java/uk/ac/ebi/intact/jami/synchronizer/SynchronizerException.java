@@ -25,8 +25,4 @@ public class SynchronizerException extends Exception{
     public SynchronizerException(Throwable cause) {
         super(cause);
     }
-
-    protected SynchronizerException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

@@ -167,6 +167,15 @@ public class IntactInitializer implements ApplicationContextAware{
     public void persistInstitution(Institution candidateInstitution, boolean isDefault) {
         Institution institution = institutionDao.getByShortLabel(candidateInstitution.getShortLabel());
 
+        CvDatabase intact = daoFactory.getCvObjectDao(CvDatabase.class).getByIdentifier(CvDatabase.INTACT_MI_REF);
+        CvXrefQualifier identity = daoFactory.getCvObjectDao(CvXrefQualifier.class).getByIdentifier(CvXrefQualifier.IDENTITY_MI_REF);
+
+        if (identity == null && isAutoPersist()){
+            createCvIfMissing(CvXrefQualifier.class, CvXrefQualifier.IDENTITY_MI_REF, CvXrefQualifier.IDENTITY, null);
+        }
+        if (intact == null && isAutoPersist()){
+            createCvIfMissing(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null);
+        }
         if (institution == null && isAutoPersist()) {
             if (log.isDebugEnabled()) log.debug("Persisting institution: "+candidateInstitution);
             corePersister.saveOrUpdate(candidateInstitution);
@@ -221,7 +230,6 @@ public class IntactInitializer implements ApplicationContextAware{
             log.info("Persisting necessary CvObjects");
 
             final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-            createCvIfMissing(CvDatabase.class, CvDatabase.INTACT_MI_REF, CvDatabase.INTACT, null);
             CvTopic usedInClass = createCvIfMissing(CvTopic.class, null, CvTopic.USED_IN_CLASS, null);
             addUsedInClass(usedInClass, usedInClass, CvObject.class.getName());
 

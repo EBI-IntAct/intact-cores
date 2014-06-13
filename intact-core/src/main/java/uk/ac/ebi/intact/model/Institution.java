@@ -5,6 +5,8 @@
  */
 package uk.ac.ebi.intact.model;
 
+import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
@@ -35,17 +37,6 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
 
     ///////////////////////////////////////
     //attributes
-
-    /**
-     * Postal address.
-     * Format: One string with line breaks.
-     */
-    protected String postalAddress;
-
-    /**
-     * TODO comments
-     */
-    protected String url;
 
     ///////////////////////////////////////
     // Constructors
@@ -78,21 +69,24 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
     ///////////////////////////////////////
     // access methods for attributes
 
-
+    @Transient
+    @Deprecated
+    /**
+     * @deprecated now it is always stored as a simple annotation
+     */
     public String getPostalAddress() {
-        return postalAddress;
+        Annotation annot = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(this, "postaladdress");
+        return annot != null ? annot.getAnnotationText() : null;
     }
 
-    public void setPostalAddress(String postalAddress) {
-        this.postalAddress = postalAddress;
-    }
-
+    @Transient
+    @Deprecated
+    /**
+     * @deprecated now it is always stored as a simple annotation
+     */
     public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+        Annotation annot = AnnotatedObjectUtils.findAnnotationByTopicMiOrLabel(this, CvTopic.URL_MI_REF);
+        return annot != null ? annot.getAnnotationText() : null;
     }
 
     @OneToMany( mappedBy = "parent", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -139,17 +133,10 @@ public class Institution extends AnnotatedObjectImpl<InstitutionXref,Institution
 
         Institution that = (Institution) o;
 
-        if (postalAddress != null ? !postalAddress.equals(that.postalAddress) : that.postalAddress != null)
-            return false;
-        if (url != null ? !url.equals(that.url) : that.url != null) return false;
-
         return true;
     }
 
     public int hashCode() {
-        int result;
-        result = (postalAddress != null ? postalAddress.hashCode() : 0);
-        result = 31 * result + (url != null ? url.hashCode() : 0);
         return 31*super.hashCode();
     }
 

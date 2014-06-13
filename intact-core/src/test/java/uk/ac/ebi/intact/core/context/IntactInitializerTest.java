@@ -50,10 +50,10 @@ public class IntactInitializerTest extends IntactBasicTestCase {
     @Test
     public void idtestInit() {
         Assert.assertEquals(4, institutionDao.countAll());
-        Assert.assertEquals(38, cvObjectDao.countAll());
+        Assert.assertEquals(39, cvObjectDao.countAll());
 
         CvTopic correctionComment = getDaoFactory().getCvObjectDao(CvTopic.class).getByShortLabel(CvTopic.CORRECTION_COMMENT);
-        Assert.assertTrue(CvObjectUtils.isHidden(correctionComment));
+        Assert.assertFalse(CvObjectUtils.isHidden(correctionComment));
         CvPublicationStatus released = getDaoFactory().getCvObjectDao(CvPublicationStatus.class).getByShortLabel("released");
         Assert.assertEquals(1, released.getXrefs().size());
         Assert.assertEquals(CvDatabase.INTACT, released.getXrefs().iterator().next().getCvDatabase().getShortLabel());

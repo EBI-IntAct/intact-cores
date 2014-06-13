@@ -395,9 +395,6 @@ public abstract class AbstractIntactCloner {
 
         clonerManager.addClone(institution, clone);
 
-        clone.setUrl(institution.getUrl());
-        clone.setPostalAddress(institution.getPostalAddress());
-
         return clone;
     }
 

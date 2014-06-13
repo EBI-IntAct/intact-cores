@@ -22,9 +22,9 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.TransientObjectException;
 import org.hibernate.ejb.HibernateEntityManager;
-import org.hibernate.engine.EntityEntry;
-import org.hibernate.engine.Status;
-import org.hibernate.impl.SessionImpl;
+import org.hibernate.engine.spi.EntityEntry;
+import org.hibernate.engine.spi.Status;
+import org.hibernate.internal.SessionImpl;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.annotations.IntactFlushMode;
@@ -44,7 +44,6 @@ import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.InteractionUtils;
 
 import javax.persistence.FlushModeType;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -674,9 +673,9 @@ public class CorePersisterImpl implements CorePersister {
             if (ise.getCause() instanceof TransientObjectException) {
 
                 final SessionImpl session = (SessionImpl) ((HibernateEntityManager) daoFactory.getEntityManager()).getSession();
-                final Map<?, EntityEntry> entityEntries = session.getPersistenceContext().getEntityEntries();
+                final Map.Entry<Object, EntityEntry>[] entityEntries = session.getPersistenceContext().reentrantSafeEntityEntries();
 
-                for (Map.Entry<?, EntityEntry> entry : entityEntries.entrySet()) {
+                for (Map.Entry<Object, EntityEntry> entry : entityEntries) {
                     EntityEntry entityEntry = entry.getValue();
                     Status entityStatus = entityEntry.getStatus();
 

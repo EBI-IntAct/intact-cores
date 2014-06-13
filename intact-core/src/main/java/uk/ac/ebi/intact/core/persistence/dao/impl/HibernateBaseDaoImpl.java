@@ -12,6 +12,7 @@ import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.ejb.HibernateEntityManager;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
@@ -21,6 +22,7 @@ import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.model.NotAnEntityException;
 
 import javax.persistence.*;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -94,12 +96,17 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      */
     @Transactional(readOnly = true)
     public String getDbName() throws SQLException {
-        String url = getSession().connection().getMetaData().getURL();
+        String url = null;
+        HibernateEntityManager hFactory = (HibernateEntityManager)getEntityManager();
+        if (hFactory.getSession() != null) {
+            SessionImplementor settings = (SessionImplementor)hFactory.getSession();
+            Connection connection = settings.connection();
+            url = connection.getMetaData().getURL();
+        }
 
         if ( url.contains( ":" ) ) {
             url = url.substring( url.lastIndexOf( ":" ) + 1, url.length() );
         }
-        getSession().connection().close();
         return url;
     }
 
@@ -149,8 +156,14 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      */
     @Transactional(readOnly = true)
     public String getDbUserName() throws SQLException {
-        final String name = getSession().connection().getMetaData().getUserName();
-        getSession().connection().close();
+        String name = null;
+        HibernateEntityManager hFactory = (HibernateEntityManager)getEntityManager();
+        if (hFactory.getSession() != null) {
+            SessionImplementor settings = (SessionImplementor)hFactory.getSession();
+            Connection connection = settings.connection();
+            String dbURL = connection.getMetaData().getURL();
+            name = connection.getMetaData().getUserName();
+        }
         return name;
     }
 

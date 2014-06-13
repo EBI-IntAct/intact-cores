@@ -198,18 +198,21 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         T existingInstance = find((I)persistentObject);
         // cache object to persist if allowed
         storeInCache(originalObject, persistentObject, existingInstance);
-        // synchronize before persisting
-        synchronizeProperties(persistentObject);
         // merge existing persistent instance with the other instance
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
-                return getIntactMerger().merge(persistentObject, existingInstance);
+                T mergedObject = getIntactMerger().merge(persistentObject, existingInstance);
+                // synchronize before persisting
+                synchronizeProperties(mergedObject);
+                return mergedObject;
             }
             // we only return the existing instance if no merge allowed
             return existingInstance;
         }
         else{
+            // synchronize before persisting
+            synchronizeProperties(persistentObject);
             if (persist){
                 persistObject(persistentObject);
             }

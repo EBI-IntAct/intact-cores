@@ -25,8 +25,4 @@ public class FinderException extends Exception {
     public FinderException(Throwable cause) {
         super(cause);
     }
-
-    protected FinderException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

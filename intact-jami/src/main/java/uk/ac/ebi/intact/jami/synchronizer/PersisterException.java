@@ -25,8 +25,4 @@ public class PersisterException extends Exception {
     public PersisterException(Throwable cause) {
         super(cause);
     }
-
-    protected PersisterException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
