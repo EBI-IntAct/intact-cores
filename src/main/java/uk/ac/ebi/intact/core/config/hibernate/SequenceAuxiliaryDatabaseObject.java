@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.core.config.hibernate;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.engine.Mapping;
+import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.AbstractAuxiliaryDatabaseObject;
 
 import java.lang.reflect.Method;

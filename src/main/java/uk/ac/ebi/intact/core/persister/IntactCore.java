@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.core.persister;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.CollectionSecondPass;
-import org.hibernate.collection.PersistentCollection;
+import org.hibernate.collection.spi.PersistentCollection;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.*;
@@ -95,7 +95,7 @@ public class IntactCore {
     /**
      * Initializes the AnnotatedObject collections (xrefs, aliases, annotations).
      *
-     * @param ao The annotatedObject
+     * @param cv The annotatedObject
      */
     public static void initializeCvObject(CvObject cv) {
         initializeAnnotatedObject(cv);

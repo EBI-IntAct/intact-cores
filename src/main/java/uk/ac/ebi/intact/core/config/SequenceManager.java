@@ -21,7 +21,7 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.Oracle8iDialect;
 import org.hibernate.dialect.Oracle9Dialect;
 import org.hibernate.ejb.HibernateEntityManagerFactory;
-import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.config.hibernate.SequenceAuxiliaryDatabaseObject;
@@ -64,8 +64,7 @@ public class SequenceManager {
 
     @PostConstruct
     public void init() {
-        HibernateEntityManagerFactory hemf = (HibernateEntityManagerFactory) entityManagerFactory;
-        this.dialect = ((SessionFactoryImplementor) hemf.getSessionFactory()).getDialect();
+        this.dialect = ((SessionFactoryImplementor) ((HibernateEntityManagerFactory) entityManagerFactory).getSessionFactory()).getDialect();
     }
 
     /**

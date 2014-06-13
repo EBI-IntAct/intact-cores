@@ -7,9 +7,11 @@
  *
  */
 
-package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.model.*;
+package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.model.*;
 
 import com.agitar.lib.junit.AgitarTestCase;
+import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 
 public class InstitutionAgitarTest extends AgitarTestCase {
@@ -80,7 +82,7 @@ public class InstitutionAgitarTest extends AgitarTestCase {
 
     public void testGetPostalAddress() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
-        institution.setPostalAddress( "testInstitutionPostalAddress" );
+        institution.getAnnotations().add(new Annotation(new CvTopic("postaladdress"), "testInstitutionPostalAddress"));
         String result = institution.getPostalAddress();
         assertEquals( "result", "testInstitutionPostalAddress", result );
     }
@@ -97,7 +99,8 @@ public class InstitutionAgitarTest extends AgitarTestCase {
 
     public void testGetUrl() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
-        institution.setUrl( "testInstitutionUrl" );
+        institution.getAnnotations().add(new Annotation(CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(),
+                CvTopic.class, CvTopic.URL_MI_REF, CvTopic.URL), "testInstitutionUrl"));
         String result = institution.getUrl();
         assertEquals( "result", "testInstitutionUrl", result );
     }
@@ -115,7 +118,7 @@ public class InstitutionAgitarTest extends AgitarTestCase {
 
     public void testSetPostalAddress() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
-        institution.setPostalAddress( "testInstitutionPostalAddress" );
+        institution.getAnnotations().add(new Annotation(new CvTopic("postaladdress"), "testInstitutionPostalAddress"));
         assertEquals( "institution.postalAddress", "testInstitutionPostalAddress", institution.getPostalAddress() );
     }
 
@@ -127,7 +130,8 @@ public class InstitutionAgitarTest extends AgitarTestCase {
 
     public void testSetUrl() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
-        institution.setUrl( "testInstitutionUrl" );
+        institution.getAnnotations().add(new Annotation(CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(),
+                CvTopic.class, CvTopic.URL_MI_REF, CvTopic.URL), "testInstitutionUrl"));
         assertEquals( "institution.url", "testInstitutionUrl", institution.getUrl() );
     }
 
