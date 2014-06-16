@@ -37,7 +37,6 @@ import java.util.List;
 @Table(name = "ia_component")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("participant_evidence")
-@ForceDiscriminator
 @Where(clause = "category = 'participant_evidence'")
 public class IntactParticipantEvidence extends AbstractIntactParticipant<InteractionEvidence, FeatureEvidence> implements ParticipantEvidence{
 

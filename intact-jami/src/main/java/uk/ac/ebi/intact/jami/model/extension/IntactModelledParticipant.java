@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForceDiscriminator;
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
@@ -31,7 +30,6 @@ import java.util.Collection;
 @Table(name = "ia_component")
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("modelled_participant")
-@ForceDiscriminator
 @Where(clause = "category = 'modelled_participant'")
 public class IntactModelledParticipant extends AbstractIntactParticipant<ModelledInteraction, ModelledFeature> implements ModelledParticipant{
 
