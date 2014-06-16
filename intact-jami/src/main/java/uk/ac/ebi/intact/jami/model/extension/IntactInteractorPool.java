@@ -155,7 +155,7 @@ public class IntactInteractorPool extends IntactInteractor implements Interactor
 
     @ManyToMany(targetEntity=IntactInteractor.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinTable(
-            name="ia_interactor_pool2interactor",
+            name="ia_pool2interactor",
             joinColumns=@JoinColumn(name="interactor_pool_ac"),
             inverseJoinColumns=@JoinColumn(name="interactor_ac")
     )

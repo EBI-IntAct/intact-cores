@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_modelled_resulting_sequence_xref" )
+@Table( name = "ia_mod_sequence_xref" )
 public class ModelledResultingSequenceXref extends AbstractIntactXref{
 
     public ModelledResultingSequenceXref() {

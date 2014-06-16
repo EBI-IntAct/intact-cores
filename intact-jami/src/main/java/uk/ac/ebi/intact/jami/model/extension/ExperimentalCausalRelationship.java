@@ -16,7 +16,7 @@ import javax.persistence.Table;
  * @since <pre>14/01/14</pre>
  */
 @Entity
-@Table(name = "ia_experimental_causal_relationship")
+@Table(name = "ia_exp_causal_relations")
 public class ExperimentalCausalRelationship extends AbstractIntactCausalRelationship<Participant> implements CausalRelationship {
 
     protected ExperimentalCausalRelationship(){

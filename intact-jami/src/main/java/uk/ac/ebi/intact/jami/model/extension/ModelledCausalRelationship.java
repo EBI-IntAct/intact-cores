@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
  * @since <pre>14/01/14</pre>
  */
 @Entity
-@Table(name = "ia_modelled_causal_relationship")
+@Table(name = "ia_mod_causal_relations")
 public class ModelledCausalRelationship extends AbstractIntactCausalRelationship<ModelledParticipant> implements CausalRelationship {
 
     protected ModelledCausalRelationship(){

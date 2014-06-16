@@ -24,7 +24,7 @@ import java.util.Collection;
  * @since <pre>09/01/14</pre>
  */
 @Entity
-@Table(name = "ia_variable_parameter_value")
+@Table(name = "ia_var_parameter_value")
 public class IntactVariableParameterValue extends AbstractAuditable implements VariableParameterValue {
 
     private String value;

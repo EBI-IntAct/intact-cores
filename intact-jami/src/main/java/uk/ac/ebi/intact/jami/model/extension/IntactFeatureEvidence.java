@@ -150,7 +150,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
 
     @ManyToMany( targetEntity = IntactCvTerm.class)
     @JoinTable(
-            name="ia_feature2detection_method",
+            name="ia_feature2method",
             joinColumns = @JoinColumn( name="feature_ac"),
             inverseJoinColumns = @JoinColumn( name="method_ac")
     )
@@ -196,7 +196,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
     @Override
     @ManyToMany( targetEntity = IntactFeatureEvidence.class)
     @JoinTable(
-            name="ia_feature_evidence2linkedfeature",
+            name="ia_expfeature2feature",
             joinColumns = @JoinColumn( name="feature_evidence_ac"),
             inverseJoinColumns = @JoinColumn( name="linked_feature_ac")
     )

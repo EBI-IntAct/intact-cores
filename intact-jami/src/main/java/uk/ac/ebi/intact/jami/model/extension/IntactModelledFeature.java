@@ -120,7 +120,7 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
     @Override
     @ManyToMany( targetEntity = IntactModelledFeature.class)
     @JoinTable(
-            name="ia_modelled_feature2linked_feature",
+            name="ia_modfeature2feature",
             joinColumns = @JoinColumn( name="modelled_feature_ac"),
             inverseJoinColumns = @JoinColumn( name="linked_feature_ac")
     )

@@ -23,7 +23,7 @@ import java.util.Set;
  * @since <pre>09/01/14</pre>
  */
 @Entity
-@Table(name = "ia_interaction_var_parameters")
+@Table(name = "ia_interaction_varparam")
 public class IntactVariableParameterValueSet extends AbstractAuditable implements VariableParameterValueSet {
 
     private Long id;
@@ -125,7 +125,7 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
 
     @ManyToMany( targetEntity = IntactVariableParameterValue.class, cascade = CascadeType.MERGE)
     @JoinTable(
-            name="ia_varset2parametervalue",
+            name="ia_varset2paramvalue",
             joinColumns = @JoinColumn( name="varset_id"),
             inverseJoinColumns = @JoinColumn( name="parametervalue_id")
     )

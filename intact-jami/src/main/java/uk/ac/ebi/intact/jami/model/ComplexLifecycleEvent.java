@@ -14,7 +14,7 @@ import java.util.Date;
  * @version $Id$
  */
 @Entity
-@Table( name = "ia_complex_lifecycle_event" )
+@Table( name = "ia_complex_lcycle_evt" )
 public class ComplexLifecycleEvent extends AbstractLifecycleEvent {
 
     public ComplexLifecycleEvent() {
