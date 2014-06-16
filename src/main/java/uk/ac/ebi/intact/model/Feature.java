@@ -12,7 +12,6 @@ import uk.ac.ebi.intact.core.util.HashCodeUtils;
 import uk.ac.ebi.intact.model.util.ComplexUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -405,8 +404,7 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         this.component = component;
     }
 
-    @Column(name = "category", nullable = false)
-    @NotNull
+    @Column(name = "category")
     private String getCategory() {
         return category;
     }

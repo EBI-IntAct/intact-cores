@@ -12,7 +12,6 @@ import org.hibernate.annotations.DiscriminatorFormula;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -362,8 +361,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         return result;
     }
 
-    @Column(name = "category", nullable = false)
-    @NotNull
+    @Column(name = "category")
     private String getCategory() {
         return category;
     }
