@@ -205,7 +205,7 @@ public class IntactCore {
     public static Collection<? extends Alias> ensureInitializedAliases(AnnotatedObject<?, ?> ao) {
         Collection<? extends Alias> aliases;
 
-        if (IntactCore.isInitialized(ao.getXrefs())) {
+        if (IntactCore.isInitialized(ao.getAliases())) {
             aliases = ao.getAliases();
         } else {
             aliases = IntactContext.getCurrentInstance().getDaoFactory().getAliasDao(AnnotatedObjectUtils.getAliasClassType(ao.getClass()))
