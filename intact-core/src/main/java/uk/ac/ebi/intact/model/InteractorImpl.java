@@ -362,11 +362,11 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
     }
 
     @Column(name = "category")
-    private String getCategory() {
+    protected String getCategory() {
         return category;
     }
 
-    private void setCategory(String category) {
+    protected void setCategory(String category) {
         this.category = category;
     }
 } // end Interactor
