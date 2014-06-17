@@ -892,11 +892,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     }
 
     @Column(name = "category")
-    protected String getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    protected void setCategory(String category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 }
