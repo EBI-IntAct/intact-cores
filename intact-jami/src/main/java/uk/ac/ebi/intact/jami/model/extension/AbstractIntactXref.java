@@ -95,7 +95,7 @@ public abstract class AbstractIntactXref extends AbstractIntactPrimaryObject imp
     ///////////////////////////////////////
     //access methods for attributes
 
-    @Column(name = "id", nullable = false, length = IntactUtils.MAX_ID_LEN)
+    @Column(name = "primaryid", nullable = false, length = IntactUtils.MAX_ID_LEN)
     @Size(max = IntactUtils.MAX_ID_LEN)
     public String getId() {
         return id;
