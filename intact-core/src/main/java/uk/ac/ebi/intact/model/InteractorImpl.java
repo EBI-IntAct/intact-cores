@@ -121,7 +121,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         if (CvObjectUtils.isProteinType(interactorType)
                 || CvObjectUtils.isPeptideType(interactorType)) {
             setObjClass(ProteinImpl.class.getName());
-            setCategory("protein");
+            setObjType("protein");
         } else if (CvObjectUtils.isInteractionType(interactorType)) {
             setObjClass(InteractionImpl.class.getName());
 
@@ -136,42 +136,42 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
                 }
 
                 if (hasCuratedComplex){
-                    setCategory("complex");
+                    setObjType("complex");
                 }
                 else{
-                    setCategory("interaction_evidence");
+                    setObjType("interaction_evidence");
                 }
             }
             // we consider that we have an interaction evidence if the category is not set
             else if (this.category == null){
-                setCategory("interaction_evidence");
+                setObjType("interaction_evidence");
             }
 
         } else if (CvObjectUtils.isSmallMoleculeType(interactorType)
                 || CvObjectUtils.isPolysaccharideType(interactorType)) {
             setObjClass(SmallMoleculeImpl.class.getName());
-            setCategory("bioactive_entity");
+            setObjType("bioactive_entity");
         } else if (CvObjectUtils.isNucleicAcidType(interactorType)) {
             setObjClass(NucleicAcidImpl.class.getName());
-            setCategory("nucleic_acid");
+            setObjType("nucleic_acid");
         } else if (CvObjectUtils.isGeneType(interactorType)) {
             setObjClass(InteractorImpl.class.getName());
-            setCategory("gene");
+            setObjType("gene");
         } else if (CvObjectUtils.isComplexType(interactorType)) {
             // only set the type to interactorImpl if it is not set and/or is not interactionImpl
             if (this.objClass == null || !this.objClass.equals(InteractionImpl.class.getName())){
                 setObjClass(InteractorImpl.class.getName());
             }
-            setCategory("complex");
+            setObjType("complex");
         }else if (CvObjectUtils.isMoleculeSetType(interactorType)) {
             setObjClass(InteractorImpl.class.getName());
-            setCategory("interactor_pool");
+            setObjType("interactor_pool");
         }else if (this instanceof Polymer) {
             setObjClass(PolymerImpl.class.getName());
-            setCategory("polymer");
+            setObjType("polymer");
         } else {
             setObjClass(InteractorImpl.class.getName());
-            setCategory("interactor");
+            setObjType("interactor");
         }
     }
 
@@ -362,11 +362,11 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
     }
 
     @Column(name = "objtype")
-    private String getCategory() {
+    private String getObjType() {
         return category;
     }
 
-    private void setCategory(String category) {
+    private void setObjType(String category) {
         this.category = category;
     }
 } // end Interactor

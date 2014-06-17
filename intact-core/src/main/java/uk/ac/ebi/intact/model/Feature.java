@@ -405,11 +405,11 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
     }
 
     @Column(name = "objtype")
-    private String getCategory() {
+    private String getObjType() {
         return category;
     }
 
-    private void setCategory(String category) {
+    private void setObjType(String category) {
         this.category = category;
     }
 }
