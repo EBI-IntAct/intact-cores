@@ -404,12 +404,12 @@ public class Feature extends AnnotatedObjectImpl<FeatureXref, FeatureAlias> impl
         this.component = component;
     }
 
-    @Column(name = "category")
-    public String getCategory() {
+    @Column(name = "objtype")
+    private String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    private void setCategory(String category) {
         this.category = category;
     }
 }
