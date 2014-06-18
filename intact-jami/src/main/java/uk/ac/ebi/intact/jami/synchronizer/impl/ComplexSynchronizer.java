@@ -310,4 +310,12 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         InteractorCloner.copyAndOverrideComplexProperties(object, newInteractor, false, false);
         return newInteractor;
     }
+
+    @Override
+    public void deleteRelatedProperties(IntactComplex intactParticipant){
+        for (Object f : intactParticipant.getParticipants()){
+            getContext().getModelledParticipantSynchronizer().delete((ModelledParticipant)f);
+        }
+        intactParticipant.getParticipants().clear();
+    }
 }

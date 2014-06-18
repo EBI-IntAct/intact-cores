@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.PublicationXref;
@@ -442,5 +443,13 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                 }
             }
         }
+    }
+
+    @Override
+    public void deleteRelatedProperties(IntactPublication intactParticipant){
+        for (Experiment f : intactParticipant.getExperiments()){
+            getContext().getExperimentSynchronizer().delete(f);
+        }
+        intactParticipant.getExperiments().clear();
     }
 }

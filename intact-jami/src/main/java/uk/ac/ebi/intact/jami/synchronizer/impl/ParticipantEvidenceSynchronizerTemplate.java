@@ -197,6 +197,19 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
     protected IntactDbSynchronizer getFeatureSynchronizer() {
         return getContext().getFeatureEvidenceSynchronizer();
     }
+
+    @Override
+    public void deleteRelatedProperties(I intactParticipant){
+        super.deleteRelatedProperties(intactParticipant);
+        for (CausalRelationship f : intactParticipant.getRelatedCausalRelationships()){
+            getContext().getExperimentalCausalRelationshipSynchronizer().delete(f);
+        }
+        intactParticipant.getRelatedCausalRelationships().clear();
+        for (Range f : intactParticipant.getRelatedRanges()){
+            f.setParticipant(null);
+        }
+        intactParticipant.getRelatedRanges().clear();
+    }
 }
 
 

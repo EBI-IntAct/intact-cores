@@ -119,6 +119,27 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
             }
         }
     }
+
+    @Override
+    public void deleteRelatedProperties(I intactParticipant){
+        super.deleteRelatedProperties(intactParticipant);
+        for (CausalRelationship f : intactParticipant.getRelatedExperimentalCausalRelationships()){
+            getContext().getExperimentalCausalRelationshipSynchronizer().delete(f);
+        }
+        intactParticipant.getRelatedExperimentalCausalRelationships().clear();
+        for (CausalRelationship f : intactParticipant.getRelatedCausalRelationships()){
+            getContext().getModelledCausalRelationshipSynchronizer().delete(f);
+        }
+        intactParticipant.getRelatedCausalRelationships().clear();
+        for (Range f : intactParticipant.getRelatedRanges()){
+            f.setParticipant(null);
+        }
+        intactParticipant.getRelatedRanges().clear();
+        for (Range f : intactParticipant.getRelatedExperimentalRanges()){
+            f.setParticipant(null);
+        }
+        intactParticipant.getRelatedExperimentalRanges().clear();
+    }
 }
 
 

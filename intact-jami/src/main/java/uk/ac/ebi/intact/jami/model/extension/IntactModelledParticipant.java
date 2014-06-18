@@ -36,6 +36,8 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
     private Collection<CvTerm> experimentalRoles;
     private Collection<CausalRelationship> relatedCausalRelationships;
     private Collection<CausalRelationship> relatedExperimentalCausalRelationships;
+    private Collection<Range> relatedRanges;
+    private Collection<Range> relatedExperimentalRanges;
 
     protected IntactModelledParticipant() {
         super();
@@ -126,6 +128,30 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
         return this.relatedExperimentalCausalRelationships;
     }
 
+    @OneToMany( mappedBy = "participant", targetEntity = ModelledRange.class)
+    @Target(ModelledRange.class)
+    /**
+     * List of modelled ranges pointing to this participant
+     */
+    public Collection<Range> getRelatedRanges(){
+        if (this.relatedRanges == null){
+            this.relatedRanges = new ArrayList<Range>();
+        }
+        return this.relatedRanges;
+    }
+
+    @OneToMany( mappedBy = "modelledParticipant", targetEntity = ExperimentalRange.class)
+    @Target(ExperimentalRange.class)
+    /**
+     * List of experimental ranges pointing to this participant
+     */
+    public Collection<Range> getRelatedExperimentalRanges(){
+        if (this.relatedExperimentalRanges== null){
+            this.relatedExperimentalRanges = new ArrayList<Range>();
+        }
+        return this.relatedExperimentalRanges;
+    }
+
     @Override
     @OneToMany( mappedBy = "participant", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactModelledFeature.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
@@ -180,6 +206,14 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
 
     protected void setRelatedExperimentalCausalRelationships(Collection<CausalRelationship> relatedCausalRelationships) {
         this.relatedExperimentalCausalRelationships = relatedCausalRelationships;
+    }
+
+    protected void setRelatedRanges(Collection<Range> relatedRanges) {
+        this.relatedRanges = relatedRanges;
+    }
+
+    protected void setRelatedExperimentalRanges(Collection<Range> relatedRanges) {
+        this.relatedExperimentalRanges = relatedRanges;
     }
 
 }

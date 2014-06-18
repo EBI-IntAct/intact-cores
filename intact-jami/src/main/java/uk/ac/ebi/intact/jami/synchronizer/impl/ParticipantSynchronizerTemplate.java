@@ -25,7 +25,7 @@ import java.util.Map;
  */
 
 public class ParticipantSynchronizerTemplate<T extends Participant, I extends AbstractIntactParticipant> extends AbstractIntactDbSynchronizer<T, I>
-implements ParticipantSynchronizer<T,I> {
+        implements ParticipantSynchronizer<T,I> {
     private Map<T, I> persistedObjects;
 
     private static final Log log = LogFactory.getLog(ParticipantSynchronizerTemplate.class);
@@ -134,5 +134,13 @@ implements ParticipantSynchronizer<T,I> {
 
     protected IntactDbSynchronizer getFeatureSynchronizer() {
         return getContext().getFeatureSynchronizer();
+    }
+
+    @Override
+    public void deleteRelatedProperties(I intactParticipant){
+        for (Object f : intactParticipant.getFeatures()){
+            getFeatureSynchronizer().delete(f);
+        }
+        intactParticipant.getFeatures().clear();
     }
 }

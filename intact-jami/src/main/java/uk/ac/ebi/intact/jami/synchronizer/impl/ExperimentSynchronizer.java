@@ -308,4 +308,12 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new ExperimentMergerEnrichOnly());
     }
+
+    @Override
+    public void deleteRelatedProperties(IntactExperiment intactParticipant){
+        for (InteractionEvidence f : intactParticipant.getInteractionEvidences()){
+            getContext().getInteractionSynchronizer().delete(f);
+        }
+        intactParticipant.getInteractionEvidences().clear();
+    }
 }

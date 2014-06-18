@@ -238,4 +238,12 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new InteractionEvidenceMergerEnrichOnly());
     }
+
+    @Override
+    public void deleteRelatedProperties(IntactInteractionEvidence intactParticipant){
+        for (Object f : intactParticipant.getParticipants()){
+            getContext().getParticipantEvidenceSynchronizer().delete((ParticipantEvidence)f);
+        }
+        intactParticipant.getParticipants().clear();
+    }
 }

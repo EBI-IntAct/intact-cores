@@ -53,6 +53,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
     private List<CvTerm> experimentalRoles;
 
     private Collection<CausalRelationship> relatedCausalRelationships;
+    private Collection<Range> relatedRanges;
 
     protected IntactParticipantEvidence() {
     }
@@ -184,6 +185,18 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
             this.relatedCausalRelationships = new ArrayList<CausalRelationship>();
         }
         return this.relatedCausalRelationships;
+    }
+
+    @OneToMany( mappedBy = "experimentalParticipant", targetEntity = ExperimentalRange.class)
+    @Target(ExperimentalRange.class)
+    /**
+     * List of experimental ranges pointing to this participant
+     */
+    public Collection<Range> getRelatedRanges(){
+        if (this.relatedRanges == null){
+            this.relatedRanges = new ArrayList<Range>();
+        }
+        return this.relatedRanges;
     }
 
     @Transient
@@ -395,6 +408,10 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
 
     protected void setRelatedCausalRelationships(Collection<CausalRelationship> relatedCausalRelationships) {
         this.relatedCausalRelationships = relatedCausalRelationships;
+    }
+
+    protected void setRelatedRanges(Collection<Range> relatedRanges) {
+        this.relatedRanges = relatedRanges;
     }
 
     protected class IdentificationMethodList extends AbstractListHavingProperties<CvTerm> {
