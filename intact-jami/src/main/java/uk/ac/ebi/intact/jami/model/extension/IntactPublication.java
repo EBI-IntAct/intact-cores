@@ -16,6 +16,7 @@ import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.Releasable;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -54,7 +55,7 @@ import java.util.*;
 @Entity
 @Table(name = "ia_publication")
 @Cacheable
-public class IntactPublication extends AbstractIntactPrimaryObject implements Publication{
+public class IntactPublication extends AbstractIntactPrimaryObject implements Publication, Releasable{
     private String title;
     private String journal;
     private Date publicationDate;

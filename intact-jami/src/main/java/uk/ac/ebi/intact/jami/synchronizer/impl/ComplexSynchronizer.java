@@ -188,7 +188,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     protected void prepareLifeCycleEvents(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
 
-        if (intactComplex.areLifeCycleEventsInitialized()){
+        if (intactComplex.areLifecycleEventsInitialized()){
             List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactComplex.getLifecycleEvents());
             for (LifeCycleEvent event : eventsToPersist){
                 // do not persist or merge events because of cascades

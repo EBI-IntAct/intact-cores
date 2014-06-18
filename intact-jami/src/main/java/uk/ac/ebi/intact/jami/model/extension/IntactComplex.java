@@ -11,6 +11,7 @@ import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
 import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.Releasable;
 import uk.ac.ebi.intact.jami.model.listener.ComplexParameterListener;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -45,7 +46,7 @@ import java.util.List;
 @EntityListeners(value = {ComplexParameterListener.class})
 @Where(clause = "category = 'complex'")
 @Cacheable
-public class IntactComplex extends IntactInteractor implements Complex{
+public class IntactComplex extends IntactInteractor implements Complex,Releasable{
     private Collection<InteractionEvidence> interactionEvidences;
     private Collection<ModelledParticipant> components;
     private Annotation physicalProperties;
@@ -198,6 +199,11 @@ public class IntactComplex extends IntactInteractor implements Complex{
 
     public void setCurrentReviewer( User currentReviewer ) {
         this.currentReviewer = currentReviewer;
+    }
+
+    @Override
+    public boolean areLifecycleEventsInitialized() {
+        return Hibernate.isInitialized(getLifecycleEvents());
     }
 
     @OneToMany( orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = ComplexLifecycleEvent.class)
@@ -557,11 +563,6 @@ public class IntactComplex extends IntactInteractor implements Complex{
     @Transient
     public boolean areParticipantsInitialized(){
         return Hibernate.isInitialized(getParticipants());
-    }
-
-    @Transient
-    public boolean areLifeCycleEventsInitialized(){
-        return Hibernate.isInitialized(getLifecycleEvents());
     }
 
     @Transient

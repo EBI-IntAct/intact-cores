@@ -87,7 +87,7 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
             mergedComplex.setCurrentReviewer(obj1.getCurrentReviewer());
         }
         // merge lifecycle
-        if (obj1.areLifeCycleEventsInitialized()){
+        if (obj1.areLifecycleEventsInitialized()){
             mergeLifeCycleEvents(mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
         }
 
