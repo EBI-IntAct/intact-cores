@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultChecksum;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
@@ -11,6 +9,8 @@ import uk.ac.ebi.intact.jami.model.SequenceChunk;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -220,6 +220,7 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @IndexColumn( name = "sequence_index" )
+    @LazyCollection(LazyCollectionOption.FALSE)
     @Deprecated
     /**
      * NOTE: for backward compatibility with intact-core, the sequence property is not persistent and the getSequenceChunks is how the sequence is persisted in

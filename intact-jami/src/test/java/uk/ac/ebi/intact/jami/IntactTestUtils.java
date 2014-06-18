@@ -472,8 +472,8 @@ public class IntactTestUtils {
         return createIntactLifeCycleEvent(lifecycleEventClass, "NEW", createCuratorUser(), "new event");
     }
 
-    public static IntactInteractor createIntactInteractor() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        IntactInteractor interactor = new IntactInteractor("test interactor");
+    public static <T extends IntactInteractor> T createIntactInteractor(Class<T> interactorClass) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        T interactor = interactorClass.getConstructor(String.class).newInstance("test interactor");
         interactor.setFullName("Full interactor name");
         interactor.getAliases().add(createAliasSynonym(InteractorAlias.class));
         interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier(InteractorXref.class, "123456"));
@@ -484,14 +484,55 @@ public class IntactTestUtils {
         return interactor;
     }
 
-    public static Interactor createDefaultInteractor() {
-        Interactor interactor = new DefaultInteractor("test interactor");
+    public static <T extends Interactor> T createInteractor(Class<T> interactorClass) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        T interactor = interactorClass.getConstructor(String.class).newInstance("test interactor");
         interactor.setFullName("Full interactor name");
-        interactor.getAliases().add(createAliasSynonym());
-        interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier("123456"));
-        interactor.getAnnotations().add(createAnnotationComment());
-        interactor.setOrganism(createOrganism());
+        interactor.getAliases().add(createAliasSynonym(InteractorAlias.class));
+        interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier(InteractorXref.class, "123456"));
+        interactor.getAnnotations().add(createAnnotationComment(InteractorAnnotation.class));
+        interactor.setOrganism(createIntactOrganism());
         interactor.getChecksums().add(ChecksumUtils.createRogid("xxxx1"));
+
+        return interactor;
+    }
+
+    public static IntactInteractor createDefaultIntactInteractor() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+
+        return createIntactInteractor(IntactInteractor.class);
+    }
+
+    public static Interactor createDefaultInteractor() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        return createInteractor(DefaultInteractor.class);
+    }
+
+    public static IntactPolymer createIntactPolymer() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactPolymer interactor = createIntactInteractor(IntactPolymer.class);
+        interactor.setSequence("AAAMGGCA");
+        interactor.getChecksums().add(new DefaultChecksum(IntactUtils.createMITopic("crc64",null), "xxxx3"));
+
+        return interactor;
+    }
+
+    public static Polymer createDefaultPolymer() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Polymer interactor = createInteractor(DefaultPolymer.class);
+        interactor.setSequence("AAAMGGCA");
+        interactor.getChecksums().add(new DefaultChecksum(IntactUtils.createMITopic("crc64",null), "xxxx3"));
+
+        return interactor;
+    }
+
+    public static IntactInteractorPool createIntactInteractorPool() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactInteractorPool interactor = createIntactInteractor(IntactInteractorPool.class);
+        interactor.add(createDefaultIntactInteractor());
+        interactor.add(createIntactPolymer());
+
+        return interactor;
+    }
+
+    public static InteractorPool createInteractorPool() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        InteractorPool interactor = createInteractor(DefaultInteractorPool.class);
+        interactor.add(createDefaultInteractor());
+        interactor.add(createDefaultPolymer());
 
         return interactor;
     }

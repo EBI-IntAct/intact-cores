@@ -101,59 +101,59 @@ public class IntactInteractorPool extends IntactInteractor implements Interactor
     }
 
     public int size() {
-        return interactors.size();
+        return getInteractors().size();
     }
 
     @Transient
     public boolean isEmpty() {
-        return interactors.isEmpty();
+        return getInteractors().isEmpty();
     }
 
     public boolean contains(Object o) {
-        return interactors.contains(o);
+        return getInteractors().contains(o);
     }
 
     public Iterator<Interactor> iterator() {
-        return interactors.iterator();
+        return getInteractors().iterator();
     }
 
     public Object[] toArray() {
-        return interactors.toArray();
+        return getInteractors().toArray();
     }
 
     public <T> T[] toArray(T[] ts) {
-        return interactors.toArray(ts);
+        return getInteractors().toArray(ts);
     }
 
     public boolean add(Interactor interactor) {
-        return interactors.add(interactor);
+        return getInteractors().add(interactor);
     }
 
     public boolean remove(Object o) {
-        return interactors.remove(o);
+        return getInteractors().remove(o);
     }
 
     public boolean containsAll(Collection<?> objects) {
-        return interactors.containsAll(objects);
+        return getInteractors().containsAll(objects);
     }
 
     public boolean addAll(Collection<? extends Interactor> interactors) {
-        return this.interactors.addAll(interactors);
+        return this.getInteractors().addAll(interactors);
     }
 
     public boolean retainAll(Collection<?> objects) {
-        return interactors.retainAll(objects);
+        return getInteractors().retainAll(objects);
     }
 
     public boolean removeAll(Collection<?> objects) {
-        return interactors.removeAll(objects);
+        return getInteractors().removeAll(objects);
     }
 
     public void clear() {
-        interactors.clear();
+        getInteractors().clear();
     }
 
-    @ManyToMany(targetEntity=IntactInteractor.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @ManyToMany(targetEntity=IntactInteractor.class, cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinTable(
             name="ia_pool2interactor",
             joinColumns=@JoinColumn(name="interactor_pool_ac"),

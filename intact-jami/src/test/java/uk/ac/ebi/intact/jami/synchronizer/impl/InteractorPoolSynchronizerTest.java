@@ -5,8 +5,9 @@ import org.hibernate.Hibernate;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-import psidev.psi.mi.jami.model.Interactor;
+import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
+import psidev.psi.mi.jami.utils.InteractorUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -23,7 +24,7 @@ import java.lang.reflect.InvocationTargetException;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-public class InteractorSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Interactor,IntactInteractor>{
+public class InteractorPoolSynchronizerTest extends AbstractDbSynchronizerTest<InteractorPool,IntactInteractorPool>{
 
     @Transactional
     @Test
@@ -96,22 +97,22 @@ public class InteractorSynchronizerTemplateTest extends AbstractDbSynchronizerTe
         persist();
         this.entityManager.flush();
 
-        Interactor sameLabel = IntactTestUtils.createDefaultInteractor();
+        InteractorPool sameLabel = IntactTestUtils.createInteractorPool();
         sameLabel.getOrganism().setTaxId(9055);
-        sameLabel = ((InteractorSynchronizerTemplate<Interactor, IntactInteractor>) this.synchronizer).synchronize(sameLabel, true);
+        sameLabel = ((InteractorPoolSynchronizer) this.synchronizer).synchronize(sameLabel, true);
         this.entityManager.flush();
-        Assert.assertEquals("test interactor-1", sameLabel.getShortName());
+        Assert.assertEquals("test interactor-4", sameLabel.getShortName());
     }
 
     @Override
-    protected void initPropertiesBeforeDetaching(IntactInteractor reloadedObject){
+    protected void initPropertiesBeforeDetaching(IntactInteractorPool reloadedObject){
         Hibernate.initialize(reloadedObject.getDbAnnotations());
         Hibernate.initialize(reloadedObject.getDbXrefs());
         Hibernate.initialize(reloadedObject.getDbAliases());
     }
 
     @Override
-    protected void testDeleteOtherProperties(IntactInteractor objectToTest) {
+    protected void testDeleteOtherProperties(IntactInteractorPool objectToTest) {
         Assert.assertNull(entityManager.find(InteractorAlias.class, ((InteractorAlias)objectToTest.getAliases().iterator().next()).getAc()));
         Assert.assertNull(entityManager.find(InteractorAlias.class, ((InteractorXref) objectToTest.getDbXrefs().iterator().next()).getAc()));
         Assert.assertNull(entityManager.find(InteractorAlias.class, ((InteractorAnnotation)objectToTest.getDbAnnotations().iterator().next()).getAc()));
@@ -119,9 +120,9 @@ public class InteractorSynchronizerTemplateTest extends AbstractDbSynchronizerTe
     }
 
     @Override
-    protected Interactor createDefaultJamiObject() {
+    protected InteractorPool createDefaultJamiObject() {
         try {
-            return IntactTestUtils.createDefaultInteractor();
+            return IntactTestUtils.createInteractorPool();
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -135,32 +136,34 @@ public class InteractorSynchronizerTemplateTest extends AbstractDbSynchronizerTe
     }
 
     @Override
-    protected void testUpdatedPropertiesAfterMerge(IntactInteractor objectToTest, IntactInteractor persistedObject) {
+    protected void testUpdatedPropertiesAfterMerge(IntactInteractorPool objectToTest, IntactInteractorPool persistedObject) {
         Assert.assertEquals(objectToTest.getAc(), persistedObject.getAc());
         Assert.assertEquals("new name", persistedObject.getShortName());
         Assert.assertEquals("new type", persistedObject.getInteractorType().getShortName());
+        Assert.assertEquals(3, persistedObject.size());
     }
 
     @Override
-    protected void updatePropertieDetachedInstance(IntactInteractor objectToTest) {
+    protected void updatePropertieDetachedInstance(IntactInteractorPool objectToTest) {
         objectToTest.setShortName("new name");
         objectToTest.setInteractorType(new DefaultCvTerm("new type"));
+        objectToTest.add(InteractorUtils.createUnknownBasicInteractor());
     }
 
     @Override
-    protected IntactInteractor findObject(IntactInteractor objectToTest) {
-        return entityManager.find(IntactInteractor.class, objectToTest.getAc());
+    protected IntactInteractorPool findObject(IntactInteractorPool objectToTest) {
+        return entityManager.find(IntactInteractorPool.class, objectToTest.getAc());
     }
 
     @Override
     protected void initSynchronizer() {
-        this.synchronizer = new InteractorSynchronizerTemplate(this.context, IntactInteractor.class);
+        this.synchronizer = new InteractorPoolSynchronizer(this.context);
     }
 
     @Override
-    protected void testPersistedProperties(IntactInteractor persistedObject) {
+    protected void testPersistedProperties(IntactInteractorPool persistedObject) {
         Assert.assertNotNull(persistedObject.getAc());
-        Assert.assertEquals("test interactor", persistedObject.getShortName());
+        Assert.assertEquals("test interactor-2", persistedObject.getShortName());
         Assert.assertEquals("Full interactor name", persistedObject.getFullName());
         Assert.assertNotNull(persistedObject.getOrganism());
         Assert.assertNotNull(((IntactOrganism) persistedObject.getOrganism()).getAc());
@@ -176,12 +179,15 @@ public class InteractorSynchronizerTemplateTest extends AbstractDbSynchronizerTe
 
         Assert.assertEquals(1, persistedObject.getIdentifiers().size());
         Assert.assertEquals(persistedObject.getAc(), XrefUtils.collectFirstIdentifierWithDatabase(persistedObject.getIdentifiers(), null, "intact").getId());
+
+        Assert.assertEquals(2, persistedObject.size());
+        Assert.assertNotNull(((IntactInteractor)persistedObject.iterator().next()).getAc());
     }
 
     @Override
-    protected void testNonPersistedProperties(IntactInteractor persistedObject) {
+    protected void testNonPersistedProperties(IntactInteractorPool persistedObject) {
         Assert.assertNull(persistedObject.getAc());
-        Assert.assertEquals("test interactor", persistedObject.getShortName());
+        Assert.assertEquals("test interactor-2", persistedObject.getShortName());
         Assert.assertEquals("Full interactor name", persistedObject.getFullName());
         Assert.assertNotNull(persistedObject.getOrganism());
         Assert.assertNotNull(((IntactOrganism) persistedObject.getOrganism()).getAc());
@@ -196,10 +202,13 @@ public class InteractorSynchronizerTemplateTest extends AbstractDbSynchronizerTe
         Assert.assertNotNull(((IntactCvTerm) persistedObject.getInteractorType()).getAc());
 
         Assert.assertEquals(0, persistedObject.getIdentifiers().size());
+
+        Assert.assertEquals(2, persistedObject.size());
+        Assert.assertNotNull(((IntactInteractor)persistedObject.iterator().next()).getAc());
     }
 
     @Override
-    protected IntactInteractor createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return IntactTestUtils.createDefaultIntactInteractor();
+    protected IntactInteractorPool createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        return IntactTestUtils.createIntactInteractorPool();
     }
 }

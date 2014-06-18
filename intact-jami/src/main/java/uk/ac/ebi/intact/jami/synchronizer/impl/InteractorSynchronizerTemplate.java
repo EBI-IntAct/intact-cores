@@ -52,10 +52,10 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                 return null;
             }
             IntactOrganism existingOrganism = null;
-            if (term.getOrganism() != null || existingOrganism.getAc() == null){
+            if (term.getOrganism() != null){
                 existingOrganism = getContext().getOrganismSynchronizer().find(term.getOrganism());
                 // could not retrieve the organism so this interactor does not exist in IntAct
-                if (existingOrganism == null){
+                if (existingOrganism == null || existingOrganism.getAc() == null){
                     return null;
                 }
             }

@@ -34,10 +34,10 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
 
     @Override
     public void synchronizeProperties(IntactInteractorPool intactInteractor) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizeProperties(intactInteractor);
-
-        // then synchronize subInteractors if not done
+        // synchronize subInteractors if not done
         prepareInteractors(intactInteractor);
+
+        super.synchronizeProperties(intactInteractor);
     }
 
     protected void prepareInteractors(IntactInteractorPool intactInteractor) throws FinderException, PersisterException, SynchronizerException {
@@ -45,7 +45,7 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
             List<Interactor> interactorToPersist = new ArrayList<Interactor>(intactInteractor);
             for (Interactor interactor : interactorToPersist){
                 if (interactor != intactInteractor){
-                    Interactor interactorCheck = getContext().getInteractorSynchronizer().synchronize(interactor, false);
+                    Interactor interactorCheck = getContext().getInteractorSynchronizer().synchronize(interactor, true);
                     // we have a different instance because needed to be synchronized
                     if (interactorCheck != interactor){
                         intactInteractor.remove(interactor);
