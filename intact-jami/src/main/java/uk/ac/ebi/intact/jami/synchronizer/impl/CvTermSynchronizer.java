@@ -516,6 +516,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     protected void deleteRelatedProperties(IntactCvTerm intactObject){
         for (OntologyTerm parent : intactObject.getParents()){
             parent.getChildren().remove(intactObject);
+            parent.getChildren().addAll(intactObject.getChildren());
         }
         intactObject.getParents().clear();
         for (OntologyTerm children : intactObject.getChildren()){

@@ -362,9 +362,13 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return Hibernate.isInitialized(getDbAnnotations());
     }
 
-    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
+    @Column(name = "objclass", nullable = false, updatable = false)
     @NotNull
     protected String getObjClass(){
+        return generateObjClass();
+    }
+
+    protected String generateObjClass() {
         return "uk.ac.ebi.intact.model.InteractorImpl";
     }
 

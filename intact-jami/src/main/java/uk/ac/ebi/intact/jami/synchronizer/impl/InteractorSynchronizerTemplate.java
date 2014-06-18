@@ -276,7 +276,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
     protected Collection<I> findByIdentifier(T term, IntactOrganism existingOrganism, IntactCvTerm existingType) throws FinderException {
         if (term.getIdentifiers().isEmpty()){
-             return null;
+             return Collections.EMPTY_LIST;
         }
         Query query=null;
         Collection<I> totalInteractors = new ArrayList<I>();

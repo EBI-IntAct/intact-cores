@@ -8,11 +8,9 @@ import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -414,9 +412,7 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
     }
 
     @Override
-    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
-    @NotNull
-    protected String getObjClass() {
+    protected String generateObjClass() {
         return "uk.ac.ebi.intact.model.SmallMoleculeImpl";
     }
 

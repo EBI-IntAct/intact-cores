@@ -471,4 +471,28 @@ public class IntactTestUtils {
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         return createIntactLifeCycleEvent(lifecycleEventClass, "NEW", createCuratorUser(), "new event");
     }
+
+    public static IntactInteractor createIntactInteractor() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactInteractor interactor = new IntactInteractor("test interactor");
+        interactor.setFullName("Full interactor name");
+        interactor.getAliases().add(createAliasSynonym(InteractorAlias.class));
+        interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier(InteractorXref.class, "123456"));
+        interactor.getAnnotations().add(createAnnotationComment(InteractorAnnotation.class));
+        interactor.setOrganism(createIntactOrganism());
+        interactor.getChecksums().add(ChecksumUtils.createRogid("xxxx1"));
+
+        return interactor;
+    }
+
+    public static Interactor createDefaultInteractor() {
+        Interactor interactor = new DefaultInteractor("test interactor");
+        interactor.setFullName("Full interactor name");
+        interactor.getAliases().add(createAliasSynonym());
+        interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier("123456"));
+        interactor.getAnnotations().add(createAnnotationComment());
+        interactor.setOrganism(createOrganism());
+        interactor.getChecksums().add(ChecksumUtils.createRogid("xxxx1"));
+
+        return interactor;
+    }
 }

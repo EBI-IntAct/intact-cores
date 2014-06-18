@@ -15,8 +15,8 @@ import uk.ac.ebi.intact.jami.model.listener.ComplexParameterListener;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.CascadeType;
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.validation.constraints.NotNull;
@@ -214,8 +214,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     @ManyToOne(targetEntity = IntactSource.class)
-    @JoinColumn( name = "owner_ac", referencedColumnName = "ac", nullable = false )
+    @JoinColumn( name = "owner_ac", referencedColumnName = "ac")
     @Target(IntactSource.class)
+    @NotNull
     public Source getSource() {
         return this.source;
     }
@@ -225,8 +226,9 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
-    @JoinColumn( name = "evidence_type_ac", referencedColumnName = "ac", nullable = false )
+    @JoinColumn( name = "evidence_type_ac", referencedColumnName = "ac")
     @Target(IntactCvTerm.class)
+    @NotNull
     public CvTerm getEvidenceType() {
         return evidenceType;
     }
@@ -588,9 +590,7 @@ public class IntactComplex extends IntactInteractor implements Complex{
     }
 
     @Override
-    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
-    @NotNull
-    protected String getObjClass() {
+    protected String generateObjClass() {
         return "uk.ac.ebi.intact.model.InteractionImpl";
     }
 

@@ -8,8 +8,10 @@ import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Cacheable;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.util.Collection;
 
 /**
@@ -222,9 +224,7 @@ public class IntactProtein extends IntactPolymer implements Protein{
     }
 
     @Override
-    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
-    @NotNull
-    protected String getObjClass() {
+    protected String generateObjClass() {
         return "uk.ac.ebi.intact.model.ProteinImpl";
     }
 

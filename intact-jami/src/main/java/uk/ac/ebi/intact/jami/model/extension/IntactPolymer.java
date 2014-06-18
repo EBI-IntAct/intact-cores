@@ -11,7 +11,6 @@ import uk.ac.ebi.intact.jami.model.SequenceChunk;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -241,9 +240,7 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
     }
 
     @Override
-    @Column(name = "objclass", nullable = false, insertable = false, updatable = false)
-    @NotNull
-    protected String getObjClass() {
+    protected String generateObjClass() {
         return "uk.ac.ebi.intact.model.PolymerImpl";
     }
 
