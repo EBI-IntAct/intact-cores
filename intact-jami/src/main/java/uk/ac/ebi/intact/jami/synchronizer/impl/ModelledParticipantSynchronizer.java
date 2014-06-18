@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,10 +20,10 @@ import java.util.List;
  * @since <pre>28/01/14</pre>
  */
 
-public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipant, I extends IntactModelledParticipant> extends ParticipantSynchronizerTemplate<T, I> {
+public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemplate<ModelledParticipant, IntactModelledParticipant> {
 
-    public ModelledParticipantSynchronizerTemplate(SynchronizerContext context, Class<I> intactClass){
-        super(context, intactClass);
+    public ModelledParticipantSynchronizer(SynchronizerContext context){
+        super(context, IntactModelledParticipant.class);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
     }
 
     @Override
-    public void synchronizeProperties(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(IntactModelledParticipant intactEntity) throws FinderException, PersisterException, SynchronizerException {
         super.synchronizeProperties(intactEntity);
         // then check aliases
         prepareAliases(intactEntity);
@@ -46,7 +47,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
         prepareExperimentalRoles(intactEntity);
     }
 
-    protected void prepareCausalRelationships(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareCausalRelationships(IntactModelledParticipant intactEntity) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areCausalRelationshipsInitialized()){
             List<CausalRelationship> relationshipsToPersist = new ArrayList<CausalRelationship>(intactEntity.getCausalRelationships());
             for (CausalRelationship causalRelationship : relationshipsToPersist){
@@ -61,7 +62,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
         }
     }
 
-    protected void prepareExperimentalRoles(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareExperimentalRoles(IntactModelledParticipant intactEntity) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areExperimentalRolesInitialized()){
             List<CvTerm> rolesToPersist = new ArrayList<CvTerm>(intactEntity.getDbExperimentalRoles());
             for (CvTerm role : rolesToPersist){
@@ -75,7 +76,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
         }
     }
 
-    protected void prepareXrefs(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(IntactModelledParticipant intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactEntity.getXrefs());
             for (Xref xref : xrefsToPersist){
@@ -90,7 +91,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
         }
     }
 
-    protected void prepareAnnotations(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(IntactModelledParticipant intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactEntity.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
@@ -105,7 +106,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
         }
     }
 
-    protected void prepareAliases(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(IntactModelledParticipant intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactEntity.getAliases());
             for (Alias alias : aliasesToPersist){
@@ -121,7 +122,7 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
     }
 
     @Override
-    public void deleteRelatedProperties(I intactParticipant){
+    public void deleteRelatedProperties(IntactModelledParticipant intactParticipant){
         super.deleteRelatedProperties(intactParticipant);
         for (CausalRelationship f : intactParticipant.getRelatedExperimentalCausalRelationships()){
             getContext().getExperimentalCausalRelationshipSynchronizer().delete(f);
@@ -139,6 +140,18 @@ public class ModelledParticipantSynchronizerTemplate<T extends ModelledParticipa
             f.setParticipant(null);
         }
         intactParticipant.getRelatedExperimentalRanges().clear();
+    }
+
+    @Override
+    protected void persistObject(IntactModelledParticipant existingInstance) {
+        // first remove all dependencies to other participants to avoid cycle dependencies when persisting the objects
+        Collection<CausalRelationship> relationships = new ArrayList<CausalRelationship>(existingInstance.getCausalRelationships());
+        existingInstance.getCausalRelationships().clear();
+
+        super.persistObject(existingInstance);
+
+        // after persistence, re-attach dependent objects to avoid internal loops when participants are called by each other
+        existingInstance.getCausalRelationships().addAll(relationships);
     }
 }
 

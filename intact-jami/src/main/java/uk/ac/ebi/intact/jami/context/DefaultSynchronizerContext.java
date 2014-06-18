@@ -815,7 +815,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
 
     public ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer() {
         if (this.modelledParticipantSynchronizer == null){
-            this.modelledParticipantSynchronizer = new ModelledParticipantSynchronizerTemplate<ModelledParticipant, IntactModelledParticipant>(this, IntactModelledParticipant.class);
+            this.modelledParticipantSynchronizer = new ModelledParticipantSynchronizer(this);
         }
         return modelledParticipantSynchronizer;
     }
@@ -823,7 +823,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
 
     public ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer(){
         if (this.participantEvidenceSynchronizer == null){
-            this.participantEvidenceSynchronizer = new ParticipantEvidenceSynchronizerTemplate<ParticipantEvidence, IntactParticipantEvidence>(this, IntactParticipantEvidence.class);
+            this.participantEvidenceSynchronizer = new ParticipantEvidenceSynchronizer(this);
         }
         return participantEvidenceSynchronizer;
     }

@@ -12,6 +12,7 @@ import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -22,13 +23,13 @@ import java.util.List;
  * @since <pre>28/01/14</pre>
  */
 
-public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEvidence, I extends IntactParticipantEvidence> extends ParticipantSynchronizerTemplate<T, I> {
+public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemplate<ParticipantEvidence, IntactParticipantEvidence> {
 
-    public ParticipantEvidenceSynchronizerTemplate(SynchronizerContext context, Class<I> intactClass){
-        super(context, intactClass);
+    public ParticipantEvidenceSynchronizer(SynchronizerContext context){
+        super(context, IntactParticipantEvidence.class);
     }
 
-    public void synchronizeProperties(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    public void synchronizeProperties(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
         super.synchronizeProperties(intactEntity);
         // then check aliases
         prepareAliases(intactEntity);
@@ -53,13 +54,13 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
     }
 
     @Override
-    protected I instantiateNewPersistentInstance(T object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        I newParticipant = intactClass.getConstructor(Interactor.class).newInstance(object.getInteractor());
+    protected IntactParticipantEvidence instantiateNewPersistentInstance(ParticipantEvidence object, Class<? extends IntactParticipantEvidence> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        IntactParticipantEvidence newParticipant = new IntactParticipantEvidence(object.getInteractor());
         ParticipantCloner.copyAndOverrideParticipantEvidenceProperties(object, newParticipant, false);
         return newParticipant;
     }
 
-    protected void prepareCausalRelationships(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareCausalRelationships(IntactParticipantEvidence intactEntity) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areCausalRelationshipsInitialized()){
             List<CausalRelationship> relationshipsToPersist = new ArrayList<CausalRelationship>(intactEntity.getCausalRelationships());
             for (CausalRelationship causalRelationship : relationshipsToPersist){
@@ -74,14 +75,14 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         }
     }
 
-    protected void prepareOrganism(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareOrganism(IntactParticipantEvidence intactEntity) throws PersisterException, FinderException, SynchronizerException {
         Organism organism = intactEntity.getExpressedInOrganism();
         if (organism != null){
             intactEntity.setExpressedInOrganism(getContext().getOrganismSynchronizer().synchronize(organism, true));
         }
     }
 
-    protected void prepareConfidences(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareConfidences(IntactParticipantEvidence intactEntity) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areConfidencesInitialized()){
             List<Confidence> confidencesToPersist = new ArrayList<Confidence>(intactEntity.getConfidences());
             for (Confidence confidence : confidencesToPersist){
@@ -96,7 +97,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         }
     }
 
-    protected void prepareExperimentalPreparations(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareExperimentalPreparations(IntactParticipantEvidence intactEntity) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areExperimentalPreparationsInitialized()){
             List<CvTerm> preparationsToPersist = new ArrayList<CvTerm>(intactEntity.getExperimentalPreparations());
             for (CvTerm preparation : preparationsToPersist){
@@ -110,7 +111,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         }
     }
 
-    protected void prepareParameters(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareParameters(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areParametersInitialized()){
             List<Parameter> parametersToPersist = new ArrayList<Parameter>(intactEntity.getParameters());
             for (Parameter parameter : parametersToPersist){
@@ -124,7 +125,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         }
     }
 
-    protected void prepareIdentificationMethods(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareIdentificationMethods(IntactParticipantEvidence intactEntity) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areIdentificationMethodsInitialized()){
             List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactEntity.getIdentificationMethods());
             for (CvTerm term : methodsToPersist){
@@ -138,7 +139,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         }
     }
 
-    protected void prepareXrefs(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactEntity.getXrefs());
             for (Xref xref : xrefsToPersist){
@@ -153,7 +154,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         }
     }
 
-    protected void prepareAnnotations(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactEntity.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
@@ -168,7 +169,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         }
     }
 
-    protected void prepareAliases(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactEntity.getAliases());
             for (Alias alias : aliasesToPersist){
@@ -183,14 +184,14 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
         }
     }
 
-    protected void prepareExperimentalRole(I intactParticipant) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareExperimentalRole(IntactParticipantEvidence intactParticipant) throws PersisterException, FinderException, SynchronizerException {
         CvTerm role = intactParticipant.getExperimentalRole();
         intactParticipant.setExperimentalRole(getContext().getExperimentalRoleSynchronizer().synchronize(role, true));
     }
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new ParticipantEvidenceMergerEnrichOnly<T, I>());
+        super.setIntactMerger(new ParticipantEvidenceMergerEnrichOnly<ParticipantEvidence, IntactParticipantEvidence>());
     }
 
     @Override
@@ -199,7 +200,7 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
     }
 
     @Override
-    public void deleteRelatedProperties(I intactParticipant){
+    public void deleteRelatedProperties(IntactParticipantEvidence intactParticipant){
         super.deleteRelatedProperties(intactParticipant);
         for (CausalRelationship f : intactParticipant.getRelatedCausalRelationships()){
             getContext().getExperimentalCausalRelationshipSynchronizer().delete(f);
@@ -209,6 +210,18 @@ public class ParticipantEvidenceSynchronizerTemplate<T extends ParticipantEviden
             f.setParticipant(null);
         }
         intactParticipant.getRelatedRanges().clear();
+    }
+
+    @Override
+    protected void persistObject(IntactParticipantEvidence existingInstance) {
+        // first remove all dependencies to other participants to avoid cycle dependencies when persisting the objects
+        Collection<CausalRelationship> relationships = new ArrayList<CausalRelationship>(existingInstance.getCausalRelationships());
+        existingInstance.getCausalRelationships().clear();
+
+        super.persistObject(existingInstance);
+
+        // after persistence, re-attach dependent objects to avoid internal loops when participants are called by each other
+        existingInstance.getCausalRelationships().addAll(relationships);
     }
 }
 
