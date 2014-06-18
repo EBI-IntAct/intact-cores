@@ -602,4 +602,22 @@ public class IntactTestUtils {
 
         return interactor;
     }
+
+    public static IntactModelledParticipant createBasicIntactModelledParticipant() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactModelledParticipant interactor = new IntactModelledParticipant(createDefaultIntactInteractor());
+        interactor.setStoichiometry(new IntactStoichiometry(2));
+        interactor.getFeatures().add(createBasicModelledFeature("type", "MI:xxxx"));
+        interactor.getFeatures().iterator().next().getLinkedFeatures().clear();
+
+        return interactor;
+    }
+
+    public static ModelledParticipant createBasicModelledParticipant() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        ModelledParticipant interactor = new DefaultModelledParticipant(createDefaultInteractor());
+        interactor.setStoichiometry(new IntactStoichiometry(2));
+        interactor.getFeatures().add(createBasicModelledFeature("type", "MI:xxxx"));
+        interactor.getFeatures().iterator().next().getLinkedFeatures().clear();
+
+        return interactor;
+    }
 }
