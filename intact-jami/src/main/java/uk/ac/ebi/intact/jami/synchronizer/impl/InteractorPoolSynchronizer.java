@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
+import psidev.psi.mi.jami.utils.comparator.interactor.DefaultInteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousInteractorPoolComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -60,7 +61,7 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     protected IntactInteractorPool postFilter(InteractorPool term, Collection<IntactInteractorPool> results) {
         Collection<IntactInteractorPool> filteredResults = new ArrayList<IntactInteractorPool>(results.size());
         for (IntactInteractorPool interactor : results){
-            if (UnambiguousInteractorPoolComparator.areEquals(term, interactor)){
+            if (DefaultInteractorPoolComparator.areEquals(term, interactor)){
                 filteredResults.add(interactor);
             }
         }

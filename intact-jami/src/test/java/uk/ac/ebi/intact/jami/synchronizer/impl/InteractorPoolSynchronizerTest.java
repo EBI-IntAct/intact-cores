@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
+import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.utils.InteractorUtils;
@@ -109,6 +110,11 @@ public class InteractorPoolSynchronizerTest extends AbstractDbSynchronizerTest<I
         Hibernate.initialize(reloadedObject.getDbAnnotations());
         Hibernate.initialize(reloadedObject.getDbXrefs());
         Hibernate.initialize(reloadedObject.getDbAliases());
+        for (Interactor i : reloadedObject){
+            Hibernate.initialize(((IntactInteractor)i).getDbAnnotations());
+            Hibernate.initialize(((IntactInteractor)i).getDbXrefs());
+            Hibernate.initialize(((IntactInteractor)i).getDbAliases());
+        }
     }
 
     @Override
