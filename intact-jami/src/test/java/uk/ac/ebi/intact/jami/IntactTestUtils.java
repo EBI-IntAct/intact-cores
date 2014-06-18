@@ -536,4 +536,70 @@ public class IntactTestUtils {
 
         return interactor;
     }
+
+    public static ExperimentalCausalRelationship createExperimentalCausalRelationship() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        ExperimentalCausalRelationship causal = new ExperimentalCausalRelationship(IntactUtils.createMITopic("increases", null), createIntactParticipantEvidence());
+
+        return causal;
+    }
+
+    public static CausalRelationship createCausalRelationship() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        CausalRelationship causal = new DefaultCausalRelationship(new DefaultCvTerm("increases"), createParticipantEvidence());
+
+        return causal;
+    }
+
+
+    public static IntactParticipantEvidence createIntactParticipantEvidence() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactParticipantEvidence interactor = new IntactParticipantEvidence(createDefaultIntactInteractor());
+        interactor.setStoichiometry(new IntactStoichiometry(2));
+        interactor.getAliases().add(createAliasSynonym(ModelledParticipantAlias.class));
+        interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier(ModelledParticipantXref.class, "123456"));
+        interactor.getAnnotations().add(createAnnotationComment(ModelledParticipantAnnotation.class));
+        interactor.getFeatures().add(createBasicFeatureEvidence("type", "MI:xxxx"));
+        interactor.getCausalRelationships().add(new ExperimentalCausalRelationship(IntactUtils.createMITopic("increases", null), interactor));
+        interactor.getFeatures().iterator().next().getLinkedFeatures().clear();
+
+        return interactor;
+    }
+
+    public static ParticipantEvidence createParticipantEvidence() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        ParticipantEvidence interactor = new DefaultParticipantEvidence(createDefaultInteractor());
+        interactor.setStoichiometry(new IntactStoichiometry(2));
+        interactor.getAliases().add(createAliasSynonym(ModelledParticipantAlias.class));
+        interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier(ModelledParticipantXref.class, "123456"));
+        interactor.getAnnotations().add(createAnnotationComment(ModelledParticipantAnnotation.class));
+        interactor.getFeatures().add(createBasicFeatureEvidence("type", "MI:xxxx"));
+        interactor.getCausalRelationships().add(new ExperimentalCausalRelationship(IntactUtils.createMITopic("increases", null), interactor));
+        interactor.getFeatures().iterator().next().getLinkedFeatures().clear();
+
+        return interactor;
+    }
+
+
+    public static IntactModelledParticipant createIntactModelledParticipant() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IntactModelledParticipant interactor = new IntactModelledParticipant(createDefaultIntactInteractor());
+        interactor.setStoichiometry(new IntactStoichiometry(2));
+        interactor.getAliases().add(createAliasSynonym(ModelledParticipantAlias.class));
+        interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier(ModelledParticipantXref.class, "123456"));
+        interactor.getAnnotations().add(createAnnotationComment(ModelledParticipantAnnotation.class));
+        interactor.getFeatures().add(createBasicModelledFeature("type", "MI:xxxx"));
+        interactor.getFeatures().iterator().next().getLinkedFeatures().clear();
+        interactor.getCausalRelationships().add(new ModelledCausalRelationship(IntactUtils.createMITopic("increases", null), interactor));
+
+        return interactor;
+    }
+
+    public static ModelledParticipant createModelledParticipant() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        ModelledParticipant interactor = new DefaultModelledParticipant(createDefaultInteractor());
+        interactor.setStoichiometry(new IntactStoichiometry(2));
+        interactor.getAliases().add(createAliasSynonym(ModelledParticipantAlias.class));
+        interactor.getXrefs().add(IntactTestUtils.createPubmedXrefNoQualifier(ModelledParticipantXref.class, "123456"));
+        interactor.getAnnotations().add(createAnnotationComment(ModelledParticipantAnnotation.class));
+        interactor.getFeatures().add(createBasicModelledFeature("type", "MI:xxxx"));
+        interactor.getFeatures().iterator().next().getLinkedFeatures().clear();
+        interactor.getCausalRelationships().add(new ModelledCausalRelationship(IntactUtils.createMITopic("increases", null), interactor));
+
+        return interactor;
+    }
 }

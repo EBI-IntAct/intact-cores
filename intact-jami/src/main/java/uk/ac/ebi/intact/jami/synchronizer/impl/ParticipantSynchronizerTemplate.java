@@ -52,6 +52,8 @@ implements ParticipantSynchronizer<T,I> {
         prepareStoichiometry(intactEntity);
         // then check features
         prepareFeatures(intactEntity);
+        // prepare biological role
+        prepareBiologicalRole(intactEntity);
     }
 
     public void clearCache() {
@@ -97,11 +99,6 @@ implements ParticipantSynchronizer<T,I> {
         }
     }
 
-    protected void prepareExperimentalPreparations(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
-       CvTerm bioRole = intactEntity.getBiologicalRole();
-       intactEntity.setBiologicalRole(getContext().getBiologicalRoleSynchronizer().synchronize(bioRole, true));
-    }
-
     protected void prepareFeatures(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areFeaturesInitialized()) {
             List<Feature> featuresToPersist = new ArrayList<Feature>(intactEntity.getFeatures());
@@ -122,6 +119,12 @@ implements ParticipantSynchronizer<T,I> {
         // persist interactor if not there
         Interactor interactor = intactEntity.getInteractor();
         intactEntity.setInteractor(getContext().getInteractorSynchronizer().synchronize(interactor, true));
+    }
+
+    protected void prepareBiologicalRole(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+        // persist biological role if not here
+        CvTerm role = intactEntity.getBiologicalRole();
+        intactEntity.setBiologicalRole(getContext().getBiologicalRoleSynchronizer().synchronize(role, true));
     }
 
     @Override

@@ -61,7 +61,9 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
     }
 
     private void setModelledParticipant(ModelledParticipant participant) {
-        super.setParticipant(participant);
+        if (participant != null){
+            super.setParticipant(participant);
+        }
     }
 
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
@@ -73,6 +75,8 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
     }
 
     private void setExperimentalParticipant(ParticipantEvidence participant) {
-        super.setParticipant(participant);
+        if (participant != null){
+            super.setParticipant(participant);
+        }
     }
 }

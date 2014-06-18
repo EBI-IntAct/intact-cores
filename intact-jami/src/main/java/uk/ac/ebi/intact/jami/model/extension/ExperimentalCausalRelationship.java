@@ -23,7 +23,7 @@ public class ExperimentalCausalRelationship extends AbstractIntactCausalRelation
         super();
     }
 
-    public ExperimentalCausalRelationship(CvTerm relationType, ParticipantEvidence target){
+    public ExperimentalCausalRelationship(CvTerm relationType, Participant target){
         super(relationType, target);
     }
 
@@ -44,10 +44,14 @@ public class ExperimentalCausalRelationship extends AbstractIntactCausalRelation
     }
 
     private void setModelledTarget(ModelledParticipant modelled){
-       super.setTarget(modelled);
+        if (modelled != null){
+            super.setTarget(modelled);
+        }
     }
 
     private void setExperimentalTarget(ParticipantEvidence evidence){
-        super.setTarget(evidence);
+        if (evidence != null){
+            super.setTarget(evidence);
+        }
     }
 }

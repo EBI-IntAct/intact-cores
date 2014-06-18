@@ -4,6 +4,7 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.ModelledParticipant;
+import psidev.psi.mi.jami.model.Participant;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ public class ModelledCausalRelationship extends AbstractIntactCausalRelationship
         super();
     }
 
-    public ModelledCausalRelationship(CvTerm relationType, ModelledParticipant target){
+    public ModelledCausalRelationship(CvTerm relationType, Participant target){
         super(relationType, target);
     }
 
