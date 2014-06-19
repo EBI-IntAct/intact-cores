@@ -79,11 +79,11 @@
 
     <bean id="intactJamiConfiguration" class="uk.ac.ebi.intact.jami.context.IntactConfiguration">
         <property name="acPrefix" value="EBI"/>
-        <property name="defaultInstitution" ref="institutionIntact"/>
+        <property name="defaultInstitution" ref="sourceIntact"/>
     </bean>
 
     <!-- Default institutions -->
-    <bean id="institutionIntact" class="uk.ac.ebi.intact.jami.model.extension.IntactSource">
+    <bean id="sourceIntact" class="uk.ac.ebi.intact.jami.model.extension.IntactSource">
         <constructor-arg index="0" value="intact"/>
         <property name="fullName" value="European Bioinformatics Institute"/>
         <property name="MIIdentifier" value="MI:0469"/>
@@ -91,14 +91,14 @@
         <property name="postalAddress" value="European Bioinformatics Institute; Wellcome Trust Genome Campus; Hinxton, Cambridge; CB10 1SD; United Kingdom"/>
     </bean>
 
-    <bean id="institutionMint" class="uk.ac.ebi.intact.jami.model.extension.IntactSource">
+    <bean id="sourceMint" class="uk.ac.ebi.intact.jami.model.extension.IntactSource">
         <constructor-arg index="0" value="mint"/>
         <property name="fullName" value="MINT, Dpt of Biology, University of Rome Tor Vergata"/>
         <property name="MIIdentifier" value="MI:0471"/>
         <property name="url" value="http://mint.bio.uniroma2.it/mint"/>
     </bean>
 
-    <bean id="institutionDip" class="uk.ac.ebi.intact.jami.model.extension.IntactSource">
+    <bean id="sourceDip" class="uk.ac.ebi.intact.jami.model.extension.IntactSource">
         <constructor-arg index="0" value="dip"/>
         <property name="fullName" value="Database of Interacting Proteins"/>
         <property name="MIIdentifier" value="MI:0465"/>
@@ -106,7 +106,7 @@
         <property name="postalAddress" value="611 Young Drive East; Los Angeles CA 90095; USA"/>
     </bean>
 
-    <bean id="institutionUndefined" class="uk.ac.ebi.intact.jami.model.extension.IntactSource">
+    <bean id="sourceUndefined" class="uk.ac.ebi.intact.jami.model.extension.IntactSource">
         <constructor-arg index="0" value="unknown"/>
         <property name="fullName" value="Undefined institution"/>
     </bean>
