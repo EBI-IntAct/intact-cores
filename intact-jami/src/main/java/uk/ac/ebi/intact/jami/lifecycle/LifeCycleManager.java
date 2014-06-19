@@ -29,7 +29,7 @@ import java.util.Collection;
  * @author Marine Dumousseau (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Component(value = "jamiLifecycleManager")
+@Component(value = "jamiLifeCycleManager")
 public class LifeCycleManager {
 
     @Autowired

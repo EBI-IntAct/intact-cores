@@ -20,7 +20,7 @@ public class IntactContext {
     private static final Log log = LogFactory.getLog(IntactContext.class);
 
     @Autowired
-    @Qualifier("jamiIntactConfiguration")
+    @Qualifier("intactJamiConfiguration")
     private IntactConfiguration jamiIntactConfiguration;
 
     @Autowired

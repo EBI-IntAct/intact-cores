@@ -30,7 +30,7 @@ import uk.ac.ebi.intact.jami.model.user.User;
 
 /**
  */
-@Component(value = "jamiCurationInProgress")
+@Component(value = "jamiCurationInProgressStatus")
 public class CurationInProgressStatus extends GlobalStatus {
 
     @Autowired
