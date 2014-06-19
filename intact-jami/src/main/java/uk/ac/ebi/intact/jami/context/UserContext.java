@@ -7,7 +7,7 @@ import uk.ac.ebi.intact.jami.model.user.User;
  * The user context
  * @author Marine Dumousseau (baranda@ebi.ac.uk)
  */
-@Component
+@Component(value = "jamiUserContext")
 public class UserContext{
 
     private User user;

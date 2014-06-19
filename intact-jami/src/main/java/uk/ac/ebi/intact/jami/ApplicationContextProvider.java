@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @version $Id$
  * @since <pre>18/12/13</pre>
  */
-@Component
+@Component(value = "jamiApplicationContextProvider")
 public class ApplicationContextProvider implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
 

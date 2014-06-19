@@ -21,7 +21,7 @@ public class IntactSynchronizerInterceptor extends EmptyInterceptor{
     @Override
     public void postFlush(Iterator entities) {
 
-        IntactDao intactDao = ApplicationContextProvider.getBean("intactDaoImpl");
+        IntactDao intactDao = ApplicationContextProvider.getBean("intactDao");
 
         if (intactDao != null) {
             intactDao.getSynchronizerContext().clearCache();
@@ -32,7 +32,7 @@ public class IntactSynchronizerInterceptor extends EmptyInterceptor{
 
     @Override
     public void afterTransactionCompletion(Transaction tx) {
-        IntactDao intactDao = ApplicationContextProvider.getBean("intactDaoImpl");
+        IntactDao intactDao = ApplicationContextProvider.getBean("intactDao");
 
         if (intactDao != null) {
             intactDao.getSynchronizerContext().clearCache();

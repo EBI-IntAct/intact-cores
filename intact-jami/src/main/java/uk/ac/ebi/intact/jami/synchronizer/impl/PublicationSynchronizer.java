@@ -159,7 +159,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
         else {
             // create unassigned pubmed id
-            SequenceManager seqManager = ApplicationContextProvider.getBean("sequenceManager");
+            SequenceManager seqManager = ApplicationContextProvider.getBean("jamiSequenceManager", SequenceManager.class);
             if (seqManager == null){
                 throw new SynchronizerException("The publication synchronizer needs a sequence manager to automatically generate a unassigned pubmed identifier for backward compatibility. No sequence manager bean " +
                         "was found in the spring context.");

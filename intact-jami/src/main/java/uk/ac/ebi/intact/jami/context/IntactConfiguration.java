@@ -23,7 +23,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactSource;
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  */
-@Component
+@Component(value = "intactJamiConfiguration")
 public class IntactConfiguration {
 
     private String acPrefix;

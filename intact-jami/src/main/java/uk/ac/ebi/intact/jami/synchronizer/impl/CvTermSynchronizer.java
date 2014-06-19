@@ -6,7 +6,6 @@ import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
@@ -373,15 +372,15 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                 intactCv.setIdentifier(intactCv.getIdentifiers().iterator().next().getId());
             }
             else {
-                final IntactContext context = ApplicationContextProvider.getBean("intactContext");
+                final IntactContext context = ApplicationContextProvider.getBean("intactJamiContext", IntactContext.class);
                 String prefix = "IA";
                 Source institution = null;
                 if (context != null){
-                    prefix = context.getConfig().getLocalCvPrefix();
-                    institution = context.getConfig().getDefaultInstitution();
+                    prefix = context.getIntactConfiguration().getLocalCvPrefix();
+                    institution = context.getIntactConfiguration().getDefaultInstitution();
                 }
                 if (institution != null){
-                    SequenceManager seqManager = ApplicationContextProvider.getBean(SequenceManager.class);
+                    SequenceManager seqManager = ApplicationContextProvider.getBean("jamiSequenceManager", SequenceManager.class);
                     if (seqManager == null){
                         throw new SynchronizerException("The Cv identifier synchronizer needs a sequence manager to automatically generate a cv identifier for backward compatibility. No sequence manager bean " +
                                 "was found in the spring context.");

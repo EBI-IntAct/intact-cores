@@ -24,7 +24,7 @@ import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
 
 /**
  */
-@Component
+@Component(value = "jamiReadyForCheckingStatus")
 public class ReadyForCheckingStatus extends GlobalStatus {
 
     public ReadyForCheckingStatus() {

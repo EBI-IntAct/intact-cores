@@ -24,12 +24,12 @@ import javax.persistence.PersistenceUnit;
  * @version $Id$
  * @since <pre>20/02/14</pre>
  */
-@Repository
+@Repository(value = "intactDao")
 @Lazy
 public class IntactDaoImpl implements IntactDao {
-    @PersistenceContext(unitName = "intact-core")
+    @PersistenceContext(unitName = "intact-jami")
     private EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
+    @PersistenceUnit(unitName = "intact-jami", name = "intactEntityManagerFactory")
     private EntityManagerFactory intactEntityManagerFactory;
 
     private SynchronizerContext synchronizerContext;

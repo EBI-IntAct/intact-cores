@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  */
-@Component
+@Component(value = "jamiSequenceManager")
 public class SequenceManager {
 
     private static final Log log = LogFactory.getLog( SequenceManager.class );
@@ -43,10 +43,10 @@ public class SequenceManager {
 
     private Dialect dialect;
 
-    @PersistenceUnit(unitName = "intact-core", name = "intactEntityManagerFactory")
+    @PersistenceUnit(unitName = "intact-jami", name = "intactEntityManagerFactory")
     private EntityManagerFactory intactEntityManagerFactory;
 
-    @PersistenceContext(unitName = "intact-core")
+    @PersistenceContext(unitName = "intact-jami")
     private EntityManager entityManager;
 
     public SequenceManager() {

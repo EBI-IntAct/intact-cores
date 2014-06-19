@@ -17,7 +17,7 @@ import java.util.Collections;
  * Assigns a reviewer to a publication
  *
  */
-@Controller
+@Controller(value = "jamiCorrectionAssigner")
 public class CorrectionAssigner {
 
     public CorrectionAssigner() {
@@ -32,7 +32,7 @@ public class CorrectionAssigner {
         }
 
         UserDao currentDao = null;
-        IntactContext intactContext = ApplicationContextProvider.getBean("intactContext");
+        IntactContext intactContext = ApplicationContextProvider.getBean("intactJamiContext", IntactContext.class);
         if (intactContext != null && intactContext.getIntactDao() != null) {
             currentDao = intactContext.getIntactDao().getUserDao();
         }
@@ -58,7 +58,7 @@ public class CorrectionAssigner {
     private SelectionRandomizer<User> createSelectionRandomizer() {
         SelectionRandomizer<User> selectionRandomizer = new SelectionRandomizer<User>();
         UserDao currentDao = null;
-        IntactContext intactContext = ApplicationContextProvider.getBean("intactContext");
+        IntactContext intactContext = ApplicationContextProvider.getBean("intactJamiContext", IntactContext.class);
         if (intactContext != null && intactContext.getIntactDao() != null) {
             currentDao = intactContext.getIntactDao().getUserDao();
         }

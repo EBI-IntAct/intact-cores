@@ -44,8 +44,8 @@
     <!-- The LocalContainerEntityManagerFactoryBean gives full control over EntityManagerFactory configuration
     and is appropriate for environments where fine-grained customization is required-->
     <bean id="intactEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceUnitName" value="intact-core"/>
-        <property name="persistenceXmlLocation" value="classpath*:/META-INF/persistence.xml"/>
+        <property name="persistenceUnitName" value="intact-jami"/>
+        <property name="persistenceXmlLocation" value="classpath*:/META-INF/jami-persistence.xml"/>
         <property name="dataSource" ref="intactCoreDataSourceTest"/>
         <property name="jpaProperties">
             <props>
@@ -73,11 +73,11 @@
     </bean>
 
     <!-- INTACT more specific beans -->
-    <bean id="userContext" class="uk.ac.ebi.intact.jami.context.UserContext">
+    <bean id="jamiUserContext" class="uk.ac.ebi.intact.jami.context.UserContext">
         <property name="userId" value="INTACT_TESTER"/>
     </bean>
 
-    <bean id="intactConfiguration" class="uk.ac.ebi.intact.jami.context.IntactConfiguration">
+    <bean id="intactJamiConfiguration" class="uk.ac.ebi.intact.jami.context.IntactConfiguration">
         <property name="acPrefix" value="EBI"/>
         <property name="defaultInstitution" ref="institutionIntact"/>
     </bean>

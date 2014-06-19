@@ -28,7 +28,7 @@ import uk.ac.ebi.intact.jami.model.user.User;
 /**
  *
  */
-@Component
+@Component(value = "jamiNewStatus")
 public class NewStatus extends GlobalStatus {
 
     public NewStatus() {
@@ -65,7 +65,7 @@ public class NewStatus extends GlobalStatus {
                     "' with state: '"+releasable.getStatus()+"'");
         }
         User currentUser = null;
-        UserContext userContext = ApplicationContextProvider.getBean("userContext");
+        UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
         if (userContext != null && userContext.getUserId() != null) {
             currentUser = userContext.getUser();
         }
@@ -94,7 +94,7 @@ public class NewStatus extends GlobalStatus {
                     "' with state: '"+releasable.getStatus()+"'");
         }
         User currentUser = null;
-        UserContext userContext = ApplicationContextProvider.getBean("userContext");
+        UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
         if (userContext != null && userContext.getUserId() != null) {
             currentUser = userContext.getUser();
         }

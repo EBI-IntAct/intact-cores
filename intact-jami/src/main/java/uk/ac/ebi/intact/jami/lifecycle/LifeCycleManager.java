@@ -16,9 +16,7 @@
 package uk.ac.ebi.intact.jami.lifecycle;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.jami.lifecycle.status.*;
 
 import java.util.Arrays;
@@ -30,31 +28,31 @@ import java.util.Collection;
  * @author Marine Dumousseau (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Component
-public class LifecycleManager {
+@Component(value = "jamiLifecycleManager")
+public class LifeCycleManager {
 
     @Autowired
-    private StartStatus startStatus;
+    private StartStatus jamiStartStatus;
     @Autowired
-    private NewStatus newStatus;
+    private NewStatus jamiNewStatus;
     @Autowired
-    private AssignedStatus assignedStatus;
+    private AssignedStatus jamiAssignedStatus;
     @Autowired
-    private CurationInProgressStatus curationInProgressStatus;
+    private CurationInProgressStatus jamiCurationInProgressStatus;
     @Autowired
-    private ReadyForCheckingStatus readyForCheckingStatus;
+    private ReadyForCheckingStatus jamiReadyForCheckingStatus;
     @Autowired
-    private AcceptedStatus acceptedStatus;
+    private AcceptedStatus jamiAcceptedStatus;
     @Autowired
-    private AcceptedOnHoldStatus acceptedOnHoldStatus;
+    private AcceptedOnHoldStatus jamiAcceptedOnHoldStatus;
     @Autowired
-    private ReadyForReleaseStatus readyForReleaseStatus;
+    private ReadyForReleaseStatus jamiReadyForReleaseStatus;
     @Autowired
-    private ReleasedStatus releasedStatus;
+    private ReleasedStatus jamiReleasedStatus;
 
     private Collection<GlobalStatus> getAllStatus() {
-        return Arrays.asList(startStatus, newStatus, assignedStatus, curationInProgressStatus, readyForCheckingStatus,
-                acceptedStatus, acceptedOnHoldStatus, readyForReleaseStatus, releasedStatus);
+        return Arrays.asList(jamiStartStatus, jamiNewStatus, jamiAssignedStatus, jamiCurationInProgressStatus, jamiReadyForCheckingStatus,
+                jamiAcceptedStatus, jamiAcceptedOnHoldStatus, jamiReadyForReleaseStatus, jamiReleasedStatus);
     }
 
     public void registerListener( LifecycleEventListener listener ) {
@@ -82,42 +80,42 @@ public class LifecycleManager {
 
     public GlobalStatus getGlobalStatus() {
         // return any of the implementations that does not override any of its methods
-        return startStatus;
+        return jamiStartStatus;
     }
 
     public StartStatus getStartStatus() {
-        return startStatus;
+        return jamiStartStatus;
     }
 
     public NewStatus getNewStatus() {
-        return newStatus;
+        return jamiNewStatus;
     }
 
     public AssignedStatus getAssignedStatus() {
-        return assignedStatus;
+        return jamiAssignedStatus;
     }
 
     public CurationInProgressStatus getCurationInProgressStatus() {
-        return curationInProgressStatus;
+        return jamiCurationInProgressStatus;
     }
 
     public ReadyForCheckingStatus getReadyForCheckingStatus() {
-        return readyForCheckingStatus;
+        return jamiReadyForCheckingStatus;
     }
 
     public AcceptedStatus getAcceptedStatus() {
-        return acceptedStatus;
+        return jamiAcceptedStatus;
     }
 
     public AcceptedOnHoldStatus getAcceptedOnHoldStatus() {
-        return acceptedOnHoldStatus;
+        return jamiAcceptedOnHoldStatus;
     }
 
     public ReadyForReleaseStatus getReadyForReleaseStatus() {
-        return readyForReleaseStatus;
+        return jamiReadyForReleaseStatus;
     }
 
     public ReleasedStatus getReleasedStatus() {
-        return releasedStatus;
+        return jamiReleasedStatus;
     }
 }

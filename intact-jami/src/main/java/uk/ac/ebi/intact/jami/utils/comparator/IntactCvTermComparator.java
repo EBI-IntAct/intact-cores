@@ -39,12 +39,12 @@ public class IntactCvTermComparator implements Comparator<CvTerm> {
         this.identifierComparator = new UnambiguousExternalIdentifierComparator();
         this.identifierCollectionComparator = new CollectionComparator<Xref>(this.identifierComparator);
 
-        final IntactContext context = ApplicationContextProvider.getBean("intactContext");
+        final IntactContext context = ApplicationContextProvider.getBean("intactJamiContext", IntactContext.class);
         this.cvPrefix = "IA:";
         if (context != null){
-            String prefix = context.getConfig().getLocalCvPrefix();
+            String prefix = context.getIntactConfiguration().getLocalCvPrefix();
             this.cvPrefix = prefix != null ? prefix+":" : "IA:";
-            this.institution = context.getConfig().getDefaultInstitution();
+            this.institution = context.getIntactConfiguration().getDefaultInstitution();
         }
     }
 

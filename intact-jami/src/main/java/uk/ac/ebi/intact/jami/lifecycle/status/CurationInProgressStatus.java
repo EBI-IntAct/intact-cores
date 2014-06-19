@@ -29,11 +29,11 @@ import uk.ac.ebi.intact.jami.model.user.User;
 
 /**
  */
-@Component
+@Component(value = "jamiCurationInProgress")
 public class CurationInProgressStatus extends GlobalStatus {
 
     @Autowired
-    private CorrectionAssigner correctionAssigner;
+    private CorrectionAssigner jamiCorrectionAssigner;
 
     public CurationInProgressStatus() {
         setLifecycleStatus(LifeCycleStatus.CURATION_IN_PROGRESS);
@@ -56,7 +56,7 @@ public class CurationInProgressStatus extends GlobalStatus {
             changeStatus(releasable, LifeCycleStatus.READY_FOR_CHECKING, LifeCycleEventType.READY_FOR_CHECKING, message);
 
             if (releasable.getCurrentReviewer() == null) {
-                correctionAssigner.assignReviewer(releasable);
+                jamiCorrectionAssigner.assignReviewer(releasable);
             }
 
             // notify listeners
@@ -66,7 +66,7 @@ public class CurationInProgressStatus extends GlobalStatus {
 
         } else {
             User currentUser = null;
-            UserContext userContext = ApplicationContextProvider.getBean("userContext");
+            UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
             if (userContext != null && userContext.getUserId() != null) {
                 currentUser = userContext.getUser();
             }

@@ -3,7 +3,7 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
    version="1.0">
 
-    <persistence-unit name="intact-core" >
+    <persistence-unit name="intact-jami" >
       <properties>
          <property name="hibernate.max_fetch_depth" value="3"/>
           <property name="hibernate.ejb.interceptor.session_scoped" value="uk.ac.ebi.intact.jami.interceptor.IntactSynchronizerInterceptor"/>

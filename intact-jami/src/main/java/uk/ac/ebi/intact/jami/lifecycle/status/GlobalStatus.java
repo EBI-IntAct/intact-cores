@@ -96,7 +96,7 @@ public class GlobalStatus {
      */
     public void changeOwnership(Releasable releasable, User newOwner, String reason) {
         User currentUser = null;
-        UserContext userContext = ApplicationContextProvider.getBean("userContext");
+        UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
         if (userContext != null && userContext.getUserId() != null) {
             currentUser = userContext.getUser();
         }
@@ -154,7 +154,7 @@ public class GlobalStatus {
 
     protected void changeStatus(Releasable releasable, LifeCycleStatus cvPublicationStatusType, LifeCycleEventType cvLifecycleEventType, String comment) {
         User currentUser = null;
-        UserContext userContext = ApplicationContextProvider.getBean("userContext");
+        UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
         if (userContext != null && userContext.getUserId() != null) {
             currentUser = userContext.getUser();
         }
