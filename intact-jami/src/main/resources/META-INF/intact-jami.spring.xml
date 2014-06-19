@@ -93,7 +93,7 @@
         <property name="userId" value="${user.context.id}"/>
     </bean>
 
-    <bean id="intactJamiConfig" class="uk.ac.ebi.intact.jami.context.IntactConfiguration">
+    <bean id="intactJamiConfiguration" class="uk.ac.ebi.intact.jami.context.IntactConfiguration">
         <property name="acPrefix" value="${intact.ac.prefix}"/>
         <property name="defaultInstitution" ref="${default.source}"/>
     </bean>
