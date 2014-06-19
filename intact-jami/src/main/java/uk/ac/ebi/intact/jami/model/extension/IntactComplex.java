@@ -202,6 +202,7 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
      * NOTE: in the future, should be persisted and cvStatus should be removed
      * @deprecated use getStatus instead
      */
+    @Deprecated
     public CvTerm getCvStatus() {
         return status.toCvTerm();
     }

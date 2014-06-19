@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
 import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
 import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
@@ -83,7 +84,7 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
 
     @Override
     protected void testDeleteOtherProperties(AbstractLifeCycleEvent objectToTest) {
-        // nothing to do here
+        Assert.assertNotNull(entityManager.find(IntactCvTerm.class, ((IntactCvTerm)objectToTest.getEvent().toCvTerm()).getAc()));
     }
 
     @Override
@@ -117,7 +118,7 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     @Override
     protected void testPersistedProperties(AbstractLifeCycleEvent persistedObject) {
         Assert.assertNotNull(persistedObject.getAc());
-        Assert.assertEquals("new", persistedObject.getEvent().toString());
+        Assert.assertEquals(LifeCycleEventType.CREATED, persistedObject.getEvent());
         Assert.assertNotNull(((IntactCvTerm) persistedObject.getEvent().toCvTerm()).getAc());
         Assert.assertEquals("default", persistedObject.getWho().getLogin());
         Assert.assertNotNull(persistedObject.getWho().getAc());
@@ -128,7 +129,7 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     @Override
     protected void testNonPersistedProperties(AbstractLifeCycleEvent persistedObject) {
         Assert.assertNull(persistedObject.getAc());
-        Assert.assertEquals("new", persistedObject.getEvent().toString());
+        Assert.assertEquals(LifeCycleEventType.CREATED, persistedObject.getEvent());
         Assert.assertNotNull(((IntactCvTerm) persistedObject.getEvent().toCvTerm()).getAc());
         Assert.assertEquals("default", persistedObject.getWho().getLogin());
         Assert.assertNotNull(persistedObject.getWho().getAc());

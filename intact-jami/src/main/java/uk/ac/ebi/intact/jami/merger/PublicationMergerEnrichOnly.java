@@ -66,8 +66,8 @@ public class PublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Public
             mergedPub.setCurrentReviewer(obj1.getCurrentReviewer());
         }
         // merge status
-        if (mergedPub.getStatus() == null && obj1.getStatus() != null){
-            mergedPub.setStatus(obj1.getStatus());
+        if (mergedPub.getCvStatus() == null && obj1.getCvStatus() != null){
+            mergedPub.setCvStatus(obj1.getCvStatus());
         }
         // merge lifecycle
         if (obj1.areLifeCycleEventsInitialized()){

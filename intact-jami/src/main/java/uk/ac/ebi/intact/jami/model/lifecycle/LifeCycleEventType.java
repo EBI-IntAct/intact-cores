@@ -16,7 +16,6 @@
 package uk.ac.ebi.intact.jami.model.lifecycle;
 
 import psidev.psi.mi.jami.model.CvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 /**
@@ -64,7 +63,6 @@ public enum LifeCycleEventType {
     public CvTerm toCvTerm(){
         if (this.cvEvent == null){
             this.cvEvent = IntactUtils.createLifecycleEvent(this.shortLabel);
-            ((IntactCvTerm)this.cvEvent).setIdentifier(this.identifier);
         }
         return this.cvEvent;
     }

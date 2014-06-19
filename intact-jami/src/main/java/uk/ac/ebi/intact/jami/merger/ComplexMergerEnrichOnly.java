@@ -75,8 +75,8 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
         IntactComplex mergedComplex = super.merge(obj1, obj2);
 
         // merge status
-        if (mergedComplex.getStatus() == null && obj1.getStatus() != null){
-            mergedComplex.setStatus(obj1.getStatus());
+        if (mergedComplex.getCvStatus() == null && obj1.getCvStatus() != null){
+            mergedComplex.setCvStatus(obj1.getCvStatus());
         }
         // merge curator
         if (mergedComplex.getCurrentOwner() == null && obj1.getCurrentOwner() != null){

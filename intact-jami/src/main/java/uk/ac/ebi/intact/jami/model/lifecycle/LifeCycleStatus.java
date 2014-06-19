@@ -16,7 +16,6 @@
 package uk.ac.ebi.intact.jami.model.lifecycle;
 
 import psidev.psi.mi.jami.model.CvTerm;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 /**
@@ -60,7 +59,6 @@ public enum LifeCycleStatus {
     public CvTerm toCvTerm(){
         if (this.cvStatus == null){
             this.cvStatus = IntactUtils.createLifecycleStatus(this.shortLabel);
-            ((IntactCvTerm)this.cvStatus).setIdentifier(this.identifier);
         }
         return this.cvStatus;
     }

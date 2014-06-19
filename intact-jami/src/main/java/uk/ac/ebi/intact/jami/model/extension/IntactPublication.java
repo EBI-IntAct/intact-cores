@@ -613,6 +613,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
      * NOTE: in the future, should be persisted and cvStatus should be removed
      * @deprecated use getStatus instead
      */
+    @Deprecated
     public CvTerm getCvStatus() {
         return status.toCvTerm();
     }

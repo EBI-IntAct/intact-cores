@@ -61,8 +61,8 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
             mergedPub.setCurrentReviewer(obj1.getCurrentReviewer());
         }
         // merge status
-        if (mergedPub.getStatus() != obj1.getStatus()){
-            mergedPub.setStatus(obj1.getStatus());
+        if (mergedPub.getCvStatus() != obj1.getCvStatus()){
+            mergedPub.setCvStatus(obj1.getCvStatus());
         }
         // merge lifecycle
         if (obj1.areLifeCycleEventsInitialized()){
