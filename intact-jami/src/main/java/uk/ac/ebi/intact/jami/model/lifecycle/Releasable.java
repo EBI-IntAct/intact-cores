@@ -29,4 +29,11 @@ public interface Releasable {
     public boolean areLifeCycleEventsInitialized();
 
     public List<LifeCycleEvent> getLifecycleEvents();
+
+    public void onReleased();
+
+    public void onHold(String message);
+
+    public boolean isOnHold();
+
 }

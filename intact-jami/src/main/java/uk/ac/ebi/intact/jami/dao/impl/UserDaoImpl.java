@@ -27,6 +27,11 @@ public class UserDaoImpl extends AbstractIntactBaseDao<User, User> implements Us
         super(User.class, entityManager, context);
     }
 
+    @Override
+    public User getByAc(String ac) {
+        return getEntityManager().find(User.class, ac);
+    }
+
     public User getByLogin(String login) {
         Query query = getEntityManager().createQuery("select u from User u " +
                 "where u.login = :login ");

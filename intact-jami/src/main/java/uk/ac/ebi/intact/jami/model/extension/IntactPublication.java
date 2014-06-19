@@ -660,6 +660,28 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.status.initCvTerm(status);
     }
 
+    @Override
+    public void onReleased() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "on-hold");
+    }
+
+    @Override
+    public void onHold(String message) {
+        Annotation onHold = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "on-hold");
+        if (onHold != null){
+            onHold.setValue(message);
+        }
+        else{
+            getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic("on-hold", null), message));
+        }
+    }
+
+    @Override
+    @Transient
+    public boolean isOnHold() {
+        return AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "on-hold") != null;
+    }
+
     @ManyToOne( targetEntity = User.class )
     @JoinColumn( name = "owner_pk", referencedColumnName = "ac" )
     @ForeignKey(name="FK_PUBLICATION_OWNER")

@@ -5,6 +5,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.PublicationDao;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -506,7 +507,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                     "join p.lifecycleEvents as l " +
                     "join l.event as t " +
                     "where l.when is null and t.shortName = :released");
-            query.setParameter("released", LifeCycleEvent.RELEASED);
+            query.setParameter("released", LifeCycleEventType.RELEASED.toString());
         }
         else{
             query = getEntityManager().createQuery("select p from IntactPublication p " +

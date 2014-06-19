@@ -117,8 +117,8 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     @Override
     protected void testPersistedProperties(AbstractLifeCycleEvent persistedObject) {
         Assert.assertNotNull(persistedObject.getAc());
-        Assert.assertEquals("new", persistedObject.getEvent().getShortName());
-        Assert.assertNotNull(((IntactCvTerm) persistedObject.getEvent()).getAc());
+        Assert.assertEquals("new", persistedObject.getEvent().toString());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getEvent().toCvTerm()).getAc());
         Assert.assertEquals("default", persistedObject.getWho().getLogin());
         Assert.assertNotNull(persistedObject.getWho().getAc());
         Assert.assertEquals("new event", persistedObject.getNote());
@@ -128,8 +128,8 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     @Override
     protected void testNonPersistedProperties(AbstractLifeCycleEvent persistedObject) {
         Assert.assertNull(persistedObject.getAc());
-        Assert.assertEquals("new", persistedObject.getEvent().getShortName());
-        Assert.assertNotNull(((IntactCvTerm) persistedObject.getEvent()).getAc());
+        Assert.assertEquals("new", persistedObject.getEvent().toString());
+        Assert.assertNotNull(((IntactCvTerm) persistedObject.getEvent().toCvTerm()).getAc());
         Assert.assertEquals("default", persistedObject.getWho().getLogin());
         Assert.assertNotNull(persistedObject.getWho().getAc());
         Assert.assertEquals("new event", persistedObject.getNote());

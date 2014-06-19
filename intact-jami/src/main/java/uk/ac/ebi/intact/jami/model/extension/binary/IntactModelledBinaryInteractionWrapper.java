@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.user.User;
 
 import java.util.Collection;
@@ -243,11 +244,11 @@ public class IntactModelledBinaryInteractionWrapper implements ModelledBinaryInt
         this.wrappedInteraction.setUpdator(userStamp);
     }
 
-    public CvTerm getStatus() {
+    public LifeCycleStatus getStatus() {
         return this.wrappedInteraction.getStatus();
     }
 
-    public void setStatus( CvTerm status ) {
+    public void setStatus( LifeCycleStatus status ) {
         this.wrappedInteraction.setStatus(status);
     }
 

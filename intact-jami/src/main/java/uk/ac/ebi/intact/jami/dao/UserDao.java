@@ -15,6 +15,7 @@ import java.util.Collection;
  */
 public interface UserDao extends IntactBaseDao<User> {
 
+    public User getByAc(String ac);
     public User getByLogin(String login);
     public Collection<User> getByFirstName(String name);
     public Collection<User> getByLastName(String name);
