@@ -80,13 +80,6 @@
         <property name="username" value="${db.user}"/>
         <property name="password" value="${db.password}"/>
     </bean>
-    <!-- Intact core basic datasource for testing -->
-    <bean id="jamiCoreDataSourceTest" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.h2.Driver"/>
-        <property name="url" value="jdbc:h2:mem:intactcore;DB_CLOSE_DELAY=-1;LOCK_MODE=0"/>
-        <property name="username" value="sa"/>
-        <property name="password" value=""/>
-    </bean>
 
     <!-- INTACT more specific beans -->
     <bean id="jamiUserContext" class="uk.ac.ebi.intact.jami.context.UserContext">
