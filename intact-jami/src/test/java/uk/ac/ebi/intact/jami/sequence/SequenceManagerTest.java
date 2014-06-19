@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
+@Transactional(value = "jamiTransactionManager")
 @TransactionConfiguration
 @DirtiesContext
 public class SequenceManagerTest{

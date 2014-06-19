@@ -31,7 +31,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/intact-jami-test.spring.xml"})
-@Transactional
+@Transactional(value = "jamiTransactionManager")
 @TransactionConfiguration
 @DirtiesContext
 public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {

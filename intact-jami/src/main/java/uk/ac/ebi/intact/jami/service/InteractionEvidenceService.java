@@ -35,37 +35,37 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
     @Qualifier("intactDAO")
     private IntactDao intactDAO;
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll() {
         return this.intactDAO.getInteractionDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<InteractionEvidence> iterateAll() {
         return new IntactQueryResultIterator<InteractionEvidence>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<InteractionEvidence> fetchIntactObjects(int first, int max) {
         return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getInteractionDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<InteractionEvidence> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<InteractionEvidence>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<InteractionEvidence> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(query, parameters, first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(InteractionEvidence object) throws PersisterException, FinderException, SynchronizerException {
         // if the interaction has an experiment, we may have to persist the experiment first
         if (object.getExperiment() != null){
@@ -101,20 +101,20 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
         intactDAO.getSynchronizerContext().getInteractionSynchronizer().synchronize(object, true);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends InteractionEvidence> objects) throws SynchronizerException, PersisterException, FinderException {
         for (InteractionEvidence interaction : objects){
             saveOrUpdate(interaction);
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(InteractionEvidence object) throws PersisterException, FinderException, SynchronizerException {
 
         this.intactDAO.getSynchronizerContext().getInteractionSynchronizer().delete(object);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends InteractionEvidence> objects) throws SynchronizerException, PersisterException, FinderException {
         for (InteractionEvidence interaction : objects){
             delete(interaction);

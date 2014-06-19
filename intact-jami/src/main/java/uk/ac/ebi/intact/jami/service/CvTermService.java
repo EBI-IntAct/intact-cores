@@ -30,56 +30,56 @@ public class CvTermService implements IntactService<CvTerm>{
     private IntactDao intactDAO;
     private String objClass;
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll() {
         return this.intactDAO.getCvTermDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<CvTerm> iterateAll() {
         return new IntactQueryResultIterator<CvTerm>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<CvTerm> fetchIntactObjects(int first, int max) {
         return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getCvTermDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<CvTerm> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<CvTerm>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<CvTerm> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getByQuery(query, parameters, first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(CvTerm object) throws PersisterException, FinderException, SynchronizerException {
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getCvSynchronizer(this.objClass).synchronize(object, true);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends CvTerm> objects) throws SynchronizerException, PersisterException, FinderException {
         for (CvTerm cv : objects){
             saveOrUpdate(cv);
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(CvTerm object) throws PersisterException, FinderException, SynchronizerException {
 
         this.intactDAO.getSynchronizerContext().getCvSynchronizer(this.objClass).delete(object);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends CvTerm> objects) throws SynchronizerException, PersisterException, FinderException {
         for (CvTerm cv : objects){
             delete(cv);

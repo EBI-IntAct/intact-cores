@@ -91,7 +91,7 @@ public class SequenceManager {
      * @param initialValue The initial value of the sequence. This will be the first value given by the sequence
      * when the next value is invoked
      */
-    @Transactional
+    @Transactional(value = "jamiTransactionManager")
     public void createSequenceIfNotExists(String sequenceName, int initialValue) {
         if (!sequenceExists(sequenceName)) {
             if (log.isInfoEnabled()) log.info("Sequence could not be found and it is going to be created: "+sequenceName);
@@ -108,7 +108,7 @@ public class SequenceManager {
      * @param entityManager The entity manager to use
      * @return the names of the sequences
      */
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, value = "jamiTransactionManager")
     public List<String> getExistingSequenceNames(EntityManager entityManager) {
         Query query ;
         String sql = dialect.getQuerySequencesString();
@@ -126,7 +126,7 @@ public class SequenceManager {
      * @param sequenceName The sequence name to query
      * @return The next value for that sequence; null if the sequence does not exist;
      */
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, value = "jamiTransactionManager")
     public Long getNextValueForSequence(String sequenceName ) {
         if ( !sequenceExists(sequenceName ) ) {
             log.error( "Sequence does not exist: " + sequenceName +

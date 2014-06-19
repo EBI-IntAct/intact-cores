@@ -32,37 +32,37 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
     @Qualifier("intactDAO")
     private IntactDao intactDAO;
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll() {
         return this.intactDAO.getComplexDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<ModelledInteraction> iterateAll() {
         return new IntactQueryResultIterator<ModelledInteraction>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<ModelledInteraction> fetchIntactObjects(int first, int max) {
         return new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getComplexDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<ModelledInteraction> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<ModelledInteraction>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<ModelledInteraction> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getByQuery(query, parameters, first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(ModelledInteraction object) throws PersisterException, FinderException, SynchronizerException {
         Complex complex;
         if (!(object instanceof Complex)){
@@ -76,21 +76,21 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
         intactDAO.getSynchronizerContext().getComplexSynchronizer().synchronize(complex, true);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends ModelledInteraction> objects) throws SynchronizerException, PersisterException, FinderException {
         for (ModelledInteraction interaction : objects){
             saveOrUpdate(interaction);
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(ModelledInteraction object) throws PersisterException, FinderException, SynchronizerException {
         if (object instanceof Complex){
             this.intactDAO.getSynchronizerContext().getComplexSynchronizer().delete((Complex)object);
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends ModelledInteraction> objects) throws SynchronizerException, PersisterException, FinderException {
         for (ModelledInteraction interaction : objects){
             delete(interaction);

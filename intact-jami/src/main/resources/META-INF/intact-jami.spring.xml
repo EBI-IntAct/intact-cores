@@ -22,7 +22,7 @@
     </bean>
 
     <!-- so the @Transactional annotations work -->
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <tx:annotation-driven transaction-manager="jamiTransactionManager"/>
 
     <!--
         Post-processor to perform exception translation on @Repository classes
@@ -44,9 +44,9 @@
 
     <!-- JPATransactionManager is not dependent on hibernate. It is a more global platform -->
     <!-- We use entity manager because it is JPA and not just specific to hibernate -->
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <bean id="jamiTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="intactEntityManagerFactory"/>
-        <property name="dataSource" ref="intactCoreDataSource"/>
+        <property name="dataSource" ref="jamiCoreDataSource"/>
     </bean>
 
 
@@ -55,7 +55,7 @@
     <bean id="intactEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="intact-jami"/>
         <property name="persistenceXmlLocation" value="classpath*:/META-INF/jami-persistence.xml"/>
-        <property name="dataSource" ref="intactCoreDataSource"/>
+        <property name="dataSource" ref="jamiCoreDataSource"/>
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.generate_statistics">true</prop>
@@ -74,14 +74,14 @@
         </property>
     </bean>
     <!-- Intact core basic datasource -->
-    <bean id="intactCoreDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <bean id="jamiCoreDataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="${db.driver}"/>
         <property name="url" value="${db.url}"/>
         <property name="username" value="${db.user}"/>
         <property name="password" value="${db.password}"/>
     </bean>
     <!-- Intact core basic datasource for testing -->
-    <bean id="intactCoreDataSourceTest" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <bean id="jamiCoreDataSourceTest" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.h2.Driver"/>
         <property name="url" value="jdbc:h2:mem:intactcore;DB_CLOSE_DELAY=-1;LOCK_MODE=0"/>
         <property name="username" value="sa"/>

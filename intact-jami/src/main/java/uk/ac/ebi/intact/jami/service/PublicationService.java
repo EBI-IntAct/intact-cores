@@ -29,56 +29,56 @@ public class PublicationService implements IntactService<Publication>{
     @Qualifier("intactDAO")
     private IntactDao intactDAO;
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll() {
         return this.intactDAO.getPublicationDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<Publication> iterateAll() {
         return new IntactQueryResultIterator<Publication>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<Publication> fetchIntactObjects(int first, int max) {
         return new ArrayList<Publication>(this.intactDAO.getPublicationDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getPublicationDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<Publication> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<Publication>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<Publication> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<Publication>(this.intactDAO.getPublicationDao().getByQuery(query, parameters, first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Publication object) throws PersisterException, FinderException, SynchronizerException {
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getPublicationSynchronizer().synchronize(object, true);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends Publication> objects) throws SynchronizerException, PersisterException, FinderException {
         for (Publication pub : objects){
             saveOrUpdate(pub);
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Publication object) throws PersisterException, FinderException, SynchronizerException {
 
         this.intactDAO.getSynchronizerContext().getPublicationSynchronizer().delete(object);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends Publication> objects) throws SynchronizerException, PersisterException, FinderException {
         for (Publication pub : objects){
             delete(pub);

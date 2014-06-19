@@ -24,7 +24,7 @@ public class CorrectionAssigner {
 
     }
 
-    @Transactional
+    @Transactional(value = "jamiTransactionManager")
     public User assignReviewer(Releasable releasable) {
         final User owner = releasable.getCurrentOwner();
         if (owner == null) {

@@ -29,56 +29,56 @@ public class ComplexService implements IntactService<Complex>{
     @Qualifier("intactDAO")
     private IntactDao intactDAO;
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll() {
         return this.intactDAO.getComplexDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<Complex> iterateAll() {
         return new IntactQueryResultIterator<Complex>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<Complex> fetchIntactObjects(int first, int max) {
         return new ArrayList<Complex>(this.intactDAO.getComplexDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getComplexDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public Iterator<Complex> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<Complex>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public List<Complex> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<Complex>(this.intactDAO.getComplexDao().getByQuery(query, parameters, first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Complex object) throws PersisterException, FinderException, SynchronizerException {
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getComplexSynchronizer().synchronize(object, true);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends Complex> objects) throws SynchronizerException, PersisterException, FinderException {
         for (Complex interaction : objects){
             saveOrUpdate(interaction);
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Complex object) throws PersisterException, FinderException, SynchronizerException {
 
         this.intactDAO.getSynchronizerContext().getComplexSynchronizer().delete(object);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends Complex> objects) throws SynchronizerException, PersisterException, FinderException {
         for (Complex interaction : objects){
             delete(interaction);
