@@ -82,6 +82,7 @@ public class IntactSchemaUtils {
     private static Configuration createConfiguration(Properties props) {
         final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setPersistenceUnitName("intact-jami");
+        factoryBean.setPersistenceXmlLocation("classpath*:/META-INF/jami-persistence.xml");
 
         final HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
         jpaVendorAdapter.setDatabasePlatform(Dialect.getDialect(props).getClass().getName());
