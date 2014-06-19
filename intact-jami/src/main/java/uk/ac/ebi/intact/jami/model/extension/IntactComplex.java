@@ -9,10 +9,7 @@ import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.ChecksumUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
-import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
-import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
+import uk.ac.ebi.intact.jami.model.lifecycle.*;
 import uk.ac.ebi.intact.jami.model.listener.ComplexParameterListener;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -67,6 +64,8 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     private CvTerm evidenceType;
     private User currentOwner;
     private User currentReviewer;
+
+    private CvTerm cvStatus;
 
     protected IntactComplex(){
         super();
@@ -187,11 +186,15 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
      * NOTE: in the future, should be persisted and cvStatus should be removed
      */
     public LifeCycleStatus getStatus() {
+        if (this.status == null){
+            this.status = LifeCycleStatus.NEW;
+        }
         return status;
     }
 
     public void setStatus( LifeCycleStatus status ) {
-        this.status = status;
+        this.status = status != null ? status : LifeCycleStatus.NEW;
+        this.cvStatus = this.status.toCvTerm();
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
@@ -204,7 +207,10 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
      */
     @Deprecated
     public CvTerm getCvStatus() {
-        return status.toCvTerm();
+        if (this.cvStatus == null){
+            this.cvStatus = getStatus().toCvTerm();
+        }
+        return this.cvStatus;
     }
 
     /**
@@ -214,40 +220,8 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
      */
     @Deprecated
     public void setCvStatus( CvTerm status ) {
-        if (status.getShortName().equals(LifeCycleStatus.ACCEPTED.shortLabel())){
-            this.status = LifeCycleStatus.ACCEPTED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.ASSIGNED.shortLabel())){
-            this.status = LifeCycleStatus.ASSIGNED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.ACCEPTED_ON_HOLD.shortLabel())){
-            this.status = LifeCycleStatus.ACCEPTED_ON_HOLD;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.NEW.shortLabel())){
-            this.status = LifeCycleStatus.NEW;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.RESERVED.shortLabel())){
-            this.status = LifeCycleStatus.RESERVED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.DISCARDED.shortLabel())){
-            this.status = LifeCycleStatus.DISCARDED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.CURATION_IN_PROGRESS.shortLabel())){
-            this.status = LifeCycleStatus.CURATION_IN_PROGRESS;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.RELEASED.shortLabel())){
-            this.status = LifeCycleStatus.RELEASED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.READY_FOR_CHECKING.shortLabel())){
-            this.status = LifeCycleStatus.READY_FOR_CHECKING;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.READY_FOR_RELEASE.shortLabel())){
-            this.status = LifeCycleStatus.READY_FOR_RELEASE;
-        }
-        else{
-            this.status = LifeCycleStatus.PUB_STATUS;
-        }
-        this.status.initCvTerm(status);
+        this.cvStatus = status;
+        this.status = LifeCycleStatus.toLifeCycleStatus(status);
     }
 
     @ManyToOne( targetEntity = User.class )

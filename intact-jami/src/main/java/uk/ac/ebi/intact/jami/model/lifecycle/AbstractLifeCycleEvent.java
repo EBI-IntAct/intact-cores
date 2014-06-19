@@ -30,12 +30,13 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
 
     private String note;
 
+    private CvTerm cvEvent;
+
     protected AbstractLifeCycleEvent() {
-        this.event = LifeCycleEventType.CREATED;
     }
 
     public AbstractLifeCycleEvent(LifeCycleEventType event, User who, Date when, String note) {
-        this.event = event != null ? event : LifeCycleEventType.CREATED;
+        this.event = event;
         this.who = who;
         this.when = when;
         this.note = note;
@@ -56,11 +57,15 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
      * NOTE: in the future, should be persisted and cvEvent should be removed
      */
     public LifeCycleEventType getEvent() {
+        if (this.event == null){
+            this.event = LifeCycleEventType.CREATED;
+        }
         return event;
     }
 
     public void setEvent( LifeCycleEventType event ) {
-        this.event = event;
+        this.event = event != null ? event : LifeCycleEventType.CREATED;
+        this.cvEvent = this.event.toCvTerm();
     }
 
     @ManyToOne( optional = false, targetEntity = User.class)
@@ -107,7 +112,10 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
      * @deprecated use getEvent instead
      */
     public CvTerm getCvEvent() {
-        return this.event.toCvTerm();
+        if (this.cvEvent == null){
+            this.cvEvent = getEvent().toCvTerm();
+        }
+        return this.cvEvent;
     }
 
     @Deprecated
@@ -115,57 +123,7 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
      * @deprecated use setEvent instead
      */
     public void setCvEvent( CvTerm event ) {
-        if (event.getShortName().equals(LifeCycleEventType.ACCEPTED.shortLabel())){
-            this.event = LifeCycleEventType.ACCEPTED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.ASSIGNED.shortLabel())){
-            this.event = LifeCycleEventType.ASSIGNED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.ASSIGNMENT_DECLINED.shortLabel())){
-            this.event = LifeCycleEventType.ASSIGNMENT_DECLINED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.CREATED.shortLabel())){
-            this.event = LifeCycleEventType.CREATED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.CURATION_STARTED.shortLabel())){
-            this.event = LifeCycleEventType.CURATION_STARTED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.DISCARDED.shortLabel())){
-            this.event = LifeCycleEventType.DISCARDED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.OWNER_CHANGED.shortLabel())){
-            this.event = LifeCycleEventType.OWNER_CHANGED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.PUT_ON_HOLD.shortLabel())){
-            this.event = LifeCycleEventType.PUT_ON_HOLD;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.READY_FOR_CHECKING.shortLabel())){
-            this.event = LifeCycleEventType.READY_FOR_CHECKING;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.READY_FOR_RELEASE.shortLabel())){
-            this.event = LifeCycleEventType.READY_FOR_RELEASE;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.REJECTED.shortLabel())){
-            this.event = LifeCycleEventType.REJECTED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.RELEASED.shortLabel())){
-            this.event = LifeCycleEventType.RELEASED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.RESERVED.shortLabel())){
-            this.event = LifeCycleEventType.RESERVED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.REVIEWER_CHANGED.shortLabel())){
-            this.event = LifeCycleEventType.REVIEWER_CHANGED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.SANITY_CHECK_FAILED.shortLabel())){
-            this.event = LifeCycleEventType.SANITY_CHECK_FAILED;
-        }
-        else if (event.getShortName().equals(LifeCycleEventType.SELF_ASSIGNED.shortLabel())){
-            this.event = LifeCycleEventType.SELF_ASSIGNED;
-        }
-        else{
-            this.event = LifeCycleEventType.LIFECYCLE_EVENT;
-        }
-        this.event.initCvTerm(event);
+        this.cvEvent = event;
+        this.event = LifeCycleEventType.toLifeCycleEventType(event);
     }
 }

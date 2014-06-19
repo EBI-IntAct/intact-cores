@@ -81,6 +81,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private User currentOwner;
     private User currentReviewer;
 
+    private CvTerm cvStatus;
+
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
         this.status = LifeCycleStatus.NEW;
@@ -598,11 +600,15 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
      * NOTE: in the future, should be persisted and cvStatus should be removed
      */
     public LifeCycleStatus getStatus() {
+        if (this.status == null){
+            this.status = LifeCycleStatus.NEW;
+        }
         return status;
     }
 
     public void setStatus( LifeCycleStatus status ) {
-        this.status = status;
+        this.status = status != null ? status : LifeCycleStatus.NEW;
+        this.cvStatus = this.status.toCvTerm();
     }
 
     @ManyToOne(targetEntity = IntactCvTerm.class)
@@ -615,7 +621,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
      */
     @Deprecated
     public CvTerm getCvStatus() {
-        return status.toCvTerm();
+        if (this.cvStatus == null){
+            this.cvStatus = getStatus().toCvTerm();
+        }
+        return this.cvStatus;
     }
 
     /**
@@ -625,40 +634,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
      */
     @Deprecated
     public void setCvStatus( CvTerm status ) {
-        if (status.getShortName().equals(LifeCycleStatus.ACCEPTED.shortLabel())){
-            this.status = LifeCycleStatus.ACCEPTED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.ASSIGNED.shortLabel())){
-            this.status = LifeCycleStatus.ASSIGNED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.ACCEPTED_ON_HOLD.shortLabel())){
-            this.status = LifeCycleStatus.ACCEPTED_ON_HOLD;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.NEW.shortLabel())){
-            this.status = LifeCycleStatus.NEW;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.RESERVED.shortLabel())){
-            this.status = LifeCycleStatus.RESERVED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.DISCARDED.shortLabel())){
-            this.status = LifeCycleStatus.DISCARDED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.CURATION_IN_PROGRESS.shortLabel())){
-            this.status = LifeCycleStatus.CURATION_IN_PROGRESS;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.RELEASED.shortLabel())){
-            this.status = LifeCycleStatus.RELEASED;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.READY_FOR_CHECKING.shortLabel())){
-            this.status = LifeCycleStatus.READY_FOR_CHECKING;
-        }
-        else if (status.getShortName().equals(LifeCycleStatus.READY_FOR_RELEASE.shortLabel())){
-            this.status = LifeCycleStatus.READY_FOR_RELEASE;
-        }
-        else{
-            this.status = LifeCycleStatus.PUB_STATUS;
-        }
-        this.status.initCvTerm(status);
+        this.cvStatus = status;
+        this.status = LifeCycleStatus.toLifeCycleStatus(status);
     }
 
     @Override

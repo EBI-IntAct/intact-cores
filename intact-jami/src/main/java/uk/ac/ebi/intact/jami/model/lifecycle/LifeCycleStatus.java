@@ -41,8 +41,6 @@ public enum LifeCycleStatus {
     private String shortLabel;
     private String identifier;
 
-    private CvTerm cvStatus;
-
     private LifeCycleStatus(String shortLabel, String identifier) {
         this.shortLabel = shortLabel;
         this.identifier = identifier;
@@ -57,16 +55,42 @@ public enum LifeCycleStatus {
     }
 
     public CvTerm toCvTerm(){
-        if (this.cvStatus == null){
-            this.cvStatus = IntactUtils.createLifecycleStatus(this.shortLabel);
-        }
-        return this.cvStatus;
+        return IntactUtils.createLifecycleStatus(this.shortLabel);
     }
 
-    public void initCvTerm(CvTerm cvTerm){
-        this.cvStatus = cvTerm;
-        if (!cvTerm.getShortName().equals(this.shortLabel)){
-            this.cvStatus = null;
+    public static LifeCycleStatus toLifeCycleStatus(CvTerm status){
+        if (status.getShortName().equals(LifeCycleStatus.ACCEPTED.shortLabel())){
+            return LifeCycleStatus.ACCEPTED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.ASSIGNED.shortLabel())){
+            return LifeCycleStatus.ASSIGNED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.ACCEPTED_ON_HOLD.shortLabel())){
+            return LifeCycleStatus.ACCEPTED_ON_HOLD;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.NEW.shortLabel())){
+            return LifeCycleStatus.NEW;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.RESERVED.shortLabel())){
+            return LifeCycleStatus.RESERVED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.DISCARDED.shortLabel())){
+            return LifeCycleStatus.DISCARDED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.CURATION_IN_PROGRESS.shortLabel())){
+            return LifeCycleStatus.CURATION_IN_PROGRESS;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.RELEASED.shortLabel())){
+            return LifeCycleStatus.RELEASED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.READY_FOR_CHECKING.shortLabel())){
+            return LifeCycleStatus.READY_FOR_CHECKING;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.READY_FOR_RELEASE.shortLabel())){
+            return LifeCycleStatus.READY_FOR_RELEASE;
+        }
+        else{
+            return LifeCycleStatus.PUB_STATUS;
         }
     }
 }

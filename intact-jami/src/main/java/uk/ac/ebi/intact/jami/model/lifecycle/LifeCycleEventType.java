@@ -45,8 +45,6 @@ public enum LifeCycleEventType {
     private String shortLabel;
     private String identifier;
 
-    private CvTerm cvEvent;
-
     private LifeCycleEventType(String shortLabel, String identifier) {
         this.shortLabel = shortLabel;
         this.identifier = identifier;
@@ -61,16 +59,60 @@ public enum LifeCycleEventType {
     }
 
     public CvTerm toCvTerm(){
-        if (this.cvEvent == null){
-            this.cvEvent = IntactUtils.createLifecycleEvent(this.shortLabel);
-        }
-        return this.cvEvent;
+        return  IntactUtils.createLifecycleEvent(this.shortLabel);
     }
 
-    public void initCvTerm(CvTerm cvTerm){
-        this.cvEvent = cvTerm;
-        if (!cvTerm.getShortName().equals(this.shortLabel)){
-            this.cvEvent = null;
+    public static LifeCycleEventType toLifeCycleEventType(CvTerm event){
+        if (event.getShortName().equals(LifeCycleEventType.ACCEPTED.shortLabel())){
+            return LifeCycleEventType.ACCEPTED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.ASSIGNED.shortLabel())){
+            return LifeCycleEventType.ASSIGNED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.ASSIGNMENT_DECLINED.shortLabel())){
+            return LifeCycleEventType.ASSIGNMENT_DECLINED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.CREATED.shortLabel())){
+            return LifeCycleEventType.CREATED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.CURATION_STARTED.shortLabel())){
+            return LifeCycleEventType.CURATION_STARTED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.DISCARDED.shortLabel())){
+            return LifeCycleEventType.DISCARDED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.OWNER_CHANGED.shortLabel())){
+            return LifeCycleEventType.OWNER_CHANGED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.PUT_ON_HOLD.shortLabel())){
+            return LifeCycleEventType.PUT_ON_HOLD;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.READY_FOR_CHECKING.shortLabel())){
+            return LifeCycleEventType.READY_FOR_CHECKING;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.READY_FOR_RELEASE.shortLabel())){
+            return LifeCycleEventType.READY_FOR_RELEASE;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.REJECTED.shortLabel())){
+            return LifeCycleEventType.REJECTED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.RELEASED.shortLabel())){
+            return LifeCycleEventType.RELEASED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.RESERVED.shortLabel())){
+            return LifeCycleEventType.RESERVED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.REVIEWER_CHANGED.shortLabel())){
+            return LifeCycleEventType.REVIEWER_CHANGED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.SANITY_CHECK_FAILED.shortLabel())){
+            return LifeCycleEventType.SANITY_CHECK_FAILED;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.SELF_ASSIGNED.shortLabel())){
+            return LifeCycleEventType.SELF_ASSIGNED;
+        }
+        else{
+            return LifeCycleEventType.LIFECYCLE_EVENT;
         }
     }
 }
