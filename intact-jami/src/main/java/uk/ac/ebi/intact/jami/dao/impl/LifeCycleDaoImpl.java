@@ -2,8 +2,8 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.LifeCycleEventDao;
-import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -18,10 +18,10 @@ import java.util.Date;
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
-public class LifeCycleDaoImpl<A extends AbstractLifecycleEvent> extends AbstractIntactBaseDao<LifeCycleEvent, A> implements LifeCycleEventDao<A> {
+public class LifeCycleDaoImpl<A extends AbstractLifeCycleEvent> extends AbstractIntactBaseDao<LifeCycleEvent, A> implements LifeCycleEventDao<A> {
 
     public LifeCycleDaoImpl(EntityManager entityManager, SynchronizerContext context) {
-        super((Class<A>)AbstractLifecycleEvent.class, entityManager, context);
+        super((Class<A>)AbstractLifeCycleEvent.class, entityManager, context);
     }
 
     public LifeCycleDaoImpl(Class<A> entityClass, EntityManager entityManager, SynchronizerContext context) {

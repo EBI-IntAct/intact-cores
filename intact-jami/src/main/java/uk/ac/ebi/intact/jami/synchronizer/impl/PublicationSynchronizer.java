@@ -11,13 +11,12 @@ import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
-import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.PublicationXref;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
@@ -390,8 +389,8 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
 
     protected void prepareStatusAndCurators(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
         // first the status
-        CvTerm status = intactPublication.getStatus() != null ? intactPublication.getStatus() : IntactUtils.createLifecycleStatus(LifeCycleEvent.NEW_STATUS);
-        intactPublication.setStatus(getContext().getLifecycleStatusSynchronizer().synchronize(status, true));
+        CvTerm status = intactPublication.getStatus().toCvTerm();
+        intactPublication.setCvStatus(getContext().getLifecycleStatusSynchronizer().synchronize(status, true));
 
         // then curator
         User curator = intactPublication.getCurrentOwner();
@@ -416,7 +415,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
 
     protected void prepareLifeCycleEvents(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
 
-        if (intactPublication.areLifecycleEventsInitialized()){
+        if (intactPublication.areLifeCycleEventsInitialized()){
             List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactPublication.getLifecycleEvents());
             for (LifeCycleEvent event : eventsToPersist){
                 // do not persist or merge events because of cascades

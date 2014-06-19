@@ -2,15 +2,16 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
-import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactComplexComparator;
 import psidev.psi.mi.jami.utils.comparator.participant.UnambiguousModelledParticipantComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ComplexMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -150,12 +151,12 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     protected void prepareStatusAndCurators(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
 
         // first the status
-        CvTerm status = intactComplex.getStatus() != null ? intactComplex.getStatus() : IntactUtils.createLifecycleStatus(LifeCycleEvent.NEW_STATUS);
-        intactComplex.setStatus(getContext().getLifecycleStatusSynchronizer().synchronize(status, true));
+        CvTerm status = intactComplex.getStatus().toCvTerm();
+        intactComplex.setCvStatus(getContext().getLifecycleStatusSynchronizer().synchronize(status, true));
 
         // if the publication is released or ready for release, we move the experiment to another publication which should be released
-        if (LifeCycleEvent.RELEASED.equals(status.getShortName()) ||
-                LifeCycleEvent.READY_FOR_RELEASE.equals(status.getShortName())){
+        if (LifeCycleStatus.RELEASED.equals(status) ||
+                LifeCycleStatus.READY_FOR_RELEASE.equals(status)){
             Experiment exp = intactComplex.getExperiments().isEmpty() ? intactComplex.getExperiments().iterator().next() : null;
             if (exp == null){
                 createExperiment(intactComplex, "14681455");
@@ -188,7 +189,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     protected void prepareLifeCycleEvents(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
 
-        if (intactComplex.areLifecycleEventsInitialized()){
+        if (intactComplex.areLifeCycleEventsInitialized()){
             List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactComplex.getLifecycleEvents());
             for (LifeCycleEvent event : eventsToPersist){
                 // do not persist or merge events because of cascades

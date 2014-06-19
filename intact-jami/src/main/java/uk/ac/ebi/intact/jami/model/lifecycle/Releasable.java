@@ -1,6 +1,5 @@
-package uk.ac.ebi.intact.jami.model;
+package uk.ac.ebi.intact.jami.model.lifecycle;
 
-import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.user.User;
 
 import java.util.List;
@@ -15,9 +14,9 @@ import java.util.List;
 
 public interface Releasable {
 
-    public CvTerm getStatus();
+    public LifeCycleStatus getStatus();
 
-    public void setStatus( CvTerm status );
+    public void setStatus( LifeCycleStatus status );
 
     public User getCurrentOwner();
 
@@ -27,7 +26,7 @@ public interface Releasable {
 
     public void setCurrentReviewer( User currentReviewer );
 
-    public boolean areLifecycleEventsInitialized();
+    public boolean areLifeCycleEventsInitialized();
 
     public List<LifeCycleEvent> getLifecycleEvents();
 }

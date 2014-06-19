@@ -3,8 +3,8 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
-import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
@@ -19,7 +19,7 @@ import java.util.Date;
  * @since <pre>24/01/14</pre>
  */
 
-public class LifeCycleSynchronizerTemplate<A extends AbstractLifecycleEvent> extends AbstractIntactDbSynchronizer<LifeCycleEvent, A>
+public class LifeCycleSynchronizerTemplate<A extends AbstractLifeCycleEvent> extends AbstractIntactDbSynchronizer<LifeCycleEvent, A>
 implements LifecycleEventSynchronizer<A>{
 
     public LifeCycleSynchronizerTemplate(SynchronizerContext context, Class<? extends A> eventClass){
@@ -32,10 +32,9 @@ implements LifecycleEventSynchronizer<A>{
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
         // check event
-        if (object.getEvent() != null){
-            CvTerm event = object.getEvent();
-            object.setEvent(getContext().getLifecycleEventSynchronizer().synchronize(event, true));
-        }
+        CvTerm event = object.getEvent().toCvTerm();
+        object.setCvEvent(getContext().getLifecycleEventSynchronizer().synchronize(event, true));
+
         // check user
         if (object.getWho() != null){
             User who = object.getWho();

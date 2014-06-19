@@ -5,7 +5,7 @@
  */
 package uk.ac.ebi.intact.jami.dao;
 
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 
 import java.util.Collection;
 import java.util.Date;

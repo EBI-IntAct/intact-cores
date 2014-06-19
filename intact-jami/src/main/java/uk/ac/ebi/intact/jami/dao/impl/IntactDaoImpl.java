@@ -7,9 +7,9 @@ import psidev.psi.mi.jami.model.ParticipantEvidence;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.*;
-import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
@@ -187,20 +187,20 @@ public class IntactDaoImpl implements IntactDao {
         return this.experimentDao;
     }
 
-    public <T extends AbstractLifecycleEvent> LifeCycleEventDao<T> getLifecycleDao(Class<T> lifecycleClass) {
+    public <T extends AbstractLifeCycleEvent> LifeCycleEventDao<T> getLifecycleDao(Class<T> lifecycleClass) {
         if (this.lifecycleEventDao == null){
-            this.lifecycleEventDao = new LifeCycleDaoImpl(AbstractLifecycleEvent.class, getEntityManager(), getSynchronizerContext());
+            this.lifecycleEventDao = new LifeCycleDaoImpl(AbstractLifeCycleEvent.class, getEntityManager(), getSynchronizerContext());
         }
         this.lifecycleEventDao.setEntityClass(lifecycleClass);
         return this.lifecycleEventDao;
     }
 
-    public LifeCycleEventDao<ComplexLifecycleEvent> getComplexLifecycleDao() {
-        return getLifecycleDao(ComplexLifecycleEvent.class);
+    public LifeCycleEventDao<ComplexLifeCycleEvent> getComplexLifecycleDao() {
+        return getLifecycleDao(ComplexLifeCycleEvent.class);
     }
 
-    public LifeCycleEventDao<PublicationLifecycleEvent> getPublicationLifecycleDao() {
-        return getLifecycleDao(PublicationLifecycleEvent.class);
+    public LifeCycleEventDao<PublicationLifeCycleEvent> getPublicationLifecycleDao() {
+        return getLifecycleDao(PublicationLifeCycleEvent.class);
     }
 
     public InteractionDao getInteractionDao() {

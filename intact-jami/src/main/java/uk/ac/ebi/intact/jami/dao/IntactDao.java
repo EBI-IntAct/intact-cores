@@ -6,9 +6,9 @@
 package uk.ac.ebi.intact.jami.dao;
 
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
-import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
@@ -63,11 +63,11 @@ public interface IntactDao {
 
     public ExperimentDao getExperimentDao();
 
-    public <T extends AbstractLifecycleEvent> LifeCycleEventDao<T> getLifecycleDao(Class<T> lifecycleClass);
+    public <T extends AbstractLifeCycleEvent> LifeCycleEventDao<T> getLifecycleDao(Class<T> lifecycleClass);
 
-    public LifeCycleEventDao<ComplexLifecycleEvent> getComplexLifecycleDao();
+    public LifeCycleEventDao<ComplexLifeCycleEvent> getComplexLifecycleDao();
 
-    public LifeCycleEventDao<PublicationLifecycleEvent> getPublicationLifecycleDao();
+    public LifeCycleEventDao<PublicationLifeCycleEvent> getPublicationLifecycleDao();
 
     public InteractionDao getInteractionDao();
 

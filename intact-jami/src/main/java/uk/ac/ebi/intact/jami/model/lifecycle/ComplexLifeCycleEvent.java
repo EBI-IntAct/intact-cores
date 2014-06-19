@@ -1,6 +1,5 @@
-package uk.ac.ebi.intact.jami.model;
+package uk.ac.ebi.intact.jami.model.lifecycle;
 
-import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.user.User;
 
 import javax.persistence.Entity;
@@ -15,12 +14,12 @@ import java.util.Date;
  */
 @Entity
 @Table( name = "ia_complex_lcycle_evt" )
-public class ComplexLifecycleEvent extends AbstractLifecycleEvent {
+public class ComplexLifeCycleEvent extends AbstractLifeCycleEvent {
 
-    public ComplexLifecycleEvent() {
+    public ComplexLifeCycleEvent() {
     }
 
-    public ComplexLifecycleEvent(CvTerm event, User who, Date when, String note) {
+    public ComplexLifeCycleEvent(LifeCycleEventType event, User who, Date when, String note) {
         super(event, who, when, note);
     }
 
@@ -30,7 +29,7 @@ public class ComplexLifecycleEvent extends AbstractLifecycleEvent {
      * @param who
      * @param note
      */
-    public ComplexLifecycleEvent(CvTerm event, User who, String note) {
+    public ComplexLifeCycleEvent(LifeCycleEventType event, User who, String note) {
         super(event, who, new Date(), note);
     }
 }

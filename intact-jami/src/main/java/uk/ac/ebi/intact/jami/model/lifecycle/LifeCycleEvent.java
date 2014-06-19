@@ -1,6 +1,5 @@
-package uk.ac.ebi.intact.jami.model;
+package uk.ac.ebi.intact.jami.model.lifecycle;
 
-import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 import uk.ac.ebi.intact.jami.model.user.User;
 
@@ -16,13 +15,9 @@ import java.util.Date;
 
 public interface LifeCycleEvent extends Auditable{
 
-    public static String NEW_STATUS = "new";
-    public static String RELEASED = "released";
-    public static String READY_FOR_RELEASE = "ready for release";
+    public LifeCycleEventType getEvent();
 
-    public CvTerm getEvent();
-
-    public void setEvent( CvTerm event );
+    public void setEvent( LifeCycleEventType event );
 
     public User getWho();
 

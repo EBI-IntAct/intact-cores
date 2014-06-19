@@ -3,10 +3,10 @@ package uk.ac.ebi.intact.jami.context;
 import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
 import uk.ac.ebi.intact.jami.merger.UserMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
@@ -324,7 +324,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.parameterSynchronizer;
     }
 
-    public <A extends AbstractLifecycleEvent> LifecycleEventSynchronizer<A> getLifecycleSynchronizer(Class<A> eventclass) {
+    public <A extends AbstractLifeCycleEvent> LifecycleEventSynchronizer<A> getLifecycleSynchronizer(Class<A> eventclass) {
         initialiseLifecycleTemplateIfNotDone();
         this.lifecycleSynchronizer.setIntactClass(eventclass);
         return this.lifecycleSynchronizer;
@@ -752,15 +752,15 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return cooperativityEvidenceSynchronizer;
     }
 
-    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer() {
+    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifeCycleEvent> getComplexLifecycleSynchronizer() {
         initialiseLifecycleTemplateIfNotDone();
-        this.lifecycleSynchronizer.setIntactClass(ComplexLifecycleEvent.class);
+        this.lifecycleSynchronizer.setIntactClass(ComplexLifeCycleEvent.class);
         return this.lifecycleSynchronizer;
     }
 
-    public IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> getPublicationLifecycleSynchronizer() {
+    public IntactDbSynchronizer<LifeCycleEvent, PublicationLifeCycleEvent> getPublicationLifecycleSynchronizer() {
         initialiseLifecycleTemplateIfNotDone();
-        this.lifecycleSynchronizer.setIntactClass(PublicationLifecycleEvent.class);
+        this.lifecycleSynchronizer.setIntactClass(PublicationLifeCycleEvent.class);
         return this.lifecycleSynchronizer;
     }
 
@@ -948,7 +948,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
 
     private void initialiseLifecycleTemplateIfNotDone() {
         if (this.lifecycleSynchronizer == null){
-            this.lifecycleSynchronizer = new LifeCycleSynchronizerTemplate(this, AbstractLifecycleEvent.class);
+            this.lifecycleSynchronizer = new LifeCycleSynchronizerTemplate(this, AbstractLifeCycleEvent.class);
         }
     }
 

@@ -11,7 +11,7 @@ import psidev.psi.mi.jami.enricher.listener.InteractionEnricherListener;
 import psidev.psi.mi.jami.enricher.listener.InteractorEnricherListener;
 import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 
 import java.util.Iterator;
@@ -87,7 +87,7 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
             mergedComplex.setCurrentReviewer(obj1.getCurrentReviewer());
         }
         // merge lifecycle
-        if (obj1.areLifecycleEventsInitialized()){
+        if (obj1.areLifeCycleEventsInitialized()){
             mergeLifeCycleEvents(mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
         }
 

@@ -14,9 +14,7 @@ import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.Releasable;
+import uk.ac.ebi.intact.jami.model.lifecycle.*;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -79,12 +77,13 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     private String shortLabel;
     private List<LifeCycleEvent> lifecycleEvents;
-    private CvTerm status;
+    private LifeCycleStatus status;
     private User currentOwner;
     private User currentReviewer;
 
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
+        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactPublication(Xref identifier){
@@ -110,6 +109,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     public IntactPublication(String pubmed){
         this.curationDepth = CurationDepth.undefined;
+        this.status = LifeCycleStatus.NEW;
 
         if (pubmed != null){
             setPubmedId(pubmed);
@@ -134,6 +134,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.journal = journal;
         this.publicationDate = publicationDate;
         this.curationDepth = CurationDepth.undefined;
+        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactPublication(String title, String journal, Date publicationDate, CurationDepth curationDepth, Source source){
@@ -505,7 +506,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     public void setReleasedDate(Date released) {
         this.releasedDate = released;
         for (LifeCycleEvent evt : getLifecycleEvents()){
-            if (LifeCycleEvent.RELEASED.equalsIgnoreCase(evt.getEvent().getShortName())){
+            if (LifeCycleEventType.RELEASED.equals(evt.getEvent())){
                 evt.setWhen(released);
             }
         }
@@ -580,11 +581,11 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    @OneToMany( orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifecycleEvent.class)
+    @OneToMany( orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifeCycleEvent.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @OrderBy("when, created")
-    @Target(PublicationLifecycleEvent.class)
+    @Target(PublicationLifeCycleEvent.class)
     public List<LifeCycleEvent> getLifecycleEvents() {
         if (this.lifecycleEvents == null){
             this.lifecycleEvents = new ArrayList<LifeCycleEvent>();
@@ -592,16 +593,71 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return lifecycleEvents;
     }
 
+    @Transient
+    /**
+     * NOTE: in the future, should be persisted and cvStatus should be removed
+     */
+    public LifeCycleStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus( LifeCycleStatus status ) {
+        this.status = status;
+    }
+
     @ManyToOne(targetEntity = IntactCvTerm.class)
     @JoinColumn( name = "status_ac", referencedColumnName = "ac" )
     @ForeignKey(name="FK_PUBLICATION_STATUS")
     @Target(IntactCvTerm.class)
-    public CvTerm getStatus() {
-        return status;
+    /**
+     * NOTE: in the future, should be persisted and cvStatus should be removed
+     * @deprecated use getStatus instead
+     */
+    public CvTerm getCvStatus() {
+        return status.toCvTerm();
     }
 
-    public void setStatus( CvTerm status ) {
-        this.status = status;
+    /**
+     *
+     * @param status
+     * @deprecated use setStatus instead
+     */
+    @Deprecated
+    public void setCvStatus( CvTerm status ) {
+        if (status.getShortName().equals(LifeCycleStatus.ACCEPTED.shortLabel())){
+            this.status = LifeCycleStatus.ACCEPTED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.ASSIGNED.shortLabel())){
+            this.status = LifeCycleStatus.ASSIGNED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.ACCEPTED_ON_HOLD.shortLabel())){
+            this.status = LifeCycleStatus.ACCEPTED_ON_HOLD;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.NEW.shortLabel())){
+            this.status = LifeCycleStatus.NEW;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.RESERVED.shortLabel())){
+            this.status = LifeCycleStatus.RESERVED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.DISCARDED.shortLabel())){
+            this.status = LifeCycleStatus.DISCARDED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.CURATION_IN_PROGRESS.shortLabel())){
+            this.status = LifeCycleStatus.CURATION_IN_PROGRESS;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.RELEASED.shortLabel())){
+            this.status = LifeCycleStatus.RELEASED;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.READY_FOR_CHECKING.shortLabel())){
+            this.status = LifeCycleStatus.READY_FOR_CHECKING;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.READY_FOR_RELEASE.shortLabel())){
+            this.status = LifeCycleStatus.READY_FOR_RELEASE;
+        }
+        else{
+            this.status = LifeCycleStatus.PUB_STATUS;
+        }
+        this.status.initCvTerm(status);
     }
 
     @ManyToOne( targetEntity = User.class )
@@ -629,7 +685,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @Transient
-    public boolean areLifecycleEventsInitialized(){
+    public boolean areLifeCycleEventsInitialized(){
         return Hibernate.isInitialized(getLifecycleEvents());
     }
 
@@ -889,7 +945,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     private void initialiseReleasedDate() {
         for (LifeCycleEvent evt : getLifecycleEvents()){
-            if (LifeCycleEvent.RELEASED.equalsIgnoreCase(evt.getEvent().getShortName())){
+            if (LifeCycleEventType.RELEASED.equals(evt.getEvent())){
                 this.releasedDate = evt.getWhen();
             }
         }

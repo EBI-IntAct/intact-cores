@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 
 /**
  * Interface for lifecycle event synchronizers
@@ -11,6 +11,6 @@ import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
  * @since <pre>21/01/14</pre>
  */
 
-public interface LifecycleEventSynchronizer<T extends AbstractLifecycleEvent> extends IntactDbSynchronizer<LifeCycleEvent, T>{
+public interface LifecycleEventSynchronizer<T extends AbstractLifeCycleEvent> extends IntactDbSynchronizer<LifeCycleEvent, T>{
 
 }

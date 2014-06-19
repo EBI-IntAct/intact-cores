@@ -1,10 +1,10 @@
 package uk.ac.ebi.intact.jami.context;
 
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.ComplexLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
@@ -92,7 +92,7 @@ public interface SynchronizerContext {
 
     public <A extends AbstractIntactParameter> ParameterSynchronizer<Parameter, A> getParameterSynchronizer(Class<A> parameterclass);
 
-    public <A extends AbstractLifecycleEvent> LifecycleEventSynchronizer<A> getLifecycleSynchronizer(Class<A> eventclass);
+    public <A extends AbstractLifeCycleEvent> LifecycleEventSynchronizer<A> getLifecycleSynchronizer(Class<A> eventclass);
 
     public AliasSynchronizer<CvTermAlias> getCvAliasSynchronizer();
 
@@ -226,9 +226,9 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer();
 
-    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifecycleEvent> getComplexLifecycleSynchronizer();
+    public IntactDbSynchronizer<LifeCycleEvent, ComplexLifeCycleEvent> getComplexLifecycleSynchronizer();
 
-    public IntactDbSynchronizer<LifeCycleEvent, PublicationLifecycleEvent> getPublicationLifecycleSynchronizer();
+    public IntactDbSynchronizer<LifeCycleEvent, PublicationLifeCycleEvent> getPublicationLifecycleSynchronizer();
 
     public IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> getInteractionSynchronizer();
 

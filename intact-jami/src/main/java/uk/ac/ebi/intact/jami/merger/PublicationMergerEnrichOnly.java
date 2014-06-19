@@ -8,7 +8,7 @@ import psidev.psi.mi.jami.enricher.impl.full.FullPublicationEnricher;
 import psidev.psi.mi.jami.enricher.listener.PublicationEnricherListener;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.impl.PublicationSynchronizer;
 
@@ -70,7 +70,7 @@ public class PublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Public
             mergedPub.setStatus(obj1.getStatus());
         }
         // merge lifecycle
-        if (obj1.areLifecycleEventsInitialized()){
+        if (obj1.areLifeCycleEventsInitialized()){
             mergeLifeCycleEvents(mergedPub.getLifecycleEvents(), obj1.getLifecycleEvents());
         }
         //merge experiments

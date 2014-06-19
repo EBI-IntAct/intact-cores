@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.jami.IntactTestUtils;
-import uk.ac.ebi.intact.jami.model.AbstractLifecycleEvent;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.PublicationLifecycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -22,7 +22,7 @@ import java.lang.reflect.InvocationTargetException;
  * @version $Id$
  * @since <pre>28/02/14</pre>
  */
-public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTest<LifeCycleEvent,AbstractLifecycleEvent>{
+public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTest<LifeCycleEvent,AbstractLifeCycleEvent>{
 
     @Transactional
     @Test
@@ -82,7 +82,7 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     }
 
     @Override
-    protected void testDeleteOtherProperties(AbstractLifecycleEvent objectToTest) {
+    protected void testDeleteOtherProperties(AbstractLifeCycleEvent objectToTest) {
         // nothing to do here
     }
 
@@ -92,30 +92,30 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     }
 
     @Override
-    protected void testUpdatedPropertiesAfterMerge(AbstractLifecycleEvent objectToTest, AbstractLifecycleEvent newObjToTest) {
+    protected void testUpdatedPropertiesAfterMerge(AbstractLifeCycleEvent objectToTest, AbstractLifeCycleEvent newObjToTest) {
         Assert.assertEquals(objectToTest.getAc(), newObjToTest.getAc());
         Assert.assertEquals("new note", newObjToTest.getNote());
         Assert.assertEquals("new last name", newObjToTest.getWho().getLastName());
     }
 
     @Override
-    protected void updatePropertieDetachedInstance(AbstractLifecycleEvent objectToTest) {
+    protected void updatePropertieDetachedInstance(AbstractLifeCycleEvent objectToTest) {
         objectToTest.setNote("new note");
         objectToTest.getWho().setLastName("new last name");
     }
 
     @Override
-    protected AbstractLifecycleEvent findObject(AbstractLifecycleEvent objectToTest) {
-        return entityManager.find(PublicationLifecycleEvent.class, objectToTest.getAc());
+    protected AbstractLifeCycleEvent findObject(AbstractLifeCycleEvent objectToTest) {
+        return entityManager.find(PublicationLifeCycleEvent.class, objectToTest.getAc());
     }
 
     @Override
     protected void initSynchronizer() {
-        this.synchronizer = new LifeCycleSynchronizerTemplate(this.context, PublicationLifecycleEvent.class);
+        this.synchronizer = new LifeCycleSynchronizerTemplate(this.context, PublicationLifeCycleEvent.class);
     }
 
     @Override
-    protected void testPersistedProperties(AbstractLifecycleEvent persistedObject) {
+    protected void testPersistedProperties(AbstractLifeCycleEvent persistedObject) {
         Assert.assertNotNull(persistedObject.getAc());
         Assert.assertEquals("new", persistedObject.getEvent().getShortName());
         Assert.assertNotNull(((IntactCvTerm) persistedObject.getEvent()).getAc());
@@ -126,7 +126,7 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     }
 
     @Override
-    protected void testNonPersistedProperties(AbstractLifecycleEvent persistedObject) {
+    protected void testNonPersistedProperties(AbstractLifeCycleEvent persistedObject) {
         Assert.assertNull(persistedObject.getAc());
         Assert.assertEquals("new", persistedObject.getEvent().getShortName());
         Assert.assertNotNull(((IntactCvTerm) persistedObject.getEvent()).getAc());
@@ -137,7 +137,7 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     }
 
     @Override
-    protected AbstractLifecycleEvent createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    protected AbstractLifeCycleEvent createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         try {
             this.context.getUserSynchronizer().persist(IntactTestUtils.createCuratorUser());
         } catch (FinderException e) {
@@ -147,6 +147,6 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
         } catch (SynchronizerException e) {
             e.printStackTrace();
         }
-        return IntactTestUtils.createIntactNewLifeCycleEvent(PublicationLifecycleEvent.class);
+        return IntactTestUtils.createIntactNewLifeCycleEvent(PublicationLifeCycleEvent.class);
     }
 }

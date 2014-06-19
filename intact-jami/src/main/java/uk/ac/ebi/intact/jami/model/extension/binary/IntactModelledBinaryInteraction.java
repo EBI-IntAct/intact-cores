@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension.binary;
 
 import psidev.psi.mi.jami.binary.ModelledBinaryInteraction;
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.model.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.user.User;
 
 import java.util.ArrayList;
