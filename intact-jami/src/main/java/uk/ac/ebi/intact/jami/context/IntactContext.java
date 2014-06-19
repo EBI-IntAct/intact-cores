@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.lifecycle.LifeCycleManager;
@@ -19,15 +20,19 @@ public class IntactContext {
     private static final Log log = LogFactory.getLog(IntactContext.class);
 
     @Autowired
+    @Qualifier("jamiIntactConfiguration")
     private IntactConfiguration jamiIntactConfiguration;
 
     @Autowired
+    @Qualifier("jamiUserContext")
     private UserContext jamiUserContext;
 
     @Autowired
+    @Qualifier("intactDao")
     private IntactDao intactDao;
 
     @Autowired
+    @Qualifier("jamiLifeCycleManager")
     private LifeCycleManager jamiLifeCycleManager;
 
     public IntactContext() {

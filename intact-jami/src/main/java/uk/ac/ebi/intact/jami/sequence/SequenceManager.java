@@ -38,9 +38,6 @@ public class SequenceManager {
 
     private static final Log log = LogFactory.getLog( SequenceManager.class );
 
-//    @Autowired
-//    private EntityManagerFactory entityManagerFactory;
-
     private Dialect dialect;
 
     @PersistenceUnit(unitName = "intact-jami", name = "intactEntityManagerFactory")

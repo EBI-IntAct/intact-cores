@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.jami.lifecycle;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.lifecycle.status.*;
 
@@ -32,22 +33,31 @@ import java.util.Collection;
 public class LifeCycleManager {
 
     @Autowired
+    @Qualifier("jamiStartStatus")
     private StartStatus jamiStartStatus;
     @Autowired
+    @Qualifier("jamiNewStatus")
     private NewStatus jamiNewStatus;
     @Autowired
+    @Qualifier("jamiAssignedStatus")
     private AssignedStatus jamiAssignedStatus;
     @Autowired
+    @Qualifier("jamiCurationInProgressStatus")
     private CurationInProgressStatus jamiCurationInProgressStatus;
     @Autowired
+    @Qualifier("jamiReadyForCheckingStatus")
     private ReadyForCheckingStatus jamiReadyForCheckingStatus;
     @Autowired
+    @Qualifier("jamiAcceptedStatus")
     private AcceptedStatus jamiAcceptedStatus;
     @Autowired
+    @Qualifier("jamiAcceptedOnHoldStatus")
     private AcceptedOnHoldStatus jamiAcceptedOnHoldStatus;
     @Autowired
+    @Qualifier("jamiReadyForReleaseStatus")
     private ReadyForReleaseStatus jamiReadyForReleaseStatus;
     @Autowired
+    @Qualifier("jamiReleasedStatus")
     private ReleasedStatus jamiReleasedStatus;
 
     private Collection<GlobalStatus> getAllStatus() {

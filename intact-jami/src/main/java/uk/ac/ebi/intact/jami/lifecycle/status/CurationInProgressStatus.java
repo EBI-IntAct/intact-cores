@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.jami.lifecycle.status;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.UserContext;
@@ -33,6 +34,7 @@ import uk.ac.ebi.intact.jami.model.user.User;
 public class CurationInProgressStatus extends GlobalStatus {
 
     @Autowired
+    @Qualifier("jamiCorrectionAssigner")
     private CorrectionAssigner jamiCorrectionAssigner;
 
     public CurationInProgressStatus() {

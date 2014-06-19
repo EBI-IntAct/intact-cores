@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,6 +26,7 @@ import java.util.*;
 public class OrganismService implements IntactService<Organism>{
 
     @Autowired
+    @Qualifier("intactDAO")
     private IntactDao intactDAO;
 
     @Transactional(propagation = Propagation.REQUIRED)
