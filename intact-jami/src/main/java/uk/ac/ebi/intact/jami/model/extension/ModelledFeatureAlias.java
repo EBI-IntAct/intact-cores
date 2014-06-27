@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_feature_alias" )
 public class ModelledFeatureAlias extends AbstractIntactAlias{
 
-    protected ModelledFeatureAlias() {
+    public ModelledFeatureAlias() {
     }
 
     public ModelledFeatureAlias(CvTerm type, String name) {
