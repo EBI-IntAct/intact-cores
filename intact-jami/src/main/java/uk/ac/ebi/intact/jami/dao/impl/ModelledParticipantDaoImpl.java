@@ -19,15 +19,11 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends IntactModelledParticipant> extends ParticipantDaoImpl<P, I>
-        implements ModelledParticipantDao<I> {
+public class ModelledParticipantDaoImpl extends ParticipantDaoImpl<ModelledParticipant, IntactModelledParticipant>
+        implements ModelledParticipantDao {
 
     public ModelledParticipantDaoImpl(EntityManager entityManager, SynchronizerContext context) {
-        super((Class<I>)IntactModelledParticipant.class, entityManager, context);
-    }
-
-    public ModelledParticipantDaoImpl(Class<I> entityClass, EntityManager entityManager, SynchronizerContext context) {
-        super(entityClass, entityManager, context);
+        super(IntactModelledParticipant.class, entityManager, context);
     }
 
     @Override
@@ -35,18 +31,18 @@ public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends
         return getSynchronizerContext().getModelledParticipantSynchronizer();
     }
 
-    public Collection<I> getByInteractionAc(String ac) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
+    public Collection<IntactModelledParticipant> getByInteractionAc(String ac) {
+        Query query = getEntityManager().createQuery("select f from IntactModelledParticipant f "  +
                 "join f.dbParentInteraction as i " +
                 "where i.ac = : interAc");
         query.setParameter("interAc", ac);
         return query.getResultList();
     }
 
-    public Collection<I> getByCausalRelationType(String typeName, String typeMI) {
+    public Collection<IntactModelledParticipant> getByCausalRelationType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct e from "+getEntityClass().getSimpleName()+" e " +
+            query = getEntityManager().createQuery("select distinct e from IntactModelledParticipant e " +
                     "join e.causalRelationships as c " +
                     "join c.relationType as t " +
                     "join t.dbXrefs as x " +
@@ -70,8 +66,8 @@ public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByCausalRelationshipTargetAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select e from "+getEntityClass().getSimpleName()+" e  " +
+    public Collection<IntactModelledParticipant> getByCausalRelationshipTargetAc(String parentAc) {
+        Query query = getEntityManager().createQuery("select e from IntactModelledParticipant e  " +
                 "join e.causalRelationships as c " +
                 "join c.target as t " +
                 "where t.ac = :ac ");
@@ -79,10 +75,10 @@ public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByCausalRelationship(String name, String mi, String targetAc) {
+    public Collection<IntactModelledParticipant> getByCausalRelationship(String name, String mi, String targetAc) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactModelledParticipant f "  +
                     "join f.causalRelationships as c " +
                     "join c.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -100,7 +96,7 @@ public class ModelledParticipantDaoImpl<P extends ModelledParticipant, I extends
             }
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactModelledParticipant f "  +
                     "join f.causalRelationships as c " +
                     (targetAc != null ? "join c.target as t " : "")+
                     "where c.shortName = :effectName"+(targetAc != null ? " and t.ac = :tarAc" : ""));

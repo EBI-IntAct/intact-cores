@@ -2,15 +2,13 @@ package uk.ac.ebi.intact.jami.dao.impl;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
-import psidev.psi.mi.jami.model.ModelledParticipant;
-import psidev.psi.mi.jami.model.ParticipantEvidence;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.*;
+import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.extension.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -36,8 +34,8 @@ public class IntactDaoImpl implements IntactDao {
     private ComplexDao complexDao;
     private CvTermDao cvTermDao;
     private ParticipantDao entityDao;
-    private ParticipantEvidenceDao<IntactParticipantEvidence> participantEvidenceDao;
-    private ModelledParticipantDao<IntactModelledParticipant> modelledParticipantDao;
+    private ParticipantEvidenceDao participantEvidenceDao;
+    private ModelledParticipantDao modelledParticipantDao;
     private FeatureDao featureDao;
     private FeatureEvidenceDao featureEvidenceDao;
     private FeatureDao<IntactModelledFeature> modelledFeatureDao;
@@ -261,16 +259,16 @@ public class IntactDaoImpl implements IntactDao {
         return this.entityDao;
     }
 
-    public ModelledParticipantDao<IntactModelledParticipant> getModelledParticipantDao() {
+    public ModelledParticipantDao getModelledParticipantDao() {
         if (this.modelledParticipantDao == null){
-            this.modelledParticipantDao = new ModelledParticipantDaoImpl<ModelledParticipant, IntactModelledParticipant>(IntactModelledParticipant.class, getEntityManager(), getSynchronizerContext());
+            this.modelledParticipantDao = new ModelledParticipantDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.modelledParticipantDao;
     }
 
-    public ParticipantEvidenceDao<IntactParticipantEvidence> getParticipantEvidenceDao() {
+    public ParticipantEvidenceDao getParticipantEvidenceDao() {
         if (this.participantEvidenceDao == null){
-            this.participantEvidenceDao = new ParticipantEvidenceDaoImpl<ParticipantEvidence, IntactParticipantEvidence>(IntactParticipantEvidence.class, getEntityManager(), getSynchronizerContext());
+            this.participantEvidenceDao = new ParticipantEvidenceDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.participantEvidenceDao;
     }

@@ -19,15 +19,11 @@ import java.util.Collection;
  * @version $Id$
  * @since <pre>23/01/14</pre>
  */
-public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends IntactParticipantEvidence> extends ParticipantDaoImpl<P, I>
-        implements ParticipantEvidenceDao<I> {
+public class ParticipantEvidenceDaoImpl extends ParticipantDaoImpl<ParticipantEvidence, IntactParticipantEvidence>
+        implements ParticipantEvidenceDao {
 
     public ParticipantEvidenceDaoImpl(EntityManager entityManager, SynchronizerContext context) {
-        super((Class<I>)IntactParticipantEvidence.class, entityManager, context);
-    }
-
-    public ParticipantEvidenceDaoImpl(Class<I> entityClass, EntityManager entityManager, SynchronizerContext context) {
-        super(entityClass, entityManager, context);
+        super(IntactParticipantEvidence.class, entityManager, context);
     }
 
     @Override
@@ -35,10 +31,10 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return getSynchronizerContext().getParticipantEvidenceSynchronizer();
     }
 
-    public Collection<I> getByExperimentalRole(String typeName, String typeMI, int first, int max) {
+    public Collection<IntactParticipantEvidence> getByExperimentalRole(String typeName, String typeMI, int first, int max) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "join f.experimentalRole as e " +
                     "join e.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -62,10 +58,10 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByExperimentalPreparation(String name, String mi, int first, int max) {
+    public Collection<IntactParticipantEvidence> getByExperimentalPreparation(String name, String mi, int first, int max) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "join f.experimentalPreparations as e " +
                     "join e.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -79,7 +75,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             query.setParameter("mi", mi);
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "join f.experimentalPreparations as e " +
                     "where e.shortName = :name order by e.ac");
             query.setParameter("name", name);
@@ -89,14 +85,14 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByDetectionMethod(String name, String mi, int first, int max) {
+    public Collection<IntactParticipantEvidence> getByDetectionMethod(String name, String mi, int first, int max) {
         Query query;
         if (name == null && mi == null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "where f.dbIdentificationMethods is empty order by f.ac");
         }
         else if (mi != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "join f.dbIdentificationMethods as i " +
                     "join i.dbXrefs as xref " +
                     "join xref.database as d " +
@@ -110,7 +106,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             query.setParameter("mi", mi);
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "join f.dbIdentificationMethods as i " +
                     "where i.shortName = :name order by f.ac");
             query.setParameter("name", name);
@@ -120,8 +116,8 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByExpressedInTaxid(String taxid, int first, int max) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
+    public Collection<IntactParticipantEvidence> getByExpressedInTaxid(String taxid, int first, int max) {
+        Query query = getEntityManager().createQuery("select f from IntactParticipantEvidence f "  +
                 "join f.expressedInOrganism as o " +
                 "where o.dbTaxid = :taxid order by f.ac");
         query.setParameter("taxid", taxid);
@@ -130,8 +126,8 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByExpressedInAc(String ac, int first, int max) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
+    public Collection<IntactParticipantEvidence> getByExpressedInAc(String ac, int first, int max) {
+        Query query = getEntityManager().createQuery("select f from IntactParticipantEvidence f "  +
                 "join f.expressedInOrganism as o " +
                 "where o.ac = :orgAc order by f.ac");
         query.setParameter("orgAc", ac);
@@ -140,14 +136,14 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByConfidence(String typeName, String typeMI, String value, int first, int max) {
+    public Collection<IntactParticipantEvidence> getByConfidence(String typeName, String typeMI, String value, int first, int max) {
         Query query;
         if (typeName == null && typeMI == null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "where f.confidences is empty order by f.ac");
         }
         else if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "join f.confidences as c " +
                     "join c.type as t " +
                     "join t.dbXrefs as xref " +
@@ -166,7 +162,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             }
         }
         else{
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "join f.confidences as c " +
                     "join c.type as t " +
                     "where t.shortName = :name "  + (value != null ? " and c.value = :confValue ":" ")+
@@ -181,18 +177,18 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByInteractionAc(String ac) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
+    public Collection<IntactParticipantEvidence> getByInteractionAc(String ac) {
+        Query query = getEntityManager().createQuery("select f from IntactParticipantEvidence f "  +
                 "join f.dbParentInteraction as i " +
                 "where i.ac = : interAc");
         query.setParameter("interAc", ac);
         return query.getResultList();
     }
 
-    public Collection<I> getByParameterType(String typeName, String typeMI) {
+    public Collection<IntactParticipantEvidence> getByParameterType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct i from "+getEntityClass().getSimpleName()+" i " +
+            query = getEntityManager().createQuery("select distinct i from IntactParticipantEvidence i " +
                     "join i.parameters as p " +
                     "join p.type as t " +
                     "join t.dbXrefs as x " +
@@ -207,7 +203,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             query.setParameter("mi", typeMI);
         }
         else{
-            query = getEntityManager().createQuery("select distinct i from "+getEntityClass().getSimpleName()+" i " +
+            query = getEntityManager().createQuery("select distinct i from IntactParticipantEvidence i " +
                     "join i.parameters as p " +
                     "join p.type as t " +
                     "where t.shortName = :paramName");
@@ -216,15 +212,15 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByParameterUnit(String unitName, String unitMI) {
+    public Collection<IntactParticipantEvidence> getByParameterUnit(String unitName, String unitMI) {
         Query query;
         if (unitMI == null && unitName == null){
-            query = getEntityManager().createQuery("select i from "+getEntityClass().getSimpleName()+" i " +
+            query = getEntityManager().createQuery("select i from IntactParticipantEvidence i " +
                     "join i.parameters as p " +
                     "where p.unit is null");
         }
         else if (unitMI != null){
-            query = getEntityManager().createQuery("select distinct i from "+getEntityClass().getSimpleName()+" i " +
+            query = getEntityManager().createQuery("select distinct i from IntactParticipantEvidence i " +
                     "join i.parameters as p " +
                     "join p.unit as u " +
                     "join u.dbXrefs as x " +
@@ -239,7 +235,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             query.setParameter("mi", unitMI);
         }
         else{
-            query = getEntityManager().createQuery("select distinct i from "+getEntityClass().getSimpleName()+" i " +
+            query = getEntityManager().createQuery("select distinct i from IntactParticipantEvidence i " +
                     "join i.parameters as p " +
                     "join p.unit as u " +
                     "where u.shortName = :unitName");
@@ -248,11 +244,11 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI) {
+    public Collection<IntactParticipantEvidence> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI) {
         Query query;
         if (typeMI != null){
             if (unitMI == null && unitName == null){
-                query = getEntityManager().createQuery("select distinct i from "+getEntityClass().getSimpleName()+" i " +
+                query = getEntityManager().createQuery("select distinct i from IntactParticipantEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "join t.dbXrefs as x " +
@@ -268,7 +264,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
                 query.setParameter("mi", typeMI);
             }
             else if (unitMI != null){
-                query = getEntityManager().createQuery("select distinct i from "+getEntityClass().getSimpleName()+" i " +
+                query = getEntityManager().createQuery("select distinct i from IntactParticipantEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "join t.dbXrefs as x " +
@@ -291,7 +287,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
                 query.setParameter("mi2", unitMI);
             }
             else{
-                query = getEntityManager().createQuery("select distinct i from "+getEntityClass().getSimpleName()+" i " +
+                query = getEntityManager().createQuery("select distinct i from IntactParticipantEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "join t.dbXrefs as x " +
@@ -311,7 +307,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         }
         else{
             if (unitMI == null && unitName == null){
-                query = getEntityManager().createQuery("select i from "+getEntityClass().getSimpleName()+" i " +
+                query = getEntityManager().createQuery("select i from IntactParticipantEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "where t.shortName = :confName " +
@@ -319,7 +315,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
                 query.setParameter("typeName", typeName);
             }
             else if (unitMI != null){
-                query = getEntityManager().createQuery("select i from "+getEntityClass().getSimpleName()+" i " +
+                query = getEntityManager().createQuery("select i from IntactParticipantEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "join p.unit as u " +
@@ -337,7 +333,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
                 query.setParameter("typeName", typeName);
             }
             else{
-                query = getEntityManager().createQuery("select i from "+getEntityClass().getSimpleName()+" i " +
+                query = getEntityManager().createQuery("select i from IntactParticipantEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "join p.unit as u " +
@@ -350,10 +346,10 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByCausalRelationType(String typeName, String typeMI) {
+    public Collection<IntactParticipantEvidence> getByCausalRelationType(String typeName, String typeMI) {
         Query query;
         if (typeMI != null){
-            query = getEntityManager().createQuery("select distinct e from "+getEntityClass().getSimpleName()+" e " +
+            query = getEntityManager().createQuery("select distinct e from IntactParticipantEvidence e " +
                     "join e.causalRelationships as c " +
                     "join c.relationType as t " +
                     "join t.dbXrefs as x " +
@@ -368,7 +364,7 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
             query.setParameter("mi", typeMI);
         }
         else{
-            query = getEntityManager().createQuery("select e from "+getEntityClass().getSimpleName()+" e " +
+            query = getEntityManager().createQuery("select e from IntactParticipantEvidence e " +
                     "join e.causalRelationships as c " +
                     "join c.relationType as t " +
                     "where t.shortName = :unitName");
@@ -377,8 +373,8 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByCausalRelationshipTargetAc(String parentAc, boolean isExperimental) {
-        Query query = getEntityManager().createQuery("select e from "+getEntityClass().getSimpleName()+" e  " +
+    public Collection<IntactParticipantEvidence> getByCausalRelationshipTargetAc(String parentAc, boolean isExperimental) {
+        Query query = getEntityManager().createQuery("select e from IntactParticipantEvidence e  " +
                 "join e.causalRelationships as c " +
                 (isExperimental ? "join c.experimentalTarget as t " : "join c.modelledTarget as t ")+
                 "where t.ac = :ac ");
@@ -386,10 +382,10 @@ public class ParticipantEvidenceDaoImpl<P extends ParticipantEvidence, I extends
         return query.getResultList();
     }
 
-    public Collection<I> getByCausalRelationship(String name, String mi, String targetAc, boolean isExperimental) {
+    public Collection<IntactParticipantEvidence> getByCausalRelationship(String name, String mi, String targetAc, boolean isExperimental) {
         Query query;
         if (mi != null){
-            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+            query = getEntityManager().createQuery("select distinct f from IntactParticipantEvidence f "  +
                     "join f.causalRelationships as c " +
                     "join c.dbXrefs as xref " +
                     "join xref.database as d " +

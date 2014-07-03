@@ -85,7 +85,7 @@ public interface IntactDao {
 
     public <T extends AbstractIntactParticipant> ParticipantDao<T> getParticipantDao(Class<T> entityClass);
 
-    public ModelledParticipantDao<IntactModelledParticipant> getModelledParticipantDao();
+    public ModelledParticipantDao getModelledParticipantDao();
 
-    public ParticipantEvidenceDao<IntactParticipantEvidence> getParticipantEvidenceDao();
+    public ParticipantEvidenceDao getParticipantEvidenceDao();
 }

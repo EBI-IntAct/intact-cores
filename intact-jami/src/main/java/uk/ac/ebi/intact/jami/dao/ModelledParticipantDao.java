@@ -12,13 +12,13 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 
-public interface ModelledParticipantDao<P extends IntactModelledParticipant> extends ParticipantDao<P>{
+public interface ModelledParticipantDao extends ParticipantDao<IntactModelledParticipant>{
 
-    public Collection<P> getByInteractionAc(String ac);
+    public Collection<IntactModelledParticipant> getByInteractionAc(String ac);
 
-    public Collection<P> getByCausalRelationship(String effectName, String effectMI, String targetAc);
+    public Collection<IntactModelledParticipant> getByCausalRelationship(String effectName, String effectMI, String targetAc);
 
-    public Collection<P> getByCausalRelationType(String typeName, String typeMI);
+    public Collection<IntactModelledParticipant> getByCausalRelationType(String typeName, String typeMI);
 
-    public Collection<P> getByCausalRelationshipTargetAc(String ac);
+    public Collection<IntactModelledParticipant> getByCausalRelationshipTargetAc(String ac);
 }

@@ -12,31 +12,31 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 
-public interface ParticipantEvidenceDao<P extends IntactParticipantEvidence> extends ParticipantDao<P>{
+public interface ParticipantEvidenceDao extends ParticipantDao<IntactParticipantEvidence>{
 
-    public Collection<P> getByExperimentalRole(String typeName, String typeMI, int first, int max);
+    public Collection<IntactParticipantEvidence> getByExperimentalRole(String typeName, String typeMI, int first, int max);
 
-    public Collection<P> getByExperimentalPreparation(String name, String mi, int first, int max);
+    public Collection<IntactParticipantEvidence> getByExperimentalPreparation(String name, String mi, int first, int max);
 
-    public Collection<P> getByDetectionMethod(String name, String mi, int first, int max);
+    public Collection<IntactParticipantEvidence> getByDetectionMethod(String name, String mi, int first, int max);
 
-    public Collection<P> getByExpressedInTaxid(String taxid, int first, int max);
+    public Collection<IntactParticipantEvidence> getByExpressedInTaxid(String taxid, int first, int max);
 
-    public Collection<P> getByExpressedInAc(String ac, int first, int max);
+    public Collection<IntactParticipantEvidence> getByExpressedInAc(String ac, int first, int max);
 
-    public Collection<P> getByConfidence(String typeName, String typeMI, String value, int first, int max);
+    public Collection<IntactParticipantEvidence> getByConfidence(String typeName, String typeMI, String value, int first, int max);
 
-    public Collection<P> getByInteractionAc(String ac);
+    public Collection<IntactParticipantEvidence> getByInteractionAc(String ac);
 
-    public Collection<P> getByParameterType(String typeName, String typeMI);
+    public Collection<IntactParticipantEvidence> getByParameterType(String typeName, String typeMI);
 
-    public Collection<P> getByParameterUnit(String unitName, String unitMI);
+    public Collection<IntactParticipantEvidence> getByParameterUnit(String unitName, String unitMI);
 
-    public Collection<P> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
+    public Collection<IntactParticipantEvidence> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
 
-    public Collection<P> getByCausalRelationship(String effectName, String effectMI, String targetAc, boolean isExperimental);
+    public Collection<IntactParticipantEvidence> getByCausalRelationship(String effectName, String effectMI, String targetAc, boolean isExperimental);
 
-    public Collection<P> getByCausalRelationType(String typeName, String typeMI);
+    public Collection<IntactParticipantEvidence> getByCausalRelationType(String typeName, String typeMI);
 
-    public Collection<P> getByCausalRelationshipTargetAc(String ac, boolean isExperimental);
+    public Collection<IntactParticipantEvidence> getByCausalRelationshipTargetAc(String ac, boolean isExperimental);
 }
