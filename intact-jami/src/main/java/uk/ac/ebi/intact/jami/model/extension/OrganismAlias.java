@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_biosource_alias" )
 public class OrganismAlias extends AbstractIntactAlias{
 
-    protected OrganismAlias() {
+    public OrganismAlias() {
     }
 
     public OrganismAlias(CvTerm type, String name) {
