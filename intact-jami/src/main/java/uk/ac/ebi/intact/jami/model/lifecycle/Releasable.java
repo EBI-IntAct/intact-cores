@@ -36,4 +36,6 @@ public interface Releasable {
 
     public boolean isOnHold();
 
+    public void removeOnHold();
+
 }

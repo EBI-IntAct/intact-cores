@@ -288,6 +288,11 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         return AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "on-hold") != null;
     }
 
+    @Override
+    public void removeOnHold() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "on-hold");
+    }
+
     @ManyToOne(targetEntity = IntactSource.class)
     @JoinColumn( name = "owner_ac", referencedColumnName = "ac")
     @Target(IntactSource.class)

@@ -660,6 +660,11 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         return AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "on-hold") != null;
     }
 
+    @Override
+    public void removeOnHold() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "on-hold");
+    }
+
     @ManyToOne( targetEntity = User.class )
     @JoinColumn( name = "owner_pk", referencedColumnName = "ac" )
     @ForeignKey(name="FK_PUBLICATION_OWNER")
