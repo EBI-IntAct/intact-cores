@@ -171,31 +171,31 @@ public abstract class AbstractIntactParameter extends AbstractIntactPrimaryObjec
     }
 
     @Column(name = "base")
-    protected int getBase() {
+    public int getBase() {
         return this.base;
     }
 
     @Column(name = "exponent")
-    protected int getExponent() {
+    public int getExponent() {
         return this.exponent;
     }
 
     @Column(name = "factor")
-    protected double getFactor() {
+    public double getFactor() {
         return this.factor;
     }
 
-    protected void setBase(int base){
+    public void setBase(int base){
         this.base = base;
         this.value = null;
     }
 
-    protected void setExponent(int exponent){
+    public void setExponent(int exponent){
         this.exponent = exponent;
         this.value = null;
     }
 
-    protected void setFactor(double factor){
+    public void setFactor(double factor){
         this.factor = factor;
         this.value = null;
     }
