@@ -66,4 +66,17 @@ public class ReadyForReleaseStatus extends GlobalStatus {
             listener.firePutOnHold( releasable );
         }
     }
+
+    public void revert(Releasable releasable) {
+        if (canChangeStatus(releasable)){
+            throw new IllegalTransitionException("Transition ready for release to ready for checking cannot be applied to object '"+ releasable.toString()+
+                    "' with state: '"+releasable.getStatus()+"'");
+        }
+        changeStatus(releasable, LifeCycleStatus.READY_FOR_CHECKING, LifeCycleEventType.READY_FOR_CHECKING, null);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireReadyForChecking( releasable );
+        }
+    }
 }

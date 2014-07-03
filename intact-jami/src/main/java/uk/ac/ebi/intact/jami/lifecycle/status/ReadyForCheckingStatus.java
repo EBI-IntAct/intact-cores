@@ -92,7 +92,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
-            listener.fireRejected( releasable );
+            listener.fireCurationInProgress( releasable );
         }
     }
 }
