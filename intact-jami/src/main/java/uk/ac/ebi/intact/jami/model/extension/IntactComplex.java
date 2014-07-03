@@ -293,6 +293,28 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "on-hold");
     }
 
+    @Override
+    public void onToBeReviewed(String message) {
+        Annotation reviewed = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "to-be-reviewed");
+        if (reviewed != null){
+            reviewed.setValue(message);
+        }
+        else{
+            getAnnotations().add(new InteractorAnnotation(IntactUtils.createMITopic("to-be-reviewed", null), message));
+        }
+    }
+
+    @Override
+    @Transient
+    public boolean isToBeReviewed() {
+        return AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "to-be-reviewed") != null;
+    }
+
+    @Override
+    public void removeToBeReviewed() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "to-be-reviewed");
+    }
+
     @ManyToOne(targetEntity = IntactSource.class)
     @JoinColumn( name = "owner_ac", referencedColumnName = "ac")
     @Target(IntactSource.class)

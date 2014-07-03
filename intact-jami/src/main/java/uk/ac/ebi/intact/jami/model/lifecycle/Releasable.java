@@ -38,4 +38,10 @@ public interface Releasable {
 
     public void removeOnHold();
 
+    public void onToBeReviewed(String message);
+
+    public boolean isToBeReviewed();
+
+    public void removeToBeReviewed();
+
 }

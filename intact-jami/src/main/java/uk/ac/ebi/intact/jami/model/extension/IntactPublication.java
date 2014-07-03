@@ -644,6 +644,28 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @Override
+    public void onToBeReviewed(String message) {
+        Annotation reviewed = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "to-be-reviewed");
+        if (reviewed != null){
+            reviewed.setValue(message);
+        }
+        else{
+            getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic("to-be-reviewed", null), message));
+        }
+    }
+
+    @Override
+    @Transient
+    public boolean isToBeReviewed() {
+        return AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "to-be-reviewed") != null;
+    }
+
+    @Override
+    public void removeToBeReviewed() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "to-be-reviewed");
+    }
+
+    @Override
     public void onHold(String message) {
         Annotation onHold = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "on-hold");
         if (onHold != null){
