@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_component_alias" )
 public class ModelledParticipantAlias extends AbstractIntactAlias{
 
-    protected ModelledParticipantAlias() {
+    public ModelledParticipantAlias() {
     }
 
     public ModelledParticipantAlias(CvTerm type, String name) {

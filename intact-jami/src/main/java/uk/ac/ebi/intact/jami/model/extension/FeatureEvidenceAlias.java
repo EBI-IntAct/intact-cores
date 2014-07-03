@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table( name = "ia_feature_alias" )
 public class FeatureEvidenceAlias extends AbstractIntactAlias{
 
-    protected FeatureEvidenceAlias() {
+    public FeatureEvidenceAlias() {
     }
 
     public FeatureEvidenceAlias(CvTerm type, String name) {
