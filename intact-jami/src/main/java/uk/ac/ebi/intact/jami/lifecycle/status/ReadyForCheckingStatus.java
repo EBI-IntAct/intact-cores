@@ -76,4 +76,23 @@ public class ReadyForCheckingStatus extends GlobalStatus {
             listener.fireRejected( releasable );
         }
     }
+
+
+    /**
+     * The curator reverts the publication status to curation in progress.
+     *
+     * @param releasable the releasable
+     */
+    public void revert(Releasable releasable) {
+        if (canChangeStatus(releasable)){
+            throw new IllegalTransitionException("Transition ready for checking to curation in progress cannot be applied to object '"+ releasable.toString()+
+                    "' with state: '"+releasable.getStatus()+"'");
+        }
+        changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.CURATION_STARTED, null);
+
+        // Notify listeners
+        for ( LifecycleEventListener listener : getListeners() ) {
+            listener.fireRejected( releasable );
+        }
+    }
 }
