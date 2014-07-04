@@ -30,6 +30,9 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>META-INF/intact-jami.spring.xml</exclude>
+                </excludes>
             </resource>
         </resources>
     </build>
