@@ -221,7 +221,9 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     @Deprecated
     public void setCvStatus( CvTerm status ) {
         this.cvStatus = status;
-        this.status = LifeCycleStatus.toLifeCycleStatus(status);
+        if (status != null){
+            this.status = LifeCycleStatus.toLifeCycleStatus(status);
+        }
     }
 
     @ManyToOne( targetEntity = User.class )

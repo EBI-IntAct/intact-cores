@@ -635,7 +635,9 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     @Deprecated
     public void setCvStatus( CvTerm status ) {
         this.cvStatus = status;
-        this.status = LifeCycleStatus.toLifeCycleStatus(status);
+        if (status != null){
+            this.status = LifeCycleStatus.toLifeCycleStatus(status);
+        }
     }
 
     @Override
