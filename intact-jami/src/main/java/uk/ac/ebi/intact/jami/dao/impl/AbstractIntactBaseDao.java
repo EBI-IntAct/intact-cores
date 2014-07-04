@@ -36,7 +36,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
             throw new IllegalArgumentException("Entity class is mandatory");
         }
         this.entityClass = entityClass;
-        if (this.entityManager == null){
+        if (entityManager == null){
             throw new IllegalArgumentException("The entityManager cannot be null");
         }
         this.entityManager = entityManager;
