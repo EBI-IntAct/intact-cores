@@ -644,13 +644,14 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         this.interactionType = term;
     }
 
-    @ManyToMany(targetEntity = IntactInteractionEvidence.class)
+    /*@ManyToMany(targetEntity = IntactInteractionEvidence.class)
     @JoinTable(
             name = "ia_complex2evidence",
             joinColumns = {@JoinColumn( name = "complex_ac" )},
             inverseJoinColumns = {@JoinColumn( name = "evidence_ac" )}
     )
-    @Target(IntactInteractionEvidence.class)
+    @Target(IntactInteractionEvidence.class) */
+    @Transient
     public Collection<InteractionEvidence> getInteractionEvidences() {
         if (interactionEvidences == null){
             initialiseInteractionEvidences();
