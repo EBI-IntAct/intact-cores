@@ -1,5 +1,8 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
 import java.util.Collection;
@@ -61,4 +64,10 @@ public interface CvTermDao extends IntactBaseDao<IntactCvTerm>{
     public IntactCvTerm getByMODIdentifier(String primaryId, String objClass);
 
     public IntactCvTerm getByPARIdentifier(String primaryId, String objClass);
+
+    public Collection<Xref> getXrefsForCvTerm(String ac);
+
+    public Collection<Annotation> getAnnotationsForCvTerm(String ac);
+
+    public Collection<Alias> getSynonymsForCvTerm(String ac);
 }

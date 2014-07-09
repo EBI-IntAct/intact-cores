@@ -1,13 +1,12 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import psidev.psi.mi.jami.model.Complex;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ComplexDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.model.extension.IntactCooperativityEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -580,4 +579,39 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         query.setParameter("pubAc", ac);
         return query.getResultList();
     } */
+
+    @Override
+    public Collection<LifeCycleEvent> getLifeCycleEventsForComplex(String ac) {
+        Query query = getEntityManager().createQuery("select l from IntactComplex p " +
+                "join p.lifecycleEvents as l " +
+                "where p.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public long countParticipantsForComplex(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.participants) from IntactComplex i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Long)query.getSingleResult();
+    }
+
+    @Override
+    public Collection<ModelledConfidence> getConfidencesForComplex(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactComplex i " +
+                "join i.modelledConfidences as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<ModelledParameter> getParametersForComplex(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactComplex i " +
+                "join i.modelledParameters as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
 }

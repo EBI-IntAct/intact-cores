@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Confidence;
+import psidev.psi.mi.jami.model.Parameter;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
 
 import java.util.Collection;
@@ -39,4 +41,8 @@ public interface ParticipantEvidenceDao extends ParticipantDao<IntactParticipant
     public Collection<IntactParticipantEvidence> getByCausalRelationType(String typeName, String typeMI);
 
     public Collection<IntactParticipantEvidence> getByCausalRelationshipTargetAc(String ac, boolean isExperimental);
+
+    public Collection<Confidence> getConfidencesForParticipant(String ac);
+
+    public Collection<Parameter> getParametersForParticipant(String ac);
 }

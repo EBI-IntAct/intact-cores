@@ -1,5 +1,8 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 
 import java.util.Collection;
@@ -46,5 +49,11 @@ public interface InteractorDao<I extends IntactInteractor> extends IntactBaseDao
     public Collection<I> getByInteractorType(String typeName, String typeMI);
 
     public Collection<I> getByTaxId(int taxid);
+
+    public Collection<Xref> getXrefsForInteractor(String ac);
+
+    public Collection<Annotation> getAnnotationsForInteractor(String ac);
+
+    public Collection<Alias> getAliasesForInteractor(String ac);
 
 }

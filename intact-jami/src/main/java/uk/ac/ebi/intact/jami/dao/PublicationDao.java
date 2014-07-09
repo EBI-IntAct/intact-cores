@@ -1,7 +1,9 @@
 package uk.ac.ebi.intact.jami.dao;
 
 import psidev.psi.mi.jami.model.CurationDepth;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 
 import java.util.Collection;
 import java.util.Date;
@@ -61,4 +63,9 @@ public interface PublicationDao extends IntactBaseDao<IntactPublication> {
 
     public Collection<IntactPublication> getBySource(String name, int first, int max);
 
+    public Collection<Xref> getXrefsForPublication(String ac);
+
+    public Collection<LifeCycleEvent> getLifeCycleEventsForPublication(String ac);
+
+    public long countExperimentsForPublication(String ac);
 }

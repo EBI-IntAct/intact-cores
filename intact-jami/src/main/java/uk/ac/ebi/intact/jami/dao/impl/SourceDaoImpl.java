@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Source;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.SourceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
@@ -557,6 +555,33 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
         else{
             throw new NonUniqueResultException("We found "+results.size()+" sources matching PAR identifier "+primaryId);
         }
+    }
+
+    @Override
+    public Collection<Xref> getXrefsForSource(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactSource cv " +
+                "join cv.dbXrefs as x " +
+                "where cv.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotationsForSource(String ac) {
+        Query query = getEntityManager().createQuery("select a from IntactSource cv " +
+                "join cv.dbAnnotations as a " +
+                "where cv.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Alias> getSynonymsForSource(String ac) {
+        Query query = getEntityManager().createQuery("select a from IntactSource cv " +
+                "join cv.aliases as a " +
+                "where cv.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
     }
 
     @Override

@@ -6,7 +6,6 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ExperimentDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
-import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -485,6 +484,23 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 "where p.ac = :pubAc");
         query.setParameter("pubAc", ac);
         return query.getResultList();
+    }
+
+    @Override
+    public Collection<Xref> getXrefsForExperiment(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactExperiment e " +
+                "join e.xrefs as x " +
+                "where e.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public long countInteractionsForExperiment(String ac) {
+        Query query = getEntityManager().createQuery("select size(e.interactionEvidences) from IntactExperiment e " +
+                "where e.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Long)query.getSingleResult();
     }
 
     @Override

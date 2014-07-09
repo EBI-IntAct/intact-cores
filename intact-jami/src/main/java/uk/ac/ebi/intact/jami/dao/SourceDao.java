@@ -1,5 +1,8 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
 import java.util.Collection;
@@ -47,4 +50,10 @@ public interface SourceDao extends IntactBaseDao<IntactSource>{
     public IntactSource getByMIIdentifier(String primaryId);
 
     public IntactSource getByPARIdentifier(String primaryId);
+
+    public Collection<Xref> getXrefsForSource(String ac);
+
+    public Collection<Annotation> getAnnotationsForSource(String ac);
+
+    public Collection<Alias> getSynonymsForSource(String ac);
 }

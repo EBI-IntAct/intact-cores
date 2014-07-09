@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Feature;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
@@ -1092,6 +1090,33 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
             }
         }
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Xref> getXrefsForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select x from "+getEntityClass().getSimpleName()+" i " +
+                "join i.dbXrefs as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotationsForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select a from "+getEntityClass().getSimpleName()+" i " +
+                "join i.annotations as a " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Alias> getAliasesForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select a from "+getEntityClass().getSimpleName()+" i " +
+                "join i.aliases as a " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
         return query.getResultList();
     }
 

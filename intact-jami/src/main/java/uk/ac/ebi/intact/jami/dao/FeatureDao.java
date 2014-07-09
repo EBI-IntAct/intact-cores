@@ -1,5 +1,8 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 
 import java.util.Collection;
@@ -73,4 +76,10 @@ public interface FeatureDao<F extends AbstractIntactFeature> extends IntactBaseD
     public Collection<F> getByResultingSequenceXref(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI);
 
     public Collection<F> getByResultingSequenceXrefLike(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI);
+
+    public Collection<Xref> getXrefsForFeature(String ac);
+
+    public Collection<Annotation> getAnnotationsForFeature(String ac);
+
+    public Collection<Alias> getAliasesForFeature(String ac);
 }

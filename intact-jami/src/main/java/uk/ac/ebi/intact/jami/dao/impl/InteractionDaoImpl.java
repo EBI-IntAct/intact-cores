@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.InteractionEvidence;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.InteractionDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
@@ -662,4 +660,47 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         return query.getResultList();
     }
 
+    @Override
+    public long countParticipantsForInteraction(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.participants) from IntactInteractionEvidence i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Long)query.getSingleResult();
+    }
+
+    @Override
+    public Collection<Xref> getXrefsForInteraction(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactInteractionEvidence i " +
+                "join i.dbXrefs as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotationsForInteraction(String ac) {
+        Query query = getEntityManager().createQuery("select a from IntactInteractionEvidence i " +
+                "join i.dbAnnotations as a " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Confidence> getConfidencesForInteraction(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactInteractionEvidence i " +
+                "join i.confidences as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Parameter> getParametersForInteraction(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactInteractionEvidence i " +
+                "join i.parameters as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
 }

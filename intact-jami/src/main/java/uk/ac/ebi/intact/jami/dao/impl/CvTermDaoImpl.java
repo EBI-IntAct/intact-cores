@@ -1,15 +1,13 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.stereotype.Repository;
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Xref;
-import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
-import uk.ac.ebi.intact.jami.model.extension.AbstractIntactCooperativeEffect;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -665,6 +663,33 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         else{
             throw new NonUniqueResultException("We found "+results.size()+" cv terms matching PAR identifier "+primaryId+", objclass "+objClass);
         }
+    }
+
+    @Override
+    public Collection<Xref> getXrefsForCvTerm(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactSource cv " +
+                "join cv.dbXrefs as x " +
+                "where cv.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotationsForCvTerm(String ac) {
+        Query query = getEntityManager().createQuery("select a from IntactSource cv " +
+                "join cv.dbAnnotations as a " +
+                "where cv.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Alias> getSynonymsForCvTerm(String ac) {
+        Query query = getEntityManager().createQuery("select a from IntactSource cv " +
+                "join cv.aliases as a " +
+                "where cv.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
     }
 
     @Override

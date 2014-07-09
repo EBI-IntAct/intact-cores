@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ParticipantEvidence;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParticipantEvidenceDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
@@ -408,6 +406,24 @@ public class ParticipantEvidenceDaoImpl extends ParticipantDaoImpl<ParticipantEv
             query.setParameter("effectName", name);
             query.setParameter("tarAc", targetAc);
         }
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Confidence> getConfidencesForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactParticipantEvidence i " +
+                "join i.confidences as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Parameter> getParametersForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select x from IntactParticipantEvidence i " +
+                "join i.parameters as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
         return query.getResultList();
     }
 }

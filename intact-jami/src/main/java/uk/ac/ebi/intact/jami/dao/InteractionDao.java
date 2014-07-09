@@ -1,5 +1,9 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Confidence;
+import psidev.psi.mi.jami.model.Parameter;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 
 import java.util.Collection;
@@ -47,4 +51,14 @@ public interface InteractionDao extends IntactBaseDao<IntactInteractionEvidence>
     public Collection<IntactInteractionEvidence> getByParameterUnit(String unitName, String unitMI);
 
     public Collection<IntactInteractionEvidence> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
+
+    public long countParticipantsForInteraction(String ac);
+
+    public Collection<Xref> getXrefsForInteraction(String ac);
+
+    public Collection<Annotation> getAnnotationsForInteraction(String ac);
+
+    public Collection<Confidence> getConfidencesForInteraction(String ac);
+
+    public Collection<Parameter> getParametersForInteraction(String ac);
 }

@@ -1,5 +1,8 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParticipant;
 
 import java.util.Collection;
@@ -47,4 +50,12 @@ public interface ParticipantDao<F extends AbstractIntactParticipant> extends Int
     public Collection<F> getByInteractorAc(String ac, int first, int max);
 
     public Collection<F> getByBiologicalRole(String typeName, String typeMI, int first, int max);
+
+    public Collection<Xref> getXrefsForParticipant(String ac);
+
+    public Collection<Annotation> getAnnotationsForParticipant(String ac);
+
+    public Collection<Alias> getAliasesForParticipant(String ac);
+
+    public long countFeaturesForParticipant(String ac);
 }

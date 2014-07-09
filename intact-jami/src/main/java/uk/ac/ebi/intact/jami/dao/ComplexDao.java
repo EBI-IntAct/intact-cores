@@ -1,6 +1,9 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.ModelledConfidence;
+import psidev.psi.mi.jami.model.ModelledParameter;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 
 import java.util.Collection;
 
@@ -55,4 +58,12 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
     public Collection<IntactComplex> getByCooperativityEvidencePublicationDoi(String doi);
 
     public Collection<IntactComplex> getByCooperativityEvidencePublicationAc(String ac);*/
+
+    public Collection<LifeCycleEvent> getLifeCycleEventsForComplex(String ac);
+
+    public long countParticipantsForComplex(String ac);
+
+    public Collection<ModelledConfidence> getConfidencesForComplex(String ac);
+
+    public Collection<ModelledParameter> getParametersForComplex(String ac);
 }

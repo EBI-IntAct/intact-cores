@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Participant;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.ParticipantDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParticipant;
@@ -540,6 +538,41 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
         query.setFirstResult(first);
         query.setMaxResults(max);
         return query.getResultList();
+    }
+
+    @Override
+    public Collection<Xref> getXrefsForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select x from "+getEntityClass().getSimpleName()+" i " +
+                "join i.xrefs as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotationsForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select a from "+getEntityClass().getSimpleName()+" i " +
+                "join i.annotations as a " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Alias> getAliasesForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select a from "+getEntityClass().getSimpleName()+" i " +
+                "join i.aliases as a " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public long countFeaturesForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.features) from "+getEntityClass().getSimpleName()+"  i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Long)query.getSingleResult();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Alias;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 
 import java.util.Collection;
@@ -52,4 +53,6 @@ public interface OrganismDao extends IntactBaseDao<IntactOrganism>{
     public Collection<IntactOrganism> getByCellTypeNameLike(String cellName);
 
     public Collection<IntactOrganism> getByTissueNameLike(String tissueName);
+
+    public Collection<Alias> getAliasesForOrganism(String ac);
 }

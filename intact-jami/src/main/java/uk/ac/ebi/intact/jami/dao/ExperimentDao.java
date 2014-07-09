@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao;
 
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 
 import java.util.Collection;
@@ -44,4 +45,8 @@ public interface ExperimentDao extends IntactBaseDao<IntactExperiment> {
     public Collection<IntactExperiment> getByVariableParameterDescription(String description);
 
     public Collection<IntactExperiment> getByPublicationAc(String ac);
+
+    public Collection<Xref> getXrefsForExperiment(String ac);
+
+    public long countInteractionsForExperiment(String ac);
 }

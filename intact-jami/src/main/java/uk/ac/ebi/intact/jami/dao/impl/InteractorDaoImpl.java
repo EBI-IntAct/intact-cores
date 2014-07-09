@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Interactor;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.InteractorDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
@@ -546,6 +544,33 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 "join f.organism as o " +
                 "where o.dbTaxid = :taxid");
         query.setParameter("taxid",Integer.toString(taxid));
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Xref> getXrefsForInteractor(String ac) {
+        Query query = getEntityManager().createQuery("select x from "+getEntityClass().getSimpleName()+" i " +
+                "join i.dbXrefs as x " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotationsForInteractor(String ac) {
+        Query query = getEntityManager().createQuery("select a from "+getEntityClass().getSimpleName()+" i " +
+                "join i.dbAnnotations as a " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Alias> getAliasesForInteractor(String ac) {
+        Query query = getEntityManager().createQuery("select a from "+getEntityClass().getSimpleName()+" i " +
+                "join i.dbAliases as a " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
         return query.getResultList();
     }
 

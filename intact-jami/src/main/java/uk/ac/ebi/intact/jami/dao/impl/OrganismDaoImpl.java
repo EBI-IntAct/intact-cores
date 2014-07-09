@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.Xref;
@@ -231,6 +232,15 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
                 "join o.tissue as t " +
                 "where upper(t.shortName) like :tissueName");
         query.setParameter("tissueName", "%"+tissueName.toUpperCase()+"%");
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<Alias> getAliasesForOrganism(String ac) {
+        Query query = getEntityManager().createQuery("select a from IntactOrganism i " +
+                "join i.aliases as a " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
         return query.getResultList();
     }
 
