@@ -24,12 +24,12 @@ import java.util.*;
  * @version $Id$
  * @since <pre>21/02/14</pre>
  */
-@Service
+@Service(value = "experimentService")
 @Lazy
 public class ExperimentService implements IntactService<Experiment>{
 
     @Autowired
-    @Qualifier("intactDAO")
+    @Qualifier("intactDao")
     private IntactDao intactDAO;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

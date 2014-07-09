@@ -541,7 +541,6 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
             inverseJoinColumns = {@JoinColumn( name = "experiment_ac" )}
     )
     @Target(IntactExperiment.class)
-    @LazyCollection(LazyCollectionOption.FALSE)
     @Deprecated
     /**
      * This method should not be used in any applications. It is only for synchronization with the database and backward compatibility

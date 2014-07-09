@@ -21,12 +21,12 @@ import java.util.*;
  * @version $Id$
  * @since <pre>21/02/14</pre>
  */
-@Service
+@Service(value = "organismService")
 @Lazy
 public class OrganismService implements IntactService<Organism>{
 
     @Autowired
-    @Qualifier("intactDAO")
+    @Qualifier("intactDao")
     private IntactDao intactDAO;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

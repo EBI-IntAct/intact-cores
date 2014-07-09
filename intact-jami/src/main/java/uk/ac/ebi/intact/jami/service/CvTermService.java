@@ -21,12 +21,12 @@ import java.util.*;
  * @version $Id$
  * @since <pre>21/02/14</pre>
  */
-@Service
+@Service(value = "cvTermService")
 @Lazy
 public class CvTermService implements IntactService<CvTerm>{
 
     @Autowired
-    @Qualifier("intactDAO")
+    @Qualifier("intactDao")
     private IntactDao intactDAO;
     private String objClass;
 

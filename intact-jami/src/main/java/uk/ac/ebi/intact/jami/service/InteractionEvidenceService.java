@@ -27,7 +27,7 @@ import java.util.*;
  * @version $Id$
  * @since <pre>21/02/14</pre>
  */
-@Service
+@Service(value = "interactionEvidenceService")
 @Lazy
 public class InteractionEvidenceService implements IntactService<InteractionEvidence> {
 

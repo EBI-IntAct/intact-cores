@@ -24,12 +24,12 @@ import java.util.*;
  * @version $Id$
  * @since <pre>21/02/14</pre>
  */
-@Service
+@Service(value = "modelledInteractionService")
 @Lazy
 public class ModelledInteractionService implements IntactService<ModelledInteraction>{
 
     @Autowired
-    @Qualifier("intactDAO")
+    @Qualifier("intactDao")
     private IntactDao intactDAO;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
