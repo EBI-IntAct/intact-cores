@@ -8,17 +8,21 @@ import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactComplexCom
 import psidev.psi.mi.jami.utils.comparator.participant.UnambiguousModelledParticipantComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ComplexMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.user.User;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Default synchronizer for complexes
@@ -99,7 +103,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         // prepare evidence type
         prepareEvidenceType(intactComplex);
         // prepare interaction evidences
-        prepareInteractionEvidences(intactComplex);
+        //prepareInteractionEvidences(intactComplex);
         // then check confidences
         prepareConfidences(intactComplex);
         // then check parameters
@@ -133,7 +137,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
        }
     }
 
-    protected void prepareInteractionEvidences(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+    /*protected void prepareInteractionEvidences(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
         if (intactComplex.areInteractionEvidencesInitialized()){
             Collection<InteractionEvidence> evidencesToPersist = new ArrayList<InteractionEvidence>(intactComplex.getInteractionEvidences());
             for (InteractionEvidence interaction : evidencesToPersist){
@@ -146,7 +150,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                 }
             }
         }
-    }
+    }*/
 
     protected void prepareStatusAndCurators(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
 

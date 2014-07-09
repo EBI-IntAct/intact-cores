@@ -5,7 +5,7 @@
 
     <persistence-unit name="intact-jami" >
       <properties>
-         <property name="hibernate.max_fetch_depth" value="3"/>
+         <property name="hibernate.max_fetch_depth" value="4"/>
           <property name="hibernate.ejb.interceptor.session_scoped" value="uk.ac.ebi.intact.jami.interceptor.IntactSynchronizerInterceptor"/>
       </properties>
    </persistence-unit>
