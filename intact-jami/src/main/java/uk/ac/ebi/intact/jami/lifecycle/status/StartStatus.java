@@ -43,11 +43,6 @@ public class StartStatus extends GlobalStatus {
                     "' with state: '"+releasable.getStatus()+"'");
         }
 
-        if( releasable.getStatus() != null ) {
-            throw new IllegalTransitionException( "Cannot get publication in status NEW when it's status is already set ("+
-                    releasable.getStatus() +"): ");
-        }
-
         changeStatus(releasable, LifeCycleStatus.NEW, LifeCycleEventType.CREATED, mechanism);
 
         // Notify listeners
