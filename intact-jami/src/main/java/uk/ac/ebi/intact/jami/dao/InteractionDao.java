@@ -52,7 +52,7 @@ public interface InteractionDao extends IntactBaseDao<IntactInteractionEvidence>
 
     public Collection<IntactInteractionEvidence> getByParameterTypeAndUnit(String typeName, String typeMI, String unitName, String unitMI);
 
-    public long countParticipantsForInteraction(String ac);
+    public int countParticipantsForInteraction(String ac);
 
     public Collection<Xref> getXrefsForInteraction(String ac);
 

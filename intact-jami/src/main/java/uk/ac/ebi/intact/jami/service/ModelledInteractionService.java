@@ -2,8 +2,10 @@ package uk.ac.ebi.intact.jami.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Complex;
@@ -26,38 +28,40 @@ import java.util.*;
  */
 @Service(value = "modelledInteractionService")
 @Lazy
+@EnableTransactionManagement
+@Configuration
 public class ModelledInteractionService implements IntactService<ModelledInteraction>{
 
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
         return this.intactDAO.getComplexDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledInteraction> iterateAll() {
         return new IntactQueryResultIterator<ModelledInteraction>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<ModelledInteraction> fetchIntactObjects(int first, int max) {
         return new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getComplexDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledInteraction> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<ModelledInteraction>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<ModelledInteraction> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getByQuery(query, parameters, first, max));
     }

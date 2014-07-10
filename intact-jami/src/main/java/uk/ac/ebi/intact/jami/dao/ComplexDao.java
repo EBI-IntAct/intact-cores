@@ -61,7 +61,7 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
 
     public Collection<LifeCycleEvent> getLifeCycleEventsForComplex(String ac);
 
-    public long countParticipantsForComplex(String ac);
+    public int countParticipantsForComplex(String ac);
 
     public Collection<ModelledConfidence> getConfidencesForComplex(String ac);
 

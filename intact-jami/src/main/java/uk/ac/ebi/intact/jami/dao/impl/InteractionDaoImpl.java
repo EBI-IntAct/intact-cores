@@ -661,11 +661,11 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     }
 
     @Override
-    public long countParticipantsForInteraction(String ac) {
+    public int countParticipantsForInteraction(String ac) {
         Query query = getEntityManager().createQuery("select size(i.participants) from IntactInteractionEvidence i " +
                 "where i.ac = :ac");
         query.setParameter("ac", ac);
-        return (Long)query.getSingleResult();
+        return (Integer)query.getSingleResult();
     }
 
     @Override

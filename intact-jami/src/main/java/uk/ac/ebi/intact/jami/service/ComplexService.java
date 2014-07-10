@@ -2,8 +2,10 @@ package uk.ac.ebi.intact.jami.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Complex;
@@ -23,38 +25,40 @@ import java.util.*;
  */
 @Service(value = "complexService")
 @Lazy
+@EnableTransactionManagement
+@Configuration
 public class ComplexService implements IntactService<Complex>{
 
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
         return this.intactDAO.getComplexDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Complex> iterateAll() {
         return new IntactQueryResultIterator<Complex>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Complex> fetchIntactObjects(int first, int max) {
         return new ArrayList<Complex>(this.intactDAO.getComplexDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getComplexDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Complex> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<Complex>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Complex> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<Complex>(this.intactDAO.getComplexDao().getByQuery(query, parameters, first, max));
     }

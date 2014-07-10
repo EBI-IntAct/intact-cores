@@ -496,11 +496,11 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     @Override
-    public long countInteractionsForExperiment(String ac) {
+    public int countInteractionsForExperiment(String ac) {
         Query query = getEntityManager().createQuery("select size(e.interactionEvidences) from IntactExperiment e " +
                 "where e.ac = :ac");
         query.setParameter("ac", ac);
-        return (Long)query.getSingleResult();
+        return (Integer)query.getSingleResult();
     }
 
     @Override

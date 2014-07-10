@@ -568,11 +568,11 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
     }
 
     @Override
-    public long countFeaturesForParticipant(String ac) {
+    public int countFeaturesForParticipant(String ac) {
         Query query = getEntityManager().createQuery("select size(i.features) from "+getEntityClass().getSimpleName()+"  i " +
                 "where i.ac = :ac");
         query.setParameter("ac", ac);
-        return (Long)query.getSingleResult();
+        return (Integer)query.getSingleResult();
     }
 
     @Override

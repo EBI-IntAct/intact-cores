@@ -679,11 +679,11 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
     }
 
     @Override
-    public long countExperimentsForPublication(String ac) {
+    public int countExperimentsForPublication(String ac) {
         Query query = getEntityManager().createQuery("select size(p.experiments) from IntactPublication p " +
                 "where p.ac = :ac");
         query.setParameter("ac", ac);
-        return (Long)query.getSingleResult();
+        return (Integer)query.getSingleResult();
     }
 
     @Override

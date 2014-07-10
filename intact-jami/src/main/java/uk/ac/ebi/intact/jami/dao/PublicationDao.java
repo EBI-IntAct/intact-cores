@@ -67,5 +67,5 @@ public interface PublicationDao extends IntactBaseDao<IntactPublication> {
 
     public Collection<LifeCycleEvent> getLifeCycleEventsForPublication(String ac);
 
-    public long countExperimentsForPublication(String ac);
+    public int countExperimentsForPublication(String ac);
 }

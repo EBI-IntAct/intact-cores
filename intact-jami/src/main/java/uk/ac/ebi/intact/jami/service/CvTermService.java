@@ -2,8 +2,10 @@ package uk.ac.ebi.intact.jami.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.CvTerm;
@@ -23,6 +25,8 @@ import java.util.*;
  */
 @Service(value = "cvTermService")
 @Lazy
+@EnableTransactionManagement
+@Configuration
 public class CvTermService implements IntactService<CvTerm>{
 
     @Autowired
@@ -30,32 +34,32 @@ public class CvTermService implements IntactService<CvTerm>{
     private IntactDao intactDAO;
     private String objClass;
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
         return this.intactDAO.getCvTermDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<CvTerm> iterateAll() {
         return new IntactQueryResultIterator<CvTerm>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<CvTerm> fetchIntactObjects(int first, int max) {
         return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getCvTermDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<CvTerm> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<CvTerm>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<CvTerm> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getByQuery(query, parameters, first, max));
     }

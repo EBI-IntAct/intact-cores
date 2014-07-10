@@ -590,11 +590,11 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
     }
 
     @Override
-    public long countParticipantsForComplex(String ac) {
+    public int countParticipantsForComplex(String ac) {
         Query query = getEntityManager().createQuery("select size(i.participants) from IntactComplex i " +
                 "where i.ac = :ac");
         query.setParameter("ac", ac);
-        return (Long)query.getSingleResult();
+        return (Integer)query.getSingleResult();
     }
 
     @Override

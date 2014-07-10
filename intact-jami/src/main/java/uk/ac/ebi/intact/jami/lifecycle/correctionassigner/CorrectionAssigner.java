@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.lifecycle.correctionassigner;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
@@ -17,7 +19,9 @@ import java.util.Collections;
  * Assigns a reviewer to a publication
  *
  */
-@Controller(value = "jamiCorrectionAssigner")
+@Component(value = "jamiCorrectionAssigner")
+@EnableTransactionManagement
+@Configuration
 public class CorrectionAssigner {
 
     public CorrectionAssigner() {

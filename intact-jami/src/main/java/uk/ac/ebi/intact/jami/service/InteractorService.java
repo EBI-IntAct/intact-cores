@@ -2,8 +2,10 @@ package uk.ac.ebi.intact.jami.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Interactor;
@@ -23,44 +25,46 @@ import java.util.*;
  */
 @Service(value = "interactorService")
 @Lazy
+@EnableTransactionManagement
+@Configuration
 public class InteractorService implements IntactService<Interactor>{
 
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
         return this.intactDAO.getInteractorBaseDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Interactor> iterateAll() {
         return new IntactQueryResultIterator<Interactor>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Interactor> fetchIntactObjects(int first, int max) {
         return new ArrayList<Interactor>(this.intactDAO.getInteractorBaseDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public void saveOrUpdate(Interactor object) throws PersisterException, FinderException, SynchronizerException {
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getInteractorSynchronizer().synchronize(object, true);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getInteractorBaseDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Interactor> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<Interactor>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Interactor> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<Interactor>(this.intactDAO.getInteractorBaseDao().getByQuery(query, parameters, first, max));
     }

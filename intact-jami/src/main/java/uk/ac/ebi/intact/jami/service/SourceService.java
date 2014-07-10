@@ -2,8 +2,10 @@ package uk.ac.ebi.intact.jami.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Source;
@@ -23,38 +25,40 @@ import java.util.*;
  */
 @Service(value = "sourceService")
 @Lazy
+@EnableTransactionManagement
+@Configuration
 public class SourceService implements IntactService<Source>{
 
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
         return this.intactDAO.getSourceDao().countAll();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Source> iterateAll() {
         return new IntactQueryResultIterator<Source>(this);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Source> fetchIntactObjects(int first, int max) {
         return new ArrayList<Source>(this.intactDAO.getSourceDao().getAll("ac", first, max));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll(String countQuery, Map<String, Object> parameters) {
         return this.intactDAO.getSourceDao().countByQuery(countQuery, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Source> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
         return new IntactQueryResultIterator<Source>(this, query, queryCount, parameters);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Source> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<Source>(this.intactDAO.getSourceDao().getByQuery(query, parameters, first, max));
     }
