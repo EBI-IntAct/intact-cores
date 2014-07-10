@@ -37,7 +37,7 @@ public class AssignedStatus extends GlobalStatus {
      * @param releasable the releasable
      */
     public void startCuration(Releasable releasable) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition assigned to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
@@ -55,7 +55,7 @@ public class AssignedStatus extends GlobalStatus {
      * @param reason a mandatory reason
      */
     public void unassign(Releasable releasable, String reason) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition assigned to reserved cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }

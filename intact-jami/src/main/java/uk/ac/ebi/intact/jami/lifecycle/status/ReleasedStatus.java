@@ -32,7 +32,7 @@ public class ReleasedStatus extends GlobalStatus {
     }
 
     public void putOnHold(Releasable releasable, String reason) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition released to accepted on hold cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }

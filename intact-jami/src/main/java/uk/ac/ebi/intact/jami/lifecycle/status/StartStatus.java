@@ -38,7 +38,7 @@ public class StartStatus extends GlobalStatus {
      * @param mechanism mechanism of creation of the publication
      */
     public void create(Releasable releasable, String mechanism) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition to new cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }

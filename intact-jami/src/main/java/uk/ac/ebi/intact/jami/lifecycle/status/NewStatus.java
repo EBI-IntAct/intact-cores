@@ -42,7 +42,7 @@ public class NewStatus extends GlobalStatus {
      * @param reason an optional reason
      */
     public void reserve(Releasable releasable, String reason) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition new to reserved cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
@@ -60,7 +60,7 @@ public class NewStatus extends GlobalStatus {
      * @param releasable the releasable
      */
     public void claimOwnership(Releasable releasable) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition new to assigned cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
@@ -89,7 +89,7 @@ public class NewStatus extends GlobalStatus {
      * @param curator the curator to be assigned
      */
     public void assignToCurator(Releasable releasable, User curator ) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition new to assigned cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }

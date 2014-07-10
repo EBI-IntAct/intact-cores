@@ -38,7 +38,7 @@ public class AcceptedStatus extends GlobalStatus {
      * @param comment optional comment
      */
     public void readyForRelease(Releasable releasable, String comment) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition accepted to ready for release cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }

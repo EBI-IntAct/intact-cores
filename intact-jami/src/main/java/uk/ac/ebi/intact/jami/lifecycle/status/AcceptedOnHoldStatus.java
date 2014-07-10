@@ -38,7 +38,7 @@ public class AcceptedOnHoldStatus extends GlobalStatus {
      * @param comment optional comment
      */
     public void onHoldRemoved(Releasable releasable, String comment) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition accepted_on_hold to ready for release cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }

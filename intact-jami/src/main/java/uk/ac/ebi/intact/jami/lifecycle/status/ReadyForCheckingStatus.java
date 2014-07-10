@@ -38,7 +38,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
      * @param comment optional comment
      */
     public void accept(Releasable releasable, String comment) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for checking to accepted or accepted_on_hold cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
@@ -64,7 +64,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
      * @param comment mandatory comment
      */
     public void reject(Releasable releasable, String comment) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for checking to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
@@ -84,7 +84,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
      * @param releasable the releasable
      */
     public void revert(Releasable releasable) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for checking to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }

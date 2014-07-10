@@ -49,7 +49,7 @@ public class CurationInProgressStatus extends GlobalStatus {
      * @param message mechanism of creation of the publication
      */
     public void readyForChecking(Releasable releasable, String message, boolean successfulSanityCheck) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition curation in progress to ready for checking cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }

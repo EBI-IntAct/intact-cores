@@ -38,7 +38,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
      * @param releaseId mandatory release process ID
      */
     public void release(Releasable releasable, String releaseId) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for release to released cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
@@ -52,7 +52,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
     }
 
     public void putOnHold(Releasable releasable, String reason) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for release to accepted on hold cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
@@ -68,7 +68,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
     }
 
     public void revert(Releasable releasable) {
-        if (canChangeStatus(releasable)){
+        if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for release to ready for checking cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
