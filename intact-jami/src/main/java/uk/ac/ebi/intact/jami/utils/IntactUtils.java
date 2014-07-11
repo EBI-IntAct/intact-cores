@@ -48,7 +48,7 @@ public class IntactUtils {
     public static final String QUALIFIER_OBJCLASS="uk.ac.ebi.intact.model.CvXrefQualifier";
     public static final String TOPIC_OBJCLASS="uk.ac.ebi.intact.model.CvTopic";
     public static final String ALIAS_TYPE_OBJCLASS="uk.ac.ebi.intact.model.CvAliasType";
-    public static final String UNIT_OBJCLASS ="uk.ac.ebi.intact.model.CvUnit";
+    public static final String UNIT_OBJCLASS ="uk.ac.ebi.intact.model.CvParameterUnit";
     public static final String FEATURE_TYPE_OBJCLASS ="uk.ac.ebi.intact.model.CvFeatureType";
     public static final String EXPERIMENTAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvExperimentalRole";
     public static final String BIOLOGICAL_ROLE_OBJCLASS ="uk.ac.ebi.intact.model.CvBiologicalRole";
