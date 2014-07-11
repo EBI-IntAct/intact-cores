@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_interaction_xref" )
+@Table( name = "ia_interactor_xref" )
 public class InteractionXref extends AbstractIntactXref{
 
     public InteractionXref() {

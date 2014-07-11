@@ -12,6 +12,8 @@
     <!-- only scan annotations in this package -->
     <context:component-scan base-package="uk.ac.ebi.intact.jami"/>
 
+    <tx:annotation-driven proxy-target-class="true"/>
+
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
@@ -47,6 +49,7 @@
     <bean id="jamiTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="intactEntityManagerFactory"/>
         <property name="dataSource" ref="jamiCoreDataSource"/>
+        <qualifier value="jamiTransactionManager"/>
     </bean>
 
 

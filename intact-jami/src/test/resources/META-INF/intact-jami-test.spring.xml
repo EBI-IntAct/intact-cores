@@ -13,7 +13,7 @@
     <context:component-scan base-package="uk.ac.ebi.intact.jami"/>
 
     <!-- so the @Transactional annotations work -->
-    <tx:annotation-driven transaction-manager="jamiTransactionManager"/>
+    <tx:annotation-driven transaction-manager="jamiTransactionManager" proxy-target-class="true"/>
 
     <!--
         Post-processor to perform exception translation on @Repository classes
@@ -38,6 +38,7 @@
     <bean id="jamiTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="intactEntityManagerFactory"/>
         <property name="dataSource" ref="jamiCoreDataSourceTest"/>
+        <qualifier value="jamiTransactionManager"/>
     </bean>
 
 
