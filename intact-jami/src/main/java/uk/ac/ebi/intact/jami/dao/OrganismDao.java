@@ -55,4 +55,6 @@ public interface OrganismDao extends IntactBaseDao<IntactOrganism>{
     public Collection<IntactOrganism> getByTissueNameLike(String tissueName);
 
     public Collection<Alias> getAliasesForOrganism(String ac);
+
+    public Collection<IntactOrganism> getAllOrganisms(boolean allowOrganismWithCellType, boolean allowOrganismWithTissue);
 }

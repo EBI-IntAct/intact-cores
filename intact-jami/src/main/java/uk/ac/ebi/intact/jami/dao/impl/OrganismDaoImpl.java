@@ -244,6 +244,24 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
         return query.getResultList();
     }
 
+    public Collection<IntactOrganism> getAllOrganism(boolean allowOrganismWithCellType, boolean allowOrganismWithTissue) {
+        String queryString = "select o from IntactOrganism o ";
+        Query query;
+        if (allowOrganismWithCellType && allowOrganismWithTissue){
+            query = getEntityManager().createQuery(queryString);
+        }
+        else if (allowOrganismWithCellType){
+            query = getEntityManager().createQuery(queryString+" where o.tissue is null");
+        }
+        else if (allowOrganismWithTissue){
+            query = getEntityManager().createQuery(queryString+" where o.cellType is null");
+        }
+        else{
+            query = getEntityManager().createQuery(queryString+" where o.cellType is null and o.tissue is null");
+        }
+        return query.getResultList();
+    }
+
     @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getOrganismSynchronizer();
