@@ -244,7 +244,7 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
         return query.getResultList();
     }
 
-    public Collection<IntactOrganism> getAllOrganism(boolean allowOrganismWithCellType, boolean allowOrganismWithTissue) {
+    public Collection<IntactOrganism> getAllOrganisms(boolean allowOrganismWithCellType, boolean allowOrganismWithTissue) {
         String queryString = "select o from IntactOrganism o ";
         Query query;
         if (allowOrganismWithCellType && allowOrganismWithTissue){
