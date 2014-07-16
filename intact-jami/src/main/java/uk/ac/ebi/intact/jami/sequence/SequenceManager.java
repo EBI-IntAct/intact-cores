@@ -20,9 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.ejb.HibernateEntityManagerFactory;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -36,8 +34,6 @@ import java.util.List;
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  */
 @Component(value = "jamiSequenceManager")
-@EnableTransactionManagement
-@Configuration
 public class SequenceManager {
 
     private static final Log log = LogFactory.getLog( SequenceManager.class );
