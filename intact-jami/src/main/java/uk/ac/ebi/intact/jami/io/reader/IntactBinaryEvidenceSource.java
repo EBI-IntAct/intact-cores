@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.io.reader;
 
 import psidev.psi.mi.jami.binary.BinaryInteractionEvidence;
+import psidev.psi.mi.jami.binary.expansion.ComplexExpansionException;
 import psidev.psi.mi.jami.datasource.BinaryInteractionEvidenceSource;
 import psidev.psi.mi.jami.datasource.InteractionEvidenceSource;
 import psidev.psi.mi.jami.exception.MIIOException;
@@ -35,7 +36,11 @@ public class IntactBinaryEvidenceSource extends IntactBinaryEvidenceStream imple
             loadedInteractions = new ArrayList<BinaryInteractionEvidence>(interactions.size());
             for (InteractionEvidence inter : interactions){
                 if (getExpansionMethod().isInteractionExpandable(inter)){
-                    loadedInteractions.addAll(getExpansionMethod().expand(inter));
+                    try {
+                        loadedInteractions.addAll(getExpansionMethod().expand(inter));
+                    } catch (ComplexExpansionException e) {
+                        throw new MIIOException("Impossible to expand n-ary interaction", e);
+                    }
                 }
             }
         }

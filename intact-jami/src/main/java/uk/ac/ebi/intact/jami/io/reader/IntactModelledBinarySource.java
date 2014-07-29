@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.io.reader;
 
 import psidev.psi.mi.jami.binary.ModelledBinaryInteraction;
+import psidev.psi.mi.jami.binary.expansion.ComplexExpansionException;
 import psidev.psi.mi.jami.datasource.ModelledBinaryInteractionSource;
 import psidev.psi.mi.jami.datasource.ModelledInteractionSource;
 import psidev.psi.mi.jami.exception.MIIOException;
@@ -34,7 +35,11 @@ public class IntactModelledBinarySource extends IntactModelledBinaryStream imple
             loadedInteractions = new ArrayList<ModelledBinaryInteraction>(interactions.size());
             for (ModelledBinaryInteraction inter : interactions){
                 if (getExpansionMethod().isInteractionExpandable(inter)){
-                    loadedInteractions.addAll(getExpansionMethod().expand(inter));
+                    try {
+                        loadedInteractions.addAll(getExpansionMethod().expand(inter));
+                    } catch (ComplexExpansionException e) {
+                        throw new MIIOException("Impossible to expand n-ary interaction", e);
+                    }
                 }
             }
         }
