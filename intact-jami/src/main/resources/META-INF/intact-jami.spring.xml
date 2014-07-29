@@ -58,7 +58,7 @@
     <bean id="intactEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="intact-jami"/>
         <property name="persistenceXmlLocation" value="classpath*:/META-INF/jami-persistence.xml"/>
-        <property name="dataSource" ref="${db.datasource}"/>
+        <property name="dataSource" ref="${jami.db.datasource}"/>
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.generate_statistics">true</prop>
@@ -92,7 +92,7 @@
         <property name="userId" value="${jami.user.context.id}"/>
     </bean>
 
-    <bean id="intactJamiConfig" class="uk.ac.ebi.intact.jami.context.IntactConfiguration">
+    <bean id="intactJamiConfiguration" class="uk.ac.ebi.intact.jami.context.IntactConfiguration">
         <property name="acPrefix" value="${jami.ac.prefix}"/>
         <property name="defaultInstitution" ref="${jami.default.source}"/>
     </bean>

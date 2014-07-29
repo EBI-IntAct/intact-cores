@@ -31,11 +31,12 @@ public class IntactConfiguration {
     private String localCvPrefix;
 
     public IntactConfiguration() {
-        acPrefix = "UNK";
-        localCvPrefix = "IA";
     }
 
     public String getAcPrefix() {
+        if (acPrefix == null){
+            acPrefix = "UNK";
+        }
         return acPrefix;
     }
 
@@ -44,6 +45,9 @@ public class IntactConfiguration {
     }
 
     public IntactSource getDefaultInstitution() {
+        if (defaultInstitution == null){
+            defaultInstitution = new IntactSource("unknown");
+        }
         return defaultInstitution;
     }
 
@@ -52,6 +56,9 @@ public class IntactConfiguration {
     }
 
     public String getLocalCvPrefix() {
+        if (localCvPrefix == null){
+            localCvPrefix = "IA";
+        }
         return localCvPrefix;
     }
 
