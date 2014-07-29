@@ -1,7 +1,9 @@
 package uk.ac.ebi.intact.jami.service;
 
 import psidev.psi.mi.jami.binary.BinaryInteraction;
+import psidev.psi.mi.jami.binary.expansion.ComplexExpansionException;
 import psidev.psi.mi.jami.binary.expansion.ComplexExpansionMethod;
+import psidev.psi.mi.jami.exception.MIIOException;
 import psidev.psi.mi.jami.model.Interaction;
 
 import java.util.*;
@@ -73,7 +75,11 @@ public class IntactQueryBinaryResultIterator<T extends Interaction, B extends Bi
                 intactObject = this.queryIterator.next();
             }
             if (this.expansionMethod.isInteractionExpandable(intactObject)){
-                this.binaryInteractions = this.expansionMethod.expand(intactObject);
+                try {
+                    this.binaryInteractions = this.expansionMethod.expand(intactObject);
+                } catch (ComplexExpansionException e) {
+                    throw new MIIOException("Impossible to expand n-ary interaction", e);
+                }
                 this.binaryIterator = this.binaryInteractions.iterator();
                 if (this.binaryIterator.hasNext()){
                     this.currentBinary = this.binaryIterator.next();
