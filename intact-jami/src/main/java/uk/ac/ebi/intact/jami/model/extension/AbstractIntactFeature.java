@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
 import psidev.psi.mi.jami.utils.CvTermUtils;
@@ -47,7 +48,7 @@ import java.util.Collection;
  * @since <pre>14/01/14</pre>
  */
 @MappedSuperclass
-public abstract class AbstractIntactFeature<P extends Participant, F extends Feature> extends AbstractIntactPrimaryObject implements Feature<P,F>{
+public abstract class AbstractIntactFeature<P extends Entity, F extends Feature> extends AbstractIntactPrimaryObject implements Feature<P,F>{
 
     private String shortName;
     private String fullName;

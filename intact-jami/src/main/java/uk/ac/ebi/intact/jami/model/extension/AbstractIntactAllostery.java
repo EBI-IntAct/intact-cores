@@ -1,12 +1,10 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.AllostericEffector;
-import psidev.psi.mi.jami.model.Allostery;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ModelledParticipant;
+import psidev.psi.mi.jami.model.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -25,14 +23,14 @@ public abstract class AbstractIntactAllostery<T extends AllostericEffector> exte
 
     private CvTerm allostericMechanism;
     private CvTerm allosteryType;
-    private ModelledParticipant allostericMolecule;
+    private ModelledEntity allostericMolecule;
     private T allostericEffector;
 
     protected AbstractIntactAllostery(){
         super();
     }
 
-    public AbstractIntactAllostery(CvTerm outcome, ModelledParticipant allostericMolecule, T allostericEffector) {
+    public AbstractIntactAllostery(CvTerm outcome, ModelledEntity allostericMolecule, T allostericEffector) {
         super(outcome);
         if (allostericMolecule == null){
             throw new IllegalArgumentException("The allosteric molecule cannot be null");
@@ -44,7 +42,7 @@ public abstract class AbstractIntactAllostery<T extends AllostericEffector> exte
         this.allostericEffector = allostericEffector;
     }
 
-    public AbstractIntactAllostery(CvTerm outcome, CvTerm response, ModelledParticipant allostericMolecule, T allostericEffector) {
+    public AbstractIntactAllostery(CvTerm outcome, CvTerm response, ModelledEntity allostericMolecule, T allostericEffector) {
         super(outcome, response);
         if (allostericMolecule == null){
             throw new IllegalArgumentException("The allosteric molecule cannot be null");
@@ -82,11 +80,11 @@ public abstract class AbstractIntactAllostery<T extends AllostericEffector> exte
     @JoinColumn( name = "allosteric_molecule_ac", referencedColumnName = "ac" )
     @Target(IntactModelledParticipant.class)
     @NotNull
-    public ModelledParticipant getAllostericMolecule() {
+    public ModelledEntity getAllostericMolecule() {
         return this.allostericMolecule;
     }
 
-    public void setAllostericMolecule(ModelledParticipant participant) {
+    public void setAllostericMolecule(ModelledEntity participant) {
         if (participant == null){
             throw new IllegalArgumentException("The allosteric molecule cannot be null");
         }

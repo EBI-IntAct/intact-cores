@@ -1,12 +1,10 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.ModelledParticipant;
-import psidev.psi.mi.jami.model.Participant;
-import psidev.psi.mi.jami.model.Position;
-import psidev.psi.mi.jami.model.ResultingSequence;
+import psidev.psi.mi.jami.model.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 
 /**
  * Intact implementation of range attached to modelled features
@@ -18,7 +16,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ia_range")
-public class ModelledRange extends AbstractIntactRange<ModelledParticipant> {
+public class ModelledRange extends AbstractIntactRange<ModelledEntity> {
 
     protected ModelledRange() {
         super();
@@ -59,13 +57,13 @@ public class ModelledRange extends AbstractIntactRange<ModelledParticipant> {
     @JoinColumn(name = "modelled_participant_ac", referencedColumnName = "ac")
     @Target(IntactModelledParticipant.class)
     @Override
-    public ModelledParticipant getParticipant() {
+    public ModelledEntity getParticipant() {
         return super.getParticipant();
     }
 
     @Override
-    public void setParticipant(Participant participant) {
-        if (participant != null && !(participant instanceof ModelledParticipant)){
+    public void setParticipant(psidev.psi.mi.jami.model.Entity participant) {
+        if (participant != null && !(participant instanceof ModelledEntity)){
             throw new IllegalArgumentException("A range attached to a modelled participant can only refer to a modelled participant.");
         }
         super.setParticipant(participant);

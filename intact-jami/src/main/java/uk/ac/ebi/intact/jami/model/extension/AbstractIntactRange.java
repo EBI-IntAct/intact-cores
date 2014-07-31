@@ -2,10 +2,8 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Type;
-import psidev.psi.mi.jami.model.Participant;
-import psidev.psi.mi.jami.model.Position;
-import psidev.psi.mi.jami.model.Range;
-import psidev.psi.mi.jami.model.ResultingSequence;
+import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.utils.comparator.range.UnambiguousRangeAndResultingSequenceComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 
@@ -22,7 +20,7 @@ import javax.persistence.*;
  * @since <pre>10/01/14</pre>
  */
 @MappedSuperclass
-public abstract class AbstractIntactRange<P extends Participant> extends AbstractIntactPrimaryObject implements Range{
+public abstract class AbstractIntactRange<P extends psidev.psi.mi.jami.model.Entity> extends AbstractIntactPrimaryObject implements Range{
 
     private Position start;
     private Position end;
@@ -125,7 +123,7 @@ public abstract class AbstractIntactRange<P extends Participant> extends Abstrac
         return this.participant;
     }
 
-    public void setParticipant(Participant participant) {
+    public void setParticipant(Entity participant) {
         this.participant = (P)participant;
     }
 

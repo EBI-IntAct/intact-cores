@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
@@ -8,6 +9,7 @@ import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -152,6 +154,13 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
 
         // after persistence, re-attach dependent objects to avoid internal loops when participants are called by each other
         existingInstance.getCausalRelationships().addAll(relationships);
+    }
+
+    @Override
+    protected IntactModelledParticipant instantiateNewPersistentInstance(ModelledParticipant object, Class<? extends IntactModelledParticipant> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        IntactModelledParticipant newParticipant = new IntactModelledParticipant(object.getInteractor());
+        ParticipantCloner.copyAndOverrideModelledParticipantProperties(object, newParticipant, false);
+        return newParticipant;
     }
 }
 

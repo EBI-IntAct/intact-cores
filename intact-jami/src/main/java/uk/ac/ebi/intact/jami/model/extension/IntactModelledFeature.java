@@ -7,6 +7,7 @@ import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
@@ -20,7 +21,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "ia_feature")
 @Where(clause = "category = 'modelled'")
-public class IntactModelledFeature extends AbstractIntactFeature<ModelledParticipant, ModelledFeature> implements ModelledFeature{
+public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity, ModelledFeature> implements ModelledFeature{
 
     public IntactModelledFeature(ModelledParticipant participant) {
         super();
@@ -108,13 +109,8 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledPartici
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
     @Target(IntactModelledParticipant.class)
-    public ModelledParticipant getParticipant() {
+    public ModelledEntity getParticipant() {
         return super.getParticipant();
-    }
-
-    @Override
-    public void setParticipant(ModelledParticipant participant) {
-        super.setParticipant(participant);
     }
 
     @Override

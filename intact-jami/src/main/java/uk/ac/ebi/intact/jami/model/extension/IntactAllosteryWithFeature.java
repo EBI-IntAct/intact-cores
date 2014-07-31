@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ModelledParticipant;
+import psidev.psi.mi.jami.model.ModelledEntity;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
@@ -23,11 +23,11 @@ public class IntactAllosteryWithFeature extends AbstractIntactAllostery<IntactFe
         super();
     }
 
-    public IntactAllosteryWithFeature(CvTerm outcome, ModelledParticipant allostericMolecule, IntactFeatureModificationEffector allostericEffector) {
+    public IntactAllosteryWithFeature(CvTerm outcome, ModelledEntity allostericMolecule, IntactFeatureModificationEffector allostericEffector) {
         super(outcome, allostericMolecule, allostericEffector);
     }
 
-    public IntactAllosteryWithFeature(CvTerm outcome, CvTerm response, ModelledParticipant allostericMolecule, IntactFeatureModificationEffector allostericEffector) {
+    public IntactAllosteryWithFeature(CvTerm outcome, CvTerm response, ModelledEntity allostericMolecule, IntactFeatureModificationEffector allostericEffector) {
         super(outcome, response, allostericMolecule, allostericEffector);
     }
 

@@ -1,12 +1,11 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.CausalRelationship;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Participant;
+import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.model.audit.AbstractAuditable;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -23,7 +22,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
-public abstract class AbstractIntactCausalRelationship<T extends Participant> extends AbstractAuditable implements CausalRelationship {
+public abstract class AbstractIntactCausalRelationship<T extends psidev.psi.mi.jami.model.Entity> extends AbstractAuditable implements CausalRelationship {
 
     private CvTerm relationType;
     private T target;
@@ -32,7 +31,7 @@ public abstract class AbstractIntactCausalRelationship<T extends Participant> ex
     protected AbstractIntactCausalRelationship(){
     }
 
-    public AbstractIntactCausalRelationship(CvTerm relationType, Participant target){
+    public AbstractIntactCausalRelationship(CvTerm relationType, psidev.psi.mi.jami.model.Entity target){
         if (relationType == null){
             throw new IllegalArgumentException("The relationType in a CausalRelationship cannot be null");
         }

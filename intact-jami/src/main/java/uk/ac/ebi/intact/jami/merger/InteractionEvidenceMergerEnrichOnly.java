@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.jami.merger;
 import psidev.psi.mi.jami.enricher.CvTermEnricher;
 import psidev.psi.mi.jami.enricher.ExperimentEnricher;
 import psidev.psi.mi.jami.enricher.InteractionEvidenceEnricher;
-import psidev.psi.mi.jami.enricher.impl.CompositeEntityEnricher;
+import psidev.psi.mi.jami.enricher.ParticipantEnricher;
 import psidev.psi.mi.jami.enricher.impl.full.FullInteractionEvidenceEnricher;
 import psidev.psi.mi.jami.enricher.listener.InteractionEnricherListener;
 import psidev.psi.mi.jami.model.CvTerm;
@@ -48,7 +48,7 @@ public class InteractionEvidenceMergerEnrichOnly extends IntactDbMergerEnrichOnl
         return super.merge(int1, int2);
     }
 
-    public CompositeEntityEnricher getParticipantEnricher() {
+    public ParticipantEnricher getParticipantEnricher() {
         return null;
     }
 

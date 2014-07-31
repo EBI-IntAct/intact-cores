@@ -1,12 +1,10 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.model.CausalRelationship;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.ModelledParticipant;
-import psidev.psi.mi.jami.model.Participant;
+import psidev.psi.mi.jami.model.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -19,7 +17,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "ia_mod_causal_relations")
-public class ModelledCausalRelationship extends AbstractIntactCausalRelationship<ModelledParticipant> implements CausalRelationship {
+public class ModelledCausalRelationship extends AbstractIntactCausalRelationship<ModelledEntity> implements CausalRelationship {
 
     protected ModelledCausalRelationship(){
         super();
@@ -33,7 +31,7 @@ public class ModelledCausalRelationship extends AbstractIntactCausalRelationship
     @JoinColumn( name = "target_ac", referencedColumnName = "ac" )
     @Target(IntactModelledParticipant.class)
     @NotNull
-    public ModelledParticipant getTarget() {
+    public ModelledEntity getTarget() {
         return super.getTarget();
     }
 }

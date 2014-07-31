@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import psidev.psi.mi.jami.model.CausalRelationship;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.Participant;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
@@ -37,8 +38,14 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
         object.setRelationType(getContext().getTopicSynchronizer().synchronize(type, true));
 
         // synchronize target
-        Participant target = object.getTarget();
-        object.setTarget(getContext().getParticipantSynchronizer().synchronize(target, false));
+        Entity target = object.getTarget();
+        if (target instanceof Participant){
+            object.setTarget(getContext().getParticipantSynchronizer().synchronize((Participant)target, false));
+        }
+        // TODO: what to do with participant set and candidates?
+        else{
+            throw new UnsupportedOperationException("The existing causal relationship synchronizer does not take into account entities that are not participants");
+        }
     }
 
     public void clearCache() {
@@ -52,7 +59,7 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
 
     @Override
     protected I instantiateNewPersistentInstance(CausalRelationship object, Class<? extends I> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return  intactClass.getConstructor(CvTerm.class, Participant.class).newInstance(object.getRelationType(), object.getTarget());
+        return  intactClass.getConstructor(CvTerm.class, Entity.class).newInstance(object.getRelationType(), object.getTarget());
     }
 
     @Override

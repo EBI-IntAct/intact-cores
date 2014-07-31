@@ -53,8 +53,15 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
                     object.setAllostericEffector(newEffector);
                 }
 
-                ModelledParticipant participant = moleculeEffector.getMolecule();
-                ((IntactMoleculeEffector) moleculeEffector).setMolecule((ModelledParticipant)getContext().getParticipantSynchronizer().synchronize(participant, false));
+                ModelledEntity participant = moleculeEffector.getMolecule();
+                if (participant instanceof ModelledParticipant){
+                    ((IntactMoleculeEffector) moleculeEffector).setMolecule((ModelledParticipant)getContext().
+                            getParticipantSynchronizer().synchronize((ModelledParticipant)participant, false));
+                }
+                // TODO: what to do with participant set and candidates?
+                else{
+                   throw new UnsupportedOperationException("The existing allostery synchronizer does not take into account entities that are not participants");
+                }
                 break;
             case feature_modification:
                 FeatureModificationEffector featureEffector = (FeatureModificationEffector)object.getAllostericEffector();
@@ -88,9 +95,15 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
     }
 
     protected void prepareAllostericMolecule(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
-        ModelledParticipant participant = object.getAllostericMolecule();
-        object.setAllostericMolecule((ModelledParticipant)getContext().getParticipantSynchronizer().synchronize(participant, false));
-
+        ModelledEntity participant = object.getAllostericMolecule();
+        if (participant instanceof ModelledParticipant){
+            object.setAllostericMolecule((ModelledParticipant)getContext().
+                    getParticipantSynchronizer().synchronize((ModelledParticipant)participant, false));
+        }
+        // TODO: what to do with participant set and candidates?
+        else{
+            throw new UnsupportedOperationException("The existing allostery synchronizer does not take into account entities that are not participants");
+        }
     }
 
     @Override
@@ -98,10 +111,13 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
         AbstractIntactAllostery newAllostery;
         switch (object.getAllostericEffector().getEffectorType()){
             case molecule:
-                newAllostery = new IntactAllosteryWithMolecule(object.getOutCome(), object.getAllostericMolecule(), new IntactMoleculeEffector(((MoleculeEffector)object.getAllostericEffector()).getMolecule()));
+                newAllostery = new IntactAllosteryWithMolecule(object.getOutCome(), object.getAllostericMolecule(),
+                        new IntactMoleculeEffector(((MoleculeEffector)object.getAllostericEffector()).getMolecule()));
                 break;
             case feature_modification:
-                newAllostery = new IntactAllosteryWithFeature(object.getOutCome(), object.getAllostericMolecule(), new IntactFeatureModificationEffector(((FeatureModificationEffector)object.getAllostericEffector()).getFeatureModification()));
+                newAllostery = new IntactAllosteryWithFeature(object.getOutCome(), object.getAllostericMolecule(),
+                        new IntactFeatureModificationEffector(((FeatureModificationEffector)object.getAllostericEffector()).
+                                getFeatureModification()));
                 break;
             default:
                 throw new UnsupportedOperationException("Cannot instantiate a new instance of persistent allostery as it does not recognize the effector type "+object.getAllostericEffector().getEffectorType());

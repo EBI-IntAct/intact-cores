@@ -1,18 +1,14 @@
 package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
-import psidev.psi.mi.jami.enricher.ComplexEnricher;
-import psidev.psi.mi.jami.enricher.CvTermEnricher;
-import psidev.psi.mi.jami.enricher.OrganismEnricher;
-import psidev.psi.mi.jami.enricher.SourceEnricher;
-import psidev.psi.mi.jami.enricher.impl.CompositeEntityEnricher;
+import psidev.psi.mi.jami.enricher.*;
 import psidev.psi.mi.jami.enricher.impl.full.FullComplexEnricher;
 import psidev.psi.mi.jami.enricher.listener.InteractionEnricherListener;
 import psidev.psi.mi.jami.enricher.listener.InteractorEnricherListener;
 import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
-import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +37,7 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
         return (ComplexEnricher)super.getBasicEnricher();
     }
 
-    public CompositeEntityEnricher getParticipantEnricher() {
+    public ParticipantEnricher getParticipantEnricher() {
         return null;
     }
 

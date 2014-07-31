@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.AllostericEffectorType;
-import psidev.psi.mi.jami.model.ModelledParticipant;
+import psidev.psi.mi.jami.model.ModelledEntity;
 import psidev.psi.mi.jami.model.MoleculeEffector;
 
 import javax.persistence.Embeddable;
@@ -20,13 +20,13 @@ import javax.persistence.Transient;
 @Embeddable
 public class IntactMoleculeEffector implements MoleculeEffector {
 
-    private ModelledParticipant participant;
+    private ModelledEntity participant;
 
     protected IntactMoleculeEffector(){
 
     }
 
-    public IntactMoleculeEffector(ModelledParticipant participant){
+    public IntactMoleculeEffector(ModelledEntity participant){
         if (participant == null){
             throw new IllegalArgumentException("The participant of a MoleculeEffector cannot be null.");
         }
@@ -36,11 +36,11 @@ public class IntactMoleculeEffector implements MoleculeEffector {
     @ManyToOne( targetEntity = IntactModelledParticipant.class )
     @JoinColumn( name = "molecule_effector_ac" , referencedColumnName = "ac")
     @Target(IntactModelledParticipant.class)
-    public ModelledParticipant getMolecule() {
+    public ModelledEntity getMolecule() {
         return participant;
     }
 
-    public void setMolecule(ModelledParticipant participant) {
+    public void setMolecule(ModelledEntity participant) {
         if (participant == null){
             throw new IllegalArgumentException("The participant of a MoleculeEffector cannot be null.");
         }

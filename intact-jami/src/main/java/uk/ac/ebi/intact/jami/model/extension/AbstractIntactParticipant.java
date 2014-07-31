@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
-import psidev.psi.mi.jami.listener.ParticipantInteractorChangeListener;
+import psidev.psi.mi.jami.listener.EntityInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.impl.DefaultStoichiometry;
 import psidev.psi.mi.jami.utils.RangeUtils;
@@ -44,7 +44,7 @@ public abstract class AbstractIntactParticipant<I extends Interaction, F extends
     private Stoichiometry stoichiometry;
     private Collection<CausalRelationship> causalRelationships;
     private Collection<F> features;
-    private ParticipantInteractorChangeListener changeListener;
+    private EntityInteractorChangeListener changeListener;
 
     private I interaction;
 
@@ -210,11 +210,11 @@ public abstract class AbstractIntactParticipant<I extends Interaction, F extends
     }
 
     @Transient
-    public ParticipantInteractorChangeListener getChangeListener() {
+    public EntityInteractorChangeListener getChangeListener() {
         return this.changeListener;
     }
 
-    public void setChangeListener(ParticipantInteractorChangeListener listener) {
+    public void setChangeListener(EntityInteractorChangeListener listener) {
         this.changeListener = listener;
     }
 

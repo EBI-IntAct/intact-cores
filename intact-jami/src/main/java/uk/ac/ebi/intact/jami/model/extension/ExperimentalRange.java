@@ -4,6 +4,7 @@ import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 
 /**
  * Intact implementation of range attached to feature evidences
@@ -15,7 +16,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ia_range")
-public class ExperimentalRange extends AbstractIntactRange<Participant> {
+public class ExperimentalRange extends AbstractIntactRange<psidev.psi.mi.jami.model.Entity> {
 
     protected ExperimentalRange() {
         super();
@@ -33,7 +34,7 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
         super(start, end, resultingSequence);
     }
 
-    public ExperimentalRange(Position start, Position end, ModelledParticipant participant) {
+    public ExperimentalRange(Position start, Position end, ParticipantEvidence participant) {
         super(start, end, participant);
     }
 
@@ -41,7 +42,7 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
         super(start, end, isLink, resultingSequence);
     }
 
-    public ExperimentalRange(Position start, Position end, boolean isLink, ModelledParticipant participant) {
+    public ExperimentalRange(Position start, Position end, boolean isLink, ParticipantEvidence participant) {
         super(start, end, isLink, participant);
     }
 
@@ -55,12 +56,12 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
     @JoinColumn(name = "modelled_participant_ac", referencedColumnName = "ac")
     @Target(IntactModelledParticipant.class)
-    protected ModelledParticipant getModelledParticipant() {
-        Participant target = getParticipant();
-        return target instanceof ModelledParticipant ? (ModelledParticipant)target : null;
+    protected ModelledEntity getModelledParticipant() {
+        psidev.psi.mi.jami.model.Entity target = getParticipant();
+        return target instanceof ModelledEntity ? (ModelledEntity)target : null;
     }
 
-    private void setModelledParticipant(ModelledParticipant participant) {
+    private void setModelledParticipant(ModelledEntity participant) {
         if (participant != null){
             super.setParticipant(participant);
         }
@@ -69,12 +70,12 @@ public class ExperimentalRange extends AbstractIntactRange<Participant> {
     @ManyToOne(targetEntity = IntactModelledParticipant.class)
     @JoinColumn(name = "experimental_participant_ac", referencedColumnName = "ac")
     @Target(IntactModelledParticipant.class)
-    protected ParticipantEvidence getExperimentalParticipant() {
-        Participant target = getParticipant();
-        return target instanceof ParticipantEvidence ? (ParticipantEvidence)target : null;
+    protected ExperimentalEntity getExperimentalParticipant() {
+        psidev.psi.mi.jami.model.Entity target = getParticipant();
+        return target instanceof ExperimentalEntity ? (ExperimentalEntity)target : null;
     }
 
-    private void setExperimentalParticipant(ParticipantEvidence participant) {
+    private void setExperimentalParticipant(ExperimentalEntity participant) {
         if (participant != null){
             super.setParticipant(participant);
         }

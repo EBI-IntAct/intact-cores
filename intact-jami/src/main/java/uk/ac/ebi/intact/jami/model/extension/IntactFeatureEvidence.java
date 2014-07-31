@@ -10,6 +10,7 @@ import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +33,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "ia_feature")
 @Where(clause = "category = 'evidence'")
-public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvidence,FeatureEvidence> implements FeatureEvidence{
+public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEntity,FeatureEvidence> implements FeatureEvidence{
 
     private DetectionMethodList detectionMethods;
     /**
@@ -189,7 +190,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ParticipantEvid
     @ManyToOne(targetEntity = IntactParticipantEvidence.class)
     @JoinColumn( name = "component_ac", referencedColumnName = "ac" )
     @Target(IntactParticipantEvidence.class)
-    public ParticipantEvidence getParticipant() {
+    public ExperimentalEntity getParticipant() {
         return super.getParticipant();
     }
 

@@ -47,9 +47,16 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         prepareResultingSequence(object);
 
         // synchronize participant
-        if (object.getParticipant() != null){
-            Participant synchronizedParticipant = getContext().getParticipantSynchronizer().synchronize(object.getParticipant(), false);
-            object.setParticipant(synchronizedParticipant);
+        if (object.getParticipant() != null ){
+            if (object.getParticipant() instanceof Participant){
+                Participant synchronizedParticipant = getContext().getParticipantSynchronizer().
+                        synchronize((Participant)object.getParticipant(), false);
+                object.setParticipant(synchronizedParticipant);
+            }
+            // TODO: what to do with participant set and candidates?
+            else{
+                throw new UnsupportedOperationException("The existing range synchronizer does not take into account entities that are not participants");
+            }
         }
     }
 
