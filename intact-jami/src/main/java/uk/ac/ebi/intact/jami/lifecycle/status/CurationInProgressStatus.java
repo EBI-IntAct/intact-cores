@@ -54,6 +54,9 @@ public class CurationInProgressStatus extends GlobalStatus {
                     "' with state: '"+releasable.getStatus()+"'");
         }
 
+        // add correction comment
+        releasable.onCorrectionComment(message);
+
         if (successfulSanityCheck) {
             changeStatus(releasable, LifeCycleStatus.READY_FOR_CHECKING, LifeCycleEventType.READY_FOR_CHECKING, message);
 

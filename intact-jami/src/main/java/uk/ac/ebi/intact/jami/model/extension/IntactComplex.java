@@ -70,6 +70,7 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     private Annotation toBeReviewed;
     private Annotation onHold;
     private Annotation accepted;
+    private Annotation correctionComment;
 
     protected IntactComplex(){
         super();
@@ -323,6 +324,35 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
             this.accepted = new InteractorAnnotation(acceptedTopic, message);
             complexAnnotationList.add(this.accepted);
         }
+    }
+
+    @Override
+    public void removeCorrectionComment() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, Releasable.CORRECTION_COMMENT);
+    }
+
+    @Override
+    public String getCorrectionComment() {
+        return this.correctionComment != null ? this.correctionComment.getValue() : null;
+    }
+
+    @Override
+    public void onCorrectionComment(String message) {
+        Collection<Annotation> complexAnnotationList = getAnnotations();
+
+        if (correctionComment != null){
+            this.correctionComment.setValue(message);
+        }
+        else  {
+            CvTerm onHoldTopic = IntactUtils.createMITopic(Releasable.CORRECTION_COMMENT, null);
+            this.correctionComment = new InteractorAnnotation(onHoldTopic, message);
+            complexAnnotationList.add(this.correctionComment);
+        }
+    }
+
+    @Override
+    public boolean hasCorrectionComment() {
+        return this.correctionComment != null;
     }
 
     @Override
@@ -769,6 +799,10 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
                 AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.ON_HOLD)){
             onHold = added;
         }
+        else if (correctionComment == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.CORRECTION_COMMENT)){
+            correctionComment = added;
+        }
     }
 
     @Override
@@ -788,6 +822,10 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         if (onHold != null && onHold.equals(removed)){
             onHold = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(),
                     null, Releasable.ON_HOLD);
+        }
+        if (correctionComment != null && correctionComment.equals(removed)){
+            correctionComment = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(),
+                    null, Releasable.CORRECTION_COMMENT);
         }
     }
 

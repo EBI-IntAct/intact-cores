@@ -17,6 +17,7 @@ public interface Releasable {
     public final static String ON_HOLD = "on-hold";
     public final static String TO_BE_REVIEWED = "to-be-reviewed";
     public final static String ACCEPTED = "accepted";
+    public static final String CORRECTION_COMMENT = "correction comment";
 
     public LifeCycleStatus getStatus();
 
@@ -57,5 +58,13 @@ public interface Releasable {
     public void removeAccepted();
 
     public String getAcceptedComment();
+
+    public void removeCorrectionComment();
+
+    public String getCorrectionComment();
+
+    public void onCorrectionComment(String message);
+
+    public boolean hasCorrectionComment();
 
 }

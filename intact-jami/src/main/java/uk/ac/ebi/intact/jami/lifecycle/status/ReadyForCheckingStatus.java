@@ -45,6 +45,8 @@ public class ReadyForCheckingStatus extends GlobalStatus {
 
         // remove to be reviewed comment
         releasable.removeToBeReviewed();
+        // remove correction comment
+        releasable.removeCorrectionComment();
         // add accepted comment
         releasable.onAccepted(comment);
 

@@ -86,6 +86,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     private Annotation toBeReviewed;
     private Annotation onHold;
     private Annotation accepted;
+    private Annotation correctionComment;
 
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
@@ -737,6 +738,35 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @Override
+    public void removeCorrectionComment() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, Releasable.CORRECTION_COMMENT);
+    }
+
+    @Override
+    public String getCorrectionComment() {
+        return this.correctionComment != null ? this.correctionComment.getValue() : null;
+    }
+
+    @Override
+    public void onCorrectionComment(String message) {
+        Collection<Annotation> complexAnnotationList = getAnnotations();
+
+        if (correctionComment != null){
+            this.correctionComment.setValue(message);
+        }
+        else  {
+            CvTerm onHoldTopic = IntactUtils.createMITopic(Releasable.CORRECTION_COMMENT, null);
+            this.correctionComment = new InteractorAnnotation(onHoldTopic, message);
+            complexAnnotationList.add(this.correctionComment);
+        }
+    }
+
+    @Override
+    public boolean hasCorrectionComment() {
+        return this.correctionComment != null;
+    }
+
+    @Override
     @Transient
     public boolean isOnHold() {
         // initialise annotations if necessary
@@ -1023,6 +1053,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
                 AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.ON_HOLD)){
             onHold = added;
         }
+        else if (correctionComment == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.CORRECTION_COMMENT)){
+            correctionComment = added;
+        }
     }
 
     protected void processRemovedAnnotation(Annotation removed) {
@@ -1037,6 +1071,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         if (onHold != null && onHold.equals(removed)){
             onHold = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(),
                     null, Releasable.ON_HOLD);
+        }
+        if (correctionComment != null && correctionComment.equals(removed)){
+            correctionComment = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(),
+                    null, Releasable.CORRECTION_COMMENT);
         }
     }
 
@@ -1063,6 +1101,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.onHold = null;
         this.toBeReviewed = null;
         this.accepted = null;
+        this.correctionComment = null;
     }
 
     private void initialiseReleasedDate() {
