@@ -43,7 +43,9 @@ public class AcceptedOnHoldStatus extends GlobalStatus {
                     "' with state: '"+releasable.getStatus()+"'");
         }
 
-        releasable.onReleased();
+        // remove any existing on-hold annotation
+        releasable.removeOnHold();
+
         changeStatus(releasable, LifeCycleStatus.READY_FOR_RELEASE, LifeCycleEventType.READY_FOR_RELEASE, comment);
 
         for ( LifecycleEventListener listener : getListeners() ) {

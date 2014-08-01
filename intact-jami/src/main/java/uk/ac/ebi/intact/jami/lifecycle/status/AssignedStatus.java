@@ -41,6 +41,7 @@ public class AssignedStatus extends GlobalStatus {
             throw new IllegalTransitionException("Transition assigned to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
+
         changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.CURATION_STARTED, "");
 
         for ( LifecycleEventListener listener : getListeners() ) {
@@ -59,6 +60,7 @@ public class AssignedStatus extends GlobalStatus {
             throw new IllegalTransitionException("Transition assigned to reserved cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
+
         enfoceMandatory(reason);
         changeStatus(releasable, LifeCycleStatus.RESERVED, LifeCycleEventType.ASSIGNMENT_DECLINED, reason);
 

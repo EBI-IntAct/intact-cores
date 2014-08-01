@@ -67,6 +67,10 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
     private CvTerm cvStatus;
 
+    private Annotation toBeReviewed;
+    private Annotation onHold;
+    private Annotation accepted;
+
     protected IntactComplex(){
         super();
         this.status = LifeCycleStatus.NEW;
@@ -79,6 +83,7 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
     public IntactComplex(String name, String fullName, CvTerm interactorType) {
         super(name, fullName, interactorType);
+        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, CvTerm interactorType, Organism organism) {
@@ -269,52 +274,108 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     }
 
     @Override
-    public void onReleased() {
-        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "on-hold");
+    @Transient
+    public String getOnHoldComment() {
+        // initialise annotations if necessary
+        getAnnotations();
+        return onHold != null ? onHold.getValue() : null;
+    }
+
+    @Override
+    @Transient
+    public String getToBeReviewedComment() {
+        // initialise annotations if necessary
+        getAnnotations();
+        return toBeReviewed != null ? toBeReviewed.getValue() : null;
+    }
+
+    @Override
+    @Transient
+    public String getAcceptedComment() {
+        // initialise annotations if necessary
+        getAnnotations();
+        return accepted != null ? accepted.getValue() : null;
+    }
+
+    @Override
+    public void onToBeReviewed(String message) {
+        Collection<Annotation> complexAnnotationList = getAnnotations();
+
+        if (toBeReviewed != null){
+            this.toBeReviewed.setValue(message);
+        }
+        else  {
+            CvTerm toBeReviewedTopic = IntactUtils.createMITopic(Releasable.TO_BE_REVIEWED, null);
+            this.toBeReviewed = new InteractorAnnotation(toBeReviewedTopic, message);
+            complexAnnotationList.add(this.toBeReviewed);
+        }
+    }
+
+    @Override
+    public void onAccepted(String message) {
+        Collection<Annotation> complexAnnotationList = getAnnotations();
+
+        if (accepted != null){
+            this.accepted.setValue(message);
+        }
+        else  {
+            CvTerm acceptedTopic = IntactUtils.createMITopic(Releasable.ACCEPTED, null);
+            this.accepted = new InteractorAnnotation(acceptedTopic, message);
+            complexAnnotationList.add(this.accepted);
+        }
+    }
+
+    @Override
+    @Transient
+    public boolean isAccepted() {
+        // initialise annotations if necessary
+        getAnnotations();
+        return accepted != null;
+    }
+
+    @Override
+    public void removeAccepted() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, Releasable.ACCEPTED);
+    }
+
+    @Override
+    @Transient
+    public boolean isToBeReviewed() {
+        // initialise annotations if necessary
+        getAnnotations();
+        return toBeReviewed != null;
+    }
+
+    @Override
+    public void removeToBeReviewed() {
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, Releasable.TO_BE_REVIEWED);
     }
 
     @Override
     public void onHold(String message) {
-        Annotation onHold = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "on-hold");
+        Collection<Annotation> complexAnnotationList = getAnnotations();
+
         if (onHold != null){
-            onHold.setValue(message);
+            this.onHold.setValue(message);
         }
-        else{
-            getAnnotations().add(new InteractorAnnotation(IntactUtils.createMITopic("on-hold", null), message));
+        else  {
+            CvTerm onHoldTopic = IntactUtils.createMITopic(Releasable.ON_HOLD, null);
+            this.onHold = new InteractorAnnotation(onHoldTopic, message);
+            complexAnnotationList.add(this.onHold);
         }
     }
 
     @Override
     @Transient
     public boolean isOnHold() {
-        return AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "on-hold") != null;
+        // initialise annotations if necessary
+        getAnnotations();
+        return onHold != null;
     }
 
     @Override
     public void removeOnHold() {
-        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "on-hold");
-    }
-
-    @Override
-    public void onToBeReviewed(String message) {
-        Annotation reviewed = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "to-be-reviewed");
-        if (reviewed != null){
-            reviewed.setValue(message);
-        }
-        else{
-            getAnnotations().add(new InteractorAnnotation(IntactUtils.createMITopic("to-be-reviewed", null), message));
-        }
-    }
-
-    @Override
-    @Transient
-    public boolean isToBeReviewed() {
-        return AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, "to-be-reviewed") != null;
-    }
-
-    @Override
-    public void removeToBeReviewed() {
-        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, "to-be-reviewed");
+        AnnotationUtils.removeAllAnnotationsWithTopic(getAnnotations(), null, Releasable.ON_HOLD);
     }
 
     @ManyToOne(targetEntity = IntactSource.class)
@@ -466,10 +527,12 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
             CvTerm complexPhysicalProperties = IntactUtils.createMITopic(Annotation.COMPLEX_PROPERTIES, Annotation.COMPLEX_PROPERTIES_MI);
             // first remove old physical property if not null
             if (this.physicalProperties != null){
-                complexAnnotationList.remove(this.physicalProperties);
+                this.physicalProperties.setValue(properties);
             }
-            this.physicalProperties = new InteractorAnnotation(complexPhysicalProperties, properties);
-            complexAnnotationList.add(this.physicalProperties);
+            else{
+                this.physicalProperties = new InteractorAnnotation(complexPhysicalProperties, properties);
+                complexAnnotationList.add(this.physicalProperties);
+            }
         }
         // remove all physical properties if the collection is not empty
         else if (!complexAnnotationList.isEmpty()) {
@@ -690,15 +753,41 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
     @Override
     protected void processAddedAnnotation(Annotation added) {
-        if (physicalProperties == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES)){
+        if (physicalProperties == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES)){
             physicalProperties = added;
+        }
+        else if (toBeReviewed == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.TO_BE_REVIEWED)){
+            toBeReviewed = added;
+        }
+        else if (accepted == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.ACCEPTED)){
+            accepted = added;
+        }
+        else if (onHold == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.ON_HOLD)){
+            onHold = added;
         }
     }
 
     @Override
     protected void processRemovedAnnotation(Annotation removed) {
         if (physicalProperties != null && physicalProperties.equals(removed)){
-            physicalProperties = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES);
+            physicalProperties = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(),
+                    Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES);
+        }
+        if (toBeReviewed != null && toBeReviewed.equals(removed)){
+            toBeReviewed = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(),
+                    null, Releasable.TO_BE_REVIEWED);
+        }
+        if (accepted != null && accepted.equals(removed)){
+            accepted = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(),
+                    null, Releasable.ACCEPTED);
+        }
+        if (onHold != null && onHold.equals(removed)){
+            onHold = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(),
+                    null, Releasable.ON_HOLD);
         }
     }
 

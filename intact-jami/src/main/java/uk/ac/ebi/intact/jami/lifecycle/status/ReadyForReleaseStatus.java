@@ -43,6 +43,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
                     "' with state: '"+releasable.getStatus()+"'");
         }
         enfoceMandatory(releaseId);
+
         changeStatus(releasable, LifeCycleStatus.RELEASED, LifeCycleEventType.RELEASED, releaseId);
 
         // Notify listeners
@@ -59,6 +60,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
         enfoceMandatory(reason);
 
         releasable.onHold(reason);
+
         changeStatus(releasable, LifeCycleStatus.ACCEPTED_ON_HOLD, LifeCycleEventType.PUT_ON_HOLD, reason);
 
         // Notify listeners
@@ -72,6 +74,9 @@ public class ReadyForReleaseStatus extends GlobalStatus {
             throw new IllegalTransitionException("Transition ready for release to ready for checking cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
+
+        releasable.removeAccepted();
+
         changeStatus(releasable, LifeCycleStatus.READY_FOR_CHECKING, LifeCycleEventType.READY_FOR_CHECKING, null);
 
         // Notify listeners

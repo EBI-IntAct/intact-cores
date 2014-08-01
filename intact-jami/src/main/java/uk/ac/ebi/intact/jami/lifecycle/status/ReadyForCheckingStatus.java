@@ -42,6 +42,13 @@ public class ReadyForCheckingStatus extends GlobalStatus {
             throw new IllegalTransitionException("Transition ready for checking to accepted or accepted_on_hold cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
+
+        // remove to be reviewed comment
+        releasable.removeToBeReviewed();
+        // add accepted comment
+        releasable.onAccepted(comment);
+
+        // the releasable is on-hold
         if (releasable.isOnHold()) {
             changeStatus(releasable, LifeCycleStatus.ACCEPTED_ON_HOLD, LifeCycleEventType.ACCEPTED, comment);
             // Notify listeners
@@ -68,7 +75,12 @@ public class ReadyForCheckingStatus extends GlobalStatus {
             throw new IllegalTransitionException("Transition ready for checking to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
+        // comment mandatory
         enfoceMandatory(comment);
+
+        // create a rejection comment
+        releasable.onToBeReviewed(comment);
+
         changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.REJECTED, comment);
 
         // Notify listeners
@@ -88,6 +100,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
             throw new IllegalTransitionException("Transition ready for checking to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
+
         changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.CURATION_STARTED, null);
 
         // Notify listeners

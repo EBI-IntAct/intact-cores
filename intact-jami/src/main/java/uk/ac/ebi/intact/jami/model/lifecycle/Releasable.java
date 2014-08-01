@@ -14,6 +14,10 @@ import java.util.List;
 
 public interface Releasable {
 
+    public final static String ON_HOLD = "on-hold";
+    public final static String TO_BE_REVIEWED = "to-be-reviewed";
+    public final static String ACCEPTED = "accepted";
+
     public LifeCycleStatus getStatus();
 
     public void setStatus( LifeCycleStatus status );
@@ -30,18 +34,28 @@ public interface Releasable {
 
     public List<LifeCycleEvent> getLifecycleEvents();
 
-    public void onReleased();
-
     public void onHold(String message);
 
     public boolean isOnHold();
 
     public void removeOnHold();
 
+    public String getOnHoldComment();
+
     public void onToBeReviewed(String message);
 
     public boolean isToBeReviewed();
 
     public void removeToBeReviewed();
+
+    public String getToBeReviewedComment();
+
+    public void onAccepted(String message);
+
+    public boolean isAccepted();
+
+    public void removeAccepted();
+
+    public String getAcceptedComment();
 
 }
