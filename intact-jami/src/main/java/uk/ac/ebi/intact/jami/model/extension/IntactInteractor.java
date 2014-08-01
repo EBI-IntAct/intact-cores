@@ -378,6 +378,10 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
     protected void initialiseAnnotations(){
         this.annotations = getDbAnnotations();
+
+        for (Annotation a : this.annotations){
+            processAddedAnnotation(a);
+        }
     }
 
     protected void initialiseXrefs(){
@@ -413,11 +417,14 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
     protected void initialiseAliases(){
         this.aliases = getDbAliases();
+        for (Alias a : this.aliases){
+            processAddedAlias(a);
+        }
     }
 
     protected void initialiseAliasesWith(Collection<Alias> aliases){
         if (aliases == null){
-            this.aliases = new ArrayList<Alias>();
+            this.aliases = getDbAliases();
         }
         else{
             this.aliases = aliases;
@@ -426,7 +433,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
     protected void initialiseAnnotationsWith(Collection<Annotation> annotations){
         if (annotations == null){
-            this.annotations = new ArrayList<Annotation>();
+            this.annotations = getDbAnnotations();
         }
         else{
             this.annotations = annotations;
@@ -495,6 +502,38 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         this.relatedModelledParticipants = activeInstances;
     }
 
+    protected boolean needToProcessAnnotationToAdd() {
+        return false;
+    }
+
+    protected boolean needToProcessAliasToAdd() {
+        return false;
+    }
+
+    protected boolean needToProcessAnnotationToRemove() {
+        return false;
+    }
+
+    protected boolean needToProcessAliasToRemove() {
+        return false;
+    }
+
+    protected void processAddedAnnotation(Annotation added) {
+        // nothing to do
+    }
+
+    protected void processRemovedAnnotation(Annotation removed) {
+        // nothing to do
+    }
+
+    protected void processAddedAlias(Alias added) {
+        // nothing to do
+    }
+
+    protected void processRemovedAlias(Alias removed) {
+        // nothing to do
+    }
+
     protected class InteractorIdentifierList extends AbstractListHavingProperties<Xref> {
         public InteractorIdentifierList(){
             super();
@@ -559,24 +598,29 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
         @Override
         protected boolean needToPreProcessElementToAdd(Annotation added) {
-            return false;
+            return needToProcessAnnotationToAdd();
         }
 
         @Override
         protected Annotation processOrWrapElementToAdd(Annotation added) {
+            processAddedAnnotation(added);
             return added;
         }
 
         @Override
         protected void processElementToRemove(Object o) {
-            // do nothing
+            if (o instanceof Annotation){
+                processRemovedAnnotation((Annotation)o);
+            }
         }
 
         @Override
         protected boolean needToPreProcessElementToRemove(Object o) {
-            return false;
+            return needToProcessAnnotationToRemove();
         }
     }
+
+
 
     protected class PersistentAliasList extends AbstractCollectionWrapper<Alias> {
 
@@ -586,22 +630,25 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
         @Override
         protected boolean needToPreProcessElementToAdd(Alias added) {
-            return false;
+            return needToProcessAliasToAdd();
         }
 
         @Override
         protected Alias processOrWrapElementToAdd(Alias added) {
+            processAddedAlias(added);
             return added;
         }
 
         @Override
         protected void processElementToRemove(Object o) {
-            // do nothing
+            if (o instanceof Alias){
+                processRemovedAlias((Alias)o);
+            }
         }
 
         @Override
         protected boolean needToPreProcessElementToRemove(Object o) {
-            return false;
+            return needToProcessAliasToRemove();
         }
     }
 

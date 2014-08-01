@@ -559,36 +559,6 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         return Hibernate.isInitialized(getInteractionEvidences());
     }
 
-    protected void processAddedAnnotationEvent(Annotation added) {
-        if (physicalProperties == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES)){
-            physicalProperties = added;
-        }
-    }
-
-    protected void processRemovedAnnotationEvent(Annotation removed) {
-        if (physicalProperties != null && physicalProperties.equals(removed)){
-            physicalProperties = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES);
-        }
-    }
-
-    protected void processAddedAliasEvent(Alias added) {
-        if (recommendedName == null && AliasUtils.doesAliasHaveType(added, Alias.COMPLEX_RECOMMENDED_NAME_MI, Alias.COMPLEX_RECOMMENDED_NAME)){
-            recommendedName = added;
-        }
-        else if (systematicName == null && AliasUtils.doesAliasHaveType(added, Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME)){
-            systematicName = added;
-        }
-    }
-
-    protected void processRemovedAliasEvent(Alias removed) {
-        if (recommendedName != null && recommendedName.equals(removed)){
-            recommendedName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.COMPLEX_RECOMMENDED_NAME_MI, Alias.COMPLEX_RECOMMENDED_NAME);
-        }
-        else if (systematicName != null && systematicName.equals(removed)){
-            systematicName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME);
-        }
-    }
-
     @Transient
     public String getRigid() {
         // initialise checksum if necessary
@@ -694,34 +664,61 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     }
 
     @Override
-    protected void initialiseAnnotations() {
-        super.initialiseAnnotationsWith(new ComplexAnnotationList(null));
-        for (Annotation check : super.getDbAnnotations()){
-            processAddedAnnotationEvent(check);
-        }
-    }
-
-    @Override
-    protected void setDbAnnotations(Collection<Annotation> annotations) {
-        super.setDbAnnotations(new ComplexAnnotationList(annotations));
-    }
-
-    @Override
     protected void initialiseChecksums(){
         super.initialiseChecksumsWith(new ComplexChecksumList());
     }
 
     @Override
-    protected void setDbAliases(Collection<Alias> aliases) {
-        super.setDbAliases(new ComplexAliasList(aliases));
+    protected boolean needToProcessAnnotationToAdd() {
+        return true;
     }
 
     @Override
-    protected void initialiseAliases(){
-        super.initialiseAliasesWith(new ComplexAliasList(null));
-        // initialise persistent aliases and content
-        for (Alias alias : getDbAliases()){
-            processAddedAliasEvent(alias);
+    protected boolean needToProcessAliasToAdd() {
+        return true;
+    }
+
+    @Override
+    protected boolean needToProcessAnnotationToRemove() {
+        return true;
+    }
+
+    @Override
+    protected boolean needToProcessAliasToRemove() {
+        return true;
+    }
+
+    @Override
+    protected void processAddedAnnotation(Annotation added) {
+        if (physicalProperties == null && AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES)){
+            physicalProperties = added;
+        }
+    }
+
+    @Override
+    protected void processRemovedAnnotation(Annotation removed) {
+        if (physicalProperties != null && physicalProperties.equals(removed)){
+            physicalProperties = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), Annotation.COMPLEX_PROPERTIES_MI, Annotation.COMPLEX_PROPERTIES);
+        }
+    }
+
+    @Override
+    protected void processAddedAlias(Alias added) {
+        if (recommendedName == null && AliasUtils.doesAliasHaveType(added, Alias.COMPLEX_RECOMMENDED_NAME_MI, Alias.COMPLEX_RECOMMENDED_NAME)){
+            recommendedName = added;
+        }
+        else if (systematicName == null && AliasUtils.doesAliasHaveType(added, Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME)){
+            systematicName = added;
+        }
+    }
+
+    @Override
+    protected void processRemovedAlias(Alias removed) {
+        if (recommendedName != null && recommendedName.equals(removed)){
+            recommendedName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.COMPLEX_RECOMMENDED_NAME_MI, Alias.COMPLEX_RECOMMENDED_NAME);
+        }
+        else if (systematicName != null && systematicName.equals(removed)){
+            systematicName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME);
         }
     }
 
@@ -790,33 +787,6 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         this.interactionEvidences = interactionEvidences;
     }
 
-    private class ComplexAnnotationList extends PersistentAnnotationList {
-        public ComplexAnnotationList(Collection<Annotation> annot){
-            super(annot);
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToAdd(Annotation added) {
-            return true;
-        }
-
-        @Override
-        protected Annotation processOrWrapElementToAdd(Annotation added) {
-            processAddedAnnotationEvent(added);
-            return added;
-        }
-
-        @Override
-        protected void processElementToRemove(Object o) {
-            processRemovedAnnotationEvent((Annotation)o);
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToRemove(Object o) {
-            return o instanceof Annotation;
-        }
-    }
-
     private class ComplexChecksumList extends AbstractListHavingProperties<Checksum> {
         public ComplexChecksumList(){
             super();
@@ -835,33 +805,6 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         @Override
         protected void clearProperties() {
             clearPropertiesLinkedToChecksums();
-        }
-    }
-
-    private class ComplexAliasList extends PersistentAliasList {
-        public ComplexAliasList(Collection<Alias> aliases){
-            super(aliases);
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToAdd(Alias added) {
-            return true;
-        }
-
-        @Override
-        protected Alias processOrWrapElementToAdd(Alias added) {
-            processAddedAliasEvent(added);
-            return added;
-        }
-
-        @Override
-        protected void processElementToRemove(Object o) {
-            processRemovedAliasEvent((Alias)o);
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToRemove(Object o) {
-            return o instanceof Alias;
         }
     }
 }

@@ -234,36 +234,6 @@ public class IntactProtein extends IntactPolymer implements Protein{
     }
 
     @Override
-    protected void initialiseAliases() {
-        super.setDbAliases(new ProteinAliasList(null));
-    }
-
-    @Override
-    protected void setDbAliases(Collection<Alias> aliases) {
-        super.setDbAliases(new ProteinAliasList(aliases));
-        for (Alias alias : super.getAliases()){
-            processAddedAliasEvent(alias);
-        }
-    }
-
-    protected void processAddedAliasEvent(Alias added) {
-        // the added alias is gene name and it is not the current gene name
-        if (geneName == null && AliasUtils.doesAliasHaveType(added, Alias.GENE_NAME_MI, Alias.GENE_NAME)){
-            geneName = added;
-        }
-    }
-
-    protected void processRemovedAliasEvent(Alias removed) {
-        if (geneName != null && geneName.equals(removed)){
-            geneName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.GENE_NAME_MI, Alias.GENE_NAME);
-        }
-    }
-
-    protected void clearPropertiesLinkedToAliases() {
-        geneName = null;
-    }
-
-    @Override
     protected void processAddedChecksumEvent(Checksum added) {
         super.processAddedChecksumEvent(added);
         if (rogid == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.ROGID_MI, Checksum.ROGID)){
@@ -340,6 +310,41 @@ public class IntactProtein extends IntactPolymer implements Protein{
     protected void clearPropertiesLinkedToIdentifiers() {
         uniprotkb = null;
         refseq = null;
+    }
+
+    @Override
+    protected boolean needToProcessAnnotationToAdd() {
+        return true;
+    }
+
+    @Override
+    protected boolean needToProcessAliasToAdd() {
+        return true;
+    }
+
+    @Override
+    protected boolean needToProcessAnnotationToRemove() {
+        return true;
+    }
+
+    @Override
+    protected boolean needToProcessAliasToRemove() {
+        return true;
+    }
+
+    @Override
+    protected void processAddedAlias(Alias added) {
+        // the added alias is gene name and it is not the current gene name
+        if (geneName == null && AliasUtils.doesAliasHaveType(added, Alias.GENE_NAME_MI, Alias.GENE_NAME)){
+            geneName = added;
+        }
+    }
+
+    @Override
+    protected void processRemovedAlias(Alias removed) {
+        if (geneName != null && geneName.equals(removed)){
+            geneName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.GENE_NAME_MI, Alias.GENE_NAME);
+        }
     }
 
     @Override
