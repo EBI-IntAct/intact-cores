@@ -332,6 +332,7 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     }
 
     @Override
+    @Transient
     public String getCorrectionComment() {
         return this.correctionComment != null ? this.correctionComment.getValue() : null;
     }
@@ -351,6 +352,7 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     }
 
     @Override
+    @Transient
     public boolean hasCorrectionComment() {
         return this.correctionComment != null;
     }
@@ -645,11 +647,6 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
             experiments = new ArrayList<Experiment>();
         }
         return experiments;
-    }
-
-    @Transient
-    public boolean areInteractionEvidencesInitialized(){
-        return Hibernate.isInitialized(getInteractionEvidences());
     }
 
     @Transient

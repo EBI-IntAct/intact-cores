@@ -743,6 +743,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @Override
+    @Transient
     public String getCorrectionComment() {
         return this.correctionComment != null ? this.correctionComment.getValue() : null;
     }
@@ -762,6 +763,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     @Override
+    @Transient
     public boolean hasCorrectionComment() {
         return this.correctionComment != null;
     }
