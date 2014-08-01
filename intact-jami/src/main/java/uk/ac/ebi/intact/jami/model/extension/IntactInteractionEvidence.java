@@ -355,7 +355,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
     @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = InteractionEvidenceConfidence.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinColumn(name="interaction_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionEvidenceConfidence.class)
     public Collection<Confidence> getConfidences() {
@@ -395,7 +395,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
     @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = InteractionEvidenceParameter.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinColumn(name="interaction_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(InteractionEvidenceParameter.class)
     public Collection<Parameter> getParameters() {

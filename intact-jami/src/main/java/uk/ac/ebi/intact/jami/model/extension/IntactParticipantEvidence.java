@@ -262,7 +262,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
 
     @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ParticipantEvidenceConfidence.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinColumn(name="component_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ParticipantEvidenceConfidence.class)
     public Collection<Confidence> getConfidences() {
@@ -274,7 +274,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
 
     @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ParticipantEvidenceParameter.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinColumn(name="component_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ParticipantEvidenceParameter.class)
     public Collection<Parameter> getParameters() {

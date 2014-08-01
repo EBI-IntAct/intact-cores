@@ -412,7 +412,7 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
     @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ComplexConfidence.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinColumn(name="interaction_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ComplexConfidence.class)
     public Collection<ModelledConfidence> getModelledConfidences() {
@@ -424,7 +424,7 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
     @OneToMany( orphanRemoval = true,
             cascade = {CascadeType.ALL}, targetEntity = ComplexParameter.class)
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinColumn(name="interaction_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(ComplexParameter.class)
     public Collection<ModelledParameter> getModelledParameters() {
