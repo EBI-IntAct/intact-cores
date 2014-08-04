@@ -166,7 +166,7 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
         return Hibernate.isInitialized(getDbExperimentalRoles());
     }
 
-    @ManyToMany(targetEntity = IntactCvTerm.class)
+    @ManyToMany(targetEntity = IntactCvTerm.class, cascade = {CascadeType.DETACH, CascadeType.MERGE})
     @JoinTable(
             name = "ia_component2exprole",
             joinColumns = {@JoinColumn( name = "component_ac" )},
