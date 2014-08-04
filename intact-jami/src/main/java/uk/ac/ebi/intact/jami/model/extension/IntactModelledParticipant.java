@@ -5,7 +5,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Where;
 import psidev.psi.mi.jami.model.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -154,7 +153,8 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
     }
 
     @Override
-    @OneToMany( mappedBy = "participant", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = IntactModelledFeature.class)
+    @OneToMany( mappedBy = "participant", cascade = {CascadeType.ALL}, orphanRemoval = true,
+            targetEntity = IntactModelledFeature.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(IntactModelledFeature.class)
     public Collection<ModelledFeature> getFeatures() {
@@ -181,9 +181,6 @@ public class IntactModelledParticipant extends AbstractIntactParticipant<Modelle
     public Collection<CvTerm> getDbExperimentalRoles() {
         if (this.experimentalRoles == null){
             this.experimentalRoles =  new ArrayList<CvTerm>();
-        }
-        if (this.experimentalRoles.isEmpty()){
-            this.experimentalRoles.add(IntactUtils.createMIExperimentalRole(Participant.NEUTRAL, Participant.NEUTRAL_MI));
         }
 
         return experimentalRoles;

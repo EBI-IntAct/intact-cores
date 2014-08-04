@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -67,6 +68,9 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareExperimentalRoles(IntactModelledParticipant intactEntity) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areExperimentalRolesInitialized()){
             List<CvTerm> rolesToPersist = new ArrayList<CvTerm>(intactEntity.getDbExperimentalRoles());
+            if (intactEntity.getDbExperimentalRoles().isEmpty()){
+                intactEntity.getDbExperimentalRoles().add(IntactUtils.createMIExperimentalRole(Participant.NEUTRAL, Participant.NEUTRAL_MI));
+            }
             for (CvTerm role : rolesToPersist){
                 CvTerm persistentRole = getContext().getExperimentalRoleSynchronizer().synchronize(role, true);
                 // we have a different instance because needed to be synchronized
