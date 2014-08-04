@@ -504,6 +504,22 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     @Override
+    public int countXrefsForExperiment(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.xrefs) from IntactExperiment i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countAnnotationsForExperiment(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.annotations) from IntactExperiment i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer<Experiment, IntactExperiment> getDbSynchronizer() {
         return getSynchronizerContext().getExperimentSynchronizer();
     }
