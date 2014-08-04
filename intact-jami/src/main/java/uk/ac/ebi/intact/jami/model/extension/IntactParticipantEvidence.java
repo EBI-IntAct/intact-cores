@@ -327,9 +327,6 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         if (this.experimentalRoles == null){
             this.experimentalRoles = new ArrayList<CvTerm>();
         }
-        if (this.experimentalRoles.isEmpty()){
-            this.experimentalRoles.add(IntactUtils.createMIExperimentalRole(Participant.UNSPECIFIED_ROLE, Participant.UNSPECIFIED_ROLE_MI));
-        }
         return this.experimentalRoles;
     }
 
