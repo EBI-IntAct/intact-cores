@@ -70,4 +70,10 @@ public interface CvTermDao extends IntactBaseDao<IntactCvTerm>{
     public Collection<Annotation> getAnnotationsForCvTerm(String ac);
 
     public Collection<Alias> getSynonymsForCvTerm(String ac);
+
+    public int countSynonymsForCvTerm(String ac);
+
+    public int countXrefsForCvTerm(String ac);
+
+    public int countAnnotationsForCvTerm(String ac);
 }

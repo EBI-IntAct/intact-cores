@@ -56,4 +56,10 @@ public interface SourceDao extends IntactBaseDao<IntactSource>{
     public Collection<Annotation> getAnnotationsForSource(String ac);
 
     public Collection<Alias> getSynonymsForSource(String ac);
+
+    public int countSynonymsForSource(String ac);
+
+    public int countXrefsForSource(String ac);
+
+    public int countAnnotationsForSource(String ac);
 }

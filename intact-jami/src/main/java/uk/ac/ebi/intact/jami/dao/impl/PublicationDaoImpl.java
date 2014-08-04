@@ -687,6 +687,22 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
     }
 
     @Override
+    public int countXrefsForPublication(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbXrefs) from IntactPublication i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countAnnotationsForPublication(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbAnnotations) from IntactPublication i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer<Publication, IntactPublication> getDbSynchronizer() {
         return getSynchronizerContext().getPublicationSynchronizer();
     }

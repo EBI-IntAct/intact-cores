@@ -4,6 +4,7 @@ import psidev.psi.mi.jami.model.*;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.FeatureDao;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
+import uk.ac.ebi.intact.jami.model.extension.IntactModelledFeature;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 
 import javax.persistence.EntityManager;
@@ -1118,6 +1119,30 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
                 "where i.ac = :ac");
         query.setParameter("ac", ac);
         return query.getResultList();
+    }
+
+    @Override
+    public int countAliasesForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.aliases) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countXrefsForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbXrefs) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countAnnotationsForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.annotations) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
     }
 
     @Override

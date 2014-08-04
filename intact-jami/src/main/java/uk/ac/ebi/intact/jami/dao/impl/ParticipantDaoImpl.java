@@ -576,6 +576,30 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
     }
 
     @Override
+    public int countAliasesForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.aliases) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countXrefsForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.xrefs) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countAnnotationsForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.annotations) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getParticipantSynchronizer();
     }

@@ -575,6 +575,30 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     @Override
+    public int countAliasesForInteractor(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbAliases) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countXrefsForInteractor(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbXrefs) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countAnnotationsForInteractor(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbAnnotations) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getInteractorSynchronizer();
     }

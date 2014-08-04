@@ -263,6 +263,14 @@ public class OrganismDaoImpl extends AbstractIntactBaseDao<Organism, IntactOrgan
     }
 
     @Override
+    public int countAliasesForOrganism(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.aliases) from IntactOrganism i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getOrganismSynchronizer();
     }

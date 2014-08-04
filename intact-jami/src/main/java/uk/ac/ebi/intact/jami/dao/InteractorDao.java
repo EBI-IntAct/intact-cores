@@ -56,4 +56,10 @@ public interface InteractorDao<I extends IntactInteractor> extends IntactBaseDao
 
     public Collection<Alias> getAliasesForInteractor(String ac);
 
+    public int countAliasesForInteractor(String ac);
+
+    public int countXrefsForInteractor(String ac);
+
+    public int countAnnotationsForInteractor(String ac);
+
 }

@@ -57,4 +57,6 @@ public interface OrganismDao extends IntactBaseDao<IntactOrganism>{
     public Collection<Alias> getAliasesForOrganism(String ac);
 
     public Collection<IntactOrganism> getAllOrganisms(boolean allowOrganismWithCellType, boolean allowOrganismWithTissue);
+
+    public int countAliasesForOrganism(String ac);
 }

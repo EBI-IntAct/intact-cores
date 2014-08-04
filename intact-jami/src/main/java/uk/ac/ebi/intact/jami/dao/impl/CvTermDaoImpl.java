@@ -667,7 +667,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
 
     @Override
     public Collection<Xref> getXrefsForCvTerm(String ac) {
-        Query query = getEntityManager().createQuery("select x from IntactSource cv " +
+        Query query = getEntityManager().createQuery("select x from IntactCvTerm cv " +
                 "join cv.dbXrefs as x " +
                 "where cv.ac = :ac");
         query.setParameter("ac", ac);
@@ -676,7 +676,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
 
     @Override
     public Collection<Annotation> getAnnotationsForCvTerm(String ac) {
-        Query query = getEntityManager().createQuery("select a from IntactSource cv " +
+        Query query = getEntityManager().createQuery("select a from IntactCvTerm cv " +
                 "join cv.dbAnnotations as a " +
                 "where cv.ac = :ac");
         query.setParameter("ac", ac);
@@ -685,11 +685,35 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
 
     @Override
     public Collection<Alias> getSynonymsForCvTerm(String ac) {
-        Query query = getEntityManager().createQuery("select a from IntactSource cv " +
+        Query query = getEntityManager().createQuery("select a from IntactCvTerm cv " +
                 "join cv.aliases as a " +
                 "where cv.ac = :ac");
         query.setParameter("ac", ac);
         return query.getResultList();
+    }
+
+    @Override
+    public int countSynonymsForCvTerm(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.synonyms) from IntactCvTerm i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countXrefsForCvTerm(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbXrefs) from IntactCvTerm i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countAnnotationsForCvTerm(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbAnnotations) from IntactCvTerm i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
     }
 
     @Override

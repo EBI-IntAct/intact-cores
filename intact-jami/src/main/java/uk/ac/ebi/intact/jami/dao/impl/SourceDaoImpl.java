@@ -585,6 +585,30 @@ public class SourceDaoImpl extends AbstractIntactBaseDao<Source, IntactSource> i
     }
 
     @Override
+    public int countSynonymsForSource(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.synonyms) from IntactSource i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countXrefsForSource(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbXrefs) from IntactSource i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countAnnotationsForSource(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbAnnotations) from IntactSource i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer<Source, IntactSource> getDbSynchronizer() {
         return getSynchronizerContext().getSourceSynchronizer();
     }

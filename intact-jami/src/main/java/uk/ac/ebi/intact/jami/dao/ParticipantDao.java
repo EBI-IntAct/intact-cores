@@ -58,4 +58,10 @@ public interface ParticipantDao<F extends AbstractIntactParticipant> extends Int
     public Collection<Alias> getAliasesForParticipant(String ac);
 
     public int countFeaturesForParticipant(String ac);
+
+    public int countAliasesForParticipant(String ac);
+
+    public int countXrefsForParticipant(String ac);
+
+    public int countAnnotationsForParticipant(String ac);
 }

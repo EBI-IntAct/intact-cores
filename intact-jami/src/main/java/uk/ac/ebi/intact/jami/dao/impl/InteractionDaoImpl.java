@@ -719,4 +719,20 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();
     }
+
+    @Override
+    public int countXrefsForInteraction(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbXrefs) from IntactInteractionEvidence i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countAnnotationsForInteraction(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbAnnotations) from IntactInteractionEvidence i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
 }

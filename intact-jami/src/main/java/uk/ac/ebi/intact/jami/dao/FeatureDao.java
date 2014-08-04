@@ -82,4 +82,10 @@ public interface FeatureDao<F extends AbstractIntactFeature> extends IntactBaseD
     public Collection<Annotation> getAnnotationsForFeature(String ac);
 
     public Collection<Alias> getAliasesForFeature(String ac);
+
+    public int countAliasesForFeature(String ac);
+
+    public int countXrefsForFeature(String ac);
+
+    public int countAnnotationsForFeature(String ac);
 }

@@ -49,4 +49,8 @@ public interface ExperimentDao extends IntactBaseDao<IntactExperiment> {
     public Collection<Xref> getXrefsForExperiment(String ac);
 
     public int countInteractionsForExperiment(String ac);
+
+    public int countXrefsForExperiment(String ac);
+
+    public int countAnnotationsForExperiment(String ac);
 }
