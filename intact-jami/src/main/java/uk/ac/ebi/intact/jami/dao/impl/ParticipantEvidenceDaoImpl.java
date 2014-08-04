@@ -426,4 +426,20 @@ public class ParticipantEvidenceDaoImpl extends ParticipantDaoImpl<ParticipantEv
         query.setParameter("ac", ac);
         return query.getResultList();
     }
+
+    @Override
+    public int countConfidencesForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.confidences) from IntactParticipantEvidence i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countParametersForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.parameters) from IntactParticipantEvidence i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
 }

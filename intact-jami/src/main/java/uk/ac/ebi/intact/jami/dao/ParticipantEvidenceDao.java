@@ -45,4 +45,8 @@ public interface ParticipantEvidenceDao extends ParticipantDao<IntactParticipant
     public Collection<Confidence> getConfidencesForParticipant(String ac);
 
     public Collection<Parameter> getParametersForParticipant(String ac);
+
+    public int countConfidencesForParticipant(String ac);
+
+    public int countParametersForParticipant(String ac);
 }

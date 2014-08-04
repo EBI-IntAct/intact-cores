@@ -61,4 +61,8 @@ public interface InteractionDao extends IntactBaseDao<IntactInteractionEvidence>
     public Collection<Confidence> getConfidencesForInteraction(String ac);
 
     public Collection<Parameter> getParametersForInteraction(String ac);
+
+    public int countConfidencesForInteraction(String ac);
+
+    public int countParametersForInteraction(String ac);
 }

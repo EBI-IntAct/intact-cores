@@ -66,4 +66,8 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
     public Collection<ModelledConfidence> getConfidencesForComplex(String ac);
 
     public Collection<ModelledParameter> getParametersForComplex(String ac);
+
+    public int countConfidencesForComplex(String ac);
+
+    public int countParametersForComplex(String ac);
 }

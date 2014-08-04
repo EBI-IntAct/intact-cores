@@ -614,4 +614,20 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         query.setParameter("ac", ac);
         return query.getResultList();
     }
+
+    @Override
+    public int countConfidencesForComplex(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.modelledConfidences) from IntactComplex i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countParametersForComplex(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.modelledParameters) from IntactComplex i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
 }
