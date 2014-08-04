@@ -229,7 +229,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         return this.identificationMethods;
     }
 
-    @ManyToMany(targetEntity = IntactCvTerm.class, cascade = {CascadeType.DETACH, CascadeType.MERGE})
+    @ManyToMany(targetEntity = IntactCvTerm.class)
     @JoinTable(
             name = "ia_component2exp_preps",
             joinColumns = {@JoinColumn( name = "component_ac" )},
@@ -311,7 +311,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         return super.getDbParentInteraction();
     }
 
-    @ManyToMany(targetEntity = IntactCvTerm.class, cascade = {CascadeType.DETACH, CascadeType.MERGE})
+    @ManyToMany(targetEntity = IntactCvTerm.class)
     @JoinTable(
             name = "ia_component2exprole",
             joinColumns = {@JoinColumn( name = "component_ac" )},
@@ -322,6 +322,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
      * @deprecated this method is for backward compatibility only. Use experimentalRole instead
      */
     @Deprecated
+    @LazyCollection(LazyCollectionOption.FALSE)
     protected List<CvTerm> getDbExperimentalRoles() {
         if (this.experimentalRoles == null){
             this.experimentalRoles = new ArrayList<CvTerm>();
@@ -377,7 +378,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         this.persistentIdentificationMethods = persistentIdentificationMethods;
     }
 
-    @ManyToMany(targetEntity = IntactCvTerm.class, cascade = {CascadeType.DETACH, CascadeType.MERGE})
+    @ManyToMany(targetEntity = IntactCvTerm.class)
     @JoinTable(
             name = "ia_component2part_detect",
             joinColumns = {@JoinColumn( name = "component_ac" )},
