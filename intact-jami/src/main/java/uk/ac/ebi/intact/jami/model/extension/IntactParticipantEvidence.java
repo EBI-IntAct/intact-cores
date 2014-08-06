@@ -295,7 +295,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
 
     @Transient
     public boolean areIdentificationMethodsInitialized(){
-        return Hibernate.isInitialized(getIdentificationMethods());
+        return Hibernate.isInitialized(getDbIdentificationMethods());
     }
 
     @Transient

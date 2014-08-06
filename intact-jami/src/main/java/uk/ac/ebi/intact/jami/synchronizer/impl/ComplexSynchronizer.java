@@ -158,25 +158,6 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         CvTerm status = intactComplex.getStatus().toCvTerm();
         intactComplex.setCvStatus(getContext().getLifecycleStatusSynchronizer().synchronize(status, true));
 
-        // if the publication is released or ready for release, we move the experiment to another publication which should be released
-        if (LifeCycleStatus.RELEASED.equals(status) ||
-                LifeCycleStatus.READY_FOR_RELEASE.equals(status)){
-            Experiment exp = intactComplex.getExperiments().isEmpty() ? intactComplex.getExperiments().iterator().next() : null;
-            if (exp == null){
-                createExperiment(intactComplex, "14681455");
-                exp = intactComplex.getExperiments().iterator().next();
-                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
-            }
-            else if (exp.getPublication() == null){
-                exp.setPublication(new IntactPublication("14681455"));
-                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
-            }
-            else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("14681455")){
-                exp.setPublication(new IntactPublication("14681455"));
-                ((IntactPublication)exp.getPublication()).setStatus(intactComplex.getStatus());
-            }
-        }
-
         // then curator
         User curator = intactComplex.getCurrentOwner();
         // do not persist user if not there
@@ -243,25 +224,18 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     protected void prepareExperiments(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactComplex.areExperimentsInitialized()){
-            if (intactComplex.getExperiments().isEmpty()){
-                createExperiment(intactComplex, "unassigned638");
+
+            Collection<Experiment> experimentsToPersist = new ArrayList<Experiment>(intactComplex.getExperiments());
+            for (Experiment exp : experimentsToPersist){
+                // synchronize experiment
+                Experiment expPar = getContext().getExperimentSynchronizer().synchronize(exp, true);
+                // we have a different instance because needed to be synchronized
+                if (expPar != exp){
+                    intactComplex.getExperiments().remove(exp);
+                    intactComplex.getExperiments().add(expPar);
+                }
             }
         }
-    }
-
-    private void createExperiment(IntactComplex intactComplex, String pubmed) throws FinderException, PersisterException, SynchronizerException {
-        // create default experiment with publication unassigned for complexes
-        IntactExperiment defaultExperiment = new IntactExperiment(new IntactPublication(pubmed));
-        // inferred by curator
-        defaultExperiment.setInteractionDetectionMethod(IntactUtils.createMIInteractionDetectionMethod(Experiment.INFERRED_BY_CURATOR, Experiment.INFERRED_BY_CURATOR_MI));
-        // use host organism of interaction
-        defaultExperiment.setHostOrganism(intactComplex.getOrganism());
-        // use predetermined participant identification method
-        defaultExperiment.setParticipantIdentificationMethod(IntactUtils.createMIParticipantIdentificationMethod(Participant.PREDETERMINED, Participant.PREDETERMINED_MI));
-        // persist this experiment
-        getContext().getExperimentSynchronizer().persist(defaultExperiment);
-        // then add this complex
-        intactComplex.getExperiments().add(defaultExperiment);
     }
 
     protected void prepareParameters(IntactComplex intactInteraction) throws PersisterException, FinderException, SynchronizerException {

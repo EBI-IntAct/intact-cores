@@ -83,14 +83,21 @@ public class IntactModelledFeature extends AbstractIntactFeature<ModelledEntity,
     }
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledFeatureAnnotation.class)
+    @JoinTable(
+            name="ia_feature2annot",
+            joinColumns = @JoinColumn( name="feature_ac"),
+            inverseJoinColumns = @JoinColumn( name="annotation_ac")
+    )
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
     @Target(ModelledFeatureAnnotation.class)
-    @Override
     /**
     * WARNING: The join table is for backward compatibility with intact-core.
     * When intact-core will be removed, the join table would disappear wnd the relation would become
-    * @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    * @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = ModelledFeatureAnnotation.class)
+     * @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+     * @JoinColumn(name = "parent_ac", referencedColumnName = "ac")
+     * @Target(ModelledFeatureAnnotation.class)
+     * @Override
      * **/
     public Collection<Annotation> getAnnotations() {
         return super.getAnnotations();

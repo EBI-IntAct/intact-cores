@@ -500,4 +500,17 @@ public class IntactUtils {
         identity.getIdentifiers().add(psiMiXref);
         return identity;
     }
+
+    public static void createAndAddDefaultExperimentForComplexes(IntactComplex intactComplex, String pubmed) {
+        // create default experiment with publication unassigned for complexes
+        IntactExperiment defaultExperiment = new IntactExperiment(new IntactPublication(pubmed));
+        // inferred by curator
+        defaultExperiment.setInteractionDetectionMethod(IntactUtils.createMIInteractionDetectionMethod(Experiment.INFERRED_BY_CURATOR, Experiment.INFERRED_BY_CURATOR_MI));
+        // use host organism of interaction
+        defaultExperiment.setHostOrganism(intactComplex.getOrganism());
+        // use predetermined participant identification method
+        defaultExperiment.setParticipantIdentificationMethod(IntactUtils.createMIParticipantIdentificationMethod(Participant.PREDETERMINED, Participant.PREDETERMINED_MI));
+        // then add this complex
+        intactComplex.getExperiments().add(defaultExperiment);
+    }
 }
