@@ -169,7 +169,7 @@ public class ParticipantSynchronizerTemplateTest extends AbstractDbSynchronizerT
     protected AbstractIntactParticipant createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         IntactModelledParticipant part =  IntactTestUtils.createBasicIntactModelledParticipant();
         try {
-            context.getExperimentalRoleSynchronizer().synchronize(part.getDbExperimentalRoles().iterator().next(), true);
+            context.getExperimentalRoleSynchronizer().synchronize(IntactUtils.createMIExperimentalRole(Participant.NEUTRAL, Participant.NEUTRAL_MI), true);
         } catch (FinderException e) {
             e.printStackTrace();
         } catch (PersisterException e) {
