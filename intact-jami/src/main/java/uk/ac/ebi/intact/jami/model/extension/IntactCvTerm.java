@@ -1,9 +1,7 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Index;
-import org.hibernate.annotations.Target;
+import org.hibernate.annotations.*;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.OntologyTerm;
@@ -11,6 +9,9 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -292,6 +293,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Target(CvTermXref.class)
+    @LazyCollection(LazyCollectionOption.FALSE)
     @Override
     /**
      * This method give direct access to the persistent collection of xrefs (identifiers and xrefs all together) for this object.
