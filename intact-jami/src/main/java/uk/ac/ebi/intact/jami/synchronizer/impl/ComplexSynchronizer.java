@@ -133,7 +133,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     protected void prepareEvidenceType(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
 
        if (intactComplex.getEvidenceType() != null){
-           intactComplex.setEvidenceType(getContext().getTopicSynchronizer().synchronize(intactComplex.getEvidenceType(), true));
+           intactComplex.setEvidenceType(getContext().getDatabaseSynchronizer().synchronize(intactComplex.getEvidenceType(), true));
        }
     }
 
