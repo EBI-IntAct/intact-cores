@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.model.audit;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -11,7 +10,7 @@ import java.util.Date;
  * @since <pre>18/12/13</pre>
  */
 
-public interface Auditable extends Serializable {
+public interface Auditable {
 
     /**
      *

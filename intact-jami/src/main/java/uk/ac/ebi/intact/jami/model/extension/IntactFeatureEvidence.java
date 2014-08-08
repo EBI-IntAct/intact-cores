@@ -12,6 +12,9 @@ import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -35,7 +38,7 @@ import java.util.Collection;
 @Where(clause = "category = 'evidence'")
 public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEntity,FeatureEvidence> implements FeatureEvidence{
 
-    private DetectionMethodList detectionMethods;
+    private transient DetectionMethodList detectionMethods;
     /**
      * Only for backward compatibility with intact-core
      * @deprecated this is only for backward compatibility with intact core. Look at detectionMethods instead.
@@ -44,7 +47,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
      */
     @Deprecated
     private CvTerm identificationMethod;
-    private PersistentDetectionMethodList persistentDetectionMethods;
+    private transient PersistentDetectionMethodList persistentDetectionMethods;
     private Collection<Parameter> parameters;
 
     public IntactFeatureEvidence(ParticipantEvidence participant) {
@@ -250,6 +253,33 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
     @NotNull
     protected String getCategory() {
         return "evidence";
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the methods
+        oos.writeObject(getDbDetectionMethods());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default methods
+        setDbDetectionMethods((Collection<CvTerm>)ois.readObject());
     }
 
     private void initialiseDetectionMethods(){

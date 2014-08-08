@@ -29,10 +29,10 @@ import java.util.Collection;
 @Where(clause = "category = 'protein'")
 public class IntactProtein extends IntactPolymer implements Protein{
 
-    private Xref uniprotkb;
-    private Xref refseq;
-    private Alias geneName;
-    private Checksum rogid;
+    private transient Xref uniprotkb;
+    private transient Xref refseq;
+    private transient Alias geneName;
+    private transient Checksum rogid;
 
     protected IntactProtein(){
         super();

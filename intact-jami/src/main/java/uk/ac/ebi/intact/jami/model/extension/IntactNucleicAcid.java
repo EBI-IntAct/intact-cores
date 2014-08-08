@@ -25,8 +25,8 @@ import java.util.Collection;
 @DiscriminatorValue( "nucleic_acid" )
 @Where(clause = "category = 'nucleic_acid'")
 public class IntactNucleicAcid extends IntactPolymer implements NucleicAcid{
-    private Xref ddbjEmblGenbank;
-    private Xref refseq;
+    private transient Xref ddbjEmblGenbank;
+    private transient Xref refseq;
 
     protected IntactNucleicAcid() {
         super();

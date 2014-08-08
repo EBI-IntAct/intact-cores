@@ -25,6 +25,9 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 /**
@@ -62,25 +65,25 @@ import java.util.*;
 @EntityListeners(value = {InteractionParameterListener.class})
 @Where(clause = "category = 'interaction_evidence'")
 public class IntactInteractionEvidence extends AbstractIntactPrimaryObject implements InteractionEvidence{
-    private Xref imexId;
+    private transient Xref imexId;
     private String availability;
     private Collection<Parameter> parameters;
     private boolean isInferred = false;
     private Collection<Confidence> confidences;
-    private Annotation isNegative;
+    private transient Annotation isNegative;
 
     private Collection<VariableParameterValueSet> variableParameterValueSets;
     private String shortName;
-    private Checksum rigid;
-    private InteractionChecksumList checksums;
-    private InteractionIdentifierList identifiers;
-    private InteractionXrefList xrefs;
-    private InteractionAnnotationList annotations;
+    private transient Checksum rigid;
+    private transient InteractionChecksumList checksums;
+    private transient InteractionIdentifierList identifiers;
+    private transient InteractionXrefList xrefs;
+    private transient InteractionAnnotationList annotations;
     private CvTerm interactionType;
     private Collection<ParticipantEvidence> participants;
 
-    private PersistentXrefList persistentXrefs;
-    private PersistentAnnotationList persistentAnnotations;
+    private transient PersistentXrefList persistentXrefs;
+    private transient PersistentAnnotationList persistentAnnotations;
 
     /**
      * @deprecated
@@ -88,7 +91,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     @Deprecated
     private List<Experiment> experiments;
 
-    private Xref acRef;
+    private transient Xref acRef;
 
     public IntactInteractionEvidence(){
     }
@@ -662,6 +665,41 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
 
     private void setParticipants(Collection<ParticipantEvidence> participants) {
         this.participants = participants;
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the xrefs
+        oos.writeObject(getDbXrefs());
+        // write the annotations
+        oos.writeObject(getDbAnnotations());
+        // write the checksums
+        oos.writeObject(getChecksums());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default xrefs
+        setDbXrefs((Collection<Xref>)ois.readObject());
+        // read default annotations
+        setDbAnnotations((Collection<Annotation>)ois.readObject());
+        // read default the checksums
+        getChecksums().addAll((Collection<Checksum>)ois.readObject());
     }
 
     /**

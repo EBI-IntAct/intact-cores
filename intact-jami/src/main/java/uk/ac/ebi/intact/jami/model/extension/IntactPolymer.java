@@ -32,7 +32,7 @@ import java.util.List;
 @Where(clause = "category = 'protein' or category = 'polymer' or category = 'nucleic_acid'")
 public class IntactPolymer extends IntactMolecule implements Polymer{
 
-    private String sequence;
+    private transient String sequence;
 
     /**
      * The protein sequence. If the protein is present in a public database,
@@ -40,7 +40,7 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
      */
     private List<SequenceChunk> sequenceChunks;
 
-    private Checksum crc64;
+    private transient Checksum crc64;
 
     protected IntactPolymer(){
         super();

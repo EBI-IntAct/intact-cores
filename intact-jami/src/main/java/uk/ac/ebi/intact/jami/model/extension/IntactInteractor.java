@@ -19,6 +19,9 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -51,22 +54,22 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
     private String shortName;
     private String fullName;
-    private InteractorIdentifierList identifiers;
-    private Collection<Checksum> checksums;
-    private InteractorXrefList xrefs;
-    private Collection<Annotation> annotations;
-    private Collection<Alias> aliases;
+    private transient InteractorIdentifierList identifiers;
+    private transient Collection<Checksum> checksums;
+    private transient InteractorXrefList xrefs;
+    private transient Collection<Annotation> annotations;
+    private transient Collection<Alias> aliases;
     private Organism organism;
     private CvTerm interactorType;
 
-    private PersistentAnnotationList persistentAnnotations;
-    private PersistentAliasList persistentAliases;
-    private PersistentXrefList persistentXrefs;
+    private transient PersistentAnnotationList persistentAnnotations;
+    private transient PersistentAliasList persistentAliases;
+    private transient PersistentXrefList persistentXrefs;
     private Collection<ParticipantEvidence> relatedParticipantEvidences;
 
     private Collection<ModelledParticipant> relatedModelledParticipants;
 
-    private Xref acRef;
+    private transient Xref acRef;
 
     protected IntactInteractor(){
         super();
@@ -532,6 +535,45 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
     protected void processRemovedAlias(Alias removed) {
         // nothing to do
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the xrefs
+        oos.writeObject(getDbXrefs());
+        // write the annotations
+        oos.writeObject(getDbAnnotations());
+        // write the aliases
+        oos.writeObject(getDbAliases());
+        // write the checksums
+        oos.writeObject(getChecksums());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default xrefs
+        setDbXrefs((Collection<Xref>)ois.readObject());
+        // read default annotations
+        setDbAnnotations((Collection<Annotation>)ois.readObject());
+        // read default aliases
+        setDbAliases((Collection<Alias>) ois.readObject());
+        // write checksums
+        getChecksums().addAll((Collection<Checksum>) ois.readObject());
     }
 
     protected class InteractorIdentifierList extends AbstractListHavingProperties<Xref> {

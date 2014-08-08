@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.jami.model.listener.AuditableEventListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -32,7 +33,7 @@ import java.util.Date;
 @DynamicInsert(value = true)
 @DynamicUpdate(value = true)
 @EntityListeners(value = {AuditableEventListener.class})
-public abstract class AbstractAuditable implements Auditable {
+public abstract class AbstractAuditable implements Auditable, Serializable {
 
     ///////////////////////////////////////
     //attributes

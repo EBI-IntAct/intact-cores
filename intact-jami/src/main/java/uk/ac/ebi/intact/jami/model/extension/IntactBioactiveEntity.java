@@ -29,10 +29,10 @@ import java.util.Iterator;
 @Where(clause = "category = 'bioactive_entity'")
 public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEntity{
 
-    private Xref chebi;
-    private Checksum smile;
-    private Checksum standardInchi;
-    private Checksum standardInchiKey;
+    private transient Xref chebi;
+    private transient Checksum smile;
+    private transient Checksum standardInchi;
+    private transient Checksum standardInchiKey;
 
     protected IntactBioactiveEntity(){
         super();

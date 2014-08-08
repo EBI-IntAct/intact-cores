@@ -27,10 +27,10 @@ import java.util.Collection;
 @Where(clause = "category = 'gene'")
 public class IntactGene extends IntactMolecule implements Gene{
 
-    private Xref ensembl;
-    private Xref ensemblGenome;
-    private Xref entrezGeneId;
-    private Xref refseq;
+    private transient Xref ensembl;
+    private transient Xref ensemblGenome;
+    private transient Xref entrezGeneId;
+    private transient Xref refseq;
 
     protected IntactGene() {
         super();

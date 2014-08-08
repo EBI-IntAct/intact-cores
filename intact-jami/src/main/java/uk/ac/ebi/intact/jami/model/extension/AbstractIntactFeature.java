@@ -19,6 +19,9 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -52,9 +55,9 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
 
     private String shortName;
     private String fullName;
-    private Xref interpro;
-    private FeatureIdentifierList identifiers;
-    private FeatureXrefList xrefs;
+    private transient Xref interpro;
+    private transient FeatureIdentifierList identifiers;
+    private transient FeatureXrefList xrefs;
     private Collection<Annotation> annotations;
     private Collection<Alias> aliases;
     private CvTerm type;
@@ -64,9 +67,9 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
 
     private P participant;
 
-    private LinkedFeatureList linkedFeatures;
-    private PersistentXrefList persistentXrefs;
-    private PersistentLinkedFeatureList persistentLinkedFeatures;
+    private transient LinkedFeatureList linkedFeatures;
+    private transient PersistentXrefList persistentXrefs;
+    private transient PersistentLinkedFeatureList persistentLinkedFeatures;
 
     private Collection<F> relatedLinkedFeatures;
     private Collection<F> relatedBindings;
@@ -90,7 +93,7 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
      */
     private F binds;
 
-    private Xref acRef;
+    private transient Xref acRef;
 
     public AbstractIntactFeature(){
     }
@@ -527,6 +530,37 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         this.relatedBindings = relatedBindings;
     }
 
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the xrefs
+        oos.writeObject(getDbXrefs());
+        // write the linked features
+        oos.writeObject(getDbLinkedFeatures());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default xrefs
+        setDbXrefs((Collection<Xref>)ois.readObject());
+        // read default linked features
+        setDbLinkedFeatures((Collection<F>)ois.readObject());
+    }
 
     protected class FeatureIdentifierList extends AbstractListHavingProperties<Xref> {
         public FeatureIdentifierList(){

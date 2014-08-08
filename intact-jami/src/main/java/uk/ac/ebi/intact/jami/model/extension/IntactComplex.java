@@ -47,17 +47,17 @@ import java.util.List;
 public class IntactComplex extends IntactInteractor implements Complex,Releasable{
     private Collection<InteractionEvidence> interactionEvidences;
     private Collection<ModelledParticipant> components;
-    private Annotation physicalProperties;
+    private transient Annotation physicalProperties;
     private Collection<ModelledConfidence> confidences;
     private Collection<ModelledParameter> parameters;
 
     private Source source;
     private Collection<CooperativeEffect> cooperativeEffects;
-    private Checksum rigid;
+    private transient Checksum rigid;
     private CvTerm interactionType;
 
-    private Alias recommendedName;
-    private Alias systematicName;
+    private transient Alias recommendedName;
+    private transient Alias systematicName;
     private Collection<Experiment> experiments;
     private List<LifeCycleEvent> lifecycleEvents;
     private LifeCycleStatus status;
@@ -67,10 +67,10 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
     private CvTerm cvStatus;
 
-    private Annotation toBeReviewed;
-    private Annotation onHold;
-    private Annotation accepted;
-    private Annotation correctionComment;
+    private transient Annotation toBeReviewed;
+    private transient Annotation onHold;
+    private transient Annotation accepted;
+    private transient Annotation correctionComment;
 
     protected IntactComplex(){
         super();
@@ -844,6 +844,13 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         else if (systematicName != null && systematicName.equals(removed)){
             systematicName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.COMPLEX_SYSTEMATIC_NAME_MI, Alias.COMPLEX_SYSTEMATIC_NAME);
         }
+    }
+
+    @Override
+    protected void initialiseChecksumsWith(Collection<Checksum> checksum) {
+        ComplexChecksumList checksumList = new ComplexChecksumList();
+        checksumList.addAllOnly(checksum);
+        super.initialiseChecksumsWith(checksumList);
     }
 
     private void processAddedChecksumEvent(Checksum added) {

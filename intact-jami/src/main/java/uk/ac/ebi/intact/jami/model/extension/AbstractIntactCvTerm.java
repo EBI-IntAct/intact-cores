@@ -20,6 +20,9 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -40,18 +43,18 @@ import java.util.Collection;
 public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject implements CvTerm {
     private String shortName;
     private String fullName;
-    private CvTermXrefList xrefs;
-    private CvTermIdentifierList identifiers;
-    private Xref miIdentifier;
-    private Xref modIdentifier;
-    private Xref parIdentifier;
+    private transient CvTermXrefList xrefs;
+    private transient  CvTermIdentifierList identifiers;
+    private transient Xref miIdentifier;
+    private transient Xref modIdentifier;
+    private transient Xref parIdentifier;
 
-    private PersistentXrefList persistentXrefs;
-    private CvTermAnnotationList annotations;
-    private PersistentAnnotationList persistentAnnotations;
+    private transient PersistentXrefList persistentXrefs;
+    private transient CvTermAnnotationList annotations;
+    private transient PersistentAnnotationList persistentAnnotations;
     private Collection<Alias> synonyms;
 
-    private Xref acRef;
+    private transient Xref acRef;
 
     protected AbstractIntactCvTerm() {
         //super call sets creation time data
@@ -474,6 +477,37 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         this.miIdentifier = null;
         this.modIdentifier = null;
         this.parIdentifier = null;
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the xrefs
+        oos.writeObject(getDbXrefs());
+        // write the annotations
+        oos.writeObject(getDbAnnotations());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default xrefs
+        setDbXrefs((Collection<Xref>)ois.readObject());
+        // read default annotations
+        setDbAnnotations((Collection<Annotation>)ois.readObject());
     }
 
     protected class CvTermIdentifierList extends AbstractListHavingProperties<Xref> {

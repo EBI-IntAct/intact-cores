@@ -25,6 +25,9 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.util.*;
 
@@ -54,26 +57,26 @@ import java.util.*;
 @Table(name = "ia_publication")
 @Cacheable
 public class IntactPublication extends AbstractIntactPrimaryObject implements Publication, Releasable{
-    private String title;
-    private String journal;
-    private Date publicationDate;
-    private List<String> authors;
-    private PublicationIdentifierList identifiers;
-    private PublicationXrefList xrefs;
+    private transient String title;
+    private transient String journal;
+    private transient Date publicationDate;
+    private transient List<String> authors;
+    private transient PublicationIdentifierList identifiers;
+    private transient PublicationXrefList xrefs;
     private Collection<Experiment> experiments;
-    private CurationDepth curationDepth;
-    private Date releasedDate;
+    private transient CurationDepth curationDepth;
+    private transient Date releasedDate;
     private Source source;
-    private PublicationAnnotationList annotations;
+    private transient PublicationAnnotationList annotations;
 
-    private Xref pubmedId;
-    private Xref doi;
-    private Xref imexId;
+    private transient Xref pubmedId;
+    private transient Xref doi;
+    private transient Xref imexId;
 
-    private PersistentXrefList persistentXrefs;
-    private PersistentAnnotationList persistentAnnotations;
+    private transient PersistentXrefList persistentXrefs;
+    private transient PersistentAnnotationList persistentAnnotations;
 
-    private Xref acRef;
+    private transient Xref acRef;
 
     private String shortLabel;
     private List<LifeCycleEvent> lifecycleEvents;
@@ -83,10 +86,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     private CvTerm cvStatus;
 
-    private Annotation toBeReviewed;
-    private Annotation onHold;
-    private Annotation accepted;
-    private Annotation correctionComment;
+    private transient Annotation toBeReviewed;
+    private transient Annotation onHold;
+    private transient Annotation accepted;
+    private transient Annotation correctionComment;
 
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
@@ -1120,6 +1123,37 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     protected void setExperiments(Collection<Experiment> experiments) {
         this.experiments = experiments;
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the xrefs
+        oos.writeObject(getDbXrefs());
+        // write the annotations
+        oos.writeObject(getDbAnnotations());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default xrefs
+        setDbXrefs((Collection<Xref>)ois.readObject());
+        // read default annotations
+        setDbAnnotations((Collection<Annotation>)ois.readObject());
     }
 
     protected void setDbAnnotations(Collection<Annotation> annotations) {

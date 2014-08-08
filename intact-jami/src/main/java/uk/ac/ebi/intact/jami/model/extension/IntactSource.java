@@ -39,9 +39,9 @@ import java.util.Collection;
 @Table(name = "ia_institution")
 @Cacheable
 public class IntactSource extends AbstractIntactCvTerm implements Source {
-    private Annotation url;
-    private Annotation postalAddress;
-    private Publication bibRef;
+    private transient Annotation url;
+    private transient Annotation postalAddress;
+    private transient Publication bibRef;
 
     protected IntactSource(){
         super();

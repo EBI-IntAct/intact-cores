@@ -12,6 +12,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,8 +43,8 @@ import java.util.List;
 @Where(clause = "category = 'participant_evidence'")
 public class IntactParticipantEvidence extends AbstractIntactParticipant<InteractionEvidence, FeatureEvidence> implements ParticipantEvidence{
 
-    private Collection<CvTerm> persistentIdentificationMethods;
-    private Collection<CvTerm> identificationMethods;
+    private transient Collection<CvTerm> persistentIdentificationMethods;
+    private transient Collection<CvTerm> identificationMethods;
     private Collection<CvTerm> experimentalPreparations;
     private Organism expressedIn;
     private Collection<Confidence> confidences;
@@ -405,6 +408,33 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
 
     protected void setRelatedRanges(Collection<Range> relatedRanges) {
         this.relatedRanges = relatedRanges;
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the identification methods
+        oos.writeObject(getDbIdentificationMethods());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default identification methods
+        setDbIdentificationMethods((Collection<CvTerm>)ois.readObject());
     }
 
     protected class IdentificationMethodList extends AbstractListHavingProperties<CvTerm> {
