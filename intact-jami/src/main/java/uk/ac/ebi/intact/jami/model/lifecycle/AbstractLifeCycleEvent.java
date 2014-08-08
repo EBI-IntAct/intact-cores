@@ -10,6 +10,9 @@ import uk.ac.ebi.intact.jami.model.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 
 /**
@@ -22,7 +25,7 @@ import java.util.Date;
 @Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
 public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject implements LifeCycleEvent {
 
-    private LifeCycleEventType event;
+    private transient LifeCycleEventType event;
 
     private User who;
 
@@ -30,7 +33,7 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
 
     private String note;
 
-    private CvTerm cvEvent;
+    private transient CvTerm cvEvent;
 
     protected AbstractLifeCycleEvent() {
     }
@@ -124,6 +127,35 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
      */
     public void setCvEvent( CvTerm event ) {
         this.cvEvent = event;
-        this.event = LifeCycleEventType.toLifeCycleEventType(event);
+        if (event != null){
+            this.event = LifeCycleEventType.toLifeCycleEventType(event);
+        }
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the event
+        oos.writeObject(getCvEvent());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default xrefs
+        setCvEvent((CvTerm)ois.readObject());
     }
 }

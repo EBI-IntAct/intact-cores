@@ -80,11 +80,11 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     private String shortLabel;
     private List<LifeCycleEvent> lifecycleEvents;
-    private LifeCycleStatus status;
+    private transient LifeCycleStatus status;
     private User currentOwner;
     private User currentReviewer;
 
-    private CvTerm cvStatus;
+    private transient CvTerm cvStatus;
 
     private transient Annotation toBeReviewed;
     private transient Annotation onHold;
@@ -1138,6 +1138,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         oos.writeObject(getDbXrefs());
         // write the annotations
         oos.writeObject(getDbAnnotations());
+        // write the status
+        oos.writeObject(getCvStatus());
     }
 
     /**
@@ -1154,6 +1156,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         setDbXrefs((Collection<Xref>)ois.readObject());
         // read default annotations
         setDbAnnotations((Collection<Annotation>)ois.readObject());
+        // read default status
+        setCvStatus((CvTerm)ois.readObject());
     }
 
     protected void setDbAnnotations(Collection<Annotation> annotations) {

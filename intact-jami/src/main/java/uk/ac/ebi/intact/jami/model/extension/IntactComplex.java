@@ -19,6 +19,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -60,12 +63,12 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     private transient Alias systematicName;
     private Collection<Experiment> experiments;
     private List<LifeCycleEvent> lifecycleEvents;
-    private LifeCycleStatus status;
+    private transient LifeCycleStatus status;
     private CvTerm evidenceType;
     private User currentOwner;
     private User currentReviewer;
 
-    private CvTerm cvStatus;
+    private transient CvTerm cvStatus;
 
     private transient Annotation toBeReviewed;
     private transient Annotation onHold;
@@ -916,6 +919,33 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
     private void setInteractionEvidences(Collection<InteractionEvidence> interactionEvidences) {
         this.interactionEvidences = interactionEvidences;
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the status
+        oos.writeObject(getCvStatus());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default status
+        setCvStatus((CvTerm)ois.readObject());
     }
 
     private class ComplexChecksumList extends AbstractListHavingProperties<Checksum> {
