@@ -59,7 +59,10 @@ public enum LifeCycleStatus {
     }
 
     public static LifeCycleStatus toLifeCycleStatus(CvTerm status){
-        if (status.getShortName().equals(LifeCycleStatus.ACCEPTED.shortLabel())){
+        if (status.getShortName() == null){
+            return LifeCycleStatus.PUB_STATUS;
+        }
+        else if (status.getShortName().equals(LifeCycleStatus.ACCEPTED.shortLabel())){
             return LifeCycleStatus.ACCEPTED;
         }
         else if (status.getShortName().equals(LifeCycleStatus.ASSIGNED.shortLabel())){

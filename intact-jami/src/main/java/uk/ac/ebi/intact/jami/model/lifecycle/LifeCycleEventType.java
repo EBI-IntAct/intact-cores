@@ -63,7 +63,10 @@ public enum LifeCycleEventType {
     }
 
     public static LifeCycleEventType toLifeCycleEventType(CvTerm event){
-        if (event.getShortName().equals(LifeCycleEventType.ACCEPTED.shortLabel())){
+        if (event.getShortName() == null){
+            return LifeCycleEventType.LIFECYCLE_EVENT;
+        }
+        else if (event.getShortName().equals(LifeCycleEventType.ACCEPTED.shortLabel())){
             return LifeCycleEventType.ACCEPTED;
         }
         else if (event.getShortName().equals(LifeCycleEventType.ASSIGNED.shortLabel())){
