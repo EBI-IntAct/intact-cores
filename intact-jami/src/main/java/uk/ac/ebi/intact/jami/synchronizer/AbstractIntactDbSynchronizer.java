@@ -174,6 +174,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
         }
         else{
+            // cache object to persist if allowed
+            storeInCache((I)intactObject, intactObject, null);
             // synchronize properties first
             synchronizeProperties(intactObject);
             // merge
