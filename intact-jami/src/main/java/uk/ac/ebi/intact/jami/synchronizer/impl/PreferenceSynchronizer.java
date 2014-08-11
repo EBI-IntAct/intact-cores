@@ -67,7 +67,7 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Preference object) {
+    protected boolean containsDetachedOrTransientObject(Preference object) {
         return false;
     }
 
@@ -82,7 +82,7 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
-    protected void storePersistableObjectInCache(Preference originalObject, Preference persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Preference originalObject, Preference persistableObject) {
         // nothing to do
     }
 

@@ -71,7 +71,7 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Alias object) {
+    protected boolean containsDetachedOrTransientObject(Alias object) {
         return false;
     }
 
@@ -89,7 +89,7 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     @Override
-    protected void storePersistableObjectInCache(Alias originalObject, A persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Alias originalObject, A persistableObject) {
         // nothing to cache here
     }
 

@@ -205,7 +205,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+    protected boolean containsDetachedOrTransientObject(T object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -229,7 +229,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected void storePersistableObjectInCache(T originalObject, I persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(T originalObject, I persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
     }
 

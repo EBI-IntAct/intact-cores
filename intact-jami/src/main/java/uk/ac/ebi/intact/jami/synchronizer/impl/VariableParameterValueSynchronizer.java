@@ -66,7 +66,7 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(VariableParameterValue object) {
+    protected boolean containsDetachedOrTransientObject(VariableParameterValue object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -81,7 +81,7 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
     }
 
     @Override
-    protected void storePersistableObjectInCache(VariableParameterValue originalObject, IntactVariableParameterValue persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(VariableParameterValue originalObject, IntactVariableParameterValue persistableObject) {
          this.convertedObjects.put(originalObject, persistableObject);
     }
 

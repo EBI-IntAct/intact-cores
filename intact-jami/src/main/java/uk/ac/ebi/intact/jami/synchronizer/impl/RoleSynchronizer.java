@@ -100,7 +100,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Role object) {
+    protected boolean containsDetachedOrTransientObject(Role object) {
         return false;
     }
 
@@ -115,7 +115,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     @Override
-    protected void storePersistableObjectInCache(Role originalObject, Role persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Role originalObject, Role persistableObject) {
         // nothing to do
     }
 

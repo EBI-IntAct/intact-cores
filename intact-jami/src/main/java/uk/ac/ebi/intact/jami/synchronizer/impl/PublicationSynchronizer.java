@@ -327,7 +327,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Publication object) {
+    protected boolean containsDetachedOrTransientObject(Publication object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -353,7 +353,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected void storePersistableObjectInCache(Publication originalObject, IntactPublication persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Publication originalObject, IntactPublication persistableObject) {
          this.convertedObjects.put(originalObject, persistableObject);
     }
 

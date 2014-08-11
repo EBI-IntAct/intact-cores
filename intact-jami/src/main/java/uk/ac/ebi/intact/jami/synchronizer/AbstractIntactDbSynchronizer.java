@@ -155,6 +155,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier) throws FinderException, PersisterException, SynchronizerException {
+        // is the object in local cache for conversion
+        if (containsDetachedOrTransientObject((I) intactObject)){
+            return fetchMatchingPersistableObject((I)intactObject);
+        }
+        // cache object to persist if allowed (avoid internal loop afterwise)
+        // different cache than for synchronization
+        storeDetachedOrTransientObjectInCache((I) intactObject, intactObject);
+
         // do not merge existing instance if the merger is a merger ignoring source
         if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){
             T reloaded = getEntityManager().find(getIntactClass(), identifier);
@@ -170,8 +178,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
         }
         else{
-            // cache object to persist if allowed (avoid internal loop afterwise)
-            storeInCache((I)intactObject, intactObject, null);
             // synchronize properties first
             synchronizeProperties(intactObject);
             // merge
@@ -187,7 +193,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     public T convertToPersistentObject(I object) throws SynchronizerException, PersisterException, FinderException {
 
         // check cache when possible
-        if (isObjectAlreadyConvertedToPersistableInstance(object)){
+        if (containsDetachedOrTransientObject(object)){
             return fetchMatchingPersistableObject(object);
         }
 
@@ -206,7 +212,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
 
             // cache
-            storePersistableObjectInCache(object, newObject);
+            storeDetachedOrTransientObjectInCache(object, newObject);
 
             // convert properties if not done
             convertPersistableProperties(newObject);
@@ -217,7 +223,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         else{
             T intactObject = (T)object;
             // cache object
-            storePersistableObjectInCache(object, intactObject);
+            storeDetachedOrTransientObjectInCache(object, intactObject);
 
             // convert properties
             convertPersistableProperties(intactObject);
@@ -302,7 +308,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * The cache used to convert an object to a persistable instance should be different from the cache used to synchronize the object
      * with existing DB instances
      */
-    protected abstract boolean isObjectAlreadyConvertedToPersistableInstance(I object);
+    protected abstract boolean containsDetachedOrTransientObject(I object);
 
     /**
      *
@@ -326,5 +332,5 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @param persistableObject : the object instance which is a clone of the original object that can be persisted in the database but is not synchronized with
      * ths database
      */
-    protected abstract void storePersistableObjectInCache(I originalObject, T persistableObject);
+    protected abstract void storeDetachedOrTransientObjectInCache(I originalObject, T persistableObject);
 }

@@ -146,7 +146,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(User object) {
+    protected boolean containsDetachedOrTransientObject(User object) {
         return this.convertedUsers.containsKey(object);
     }
 
@@ -164,7 +164,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected void storePersistableObjectInCache(User originalObject, User persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(User originalObject, User persistableObject) {
          this.convertedUsers.put(originalObject, persistableObject);
     }
 

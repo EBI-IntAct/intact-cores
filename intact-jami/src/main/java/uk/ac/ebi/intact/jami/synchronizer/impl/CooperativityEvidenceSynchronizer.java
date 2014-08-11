@@ -98,7 +98,7 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(CooperativityEvidence object) {
+    protected boolean containsDetachedOrTransientObject(CooperativityEvidence object) {
         return false;
     }
 
@@ -117,7 +117,7 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     }
 
     @Override
-    protected void storePersistableObjectInCache(CooperativityEvidence originalObject, IntactCooperativityEvidence persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(CooperativityEvidence originalObject, IntactCooperativityEvidence persistableObject) {
         // nothing to do
     }
 

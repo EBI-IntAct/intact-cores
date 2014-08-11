@@ -96,7 +96,7 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+    protected boolean containsDetachedOrTransientObject(T object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -118,7 +118,7 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     }
 
     @Override
-    protected void storePersistableObjectInCache(T originalObject, I persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(T originalObject, I persistableObject) {
        this.convertedObjects.put(originalObject, persistableObject);
     }
 

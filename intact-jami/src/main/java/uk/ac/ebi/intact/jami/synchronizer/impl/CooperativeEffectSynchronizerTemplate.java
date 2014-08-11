@@ -157,7 +157,7 @@ implements CooperativeEffectSynchronizer<T, C> {
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+    protected boolean containsDetachedOrTransientObject(T object) {
         return false;
     }
 
@@ -181,7 +181,7 @@ implements CooperativeEffectSynchronizer<T, C> {
     }
 
     @Override
-    protected void storePersistableObjectInCache(T originalObject, C persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(T originalObject, C persistableObject) {
         // nothing to do here
     }
 

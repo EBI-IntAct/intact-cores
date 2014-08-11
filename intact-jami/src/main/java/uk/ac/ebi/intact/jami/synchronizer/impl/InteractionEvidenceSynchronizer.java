@@ -99,7 +99,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(InteractionEvidence object) {
+    protected boolean containsDetachedOrTransientObject(InteractionEvidence object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -127,7 +127,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void storePersistableObjectInCache(InteractionEvidence originalObject, IntactInteractionEvidence persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(InteractionEvidence originalObject, IntactInteractionEvidence persistableObject) {
          this.convertedObjects.put(originalObject, persistableObject);
     }
 

@@ -272,7 +272,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Source object) {
+    protected boolean containsDetachedOrTransientObject(Source object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -292,7 +292,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected void storePersistableObjectInCache(Source originalObject, IntactSource persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Source originalObject, IntactSource persistableObject) {
          this.convertedObjects.put(originalObject, persistableObject);
     }
 

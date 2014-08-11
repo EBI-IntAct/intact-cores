@@ -84,7 +84,7 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(LifeCycleEvent object) {
+    protected boolean containsDetachedOrTransientObject(LifeCycleEvent object) {
         return false;
     }
 
@@ -103,7 +103,7 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     @Override
-    protected void storePersistableObjectInCache(LifeCycleEvent originalObject, A persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(LifeCycleEvent originalObject, A persistableObject) {
         // nothing to do
     }
 

@@ -88,7 +88,7 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Xref object) {
+    protected boolean containsDetachedOrTransientObject(Xref object) {
         return false;
     }
 
@@ -107,7 +107,7 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     }
 
     @Override
-    protected void storePersistableObjectInCache(Xref originalObject, X persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Xref originalObject, X persistableObject) {
          // nothing to do
     }
 

@@ -87,7 +87,7 @@ implements ParameterSynchronizer<T,P>{
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+    protected boolean containsDetachedOrTransientObject(T object) {
         return false;
     }
 
@@ -106,7 +106,7 @@ implements ParameterSynchronizer<T,P>{
     }
 
     @Override
-    protected void storePersistableObjectInCache(T originalObject, P persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(T originalObject, P persistableObject) {
         // nothing to do here
     }
 

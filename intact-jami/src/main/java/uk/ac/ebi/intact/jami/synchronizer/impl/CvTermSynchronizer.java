@@ -357,7 +357,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(CvTerm object) {
+    protected boolean containsDetachedOrTransientObject(CvTerm object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -379,7 +379,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected void storePersistableObjectInCache(CvTerm originalObject, IntactCvTerm persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(CvTerm originalObject, IntactCvTerm persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
     }
 

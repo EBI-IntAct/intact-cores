@@ -54,7 +54,7 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(VariableParameterValueSet object) {
+    protected boolean containsDetachedOrTransientObject(VariableParameterValueSet object) {
         return false;
     }
 
@@ -69,7 +69,7 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
     }
 
     @Override
-    protected void storePersistableObjectInCache(VariableParameterValueSet originalObject, IntactVariableParameterValueSet persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(VariableParameterValueSet originalObject, IntactVariableParameterValueSet persistableObject) {
          // nothing to do
     }
 

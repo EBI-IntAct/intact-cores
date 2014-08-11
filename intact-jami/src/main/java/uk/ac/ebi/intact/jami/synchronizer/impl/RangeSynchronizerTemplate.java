@@ -54,7 +54,7 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         if (object.getParticipant() != null ){
             if (object.getParticipant() instanceof Participant){
                 Participant synchronizedParticipant = enableSynchronization ?
-                        getContext().getParticipantSynchronizer().synchronize((Participant)object.getParticipant(), false) :
+                        getContext().getParticipantSynchronizer().synchronize((Participant) object.getParticipant(), false) :
                         getContext().getParticipantSynchronizer().convertToPersistentObject((Participant)object.getParticipant());
                 object.setParticipant(synchronizedParticipant);
             }
@@ -125,7 +125,7 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Range object) {
+    protected boolean containsDetachedOrTransientObject(Range object) {
         return false;
     }
 
@@ -147,7 +147,7 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
     }
 
     @Override
-    protected void storePersistableObjectInCache(Range originalObject, I persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Range originalObject, I persistableObject) {
         // nothing to do
     }
 

@@ -80,7 +80,7 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
     public boolean delete(I object);
 
     /**
-     * If the object is not annotated with hibernate annotations,
+     * If the object is not annotated with hibernate annotations or is lazy and needs to be treated with caution (merging detached objects for instance),
      * a new persistable object may be created. All the properties of this object will be converted to persistable hibernate entities
      * if it is not already the case.
      * @param object

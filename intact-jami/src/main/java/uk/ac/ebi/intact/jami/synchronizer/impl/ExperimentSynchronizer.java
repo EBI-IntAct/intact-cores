@@ -185,7 +185,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Experiment object) {
+    protected boolean containsDetachedOrTransientObject(Experiment object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -213,7 +213,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     }
 
     @Override
-    protected void storePersistableObjectInCache(Experiment originalObject, IntactExperiment persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Experiment originalObject, IntactExperiment persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
     }
 

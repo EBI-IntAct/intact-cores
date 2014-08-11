@@ -148,7 +148,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(F object) {
+    protected boolean containsDetachedOrTransientObject(F object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -168,7 +168,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected void storePersistableObjectInCache(F originalObject, I persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(F originalObject, I persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
     }
 

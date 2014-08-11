@@ -69,7 +69,7 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Annotation object) {
+    protected boolean containsDetachedOrTransientObject(Annotation object) {
         return false;
     }
 
@@ -86,7 +86,7 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     }
 
     @Override
-    protected void storePersistableObjectInCache(Annotation originalObject, A persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Annotation originalObject, A persistableObject) {
         // nothing to do
     }
 

@@ -86,7 +86,7 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(CausalRelationship object) {
+    protected boolean containsDetachedOrTransientObject(CausalRelationship object) {
         return false;
     }
 
@@ -105,7 +105,7 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     }
 
     @Override
-    protected void storePersistableObjectInCache(CausalRelationship originalObject, I persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(CausalRelationship originalObject, I persistableObject) {
          // nothing to do
     }
 

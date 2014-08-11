@@ -290,7 +290,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected boolean isObjectAlreadyConvertedToPersistableInstance(Organism object) {
+    protected boolean containsDetachedOrTransientObject(Organism object) {
         return this.convertedObjects.containsKey(object);
     }
 
@@ -308,7 +308,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected void storePersistableObjectInCache(Organism originalObject, IntactOrganism persistableObject) {
+    protected void storeDetachedOrTransientObjectInCache(Organism originalObject, IntactOrganism persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
     }
 
