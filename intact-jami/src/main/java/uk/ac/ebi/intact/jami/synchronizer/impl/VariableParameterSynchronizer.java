@@ -57,6 +57,29 @@ public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<
         return false;
     }
 
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(VariableParameter object) {
+        return false;
+    }
+
+    @Override
+    protected IntactVariableParameter fetchMatchingPersistableObject(VariableParameter object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(IntactVariableParameter object) throws SynchronizerException, PersisterException, FinderException {
+        // synchronize unit
+        synchronizeUnit(object, false);
+        // synchronize values
+        synchronizeParameterValues(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(VariableParameter originalObject, IntactVariableParameter persistableObject) {
+         // nothing to do
+    }
+
     public IntactVariableParameter find(VariableParameter object) throws FinderException {
         return null;
     }
@@ -65,16 +88,18 @@ public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<
         // synchronize
         synchronizeDescription(object);
         // synchronize unit
-        synchronizeUnit(object);
+        synchronizeUnit(object, true);
         // synchronize values
-        synchronizeParameterValues(object);
+        synchronizeParameterValues(object, true);
     }
 
-    protected void synchronizeParameterValues(IntactVariableParameter object) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizeParameterValues(IntactVariableParameter object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object.getVariableValues());
             for (VariableParameterValue value : valuesToPersist){
-                VariableParameterValue valueCheck = getContext().getVariableParameterValueSynchronizer().synchronize(value, false);
+                VariableParameterValue valueCheck = enableSynchronization ?
+                        getContext().getVariableParameterValueSynchronizer().synchronize(value, false) :
+                        getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
                 // we have a different instance because needed to be synchronized
                 if (valueCheck != value){
                     object.getVariableValues().remove(value);
@@ -84,9 +109,11 @@ public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<
         }
     }
 
-    protected void synchronizeUnit(IntactVariableParameter object) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizeUnit(IntactVariableParameter object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.getUnit() != null){
-            object.setUnit(getContext().getUnitSynchronizer().synchronize(object.getUnit(), true));
+            object.setUnit(enableSynchronization ?
+                    getContext().getUnitSynchronizer().synchronize(object.getUnit(), true) :
+                    getContext().getUnitSynchronizer().convertToPersistentObject(object.getUnit()));
         }
     }
 

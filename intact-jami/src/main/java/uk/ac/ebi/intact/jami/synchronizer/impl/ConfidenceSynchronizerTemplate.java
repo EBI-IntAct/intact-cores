@@ -70,6 +70,28 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     }
 
     @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+        return false;
+    }
+
+    @Override
+    protected C fetchMatchingPersistableObject(T object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(C object) throws SynchronizerException, PersisterException, FinderException {
+        // type first
+        CvTerm type = object.getType();
+        object.setType(getContext().getConfidenceTypeSynchronizer().convertToPersistentObject(type));
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(T originalObject, C persistableObject) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<T, C>(this));
     }

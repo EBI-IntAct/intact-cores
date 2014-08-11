@@ -40,7 +40,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     public T persist(T object) throws FinderException, PersisterException, SynchronizerException {
 
         // check cache when possible
-        if (isObjectStoredInCache((I)object)){
+        if (isObjectStoredInCache((I) object)){
             return fetchObjectFromCache((I)object);
         }
 
@@ -158,23 +158,19 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // do not merge existing instance if the merger is a merger ignoring source
         if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){
             T reloaded = getEntityManager().find(getIntactClass(), identifier);
+            // the reloaded object is not null and is the one that should be used in the cache because we ignore local changes
             if (reloaded != null){
                 // cache object to persist if allowed
                 storeInCache((I)intactObject, intactObject, reloaded);
                 return reloaded;
             }
+            // the reloaded object does not exist which means the object is corrupted? Already deleted?
             else{
-                // synchronize properties first
-                synchronizeProperties(intactObject);
-                // merge because no existing instances
-                T mergedObject = this.entityManager.merge(intactObject);
-                // cache object to persist if allowed
-                storeInCache((I)intactObject, intactObject, mergedObject);
-                return mergedObject;
+                throw new SynchronizerException("The persistent entity "+intactObject.getClass() + " has an identifier "+identifier+" but cannot be found in the database.");
             }
         }
         else{
-            // cache object to persist if allowed
+            // cache object to persist if allowed (avoid internal loop afterwise)
             storeInCache((I)intactObject, intactObject, null);
             // synchronize properties first
             synchronizeProperties(intactObject);
@@ -182,7 +178,51 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             T mergedObject = this.entityManager.merge(intactObject);
             // cache object to persist if allowed
             storeInCache((I)intactObject, intactObject, mergedObject);
+
             return mergedObject;
+        }
+    }
+
+    @Override
+    public T convertToPersistentObject(I object) throws SynchronizerException, PersisterException, FinderException {
+
+        // check cache when possible
+        if (isObjectAlreadyConvertedToPersistableInstance(object)){
+            return fetchMatchingPersistableObject(object);
+        }
+
+        if (!this.intactClass.isAssignableFrom(object.getClass())){
+            T newObject = null;
+            try {
+                newObject = instantiateNewPersistentInstance(object, this.intactClass);
+            } catch (InstantiationException e) {
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+            } catch (IllegalAccessException e) {
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+            } catch (InvocationTargetException e) {
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+            } catch (NoSuchMethodException e) {
+                throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+            }
+
+            // cache
+            storePersistableObjectInCache(object, newObject);
+
+            // convert properties if not done
+            convertPersistableProperties(newObject);
+
+            // new object fully persistable
+            return newObject;
+        }
+        else{
+            T intactObject = (T)object;
+            // cache object
+            storePersistableObjectInCache(object, intactObject);
+
+            // convert properties
+            convertPersistableProperties(intactObject);
+
+            return intactObject;
         }
     }
 
@@ -240,7 +280,51 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         return context;
     }
 
+    /**
+     *
+     * @param object
+     * @return the synchronized/persistent object associated with this object which has been fetched from the
+     * cache
+     */
     protected abstract T fetchObjectFromCache(I object);
 
+    /**
+     *
+     * @param object
+     * @return true if the object has already been synchronized
+     */
     protected abstract boolean isObjectStoredInCache(I object);
+
+    /**
+     *
+     * @param object
+     * @return true if the object has already been converted to a persistable instance but not synchronized with DB.
+     * The cache used to convert an object to a persistable instance should be different from the cache used to synchronize the object
+     * with existing DB instances
+     */
+    protected abstract boolean isObjectAlreadyConvertedToPersistableInstance(I object);
+
+    /**
+     *
+     * @param object
+     * @return the persistable object associated with this object. The persistable object that is returned is NOT synchronized
+     * with existing instances in the database
+     */
+    protected abstract T fetchMatchingPersistableObject(I object);
+
+    /**
+     * This method will check that all properties of this object are persistable.
+     * If not, it will replace them with persistable Hibernate entities when applicable
+     * @param object
+     */
+    protected abstract void convertPersistableProperties(T object) throws SynchronizerException, PersisterException, FinderException;
+
+    /**
+     * Stores in a cache (different from cache used for full synchronization) the different states of an object
+     * if supported by the synchronizer
+     * @param originalObject : the original object instance that we want to persist/update
+     * @param persistableObject : the object instance which is a clone of the original object that can be persisted in the database but is not synchronized with
+     * ths database
+     */
+    protected abstract void storePersistableObjectInCache(I originalObject, T persistableObject);
 }

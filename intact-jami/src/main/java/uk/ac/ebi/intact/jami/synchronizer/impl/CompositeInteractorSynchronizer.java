@@ -223,6 +223,41 @@ public class CompositeInteractorSynchronizer implements InteractorFetcher<Intera
         }
     }
 
+    @Override
+    public IntactInteractor convertToPersistentObject(Interactor term) throws SynchronizerException, PersisterException, FinderException {
+        if (term instanceof Molecule){
+            if (term instanceof Polymer){
+                if (term instanceof Protein){
+                    return this.context.getProteinSynchronizer().convertToPersistentObject((Protein) term);
+                }
+                else if (term instanceof NucleicAcid){
+                    return this.context.getNucleicAcidSynchronizer().convertToPersistentObject((NucleicAcid) term);
+                }
+                else{
+                    return this.context.getPolymerSynchronizer().convertToPersistentObject((Polymer) term);
+                }
+            }
+            else if (term instanceof BioactiveEntity){
+                return this.context.getBioactiveEntitySynchronizer().convertToPersistentObject((BioactiveEntity) term);
+            }
+            else if (term instanceof Gene){
+                return this.context.getGeneSynchronizer().convertToPersistentObject((Gene) term);
+            }
+            else{
+                return this.context.getMoleculeSynchronizer().convertToPersistentObject((Molecule)term);
+            }
+        }
+        else if (term instanceof Complex){
+            return this.context.getComplexSynchronizer().convertToPersistentObject((Complex) term);
+        }
+        else if (term instanceof InteractorPool){
+            return this.context.getInteractorPoolSynchronizer().convertToPersistentObject((InteractorPool) term);
+        }
+        else {
+            return this.context.getInteractorBaseSynchronizer().convertToPersistentObject(term);
+        }
+    }
+
     public Collection<Interactor> fetchByIdentifier(String identifier) throws BridgeFailedException {
         return ((InteractorFetcher<Interactor>)this.context.getInteractorBaseSynchronizer()).fetchByIdentifier(identifier);
     }

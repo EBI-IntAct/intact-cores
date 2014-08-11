@@ -36,14 +36,26 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
 
     public void synchronizeProperties(X object) throws FinderException, PersisterException, SynchronizerException {
         // database first
-        CvTerm db = object.getDatabase();
-        object.setDatabase(getContext().getDatabaseSynchronizer().synchronize(db, true));
+        prepareDatabase(object, true);
 
         // check qualifier
+        prepareQualifier(object, true);
+    }
+
+    protected void prepareQualifier(X object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.getQualifier() != null){
             CvTerm qualifier = object.getQualifier();
-            object.setQualifier(getContext().getQualifierSynchronizer().synchronize(qualifier, true));
+            object.setQualifier(enableSynchronization ?
+                    getContext().getQualifierSynchronizer().synchronize(qualifier, true) :
+                    getContext().getQualifierSynchronizer().convertToPersistentObject(qualifier));
         }
+    }
+
+    protected void prepareDatabase(X object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        CvTerm db = object.getDatabase();
+        object.setDatabase(enableSynchronization ?
+                getContext().getDatabaseSynchronizer().synchronize(db, true) :
+                getContext().getDatabaseSynchronizer().convertToPersistentObject(db));
     }
 
     public void clearCache() {
@@ -73,6 +85,30 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     @Override
     protected boolean isObjectStoredInCache(Xref object) {
         return false;
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Xref object) {
+        return false;
+    }
+
+    @Override
+    protected X fetchMatchingPersistableObject(Xref object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(X object) throws SynchronizerException, PersisterException, FinderException {
+        // database first
+        prepareDatabase(object, false);
+
+        // check qualifier
+        prepareQualifier(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Xref originalObject, X persistableObject) {
+         // nothing to do
     }
 
     @Override

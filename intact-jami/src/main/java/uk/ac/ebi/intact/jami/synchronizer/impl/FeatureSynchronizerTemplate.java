@@ -29,6 +29,7 @@ import java.util.Map;
 
 public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIntactFeature> extends AbstractIntactDbSynchronizer<F,I>{
     private Map<F, I> persistedObjects;
+    private Map<F, I> convertedObjects;
 
     private static final Log log = LogFactory.getLog(FeatureSynchronizerTemplate.class);
 
@@ -36,6 +37,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         super(context, featureClass);
 
         this.persistedObjects = new IdentityMap();
+        this.convertedObjects = new IdentityMap();
     }
 
     public I find(F feature) throws FinderException {
@@ -50,11 +52,11 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
 
     public void synchronizeProperties(I intactFeature) throws FinderException, PersisterException, SynchronizerException {
         // synchronize feature type
-        prepareType(intactFeature);
+        prepareType(intactFeature, true);
         // then check def
-        prepareInteractionEffectAndDependencies(intactFeature);
+        prepareInteractionEffectAndDependencies(intactFeature, true);
         // then check linkedFeatures
-        prepareLinkedFeatures(intactFeature);
+        prepareLinkedFeatures(intactFeature, true);
     }
 
     @Override
@@ -73,24 +75,31 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
 
     public void clearCache() {
         this.persistedObjects.clear();
+        this.convertedObjects.clear();
     }
 
-    protected void prepareType(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareType(I intactFeature, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.getType() != null){
-            intactFeature.setType(getContext().getFeatureTypeSynchronizer().synchronize(intactFeature.getType(), true));
+            intactFeature.setType(enableSynchronization ?
+                    getContext().getFeatureTypeSynchronizer().synchronize(intactFeature.getType(), true) :
+                    getContext().getFeatureTypeSynchronizer().convertToPersistentObject(intactFeature.getType()));
         }
     }
 
-    protected void prepareLinkedFeatures(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareLinkedFeatures(I intactFeature, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.getBinds() != null){
-            intactFeature.setBinds(synchronize((F)intactFeature.getBinds(), false));
+            intactFeature.setBinds(enableSynchronization ?
+                    synchronize((F)intactFeature.getBinds(), false) :
+                    convertToPersistentObject((F)intactFeature.getBinds()));
         }
         if (intactFeature.areLinkedFeaturesInitialized()){
             List<F> featureToSynchronize = new ArrayList<F>(intactFeature.getDbLinkedFeatures());
             for (F feature : featureToSynchronize){
                 if (intactFeature != feature){
                     // do not persist or merge features because of cascades
-                    I linkedFeature = synchronize((F) feature, false);
+                    I linkedFeature = enableSynchronization ?
+                            synchronize((F) feature, false) :
+                            convertToPersistentObject((F)feature);
                     // we have a different instance because needed to be synchronized
                     if (linkedFeature != feature){
                         intactFeature.getDbLinkedFeatures().remove(feature);
@@ -101,10 +110,12 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         }
     }
 
-    protected void prepareInteractionEffectAndDependencies(I intactFeature) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareInteractionEffectAndDependencies(I intactFeature, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactFeature.getRole() != null){
-            intactFeature.setRole(getContext().getTopicSynchronizer().synchronize(intactFeature.getRole(), true));
+            intactFeature.setRole(enableSynchronization ?
+                    getContext().getTopicSynchronizer().synchronize(intactFeature.getRole(), true) :
+                    getContext().getTopicSynchronizer().convertToPersistentObject(intactFeature.getRole()));
         }
     }
 
@@ -134,6 +145,31 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     @Override
     protected boolean isObjectStoredInCache(F object) {
         return this.persistedObjects.containsKey(object);
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(F object) {
+        return this.convertedObjects.containsKey(object);
+    }
+
+    @Override
+    protected I fetchMatchingPersistableObject(F object) {
+        return this.convertedObjects.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(I intactFeature) throws SynchronizerException, PersisterException, FinderException {
+        // synchronize feature type
+        prepareType(intactFeature, false);
+        // then check def
+        prepareInteractionEffectAndDependencies(intactFeature, false);
+        // then check linkedFeatures
+        prepareLinkedFeatures(intactFeature, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(F originalObject, I persistableObject) {
+        this.convertedObjects.put(originalObject, persistableObject);
     }
 
     @Override

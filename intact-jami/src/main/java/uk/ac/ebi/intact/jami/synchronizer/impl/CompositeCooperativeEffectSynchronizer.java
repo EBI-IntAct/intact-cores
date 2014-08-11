@@ -111,4 +111,23 @@ public class CompositeCooperativeEffectSynchronizer implements CooperativeEffect
             return false;
         }
     }
+
+    @Override
+    public AbstractIntactCooperativeEffect convertToPersistentObject(CooperativeEffect object) throws SynchronizerException, PersisterException, FinderException {
+        // preassembly
+        if (object instanceof Preassembly){
+            return this.context.getPreAssemblySynchronizer().convertToPersistentObject((Preassembly) object);
+        }
+        // allostery
+        else if (object instanceof Allostery){
+            return this.context.getAllosterySynchronizer().convertToPersistentObject((Allostery) object);
+        }
+        // consider that as preassembly in intact
+        else{
+            IntactPreassembly preassembly = new IntactPreassembly();
+            CooperativeEffectCloner.copyAndOverrideBasicCooperativeEffectProperties(object, preassembly);
+
+            return this.context.getPreAssemblySynchronizer().convertToPersistentObject(preassembly);
+        }
+    }
 }

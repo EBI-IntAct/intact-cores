@@ -67,6 +67,26 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Preference object) {
+        return false;
+    }
+
+    @Override
+    protected Preference fetchMatchingPersistableObject(Preference object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(Preference object) throws SynchronizerException, PersisterException, FinderException {
+        // nothing to do
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Preference originalObject, Preference persistableObject) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Preference, Preference>(this));
     }

@@ -1,17 +1,20 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import psidev.psi.mi.jami.model.*;
+import org.apache.commons.collections.map.IdentityMap;
+import psidev.psi.mi.jami.model.Interactor;
+import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.DefaultInteractorPoolComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorPoolComparator;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousInteractorPoolComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.InteractorPoolMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.InteractorSynchronizerTemplate;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
+import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -36,17 +39,27 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     @Override
     public void synchronizeProperties(IntactInteractorPool intactInteractor) throws FinderException, PersisterException, SynchronizerException {
         // synchronize subInteractors if not done
-        prepareInteractors(intactInteractor);
+        prepareInteractors(intactInteractor, true);
 
         super.synchronizeProperties(intactInteractor);
     }
 
-    protected void prepareInteractors(IntactInteractorPool intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+    @Override
+    public void convertPersistableProperties(IntactInteractorPool intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+        // synchronize subInteractors if not done
+        prepareInteractors(intactInteractor, false);
+
+        super.convertPersistableProperties(intactInteractor);
+    }
+
+    protected void prepareInteractors(IntactInteractorPool intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areInteractorsInitialized()){
             List<Interactor> interactorToPersist = new ArrayList<Interactor>(intactInteractor);
             for (Interactor interactor : interactorToPersist){
                 if (interactor != intactInteractor){
-                    Interactor interactorCheck = getContext().getInteractorSynchronizer().synchronize(interactor, true);
+                    Interactor interactorCheck = enableSynchronization ?
+                            getContext().getInteractorSynchronizer().synchronize(interactor, true) :
+                            getContext().getInteractorSynchronizer().convertToPersistentObject(intactInteractor);
                     // we have a different instance because needed to be synchronized
                     if (interactorCheck != interactor){
                         intactInteractor.remove(interactor);
@@ -103,6 +116,7 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     @Override
     protected void initialisePersistedObjectMap() {
         super.setPersistedObjects(new TreeMap<InteractorPool, IntactInteractorPool>(new UnambiguousExactInteractorPoolComparator()));
+        super.setConvertedObjects(new IdentityMap());
     }
 
     @Override

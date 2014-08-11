@@ -37,24 +37,43 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
     public void synchronizeProperties(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
         super.synchronizeProperties(intactFeature);
         // then check aliases
-        prepareAliases(intactFeature);
+        prepareAliases(intactFeature, true);
         // then check annotations
-        prepareAnnotations(intactFeature);
+        prepareAnnotations(intactFeature, true);
         // then check xrefs
-        prepareXrefs(intactFeature);
+        prepareXrefs(intactFeature, true);
         // then detection methods
-        prepareDetectionMethods(intactFeature);
+        prepareDetectionMethods(intactFeature, true);
         // then check ranges
-        prepareRanges(intactFeature);
+        prepareRanges(intactFeature, true);
         // then synchronize parameters
-        prepareParameters(intactFeature);
+        prepareParameters(intactFeature, true);
     }
 
-    private void prepareParameters(IntactFeatureEvidence intactFeature) throws PersisterException, FinderException, SynchronizerException {
+    @Override
+    public void convertPersistableProperties(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+        super.convertPersistableProperties(intactFeature);
+        // then check aliases
+        prepareAliases(intactFeature, false);
+        // then check annotations
+        prepareAnnotations(intactFeature, false);
+        // then check xrefs
+        prepareXrefs(intactFeature, false);
+        // then detection methods
+        prepareDetectionMethods(intactFeature, false);
+        // then check ranges
+        prepareRanges(intactFeature, false);
+        // then synchronize parameters
+        prepareParameters(intactFeature, false);
+    }
+
+    private void prepareParameters(IntactFeatureEvidence intactFeature, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.areParametersInitialized()){
             List<Parameter> parametersToPersist = new ArrayList<Parameter>(intactFeature.getParameters());
             for (Parameter parameter : parametersToPersist){
-                Parameter persistentParameter = getContext().getFeatureParameterSynchronizer().synchronize(parameter, false);
+                Parameter persistentParameter = enableSynchronization ?
+                        getContext().getFeatureParameterSynchronizer().synchronize(parameter, false) :
+                        getContext().getFeatureParameterSynchronizer().convertToPersistentObject(parameter);
                 // we have a different instance because needed to be synchronized
                 if (persistentParameter != parameter){
                     intactFeature.getParameters().remove(parameter);
@@ -64,7 +83,7 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         }
     }
 
-    protected void prepareRanges(IntactFeatureEvidence intactFeature) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareRanges(IntactFeatureEvidence intactFeature, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.areRangesInitialized()){
             List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
             for (Range range : rangesToPersist){
@@ -77,7 +96,9 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                 }
 
                 // do not persist or merge ranges because of cascades
-                Range featureRange = getContext().getExperimentalRangeSynchronizer().synchronize(range, false);
+                Range featureRange = enableSynchronization ?
+                        getContext().getExperimentalRangeSynchronizer().synchronize(range, false) :
+                        getContext().getExperimentalRangeSynchronizer().convertToPersistentObject(range);
                 // we have a different instance because needed to be synchronized
                 if (featureRange != range){
                     intactFeature.getRanges().remove(range);
@@ -99,14 +120,18 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         }
     }
 
-    protected void prepareDetectionMethods(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareDetectionMethods(IntactFeatureEvidence intactFeature, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.getFeatureIdentification() != null){
-            intactFeature.setFeatureIdentification(getContext().getFeatureDetectionMethodSynchronizer().synchronize(intactFeature.getFeatureIdentification(), true));
+            intactFeature.setFeatureIdentification(enableSynchronization ?
+                    getContext().getFeatureDetectionMethodSynchronizer().synchronize(intactFeature.getFeatureIdentification(), true) :
+                    getContext().getFeatureDetectionMethodSynchronizer().convertToPersistentObject(intactFeature.getFeatureIdentification()));
         }
         if (intactFeature.areDetectionMethodsInitialized()){
             List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactFeature.getDbDetectionMethods());
             for (CvTerm method : methodsToPersist){
-                CvTerm featureTerm = getContext().getFeatureDetectionMethodSynchronizer().synchronize(method, true);
+                CvTerm featureTerm = enableSynchronization ?
+                        getContext().getFeatureDetectionMethodSynchronizer().synchronize(method, true) :
+                        getContext().getFeatureDetectionMethodSynchronizer().convertToPersistentObject(method);
                 // we have a different instance because needed to be synchronized
                 if (featureTerm != method){
                     intactFeature.getDbDetectionMethods().remove(method);
@@ -129,12 +154,14 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         return newFeature;
     }
 
-    protected void prepareXrefs(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(IntactFeatureEvidence intactFeature, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref featureXref = getContext().getFeatureEvidenceXrefSynchronizer().synchronize(xref, false);
+                Xref featureXref = enableSynchronization ?
+                        getContext().getFeatureEvidenceXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getFeatureEvidenceXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
                 if (featureXref != xref){
                     intactFeature.getDbXrefs().remove(xref);
@@ -144,12 +171,14 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         }
     }
 
-    protected void prepareAnnotations(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(IntactFeatureEvidence intactFeature, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation featureAnnotation = getContext().getFeatureEvidenceAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation featureAnnotation = enableSynchronization ?
+                        getContext().getFeatureEvidenceAnnotationSynchronizer().synchronize(annotation, false) :
+                        getContext().getFeatureEvidenceAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
                 if (featureAnnotation != annotation){
                     intactFeature.getAnnotations().remove(annotation);
@@ -159,12 +188,14 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         }
     }
 
-    protected void prepareAliases(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(IntactFeatureEvidence intactFeature, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias featureAlias = getContext().getFeatureEvidenceAliasSynchronizer().synchronize(alias, false);
+                Alias featureAlias = enableSynchronization ?
+                        getContext().getFeatureEvidenceAliasSynchronizer().synchronize(alias, false) :
+                        getContext().getFeatureEvidenceAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
                 if (featureAlias != alias){
                     intactFeature.getAliases().remove(alias);

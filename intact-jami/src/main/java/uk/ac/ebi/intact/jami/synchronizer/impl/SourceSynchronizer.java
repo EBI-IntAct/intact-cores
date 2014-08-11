@@ -1,15 +1,15 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -30,6 +30,7 @@ import java.util.*;
 
 public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> implements SourceFetcher {
     private Map<Source, IntactSource> persistedObjects;
+    private Map<Source, IntactSource> convertedObjects;
 
     private static final Log log = LogFactory.getLog(SourceSynchronizer.class);
 
@@ -37,6 +38,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         super(context, IntactSource.class);
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Source, IntactSource>();
+        this.convertedObjects = new IdentityMap();
     }
 
     public IntactSource find(Source term) throws FinderException {
@@ -88,15 +90,16 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         // then check full name
         prepareFullName(intactSource);
         // then check aliases
-        prepareAliases(intactSource);
+        prepareAliases(intactSource, true);
         // then check annotations
-        prepareAnnotations(intactSource);
+        prepareAnnotations(intactSource, true);
         // then check xrefs
-        prepareXrefs(intactSource);
+        prepareXrefs(intactSource, true);
     }
 
     public void clearCache() {
         this.persistedObjects.clear();
+        this.convertedObjects.clear();
     }
 
     public Source fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
@@ -268,13 +271,40 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         return this.persistedObjects.containsKey(object);
     }
 
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Source object) {
+        return this.convertedObjects.containsKey(object);
+    }
 
-    protected void prepareXrefs(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
+    @Override
+    protected IntactSource fetchMatchingPersistableObject(Source object) {
+        return this.convertedObjects.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(IntactSource intactSource) throws SynchronizerException, PersisterException, FinderException {
+        // then check aliases
+        prepareAliases(intactSource, false);
+        // then check annotations
+        prepareAnnotations(intactSource, false);
+        // then check xrefs
+        prepareXrefs(intactSource, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Source originalObject, IntactSource persistableObject) {
+         this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+
+    protected void prepareXrefs(IntactSource intactSource, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref = getContext().getSourceXrefSynchronizer().synchronize(xref, false);
+                Xref cvXref = enableSynchronization ?
+                        getContext().getSourceXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getSourceXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactSource.getDbXrefs().remove(xref);
@@ -284,12 +314,14 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         }
     }
 
-    protected void prepareAnnotations(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(IntactSource intactSource, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation cvAnnotation = enableSynchronization ?
+                        getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false) :
+                        getContext().getSourceAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactSource.getDbAnnotations().remove(annotation);
@@ -299,12 +331,14 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         }
     }
 
-    protected void prepareAliases(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(IntactSource intactSource, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areSynonymsInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactSource.getSynonyms());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = getContext().getSourceAliasSynchronizer().synchronize(alias, false);
+                Alias cvAlias = enableSynchronization ?
+                        getContext().getSourceAliasSynchronizer().synchronize(alias, false) :
+                        getContext().getSourceAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactSource.getSynonyms().remove(alias);

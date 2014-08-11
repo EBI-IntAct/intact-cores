@@ -53,15 +53,41 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
         return false;
     }
 
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(VariableParameterValueSet object) {
+        return false;
+    }
+
+    @Override
+    protected IntactVariableParameterValueSet fetchMatchingPersistableObject(VariableParameterValueSet object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(IntactVariableParameterValueSet object) throws SynchronizerException, PersisterException, FinderException {
+        prepareVariableParameterValues(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(VariableParameterValueSet originalObject, IntactVariableParameterValueSet persistableObject) {
+         // nothing to do
+    }
+
     public IntactVariableParameterValueSet find(VariableParameterValueSet object) throws FinderException {
         return null;
     }
 
     public void synchronizeProperties(IntactVariableParameterValueSet object) throws FinderException, PersisterException, SynchronizerException {
+        prepareVariableParameterValues(object, true);
+    }
+
+    protected void prepareVariableParameterValues(IntactVariableParameterValueSet object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object);
             for (VariableParameterValue value : valuesToPersist){
-                VariableParameterValue valueCheck = getContext().getVariableParameterValueSynchronizer().synchronize(value, false);
+                VariableParameterValue valueCheck = enableSynchronization ?
+                        getContext().getVariableParameterValueSynchronizer().synchronize(value, false):
+                        getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
                 // we have a different instance because needed to be synchronized
                 if (valueCheck != value){
                     object.remove(value);

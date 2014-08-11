@@ -27,6 +27,7 @@ import java.util.Map;
 public class ParticipantSynchronizerTemplate<T extends Participant, I extends AbstractIntactParticipant> extends AbstractIntactDbSynchronizer<T, I>
         implements ParticipantSynchronizer<T,I> {
     private Map<T, I> persistedObjects;
+    private Map<T, I> convertedObjects;
 
     private static final Log log = LogFactory.getLog(ParticipantSynchronizerTemplate.class);
 
@@ -34,6 +35,7 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         super(context, intactClass);
         // to keep track of persisted cvs
         this.persistedObjects = new IdentityMap();
+        this.convertedObjects = new IdentityMap();
     }
 
     public I find(T term) throws FinderException {
@@ -47,17 +49,18 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
 
     public void synchronizeProperties(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
         // then check interactor
-        prepareInteractor(intactEntity);
+        prepareInteractor(intactEntity, true);
         // then check stoichiometry
         prepareStoichiometry(intactEntity);
         // then check features
-        prepareFeatures(intactEntity);
+        prepareFeatures(intactEntity, true);
         // prepare biological role
-        prepareBiologicalRole(intactEntity);
+        prepareBiologicalRole(intactEntity, true);
     }
 
     public void clearCache() {
         this.persistedObjects.clear();
+        this.convertedObjects.clear();
     }
 
     @Override
@@ -92,6 +95,33 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         return this.persistedObjects.containsKey(object);
     }
 
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+        return this.convertedObjects.containsKey(object);
+    }
+
+    @Override
+    protected I fetchMatchingPersistableObject(T object) {
+        return this.convertedObjects.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(I intactEntity) throws SynchronizerException, PersisterException, FinderException {
+        // then check interactor
+        prepareInteractor(intactEntity, false);
+        // then check stoichiometry
+        prepareStoichiometry(intactEntity);
+        // then check features
+        prepareFeatures(intactEntity, false);
+        // prepare biological role
+        prepareBiologicalRole(intactEntity, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(T originalObject, I persistableObject) {
+       this.convertedObjects.put(originalObject, persistableObject);
+    }
+
     protected void prepareStoichiometry(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
         Stoichiometry stc = intactEntity.getStoichiometry();
         if (stc != null && !(stc instanceof IntactStoichiometry)){
@@ -99,13 +129,15 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         }
     }
 
-    protected void prepareFeatures(I intactEntity) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareFeatures(I intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areFeaturesInitialized()) {
             List<Feature> featuresToPersist = new ArrayList<Feature>(intactEntity.getFeatures());
             for (Feature feature : featuresToPersist) {
                 feature.setParticipant(intactEntity);
                 // do not persist or merge features because of cascades
-                Feature persistentFeature = (Feature)getFeatureSynchronizer().synchronize(feature, false);
+                Feature persistentFeature = enableSynchronization ?
+                        (Feature)getFeatureSynchronizer().synchronize(feature, false) :
+                        (Feature)getFeatureSynchronizer().convertToPersistentObject(feature);
                 // we have a different instance because needed to be synchronized
                 if (persistentFeature != feature) {
                     intactEntity.getFeatures().remove(feature);
@@ -115,16 +147,20 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         }
     }
 
-    protected void prepareInteractor(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareInteractor(I intactEntity, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         // persist interactor if not there
         Interactor interactor = intactEntity.getInteractor();
-        intactEntity.setInteractor(getContext().getInteractorSynchronizer().synchronize(interactor, true));
+        intactEntity.setInteractor(enableSynchronization ?
+                getContext().getInteractorSynchronizer().synchronize(interactor, true) :
+                getContext().getInteractorSynchronizer().convertToPersistentObject(interactor));
     }
 
-    protected void prepareBiologicalRole(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareBiologicalRole(I intactEntity, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         // persist biological role if not here
         CvTerm role = intactEntity.getBiologicalRole();
-        intactEntity.setBiologicalRole(getContext().getBiologicalRoleSynchronizer().synchronize(role, true));
+        intactEntity.setBiologicalRole(enableSynchronization ?
+                getContext().getBiologicalRoleSynchronizer().synchronize(role, true) :
+                getContext().getBiologicalRoleSynchronizer().convertToPersistentObject(role));
     }
 
     @Override

@@ -71,6 +71,29 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Alias object) {
+        return false;
+    }
+
+    @Override
+    protected A fetchMatchingPersistableObject(Alias object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(A object) throws SynchronizerException, PersisterException, FinderException {
+        if (object.getType() != null){
+            CvTerm type = object.getType();
+            object.setType(getContext().getAliasTypeSynchronizer().convertToPersistentObject(type));
+        }
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Alias originalObject, A persistableObject) {
+        // nothing to cache here
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Alias, A>(this));
     }

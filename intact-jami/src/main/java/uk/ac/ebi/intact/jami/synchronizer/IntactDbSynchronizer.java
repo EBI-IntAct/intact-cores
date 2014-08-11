@@ -78,4 +78,13 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
      * @return true if the object was deleted from the database
      */
     public boolean delete(I object);
+
+    /**
+     * If the object is not annotated with hibernate annotations,
+     * a new persistable object may be created. All the properties of this object will be converted to persistable hibernate entities
+     * if it is not already the case.
+     * @param object
+     * @return the new object instance that is fully persistable but IS NOT synchronized with existing persistent objects in the database
+     */
+    public T convertToPersistentObject(I object) throws SynchronizerException, PersisterException, FinderException;;
 }

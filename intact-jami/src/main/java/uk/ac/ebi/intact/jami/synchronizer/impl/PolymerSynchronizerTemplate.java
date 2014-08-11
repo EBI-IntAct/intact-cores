@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.Polymer;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactPolymerComparator;
@@ -78,6 +79,7 @@ public class PolymerSynchronizerTemplate<T extends Polymer, P extends IntactPoly
     @Override
     protected void initialisePersistedObjectMap() {
         super.setPersistedObjects(new TreeMap<T, P>(new UnambiguousExactPolymerComparator()));
+        super.setConvertedObjects(new IdentityMap());
     }
 
     @Override

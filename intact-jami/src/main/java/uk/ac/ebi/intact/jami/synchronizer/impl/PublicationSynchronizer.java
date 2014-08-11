@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +42,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         implements PublicationFetcher{
 
     private Map<Publication, IntactPublication> persistedObjects;
+    private Map<Publication, IntactPublication> convertedObjects;
 
     private static final Log log = LogFactory.getLog(PublicationSynchronizer.class);
 
@@ -48,6 +50,8 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         super(context, IntactPublication.class);
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<Publication, IntactPublication>(new UnambiguousPublicationComparator());
+        // to keep track of converted objects
+        this.convertedObjects = new IdentityMap();
     }
 
     public IntactPublication find(Publication publication) throws FinderException {
@@ -104,17 +108,17 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         // then check authors
         preparePublicationAuthors(intactPublication);
         // then check annotations
-        prepareAnnotations(intactPublication);
+        prepareAnnotations(intactPublication, true);
         // then check xrefs
-        prepareXrefs(intactPublication);
+        prepareXrefs(intactPublication, true);
         // then check source
-        prepareSource(intactPublication);
+        prepareSource(intactPublication, true);
         // then check experiments
-        prepareExperiments(intactPublication);
+        prepareExperiments(intactPublication, true);
         // then prepare users
-        prepareStatusAndCurators(intactPublication);
+        prepareStatusAndCurators(intactPublication, true);
         // then check publication lifecycle
-        prepareLifeCycleEvents(intactPublication);
+        prepareLifeCycleEvents(intactPublication, true);
     }
 
     public Publication fetchByIdentifier(String identifier, String source) throws BridgeFailedException {
@@ -142,6 +146,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
 
     public void clearCache() {
         this.persistedObjects.clear();
+        this.convertedObjects.clear();
     }
 
     protected void prepareAndSynchronizeShortLabel(IntactPublication intactPublication) throws SynchronizerException {
@@ -321,6 +326,37 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         return this.persistedObjects.containsKey(object);
     }
 
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Publication object) {
+        return this.convertedObjects.containsKey(object);
+    }
+
+    @Override
+    protected IntactPublication fetchMatchingPersistableObject(Publication object) {
+        return this.convertedObjects.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(IntactPublication intactPublication) throws SynchronizerException, PersisterException, FinderException {
+        // then check annotations
+        prepareAnnotations(intactPublication, false);
+        // then check xrefs
+        prepareXrefs(intactPublication, false);
+        // then check source
+        prepareSource(intactPublication, false);
+        // then check experiments
+        prepareExperiments(intactPublication, false);
+        // then prepare users
+        prepareStatusAndCurators(intactPublication, false);
+        // then check publication lifecycle
+        prepareLifeCycleEvents(intactPublication, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Publication originalObject, IntactPublication persistableObject) {
+         this.convertedObjects.put(originalObject, persistableObject);
+    }
+
     protected void preparePublicationAuthors(IntactPublication intactPublication) {
         if (intactPublication.getAuthors().isEmpty()){
             AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.AUTHOR_MI, Annotation.AUTHOR);
@@ -344,12 +380,14 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void prepareXrefs(IntactPublication intactPublication) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(IntactPublication intactPublication, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactPublication.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactPublication.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref pubRef = getContext().getPublicationXrefSynchronizer().synchronize(xref, false);
+                Xref pubRef = enableSynchronization ?
+                        getContext().getPublicationXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getPublicationXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
                 if (pubRef != xref){
                     intactPublication.getDbXrefs().remove(xref);
@@ -359,12 +397,14 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void prepareAnnotations(IntactPublication intactPublication) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(IntactPublication intactPublication, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactPublication.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactPublication.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation pubAnnotation = getContext().getPublicationAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation pubAnnotation = enableSynchronization ?
+                        getContext().getPublicationAnnotationSynchronizer().synchronize(annotation, false) :
+                        getContext().getPublicationAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
                 if (pubAnnotation != annotation){
                     intactPublication.getDbAnnotations().remove(annotation);
@@ -387,39 +427,49 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         super.setIntactMerger(new PublicationMergerEnrichOnly(this));
     }
 
-    protected void prepareStatusAndCurators(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareStatusAndCurators(IntactPublication intactPublication, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         // first the status
         CvTerm status = intactPublication.getStatus().toCvTerm();
-        intactPublication.setCvStatus(getContext().getLifecycleStatusSynchronizer().synchronize(status, true));
+        intactPublication.setCvStatus(enableSynchronization ?
+                getContext().getLifecycleStatusSynchronizer().synchronize(status, true) :
+                getContext().getLifecycleStatusSynchronizer().convertToPersistentObject(status));
 
         // then curator
         User curator = intactPublication.getCurrentOwner();
         // do not persist user if not there
         if (curator != null){
-            intactPublication.setCurrentOwner(getContext().getUserReadOnlySynchronizer().synchronize(curator, false));
+            intactPublication.setCurrentOwner(enableSynchronization ?
+                    getContext().getUserReadOnlySynchronizer().synchronize(curator, false) :
+                    getContext().getUserReadOnlySynchronizer().convertToPersistentObject(curator));
         }
 
         // then reviewer
         User reviewer = intactPublication.getCurrentReviewer();
         if (reviewer != null){
-            intactPublication.setCurrentReviewer(getContext().getUserReadOnlySynchronizer().synchronize(reviewer, false));
+            intactPublication.setCurrentReviewer(enableSynchronization ?
+                    getContext().getUserReadOnlySynchronizer().synchronize(reviewer, false) :
+                    getContext().getUserReadOnlySynchronizer().convertToPersistentObject(reviewer));
         }
     }
 
-    protected void prepareSource(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareSource(IntactPublication intactPublication, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         Source source = intactPublication.getSource();
         if (source != null){
-            intactPublication.setSource(getContext().getSourceSynchronizer().synchronize(source, true));
+            intactPublication.setSource(enableSynchronization ?
+                    getContext().getSourceSynchronizer().synchronize(source, true) :
+                    getContext().getSourceSynchronizer().convertToPersistentObject(source));
         }
     }
 
-    protected void prepareLifeCycleEvents(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareLifeCycleEvents(IntactPublication intactPublication, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactPublication.areLifeCycleEventsInitialized()){
             List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactPublication.getLifecycleEvents());
             for (LifeCycleEvent event : eventsToPersist){
                 // do not persist or merge events because of cascades
-                LifeCycleEvent evt = getContext().getPublicationLifecycleSynchronizer().synchronize(event, false);
+                LifeCycleEvent evt = enableSynchronization ?
+                        getContext().getPublicationLifecycleSynchronizer().synchronize(event, false) :
+                        getContext().getPublicationLifecycleSynchronizer().convertToPersistentObject(event);
                 // we have a different instance because needed to be synchronized
                 if (evt != event){
                     intactPublication.getLifecycleEvents().add(intactPublication.getLifecycleEvents().indexOf(event), evt);
@@ -429,12 +479,14 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
     }
 
-    protected void prepareExperiments(IntactPublication intactPublication) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareExperiments(IntactPublication intactPublication, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactPublication.areExperimentsInitialized()){
             List<Experiment> experimentToPersist = new ArrayList<Experiment>(intactPublication.getExperiments());
             for (Experiment experiment : experimentToPersist){
                 // do not persist or merge experiments because of cascades
-                Experiment pubExperiment = getContext().getExperimentSynchronizer().synchronize(experiment, false);
+                Experiment pubExperiment = enableSynchronization ?
+                        getContext().getExperimentSynchronizer().synchronize(experiment, false) :
+                        getContext().getExperimentSynchronizer().convertToPersistentObject(experiment);
                 // we have a different instance because needed to be synchronized
                 if (pubExperiment != experiment){
                     intactPublication.removeExperiment(experiment);

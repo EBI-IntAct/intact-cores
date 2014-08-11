@@ -35,14 +35,26 @@ implements ParameterSynchronizer<T,P>{
 
     public void synchronizeProperties(P object) throws FinderException, PersisterException, SynchronizerException {
         // type first
-        CvTerm type = object.getType();
-        object.setType(getContext().getParameterTypeSynchronizer().synchronize(type, true));
+        prepareType(object, true);
 
         // check unit
+        prepareUnit(object, true);
+    }
+
+    protected void prepareUnit(P object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.getUnit() != null){
             CvTerm unit = object.getUnit();
-            object.setUnit(getContext().getUnitSynchronizer().synchronize(unit, true));
+            object.setUnit(enableSynchronization ?
+                    getContext().getUnitSynchronizer().synchronize(unit, true) :
+                    getContext().getUnitSynchronizer().convertToPersistentObject(unit));
         }
+    }
+
+    protected void prepareType(P object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        CvTerm type = object.getType();
+        object.setType(enableSynchronization ?
+                getContext().getParameterTypeSynchronizer().synchronize(type, true) :
+                getContext().getParameterTypeSynchronizer().convertToPersistentObject(type));
     }
 
     public void clearCache() {
@@ -72,6 +84,30 @@ implements ParameterSynchronizer<T,P>{
     @Override
     protected boolean isObjectStoredInCache(T object) {
         return false;
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+        return false;
+    }
+
+    @Override
+    protected P fetchMatchingPersistableObject(T object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(P object) throws SynchronizerException, PersisterException, FinderException {
+        // type first
+        prepareType(object, false);
+
+        // check unit
+        prepareUnit(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(T originalObject, P persistableObject) {
+        // nothing to do here
     }
 
     @Override

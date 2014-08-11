@@ -102,4 +102,16 @@ public class CompositeParticipantSynchronizer implements ParticipantSynchronizer
             return this.context.getModelledParticipantSynchronizer().delete((ModelledParticipant)term);
         }
     }
+
+    @Override
+    public AbstractIntactParticipant convertToPersistentObject(Participant term) throws SynchronizerException, PersisterException, FinderException {
+        // experimental
+        if (term instanceof ParticipantEvidence){
+            return this.context.getParticipantEvidenceSynchronizer().convertToPersistentObject((ParticipantEvidence)term);
+        }
+        // modelled
+        else {
+            return this.context.getModelledParticipantSynchronizer().convertToPersistentObject((ModelledParticipant)term);
+        }
+    }
 }

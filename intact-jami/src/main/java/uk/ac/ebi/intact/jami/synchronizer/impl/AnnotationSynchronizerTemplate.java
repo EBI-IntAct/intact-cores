@@ -69,6 +69,28 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     }
 
     @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Annotation object) {
+        return false;
+    }
+
+    @Override
+    protected A fetchMatchingPersistableObject(Annotation object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(A object) throws SynchronizerException, PersisterException, FinderException {
+        // topic first
+        CvTerm topic = object.getTopic();
+        object.setTopic(getContext().getTopicSynchronizer().convertToPersistentObject(topic));
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Annotation originalObject, A persistableObject) {
+        // nothing to do
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Annotation, A>(this));
     }

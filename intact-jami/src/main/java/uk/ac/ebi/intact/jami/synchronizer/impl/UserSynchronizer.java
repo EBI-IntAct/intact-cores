@@ -3,19 +3,16 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import psidev.psi.mi.jami.model.Source;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
-import uk.ac.ebi.intact.jami.merger.IntactDbMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
 import uk.ac.ebi.intact.jami.merger.UserMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
-import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -35,12 +32,14 @@ import java.util.*;
 public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
 
     private Map<User, User> persistedUsers;
+    private Map<User, User> convertedUsers;
 
     private static final Log log = LogFactory.getLog(UserSynchronizer.class);
 
     public UserSynchronizer(SynchronizerContext context){
         super(context, User.class);
         this.persistedUsers = new HashMap<User, User>();
+        this.convertedUsers = new IdentityMap();
     }
 
     public User find(User user) throws FinderException {
@@ -69,20 +68,23 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
 
     public void synchronizeProperties(User object) throws FinderException, PersisterException, SynchronizerException {
         // synchronize preferences
-        preparePreferences(object);
+        preparePreferences(object, true);
         // synchronize roles
-        prepareRoles(object);
+        prepareRoles(object, true);
     }
 
     public void clearCache() {
         this.persistedUsers.clear();
+        this.convertedUsers.clear();
     }
 
-    protected void prepareRoles(User intactUser) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareRoles(User intactUser, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactUser.areRolesInitialized()){
             List<Role> rolesToPersist = new ArrayList<Role>(intactUser.getRoles());
             for (Role role : rolesToPersist){
-                Role userRole = getContext().getRoleSynchronizer().synchronize(role, true);
+                Role userRole = enableSynchronization ?
+                        getContext().getRoleSynchronizer().synchronize(role, true) :
+                        getContext().getRoleSynchronizer().convertToPersistentObject(role);
                 // we have a different instance because needed to be synchronized
                 if (userRole != role){
                     intactUser.removeRole(role);
@@ -92,12 +94,14 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
         }
     }
 
-    protected void preparePreferences(User intactUser) throws FinderException, PersisterException, SynchronizerException {
+    protected void preparePreferences(User intactUser, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactUser.arePreferencesInitialized()){
             List<Preference> preferencesToPersist = new ArrayList<Preference>(intactUser.getPreferences());
             for (Preference pref : preferencesToPersist){
                 // do not persist or merge preferences because of cascades
-                Preference userPref = getContext().getPreferenceSynchronizer().synchronize(pref, false);
+                Preference userPref = enableSynchronization ?
+                        getContext().getPreferenceSynchronizer().synchronize(pref, false) :
+                        getContext().getPreferenceSynchronizer().convertToPersistentObject(pref);
                 // we have a different instance because needed to be synchronized
                 if (userPref != pref){
                     intactUser.removePreference(pref);
@@ -139,6 +143,29 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     @Override
     protected boolean isObjectStoredInCache(User object) {
         return this.persistedUsers.containsKey(object);
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(User object) {
+        return this.convertedUsers.containsKey(object);
+    }
+
+    @Override
+    protected User fetchMatchingPersistableObject(User object) {
+        return this.convertedUsers.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(User object) throws SynchronizerException, PersisterException, FinderException {
+        // synchronize preferences
+        preparePreferences(object, false);
+        // synchronize roles
+        prepareRoles(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(User originalObject, User persistableObject) {
+         this.convertedUsers.put(originalObject, persistableObject);
     }
 
     @Override

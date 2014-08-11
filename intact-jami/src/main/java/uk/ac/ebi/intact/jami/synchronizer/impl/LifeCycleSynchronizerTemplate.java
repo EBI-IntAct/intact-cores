@@ -32,14 +32,26 @@ implements LifecycleEventSynchronizer<A>{
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {
         // check event
-        CvTerm event = object.getEvent().toCvTerm();
-        object.setCvEvent(getContext().getLifecycleEventSynchronizer().synchronize(event, true));
+        prepareEvent(object, true);
 
         // check user
+        prepareUser(object, true);
+    }
+
+    protected void prepareUser(A object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.getWho() != null){
             User who = object.getWho();
-            object.setWho(getContext().getUserReadOnlySynchronizer().synchronize(who, false));
+            object.setWho(enableSynchronization ?
+                    getContext().getUserReadOnlySynchronizer().synchronize(who, false) :
+                    getContext().getUserReadOnlySynchronizer().convertToPersistentObject(who));
         }
+    }
+
+    protected void prepareEvent(A object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        CvTerm event = object.getEvent().toCvTerm();
+        object.setCvEvent(enableSynchronization ?
+                getContext().getLifecycleEventSynchronizer().synchronize(event, true) :
+                getContext().getLifecycleEventSynchronizer().convertToPersistentObject(event));
     }
 
     public void clearCache() {
@@ -69,6 +81,30 @@ implements LifecycleEventSynchronizer<A>{
     @Override
     protected boolean isObjectStoredInCache(LifeCycleEvent object) {
         return false;
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(LifeCycleEvent object) {
+        return false;
+    }
+
+    @Override
+    protected A fetchMatchingPersistableObject(LifeCycleEvent object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(A object) throws SynchronizerException, PersisterException, FinderException {
+        // check event
+        prepareEvent(object, false);
+
+        // check user
+        prepareUser(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(LifeCycleEvent originalObject, A persistableObject) {
+        // nothing to do
     }
 
     @Override

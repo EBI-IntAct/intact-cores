@@ -28,7 +28,7 @@ public class ExperimentalRangeSynchronizer extends RangeSynchronizerTemplate<Exp
     }
 
     @Override
-    protected void prepareResultingSequence(ExperimentalRange object) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareResultingSequence(ExperimentalRange object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         // prepare ResultingSequence
         if (object.getResultingSequence() != null){
             if (!(object.getResultingSequence() instanceof ExperimentalResultingSequence)){
@@ -38,18 +38,20 @@ public class ExperimentalRangeSynchronizer extends RangeSynchronizerTemplate<Exp
             }
 
             // prepare xrefs of resulting sequence
-            prepareXrefs((ExperimentalResultingSequence)object.getResultingSequence());
+            prepareXrefs((ExperimentalResultingSequence)object.getResultingSequence(), enableSynchronization);
 
         }
     }
 
     @Override
-    protected void prepareXrefs(AbstractIntactResultingSequence intactObj) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(AbstractIntactResultingSequence intactObj, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactObj.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref objRef = getContext().getExperimentalResultingSequenceXrefSynchronizer().synchronize(xref, false);
+                Xref objRef = enableSynchronization ?
+                        getContext().getExperimentalResultingSequenceXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getExperimentalResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
                 if (objRef != xref){
                     intactObj.getXrefs().remove(xref);

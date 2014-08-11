@@ -36,23 +36,31 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
 
     public void synchronizeProperties(IntactCooperativityEvidence object) throws FinderException, PersisterException, SynchronizerException {
         // publication first
-        Publication pub = object.getPublication();
-        object.setPublication(getContext().getPublicationSynchronizer().synchronize(pub, true));
+        synchronizePublication(object, true);
 
         // check evidence methodse
-        prepareEvidenceMethods(object);
+        prepareEvidenceMethods(object, true);
+    }
+
+    protected void synchronizePublication(IntactCooperativityEvidence object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        Publication pub = object.getPublication();
+        object.setPublication(enableSynchronization ?
+                getContext().getPublicationSynchronizer().synchronize(pub, true) :
+                getContext().getPublicationSynchronizer().convertToPersistentObject(pub));
     }
 
     public void clearCache() {
         // nothing to do
     }
 
-    protected void prepareEvidenceMethods(IntactCooperativityEvidence object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareEvidenceMethods(IntactCooperativityEvidence object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (object.areEvidenceMethodsInitialized()){
             Collection<CvTerm> parametersToPersist = new ArrayList<CvTerm>(object.getEvidenceMethods());
             for (CvTerm param : parametersToPersist){
-                CvTerm expParam = getContext().getTopicSynchronizer().synchronize(param, true);
+                CvTerm expParam = enableSynchronization ?
+                        getContext().getTopicSynchronizer().synchronize(param, true) :
+                        getContext().getTopicSynchronizer().convertToPersistentObject(param);
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     object.getEvidenceMethods().remove(param);
@@ -87,6 +95,30 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     @Override
     protected boolean isObjectStoredInCache(CooperativityEvidence object) {
         return false;
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(CooperativityEvidence object) {
+        return false;
+    }
+
+    @Override
+    protected IntactCooperativityEvidence fetchMatchingPersistableObject(CooperativityEvidence object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(IntactCooperativityEvidence object) throws SynchronizerException, PersisterException, FinderException {
+        // publication first
+        synchronizePublication(object, false);
+
+        // check evidence methodse
+        prepareEvidenceMethods(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(CooperativityEvidence originalObject, IntactCooperativityEvidence persistableObject) {
+        // nothing to do
     }
 
     @Override

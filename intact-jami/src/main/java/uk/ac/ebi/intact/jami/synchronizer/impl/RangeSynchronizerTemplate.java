@@ -41,16 +41,21 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
 
     public void synchronizeProperties(I object) throws FinderException, PersisterException, SynchronizerException {
         // prepare start position
-        preparePositions(object);
+        preparePositions(object, true);
 
         // prepare resulting sequence
-        prepareResultingSequence(object);
+        prepareResultingSequence(object, true);
 
         // synchronize participant
+        prepareParticipant(object, true);
+    }
+
+    protected void prepareParticipant(I object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.getParticipant() != null ){
             if (object.getParticipant() instanceof Participant){
-                Participant synchronizedParticipant = getContext().getParticipantSynchronizer().
-                        synchronize((Participant)object.getParticipant(), false);
+                Participant synchronizedParticipant = enableSynchronization ?
+                        getContext().getParticipantSynchronizer().synchronize((Participant)object.getParticipant(), false) :
+                        getContext().getParticipantSynchronizer().convertToPersistentObject((Participant)object.getParticipant());
                 object.setParticipant(synchronizedParticipant);
             }
             // TODO: what to do with participant set and candidates?
@@ -60,18 +65,18 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         }
     }
 
-    protected void prepareResultingSequence(I object) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareResultingSequence(I object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do here. Delegates to sub classes
     }
 
-    protected void preparePositions(I object) throws FinderException, PersisterException, SynchronizerException {
-        IntactPosition start = preparePosition(object.getStart());
+    protected void preparePositions(I object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        IntactPosition start = preparePosition(object.getStart(), enableSynchronization);
         // prepare end position
-        IntactPosition end = preparePosition(object.getEnd());
+        IntactPosition end = preparePosition(object.getEnd(), enableSynchronization);
         object.setPositions(start, end);
     }
 
-    protected IntactPosition preparePosition(Position position) throws FinderException, PersisterException, SynchronizerException {
+    protected IntactPosition preparePosition(Position position, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         IntactPosition pos;
         if (!(position instanceof IntactPosition)){
             pos = new IntactPosition(position.getStatus(), position.getStart(), position.getEnd());
@@ -80,7 +85,9 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
             pos = (IntactPosition)position;
         }
         // prepare status
-        CvTerm status = getContext().getRangeStatusSynchronizer().synchronize(pos.getStatus(), true);
+        CvTerm status = enableSynchronization ?
+                getContext().getRangeStatusSynchronizer().synchronize(pos.getStatus(), true) :
+                getContext().getRangeStatusSynchronizer().convertToPersistentObject(pos.getStatus());
         pos.setStatus(status);
         return pos;
     }
@@ -117,7 +124,34 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         return false;
     }
 
-    protected void prepareXrefs(AbstractIntactResultingSequence intactObj) throws FinderException, PersisterException, SynchronizerException {
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Range object) {
+        return false;
+    }
+
+    @Override
+    protected I fetchMatchingPersistableObject(Range object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(I object) throws SynchronizerException, PersisterException, FinderException {
+        // prepare start position
+        preparePositions(object, false);
+
+        // prepare resulting sequence
+        prepareResultingSequence(object, false);
+
+        // synchronize participant
+        prepareParticipant(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Range originalObject, I persistableObject) {
+        // nothing to do
+    }
+
+    protected void prepareXrefs(AbstractIntactResultingSequence intactObj, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do here. Delegates to sub classes
     }
 

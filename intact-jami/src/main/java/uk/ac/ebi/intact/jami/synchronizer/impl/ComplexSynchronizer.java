@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
@@ -95,45 +96,71 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     @Override
     protected void initialisePersistedObjectMap() {
         super.setPersistedObjects(new TreeMap<Complex, IntactComplex>(new UnambiguousExactComplexComparator()));
+        super.setConvertedObjects(new IdentityMap());
     }
 
     @Override
     public void synchronizeProperties(IntactComplex intactComplex) throws FinderException, PersisterException, SynchronizerException {
         super.synchronizeProperties(intactComplex);
         // prepare evidence type
-        prepareEvidenceType(intactComplex);
+        prepareEvidenceType(intactComplex, true);
         // prepare interaction evidences
         //prepareInteractionEvidences(intactComplex);
         // then check confidences
-        prepareConfidences(intactComplex);
+        prepareConfidences(intactComplex, true);
         // then check parameters
-        prepareParameters(intactComplex);
+        prepareParameters(intactComplex, true);
         // then check participants
-        prepareParticipants(intactComplex);
+        prepareParticipants(intactComplex, true);
         // then check cooperative effects
         //prepareCooperativeEffects(intactComplex);
         // prepare status
-        prepareStatusAndCurators(intactComplex);
+        prepareStatusAndCurators(intactComplex, true);
         // prepare lifecycle
-        prepareLifeCycleEvents(intactComplex);
+        prepareLifeCycleEvents(intactComplex, true);
         // then prepare experiment for backward compatibility
-        prepareExperiments(intactComplex);
+        prepareExperiments(intactComplex, true);
     }
 
     @Override
-    protected void prepareAnnotations(IntactComplex intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+    public void convertPersistableProperties(IntactComplex intactComplex) throws FinderException, PersisterException, SynchronizerException {
+        super.convertPersistableProperties(intactComplex);
+        // prepare evidence type
+        prepareEvidenceType(intactComplex, false);
+        // prepare interaction evidences
+        //prepareInteractionEvidences(intactComplex);
+        // then check confidences
+        prepareConfidences(intactComplex, false);
+        // then check parameters
+        prepareParameters(intactComplex, false);
+        // then check participants
+        prepareParticipants(intactComplex, false);
+        // then check cooperative effects
+        //prepareCooperativeEffects(intactComplex);
+        // prepare status
+        prepareStatusAndCurators(intactComplex, false);
+        // prepare lifecycle
+        prepareLifeCycleEvents(intactComplex, false);
+        // then prepare experiment for backward compatibility
+        prepareExperiments(intactComplex, false);
+    }
+
+    @Override
+    protected void prepareAnnotations(IntactComplex intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAnnotationsInitialized()){
             if (AnnotationUtils.collectFirstAnnotationWithTopic(intactInteractor.getAnnotations(), null, "curated-complex") == null){
                 intactInteractor.getAnnotations().add(new InteractorAnnotation(IntactUtils.createMITopic("curated-complex", null)));
             }
         }
-        super.prepareAnnotations(intactInteractor);
+        super.prepareAnnotations(intactInteractor, enableSynchronization);
     }
 
-    protected void prepareEvidenceType(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareEvidenceType(IntactComplex intactComplex, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
        if (intactComplex.getEvidenceType() != null){
-           intactComplex.setEvidenceType(getContext().getDatabaseSynchronizer().synchronize(intactComplex.getEvidenceType(), true));
+           intactComplex.setEvidenceType(enableSynchronization ?
+                   getContext().getDatabaseSynchronizer().synchronize(intactComplex.getEvidenceType(), true) :
+                   getContext().getDatabaseSynchronizer().convertToPersistentObject(intactComplex.getEvidenceType()));
        }
     }
 
@@ -152,33 +179,41 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         }
     }*/
 
-    protected void prepareStatusAndCurators(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareStatusAndCurators(IntactComplex intactComplex, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         // first the status
         CvTerm status = intactComplex.getStatus().toCvTerm();
-        intactComplex.setCvStatus(getContext().getLifecycleStatusSynchronizer().synchronize(status, true));
+        intactComplex.setCvStatus(enableSynchronization ?
+                getContext().getLifecycleStatusSynchronizer().synchronize(status, true) :
+                getContext().getLifecycleStatusSynchronizer().convertToPersistentObject(status));
 
         // then curator
         User curator = intactComplex.getCurrentOwner();
         // do not persist user if not there
         if (curator != null){
-            intactComplex.setCurrentOwner(getContext().getUserReadOnlySynchronizer().synchronize(curator, false));
+            intactComplex.setCurrentOwner(enableSynchronization ?
+                    getContext().getUserReadOnlySynchronizer().synchronize(curator, false) :
+                    getContext().getUserReadOnlySynchronizer().convertToPersistentObject(curator));
         }
 
         // then reviewer
         User reviewer = intactComplex.getCurrentReviewer();
         if (reviewer != null){
-            intactComplex.setCurrentReviewer(getContext().getUserReadOnlySynchronizer().synchronize(reviewer, false));
+            intactComplex.setCurrentReviewer(enableSynchronization ?
+                    getContext().getUserReadOnlySynchronizer().synchronize(reviewer, false) :
+                    getContext().getUserReadOnlySynchronizer().convertToPersistentObject(reviewer));
         }
     }
 
-    protected void prepareLifeCycleEvents(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareLifeCycleEvents(IntactComplex intactComplex, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactComplex.areLifeCycleEventsInitialized()){
             List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactComplex.getLifecycleEvents());
             for (LifeCycleEvent event : eventsToPersist){
                 // do not persist or merge events because of cascades
-                LifeCycleEvent evt = getContext().getComplexLifecycleSynchronizer().synchronize(event, false);
+                LifeCycleEvent evt = enableSynchronization ?
+                        getContext().getComplexLifecycleSynchronizer().synchronize(event, false) :
+                        getContext().getComplexLifecycleSynchronizer().convertToPersistentObject(event);
                 // we have a different instance because needed to be synchronized
                 if (evt != event){
                     intactComplex.getLifecycleEvents().add(intactComplex.getLifecycleEvents().indexOf(event), evt);
@@ -188,13 +223,15 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         }
     }
 
-    protected void prepareCooperativeEffects(IntactComplex intactInteraction) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareCooperativeEffects(IntactComplex intactInteraction, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactInteraction.areCooperativeEffectsInitialized()){
             Collection<CooperativeEffect> parametersToPersist = new ArrayList<CooperativeEffect>(intactInteraction.getCooperativeEffects());
             for (CooperativeEffect param : parametersToPersist){
                 // do not persist or merge parameters because of cascades
-                CooperativeEffect expParam = getContext().getCooperativeEffectSynchronizer().synchronize(param, false);
+                CooperativeEffect expParam = enableSynchronization ?
+                        getContext().getCooperativeEffectSynchronizer().synchronize(param, false) :
+                        getContext().getCooperativeEffectSynchronizer().convertToPersistentObject(param);
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     intactInteraction.getCooperativeEffects().remove(param);
@@ -204,14 +241,16 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         }
     }
 
-    protected void prepareParticipants(IntactComplex intactInteraction) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareParticipants(IntactComplex intactInteraction, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactInteraction.areParticipantsInitialized()){
             Collection<ModelledParticipant> participantsToPersist = new ArrayList<ModelledParticipant>(intactInteraction.getParticipants());
             for (ModelledParticipant participant : participantsToPersist){
                 // reinit parent
                 participant.setInteraction(intactInteraction);
                 // do not persist or merge participants because of cascades
-                ModelledParticipant expPart = (ModelledParticipant) getContext().getParticipantSynchronizer().synchronize(participant, false);
+                ModelledParticipant expPart = enableSynchronization ?
+                        (ModelledParticipant) getContext().getParticipantSynchronizer().synchronize(participant, false) :
+                        (ModelledParticipant) getContext().getParticipantSynchronizer().convertToPersistentObject(participant);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);
@@ -221,14 +260,16 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         }
     }
 
-    protected void prepareExperiments(IntactComplex intactComplex) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareExperiments(IntactComplex intactComplex, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactComplex.areExperimentsInitialized()){
 
             Collection<Experiment> experimentsToPersist = new ArrayList<Experiment>(intactComplex.getExperiments());
             for (Experiment exp : experimentsToPersist){
                 // synchronize experiment
-                Experiment expPar = getContext().getExperimentSynchronizer().synchronize(exp, true);
+                Experiment expPar = enableSynchronization ?
+                        getContext().getExperimentSynchronizer().synchronize(exp, true) :
+                        getContext().getExperimentSynchronizer().convertToPersistentObject(exp);
                 // we have a different instance because needed to be synchronized
                 if (expPar != exp){
                     intactComplex.getExperiments().remove(exp);
@@ -238,12 +279,14 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         }
     }
 
-    protected void prepareParameters(IntactComplex intactInteraction) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareParameters(IntactComplex intactInteraction, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactInteraction.areParametersInitialized()){
             Collection<ModelledParameter> parametersToPersist = new ArrayList<ModelledParameter>(intactInteraction.getModelledParameters());
             for (ModelledParameter param : parametersToPersist){
                 // do not persist or merge parameters because of cascades
-                ModelledParameter expPar = getContext().getComplexParameterSynchronizer().synchronize(param, false);
+                ModelledParameter expPar = enableSynchronization ?
+                        getContext().getComplexParameterSynchronizer().synchronize(param, false) :
+                        getContext().getComplexParameterSynchronizer().convertToPersistentObject(param);
                 // we have a different instance because needed to be synchronized
                 if (expPar != param){
                     intactInteraction.getModelledParameters().remove(param);
@@ -253,12 +296,14 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         }
     }
 
-    protected void prepareConfidences(IntactComplex intactInteraction) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareConfidences(IntactComplex intactInteraction, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteraction.areConfidencesInitialized()){
             List<ModelledConfidence> confsToPersist = new ArrayList<ModelledConfidence>(intactInteraction.getModelledConfidences());
             for (ModelledConfidence confidence : confsToPersist){
                 // do not persist or merge confidences because of cascades
-                ModelledConfidence expConf = getContext().getComplexConfidenceSynchronizer().synchronize(confidence, false);
+                ModelledConfidence expConf = enableSynchronization ?
+                        getContext().getComplexConfidenceSynchronizer().synchronize(confidence, false) :
+                        getContext().getComplexConfidenceSynchronizer().convertToPersistentObject(confidence);
                 // we have a different instance because needed to be synchronized
                 if (expConf != confidence){
                     intactInteraction.getModelledConfidences().remove(confidence);

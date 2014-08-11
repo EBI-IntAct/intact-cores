@@ -109,4 +109,20 @@ public class CompositeFeatureSynchronizer implements IntactDbSynchronizer<Featur
             return false;
         }
     }
+
+    @Override
+    public AbstractIntactFeature convertToPersistentObject(Feature term) throws SynchronizerException, PersisterException, FinderException {
+        if (term instanceof FeatureEvidence){
+            return this.context.getFeatureEvidenceSynchronizer().convertToPersistentObject((FeatureEvidence)term);
+        }
+        else if (term instanceof ModelledFeature) {
+            return this.context.getModelledFeatureSynchronizer().convertToPersistentObject((ModelledFeature)term);
+        }
+        else{
+            IntactFeatureEvidence featureEvidence = new IntactFeatureEvidence();
+            FeatureCloner.copyAndOverrideBasicFeaturesProperties(term, featureEvidence);
+
+            return this.context.getFeatureEvidenceSynchronizer().convertToPersistentObject(featureEvidence);
+        }
+    }
 }

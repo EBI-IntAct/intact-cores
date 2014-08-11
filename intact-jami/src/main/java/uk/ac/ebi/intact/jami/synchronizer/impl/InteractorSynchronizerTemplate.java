@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
@@ -28,6 +29,7 @@ import java.util.*;
 public class InteractorSynchronizerTemplate<T extends Interactor, I extends IntactInteractor> extends AbstractIntactDbSynchronizer<T, I>
 implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     private Map<T, I> persistedObjects;
+    private Map<T, I> convertedObjects;
 
     private static final Log log = LogFactory.getLog(InteractorSynchronizerTemplate.class);
 
@@ -127,29 +129,47 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         // then check full name
         prepareFullName(intactInteractor);
         // then check organism
-        if (intactInteractor.getOrganism() != null){
-            intactInteractor.setOrganism(getContext().getOrganismSynchronizer().synchronize(intactInteractor.getOrganism(), true));
-        }
+        synchronizeOrganism(intactInteractor, true);
         // then check interactor type
-        intactInteractor.setInteractorType(getContext().getInteractorTypeSynchronizer().synchronize(intactInteractor.getInteractorType(), true));
+        synchronizeInteractorType(intactInteractor, true);
         // then check aliases
-        prepareAliases(intactInteractor);
+        prepareAliases(intactInteractor, true);
         // then check annotations
-        prepareAnnotations(intactInteractor);
+        prepareAnnotations(intactInteractor, true);
         // then check xrefs
-        prepareXrefs(intactInteractor);
+        prepareXrefs(intactInteractor, true);
+    }
+
+    protected void synchronizeInteractorType(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        intactInteractor.setInteractorType(enableSynchronization ?
+                getContext().getInteractorTypeSynchronizer().synchronize(intactInteractor.getInteractorType(), true) :
+                getContext().getInteractorTypeSynchronizer().convertToPersistentObject(intactInteractor.getInteractorType()));
+    }
+
+    protected void synchronizeOrganism(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        if (intactInteractor.getOrganism() != null){
+            intactInteractor.setOrganism(enableSynchronization ?
+                    getContext().getOrganismSynchronizer().synchronize(intactInteractor.getOrganism(), true) :
+                    getContext().getOrganismSynchronizer().convertToPersistentObject(intactInteractor.getOrganism()));
+        }
     }
 
     public void clearCache() {
         this.persistedObjects.clear();
+        this.convertedObjects.clear();
     }
 
     protected void initialisePersistedObjectMap() {
         this.persistedObjects = new TreeMap<T, I>(new UnambiguousExactInteractorBaseComparator());
+        this.convertedObjects = new IdentityMap();
     }
 
     protected void setPersistedObjects(Map<T, I> persistedObjects) {
         this.persistedObjects = persistedObjects;
+    }
+
+    protected void setConvertedObjects(Map<T, I> persistedObjects) {
+        this.convertedObjects = persistedObjects;
     }
 
     @Override
@@ -184,12 +204,43 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         return this.persistedObjects.containsKey(object);
     }
 
-    protected void prepareXrefs(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+        return this.convertedObjects.containsKey(object);
+    }
+
+    @Override
+    protected I fetchMatchingPersistableObject(T object) {
+        return this.convertedObjects.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(I object) throws SynchronizerException, PersisterException, FinderException {
+        // then check organism
+        synchronizeOrganism(object, false);
+        // then check interactor type
+        synchronizeInteractorType(object, false);
+        // then check aliases
+        prepareAliases(object, false);
+        // then check annotations
+        prepareAnnotations(object, false);
+        // then check xrefs
+        prepareXrefs(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(T originalObject, I persistableObject) {
+        this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    protected void prepareXrefs(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref cvXref = getContext().getInteractorXrefSynchronizer().synchronize(xref, false);
+                Xref cvXref = enableSynchronization ?
+                        getContext().getInteractorXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getInteractorXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactInteractor.getDbXrefs().remove(xref);
@@ -199,12 +250,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         }
     }
 
-    protected void prepareAnnotations(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteractor.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                Annotation cvAnnotation = getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false);
+                Annotation cvAnnotation = enableSynchronization ?
+                        getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false) :
+                        getContext().getInteractorAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactInteractor.getDbAnnotations().remove(annotation);
@@ -214,12 +267,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         }
     }
 
-    protected void prepareAliases(I intactInteractor) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactInteractor.getDbAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias cvAlias = getContext().getInteractorAliasSynchronizer().synchronize(alias, false);
+                Alias cvAlias = enableSynchronization ?
+                        getContext().getInteractorAliasSynchronizer().synchronize(alias, false) :
+                        getContext().getInteractorAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactInteractor.getDbAliases().remove(alias);
@@ -246,7 +301,6 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         List<String> existingInteractors;
         do{
             name = intactInteractor.getShortName().trim().toLowerCase();
-            existingInteractors = Collections.EMPTY_LIST;
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select i.shortName from IntactInteractor i " +

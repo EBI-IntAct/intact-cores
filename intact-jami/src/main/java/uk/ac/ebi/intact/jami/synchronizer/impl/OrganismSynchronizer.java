@@ -1,20 +1,23 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.utils.clone.OrganismCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.synchronizer.impl.AliasSynchronizerTemplate;
-import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -29,6 +32,7 @@ import java.util.*;
 
 public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism> implements OrganismFetcher{
     private Map<Organism, IntactOrganism> persistedObjects;
+    private Map<Organism, IntactOrganism> convertedObjects;
 
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
 
@@ -36,6 +40,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         super(context, IntactOrganism.class);
         // to keep track of persisted cvs
         this.persistedObjects = new HashMap<Organism, IntactOrganism>();
+        this.convertedObjects = new IdentityMap();
     }
 
     public IntactOrganism find(Organism term) throws FinderException {
@@ -122,13 +127,14 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         // then check full name
         prepareFullName(intactOrganism);
         // then check aliases
-        prepareAliases(intactOrganism);
+        prepareAliases(intactOrganism, true);
         // then check annotations
-        prepareCellTypeAndTissue(intactOrganism);
+        prepareCellTypeAndTissue(intactOrganism, true);
     }
 
     public void clearCache() {
         this.persistedObjects.clear();
+        this.convertedObjects.clear();
     }
 
     public IntactOrganism fetchByTaxID(int taxID) throws BridgeFailedException {
@@ -162,21 +168,27 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         return results;
     }
 
-    protected void prepareCellTypeAndTissue(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareCellTypeAndTissue(IntactOrganism intactOrganism, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactOrganism.getCellType() != null){
-            intactOrganism.setCellType(getContext().getCellTypeSynchronizer().synchronize(intactOrganism.getCellType(), true));
+            intactOrganism.setCellType(enableSynchronization ?
+                    getContext().getCellTypeSynchronizer().synchronize(intactOrganism.getCellType(), true) :
+                    getContext().getCellTypeSynchronizer().convertToPersistentObject(intactOrganism.getCellType()));
         }
         if (intactOrganism.getTissue() != null){
-            intactOrganism.setTissue(getContext().getTissueSynchronizer().synchronize(intactOrganism.getTissue(), true));
+            intactOrganism.setTissue(enableSynchronization ?
+                    getContext().getTissueSynchronizer().synchronize(intactOrganism.getTissue(), true) :
+                    getContext().getTissueSynchronizer().convertToPersistentObject(intactOrganism.getTissue()));
         }
     }
 
-    protected void prepareAliases(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(IntactOrganism intactOrganism, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactOrganism.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactOrganism.getAliases());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                Alias organismAlias = getContext().getOrganismAliasSynchronizer().synchronize(alias, false);
+                Alias organismAlias = enableSynchronization ?
+                        getContext().getOrganismAliasSynchronizer().synchronize(alias, false) :
+                        getContext().getOrganismAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
                 if (organismAlias != alias){
                     intactOrganism.getAliases().remove(alias);
@@ -275,6 +287,29 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     @Override
     protected boolean isObjectStoredInCache(Organism object) {
         return this.persistedObjects.containsKey(object);
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Organism object) {
+        return this.convertedObjects.containsKey(object);
+    }
+
+    @Override
+    protected IntactOrganism fetchMatchingPersistableObject(Organism object) {
+        return this.convertedObjects.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(IntactOrganism intactOrganism) throws SynchronizerException, PersisterException, FinderException {
+        // then check aliases
+        prepareAliases(intactOrganism, false);
+        // then check annotations
+        prepareCellTypeAndTissue(intactOrganism, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Organism originalObject, IntactOrganism persistableObject) {
+        this.convertedObjects.put(originalObject, persistableObject);
     }
 
     @Override

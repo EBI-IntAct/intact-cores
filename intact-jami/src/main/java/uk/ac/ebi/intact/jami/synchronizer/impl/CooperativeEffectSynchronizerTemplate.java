@@ -39,26 +39,28 @@ implements CooperativeEffectSynchronizer<T, C> {
 
     public void synchronizeProperties(C object) throws FinderException, PersisterException, SynchronizerException {
         // outcome first
-        prepareOutcome(object);
+        prepareOutcome(object, true);
         // response
-        prepareResponse(object);
+        prepareResponse(object, true);
         // cooperativity evidences
-        prepareCooperativityEvidences(object);
+        prepareCooperativityEvidences(object, true);
         // affected interactions
-        prepareAffectedInteractions(object);
+        prepareAffectedInteractions(object, true);
         // annotations
-        prepareAnnotations(object);
+        prepareAnnotations(object, true);
     }
 
     public void clearCache() {
         // nothing to do
     }
 
-    protected void prepareAnnotations(C object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareAnnotations(C object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (object.areAnnotationsInitialized()){
             Collection<Annotation> annotsToPersist = new ArrayList<Annotation>(object.getAnnotations());
             for (Annotation annot : annotsToPersist){
-                Annotation persistentAnnot = getContext().getCooperativeEffectAnnotationSynchronizer().synchronize(annot, false);
+                Annotation persistentAnnot = enableSynchronization ?
+                        getContext().getCooperativeEffectAnnotationSynchronizer().synchronize(annot, false) :
+                        getContext().getCooperativeEffectAnnotationSynchronizer().convertToPersistentObject(annot);
                 // we have a different instance because needed to be synchronized
                 if (persistentAnnot != annot){
                     object.getAnnotations().remove(annot);
@@ -68,7 +70,7 @@ implements CooperativeEffectSynchronizer<T, C> {
         }
     }
 
-    protected void prepareAffectedInteractions(C object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareAffectedInteractions(C object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (object.areAffectedInteractionsInitialized()){
             Collection<ModelledInteraction> interactionsToPersist = new ArrayList<ModelledInteraction>(object.getAffectedInteractions());
             for (ModelledInteraction interaction : interactionsToPersist){
@@ -82,7 +84,9 @@ implements CooperativeEffectSynchronizer<T, C> {
                     convertedComplex = (Complex)interaction;
                 }
 
-                Complex persistentInteraction = getContext().getComplexSynchronizer().synchronize(convertedComplex, true);
+                Complex persistentInteraction = enableSynchronization ?
+                        getContext().getComplexSynchronizer().synchronize(convertedComplex, true) :
+                        getContext().getComplexSynchronizer().convertToPersistentObject(convertedComplex);
                 // we have a different instance because needed to be synchronized
                 if (persistentInteraction != interaction){
                     object.getAffectedInteractions().remove(interaction);
@@ -92,11 +96,13 @@ implements CooperativeEffectSynchronizer<T, C> {
         }
     }
 
-    protected void prepareCooperativityEvidences(C object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareCooperativityEvidences(C object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (object.areCooperativityEvidencesInitialized()){
             Collection<CooperativityEvidence> parametersToPersist = new ArrayList<CooperativityEvidence>(object.getCooperativityEvidences());
             for (CooperativityEvidence param : parametersToPersist){
-                CooperativityEvidence expParam = getContext().getCooperativityEvidenceSynchronizer().synchronize(param, false);
+                CooperativityEvidence expParam = enableSynchronization ?
+                        getContext().getCooperativityEvidenceSynchronizer().synchronize(param, false) :
+                        getContext().getCooperativityEvidenceSynchronizer().convertToPersistentObject(param);
                 // we have a different instance because needed to be synchronized
                 if (expParam != param){
                     object.getCooperativityEvidences().remove(param);
@@ -106,15 +112,21 @@ implements CooperativeEffectSynchronizer<T, C> {
         }
     }
 
-    protected void prepareResponse(C object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareResponse(C object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
        CvTerm outcome = object.getOutCome();
-       object.setOutCome(getContext().getTopicSynchronizer().synchronize(outcome, true));
+       object.setOutCome(enableSynchronization ?
+               getContext().getTopicSynchronizer().synchronize(outcome, true) :
+               getContext().getTopicSynchronizer().convertToPersistentObject(outcome));
     }
 
-    protected void prepareOutcome(C object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareOutcome(C object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         CvTerm response = object.getResponse();
-        object.setResponse(getContext().getTopicSynchronizer().synchronize(response, true));
+        if (response != null){
+            object.setResponse(enableSynchronization ?
+                    getContext().getTopicSynchronizer().synchronize(response, true) :
+                    getContext().getTopicSynchronizer().convertToPersistentObject(response));
+        }
     }
 
     @Override
@@ -142,6 +154,35 @@ implements CooperativeEffectSynchronizer<T, C> {
     @Override
     protected boolean isObjectStoredInCache(T object) {
         return false;
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(T object) {
+        return false;
+    }
+
+    @Override
+    protected C fetchMatchingPersistableObject(T object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(C object) throws SynchronizerException, PersisterException, FinderException {
+        // outcome first
+        prepareOutcome(object, false);
+        // response
+        prepareResponse(object, false);
+        // cooperativity evidences
+        prepareCooperativityEvidences(object, false);
+        // affected interactions
+        prepareAffectedInteractions(object, false);
+        // annotations
+        prepareAnnotations(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(T originalObject, C persistableObject) {
+        // nothing to do here
     }
 
     @Override

@@ -4,15 +4,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
-import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -100,6 +97,26 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     @Override
     protected boolean isObjectStoredInCache(Role object) {
         return this.persistedRoles.containsKey(object);
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(Role object) {
+        return false;
+    }
+
+    @Override
+    protected Role fetchMatchingPersistableObject(Role object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(Role object) throws SynchronizerException, PersisterException, FinderException {
+         // nothing to do
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(Role originalObject, Role persistableObject) {
+        // nothing to do
     }
 
     @Override

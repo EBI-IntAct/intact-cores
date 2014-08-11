@@ -27,10 +27,12 @@ import java.util.Map;
 
 public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchronizer<VariableParameterValue, IntactVariableParameterValue> {
     private Map<VariableParameterValue, IntactVariableParameterValue> persistedObjects;
+    private Map<VariableParameterValue, IntactVariableParameterValue> convertedObjects;
 
     public VariableParameterValueSynchronizer(SynchronizerContext context) {
         super(context, IntactVariableParameterValue.class);
         this.persistedObjects = new IdentityMap();
+        this.convertedObjects = new IdentityMap();
     }
 
     @Override
@@ -61,6 +63,26 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
     @Override
     protected boolean isObjectStoredInCache(VariableParameterValue object) {
         return this.persistedObjects.containsKey(object);
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(VariableParameterValue object) {
+        return this.convertedObjects.containsKey(object);
+    }
+
+    @Override
+    protected IntactVariableParameterValue fetchMatchingPersistableObject(VariableParameterValue object) {
+        return this.convertedObjects.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(IntactVariableParameterValue object) throws SynchronizerException, PersisterException, FinderException {
+        // nothing to do
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(VariableParameterValue originalObject, IntactVariableParameterValue persistableObject) {
+         this.convertedObjects.put(originalObject, persistableObject);
     }
 
     public IntactVariableParameterValue find(VariableParameterValue object) throws FinderException {

@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +43,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     private String objClass;
     private Map<CvTerm, IntactCvTerm> persistedObjects;
+    private Map<CvTerm, IntactCvTerm> convertedObjects;
 
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
 
@@ -51,6 +53,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         this.objClass = IntactUtils.TOPIC_OBJCLASS;
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
+        this.convertedObjects = new IdentityMap();
     }
 
     public CvTermSynchronizer(SynchronizerContext context, String objClass){
@@ -111,15 +114,15 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactCv);
         // then check aliases
-        prepareAliases(intactCv);
+        prepareAliases(intactCv, true);
         // then check annotations
-        prepareAnnotations(intactCv);
+        prepareAnnotations(intactCv, true);
         // set identifier for backward compatibility
         initialiseIdentifier(intactCv);
         // then check xrefs
-        prepareXrefs(intactCv);
+        prepareXrefs(intactCv, true);
         // do synchronize parent but not children
-        prepareParents(intactCv);
+        prepareParents(intactCv, true);
     }
 
     public OntologyTerm fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
@@ -233,6 +236,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     public void clearCache() {
         this.persistedObjects.clear();
+        this.convertedObjects.clear();
     }
 
     public String getObjClass() {
@@ -352,6 +356,33 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         return this.persistedObjects.containsKey(object);
     }
 
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(CvTerm object) {
+        return this.convertedObjects.containsKey(object);
+    }
+
+    @Override
+    protected IntactCvTerm fetchMatchingPersistableObject(CvTerm object) {
+        return this.convertedObjects.get(object);
+    }
+
+    @Override
+    protected void convertPersistableProperties(IntactCvTerm intactCv) throws SynchronizerException, PersisterException, FinderException {
+        // then check aliases
+        prepareAliases(intactCv, false);
+        // then check annotations
+        prepareAnnotations(intactCv, false);
+        // then check xrefs
+        prepareXrefs(intactCv, false);
+        // do synchronize parent but not children
+        prepareParents(intactCv, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(CvTerm originalObject, IntactCvTerm persistableObject) {
+        this.convertedObjects.put(originalObject, persistableObject);
+    }
+
     protected void initialiseIdentifier(IntactCvTerm intactCv) throws SynchronizerException {
         // if xrefs have been initialised, some identifiers may have changed
         if (intactCv.areXrefsInitialized()){
@@ -412,12 +443,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         }
     }*/
 
-    protected void prepareParents(IntactCvTerm intactCv) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareParents(IntactCvTerm intactCv, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactCv.areParentsInitialized()){
             List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getParents());
             for (OntologyTerm term : termsToPersist){
-                IntactCvTerm cvParent = synchronize(term, true);
+                IntactCvTerm cvParent = enableSynchronization ?
+                        synchronize(term, true) :
+                        convertToPersistentObject(term);
                 // we have a different instance because needed to be synchronized
                 if (cvParent != term){
                     intactCv.removeParent(term);
@@ -427,12 +460,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         }
     }
 
-    protected void prepareXrefs(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(IntactCvTerm intactCv, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                CvTermXref cvXref = getContext().getCvXrefSynchronizer().synchronize(xref, false);
+                CvTermXref cvXref = enableSynchronization ?
+                        getContext().getCvXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getCvXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
                 if (cvXref != xref){
                     intactCv.getDbXrefs().remove(xref);
@@ -442,12 +477,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         }
     }
 
-    protected void prepareAnnotations(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAnnotations(IntactCvTerm intactCv, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getDbAnnotations());
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
-                CvTermAnnotation cvAnnotation = getContext().getCvAnnotationSynchronizer().synchronize(annotation, false);
+                CvTermAnnotation cvAnnotation = enableSynchronization ?
+                        getContext().getCvAnnotationSynchronizer().synchronize(annotation, false):
+                        getContext().getCvAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
                 if (cvAnnotation != annotation){
                     intactCv.getDbAnnotations().remove(annotation);
@@ -457,12 +494,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         }
     }
 
-    protected void prepareAliases(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareAliases(IntactCvTerm intactCv, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areSynonymsInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
-                CvTermAlias cvAlias = getContext().getCvAliasSynchronizer().synchronize(alias, false);
+                CvTermAlias cvAlias = enableSynchronization ?
+                        getContext().getCvAliasSynchronizer().synchronize(alias, false):
+                        getContext().getCvAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
                 if (cvAlias != alias){
                     intactCv.getSynonyms().remove(alias);

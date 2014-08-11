@@ -28,21 +28,37 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
         super(context, AbstractIntactAllostery.class);
     }
 
+    @Override
     public void synchronizeProperties(AbstractIntactAllostery object) throws FinderException, PersisterException, SynchronizerException {
         super.synchronizeProperties(object);
 
         // prepare mechanism
-        prepareMechanism(object);
+        prepareMechanism(object, true);
         // prepare allostery type
-        prepareAllosteryType(object);
+        prepareAllosteryType(object, true);
         // prepare allosteric effector
-        prepareAllostericEffector(object);
+        prepareAllostericEffector(object, true);
         // prepare allostericMolecule
-        prepareAllostericMolecule(object);
+        prepareAllostericMolecule(object, true);
 
     }
 
-    protected void prepareAllostericEffector(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
+    @Override
+    public void convertPersistableProperties(AbstractIntactAllostery object) throws FinderException, PersisterException, SynchronizerException {
+        super.convertPersistableProperties(object);
+
+        // prepare mechanism
+        prepareMechanism(object, false);
+        // prepare allostery type
+        prepareAllosteryType(object, false);
+        // prepare allosteric effector
+        prepareAllostericEffector(object, false);
+        // prepare allostericMolecule
+        prepareAllostericMolecule(object, false);
+
+    }
+
+    protected void prepareAllostericEffector(AbstractIntactAllostery object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         switch (object.getAllostericEffector().getEffectorType()){
             case molecule:
                 MoleculeEffector moleculeEffector = (MoleculeEffector)object.getAllostericEffector();
@@ -55,8 +71,9 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
 
                 ModelledEntity participant = moleculeEffector.getMolecule();
                 if (participant instanceof ModelledParticipant){
-                    ((IntactMoleculeEffector) moleculeEffector).setMolecule((ModelledParticipant)getContext().
-                            getParticipantSynchronizer().synchronize((ModelledParticipant)participant, false));
+                    ((IntactMoleculeEffector) moleculeEffector).setMolecule(enableSynchronization ?
+                            (ModelledParticipant)getContext().getParticipantSynchronizer().synchronize((ModelledParticipant)participant, false) :
+                            (ModelledParticipant)getContext().getParticipantSynchronizer().convertToPersistentObject((ModelledParticipant)participant));
                 }
                 // TODO: what to do with participant set and candidates?
                 else{
@@ -73,32 +90,39 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
                 }
 
                 ModelledFeature feature = featureEffector.getFeatureModification();
-                ((IntactFeatureModificationEffector) featureEffector).setFeatureModification(getContext().getModelledFeatureSynchronizer().synchronize(feature, false));
+                ((IntactFeatureModificationEffector) featureEffector).setFeatureModification(enableSynchronization ?
+                        getContext().getModelledFeatureSynchronizer().synchronize(feature, false) :
+                        getContext().getModelledFeatureSynchronizer().convertToPersistentObject(feature));
                 break;
             default:
                 throw new SynchronizerException("Does not recognize allosteric effector "+object.getAllostericEffector()+", so cannot synchronize the allosteric effector. Was expecting a molecule effector or a feature modification effector.");
         }
     }
 
-    protected void prepareMechanism(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
-        CvTerm mehcanism = object.getAllostericMechanism();
-        if (mehcanism != null){
-            object.setAllostericMechanism(getContext().getTopicSynchronizer().synchronize(mehcanism, true));
+    protected void prepareMechanism(AbstractIntactAllostery object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
+        CvTerm mechanism = object.getAllostericMechanism();
+        if (mechanism != null){
+            object.setAllostericMechanism(enableSynchronization ?
+                    getContext().getTopicSynchronizer().synchronize(mechanism, true) :
+                    getContext().getTopicSynchronizer().convertToPersistentObject(mechanism));
         }
     }
 
-    protected void prepareAllosteryType(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareAllosteryType(AbstractIntactAllostery object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         CvTerm type = object.getAllosteryType();
         if (type != null){
-            object.setAllosteryType(getContext().getTopicSynchronizer().synchronize(type, true));
+            object.setAllosteryType(enableSynchronization ?
+                    getContext().getTopicSynchronizer().synchronize(type, true) :
+                    getContext().getTopicSynchronizer().convertToPersistentObject(type));
         }
     }
 
-    protected void prepareAllostericMolecule(AbstractIntactAllostery object) throws PersisterException, FinderException, SynchronizerException {
+    protected void prepareAllostericMolecule(AbstractIntactAllostery object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         ModelledEntity participant = object.getAllostericMolecule();
         if (participant instanceof ModelledParticipant){
-            object.setAllostericMolecule((ModelledParticipant)getContext().
-                    getParticipantSynchronizer().synchronize((ModelledParticipant)participant, false));
+            object.setAllostericMolecule(enableSynchronization ?
+                    (ModelledParticipant)getContext().getParticipantSynchronizer().synchronize((ModelledParticipant)participant, false) :
+                    (ModelledParticipant)getContext().getParticipantSynchronizer().convertToPersistentObject((ModelledParticipant)participant));
         }
         // TODO: what to do with participant set and candidates?
         else{

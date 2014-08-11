@@ -28,7 +28,7 @@ public class ModelledRangeSynchronizer extends RangeSynchronizerTemplate<Modelle
     }
 
     @Override
-    protected void prepareResultingSequence(ModelledRange object) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareResultingSequence(ModelledRange object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         // prepare ResultingSequence
         if (object.getResultingSequence() != null){
             if (!(object.getResultingSequence() instanceof ModelledResultingSequence)){
@@ -38,17 +38,19 @@ public class ModelledRangeSynchronizer extends RangeSynchronizerTemplate<Modelle
             }
 
             // prepare xrefs of resulting sequence
-            prepareXrefs((ModelledResultingSequence)object.getResultingSequence());
+            prepareXrefs((ModelledResultingSequence)object.getResultingSequence(), enableSynchronization);
         }
     }
 
     @Override
-    protected void prepareXrefs(AbstractIntactResultingSequence intactObj) throws FinderException, PersisterException, SynchronizerException {
+    protected void prepareXrefs(AbstractIntactResultingSequence intactObj, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactObj.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
-                Xref objRef = getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false);
+                Xref objRef = enableSynchronization ?
+                        getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false):
+                        getContext().getModelledResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
                 if (objRef != xref){
                     intactObj.getXrefs().remove(xref);

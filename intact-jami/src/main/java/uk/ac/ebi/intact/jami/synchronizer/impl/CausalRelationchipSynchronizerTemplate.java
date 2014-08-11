@@ -34,10 +34,13 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
 
     public void synchronizeProperties(I object) throws FinderException, PersisterException, SynchronizerException {
         // synchronize relation type
-        CvTerm type = object.getRelationType();
-        object.setRelationType(getContext().getTopicSynchronizer().synchronize(type, true));
+        synchronizeRelationType(object, true);
 
         // synchronize target
+        synchronizeTarget(object, true);
+    }
+
+    protected void synchronizeTarget(I object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         Entity target = object.getTarget();
         if (target instanceof Participant){
             object.setTarget(getContext().getParticipantSynchronizer().synchronize((Participant)target, false));
@@ -46,6 +49,11 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
         else{
             throw new UnsupportedOperationException("The existing causal relationship synchronizer does not take into account entities that are not participants");
         }
+    }
+
+    protected void synchronizeRelationType(I object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        CvTerm type = object.getRelationType();
+        object.setRelationType(getContext().getTopicSynchronizer().synchronize(type, true));
     }
 
     public void clearCache() {
@@ -75,6 +83,30 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     @Override
     protected boolean isObjectStoredInCache(CausalRelationship object) {
         return false;
+    }
+
+    @Override
+    protected boolean isObjectAlreadyConvertedToPersistableInstance(CausalRelationship object) {
+        return false;
+    }
+
+    @Override
+    protected I fetchMatchingPersistableObject(CausalRelationship object) {
+        return null;
+    }
+
+    @Override
+    protected void convertPersistableProperties(I object) throws SynchronizerException, PersisterException, FinderException {
+        // synchronize relation type
+        synchronizeRelationType(object, false);
+
+        // synchronize target
+        synchronizeTarget(object, false);
+    }
+
+    @Override
+    protected void storePersistableObjectInCache(CausalRelationship originalObject, I persistableObject) {
+         // nothing to do
     }
 
     @Override
