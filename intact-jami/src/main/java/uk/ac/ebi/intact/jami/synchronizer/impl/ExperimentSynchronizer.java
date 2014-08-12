@@ -92,9 +92,9 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                     (fetchedParticipantDetectionMethod != null ? "join e.participantIdentificationMethod as ident " : "" ) +
                     "where "+
                     (fetchedOrganism != null ? "h.ac = :orgAc " : "e.hostOrganism is null " ) +
-                    (fetchedDetectionMethod != null ? "det.ac = :detAc " : "e.interactionDetectionMethod is null " ) +
-                    (fetchedPublication != null ? "p.ac = :pubAc " : "e.publication is null " ) +
-                    (fetchedParticipantDetectionMethod != null ? "ident.ac = :identAc" : "e.participantIdentificationMethod is null" ));
+                    (fetchedDetectionMethod != null ? "and det.ac = :detAc " : "and e.interactionDetectionMethod is null " ) +
+                    (fetchedPublication != null ? "and p.ac = :pubAc " : "and e.publication is null " ) +
+                    (fetchedParticipantDetectionMethod != null ? "and ident.ac = :identAc" : "and e.participantIdentificationMethod is null" ));
             if (fetchedOrganism != null){
                 query.setParameter("orgAc", fetchedOrganism.getAc());
             }
