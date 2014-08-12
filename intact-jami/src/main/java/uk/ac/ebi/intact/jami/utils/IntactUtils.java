@@ -9,10 +9,7 @@ import uk.ac.ebi.intact.jami.model.extension.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -290,9 +287,14 @@ public class IntactUtils {
             label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_");
             finalLabel = label+"-"+yearString;
         }
-        else{
+        else if (pub.getPublicationDate() != null){
             label = "unknown";
             yearString = IntactUtils.YEAR_FORMAT.format(pub.getPublicationDate());
+            finalLabel = "unknown-"+yearString;
+        }
+        else{
+            label = "unknown";
+            yearString = IntactUtils.YEAR_FORMAT.format(new Date());
             finalLabel = "unknown-"+yearString;
         }
 
