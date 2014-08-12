@@ -58,12 +58,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     public T synchronize(I object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
 
-        // check cache when possible
-        if (isObjectStoredInCache(object)){
-            return fetchObjectFromCache(object);
-        }
-
         if (!this.intactClass.isAssignableFrom(object.getClass())){
+            // check cache when possible. The object should be fully initialised as it is not a hibernate entity
+            if (isObjectStoredInCache(object)){
+                return fetchObjectFromCache(object);
+            }
+
             T newObject = null;
             try {
                 newObject = instantiateNewPersistentInstance(object, this.intactClass);
@@ -89,10 +89,18 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // retrieve and or persist transient instance
             else if (identifier == null){
+                // check cache when possible
+                if (isObjectStoredInCache(object)){
+                    return fetchObjectFromCache(object);
+                }
                 // new object to synchronize with db
                 return findOrPersist(object, intactObject, persist);
             }
             else{
+                // check cache when possible
+                if (isObjectStoredInCache(object)){
+                    return fetchObjectFromCache(object);
+                }
                 // cache object to persist if allowed
                 storeInCache(object, intactObject, intactObject);
                 // synchronize properties
@@ -169,7 +177,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // the reloaded object is not null and is the one that should be used in the cache because we ignore local changes
             if (reloaded != null){
                 // cache object to persist if allowed
-                storeInCache((I)intactObject, intactObject, reloaded);
+                storeInCache((I)reloaded, intactObject, reloaded);
                 return reloaded;
             }
             // the reloaded object does not exist which means the object is corrupted? Already deleted?
@@ -183,7 +191,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // merge
             T mergedObject = this.entityManager.merge(intactObject);
             // cache object to persist if allowed
-            storeInCache((I)intactObject, intactObject, mergedObject);
+            storeInCache((I)mergedObject, intactObject, mergedObject);
 
             return mergedObject;
         }

@@ -134,7 +134,7 @@ public class XrefSynchronizerTemplateTest extends AbstractDbSynchronizerTest<Xre
         Assert.assertNull(interactionXref.getQualifier());
         IntactCvTerm db2 = (IntactCvTerm)interactionXref.getDatabase();
         Assert.assertNotNull(db2.getAc());
-        Assert.assertTrue(interactionXref.getDatabase() == cvXref.getDatabase());
+        Assert.assertEquals(interactionXref.getDatabase(), cvXref.getDatabase());
         Assert.assertEquals("123456", interactionXref.getId());
 
         this.synchronizer.setIntactClass(InteractorXref.class);

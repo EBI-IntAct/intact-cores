@@ -3,11 +3,11 @@ package uk.ac.ebi.intact.jami.utils.comparator;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Experiment;
-import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.annotation.AnnotationComparator;
 import psidev.psi.mi.jami.utils.comparator.annotation.UnambiguousAnnotationComparator;
 import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousExperimentComparator;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.Collection;
 
@@ -37,9 +37,18 @@ public class IntactExperimentComparator extends UnambiguousExperimentComparator{
             return comp;
         }
 
-        if (exp1 != null && exp2 != null){
-            CvTerm identificationMethod1 = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp1);
-            CvTerm identificationMethod2 = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp2);
+        if (exp1 == exp2){
+            return 0;
+        }
+        else if (exp1 == null){
+            return 1;
+        }
+        else if (exp2 == null){
+            return -1;
+        }
+        else {
+            CvTerm identificationMethod1 = IntactUtils.extractMostCommonParticipantDetectionMethodFrom(exp1);
+            CvTerm identificationMethod2 = IntactUtils.extractMostCommonParticipantDetectionMethodFrom(exp2);
             int EQUAL = 0;
             int BEFORE = -1;
             int AFTER = 1;
@@ -64,9 +73,6 @@ public class IntactExperimentComparator extends UnambiguousExperimentComparator{
             Collection<Annotation> annots1 = exp1.getAnnotations();
             Collection<Annotation> annots2 = exp2.getAnnotations();
             return this.annotationCollectionComparator.compare(annots1, annots2);
-        }
-        else{
-            return comp;
         }
     }
 

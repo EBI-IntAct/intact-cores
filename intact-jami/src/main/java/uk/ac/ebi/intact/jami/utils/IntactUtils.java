@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.utils;
 
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AliasUtils;
+import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.ParticipantUtils;
 import psidev.psi.mi.jami.utils.comparator.IntegerComparator;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -512,5 +513,16 @@ public class IntactUtils {
         defaultExperiment.setParticipantIdentificationMethod(IntactUtils.createMIParticipantIdentificationMethod(Participant.PREDETERMINED, Participant.PREDETERMINED_MI));
         // then add this complex
         intactComplex.getExperiments().add(defaultExperiment);
+    }
+
+    public static CvTerm extractMostCommonParticipantDetectionMethodFrom(Experiment exp){
+        if (exp instanceof IntactExperiment){
+             IntactExperiment intactExp = (IntactExperiment)exp;
+            if (intactExp.getParticipantIdentificationMethod() != null){
+                 return intactExp.getParticipantIdentificationMethod();
+            }
+        }
+        return ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp);
+
     }
 }
