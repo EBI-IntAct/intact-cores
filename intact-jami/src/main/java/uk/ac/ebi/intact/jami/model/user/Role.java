@@ -24,6 +24,8 @@ public class Role extends AbstractIntactPrimaryObject {
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_REVIEWER = "REVIEWER";
     public static final String ROLE_CURATOR = "CURATOR";
+    public static final String ROLE_COMPLEX_REVIEWER = "COMPLEX_REVIEWER";
+    public static final String ROLE_COMPLEX_CURATOR = "COMPLEX_CURATOR";
 
     private String name;
 
