@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 import psidev.psi.mi.jami.model.ResultingSequence;
 import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.comparator.range.ResultingSequenceComparator;
@@ -37,12 +38,14 @@ public abstract class AbstractIntactResultingSequence implements ResultingSequen
     }
 
     @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     @Column(name = "resulting_sequence")
     public String getNewSequence() {
         return newSequence;
     }
 
     @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     @Column(name = "full_sequence")
     public String getOriginalSequence() {
         return originalSequence;

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.lifecycle;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Type;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -95,6 +96,7 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
     }
 
     @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     public String getNote() {
         return note;
     }

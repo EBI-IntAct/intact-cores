@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.model.user;
 
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -70,6 +71,7 @@ public class Preference extends AbstractIntactPrimaryObject {
     }
 
     @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     public String getValue() {
         return value;
     }
