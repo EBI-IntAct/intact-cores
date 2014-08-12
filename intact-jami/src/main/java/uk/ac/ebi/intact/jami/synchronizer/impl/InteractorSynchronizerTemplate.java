@@ -393,7 +393,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                 }
                 else{
                     query = getEntityManager().createQuery("select distinct i from "+getIntactClass().getSimpleName()+" i " +
-                            "join i.persistentXrefs as x " +
+                            "join i.dbXrefs as x " +
                             "join x.database as d " +
                             "join x.qualifier as q " +
                             "join i.organism as o " +

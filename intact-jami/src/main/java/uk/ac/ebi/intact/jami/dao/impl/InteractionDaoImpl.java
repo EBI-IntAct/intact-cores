@@ -235,7 +235,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
             }
             else{
                 query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
-                        "join f.persistentXrefs as x " +
+                        "join f.dbXrefs as x " +
                         "join x.database as d " +
                         "join x.qualifier as q " +
                         "where d.shortName = :dbName " +

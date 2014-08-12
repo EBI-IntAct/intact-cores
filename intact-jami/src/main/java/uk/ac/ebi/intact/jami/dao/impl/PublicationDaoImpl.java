@@ -436,7 +436,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         }
         else{
             query = getEntityManager().createQuery("select distinct p from IntactPublication p "  +
-                    "join p.persistentAnnotations as a " +
+                    "join p.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortName = :topicName");
             query.setParameter("topicName", topicName);
