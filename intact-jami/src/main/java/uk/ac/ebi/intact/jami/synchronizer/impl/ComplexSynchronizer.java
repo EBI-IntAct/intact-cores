@@ -270,7 +270,6 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
             for (Experiment exp : experimentsToPersist){
                 // synchronize publication if not done yet
                 if (exp.getPublication() != null){
-                    exp.getPublication().getExperiments().clear();
                     Publication syncPub = enableSynchronization ?
                             getContext().getPublicationSynchronizer().synchronize(exp.getPublication(), true) :
                             getContext().getPublicationSynchronizer().convertToPersistentObject(exp.getPublication());
