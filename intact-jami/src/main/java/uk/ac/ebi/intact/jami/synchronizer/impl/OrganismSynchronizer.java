@@ -229,14 +229,14 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         List<String> existingOrganism;
         do{
             name = intactOrganism.getCommonName().trim().toLowerCase();
-            existingOrganism = Collections.EMPTY_LIST;
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = getEntityManager().createQuery("select o.commonName from IntactOrganism o " +
-                    "where (o.commonName = :name or o.commonName like :nameWithSuffix) "
+                    "where (o.commonName = :name or (o.commonName like :nameWithSuffix and o.commonName not like :nameWithCellTissue) ) "
                     + (intactOrganism.getAc() != null ? "and o.ac <> :organismAc" : ""));
             query.setParameter("name", name);
             query.setParameter("nameWithSuffix", name+"-%");
+            query.setParameter("nameWithCellTissue", name+"-%-%");
             if (intactOrganism.getAc() != null){
                 query.setParameter("organismAc", intactOrganism.getAc());
             }
