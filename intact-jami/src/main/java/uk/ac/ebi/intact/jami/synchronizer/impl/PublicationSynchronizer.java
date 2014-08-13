@@ -103,10 +103,6 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     public void synchronizeProperties(IntactPublication intactPublication) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactPublication);
-        // then check full name
-        prepareTitle(intactPublication);
-        // then check authors
-        preparePublicationAuthors(intactPublication);
         // then check xrefs
         prepareXrefs(intactPublication, true);
         // then check source
@@ -117,6 +113,10 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         prepareStatusAndCurators(intactPublication, true);
         // then check publication lifecycle
         prepareLifeCycleEvents(intactPublication, true);
+        // then check full name
+        prepareTitle(intactPublication);
+        // then check authors
+        preparePublicationAuthors(intactPublication);
         // then check annotations
         prepareAnnotations(intactPublication, true);
     }
