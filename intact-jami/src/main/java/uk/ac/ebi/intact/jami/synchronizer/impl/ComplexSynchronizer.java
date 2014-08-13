@@ -218,8 +218,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                         getContext().getComplexLifecycleSynchronizer().convertToPersistentObject(event);
                 // we have a different instance because needed to be synchronized
                 if (evt != event){
-                    intactComplex.getLifecycleEvents().add(intactComplex.getLifecycleEvents().indexOf(event), evt);
+                    int pos = intactComplex.getLifecycleEvents().indexOf(event);
                     intactComplex.getLifecycleEvents().remove(event);
+                    intactComplex.getLifecycleEvents().add(pos, evt);
                 }
             }
         }

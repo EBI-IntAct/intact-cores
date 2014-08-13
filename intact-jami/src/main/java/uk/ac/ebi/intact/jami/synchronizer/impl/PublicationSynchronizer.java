@@ -13,11 +13,10 @@ import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationCom
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.PublicationXref;
-import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
@@ -476,8 +475,9 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                         getContext().getPublicationLifecycleSynchronizer().convertToPersistentObject(event);
                 // we have a different instance because needed to be synchronized
                 if (evt != event){
-                    intactPublication.getLifecycleEvents().add(intactPublication.getLifecycleEvents().indexOf(event), evt);
+                    int pos = intactPublication.getLifecycleEvents().indexOf(event);
                     intactPublication.getLifecycleEvents().remove(event);
+                    intactPublication.getLifecycleEvents().add(pos, evt);
                 }
             }
         }
