@@ -188,9 +188,11 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected void storeInCache(T originalObject, I persistentObject, I existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
+            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
+            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 

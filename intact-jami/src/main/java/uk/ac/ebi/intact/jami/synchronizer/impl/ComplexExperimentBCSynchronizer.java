@@ -7,24 +7,31 @@ import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.comparator.IntactExperimentComparator;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactExperimentComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
- * Default synchronizer for publications
+ * Default synchronizer for experiments attached to complexes.
+ * This synchronizer is only for backward compatibility with intact core and should be deleted when intact-core is not needed anymore
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>21/01/14</pre>
  */
 
-public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experiment, IntactExperiment> {
+public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronizer<Experiment, IntactExperiment> {
 
     private Map<Experiment, IntactExperiment> persistedObjects;
     private Map<Experiment, IntactExperiment> convertedObjects;
@@ -32,7 +39,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     private CollectionComparator<Annotation> annotationCollectionComparator;
     private CollectionComparator<VariableParameter> variableParameterComparator;
 
-    public ExperimentSynchronizer(SynchronizerContext context){
+    public ComplexExperimentBCSynchronizer(SynchronizerContext context){
         super(context, IntactExperiment.class);
         // to keep track of persisted cvs
         IntactExperimentComparator comp = new IntactExperimentComparator();

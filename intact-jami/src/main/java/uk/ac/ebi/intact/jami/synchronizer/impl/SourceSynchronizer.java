@@ -255,9 +255,11 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     protected void storeInCache(Source originalObject, IntactSource persistentObject, IntactSource existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
+            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
+            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 

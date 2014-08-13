@@ -129,9 +129,11 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     protected void storeInCache(User originalObject, User persistentObject, User existingInstance) {
         if (existingInstance != null){
             this.persistedUsers.put(originalObject, existingInstance);
+            this.convertedUsers.put(originalObject, existingInstance);
         }
         else{
             this.persistedUsers.put(originalObject, persistentObject);
+            this.convertedUsers.put(originalObject, persistentObject);
         }
     }
 

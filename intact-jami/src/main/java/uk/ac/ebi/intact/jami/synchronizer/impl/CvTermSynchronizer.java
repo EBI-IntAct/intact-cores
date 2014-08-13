@@ -344,6 +344,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     @Override
     protected void storeInCache(CvTerm originalObject, IntactCvTerm persistentObject, IntactCvTerm existingInstance) {
         this.persistedObjects.put(originalObject, existingInstance != null ? existingInstance : persistentObject);
+        this.convertedObjects.put(originalObject, existingInstance != null ? existingInstance : persistentObject);
     }
 
     @Override

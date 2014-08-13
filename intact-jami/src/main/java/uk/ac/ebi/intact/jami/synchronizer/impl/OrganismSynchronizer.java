@@ -273,9 +273,11 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     protected void storeInCache(Organism originalObject, IntactOrganism persistentObject, IntactOrganism existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
+            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
+            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 

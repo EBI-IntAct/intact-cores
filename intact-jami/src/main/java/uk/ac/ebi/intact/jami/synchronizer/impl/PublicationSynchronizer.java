@@ -310,9 +310,11 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     protected void storeInCache(Publication originalObject, IntactPublication persistentObject, IntactPublication existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
+            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
+            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 
