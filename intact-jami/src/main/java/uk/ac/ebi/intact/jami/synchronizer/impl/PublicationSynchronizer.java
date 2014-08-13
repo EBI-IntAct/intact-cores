@@ -360,24 +360,26 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     protected void preparePublicationAuthors(IntactPublication intactPublication) {
-        if (intactPublication.getAuthors().isEmpty()){
-            AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getAnnotations(), Annotation.AUTHOR_MI, Annotation.AUTHOR);
-        }
-        else{
-            String authorAnnot = StringUtils.join(intactPublication.getAuthors(), ", ");
-            // truncate if necessary
-            if (IntactUtils.MAX_DESCRIPTION_LEN < authorAnnot.length()){
-                log.warn("Publication authors too long: "+authorAnnot+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");
-                authorAnnot = authorAnnot.substring(0, IntactUtils.MAX_DESCRIPTION_LEN);
-            }
-            Annotation authorList = AnnotationUtils.collectFirstAnnotationWithTopic(intactPublication.getAnnotations(), Annotation.AUTHOR_MI, Annotation.AUTHOR);
-            if (authorList != null){
-                if (!authorAnnot.equalsIgnoreCase(authorList.getValue())){
-                    authorList.setValue(authorAnnot);
-                }
+        if (intactPublication.areAnnotationsInitialized()){
+            if (intactPublication.getAuthors().isEmpty()){
+                AnnotationUtils.removeAllAnnotationsWithTopic(intactPublication.getDbAnnotations(), Annotation.AUTHOR_MI, Annotation.AUTHOR);
             }
             else{
-                intactPublication.getAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.AUTHOR, Annotation.AUTHOR_MI), authorAnnot));
+                String authorAnnot = StringUtils.join(intactPublication.getAuthors(), ", ");
+                // truncate if necessary
+                if (IntactUtils.MAX_DESCRIPTION_LEN < authorAnnot.length()){
+                    log.warn("Publication authors too long: "+authorAnnot+", will be truncated to "+ IntactUtils.MAX_DESCRIPTION_LEN+" characters.");
+                    authorAnnot = authorAnnot.substring(0, IntactUtils.MAX_DESCRIPTION_LEN);
+                }
+                Annotation authorList = AnnotationUtils.collectFirstAnnotationWithTopic(intactPublication.getDbAnnotations(), Annotation.AUTHOR_MI, Annotation.AUTHOR);
+                if (authorList != null){
+                    if (!authorAnnot.equalsIgnoreCase(authorList.getValue())){
+                        authorList.setValue(authorAnnot);
+                    }
+                }
+                else{
+                    intactPublication.getDbAnnotations().add(new PublicationAnnotation(IntactUtils.createMITopic(Annotation.AUTHOR, Annotation.AUTHOR_MI), authorAnnot));
+                }
             }
         }
     }
