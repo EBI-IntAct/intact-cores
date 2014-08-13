@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
+import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousExperimentComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -36,15 +37,10 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     private Map<Experiment, IntactExperiment> persistedObjects;
     private Map<Experiment, IntactExperiment> convertedObjects;
 
-    private CollectionComparator<Annotation> annotationCollectionComparator;
-    private CollectionComparator<VariableParameter> variableParameterComparator;
-
     public ComplexExperimentBCSynchronizer(SynchronizerContext context){
         super(context, IntactExperiment.class);
         // to keep track of persisted cvs
-        IntactExperimentComparator comp = new IntactExperimentComparator();
-        this.annotationCollectionComparator = comp.getAnnotationCollectionComparator();
-        this.variableParameterComparator = comp.getVariableParameterCollectionComparator();
+        UnambiguousExperimentComparator comp = new UnambiguousExperimentComparator();
 
         this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(comp);
         this.convertedObjects = new IdentityMap();
@@ -82,26 +78,15 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
                     return null;
                 }
             }
-            IntactCvTerm fetchedParticipantDetectionMethod = null;
-            CvTerm commonMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(experiment);
-            if (commonMethod != null){
-                fetchedParticipantDetectionMethod = getContext().getParticipantDetectionMethodSynchronizer().find(commonMethod);
-                // the participant detection method does not exist so the experiment does not exist
-                if (fetchedParticipantDetectionMethod == null || fetchedParticipantDetectionMethod.getAc() == null){
-                    return null;
-                }
-            }
 
             Query query = getEntityManager().createQuery("select e from IntactExperiment e " +
                     (fetchedOrganism != null ? "join e.hostOrganism as h " : "" ) +
                     (fetchedDetectionMethod != null ? "join e.interactionDetectionMethod as det " : "" ) +
                     (fetchedPublication != null ? "join e.publication as p " : "" ) +
-                    (fetchedParticipantDetectionMethod != null ? "join e.participantIdentificationMethod as ident " : "" ) +
                     "where "+
                     (fetchedOrganism != null ? "h.ac = :orgAc " : "e.hostOrganism is null " ) +
                     (fetchedDetectionMethod != null ? "and det.ac = :detAc " : "and e.interactionDetectionMethod is null " ) +
-                    (fetchedPublication != null ? "and p.ac = :pubAc " : "and e.publication is null " ) +
-                    (fetchedParticipantDetectionMethod != null ? "and ident.ac = :identAc" : "and e.participantIdentificationMethod is null" ));
+                    (fetchedPublication != null ? "and p.ac = :pubAc " : "and e.publication is null " ));
             if (fetchedOrganism != null){
                 query.setParameter("orgAc", fetchedOrganism.getAc());
             }
@@ -111,26 +96,13 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
             if (fetchedPublication != null){
                 query.setParameter("pubAc", fetchedPublication.getAc());
             }
-            if (fetchedParticipantDetectionMethod != null){
-                query.setParameter("identAc", fetchedParticipantDetectionMethod.getAc());
-            }
 
             Collection<IntactExperiment> results = query.getResultList();
-            if (!results.isEmpty()){
-                Collection<IntactExperiment> filteredResults = new ArrayList<IntactExperiment>(results.size());
-                for (IntactExperiment exp : filteredResults){
-                    if (this.annotationCollectionComparator.compare(experiment.getAnnotations(), exp.getAnnotations()) == 0
-                            && this.variableParameterComparator.compare(experiment.getVariableParameters(), exp.getVariableParameters()) == 0){
-                        filteredResults.add(exp);
-                    }
-                }
-
-                if (filteredResults.size() == 1){
-                    return filteredResults.iterator().next();
-                }
-                else if (filteredResults.size() > 1){
-                    throw new FinderException("The experiment "+experiment.toString() + " can match "+filteredResults.size()+" experiments in the database and we cannot determine which one is valid.");
-                }
+            if (results.size() == 1){
+                return results.iterator().next();
+            }
+            else if (results.size() > 1){
+                throw new FinderException("The experiment "+experiment.toString() + " can match "+results.size()+" experiments in the database and we cannot determine which one is valid.");
             }
             return null;
         }
@@ -149,10 +121,6 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         prepareAnnotations(intactExperiment, true);
         // then check xrefs
         prepareXrefs(intactExperiment, true);
-        // then check interactions
-        prepareInteractions(intactExperiment, true);
-        // then check variable parameters
-        prepareVariableParameters(intactExperiment, true);
     }
 
     public void clearCache() {
@@ -215,50 +183,11 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         prepareAnnotations(intactExperiment, false);
         // then check xrefs
         prepareXrefs(intactExperiment, false);
-        // then check interactions
-        prepareInteractions(intactExperiment, false);
-        // then check variable parameters
-        prepareVariableParameters(intactExperiment, false);
     }
 
     @Override
     protected void storeDetachedOrTransientObjectInCache(Experiment originalObject, IntactExperiment persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
-    }
-
-    protected void prepareVariableParameters(IntactExperiment intactExperiment, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
-
-        if (intactExperiment.areVariableParametersInitialized()){
-            Collection<VariableParameter> parametersToPersist = new ArrayList<VariableParameter>(intactExperiment.getVariableParameters());
-            for (VariableParameter param : parametersToPersist){
-                // do not persist or merge parameters because of cascades
-                VariableParameter expParam = enableSynchronization ?
-                        getContext().getVariableParameterSynchronizer().synchronize(param, false) :
-                        getContext().getVariableParameterSynchronizer().convertToPersistentObject(param);
-                // we have a different instance because needed to be synchronized
-                if (expParam != param){
-                    intactExperiment.getVariableParameters().remove(param);
-                    intactExperiment.addVariableParameter(expParam);
-                }
-            }
-        }
-    }
-
-    protected void prepareInteractions(IntactExperiment intactExperiment, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
-        if (intactExperiment.areInteractionEvidencesInitialized()){
-            Collection<InteractionEvidence> interactionsToPersist = new ArrayList<InteractionEvidence>(intactExperiment.getInteractionEvidences());
-            for (InteractionEvidence interaction : interactionsToPersist){
-                // do not persist or merge interactions because of cascades
-                InteractionEvidence expInter = enableSynchronization ?
-                        getContext().getInteractionSynchronizer().synchronize(interaction, false) :
-                        getContext().getInteractionSynchronizer().convertToPersistentObject(interaction);
-                // we have a different instance because needed to be synchronized
-                if (expInter != interaction){
-                    intactExperiment.getInteractionEvidences().remove(interaction);
-                    intactExperiment.addInteractionEvidence(expInter);
-                }
-            }
-        }
     }
 
     protected void prepareHostOrganism(IntactExperiment intactExperiment, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
@@ -331,7 +260,9 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     protected void prepareAndSynchronizeShortLabel(IntactExperiment intactExperiment) throws SynchronizerException {
         // first initialise shortlabel if not done
         if (intactExperiment.getShortLabel() == null){
-            intactExperiment.setShortLabel(IntactUtils.generateAutomaticExperimentShortlabelFor(intactExperiment, IntactUtils.MAX_SHORT_LABEL_LEN));
+            intactExperiment.setShortLabel(intactExperiment.getHostOrganism() != null ?
+                    intactExperiment.getHostOrganism().getCommonName() :
+                    IntactUtils.generateAutomaticExperimentShortlabelFor(intactExperiment, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
         // then synchronize with database

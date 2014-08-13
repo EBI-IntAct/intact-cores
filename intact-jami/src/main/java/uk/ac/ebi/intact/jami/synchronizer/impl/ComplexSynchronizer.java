@@ -39,10 +39,12 @@ import java.util.TreeMap;
 public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex, IntactComplex>{
 
     private CollectionComparator<ModelledParticipant> participantsComparator;
+    private ComplexExperimentBCSynchronizer experimentBCSynchronizer;
 
     public ComplexSynchronizer(SynchronizerContext context) {
         super(context, IntactComplex.class);
         this.participantsComparator = new CollectionComparator<ModelledParticipant>(new UnambiguousModelledParticipantComparator());
+        this.experimentBCSynchronizer = new ComplexExperimentBCSynchronizer(context);
     }
 
     @Override
@@ -279,8 +281,8 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                 }
                 // synchronize experiment
                 Experiment expPar = enableSynchronization ?
-                        getContext().getExperimentSynchronizer().synchronize(exp, true) :
-                        getContext().getExperimentSynchronizer().convertToPersistentObject(exp);
+                        this.experimentBCSynchronizer.synchronize(exp, true) :
+                        this.experimentBCSynchronizer.convertToPersistentObject(exp);
                 // we have a different instance because needed to be synchronized
                 if (expPar != exp){
                     intactComplex.getExperiments().remove(exp);
