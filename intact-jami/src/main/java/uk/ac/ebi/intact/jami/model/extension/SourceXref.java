@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since <pre>08/01/14</pre>
  */
 @Entity
-@Table( name = "ia_source_xref" )
+@Table( name = "ia_institution_xref" )
 public class SourceXref extends AbstractIntactXref{
 
     public SourceXref() {
