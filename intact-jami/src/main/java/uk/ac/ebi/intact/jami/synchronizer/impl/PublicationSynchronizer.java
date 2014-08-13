@@ -107,8 +107,6 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         prepareTitle(intactPublication);
         // then check authors
         preparePublicationAuthors(intactPublication);
-        // then check annotations
-        prepareAnnotations(intactPublication, true);
         // then check xrefs
         prepareXrefs(intactPublication, true);
         // then check source
@@ -119,6 +117,8 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         prepareStatusAndCurators(intactPublication, true);
         // then check publication lifecycle
         prepareLifeCycleEvents(intactPublication, true);
+        // then check annotations
+        prepareAnnotations(intactPublication, true);
     }
 
     public Publication fetchByIdentifier(String identifier, String source) throws BridgeFailedException {
@@ -338,8 +338,6 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
 
     @Override
     protected void convertPersistableProperties(IntactPublication intactPublication) throws SynchronizerException, PersisterException, FinderException {
-        // then check annotations
-        prepareAnnotations(intactPublication, false);
         // then check xrefs
         prepareXrefs(intactPublication, false);
         // then check source
@@ -350,6 +348,8 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         prepareStatusAndCurators(intactPublication, false);
         // then check publication lifecycle
         prepareLifeCycleEvents(intactPublication, false);
+        // then check annotations
+        prepareAnnotations(intactPublication, false);
     }
 
     @Override

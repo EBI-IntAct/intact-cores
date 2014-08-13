@@ -593,7 +593,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     @OneToMany( orphanRemoval = true, cascade = CascadeType.ALL, targetEntity = PublicationLifeCycleEvent.class)
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="parent_ac", referencedColumnName="ac")
+    @JoinColumn(name="publication_ac", referencedColumnName="ac")
     @OrderBy("when, created")
     @Target(PublicationLifeCycleEvent.class)
     public List<LifeCycleEvent> getLifecycleEvents() {
