@@ -314,7 +314,10 @@ public class IntactUtils {
             IntegerComparator comparator = new IntegerComparator();
             SortedSet<Integer> existingIndexes = new TreeSet<Integer>(comparator);
             for (String exitingLabel : exitingLabels){
-                existingIndexes.add(extractLastNumberInShortLabel(exitingLabel));
+                Integer suffix = extractLastNumberInShortLabel(exitingLabel);
+                if (suffix != null){
+                    existingIndexes.add(suffix);
+                }
             }
 
             int freeIndex = alwaysAppendSuffix ? 1 : 0;
@@ -344,7 +347,7 @@ public class IntactUtils {
         return nameInSync;
     }
 
-    public static int extractLastNumberInShortLabel(String currentLabel) {
+    public static Integer extractLastNumberInShortLabel(String currentLabel) {
         if (currentLabel.contains("-")){
             String strSuffix = currentLabel.substring(currentLabel .lastIndexOf("-") + 1, currentLabel.length());
             Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
@@ -352,6 +355,7 @@ public class IntactUtils {
             if (matcher.matches()){
                 return Integer.parseInt(matcher.group());
             }
+            return null;
         }
         return 0;
     }

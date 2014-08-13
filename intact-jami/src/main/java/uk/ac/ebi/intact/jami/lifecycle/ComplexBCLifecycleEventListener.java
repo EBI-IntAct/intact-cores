@@ -82,15 +82,12 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
             if (exp == null){
                 IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "14681455");
                 exp = complex.getExperiments().iterator().next();
-                ((IntactPublication)exp.getPublication()).setStatus(complex.getStatus());
             }
             else if (exp.getPublication() == null){
                 exp.setPublication(new IntactPublication("14681455"));
-                ((IntactPublication)exp.getPublication()).setStatus(complex.getStatus());
             }
             else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("14681455")){
                 exp.setPublication(new IntactPublication("14681455"));
-                ((IntactPublication)exp.getPublication()).setStatus(complex.getStatus());
             }
         }
     }
@@ -103,16 +100,12 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
             Experiment exp = complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
             if (exp == null){
                 IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "14681455");
-                exp = complex.getExperiments().iterator().next();
-                ((IntactPublication)exp.getPublication()).setStatus(complex.getStatus());
             }
             else if (exp.getPublication() == null){
                 exp.setPublication(new IntactPublication("14681455"));
-                ((IntactPublication)exp.getPublication()).setStatus(complex.getStatus());
             }
             else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("14681455")){
                 exp.setPublication(new IntactPublication("14681455"));
-                ((IntactPublication)exp.getPublication()).setStatus(complex.getStatus());
             }
         }
     }
