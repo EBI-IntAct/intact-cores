@@ -85,10 +85,10 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
 
     protected void prepareExperimentalRoles(IntactModelledParticipant intactEntity, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areExperimentalRolesInitialized()){
-            List<CvTerm> rolesToPersist = new ArrayList<CvTerm>(intactEntity.getDbExperimentalRoles());
             if (intactEntity.getDbExperimentalRoles().isEmpty()){
                 intactEntity.getDbExperimentalRoles().add(IntactUtils.createMIExperimentalRole(Participant.NEUTRAL, Participant.NEUTRAL_MI));
             }
+            List<CvTerm> rolesToPersist = new ArrayList<CvTerm>(intactEntity.getDbExperimentalRoles());
             for (CvTerm role : rolesToPersist){
                 CvTerm persistentRole = enableSynchronization ?
                         getContext().getExperimentalRoleSynchronizer().synchronize(role, true) :
