@@ -9,11 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.Publication;
-import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
-import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
-import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
-import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -75,24 +71,19 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
                Publication pub = exp.getPublication();
                // create publication first in the database if not done
                if (pub != null){
+                   // clear all experiments first
+                   pub.getExperiments().clear();
+                   Publication syncPub = intactDAO.getSynchronizerContext().getPublicationSynchronizer().synchronize(pub, true);
                    // transcient publication to persist first
-                   if (!(pub instanceof IntactPublication)
-                           || intactDAO.getPublicationDao().isTransient((IntactPublication)pub)){
-                       IntactPublication intactCuratedPub = new IntactPublication();
-                       PublicationCloner.copyAndOverridePublicationProperties(pub, intactCuratedPub);
-
-                       intactDAO.getPublicationDao().persist(intactCuratedPub);
-                       intactCuratedPub.addExperiment(exp);
+                   if (syncPub != pub){
+                       exp.setPublication(syncPub);
                    }
                }
-               // transcient experiment to persist first
-               if (!(exp instanceof IntactExperiment)
-                       || intactDAO.getExperimentDao().isTransient((IntactExperiment)exp)){
-                   IntactExperiment intactExperiment = new IntactExperiment(null);
-                   ExperimentCloner.copyAndOverrideExperimentProperties(exp, intactExperiment);
-
-                   intactDAO.getExperimentDao().persist(intactExperiment);
-                   intactExperiment.addInteractionEvidence(object);
+               // create experiment in database if not done
+               Experiment syncExp = intactDAO.getSynchronizerContext().getExperimentSynchronizer().synchronize(exp, true);
+               // transient experiment to persist first
+               if (syncExp != exp){
+                   object.setExperiment(syncExp);
                }
            }
         }
