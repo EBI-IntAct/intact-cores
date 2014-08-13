@@ -157,8 +157,8 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
                 participant.setInteraction(intactInteraction);
                 // do not persist or merge participants because of cascades
                 ParticipantEvidence expPart = enableSynchronization ?
-                        (ParticipantEvidence)getContext().getParticipantSynchronizer().synchronize(participant, false) :
-                        (ParticipantEvidence)getContext().getParticipantSynchronizer().convertToPersistentObject(participant);
+                        getContext().getParticipantEvidenceSynchronizer().synchronize(participant, false) :
+                        getContext().getParticipantEvidenceSynchronizer().convertToPersistentObject(participant);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);

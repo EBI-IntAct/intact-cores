@@ -72,8 +72,8 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
                 ModelledEntity participant = moleculeEffector.getMolecule();
                 if (participant instanceof ModelledParticipant){
                     ((IntactMoleculeEffector) moleculeEffector).setMolecule(enableSynchronization ?
-                            (ModelledParticipant)getContext().getParticipantSynchronizer().synchronize((ModelledParticipant)participant, false) :
-                            (ModelledParticipant)getContext().getParticipantSynchronizer().convertToPersistentObject((ModelledParticipant)participant));
+                            getContext().getModelledParticipantSynchronizer().synchronize((ModelledParticipant)participant, false) :
+                            getContext().getModelledParticipantSynchronizer().convertToPersistentObject((ModelledParticipant)participant));
                 }
                 // TODO: what to do with participant set and candidates?
                 else{
@@ -121,8 +121,8 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
         ModelledEntity participant = object.getAllostericMolecule();
         if (participant instanceof ModelledParticipant){
             object.setAllostericMolecule(enableSynchronization ?
-                    (ModelledParticipant)getContext().getParticipantSynchronizer().synchronize((ModelledParticipant)participant, false) :
-                    (ModelledParticipant)getContext().getParticipantSynchronizer().convertToPersistentObject((ModelledParticipant)participant));
+                    getContext().getModelledParticipantSynchronizer().synchronize((ModelledParticipant)participant, false) :
+                    getContext().getModelledParticipantSynchronizer().convertToPersistentObject((ModelledParticipant)participant));
         }
         // TODO: what to do with participant set and candidates?
         else{

@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactResultingSequence;
 import uk.ac.ebi.intact.jami.model.extension.ModelledRange;
 import uk.ac.ebi.intact.jami.model.extension.ModelledResultingSequence;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
@@ -58,5 +59,10 @@ public class ModelledRangeSynchronizer extends RangeSynchronizerTemplate<Modelle
                 }
             }
         }
+    }
+
+    @Override
+    protected IntactDbSynchronizer getParticipantSynchronizer(){
+        return getContext().getModelledParticipantSynchronizer();
     }
 }

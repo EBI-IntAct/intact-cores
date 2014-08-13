@@ -249,8 +249,8 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                 participant.setInteraction(intactInteraction);
                 // do not persist or merge participants because of cascades
                 ModelledParticipant expPart = enableSynchronization ?
-                        (ModelledParticipant) getContext().getParticipantSynchronizer().synchronize(participant, false) :
-                        (ModelledParticipant) getContext().getParticipantSynchronizer().convertToPersistentObject(participant);
+                        (ModelledParticipant) getContext().getModelledParticipantSynchronizer().synchronize(participant, false) :
+                        (ModelledParticipant) getContext().getModelledParticipantSynchronizer().convertToPersistentObject(participant);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
                     intactInteraction.getParticipants().remove(participant);

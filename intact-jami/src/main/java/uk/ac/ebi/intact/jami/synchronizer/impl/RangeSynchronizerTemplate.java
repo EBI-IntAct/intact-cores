@@ -8,10 +8,7 @@ import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactRange;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactResultingSequence;
 import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
-import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -54,8 +51,8 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         if (object.getParticipant() != null ){
             if (object.getParticipant() instanceof Participant){
                 Participant synchronizedParticipant = enableSynchronization ?
-                        getContext().getParticipantSynchronizer().synchronize((Participant) object.getParticipant(), false) :
-                        getContext().getParticipantSynchronizer().convertToPersistentObject((Participant)object.getParticipant());
+                        (Participant)getParticipantSynchronizer().synchronize(object.getParticipant(), false) :
+                        (Participant)getParticipantSynchronizer().convertToPersistentObject(object.getParticipant());
                 object.setParticipant(synchronizedParticipant);
             }
             // TODO: what to do with participant set and candidates?
@@ -63,6 +60,10 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
                 throw new UnsupportedOperationException("The existing range synchronizer does not take into account entities that are not participants");
             }
         }
+    }
+
+    protected IntactDbSynchronizer getParticipantSynchronizer(){
+        return getContext().getParticipantSynchronizer();
     }
 
     protected void prepareResultingSequence(I object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
