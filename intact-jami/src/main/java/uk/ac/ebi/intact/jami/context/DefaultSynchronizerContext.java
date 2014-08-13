@@ -780,7 +780,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
 
     public IntactDbSynchronizer<ModelledFeature, IntactModelledFeature> getModelledFeatureSynchronizer() {
         if (this.modelledFeatureSynchronizer == null){
-            this.modelledFeatureSynchronizer = new FeatureSynchronizerTemplate<ModelledFeature, IntactModelledFeature>(this, IntactModelledFeature.class);
+            this.modelledFeatureSynchronizer = new ModelledFeatureSynchronizer(this);
         }
         return modelledFeatureSynchronizer;
     }
