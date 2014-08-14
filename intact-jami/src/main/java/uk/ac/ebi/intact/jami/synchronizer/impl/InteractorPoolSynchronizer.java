@@ -14,6 +14,8 @@ import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactInteractorPoolComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactPolymerComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -115,8 +117,7 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
 
     @Override
     protected void initialisePersistedObjectMap() {
-        super.setPersistedObjects(new TreeMap<InteractorPool, IntactInteractorPool>(new UnambiguousExactInteractorPoolComparator()));
-        super.setConvertedObjects(new IdentityMap());
+        super.initialisePersistedObjectMap(new IntactInteractorPoolComparator());
     }
 
     @Override

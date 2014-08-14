@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.utils.comparator;
 
 import psidev.psi.mi.jami.model.Interactor;
+import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -105,6 +106,16 @@ implements IntactComparator<Interactor>{
 
             if (!intactInteractor.areAnnotationsInitialized()){
                 return false;
+            }
+        }
+
+        // check if a pool
+        if (objectToCompare instanceof InteractorPool){
+            InteractorPool pool = (InteractorPool)objectToCompare;
+            for (Interactor i : pool){
+                if (!canCompareAllProperties(i)){
+                    return false;
+                }
             }
         }
 
