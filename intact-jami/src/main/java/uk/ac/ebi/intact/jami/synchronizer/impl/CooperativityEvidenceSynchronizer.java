@@ -98,12 +98,17 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(CooperativityEvidence object) {
+    protected boolean containsObjectInstance(CooperativityEvidence object) {
         return false;
     }
 
     @Override
-    protected IntactCooperativityEvidence fetchMatchingPersistableObject(CooperativityEvidence object) {
+    protected void removeObjectInstanceFromIdentityCache(CooperativityEvidence object) {
+        // npthing to do here
+    }
+
+    @Override
+    protected IntactCooperativityEvidence fetchMatchingObjectFromIdentityCache(CooperativityEvidence object) {
         return null;
     }
 
@@ -117,8 +122,13 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(CooperativityEvidence originalObject, IntactCooperativityEvidence persistableObject) {
+    protected void storeObjectInIdentityCache(CooperativityEvidence originalObject, IntactCooperativityEvidence persistableObject) {
         // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(CooperativityEvidence originalObject) {
+        return false;
     }
 
     @Override

@@ -70,12 +70,17 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(T object) {
+    protected boolean containsObjectInstance(T object) {
         return false;
     }
 
     @Override
-    protected C fetchMatchingPersistableObject(T object) {
+    protected void removeObjectInstanceFromIdentityCache(T object) {
+        // nothing to do here
+    }
+
+    @Override
+    protected C fetchMatchingObjectFromIdentityCache(T object) {
         return null;
     }
 
@@ -87,8 +92,13 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(T originalObject, C persistableObject) {
+    protected void storeObjectInIdentityCache(T originalObject, C persistableObject) {
         // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(T originalObject) {
+        return false;
     }
 
     @Override

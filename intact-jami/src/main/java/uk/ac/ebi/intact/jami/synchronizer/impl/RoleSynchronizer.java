@@ -100,12 +100,17 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Role object) {
+    protected boolean containsObjectInstance(Role object) {
         return false;
     }
 
     @Override
-    protected Role fetchMatchingPersistableObject(Role object) {
+    protected void removeObjectInstanceFromIdentityCache(Role object) {
+        // nothing to do
+    }
+
+    @Override
+    protected Role fetchMatchingObjectFromIdentityCache(Role object) {
         return null;
     }
 
@@ -115,8 +120,13 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Role originalObject, Role persistableObject) {
+    protected void storeObjectInIdentityCache(Role originalObject, Role persistableObject) {
         // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(Role originalObject) {
+        return false;
     }
 
     @Override

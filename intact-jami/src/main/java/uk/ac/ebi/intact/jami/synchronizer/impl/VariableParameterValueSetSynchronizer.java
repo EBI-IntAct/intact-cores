@@ -54,12 +54,17 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(VariableParameterValueSet object) {
+    protected boolean containsObjectInstance(VariableParameterValueSet object) {
         return false;
     }
 
     @Override
-    protected IntactVariableParameterValueSet fetchMatchingPersistableObject(VariableParameterValueSet object) {
+    protected void removeObjectInstanceFromIdentityCache(VariableParameterValueSet object) {
+        // nothing to do
+    }
+
+    @Override
+    protected IntactVariableParameterValueSet fetchMatchingObjectFromIdentityCache(VariableParameterValueSet object) {
         return null;
     }
 
@@ -69,8 +74,13 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(VariableParameterValueSet originalObject, IntactVariableParameterValueSet persistableObject) {
+    protected void storeObjectInIdentityCache(VariableParameterValueSet originalObject, IntactVariableParameterValueSet persistableObject) {
          // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(VariableParameterValueSet originalObject) {
+        return false;
     }
 
     public IntactVariableParameterValueSet find(VariableParameterValueSet object) throws FinderException {

@@ -39,72 +39,124 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     public T persist(T object) throws FinderException, PersisterException, SynchronizerException {
 
+        // when the object is dirty, we need to synchronize the properties first
+        if (isObjectDirty((I)object)){
+            // store object in a identity cache so no lazy properties can be called before synchronization
+            storeObjectInIdentityCache((I)object, object);
+            // synchronize properties
+            synchronizeProperties(object);
+            // remove object from identity cache as not dirty anymore
+            removeObjectInstanceFromIdentityCache((I)object);
+            // store in normal cache
+            storeInCache((I)object, object, null);
+            // persist the object
+            persistObject(object);
+            return object;
+        }
         // check cache when possible
-        if (isObjectStoredInCache((I) object)){
+        else if (isObjectStoredInCache((I) object)){
             return fetchObjectFromCache((I)object);
         }
-
         // store in cache
         storeInCache((I)object, object, null);
-
         // synchronize properties
         synchronizeProperties(object);
-
-        // persist the cv
+        // persist the object
         persistObject(object);
-
         return object;
     }
 
     public T synchronize(I object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
 
         if (!this.intactClass.isAssignableFrom(object.getClass())){
-            // check cache when possible. The object should be fully initialised as it is not a hibernate entity
-            if (isObjectStoredInCache(object)){
+            T newObject = null;
+            boolean needToSynchronizeProperties = true;
+            // check identity cache when possible to avoid internal loops
+            if (containsObjectInstance(object)){
+                return fetchMatchingObjectFromIdentityCache(object);
+            }
+            // when the object is dirty, we need to synchronize the properties first
+            else if (isObjectDirty(object)){
+                try {
+                    newObject = instantiateNewPersistentInstance(object, this.intactClass);
+                } catch (InstantiationException e) {
+                    throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+                } catch (IllegalAccessException e) {
+                    throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+                } catch (InvocationTargetException e) {
+                    throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+                } catch (NoSuchMethodException e) {
+                    throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+                }
+                // store object in a identity cache so no lazy properties can be called before synchronization
+                storeObjectInIdentityCache(object, newObject);
+                // synchronize properties
+                synchronizeProperties(newObject);
+                // remove object from identity cache as not dirty anymore
+                removeObjectInstanceFromIdentityCache(object);
+                needToSynchronizeProperties = false;
+            }
+            // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
+            else if (isObjectStoredInCache(object)){
                 return fetchObjectFromCache(object);
             }
-
-            T newObject = null;
-            try {
-                newObject = instantiateNewPersistentInstance(object, this.intactClass);
-            } catch (InstantiationException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
-            } catch (IllegalAccessException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
-            } catch (InvocationTargetException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
-            } catch (NoSuchMethodException e) {
-                throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+            else{
+                try {
+                    newObject = instantiateNewPersistentInstance(object, this.intactClass);
+                } catch (InstantiationException e) {
+                    throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+                } catch (IllegalAccessException e) {
+                    throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+                } catch (InvocationTargetException e) {
+                    throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+                } catch (NoSuchMethodException e) {
+                    throw new SynchronizerException("Impossible to create a new instance of type "+this.intactClass, e);
+                }
             }
+
             // new object to synchronize with db
-            return findOrPersist(object, newObject, persist);
+            return findOrPersist(object, newObject, persist, needToSynchronizeProperties);
         }
         else{
             T intactObject = (T)object;
             Object identifier = extractIdentifier(intactObject);
+            boolean needToSynchronizeProperties = true;
+            // check identity cache when possible to avoid internal loops
+            if (containsObjectInstance(object)){
+                return fetchMatchingObjectFromIdentityCache(object);
+            }
+            // when the object is dirty, we need to synchronize the properties first
+            else if (isObjectDirty(object)){
+                // store object in a identity cache so no lazy properties can be called before synchronization
+                storeObjectInIdentityCache(object, intactObject);
+                // synchronize properties
+                synchronizeProperties(intactObject);
+                // remove object from identity cache as not dirty anymore
+                removeObjectInstanceFromIdentityCache(object);
+                needToSynchronizeProperties = false;
+            }
+            // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
+            else if (isObjectStoredInCache(object)){
+                return fetchObjectFromCache(object);
+            }
+
             // detached existing instance or new transient instance
             if (identifier != null && !this.entityManager.contains(intactObject)){
-                return mergeExistingInstanceToCurrentSession(intactObject, identifier);
+                return mergeExistingInstanceToCurrentSession(intactObject, identifier, needToSynchronizeProperties);
 
             }
             // retrieve and or persist transient instance
             else if (identifier == null){
-                // check cache when possible
-                if (isObjectStoredInCache(object)){
-                    return fetchObjectFromCache(object);
-                }
                 // new object to synchronize with db
-                return findOrPersist(object, intactObject, persist);
+                return findOrPersist(object, intactObject, persist, needToSynchronizeProperties);
             }
             else{
-                // check cache when possible
-                if (isObjectStoredInCache(object)){
-                    return fetchObjectFromCache(object);
-                }
                 // cache object to persist if allowed
                 storeInCache(object, intactObject, intactObject);
                 // synchronize properties
-                synchronizeProperties(intactObject);
+                if (needToSynchronizeProperties){
+                    synchronizeProperties(intactObject);
+                }
                 return intactObject;
             }
         }
@@ -162,14 +214,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // does nothing
     }
 
-    protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier) throws FinderException, PersisterException, SynchronizerException {
-        // is the object in local cache for conversion
-        if (containsDetachedOrTransientObject((I) intactObject)){
-            return fetchMatchingPersistableObject((I)intactObject);
-        }
-        // cache object to persist if allowed (avoid internal loop afterwise)
-        // different cache than for synchronization
-        storeDetachedOrTransientObjectInCache((I) intactObject, intactObject);
+    protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier, boolean synchronizeProperties) throws FinderException, PersisterException, SynchronizerException {
 
         // do not merge existing instance if the merger is a merger ignoring source
         if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){
@@ -187,7 +232,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         }
         else{
             // synchronize properties first
-            synchronizeProperties(intactObject);
+            if (synchronizeProperties){
+                synchronizeProperties(intactObject);
+            }
             // merge
             T mergedObject = this.entityManager.merge(intactObject);
             // cache object to persist if allowed
@@ -201,8 +248,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     public T convertToPersistentObject(I object) throws SynchronizerException, PersisterException, FinderException {
 
         // check cache when possible
-        if (containsDetachedOrTransientObject(object)){
-            return fetchMatchingPersistableObject(object);
+        if (containsObjectInstance(object)){
+            return fetchMatchingObjectFromIdentityCache(object);
         }
 
         if (!this.intactClass.isAssignableFrom(object.getClass())){
@@ -220,7 +267,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
 
             // cache
-            storeDetachedOrTransientObjectInCache(object, newObject);
+            storeObjectInIdentityCache(object, newObject);
 
             // convert properties if not done
             convertPersistableProperties(newObject);
@@ -231,7 +278,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         else{
             T intactObject = (T)object;
             // cache object
-            storeDetachedOrTransientObjectInCache(object, intactObject);
+            storeObjectInIdentityCache(object, intactObject);
 
             // convert properties
             convertPersistableProperties(intactObject);
@@ -248,7 +295,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     protected abstract T instantiateNewPersistentInstance(I object, Class<? extends T> intactClass) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException;
 
-    protected T findOrPersist(I originalObject, T persistentObject, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+    protected T findOrPersist(I originalObject, T persistentObject, boolean persist, boolean needToSynchronizeProperties) throws FinderException, PersisterException, SynchronizerException {
         T existingInstance = find((I)persistentObject);
         // cache object to persist if allowed
         storeInCache(originalObject, persistentObject, existingInstance);
@@ -258,7 +305,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             if (getIntactMerger() != null){
                 T mergedObject = getIntactMerger().merge(persistentObject, existingInstance);
                 // synchronize before persisting
-                synchronizeProperties(mergedObject);
+                if (needToSynchronizeProperties){
+                    synchronizeProperties(mergedObject);
+                }
                 return mergedObject;
             }
             // we only return the existing instance if no merge allowed
@@ -266,7 +315,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         }
         else{
             // synchronize before persisting
-            synchronizeProperties(persistentObject);
+            if (needToSynchronizeProperties){
+                synchronizeProperties(persistentObject);
+            }
             if (persist){
                 persistObject(persistentObject);
             }
@@ -312,11 +363,15 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     /**
      *
      * @param object
-     * @return true if the object has already been converted to a persistable instance but not synchronized with DB.
-     * The cache used to convert an object to a persistable instance should be different from the cache used to synchronize the object
-     * with existing DB instances
+     * @return true if the object instance has already been processed. This expects to find the exact same instance.
      */
-    protected abstract boolean containsDetachedOrTransientObject(I object);
+    protected abstract boolean containsObjectInstance(I object);
+
+    /**
+     * Method that remove the object from the initial identity cache
+     * @param object
+     */
+    protected abstract void removeObjectInstanceFromIdentityCache(I object);
 
     /**
      *
@@ -324,7 +379,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @return the persistable object associated with this object. The persistable object that is returned is NOT synchronized
      * with existing instances in the database
      */
-    protected abstract T fetchMatchingPersistableObject(I object);
+    protected abstract T fetchMatchingObjectFromIdentityCache(I object);
 
     /**
      * This method will check that all properties of this object are persistable.
@@ -334,11 +389,18 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected abstract void convertPersistableProperties(T object) throws SynchronizerException, PersisterException, FinderException;
 
     /**
-     * Stores in a cache (different from cache used for full synchronization) the different states of an object
+     * Stores in a identity cache (onlyu relies on identity of the object instance) (different from cache used for full synchronization) the different states of an object
      * if supported by the synchronizer
      * @param originalObject : the original object instance that we want to persist/update
      * @param persistableObject : the object instance which is a clone of the original object that can be persisted in the database but is not synchronized with
      * ths database
      */
-    protected abstract void storeDetachedOrTransientObjectInCache(I originalObject, T persistableObject);
+    protected abstract void storeObjectInIdentityCache(I originalObject, T persistableObject);
+
+    /**
+     *
+     * @param originalObject
+     * @return true if the object is dirty and needs to be synchronized before putting anything in the cache
+     */
+    protected abstract boolean isObjectDirty(I originalObject);
 }

@@ -69,12 +69,17 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Annotation object) {
+    protected boolean containsObjectInstance(Annotation object) {
         return false;
     }
 
     @Override
-    protected A fetchMatchingPersistableObject(Annotation object) {
+    protected void removeObjectInstanceFromIdentityCache(Annotation object) {
+        // nothing to do
+    }
+
+    @Override
+    protected A fetchMatchingObjectFromIdentityCache(Annotation object) {
         return null;
     }
 
@@ -86,8 +91,13 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Annotation originalObject, A persistableObject) {
+    protected void storeObjectInIdentityCache(Annotation originalObject, A persistableObject) {
         // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(Annotation originalObject) {
+        return false;
     }
 
     @Override

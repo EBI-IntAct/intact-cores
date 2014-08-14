@@ -24,6 +24,8 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactPublicationComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -43,12 +45,15 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     private Map<Publication, IntactPublication> persistedObjects;
     private Map<Publication, IntactPublication> convertedObjects;
 
+    private IntactComparator<Publication> publicationComparator;
+
     private static final Log log = LogFactory.getLog(PublicationSynchronizer.class);
 
     public PublicationSynchronizer(SynchronizerContext context) {
         super(context, IntactPublication.class);
+        this.publicationComparator = new IntactPublicationComparator();
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<Publication, IntactPublication>(new UnambiguousPublicationComparator());
+        this.persistedObjects = new TreeMap<Publication, IntactPublication>(this.publicationComparator);
         // to keep track of converted objects
         this.convertedObjects = new IdentityMap();
     }
@@ -309,11 +314,9 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     protected void storeInCache(Publication originalObject, IntactPublication persistentObject, IntactPublication existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
-            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
-            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 
@@ -328,12 +331,17 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Publication object) {
+    protected boolean containsObjectInstance(Publication object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected IntactPublication fetchMatchingPersistableObject(Publication object) {
+    protected void removeObjectInstanceFromIdentityCache(Publication object) {
+        this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected IntactPublication fetchMatchingObjectFromIdentityCache(Publication object) {
         return this.convertedObjects.get(object);
     }
 
@@ -354,8 +362,13 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Publication originalObject, IntactPublication persistableObject) {
+    protected void storeObjectInIdentityCache(Publication originalObject, IntactPublication persistableObject) {
          this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(Publication originalObject) {
+        return !this.publicationComparator.canCompare(originalObject);
     }
 
     protected void preparePublicationAuthors(IntactPublication intactPublication) {

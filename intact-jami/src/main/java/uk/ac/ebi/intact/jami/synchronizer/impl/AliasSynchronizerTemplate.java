@@ -71,12 +71,17 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Alias object) {
+    protected boolean containsObjectInstance(Alias object) {
         return false;
     }
 
     @Override
-    protected A fetchMatchingPersistableObject(Alias object) {
+    protected void removeObjectInstanceFromIdentityCache(Alias object) {
+        // nothing to do
+    }
+
+    @Override
+    protected A fetchMatchingObjectFromIdentityCache(Alias object) {
         return null;
     }
 
@@ -89,8 +94,13 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Alias originalObject, A persistableObject) {
+    protected void storeObjectInIdentityCache(Alias originalObject, A persistableObject) {
         // nothing to cache here
+    }
+
+    @Override
+    protected boolean isObjectDirty(Alias originalObject) {
+        return false;
     }
 
     @Override

@@ -4,8 +4,6 @@ import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
-import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
-import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousExperimentComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -17,7 +15,8 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
-import uk.ac.ebi.intact.jami.utils.comparator.IntactExperimentComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.UnambiguousIntactExperimentComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -37,12 +36,14 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     private Map<Experiment, IntactExperiment> persistedObjects;
     private Map<Experiment, IntactExperiment> convertedObjects;
 
+    private IntactComparator<Experiment> experimentComparator;
+
     public ComplexExperimentBCSynchronizer(SynchronizerContext context){
         super(context, IntactExperiment.class);
         // to keep track of persisted cvs
-        UnambiguousExperimentComparator comp = new UnambiguousExperimentComparator();
+        this.experimentComparator = new UnambiguousIntactExperimentComparator();
 
-        this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(comp);
+        this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(this.experimentComparator);
         this.convertedObjects = new IdentityMap();
     }
 
@@ -143,11 +144,9 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     protected void storeInCache(Experiment originalObject, IntactExperiment persistentObject, IntactExperiment existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
-            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
-            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 
@@ -162,12 +161,17 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Experiment object) {
+    protected boolean containsObjectInstance(Experiment object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected IntactExperiment fetchMatchingPersistableObject(Experiment object) {
+    protected void removeObjectInstanceFromIdentityCache(Experiment object) {
+         this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected IntactExperiment fetchMatchingObjectFromIdentityCache(Experiment object) {
         return this.convertedObjects.get(object);
     }
 
@@ -186,8 +190,13 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Experiment originalObject, IntactExperiment persistableObject) {
+    protected void storeObjectInIdentityCache(Experiment originalObject, IntactExperiment persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(Experiment originalObject) {
+        return !this.experimentComparator.canCompare(originalObject);
     }
 
     protected void prepareHostOrganism(IntactExperiment intactExperiment, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {

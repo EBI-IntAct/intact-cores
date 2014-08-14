@@ -22,6 +22,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactCvTermComparator;
 
 import javax.persistence.Query;
@@ -45,14 +46,17 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     private Map<CvTerm, IntactCvTerm> persistedObjects;
     private Map<CvTerm, IntactCvTerm> convertedObjects;
 
+    private IntactComparator<CvTerm> cvComparator;
+
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
 
     public CvTermSynchronizer(SynchronizerContext context){
         super(context, IntactCvTerm.class);
         // all new cv created will be annotation topic by default
         this.objClass = IntactUtils.TOPIC_OBJCLASS;
+        cvComparator = new IntactCvTermComparator();
         // to keep track of persisted cvs
-        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(new IntactCvTermComparator());
+        this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(cvComparator);
         this.convertedObjects = new IdentityMap();
     }
 
@@ -343,8 +347,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     @Override
     protected void storeInCache(CvTerm originalObject, IntactCvTerm persistentObject, IntactCvTerm existingInstance) {
+        // put the synchronized object in the cache
         this.persistedObjects.put(originalObject, existingInstance != null ? existingInstance : persistentObject);
-        this.convertedObjects.put(originalObject, existingInstance != null ? existingInstance : persistentObject);
     }
 
     @Override
@@ -358,12 +362,17 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(CvTerm object) {
+    protected boolean containsObjectInstance(CvTerm object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected IntactCvTerm fetchMatchingPersistableObject(CvTerm object) {
+    protected void removeObjectInstanceFromIdentityCache(CvTerm object) {
+         this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected IntactCvTerm fetchMatchingObjectFromIdentityCache(CvTerm object) {
         return this.convertedObjects.get(object);
     }
 
@@ -380,8 +389,13 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(CvTerm originalObject, IntactCvTerm persistableObject) {
+    protected void storeObjectInIdentityCache(CvTerm originalObject, IntactCvTerm persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(CvTerm originalObject) {
+        return !this.cvComparator.canCompare(originalObject);
     }
 
     protected void initialiseIdentifier(IntactCvTerm intactCv) throws SynchronizerException {

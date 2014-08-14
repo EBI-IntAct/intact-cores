@@ -84,12 +84,17 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(LifeCycleEvent object) {
+    protected boolean containsObjectInstance(LifeCycleEvent object) {
         return false;
     }
 
     @Override
-    protected A fetchMatchingPersistableObject(LifeCycleEvent object) {
+    protected void removeObjectInstanceFromIdentityCache(LifeCycleEvent object) {
+        // nothing to do
+    }
+
+    @Override
+    protected A fetchMatchingObjectFromIdentityCache(LifeCycleEvent object) {
         return null;
     }
 
@@ -103,8 +108,13 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(LifeCycleEvent originalObject, A persistableObject) {
+    protected void storeObjectInIdentityCache(LifeCycleEvent originalObject, A persistableObject) {
         // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(LifeCycleEvent originalObject) {
+        return false;
     }
 
     @Override

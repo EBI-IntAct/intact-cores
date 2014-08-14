@@ -126,12 +126,17 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Range object) {
+    protected boolean containsObjectInstance(Range object) {
         return false;
     }
 
     @Override
-    protected I fetchMatchingPersistableObject(Range object) {
+    protected void removeObjectInstanceFromIdentityCache(Range object) {
+        // nothing to do
+    }
+
+    @Override
+    protected I fetchMatchingObjectFromIdentityCache(Range object) {
         return null;
     }
 
@@ -148,8 +153,13 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Range originalObject, I persistableObject) {
+    protected void storeObjectInIdentityCache(Range originalObject, I persistableObject) {
         // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(Range originalObject) {
+        return false;
     }
 
     protected void prepareXrefs(AbstractIntactResultingSequence intactObj, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {

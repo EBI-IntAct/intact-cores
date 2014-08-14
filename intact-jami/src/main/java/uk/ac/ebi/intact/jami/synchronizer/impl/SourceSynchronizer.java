@@ -15,6 +15,9 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactCvTermComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactSourceComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -32,12 +35,15 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     private Map<Source, IntactSource> persistedObjects;
     private Map<Source, IntactSource> convertedObjects;
 
+    private IntactComparator<Source> sourceComparator;
+
     private static final Log log = LogFactory.getLog(SourceSynchronizer.class);
 
     public SourceSynchronizer(SynchronizerContext context){
         super(context, IntactSource.class);
+        this.sourceComparator = new IntactSourceComparator();
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<Source, IntactSource>();
+        this.persistedObjects = new TreeMap<Source, IntactSource>(this.sourceComparator);
         this.convertedObjects = new IdentityMap();
     }
 
@@ -274,12 +280,17 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Source object) {
+    protected boolean containsObjectInstance(Source object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected IntactSource fetchMatchingPersistableObject(Source object) {
+    protected void removeObjectInstanceFromIdentityCache(Source object) {
+        this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected IntactSource fetchMatchingObjectFromIdentityCache(Source object) {
         return this.convertedObjects.get(object);
     }
 
@@ -294,8 +305,13 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Source originalObject, IntactSource persistableObject) {
+    protected void storeObjectInIdentityCache(Source originalObject, IntactSource persistableObject) {
          this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(Source originalObject) {
+        return !this.sourceComparator.canCompare(originalObject);
     }
 
 

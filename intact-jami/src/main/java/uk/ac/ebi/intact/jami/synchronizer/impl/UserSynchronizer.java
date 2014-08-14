@@ -129,11 +129,9 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     protected void storeInCache(User originalObject, User persistentObject, User existingInstance) {
         if (existingInstance != null){
             this.persistedUsers.put(originalObject, existingInstance);
-            this.convertedUsers.put(originalObject, existingInstance);
         }
         else{
             this.persistedUsers.put(originalObject, persistentObject);
-            this.convertedUsers.put(originalObject, persistentObject);
         }
     }
 
@@ -148,12 +146,17 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(User object) {
+    protected boolean containsObjectInstance(User object) {
         return this.convertedUsers.containsKey(object);
     }
 
     @Override
-    protected User fetchMatchingPersistableObject(User object) {
+    protected void removeObjectInstanceFromIdentityCache(User object) {
+         this.convertedUsers.remove(object);
+    }
+
+    @Override
+    protected User fetchMatchingObjectFromIdentityCache(User object) {
         return this.convertedUsers.get(object);
     }
 
@@ -166,8 +169,13 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(User originalObject, User persistableObject) {
+    protected void storeObjectInIdentityCache(User originalObject, User persistableObject) {
          this.convertedUsers.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(User originalObject) {
+        return false;
     }
 
     @Override

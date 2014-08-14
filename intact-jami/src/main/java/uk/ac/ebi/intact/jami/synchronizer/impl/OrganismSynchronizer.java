@@ -8,6 +8,7 @@ import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.utils.clone.OrganismCloner;
+import psidev.psi.mi.jami.utils.comparator.organism.UnambiguousOrganismComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -17,6 +18,8 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactOrganismComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -33,13 +36,15 @@ import java.util.*;
 public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism> implements OrganismFetcher{
     private Map<Organism, IntactOrganism> persistedObjects;
     private Map<Organism, IntactOrganism> convertedObjects;
+    private IntactComparator<Organism> organismComparator;
 
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
 
     public OrganismSynchronizer(SynchronizerContext context){
         super(context, IntactOrganism.class);
+        this.organismComparator = new IntactOrganismComparator();
         // to keep track of persisted cvs
-        this.persistedObjects = new HashMap<Organism, IntactOrganism>();
+        this.persistedObjects = new TreeMap<Organism, IntactOrganism>(this.organismComparator);
         this.convertedObjects = new IdentityMap();
     }
 
@@ -273,11 +278,9 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     protected void storeInCache(Organism originalObject, IntactOrganism persistentObject, IntactOrganism existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
-            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
-            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 
@@ -292,12 +295,17 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Organism object) {
+    protected boolean containsObjectInstance(Organism object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected IntactOrganism fetchMatchingPersistableObject(Organism object) {
+    protected void removeObjectInstanceFromIdentityCache(Organism object) {
+        this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected IntactOrganism fetchMatchingObjectFromIdentityCache(Organism object) {
         return this.convertedObjects.get(object);
     }
 
@@ -310,8 +318,13 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Organism originalObject, IntactOrganism persistableObject) {
+    protected void storeObjectInIdentityCache(Organism originalObject, IntactOrganism persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(Organism originalObject) {
+        return !this.organismComparator.canCompare(originalObject);
     }
 
     @Override

@@ -86,12 +86,17 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(CausalRelationship object) {
+    protected boolean containsObjectInstance(CausalRelationship object) {
         return false;
     }
 
     @Override
-    protected I fetchMatchingPersistableObject(CausalRelationship object) {
+    protected void removeObjectInstanceFromIdentityCache(CausalRelationship object) {
+        // nothing to do
+    }
+
+    @Override
+    protected I fetchMatchingObjectFromIdentityCache(CausalRelationship object) {
         return null;
     }
 
@@ -105,8 +110,13 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(CausalRelationship originalObject, I persistableObject) {
+    protected void storeObjectInIdentityCache(CausalRelationship originalObject, I persistableObject) {
          // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(CausalRelationship originalObject) {
+        return false;
     }
 
     @Override

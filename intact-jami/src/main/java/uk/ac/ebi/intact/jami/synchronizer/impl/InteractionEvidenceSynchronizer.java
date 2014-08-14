@@ -99,12 +99,17 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(InteractionEvidence object) {
+    protected boolean containsObjectInstance(InteractionEvidence object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected IntactInteractionEvidence fetchMatchingPersistableObject(InteractionEvidence object) {
+    protected void removeObjectInstanceFromIdentityCache(InteractionEvidence object) {
+        this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected IntactInteractionEvidence fetchMatchingObjectFromIdentityCache(InteractionEvidence object) {
         return this.convertedObjects.get(object);
     }
 
@@ -127,8 +132,13 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(InteractionEvidence originalObject, IntactInteractionEvidence persistableObject) {
+    protected void storeObjectInIdentityCache(InteractionEvidence originalObject, IntactInteractionEvidence persistableObject) {
          this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(InteractionEvidence originalObject) {
+        return false;
     }
 
     protected void prepareVariableParametersValues(IntactInteractionEvidence intactInteraction, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {

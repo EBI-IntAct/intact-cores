@@ -88,12 +88,17 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Xref object) {
+    protected boolean containsObjectInstance(Xref object) {
         return false;
     }
 
     @Override
-    protected X fetchMatchingPersistableObject(Xref object) {
+    protected void removeObjectInstanceFromIdentityCache(Xref object) {
+        // nothing to do
+    }
+
+    @Override
+    protected X fetchMatchingObjectFromIdentityCache(Xref object) {
         return null;
     }
 
@@ -107,8 +112,13 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Xref originalObject, X persistableObject) {
+    protected void storeObjectInIdentityCache(Xref originalObject, X persistableObject) {
          // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(Xref originalObject) {
+        return false;
     }
 
     @Override

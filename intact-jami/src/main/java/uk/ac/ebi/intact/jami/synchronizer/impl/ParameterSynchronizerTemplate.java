@@ -87,12 +87,17 @@ implements ParameterSynchronizer<T,P>{
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(T object) {
+    protected boolean containsObjectInstance(T object) {
         return false;
     }
 
     @Override
-    protected P fetchMatchingPersistableObject(T object) {
+    protected void removeObjectInstanceFromIdentityCache(T object) {
+        // nothing to do
+    }
+
+    @Override
+    protected P fetchMatchingObjectFromIdentityCache(T object) {
         return null;
     }
 
@@ -106,8 +111,13 @@ implements ParameterSynchronizer<T,P>{
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(T originalObject, P persistableObject) {
+    protected void storeObjectInIdentityCache(T originalObject, P persistableObject) {
         // nothing to do here
+    }
+
+    @Override
+    protected boolean isObjectDirty(T originalObject) {
+        return false;
     }
 
     @Override

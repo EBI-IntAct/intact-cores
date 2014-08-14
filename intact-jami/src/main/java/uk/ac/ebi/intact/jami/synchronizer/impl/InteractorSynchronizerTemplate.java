@@ -13,6 +13,8 @@ import uk.ac.ebi.intact.jami.merger.InteractorBaseMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.UnambiguousIntactInteractorBaseComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +32,8 @@ public class InteractorSynchronizerTemplate<T extends Interactor, I extends Inta
 implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     private Map<T, I> persistedObjects;
     private Map<T, I> convertedObjects;
+
+    private IntactComparator interactorComparator;
 
     private static final Log log = LogFactory.getLog(InteractorSynchronizerTemplate.class);
 
@@ -160,7 +164,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     protected void initialisePersistedObjectMap() {
-        this.persistedObjects = new TreeMap<T, I>(new UnambiguousExactInteractorBaseComparator());
+        this.interactorComparator = new UnambiguousIntactInteractorBaseComparator();
+        this.persistedObjects = new TreeMap<T, I>(this.interactorComparator);
+        this.convertedObjects = new IdentityMap();
+    }
+
+    protected void initialisePersistedObjectMap(IntactComparator comparator) {
+        this.interactorComparator = comparator;
+        this.persistedObjects = new TreeMap<T, I>(this.interactorComparator);
         this.convertedObjects = new IdentityMap();
     }
 
@@ -188,11 +199,9 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected void storeInCache(T originalObject, I persistentObject, I existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
-            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
-            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 
@@ -207,12 +216,17 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(T object) {
+    protected boolean containsObjectInstance(T object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected I fetchMatchingPersistableObject(T object) {
+    protected void removeObjectInstanceFromIdentityCache(T object) {
+        this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected I fetchMatchingObjectFromIdentityCache(T object) {
         return this.convertedObjects.get(object);
     }
 
@@ -231,8 +245,13 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(T originalObject, I persistableObject) {
+    protected void storeObjectInIdentityCache(T originalObject, I persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(T originalObject) {
+        return !this.interactorComparator.canCompare(originalObject);
     }
 
     protected void prepareXrefs(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {

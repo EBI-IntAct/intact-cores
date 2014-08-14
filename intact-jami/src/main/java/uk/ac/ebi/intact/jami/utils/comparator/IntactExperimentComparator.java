@@ -1,12 +1,15 @@
 package uk.ac.ebi.intact.jami.utils.comparator;
 
-import psidev.psi.mi.jami.model.Annotation;
-import psidev.psi.mi.jami.model.CvTerm;
-import psidev.psi.mi.jami.model.Experiment;
+import org.hibernate.Hibernate;
+import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.annotation.AnnotationComparator;
 import psidev.psi.mi.jami.utils.comparator.annotation.UnambiguousAnnotationComparator;
 import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousExperimentComparator;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.Collection;
@@ -20,7 +23,7 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactExperimentComparator extends UnambiguousExperimentComparator{
+public class IntactExperimentComparator extends UnambiguousExperimentComparator implements IntactComparator<Experiment>{
     private AnnotationComparator annotationComparator;
     private CollectionComparator<Annotation> annotationCollectionComparator;
 
@@ -82,5 +85,118 @@ public class IntactExperimentComparator extends UnambiguousExperimentComparator{
 
     public CollectionComparator<Annotation> getAnnotationCollectionComparator() {
         return annotationCollectionComparator;
+    }
+
+    @Override
+    public boolean canCompare(Experiment objectToCompare) {
+        // first check publication
+        if (objectToCompare.getPublication() != null){
+            Publication pub = objectToCompare.getPublication();
+            if (pub instanceof IntactPublication){
+                if (!((IntactPublication)pub).areAnnotationsInitialized() || !((IntactPublication)pub).areXrefsInitialized()){
+                    return false;
+                }
+            }
+        }
+
+        // then check detection method
+        if (objectToCompare.getInteractionDetectionMethod() != null){
+            CvTerm detMethod = objectToCompare.getInteractionDetectionMethod();
+            if (detMethod instanceof IntactCvTerm){
+                if (!((IntactCvTerm)detMethod).areXrefsInitialized()){
+                    return false;
+                }
+            }
+        }
+
+        // then check detection method
+        if (objectToCompare instanceof IntactExperiment){
+             IntactExperiment intactExperiment = (IntactExperiment)objectToCompare;
+            if (intactExperiment.getParticipantIdentificationMethod() != null){
+                CvTerm detMethod = intactExperiment.getParticipantIdentificationMethod();
+                if (detMethod instanceof IntactCvTerm){
+                    if (!((IntactCvTerm)detMethod).areXrefsInitialized()){
+                        return false;
+                    }
+                }
+            }
+            else {
+                if (!isParticipantIdentificationMethodInitialised(intactExperiment)){
+                     return false;
+                }
+            }
+        }
+        else if (!isParticipantIdentificationMethodInitialised(objectToCompare)){
+            return false;
+        }
+
+        // then check organism
+        if (objectToCompare.getHostOrganism() != null){
+            Organism host = objectToCompare.getHostOrganism();
+            // check cellType
+            if (host.getCellType() != null && host.getCellType() instanceof IntactCvTerm){
+                if (!((IntactCvTerm)host.getCellType()).areXrefsInitialized()){
+                    return false;
+                }
+            }
+            // check tissue
+            if (host.getTissue() != null && host.getTissue() instanceof IntactCvTerm){
+                if (!((IntactCvTerm)host.getTissue()).areXrefsInitialized()){
+                    return false;
+                }
+            }
+        }
+
+        // then check variable parameter values
+        if (Hibernate.isInitialized(objectToCompare.getVariableParameters())){
+            for (VariableParameter param : objectToCompare.getVariableParameters()){
+                // check unit
+                if (param.getUnit() != null && param.getUnit() instanceof IntactCvTerm){
+                    if (!((IntactCvTerm)param.getUnit()).areXrefsInitialized()){
+                        return false;
+                    }
+                }
+                // check variable parameter values
+                if (!Hibernate.isInitialized(param.getVariableValues())){
+                    return false;
+                }
+            }
+        }
+        else {
+            return false;
+        }
+
+        // then check annotations
+        if (objectToCompare instanceof IntactExperiment){
+             if (!((IntactExperiment) objectToCompare).areAnnotationsInitialized()){
+                 return false;
+             }
+        }
+
+        // then check
+        return true;
+    }
+
+    private boolean isParticipantIdentificationMethodInitialised(Experiment exp){
+         if (Hibernate.isInitialized(exp.getInteractionEvidences())){
+              for (InteractionEvidence inter : exp.getInteractionEvidences()){
+                  if (Hibernate.isInitialized(inter.getParticipants())){
+                      for (ParticipantEvidence part : inter.getParticipants()){
+                          if (part instanceof IntactParticipantEvidence){
+                              if (!((IntactParticipantEvidence) part).areIdentificationMethodsInitialized()){
+                                  return false;
+                              }
+                          }
+                      }
+                  }
+                  else {
+                      return false;
+                  }
+              }
+         }
+        else {
+             return false;
+         }
+        return true;
     }
 }

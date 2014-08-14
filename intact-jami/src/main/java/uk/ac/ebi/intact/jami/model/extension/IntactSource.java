@@ -2,6 +2,8 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
@@ -218,6 +220,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     @JoinColumn(name="parent_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @Target(SourceXref.class)
+    @LazyCollection(LazyCollectionOption.FALSE)
     /**
      * This method give direct access to the persistent collection of xrefs (identifiers and xrefs all together) for this object.
      * WARNING: It should not be used to add/remove objects as it may mess up with the state of the object (only used this way by the synchronizers).

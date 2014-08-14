@@ -17,6 +17,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.UnambiguousIntactComplexComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -97,8 +98,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     @Override
     protected void initialisePersistedObjectMap() {
-        super.setPersistedObjects(new TreeMap<Complex, IntactComplex>(new UnambiguousExactComplexComparator()));
-        super.setConvertedObjects(new IdentityMap());
+        super.initialisePersistedObjectMap(new UnambiguousIntactComplexComparator());
     }
 
     @Override

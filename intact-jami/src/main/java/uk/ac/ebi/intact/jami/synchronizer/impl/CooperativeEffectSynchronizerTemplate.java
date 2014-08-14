@@ -157,12 +157,17 @@ implements CooperativeEffectSynchronizer<T, C> {
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(T object) {
+    protected boolean containsObjectInstance(T object) {
         return false;
     }
 
     @Override
-    protected C fetchMatchingPersistableObject(T object) {
+    protected void removeObjectInstanceFromIdentityCache(T object) {
+        // nothing to do
+    }
+
+    @Override
+    protected C fetchMatchingObjectFromIdentityCache(T object) {
         return null;
     }
 
@@ -181,8 +186,13 @@ implements CooperativeEffectSynchronizer<T, C> {
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(T originalObject, C persistableObject) {
+    protected void storeObjectInIdentityCache(T originalObject, C persistableObject) {
         // nothing to do here
+    }
+
+    @Override
+    protected boolean isObjectDirty(T originalObject) {
+        return false;
     }
 
     @Override

@@ -131,16 +131,15 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     protected void storeInCache(F originalObject, I persistentObject, I existingInstance) {
         if (existingInstance != null){
             this.persistedObjects.put(originalObject, existingInstance);
-            this.convertedObjects.put(originalObject, existingInstance);
         }
         else{
             this.persistedObjects.put(originalObject, persistentObject);
-            this.convertedObjects.put(originalObject, persistentObject);
         }
     }
 
     @Override
     protected I fetchObjectFromCache(F object) {
+
         return this.persistedObjects.get(object);
     }
 
@@ -150,12 +149,17 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(F object) {
+    protected boolean containsObjectInstance(F object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected I fetchMatchingPersistableObject(F object) {
+    protected void removeObjectInstanceFromIdentityCache(F object) {
+        this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected I fetchMatchingObjectFromIdentityCache(F object) {
         return this.convertedObjects.get(object);
     }
 
@@ -170,8 +174,14 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(F originalObject, I persistableObject) {
+    protected void storeObjectInIdentityCache(F originalObject, I persistableObject) {
         this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(F originalObject) {
+        // always return false as we only keep identity map of features
+        return false;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.utils.comparator;
 
-import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Source;
 import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.XrefUtils;
@@ -8,22 +7,22 @@ import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.xref.UnambiguousExternalIdentifierComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Comparator for IntAct cv terms that take into account objClass and always look at the shortlabel first
+ * Comparator for IntAct source
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactCvTermComparator implements IntactComparator<CvTerm> {
+public class IntactSourceComparator implements IntactComparator<Source> {
 
-    private static IntactCvTermComparator intactCvTermComparator;
+    private static IntactSourceComparator intactCvTermComparator;
     protected UnambiguousExternalIdentifierComparator identifierComparator;
     protected CollectionComparator<Xref> identifierCollectionComparator;
 
@@ -34,7 +33,7 @@ public class IntactCvTermComparator implements IntactComparator<CvTerm> {
      * Creates a new CvTermComparator with UnambiguousExternalIdentifierComparator
      *
      */
-    public IntactCvTermComparator() {
+    public IntactSourceComparator() {
         this.identifierComparator = new UnambiguousExternalIdentifierComparator();
         this.identifierCollectionComparator = new CollectionComparator<Xref>(this.identifierComparator);
 
@@ -51,7 +50,7 @@ public class IntactCvTermComparator implements IntactComparator<CvTerm> {
         return identifierComparator;
     }
 
-    public int compare(CvTerm cvTerm1, CvTerm cvTerm2) {
+    public int compare(Source cvTerm1, Source cvTerm2) {
 
         int EQUAL = 0;
         int BEFORE = -1;
@@ -74,23 +73,6 @@ public class IntactCvTermComparator implements IntactComparator<CvTerm> {
             String mod2 = cvTerm2.getMODIdentifier();
             String par1 = cvTerm1.getPARIdentifier();
             String par2 = cvTerm2.getPARIdentifier();
-
-            // get objclass first
-            String objClass1 = cvTerm1 instanceof IntactCvTerm ? ((IntactCvTerm) cvTerm1).getObjClass() : null;
-            String objClass2 = cvTerm2 instanceof IntactCvTerm ? ((IntactCvTerm) cvTerm2).getObjClass() : null;
-
-            if (objClass1 != null && objClass2 != null){
-                int comp = objClass1.compareTo(objClass2);
-                if (comp != 0){
-                    return comp;
-                }
-            }
-            else if (objClass1 != null){
-                 return BEFORE;
-            }
-            else if (objClass2 != null){
-                return AFTER;
-            }
 
             if (mi1 != null && mi2 != null){
                 return mi1.compareTo(mi2);
@@ -183,18 +165,18 @@ public class IntactCvTermComparator implements IntactComparator<CvTerm> {
      * @param cv2
      * @return true if the two CvTerms are equal
      */
-    public static boolean areEquals(CvTerm cv1, CvTerm cv2){
+    public static boolean areEquals(Source cv1, Source cv2){
         if (intactCvTermComparator == null){
-            intactCvTermComparator = new IntactCvTermComparator();
+            intactCvTermComparator = new IntactSourceComparator();
         }
 
         return intactCvTermComparator.compare(cv1, cv2) == 0;
     }
 
     @Override
-    public boolean canCompare(CvTerm objectToCompare) {
-        if (objectToCompare instanceof IntactCvTerm){
-            if (!((IntactCvTerm)objectToCompare).areXrefsInitialized()){
+    public boolean canCompare(Source objectToCompare) {
+        if (objectToCompare instanceof IntactSource){
+            if (!((IntactSource)objectToCompare).areXrefsInitialized()){
                  return false;
             }
         }

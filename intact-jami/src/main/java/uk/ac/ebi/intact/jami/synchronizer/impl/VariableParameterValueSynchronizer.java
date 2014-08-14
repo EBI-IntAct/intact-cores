@@ -66,12 +66,17 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(VariableParameterValue object) {
+    protected boolean containsObjectInstance(VariableParameterValue object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected IntactVariableParameterValue fetchMatchingPersistableObject(VariableParameterValue object) {
+    protected void removeObjectInstanceFromIdentityCache(VariableParameterValue object) {
+        this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected IntactVariableParameterValue fetchMatchingObjectFromIdentityCache(VariableParameterValue object) {
         return this.convertedObjects.get(object);
     }
 
@@ -81,8 +86,13 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(VariableParameterValue originalObject, IntactVariableParameterValue persistableObject) {
+    protected void storeObjectInIdentityCache(VariableParameterValue originalObject, IntactVariableParameterValue persistableObject) {
          this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(VariableParameterValue originalObject) {
+        return false;
     }
 
     public IntactVariableParameterValue find(VariableParameterValue object) throws FinderException {

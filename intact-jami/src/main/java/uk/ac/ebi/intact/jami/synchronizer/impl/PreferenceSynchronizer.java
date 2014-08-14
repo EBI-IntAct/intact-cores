@@ -67,12 +67,17 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(Preference object) {
+    protected boolean containsObjectInstance(Preference object) {
         return false;
     }
 
     @Override
-    protected Preference fetchMatchingPersistableObject(Preference object) {
+    protected void removeObjectInstanceFromIdentityCache(Preference object) {
+        // nothing to do
+    }
+
+    @Override
+    protected Preference fetchMatchingObjectFromIdentityCache(Preference object) {
         return null;
     }
 
@@ -82,8 +87,13 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(Preference originalObject, Preference persistableObject) {
+    protected void storeObjectInIdentityCache(Preference originalObject, Preference persistableObject) {
         // nothing to do
+    }
+
+    @Override
+    protected boolean isObjectDirty(Preference originalObject) {
+        return false;
     }
 
     @Override

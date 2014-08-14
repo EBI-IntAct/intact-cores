@@ -96,12 +96,17 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     }
 
     @Override
-    protected boolean containsDetachedOrTransientObject(T object) {
+    protected boolean containsObjectInstance(T object) {
         return this.convertedObjects.containsKey(object);
     }
 
     @Override
-    protected I fetchMatchingPersistableObject(T object) {
+    protected void removeObjectInstanceFromIdentityCache(T object) {
+        this.convertedObjects.remove(object);
+    }
+
+    @Override
+    protected I fetchMatchingObjectFromIdentityCache(T object) {
         return this.convertedObjects.get(object);
     }
 
@@ -118,8 +123,13 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     }
 
     @Override
-    protected void storeDetachedOrTransientObjectInCache(T originalObject, I persistableObject) {
+    protected void storeObjectInIdentityCache(T originalObject, I persistableObject) {
        this.convertedObjects.put(originalObject, persistableObject);
+    }
+
+    @Override
+    protected boolean isObjectDirty(T originalObject) {
+        return false;
     }
 
     protected void prepareStoichiometry(I intactEntity) throws PersisterException, FinderException, SynchronizerException {
