@@ -193,8 +193,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             Object identifier = extractIdentifier(intactObject);
             // detached existing instance or new transient instance
             if (identifier != null && !this.entityManager.contains(intactObject)){
-                deleteRelatedProperties(intactObject);
-                this.entityManager.remove(this.entityManager.getReference(getIntactClass(), identifier));
+                T reloadedObject = this.entityManager.getReference(getIntactClass(), identifier);
+                deleteRelatedProperties(reloadedObject);
+                this.entityManager.remove(reloadedObject);
                 return true;
 
             }
