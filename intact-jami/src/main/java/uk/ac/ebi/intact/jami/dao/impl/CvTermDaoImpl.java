@@ -693,6 +693,14 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     @Override
+    public Collection<IntactCvTerm> getByObjClass(String objClass) {
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
+                "where cv.objClass = :objclass");
+        query.setParameter("objclass", objClass);
+        return query.getResultList();
+    }
+
+    @Override
     public int countSynonymsForCvTerm(String ac) {
         Query query = getEntityManager().createQuery("select size(i.synonyms) from IntactCvTerm i " +
                 "where i.ac = :ac");
