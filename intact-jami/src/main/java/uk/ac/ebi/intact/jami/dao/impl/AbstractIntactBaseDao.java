@@ -12,8 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -75,27 +73,23 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
     }
 
     public List<T> getAll() {
-        return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o")
+        return this.entityManager.createQuery("select o from "+getEntityClass().getName()+" o")
                 .getResultList();
     }
 
     public List<T> getAll(String sortProperty, int firstResult, int maxResults) {
-        CriteriaBuilder builder = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> criteria = builder.createQuery(this.entityClass);
-        Root<T> root = criteria.from(getEntityClass());
-        Order order = builder.asc(root.get(sortProperty));
-        return this.entityManager.createQuery(criteria.orderBy(order))
+        String strQuery = "select o from "+getEntityClass().getName()+" o order by "+sortProperty;
+        Query query = this.entityManager.createQuery(strQuery);
+        return query
                 .setFirstResult(firstResult)
                 .setMaxResults(maxResults)
                 .getResultList();
     }
 
     public List<T> getAllSorted(int firstResult, int maxResults, String sortProperty, boolean ascendant) {
-        CriteriaBuilder builder = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> criteria = builder.createQuery(getEntityClass());
-        Root<T> root = criteria.from(getEntityClass());
-        Order order = ascendant ? builder.asc(root.get(sortProperty)) : builder.desc(root.get(sortProperty));
-        return this.entityManager.createQuery(criteria.orderBy(order))
+        String strQuery = "select o from "+getEntityClass().getName()+" o order by "+sortProperty+" "+((ascendant)? "asc" : "desc");
+        Query query = this.entityManager.createQuery(strQuery);
+        return query
                 .setFirstResult(firstResult)
                 .setMaxResults(maxResults)
                 .getResultList();
