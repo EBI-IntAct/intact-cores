@@ -75,8 +75,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
     }
 
     public List<T> getAll() {
-        return getEntityManager().createQuery(this.entityManager.getCriteriaBuilder().
-                createQuery(this.entityClass))
+        return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o")
                 .getResultList();
     }
 
