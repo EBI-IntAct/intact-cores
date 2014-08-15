@@ -10,7 +10,6 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -22,7 +21,7 @@ import javax.validation.constraints.Size;
  * @author marine Dumousseau
  */
 @Entity
-@Table( name = "ia_sequence_chunk", uniqueConstraints = {@UniqueConstraint(columnNames={"parent_ac", "sequence_index"})} )
+@Table( name = "ia_sequence_chunk" )
 @Deprecated
 public class SequenceChunk extends AbstractIntactPrimaryObject {
 
