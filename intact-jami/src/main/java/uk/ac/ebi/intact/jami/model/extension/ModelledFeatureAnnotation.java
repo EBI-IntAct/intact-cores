@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_annotation" )
 public class ModelledFeatureAnnotation extends AbstractIntactAnnotation{
 
-    public ModelledFeatureAnnotation() {
+    protected ModelledFeatureAnnotation() {
         super();
     }
 

@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_annotation" )
 public class CvTermAnnotation extends AbstractIntactAnnotation{
 
-    public CvTermAnnotation() {
+    protected CvTermAnnotation() {
         super();
     }
 

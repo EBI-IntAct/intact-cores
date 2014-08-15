@@ -35,7 +35,7 @@ public abstract class AbstractIntactAlias extends AbstractIntactPrimaryObject im
         super();
     }
 
-    public AbstractIntactAlias(CvTerm type, String name) {
+    protected AbstractIntactAlias(CvTerm type, String name) {
         this(name);
         this.type = type;
     }

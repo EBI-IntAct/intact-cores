@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Table( name = "ia_annotation" )
 public class FeatureEvidenceAnnotation extends AbstractIntactAnnotation{
 
-    public FeatureEvidenceAnnotation() {
+    protected FeatureEvidenceAnnotation() {
         super();
     }
 

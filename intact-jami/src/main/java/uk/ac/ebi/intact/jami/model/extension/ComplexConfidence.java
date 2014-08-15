@@ -26,7 +26,7 @@ public class ComplexConfidence extends AbstractIntactConfidence implements Model
 
     private Publication publication;
 
-    public ComplexConfidence() {
+    protected ComplexConfidence() {
     }
 
     public ComplexConfidence(CvTerm type, String value) {

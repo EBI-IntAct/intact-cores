@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "ia_component_alias")
 public class ParticipantEvidenceAlias extends AbstractIntactAlias {
 
-    public ParticipantEvidenceAlias() {
+    protected ParticipantEvidenceAlias() {
     }
 
     public ParticipantEvidenceAlias(CvTerm type, String name) {

@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_interactor_alias" )
 public class InteractorAlias extends AbstractIntactAlias{
 
-    public InteractorAlias() {
+    protected InteractorAlias() {
     }
 
     public InteractorAlias(CvTerm type, String name) {

@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_institution_alias" )
 public class SourceAlias extends AbstractIntactAlias{
 
-    public SourceAlias() {
+    protected SourceAlias() {
     }
 
     public SourceAlias(CvTerm type, String name) {

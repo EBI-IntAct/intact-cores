@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_controlledvocab_alias" )
 public class CvTermAlias extends AbstractIntactAlias{
 
-    public CvTermAlias() {
+    protected CvTermAlias() {
     }
 
     public CvTermAlias(CvTerm type, String name) {

@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_publication_xref" )
 public class PublicationXref extends AbstractIntactXref{
 
-    public PublicationXref() {
+    protected PublicationXref() {
     }
 
     public PublicationXref(CvTerm database, String id, CvTerm qualifier) {

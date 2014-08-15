@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "ia_component_confidence")
 public class ParticipantEvidenceConfidence extends AbstractIntactConfidence{
 
-    public ParticipantEvidenceConfidence() {
+    protected ParticipantEvidenceConfidence() {
     }
 
     public ParticipantEvidenceConfidence(CvTerm type, String value) {

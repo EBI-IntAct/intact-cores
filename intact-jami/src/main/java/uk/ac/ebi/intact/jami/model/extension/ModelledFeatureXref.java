@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_feature_xref" )
 public class ModelledFeatureXref extends AbstractIntactXref{
 
-    public ModelledFeatureXref() {
+    protected ModelledFeatureXref() {
     }
 
     public ModelledFeatureXref(CvTerm database, String id, CvTerm qualifier) {

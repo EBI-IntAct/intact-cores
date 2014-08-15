@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_annotation" )
 public class SourceAnnotation extends AbstractIntactAnnotation{
 
-    public SourceAnnotation() {
+    protected SourceAnnotation() {
         super();
     }
 

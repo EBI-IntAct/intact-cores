@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_controlledvocab_xref" )
 public class CvTermXref extends AbstractIntactXref{
 
-    public CvTermXref() {
+    protected CvTermXref() {
     }
 
     public CvTermXref(CvTerm database, String id, CvTerm qualifier) {

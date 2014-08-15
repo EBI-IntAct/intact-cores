@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Table(name = "ia_confidence")
 public class InteractionEvidenceConfidence extends AbstractIntactConfidence{
 
-    public InteractionEvidenceConfidence() {
+    protected InteractionEvidenceConfidence() {
     }
 
     public InteractionEvidenceConfidence(CvTerm type, String value) {

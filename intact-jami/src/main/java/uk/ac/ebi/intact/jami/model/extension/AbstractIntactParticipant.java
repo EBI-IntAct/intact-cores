@@ -4,7 +4,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.listener.EntityInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.model.impl.DefaultStoichiometry;
 import psidev.psi.mi.jami.utils.RangeUtils;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -188,7 +187,7 @@ public abstract class AbstractIntactParticipant<I extends Interaction, F extends
             this.stoichiometry = null;
         }
         else {
-            this.stoichiometry = new DefaultStoichiometry(stoichiometry, stoichiometry);
+            this.stoichiometry = new IntactStoichiometry(stoichiometry, stoichiometry);
         }
     }
 

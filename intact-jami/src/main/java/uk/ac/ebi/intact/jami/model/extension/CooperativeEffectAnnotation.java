@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_cooperative_effect_annotation" )
 public class CooperativeEffectAnnotation extends AbstractIntactAnnotation{
 
-    public CooperativeEffectAnnotation() {
+    protected CooperativeEffectAnnotation() {
         super();
     }
 

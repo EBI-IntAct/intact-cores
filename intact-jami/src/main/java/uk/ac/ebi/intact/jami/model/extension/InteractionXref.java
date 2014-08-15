@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_interactor_xref" )
 public class InteractionXref extends AbstractIntactXref{
 
-    public InteractionXref() {
+    protected InteractionXref() {
     }
 
     public InteractionXref(CvTerm database, String id, CvTerm qualifier) {

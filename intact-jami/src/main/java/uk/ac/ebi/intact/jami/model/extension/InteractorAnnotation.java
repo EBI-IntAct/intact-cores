@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table( name = "ia_annotation" )
 public class InteractorAnnotation extends AbstractIntactAnnotation{
 
-    public InteractorAnnotation() {
+    protected InteractorAnnotation() {
         super();
     }
 
