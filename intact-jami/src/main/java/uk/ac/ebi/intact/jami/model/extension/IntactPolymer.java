@@ -8,8 +8,8 @@ import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
 import uk.ac.ebi.intact.jami.model.SequenceChunk;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.*;
 import javax.persistence.CascadeType;
+import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -207,7 +207,7 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
                 // recycle chunk
                 SequenceChunk sc = chunkPool.remove( 0 );
                 sc.setSequenceChunk( chunk );
-                sc.setSequenceIndex( i );
+                sc.setSequenceIndex(i);
                 chunks.add(sc);
             } else {
                 // create new chunk
