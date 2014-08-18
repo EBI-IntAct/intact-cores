@@ -267,6 +267,23 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
         if (intactComplex.areExperimentsInitialized()){
 
+            if (!intactComplex.getExperiments().isEmpty()){
+               Experiment exp = intactComplex.getExperiments().iterator().next();
+                // check that experiment host is the same as existing organism
+                if (intactComplex.getOrganism() != null && exp.getHostOrganism() != null){
+                     if (intactComplex.getOrganism().getTaxId() != exp.getHostOrganism().getTaxId()){
+                         IntactUtils.createAndAddDefaultExperimentForComplexes(intactComplex, exp.getPublication() != null ?
+                                 (exp.getPublication().getPubmedId() != null ? exp.getPublication().getPubmedId() : "unassigned638")
+                                 : "unassigned638");
+                     }
+                }
+                else {
+                    IntactUtils.createAndAddDefaultExperimentForComplexes(intactComplex, exp.getPublication() != null ?
+                            (exp.getPublication().getPubmedId() != null ? exp.getPublication().getPubmedId() : "unassigned638")
+                            : "unassigned638");
+                }
+
+            }
             Collection<Experiment> experimentsToPersist = new ArrayList<Experiment>(intactComplex.getExperiments());
             for (Experiment exp : experimentsToPersist){
                 // synchronize publication if not done yet
