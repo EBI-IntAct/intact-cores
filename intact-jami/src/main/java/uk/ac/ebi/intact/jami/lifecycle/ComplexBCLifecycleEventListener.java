@@ -81,7 +81,6 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
             Experiment exp = complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
             if (exp == null){
                 IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "14681455");
-                exp = complex.getExperiments().iterator().next();
             }
             else if (exp.getPublication() == null){
                 exp.setPublication(new IntactPublication("14681455"));
