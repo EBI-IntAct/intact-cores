@@ -7,7 +7,6 @@ import psidev.psi.mi.jami.model.Entity;
 import psidev.psi.mi.jami.model.impl.DefaultCvTerm;
 import psidev.psi.mi.jami.model.impl.DefaultXref;
 import psidev.psi.mi.jami.utils.CvTermUtils;
-import psidev.psi.mi.jami.utils.RangeUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractCollectionWrapper;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
@@ -267,22 +266,7 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
     }
 
     public void setParticipant(P participant) {
-        P oldParticipant = this.participant;
         this.participant = participant;
-        if (this.participant != oldParticipant && this.participant != null
-                && !getRanges().isEmpty()){
-            Interactor interactor = this.participant.getInteractor();
-            if (interactor instanceof Polymer){
-                String sequence = ((Polymer)interactor).getSequence();
-                for (Object obj : getRanges()){
-                    Range range = (Range)obj;
-                    // only reinit when we have a resulting sequence
-                    if (range.getResultingSequence() != null){
-                        range.getResultingSequence().setOriginalSequence(RangeUtils.extractRangeSequence(range, sequence));
-                    }
-                }
-            }
-        }
     }
 
     public void setParticipantAndAddFeature(P participant) {

@@ -150,7 +150,7 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
                         (Feature)getFeatureSynchronizer().convertToPersistentObject(feature);
                 // we have a different instance because needed to be synchronized
                 if (persistentFeature != feature) {
-                    intactEntity.getFeatures().remove(feature);
+                    intactEntity.removeFeature(feature);
                     intactEntity.addFeature(persistentFeature);
                 }
             }

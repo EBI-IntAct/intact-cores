@@ -4,7 +4,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.listener.EntityInteractorChangeListener;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.RangeUtils;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
@@ -116,11 +115,6 @@ public abstract class AbstractIntactParticipant<I extends Interaction, F extends
         if (oldInteractor != this.interactor){
             if (this.changeListener != null){
                 this.changeListener.onInteractorUpdate(this, oldInteractor);
-            }
-
-            // reset feature ranges
-            if (this.interactor instanceof Polymer){
-                reinitFeatureRanges((Polymer)this.interactor);
             }
         }
     }
@@ -299,23 +293,6 @@ public abstract class AbstractIntactParticipant<I extends Interaction, F extends
     @Transient
     public boolean areCausalRelationshipsInitialized(){
         return Hibernate.isInitialized(getCausalRelationships());
-    }
-
-    protected void reinitFeatureRanges(Polymer polymer){
-        String sequence = polymer.getSequence();
-        for (F feature : getFeatures()){
-            initRangeSequence(sequence, feature);
-        }
-    }
-
-    protected void initRangeSequence(String sequence, F feature) {
-        for (Object obj : feature.getRanges()){
-            Range range = (Range)obj;
-            // only reinit when we have a resulting sequence
-            if (range.getResultingSequence() != null){
-                range.getResultingSequence().setOriginalSequence(RangeUtils.extractRangeSequence(range, sequence));
-            }
-        }
     }
 
     @Transient

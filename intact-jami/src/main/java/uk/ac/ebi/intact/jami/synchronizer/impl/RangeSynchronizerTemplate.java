@@ -3,6 +3,8 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.impl.DefaultResultingSequence;
+import psidev.psi.mi.jami.utils.RangeUtils;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactRange;
@@ -40,11 +42,11 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         // prepare start position
         preparePositions(object, true);
 
-        // prepare resulting sequence
-        prepareResultingSequence(object, true);
-
         // synchronize participant
         prepareParticipant(object, true);
+
+        // prepare resulting sequence
+        prepareResultingSequence(object, true);
     }
 
     protected void prepareParticipant(I object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
@@ -54,6 +56,24 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
                         (Participant)getParticipantSynchronizer().synchronize(object.getParticipant(), false) :
                         (Participant)getParticipantSynchronizer().convertToPersistentObject(object.getParticipant());
                 object.setParticipant(synchronizedParticipant);
+
+                // init/update resulting sequence
+                if (synchronizedParticipant.getInteractor() instanceof Polymer){
+                    String sequence = ((Polymer) synchronizedParticipant.getInteractor()).getSequence();
+                    if (sequence != null){
+                        ResultingSequence seq = object.getResultingSequence();
+                        if (seq != null){
+                            seq.setOriginalSequence(RangeUtils.extractRangeSequence(object, sequence));
+                        }
+                        else{
+                            seq = new DefaultResultingSequence(RangeUtils.extractRangeSequence(object, sequence), null);
+                            object.setResultingSequence(seq);
+                        }
+                    }
+                    else if (object.getResultingSequence() != null && object.getResultingSequence().getOriginalSequence() != null){
+                        object.getResultingSequence().setOriginalSequence(null);
+                    }
+                }
             }
             // TODO: what to do with participant set and candidates?
             else{

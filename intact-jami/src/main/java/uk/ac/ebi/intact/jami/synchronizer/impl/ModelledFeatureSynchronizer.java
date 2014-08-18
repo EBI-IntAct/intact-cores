@@ -93,10 +93,13 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
     protected void prepareRangeResultingSequence(Polymer polymer, Range range) {
         if (polymer != null){
             String sequence = polymer.getSequence();
-            if (range.getResultingSequence() == null){
+            if (sequence != null && range.getResultingSequence() == null){
                 range.setResultingSequence(new ModelledResultingSequence(RangeUtils.extractRangeSequence(range, sequence), null));
             }
-            else{
+            else if (sequence == null && range.getResultingSequence() != null && range.getResultingSequence().getOriginalSequence() != null){
+                range.getResultingSequence().setOriginalSequence(null);
+            }
+            else if (sequence != null){
                 range.getResultingSequence().setOriginalSequence(RangeUtils.extractRangeSequence(range, sequence));
             }
         }
