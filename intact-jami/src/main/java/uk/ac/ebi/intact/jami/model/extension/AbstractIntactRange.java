@@ -2,8 +2,11 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Type;
-import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.model.Entity;
+import psidev.psi.mi.jami.model.Position;
+import psidev.psi.mi.jami.model.Range;
+import psidev.psi.mi.jami.model.ResultingSequence;
+import psidev.psi.mi.jami.utils.PositionUtils;
 import psidev.psi.mi.jami.utils.comparator.range.UnambiguousRangeAndResultingSequenceComparator;
 import uk.ac.ebi.intact.jami.model.AbstractIntactPrimaryObject;
 
@@ -156,5 +159,25 @@ public abstract class AbstractIntactRange<P extends psidev.psi.mi.jami.model.Ent
 
     private void setEnd(Position end) {
         this.end = end;
+    }
+
+    @Type( type = "yes_no" )
+    @Deprecated
+    /**
+     * @deprecated use Position.isUndetermined method to know if a specific position is undetermined
+     */
+    private boolean isUndetermined() {
+        if (start == null || end == null){
+            return true;
+        }
+        return PositionUtils.isUndetermined(start) && PositionUtils.isUndetermined(end);
+    }
+
+    /**
+     * Undetermined is true only both fuzzy types are of UNDETERMINED type. For all other instances, it is false.
+     */
+    @Deprecated
+    private void setUndetermined() {
+        // nothing to do here, the setter is for hibernate and backward compatibility only
     }
 }
