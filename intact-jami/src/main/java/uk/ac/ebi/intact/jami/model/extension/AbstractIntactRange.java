@@ -177,7 +177,7 @@ public abstract class AbstractIntactRange<P extends psidev.psi.mi.jami.model.Ent
      * Undetermined is true only both fuzzy types are of UNDETERMINED type. For all other instances, it is false.
      */
     @Deprecated
-    private void setUndetermined() {
+    private void setUndetermined(boolean value) {
         // nothing to do here, the setter is for hibernate and backward compatibility only
     }
 }
