@@ -16,7 +16,7 @@ public class IntactWriterOptions extends InteractionWriterOptions{
     /**
      * The source location of the spring file which describe IntAct configuration for the IntAct database writer.
      * If provided, it will override any existing spring configuration.
-     * If no spring configuration was provided, it will inject spring configuration file classpath*:/META-INF/intact-jami.spring.xml which expects some properties to be set such as :
+     * If no spring configuration was provided, it will inject spring configuration file classpath*:/META-INF/intact-jami-spring.xml which expects some properties to be set such as :
      * intact.hbm2ddl
      * intact.platform
      * intact.driver

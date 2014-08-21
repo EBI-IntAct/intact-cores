@@ -138,7 +138,7 @@ public abstract class AbstractIntactWriter<T extends Interaction> implements Int
 
     protected void initialiseDefaultSpringContext(){
         if (!isSpringContextInitialised()){
-            ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(new String [] {"classpath*:/META-INF/intact-jami.spring.xml"}, ApplicationContextProvider.getApplicationContext());
+            ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(new String [] {"classpath*:/META-INF/intact-jami-spring.xml"}, ApplicationContextProvider.getApplicationContext());
             springContext.registerShutdownHook();
         }
     }
