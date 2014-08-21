@@ -14,10 +14,12 @@
     <context:annotation-config/>
     <tx:annotation-driven proxy-target-class="true"/>
 
-    <bean class =
-                  "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-        <property name="location" value = "#{contextParameters.jamiProperties}" />
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath*:/META-INF/intact-jami.properties</value>
+            </list>
+        </property>
     </bean>
 
     <!-- so the @Transactional annotations work -->
