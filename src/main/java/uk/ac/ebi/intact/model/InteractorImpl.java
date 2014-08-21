@@ -160,7 +160,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         } else if (CvObjectUtils.isComplexType(interactorType)) {
             // only set the type to interactorImpl if it is not set and/or is not interactionImpl
             if (this.objClass == null || !this.objClass.equals(InteractionImpl.class.getName())){
-                setObjClass(InteractorImpl.class.getName());
+                setObjClass(InteractionImpl.class.getName());
             }
             setCategory("complex");
         }else if (CvObjectUtils.isMoleculeSetType(interactorType)) {
