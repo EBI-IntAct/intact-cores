@@ -27,7 +27,7 @@ public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter i
     public void execute(Runnable runnable) {
         LOGGER.log(Level.INFO, "Submitting new runnable {} to run after commit", runnable);
         if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            LOGGER.log(Level.INFO, "Transaction synchronization is NOT ACTIVE. Executing right now runnable {}", runnable);
+            LOGGER.log(Level.FINE, "Transaction synchronization is NOT ACTIVE. Executing right now runnable {}", runnable);
             runnable.run();
             return;
         }
@@ -43,10 +43,10 @@ public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter i
     @Override
     public void afterCommit() {
         List<Runnable> threadRunnables = getThreadRunnables();
-        LOGGER.log(Level.INFO, "Transaction successfully committed, executing {} runnables", threadRunnables.size());
+        LOGGER.log(Level.FINE, "Transaction successfully committed, executing {} runnables", threadRunnables.size());
         for (int i = 0; i < threadRunnables.size(); i++) {
             Runnable runnable = threadRunnables.get(i);
-            LOGGER.log(Level.INFO, "Executing runnable {}", runnable);
+            LOGGER.log(Level.FINE, "Executing runnable {}", runnable);
             try {
                 runnable.run();
             } catch (RuntimeException e) {
@@ -57,7 +57,7 @@ public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter i
 
     @Override
     public void afterCompletion(int status) {
-        LOGGER.log(Level.INFO, "Transaction completed with status {}", status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK");
+        LOGGER.log(Level.FINE, "Transaction completed with status {}", status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK");
         RUNNABLES.remove();
     }
 
