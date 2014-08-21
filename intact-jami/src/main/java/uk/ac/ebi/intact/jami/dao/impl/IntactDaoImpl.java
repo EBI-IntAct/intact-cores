@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -24,6 +26,7 @@ import javax.persistence.PersistenceUnit;
  */
 @Repository(value = "intactDao")
 @Lazy
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class IntactDaoImpl implements IntactDao {
     @PersistenceContext(unitName = "intact-jami")
     private EntityManager entityManager;

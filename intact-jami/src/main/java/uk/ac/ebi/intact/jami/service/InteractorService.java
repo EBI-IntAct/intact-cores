@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Interactor;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
+import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -28,6 +29,9 @@ public class InteractorService implements IntactService<Interactor>{
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
+    @Autowired
+    @Qualifier("afterCommitExecutor")
+    private AfterCommitExecutor afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
@@ -46,6 +50,7 @@ public class InteractorService implements IntactService<Interactor>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public void saveOrUpdate(Interactor object) throws PersisterException, FinderException, SynchronizerException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getInteractorSynchronizer().synchronize(object, true);
     }
@@ -67,21 +72,24 @@ public class InteractorService implements IntactService<Interactor>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends Interactor> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (Interactor interactor : objects){
-            saveOrUpdate(interactor);
+            // we can synchronize the complex with the database now
+            intactDAO.getSynchronizerContext().getInteractorSynchronizer().synchronize(interactor, true);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Interactor object) throws PersisterException, FinderException, SynchronizerException {
-
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().delete(object);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends Interactor> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (Interactor interactor : objects){
-            delete(interactor);
+            this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().delete(interactor);
         }
     }
 }

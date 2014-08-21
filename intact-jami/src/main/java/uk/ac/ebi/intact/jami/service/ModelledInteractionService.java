@@ -10,6 +10,7 @@ import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.ModelledInteraction;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
+import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -31,6 +32,9 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
+    @Autowired
+    @Qualifier("afterCommitExecutor")
+    private AfterCommitExecutor afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
@@ -64,6 +68,12 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(ModelledInteraction object) throws PersisterException, FinderException, SynchronizerException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+
+        saveModelledInteraction(object);
+    }
+
+    protected void saveModelledInteraction(ModelledInteraction object) throws FinderException, PersisterException, SynchronizerException {
         Complex complex;
         if (!(object instanceof Complex)){
             complex = new IntactComplex(object.getShortName() != null ? object.getShortName() : "unknown");
@@ -78,13 +88,17 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends ModelledInteraction> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+
         for (ModelledInteraction interaction : objects){
-            saveOrUpdate(interaction);
+            saveModelledInteraction(interaction);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(ModelledInteraction object) throws PersisterException, FinderException, SynchronizerException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+
         if (object instanceof Complex){
             this.intactDAO.getSynchronizerContext().getComplexSynchronizer().delete((Complex)object);
         }
@@ -92,8 +106,12 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends ModelledInteraction> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+
         for (ModelledInteraction interaction : objects){
-            delete(interaction);
+            if (interaction instanceof Complex){
+                this.intactDAO.getSynchronizerContext().getComplexSynchronizer().delete((Complex)interaction);
+            }
         }
     }
 }

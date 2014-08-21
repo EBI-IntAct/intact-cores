@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Source;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
+import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -28,6 +29,9 @@ public class SourceService implements IntactService<Source>{
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
+    @Autowired
+    @Qualifier("afterCommitExecutor")
+    private AfterCommitExecutor afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
@@ -61,27 +65,31 @@ public class SourceService implements IntactService<Source>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Source object) throws PersisterException, FinderException, SynchronizerException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getSourceSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends Source> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (Source source : objects){
-            saveOrUpdate(source);
+            // we can synchronize the complex with the database now
+            intactDAO.getSynchronizerContext().getSourceSynchronizer().synchronize(source, true);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Source object) throws PersisterException, FinderException, SynchronizerException {
-
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getSourceSynchronizer().delete(object);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends Source> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (Source source : objects){
-            delete(source);
+            this.intactDAO.getSynchronizerContext().getSourceSynchronizer().delete(source);
         }
     }
 }

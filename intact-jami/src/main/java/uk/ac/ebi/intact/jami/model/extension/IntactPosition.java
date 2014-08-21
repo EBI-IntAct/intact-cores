@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.jami.model.extension;
 import org.hibernate.annotations.Target;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Position;
-import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.PositionUtils;
 import psidev.psi.mi.jami.utils.comparator.range.UnambiguousPositionComparator;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -12,7 +11,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-import java.util.logging.Logger;
 
 /**
  * Intact implementation of a position
@@ -28,8 +26,6 @@ public class IntactPosition implements Position{
     private long start;
     private long end;
     private boolean isPositionUndetermined;
-
-    private static final Logger log = Logger.getLogger("DefaultPosition");
 
     protected IntactPosition(){
 

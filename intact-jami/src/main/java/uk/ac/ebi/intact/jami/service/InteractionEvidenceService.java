@@ -10,6 +10,7 @@ import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.Publication;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
+import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -30,6 +31,9 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
     @Autowired
     @Qualifier("intactDAO")
     private IntactDao intactDAO;
+    @Autowired
+    @Qualifier("afterCommitExecutor")
+    private AfterCommitExecutor afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
@@ -63,6 +67,12 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(InteractionEvidence object) throws PersisterException, FinderException, SynchronizerException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+        saveInteraction(object);
+
+    }
+
+    protected void saveInteraction(InteractionEvidence object) throws FinderException, PersisterException, SynchronizerException {
         // if the interaction has an experiment, we may have to persist the experiment first
         if (object.getExperiment() != null){
            Experiment exp = object.getExperiment();
@@ -94,21 +104,23 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends InteractionEvidence> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (InteractionEvidence interaction : objects){
-            saveOrUpdate(interaction);
+            saveInteraction(interaction);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(InteractionEvidence object) throws PersisterException, FinderException, SynchronizerException {
-
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getInteractionSynchronizer().delete(object);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends InteractionEvidence> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (InteractionEvidence interaction : objects){
-            delete(interaction);
+            this.intactDAO.getSynchronizerContext().getInteractionSynchronizer().delete(interaction);
         }
     }
 }

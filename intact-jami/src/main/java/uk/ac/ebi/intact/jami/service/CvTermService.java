@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
+import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -28,6 +29,9 @@ public class CvTermService implements IntactService<CvTerm>{
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
+    @Autowired
+    @Qualifier("afterCommitExecutor")
+    private AfterCommitExecutor afterCommitExecutor;
     private String objClass;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -62,27 +66,31 @@ public class CvTermService implements IntactService<CvTerm>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(CvTerm object) throws PersisterException, FinderException, SynchronizerException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getCvSynchronizer(this.objClass).synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends CvTerm> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (CvTerm cv : objects){
-            saveOrUpdate(cv);
+            // we can synchronize the complex with the database now
+            intactDAO.getSynchronizerContext().getCvSynchronizer(this.objClass).synchronize(cv, true);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(CvTerm object) throws PersisterException, FinderException, SynchronizerException {
-
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getCvSynchronizer(this.objClass).delete(object);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends CvTerm> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (CvTerm cv : objects){
-            delete(cv);
+            this.intactDAO.getSynchronizerContext().getCvSynchronizer(this.objClass).delete(cv);
         }
     }
 

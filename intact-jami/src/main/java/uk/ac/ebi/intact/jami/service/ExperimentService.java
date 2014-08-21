@@ -10,6 +10,7 @@ import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
+import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -31,6 +32,9 @@ public class ExperimentService implements IntactService<Experiment>{
     @Autowired
     @Qualifier("intactDao")
     private IntactDao intactDAO;
+    @Autowired
+    @Qualifier("afterCommitExecutor")
+    private AfterCommitExecutor afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
@@ -64,6 +68,11 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Experiment object) throws PersisterException, FinderException, SynchronizerException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+        saveExperiment(object);
+    }
+
+    protected void saveExperiment(Experiment object) throws FinderException, SynchronizerException, PersisterException {
         Publication pub = object.getPublication();
         // create publication first in the database if not done
         if (pub != null){
@@ -83,21 +92,23 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void saveOrUpdate(Collection<? extends Experiment> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (Experiment exp : objects){
-            saveOrUpdate(exp);
+            saveExperiment(exp);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Experiment object) throws PersisterException, FinderException, SynchronizerException {
-
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().delete(object);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Collection<? extends Experiment> objects) throws SynchronizerException, PersisterException, FinderException {
+        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         for (Experiment exp : objects){
-            delete(exp);
+            this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().delete(exp);
         }
     }
 }

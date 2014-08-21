@@ -2,8 +2,8 @@ package uk.ac.ebi.intact.jami.interceptor;
 
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
+import org.hibernate.engine.transaction.spi.LocalStatus;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
-import uk.ac.ebi.intact.jami.dao.IntactDao;
 
 import java.util.Iterator;
 
@@ -17,14 +17,21 @@ import java.util.Iterator;
  */
 
 public class IntactSynchronizerInterceptor extends EmptyInterceptor{
+    /** Completion status in case of proper commit */
+    int STATUS_COMMITTED = 0;
+
+    /** Completion status in case of proper rollback */
+    int STATUS_ROLLED_BACK = 1;
+
+    /** Completion status in case of heuristic mixed completion or system errors */
+    int STATUS_UNKNOWN = 2;
 
     @Override
     public void postFlush(Iterator entities) {
 
-        IntactDao intactDao = ApplicationContextProvider.getBean("intactDao");
-
-        if (intactDao != null) {
-            intactDao.getSynchronizerContext().clearCache();
+        AfterCommitExecutor afterCommitExecutor = ApplicationContextProvider.getBean("afterCommitExecutor");
+        if (afterCommitExecutor != null){
+            afterCommitExecutor.afterCommit();
         }
 
         super.postFlush(entities);
@@ -32,10 +39,17 @@ public class IntactSynchronizerInterceptor extends EmptyInterceptor{
 
     @Override
     public void afterTransactionCompletion(Transaction tx) {
-        IntactDao intactDao = ApplicationContextProvider.getBean("intactDao");
-
-        if (intactDao != null) {
-            intactDao.getSynchronizerContext().clearCache();
+        AfterCommitExecutor afterCommitExecutor = ApplicationContextProvider.getBean("afterCommitExecutor");
+        if (afterCommitExecutor != null){
+            if (tx.getLocalStatus() == LocalStatus.COMMITTED){
+                afterCommitExecutor.afterCompletion(STATUS_COMMITTED);
+            }
+            else if (tx.getLocalStatus() == LocalStatus.ROLLED_BACK){
+                afterCommitExecutor.afterCompletion(STATUS_ROLLED_BACK);
+            }
+            else{
+                afterCommitExecutor.afterCompletion(STATUS_UNKNOWN);
+            }
         }
 
         super.afterTransactionCompletion(tx);
