@@ -10,7 +10,7 @@ import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.Publication;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
-import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
+import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -32,8 +32,8 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
     @Qualifier("intactDAO")
     private IntactDao intactDAO;
     @Autowired
-    @Qualifier("afterCommitExecutor")
-    private AfterCommitExecutor afterCommitExecutor;
+    @Qualifier("intactTransactionSynchronization")
+    private IntactTransactionSynchronization afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Publication;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
-import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
+import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -30,8 +30,8 @@ public class PublicationService implements IntactService<Publication>{
     @Qualifier("intactDao")
     private IntactDao intactDAO;
     @Autowired
-    @Qualifier("afterCommitExecutor")
-    private AfterCommitExecutor afterCommitExecutor;
+    @Qualifier("intactTransactionSynchronization")
+    private IntactTransactionSynchronization afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {

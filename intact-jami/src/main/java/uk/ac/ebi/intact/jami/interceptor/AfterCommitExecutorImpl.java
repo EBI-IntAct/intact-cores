@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.dao.IntactDao;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
  * @since <pre>21/08/14</pre>
  */
 @Component(value = "afterCommitExecutor")
-public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter implements AfterCommitExecutor {
+public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter implements IntactTransactionSynchronization, Executor {
     private static final Logger LOGGER = Logger.getLogger("AfterCommitExecutorImpl");
     private static final ThreadLocal<List<Runnable>> RUNNABLES = new ThreadLocal<List<Runnable>>();
 

@@ -10,7 +10,7 @@ import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
-import uk.ac.ebi.intact.jami.interceptor.AfterCommitExecutor;
+import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
@@ -33,8 +33,8 @@ public class ExperimentService implements IntactService<Experiment>{
     @Qualifier("intactDao")
     private IntactDao intactDAO;
     @Autowired
-    @Qualifier("afterCommitExecutor")
-    private AfterCommitExecutor afterCommitExecutor;
+    @Qualifier("intactTransactionSynchronization")
+    private IntactTransactionSynchronization afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {

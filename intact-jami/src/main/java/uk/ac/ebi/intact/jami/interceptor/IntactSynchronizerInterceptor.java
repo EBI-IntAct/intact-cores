@@ -29,7 +29,7 @@ public class IntactSynchronizerInterceptor extends EmptyInterceptor{
     @Override
     public void postFlush(Iterator entities) {
 
-        AfterCommitExecutor afterCommitExecutor = ApplicationContextProvider.getBean("afterCommitExecutor");
+        IntactTransactionSynchronization afterCommitExecutor = ApplicationContextProvider.getBean("afterCommitExecutor");
         if (afterCommitExecutor != null){
             afterCommitExecutor.afterCommit();
         }
@@ -39,7 +39,7 @@ public class IntactSynchronizerInterceptor extends EmptyInterceptor{
 
     @Override
     public void afterTransactionCompletion(Transaction tx) {
-        AfterCommitExecutor afterCommitExecutor = ApplicationContextProvider.getBean("afterCommitExecutor");
+        IntactTransactionSynchronization afterCommitExecutor = ApplicationContextProvider.getBean("afterCommitExecutor");
         if (afterCommitExecutor != null){
             if (tx.getLocalStatus() == LocalStatus.COMMITTED){
                 afterCommitExecutor.afterCompletion(STATUS_COMMITTED);
