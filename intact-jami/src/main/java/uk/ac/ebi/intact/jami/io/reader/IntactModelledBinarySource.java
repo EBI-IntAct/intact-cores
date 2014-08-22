@@ -1,9 +1,9 @@
 package uk.ac.ebi.intact.jami.io.reader;
 
 import psidev.psi.mi.jami.binary.ModelledBinaryInteraction;
-import psidev.psi.mi.jami.binary.expansion.ComplexExpansionException;
 import psidev.psi.mi.jami.datasource.ModelledBinaryInteractionSource;
 import psidev.psi.mi.jami.datasource.ModelledInteractionSource;
+import psidev.psi.mi.jami.exception.ComplexExpansionException;
 import psidev.psi.mi.jami.exception.MIIOException;
 
 import java.util.ArrayList;

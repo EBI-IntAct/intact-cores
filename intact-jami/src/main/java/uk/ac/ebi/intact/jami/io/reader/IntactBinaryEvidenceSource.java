@@ -1,9 +1,9 @@
 package uk.ac.ebi.intact.jami.io.reader;
 
 import psidev.psi.mi.jami.binary.BinaryInteractionEvidence;
-import psidev.psi.mi.jami.binary.expansion.ComplexExpansionException;
 import psidev.psi.mi.jami.datasource.BinaryInteractionEvidenceSource;
 import psidev.psi.mi.jami.datasource.InteractionEvidenceSource;
+import psidev.psi.mi.jami.exception.ComplexExpansionException;
 import psidev.psi.mi.jami.exception.MIIOException;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 
