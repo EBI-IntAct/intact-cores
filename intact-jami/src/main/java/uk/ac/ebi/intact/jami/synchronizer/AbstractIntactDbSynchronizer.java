@@ -236,19 +236,23 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             if (synchronizeProperties){
                 // cache object to persist if allowed
                 storeObjectInIdentityCache((I)intactObject, intactObject);
-                convertPersistableProperties(intactObject);
+                synchronizeProperties(intactObject);
                 // remove from identity cache
-                removeObjectInstanceFromIdentityCache((I)intactObject);
+                removeObjectInstanceFromIdentityCache((I) intactObject);
             }
             // merge
             T mergedObject = this.entityManager.merge(intactObject);
             // cache object to persist if allowed
             storeInCache((I)mergedObject, intactObject, mergedObject);
             // second round of snchronization in case we need to initialise collection that were not initialised
-            synchronizeProperties(mergedObject);
+            synchronizePropertiesAfterMerge(mergedObject);
 
             return mergedObject;
         }
+    }
+
+    protected void synchronizePropertiesAfterMerge(T mergedObject) throws SynchronizerException, PersisterException, FinderException {
+        // do nothing by default
     }
 
     @Override

@@ -149,6 +149,14 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     }
 
     @Override
+    protected void synchronizePropertiesAfterMerge(IntactComplex mergedObject) throws SynchronizerException, PersisterException, FinderException {
+        // prepare evidence type
+        prepareEvidenceType(mergedObject, true);
+        // prapare xrefs
+        prepareXrefs(mergedObject, true);
+    }
+
+    @Override
     protected void prepareAnnotations(IntactComplex intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAnnotationsInitialized()){
             if (AnnotationUtils.collectFirstAnnotationWithTopic(intactInteractor.getAnnotations(), null, "curated-complex") == null){

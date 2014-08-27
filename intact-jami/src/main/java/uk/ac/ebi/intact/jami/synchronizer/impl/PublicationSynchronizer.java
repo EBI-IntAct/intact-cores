@@ -434,7 +434,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
 
     protected void prepareTitle(IntactPublication intactPublication) {
         // truncate if necessary
-        if (getEntityManager().contains(intactPublication) && intactPublication.getTitle() != null && IntactUtils.MAX_FULL_NAME_LEN < intactPublication.getTitle().length()){
+        if (intactPublication.getTitle() != null && IntactUtils.MAX_FULL_NAME_LEN < intactPublication.getTitle().length()){
             log.warn("Publication title too long: "+intactPublication.getTitle()+", will be truncated to "+ IntactUtils.MAX_FULL_NAME_LEN+" characters.");
             intactPublication.setTitle(intactPublication.getTitle().substring(0, IntactUtils.MAX_FULL_NAME_LEN));
         }
