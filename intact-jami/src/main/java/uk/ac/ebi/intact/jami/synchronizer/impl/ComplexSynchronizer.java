@@ -104,9 +104,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     @Override
     public void synchronizeProperties(IntactComplex intactComplex) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizeProperties(intactComplex);
         // prepare evidence type
         prepareEvidenceType(intactComplex, true);
+        super.synchronizeProperties(intactComplex);
         // prepare interaction evidences
         //prepareInteractionEvidences(intactComplex);
         // then check confidences
@@ -127,9 +127,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     @Override
     public void convertPersistableProperties(IntactComplex intactComplex) throws FinderException, PersisterException, SynchronizerException {
-        super.convertPersistableProperties(intactComplex);
         // prepare evidence type
         prepareEvidenceType(intactComplex, false);
+        super.convertPersistableProperties(intactComplex);
         // prepare interaction evidences
         //prepareInteractionEvidences(intactComplex);
         // then check confidences
