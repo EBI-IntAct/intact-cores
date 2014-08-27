@@ -170,7 +170,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
            Xref ecoCode = XrefUtils.collectFirstIdentifierWithDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
            // only add xref when we can reload the xrefs becaus ethe complex is in the session
            if (ecoCode != null && getEntityManager().contains(intactComplex)){
-               Collection<Xref> ecoCodes = XrefUtils.collectAllXrefsHavingDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
+               Collection<Xref> ecoCodes = XrefUtils.collectAllXrefsHavingDatabase(intactComplex.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
                // no eco codes
                if (ecoCodes.isEmpty()){
                    intactComplex.getXrefs().add(new InteractorXref(IntactUtils.createMIDatabase(Complex.ECO,

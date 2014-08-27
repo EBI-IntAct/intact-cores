@@ -232,11 +232,11 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
         }
         else{
-            // synchronize properties first
+            // synchronize properties first before merging
             if (synchronizeProperties){
                 // cache object to persist if allowed
                 storeObjectInIdentityCache((I)intactObject, intactObject);
-                synchronizeProperties(intactObject);
+                convertPersistableProperties(intactObject);
                 // remove from identity cache
                 removeObjectInstanceFromIdentityCache((I)intactObject);
             }
