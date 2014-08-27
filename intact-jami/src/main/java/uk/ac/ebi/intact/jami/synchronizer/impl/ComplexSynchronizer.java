@@ -164,40 +164,38 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
            CvTerm evidenceType = enableSynchronization ?
                    getContext().getDatabaseSynchronizer().synchronize(intactComplex.getEvidenceType(), true) :
                    getContext().getDatabaseSynchronizer().convertToPersistentObject(intactComplex.getEvidenceType());
-           if (intactComplex.getEvidenceType() != evidenceType){
-               intactComplex.setEvidenceType(evidenceType);
+           intactComplex.setEvidenceType(evidenceType);
 
-               // for BC with intact-core only
-               Xref ecoCode = XrefUtils.collectFirstIdentifierWithDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
-               // only add xref when we can reload the xrefs becaus ethe complex is in the session
-               if (ecoCode != null && getEntityManager().contains(intactComplex)){
-                   Collection<Xref> ecoCodes = XrefUtils.collectAllXrefsHavingDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
-                   // no eco codes
-                   if (ecoCodes.isEmpty()){
+           // for BC with intact-core only
+           Xref ecoCode = XrefUtils.collectFirstIdentifierWithDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
+           // only add xref when we can reload the xrefs becaus ethe complex is in the session
+           if (ecoCode != null && getEntityManager().contains(intactComplex)){
+               Collection<Xref> ecoCodes = XrefUtils.collectAllXrefsHavingDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
+               // no eco codes
+               if (ecoCodes.isEmpty()){
+                   intactComplex.getXrefs().add(new InteractorXref(IntactUtils.createMIDatabase(Complex.ECO,
+                           Complex.ECO_MI),
+                           ecoCode.getId()));
+               }
+               // update eco codes
+               else {
+                   Collection<Xref> ecoCodesToRemove = new ArrayList<Xref>(ecoCodes.size());
+                   boolean hasEco = false;
+                   for (Xref eco : ecoCodes){
+                       if (eco.getQualifier() == null && !eco.getId().equalsIgnoreCase(eco.getId())){
+                           ecoCodesToRemove.add(eco);
+                       }
+                       else if (eco.getId().equalsIgnoreCase(eco.getId())){
+                           hasEco = true;
+                       }
+                   }
+
+                   if (!hasEco){
                        intactComplex.getXrefs().add(new InteractorXref(IntactUtils.createMIDatabase(Complex.ECO,
                                Complex.ECO_MI),
                                ecoCode.getId()));
                    }
-                   // update eco codes
-                   else {
-                       Collection<Xref> ecoCodesToRemove = new ArrayList<Xref>(ecoCodes.size());
-                       boolean hasEco = false;
-                       for (Xref eco : ecoCodes){
-                           if (eco.getQualifier() == null && !eco.getId().equalsIgnoreCase(eco.getId())){
-                               ecoCodesToRemove.add(eco);
-                           }
-                           else if (eco.getId().equalsIgnoreCase(eco.getId())){
-                               hasEco = true;
-                           }
-                       }
-
-                       if (!hasEco){
-                           intactComplex.getXrefs().add(new InteractorXref(IntactUtils.createMIDatabase(Complex.ECO,
-                                   Complex.ECO_MI),
-                                   ecoCode.getId()));
-                       }
-                       intactComplex.getXrefs().removeAll(ecoCodesToRemove);
-                   }
+                   intactComplex.getXrefs().removeAll(ecoCodesToRemove);
                }
            }
        }
