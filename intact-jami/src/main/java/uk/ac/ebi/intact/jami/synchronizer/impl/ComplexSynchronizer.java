@@ -152,8 +152,6 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     protected void synchronizePropertiesAfterMerge(IntactComplex mergedObject) throws SynchronizerException, PersisterException, FinderException {
         // prepare evidence type
         prepareEvidenceType(mergedObject, true);
-        // prapare xrefs
-        prepareXrefs(mergedObject, true);
     }
 
     @Override
@@ -181,8 +179,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                Collection<Xref> ecoCodes = XrefUtils.collectAllXrefsHavingDatabase(intactComplex.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
                // no eco codes
                if (ecoCodes.isEmpty()){
-                   intactComplex.getXrefs().add(new InteractorXref(IntactUtils.createMIDatabase(Complex.ECO,
-                           Complex.ECO_MI),
+                   CvTerm db = IntactUtils.createMIDatabase(Complex.ECO,
+                           Complex.ECO_MI);
+                   intactComplex.getXrefs().add(new InteractorXref(getContext().getDatabaseSynchronizer().synchronize(db, true),
                            ecoCode.getId()));
                }
                // update eco codes
@@ -199,8 +198,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                    }
 
                    if (!hasEco){
-                       intactComplex.getXrefs().add(new InteractorXref(IntactUtils.createMIDatabase(Complex.ECO,
-                               Complex.ECO_MI),
+                       CvTerm db = IntactUtils.createMIDatabase(Complex.ECO,
+                               Complex.ECO_MI);
+                       intactComplex.getXrefs().add(new InteractorXref(getContext().getDatabaseSynchronizer().synchronize(db, true),
                                ecoCode.getId()));
                    }
                    intactComplex.getXrefs().removeAll(ecoCodesToRemove);
