@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactComplexComparator;
@@ -160,9 +161,44 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     protected void prepareEvidenceType(IntactComplex intactComplex, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
        if (intactComplex.getEvidenceType() != null){
-           intactComplex.setEvidenceType(enableSynchronization ?
+           CvTerm evidenceType = enableSynchronization ?
                    getContext().getDatabaseSynchronizer().synchronize(intactComplex.getEvidenceType(), true) :
-                   getContext().getDatabaseSynchronizer().convertToPersistentObject(intactComplex.getEvidenceType()));
+                   getContext().getDatabaseSynchronizer().convertToPersistentObject(intactComplex.getEvidenceType());
+           if (intactComplex.getEvidenceType() != evidenceType){
+               intactComplex.setEvidenceType(evidenceType);
+
+               // for BC with intact-core only
+               Xref ecoCode = XrefUtils.collectFirstIdentifierWithDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
+               if (ecoCode != null){
+                   Collection<Xref> ecoCodes = XrefUtils.collectAllXrefsHavingDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
+                   // no eco codes
+                   if (ecoCodes.isEmpty()){
+                       intactComplex.getXrefs().add(new InteractorXref(IntactUtils.createMIDatabase(Complex.ECO,
+                               Complex.ECO_MI),
+                               ecoCode.getId()));
+                   }
+                   // update eco codes
+                   else {
+                       Collection<Xref> ecoCodesToRemove = new ArrayList<Xref>(ecoCodes.size());
+                       boolean hasEco = false;
+                       for (Xref eco : ecoCodes){
+                           if (eco.getQualifier() == null && !eco.getId().equalsIgnoreCase(eco.getId())){
+                               ecoCodesToRemove.add(eco);
+                           }
+                           else if (eco.getId().equalsIgnoreCase(eco.getId())){
+                               hasEco = true;
+                           }
+                       }
+
+                       if (!hasEco){
+                           intactComplex.getXrefs().add(new InteractorXref(IntactUtils.createMIDatabase(Complex.ECO,
+                                   Complex.ECO_MI),
+                                   ecoCode.getId()));
+                       }
+                       intactComplex.getXrefs().removeAll(ecoCodesToRemove);
+                   }
+               }
+           }
        }
     }
 
