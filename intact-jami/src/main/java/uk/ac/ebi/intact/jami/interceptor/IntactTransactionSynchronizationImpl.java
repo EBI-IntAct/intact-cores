@@ -44,6 +44,15 @@ public class IntactTransactionSynchronizationImpl extends TransactionSynchroniza
     @Override
     public void afterCompletion(int status) {
         LOGGER.log(Level.FINE, "Transaction completed with status {}", status == STATUS_COMMITTED ? "COMMITTED" : "ROLLED_BACK");
+        Set<IntactDao> daos = this.registeredDao;
+        for (IntactDao dao : daos) {
+            LOGGER.log(Level.FINE, "Clearing cache {}", dao);
+            try {
+                clearIntactDaoCache(dao);
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.SEVERE, "Failed to clear intact dao cache " + dao, e);
+            }
+        }
         clearRegisteredDao();
     }
 
