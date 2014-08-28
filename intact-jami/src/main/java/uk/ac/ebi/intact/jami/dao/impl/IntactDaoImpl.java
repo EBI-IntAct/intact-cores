@@ -12,10 +12,7 @@ import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.*;
 
 /**
  * Implementation of IntactDao
@@ -60,6 +57,8 @@ public class IntactDaoImpl implements IntactDao {
     private VariableParameterValueSetDao variableParameterValueSetDao;
 
     public EntityManager getEntityManager() {
+        // the flushmode commit must be set so the entity manager do not flush when creating queries
+        this.entityManager.setFlushMode(FlushModeType.COMMIT);
         return this.entityManager;
     }
 
