@@ -258,7 +258,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                         getContext().getInteractionSynchronizer().convertToPersistentObject(interaction);
                 // we have a different instance because needed to be synchronized
                 if (expInter != interaction){
-                    intactExperiment.removeInteractionEvidence(interaction);
+                    intactExperiment.getInteractionEvidences().remove(interaction);
                     intactExperiment.addInteractionEvidence(expInter);
                 }
             }

@@ -171,7 +171,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
                         getContext().getParticipantEvidenceSynchronizer().convertToPersistentObject(participant);
                 // we have a different instance because needed to be synchronized
                 if (expPart != participant){
-                    intactInteraction.removeParticipant(participant);
+                    intactInteraction.getParticipants().remove(participant);
                     intactInteraction.addParticipant(expPart);
                 }
             }

@@ -508,7 +508,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                         getContext().getExperimentSynchronizer().convertToPersistentObject(experiment);
                 // we have a different instance because needed to be synchronized
                 if (pubExperiment != experiment){
-                    intactPublication.removeExperiment(experiment);
+                    intactPublication.getExperiments().remove(experiment);
                     intactPublication.addExperiment(pubExperiment);
                 }
             }
