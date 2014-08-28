@@ -73,6 +73,5 @@ public class IntactTransactionSynchronizationImpl extends TransactionSynchroniza
 
     private synchronized void clearIntactDaoCache(IntactDao dao) {
         dao.getSynchronizerContext().clearCache();
-        clearRegisteredDao();
     }
 }
