@@ -6,7 +6,8 @@
     <persistence-unit name="intact-jami" >
       <properties>
          <property name="hibernate.max_fetch_depth" value="4"/>
-          <property name="hibernate.ejb.interceptor.session_scoped" value="uk.ac.ebi.intact.jami.interceptor.IntactSynchronizerInterceptor"/>
+         <!--<property name="hibernate.ejb.interceptor.session_scoped" value="uk.ac.ebi.intact.jami.interceptor.IntactSynchronizerInterceptor"/>-->
+          <property name="hibernate.connection.release_mode" value="after_transaction"/>
       </properties>
    </persistence-unit>
 

@@ -55,8 +55,7 @@
                 <prop key="hibernate.generate_statistics">true</prop>
                 <prop key="hibernate.format_sql">false</prop>
                 <prop key="hibernate.hbm2ddl.auto">${jami.db.hbm2ddl}</prop>
-                <!-- hibernate interceptor to clear the synchronizer caches after each transaction-->
-                <prop key="hibernate.ejb.interceptor.session_scoped">uk.ac.ebi.intact.jami.interceptor.IntactSynchronizerInterceptor</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
         </property>
         <property name="jpaVendorAdapter">
