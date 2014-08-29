@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.jami.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
+import uk.ac.ebi.intact.jami.model.user.User;
 
 /**
  */
@@ -37,13 +38,13 @@ public class StartStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param mechanism mechanism of creation of the publication
      */
-    public void create(Releasable releasable, String mechanism) {
+    public void create(Releasable releasable, String mechanism, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition to new cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
 
-        changeStatus(releasable, LifeCycleStatus.NEW, LifeCycleEventType.CREATED, mechanism);
+        changeStatus(releasable, LifeCycleStatus.NEW, LifeCycleEventType.CREATED, mechanism, who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {

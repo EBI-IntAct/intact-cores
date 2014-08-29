@@ -418,7 +418,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                 intactCv.setIdentifier(intactCv.getIdentifiers().iterator().next().getId());
             }
             else {
-                final IntactContext context = ApplicationContextProvider.getBean("intactJamiContext", IntactContext.class);
+                final IntactContext context = ApplicationContextProvider.getBean("intactJamiContext");
                 String prefix = "IA";
                 Source institution = null;
                 if (context != null){

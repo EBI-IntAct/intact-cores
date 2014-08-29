@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.jami.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
+import uk.ac.ebi.intact.jami.model.user.User;
 
 /**
  */
@@ -37,7 +38,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param comment optional comment
      */
-    public void accept(Releasable releasable, String comment) {
+    public void accept(Releasable releasable, String comment, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for checking to accepted or accepted_on_hold cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
@@ -52,13 +53,13 @@ public class ReadyForCheckingStatus extends GlobalStatus {
 
         // the releasable is on-hold
         if (releasable.isOnHold()) {
-            changeStatus(releasable, LifeCycleStatus.ACCEPTED_ON_HOLD, LifeCycleEventType.ACCEPTED, comment);
+            changeStatus(releasable, LifeCycleStatus.ACCEPTED_ON_HOLD, LifeCycleEventType.ACCEPTED, comment, who);
             // Notify listeners
             for ( LifecycleEventListener listener : getListeners() ) {
                 listener.fireAcceptedOnHold( releasable );
             }
         } else {
-            changeStatus(releasable, LifeCycleStatus.ACCEPTED, LifeCycleEventType.ACCEPTED, comment);
+            changeStatus(releasable, LifeCycleStatus.ACCEPTED, LifeCycleEventType.ACCEPTED, comment, who);
             // Notify listeners
             for ( LifecycleEventListener listener : getListeners() ) {
                 listener.fireAccepted( releasable );
@@ -72,7 +73,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param comment mandatory comment
      */
-    public void reject(Releasable releasable, String comment) {
+    public void reject(Releasable releasable, String comment, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for checking to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
@@ -83,7 +84,7 @@ public class ReadyForCheckingStatus extends GlobalStatus {
         // create a rejection comment
         releasable.onToBeReviewed(comment);
 
-        changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.REJECTED, comment);
+        changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.REJECTED, comment, who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
@@ -97,13 +98,13 @@ public class ReadyForCheckingStatus extends GlobalStatus {
      *
      * @param releasable the releasable
      */
-    public void revert(Releasable releasable) {
+    public void revert(Releasable releasable, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for checking to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
 
-        changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.CURATION_STARTED, null);
+        changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.CURATION_STARTED, null, who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {

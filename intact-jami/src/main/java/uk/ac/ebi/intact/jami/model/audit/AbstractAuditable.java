@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.jami.model.audit;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import uk.ac.ebi.intact.jami.context.UserContext;
 import uk.ac.ebi.intact.jami.model.listener.AuditableEventListener;
 
 import javax.persistence.*;
@@ -57,6 +58,8 @@ public abstract class AbstractAuditable implements Auditable, Serializable {
      * The last update of the object. The type is java.sql.Date, not java.util.Data, for database compatibility.
      */
     private Date updated;
+
+    private UserContext localContext;
 
 
     public AbstractAuditable() {
@@ -108,5 +111,19 @@ public abstract class AbstractAuditable implements Auditable, Serializable {
 
     public void setUpdator( String updator ) {
         this.updator = updator;
+    }
+
+    @Override
+    @Transient
+    /**
+     * Property not saved, only for auditing
+     */
+    public UserContext getLocalUserContext() {
+        return this.localContext;
+    }
+
+    @Override
+    public void setLocalUserContext(UserContext context) {
+        this.localContext = context;
     }
 }

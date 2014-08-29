@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.model.audit;
 
+import uk.ac.ebi.intact.jami.context.UserContext;
+
 import java.util.Date;
 
 /**
@@ -59,4 +61,16 @@ public interface Auditable {
      * @param userStamp
      */
     public void setUpdator( String userStamp );
+
+    /**
+     *
+     * @return  the local user context if set, null otherwise
+     */
+    public UserContext getLocalUserContext();
+
+    /**
+     *
+     * @param context : local user context
+     */
+    public void setLocalUserContext(UserContext context);
 }

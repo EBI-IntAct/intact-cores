@@ -51,11 +51,19 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             storeInCache((I)object, object, null);
             // persist the object
             persistObject(object);
+
+            // then set userContext
+            object.setLocalUserContext(getContext().getUserContext());
+
             return object;
         }
         // check cache when possible
         else if (isObjectStoredInCache((I) object)){
-            return fetchObjectFromCache((I)object);
+
+            T fetched = fetchObjectFromCache((I)object);
+            // then set userContext
+            fetched.setLocalUserContext(getContext().getUserContext());
+            return fetched;
         }
         // store in cache
         storeInCache((I)object, object, null);
@@ -63,6 +71,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         synchronizeProperties(object);
         // persist the object
         persistObject(object);
+
+        // then set userContext
+        object.setLocalUserContext(getContext().getUserContext());
         return object;
     }
 
@@ -73,7 +84,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             boolean needToSynchronizeProperties = true;
             // check identity cache when possible to avoid internal loops
             if (containsObjectInstance(object)){
-                return fetchMatchingObjectFromIdentityCache(object);
+                T fetched = fetchMatchingObjectFromIdentityCache(object);
+                // then set userContext
+                fetched.setLocalUserContext(getContext().getUserContext());
+                return fetched;
             }
             // when the object is dirty, we need to synchronize the properties first
             else if (isObjectDirty(object)){
@@ -98,7 +112,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
             else if (isObjectStoredInCache(object)){
-                return fetchObjectFromCache(object);
+                T fetched = fetchObjectFromCache(object);
+                // then set userContext
+                fetched.setLocalUserContext(getContext().getUserContext());
+                return fetched;
             }
             else{
                 try {
@@ -123,7 +140,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             boolean needToSynchronizeProperties = true;
             // check identity cache when possible to avoid internal loops
             if (containsObjectInstance(object)){
-                return fetchMatchingObjectFromIdentityCache(object);
+                T fetched = fetchMatchingObjectFromIdentityCache(object);
+                // then set userContext
+                fetched.setLocalUserContext(getContext().getUserContext());
+                return fetched;
             }
             // when the object is dirty, we need to synchronize the properties first
             else if (isObjectDirty(object)){
@@ -137,12 +157,18 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
             else if (isObjectStoredInCache(object)){
-                return fetchObjectFromCache(object);
+                T fetched = fetchObjectFromCache(object);
+                // then set userContext
+                fetched.setLocalUserContext(getContext().getUserContext());
+                return fetched;
             }
 
             // detached existing instance or new transient instance
             if (identifier != null && !this.entityManager.contains(intactObject)){
-                return mergeExistingInstanceToCurrentSession(intactObject, identifier, needToSynchronizeProperties);
+                T merged = mergeExistingInstanceToCurrentSession(intactObject, identifier, needToSynchronizeProperties);
+                // then set userContext
+                merged.setLocalUserContext(getContext().getUserContext());
+                return merged;
 
             }
             // retrieve and or persist transient instance
@@ -157,6 +183,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 if (needToSynchronizeProperties){
                     synchronizeProperties(intactObject);
                 }
+                // then set userContext
+                intactObject.setLocalUserContext(getContext().getUserContext());
                 return intactObject;
             }
         }
@@ -319,12 +347,16 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 if (needToSynchronizeProperties){
                     synchronizeProperties(mergedObject);
                 }
+                // then set userContext
+                mergedObject.setLocalUserContext(getContext().getUserContext());
                 return mergedObject;
             }
             // we only return the existing instance if no merge allowed
             return existingInstance;
         }
         else{
+            // then set userContext
+            persistentObject.setLocalUserContext(getContext().getUserContext());
             // synchronize before persisting
             if (needToSynchronizeProperties){
                 synchronizeProperties(persistentObject);

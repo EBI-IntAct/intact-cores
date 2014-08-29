@@ -41,12 +41,12 @@ public class NewStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param reason an optional reason
      */
-    public void reserve(Releasable releasable, String reason) {
+    public void reserve(Releasable releasable, String reason, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition new to reserved cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
-        changeStatus(releasable, LifeCycleStatus.RESERVED, LifeCycleEventType.RESERVED, reason);
+        changeStatus(releasable, LifeCycleStatus.RESERVED, LifeCycleEventType.RESERVED, reason, who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
@@ -59,20 +59,20 @@ public class NewStatus extends GlobalStatus {
      *
      * @param releasable the releasable
      */
-    public void claimOwnership(Releasable releasable) {
+    public void claimOwnership(Releasable releasable, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition new to assigned cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
-        User currentUser = null;
+        User currentUser = who;
         UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
-        if (userContext != null && userContext.getUserId() != null) {
+        if (currentUser == null && userContext != null && userContext.getUserId() != null) {
             currentUser = userContext.getUser();
         }
         User oldOwner = releasable.getCurrentOwner();
         releasable.setCurrentOwner(currentUser);
 
-        changeStatus(releasable, LifeCycleStatus.ASSIGNED, LifeCycleEventType.SELF_ASSIGNED, "Claimed ownership");
+        changeStatus(releasable, LifeCycleStatus.ASSIGNED, LifeCycleEventType.SELF_ASSIGNED, "Claimed ownership", who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
@@ -88,20 +88,20 @@ public class NewStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param curator the curator to be assigned
      */
-    public void assignToCurator(Releasable releasable, User curator ) {
+    public void assignToCurator(Releasable releasable, User curator, User user ) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition new to assigned cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
-        User currentUser = null;
+        User currentUser = user;
         UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
-        if (userContext != null && userContext.getUserId() != null) {
+        if (currentUser == null && userContext != null && userContext.getUserId() != null) {
             currentUser = userContext.getUser();
         }
         final User previousOwner = releasable.getCurrentOwner();
         releasable.setCurrentOwner( curator );
 
-        changeStatus(releasable, LifeCycleStatus.ASSIGNED, LifeCycleEventType.ASSIGNED, "Assigned to: "+ curator.getLogin() + " by " + currentUser.getLogin() );
+        changeStatus(releasable, LifeCycleStatus.ASSIGNED, LifeCycleEventType.ASSIGNED, "Assigned to: "+ curator.getLogin() + " by " + currentUser.getLogin(),user );
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {

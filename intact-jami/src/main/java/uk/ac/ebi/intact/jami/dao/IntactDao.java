@@ -6,6 +6,7 @@
 package uk.ac.ebi.intact.jami.dao;
 
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.context.UserContext;
 import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
@@ -24,6 +25,8 @@ public interface IntactDao {
     public EntityManager getEntityManager();
 
     public SynchronizerContext getSynchronizerContext();
+
+    public UserContext getUserContext();
 
     public CvTermDao getCvTermDao();
 

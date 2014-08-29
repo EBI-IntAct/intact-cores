@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension.binary;
 import psidev.psi.mi.jami.binary.BinaryInteractionEvidence;
 import psidev.psi.mi.jami.binary.impl.BinaryInteractionEvidenceWrapper;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.context.UserContext;
 import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 
@@ -250,5 +251,15 @@ public class IntactBinaryInteractionEvidenceWrapper implements BinaryInteraction
 
     public void setUpdator(String userStamp) {
         this.wrappedInteraction.setUpdator(userStamp);
+    }
+
+    @Override
+    public UserContext getLocalUserContext() {
+        return this.wrappedInteraction.getLocalUserContext();
+    }
+
+    @Override
+    public void setLocalUserContext(UserContext context) {
+        this.wrappedInteraction.setLocalUserContext(context);
     }
 }

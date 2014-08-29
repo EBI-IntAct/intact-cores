@@ -48,7 +48,7 @@ public class CurationInProgressStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param message mechanism of creation of the publication
      */
-    public void readyForChecking(Releasable releasable, String message, boolean successfulSanityCheck) {
+    public void readyForChecking(Releasable releasable, String message, boolean successfulSanityCheck, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition curation in progress to ready for checking cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
@@ -60,7 +60,7 @@ public class CurationInProgressStatus extends GlobalStatus {
         }
 
         if (successfulSanityCheck) {
-            changeStatus(releasable, LifeCycleStatus.READY_FOR_CHECKING, LifeCycleEventType.READY_FOR_CHECKING, message);
+            changeStatus(releasable, LifeCycleStatus.READY_FOR_CHECKING, LifeCycleEventType.READY_FOR_CHECKING, message, who);
 
             if (releasable.getCurrentReviewer() == null) {
                 jamiCorrectionAssigner.assignReviewer(releasable);
@@ -72,9 +72,9 @@ public class CurationInProgressStatus extends GlobalStatus {
             }
 
         } else {
-            User currentUser = null;
+            User currentUser = who;
             UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
-            if (userContext != null && userContext.getUserId() != null) {
+            if (currentUser == null && userContext != null && userContext.getUserId() != null) {
                 currentUser = userContext.getUser();
             }
             addLifecycleEvent(releasable, LifeCycleEventType.SANITY_CHECK_FAILED, message, currentUser);

@@ -1,11 +1,14 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.jami.context.DefaultSynchronizerContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.context.UserContext;
 import uk.ac.ebi.intact.jami.dao.*;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
@@ -29,6 +32,10 @@ public class IntactDaoImpl implements IntactDao {
     private EntityManager entityManager;
     @PersistenceUnit(unitName = "intact-jami", name = "intactEntityManagerFactory")
     private EntityManagerFactory intactEntityManagerFactory;
+
+    @Autowired
+    @Qualifier(value = "jamiUserContext")
+    private UserContext userContext;
 
     private SynchronizerContext synchronizerContext;
     private ComplexDao complexDao;
@@ -64,7 +71,7 @@ public class IntactDaoImpl implements IntactDao {
 
     public SynchronizerContext getSynchronizerContext() {
         if (this.synchronizerContext == null){
-            this.synchronizerContext = new DefaultSynchronizerContext(getEntityManager());
+            this.synchronizerContext = new DefaultSynchronizerContext(getEntityManager(), getUserContext());
         }
         return this.synchronizerContext;
     }
@@ -275,4 +282,7 @@ public class IntactDaoImpl implements IntactDao {
         return this.participantEvidenceDao;
     }
 
+    public UserContext getUserContext() {
+        return userContext;
+    }
 }

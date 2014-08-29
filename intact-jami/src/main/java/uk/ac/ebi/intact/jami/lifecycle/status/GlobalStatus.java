@@ -78,9 +78,9 @@ public class GlobalStatus {
      * @param releasable the object that is managed by intact release lifecycle
      * @param reason a mandatory reason
      */
-    public void discard(Releasable releasable, String reason) {
+    public void discard(Releasable releasable, String reason, User user) {
         enfoceMandatory(reason);
-        changeStatus(releasable, LifeCycleStatus.DISCARDED, LifeCycleEventType.DISCARDED, reason);
+        changeStatus(releasable, LifeCycleStatus.DISCARDED, LifeCycleEventType.DISCARDED, reason, user);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
@@ -152,10 +152,11 @@ public class GlobalStatus {
         releasable.setStatus(cvPublicationStatusIdentifier);
     }
 
-    protected void changeStatus(Releasable releasable, LifeCycleStatus cvPublicationStatusType, LifeCycleEventType cvLifecycleEventType, String comment) {
-        User currentUser = null;
-        UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext", UserContext.class);
-        if (userContext != null && userContext.getUserId() != null) {
+    protected void changeStatus(Releasable releasable, LifeCycleStatus cvPublicationStatusType,
+                                LifeCycleEventType cvLifecycleEventType, String comment, User who) {
+        User currentUser = who;
+        UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext");
+        if (currentUser == null && userContext != null && userContext.getUserId() != null) {
             currentUser = userContext.getUser();
         }
 

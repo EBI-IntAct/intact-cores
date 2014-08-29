@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.jami.context;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
@@ -24,6 +26,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactSource;
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  */
 @Component(value = "intactJamiConfiguration")
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class IntactConfiguration {
 
     private String acPrefix;

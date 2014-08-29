@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.context;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.model.user.User;
 
@@ -8,6 +10,7 @@ import uk.ac.ebi.intact.jami.model.user.User;
  * @author Marine Dumousseau (baranda@ebi.ac.uk)
  */
 @Component(value = "jamiUserContext")
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class UserContext{
 
     private User user;

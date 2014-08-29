@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.context;
 
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
 import uk.ac.ebi.intact.jami.merger.UserMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -27,6 +28,8 @@ import javax.persistence.EntityManager;
 
 public class DefaultSynchronizerContext implements SynchronizerContext {
     private EntityManager entityManager;
+
+    private UserContext userContext;
 
     // cv synchronizer
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> generalCvSynchronizer;
@@ -141,6 +144,15 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
             throw new IllegalArgumentException("Entity manager cannot be null in an IntAct database synchronizer context");
         }
         this.entityManager = entityManager;
+        this.userContext = ApplicationContextProvider.getBean("jamiUserContext");
+    }
+
+    public DefaultSynchronizerContext(EntityManager entityManager, UserContext context){
+        if (entityManager == null){
+            throw new IllegalArgumentException("Entity manager cannot be null in an IntAct database synchronizer context");
+        }
+        this.entityManager = entityManager;
+        this.userContext = context != null ? context : (UserContext) ApplicationContextProvider.getBean("jamiUserContext");
     }
 
     public EntityManager getEntityManager() {
@@ -826,6 +838,11 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
             this.participantEvidenceSynchronizer = new ParticipantEvidenceSynchronizer(this);
         }
         return participantEvidenceSynchronizer;
+    }
+
+    @Override
+    public UserContext getUserContext() {
+        return this.userContext;
     }
 
     public void clearCache() {

@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.model.extension.binary;
 import psidev.psi.mi.jami.binary.ModelledBinaryInteraction;
 import psidev.psi.mi.jami.binary.impl.ModelledBinaryInteractionWrapper;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.context.UserContext;
 import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
@@ -270,5 +271,15 @@ public class IntactModelledBinaryInteractionWrapper implements ModelledBinaryInt
 
     public void setCurrentReviewer( User currentReviewer ) {
         this.wrappedInteraction.setCurrentReviewer(currentReviewer);
+    }
+
+    @Override
+    public UserContext getLocalUserContext() {
+        return this.wrappedInteraction.getLocalUserContext();
+    }
+
+    @Override
+    public void setLocalUserContext(UserContext context) {
+        this.wrappedInteraction.setLocalUserContext(context);
     }
 }

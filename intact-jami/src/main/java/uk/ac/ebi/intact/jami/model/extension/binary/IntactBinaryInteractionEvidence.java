@@ -6,6 +6,7 @@ import psidev.psi.mi.jami.model.impl.DefaultXref;
 import psidev.psi.mi.jami.utils.CvTermUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.collection.AbstractListHavingProperties;
+import uk.ac.ebi.intact.jami.context.UserContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +29,7 @@ public class IntactBinaryInteractionEvidence extends AbstractIntactBinaryInterac
     private Collection<Confidence> confidences;
     private boolean isNegative;
     private Collection<VariableParameterValueSet> variableParameterValueSets;
+    private UserContext localContext;
 
     public IntactBinaryInteractionEvidence() {
         super();
@@ -174,6 +176,14 @@ public class IntactBinaryInteractionEvidence extends AbstractIntactBinaryInterac
 
     public void setInferred(boolean inferred) {
         this.isInferred = inferred;
+    }
+
+    public UserContext getLocalUserContext() {
+        return localContext;
+    }
+
+    public void setLocalUserContext(UserContext localContext) {
+        this.localContext = localContext;
     }
 
     protected void processAddedXrefEvent(Xref added) {

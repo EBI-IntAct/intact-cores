@@ -407,7 +407,7 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
 
         // initialise ac
         if (getAc() != null){
-            IntactContext intactContext = ApplicationContextProvider.getBean("intactJamiContext", IntactContext.class);
+            IntactContext intactContext = ApplicationContextProvider.getBean("intactJamiContext");
             if (intactContext != null){
                 this.acRef = new DefaultXref(intactContext.getIntactConfiguration().getDefaultInstitution(), getAc(), CvTermUtils.createIdentityQualifier());
             }

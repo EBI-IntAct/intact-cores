@@ -885,7 +885,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
         // initialise ac
         if (getAc() != null){
-            IntactContext intactContext = ApplicationContextProvider.getBean("intactJamiContext", IntactContext.class);
+            IntactContext intactContext = ApplicationContextProvider.getBean("intactJamiContext");
             if (intactContext != null){
                 this.acRef = new DefaultXref(intactContext.getIntactConfiguration().getDefaultInstitution(), getAc(), CvTermUtils.createIdentityQualifier());
             }

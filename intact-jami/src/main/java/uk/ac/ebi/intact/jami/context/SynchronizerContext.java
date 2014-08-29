@@ -249,4 +249,6 @@ public interface SynchronizerContext {
     public ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer();
 
     public ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer();
+
+    public UserContext getUserContext();
 }

@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension.binary;
 
 import psidev.psi.mi.jami.binary.ModelledBinaryInteraction;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.context.UserContext;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.user.User;
 
@@ -30,6 +31,8 @@ public class IntactModelledBinaryInteraction extends AbstractIntactBinaryInterac
     private CvTerm status;
     private User currentOwner;
     private User currentReviewer;
+
+    private UserContext localContext;
 
     public IntactModelledBinaryInteraction() {
         super();
@@ -164,5 +167,13 @@ public class IntactModelledBinaryInteraction extends AbstractIntactBinaryInterac
             initialiseCooperativeEffects();
         }
         return this.cooperativeEffects;
+    }
+
+    public UserContext getLocalUserContext() {
+        return localContext;
+    }
+
+    public void setLocalUserContext(UserContext localContext) {
+        this.localContext = localContext;
     }
 }

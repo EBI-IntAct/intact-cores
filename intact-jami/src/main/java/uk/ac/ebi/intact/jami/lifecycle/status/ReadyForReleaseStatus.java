@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.jami.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
+import uk.ac.ebi.intact.jami.model.user.User;
 
 /**
  */
@@ -37,14 +38,14 @@ public class ReadyForReleaseStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param releaseId mandatory release process ID
      */
-    public void release(Releasable releasable, String releaseId) {
+    public void release(Releasable releasable, String releaseId, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for release to released cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
         enfoceMandatory(releaseId);
 
-        changeStatus(releasable, LifeCycleStatus.RELEASED, LifeCycleEventType.RELEASED, releaseId);
+        changeStatus(releasable, LifeCycleStatus.RELEASED, LifeCycleEventType.RELEASED, releaseId, who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
@@ -52,7 +53,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
         }
     }
 
-    public void putOnHold(Releasable releasable, String reason) {
+    public void putOnHold(Releasable releasable, String reason, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for release to accepted on hold cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
@@ -61,7 +62,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
 
         releasable.onHold(reason);
 
-        changeStatus(releasable, LifeCycleStatus.ACCEPTED_ON_HOLD, LifeCycleEventType.PUT_ON_HOLD, reason);
+        changeStatus(releasable, LifeCycleStatus.ACCEPTED_ON_HOLD, LifeCycleEventType.PUT_ON_HOLD, reason, who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
@@ -69,7 +70,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
         }
     }
 
-    public void revert(Releasable releasable) {
+    public void revert(Releasable releasable, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition ready for release to ready for checking cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
@@ -77,7 +78,7 @@ public class ReadyForReleaseStatus extends GlobalStatus {
 
         releasable.removeAccepted();
 
-        changeStatus(releasable, LifeCycleStatus.READY_FOR_CHECKING, LifeCycleEventType.READY_FOR_CHECKING, null);
+        changeStatus(releasable, LifeCycleStatus.READY_FOR_CHECKING, LifeCycleEventType.READY_FOR_CHECKING, null, who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {

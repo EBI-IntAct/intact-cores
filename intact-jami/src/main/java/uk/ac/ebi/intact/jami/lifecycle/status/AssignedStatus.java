@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.jami.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
+import uk.ac.ebi.intact.jami.model.user.User;
 
 /**
  */
@@ -36,13 +37,13 @@ public class AssignedStatus extends GlobalStatus {
      *
      * @param releasable the releasable
      */
-    public void startCuration(Releasable releasable) {
+    public void startCuration(Releasable releasable, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition assigned to curation in progress cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
 
-        changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.CURATION_STARTED, "");
+        changeStatus(releasable, LifeCycleStatus.CURATION_IN_PROGRESS, LifeCycleEventType.CURATION_STARTED, "", who);
 
         for ( LifecycleEventListener listener : getListeners() ) {
             listener.fireCurationInProgress( releasable );
@@ -55,14 +56,14 @@ public class AssignedStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param reason a mandatory reason
      */
-    public void unassign(Releasable releasable, String reason) {
+    public void unassign(Releasable releasable, String reason, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition assigned to reserved cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
 
         enfoceMandatory(reason);
-        changeStatus(releasable, LifeCycleStatus.RESERVED, LifeCycleEventType.ASSIGNMENT_DECLINED, reason);
+        changeStatus(releasable, LifeCycleStatus.RESERVED, LifeCycleEventType.ASSIGNMENT_DECLINED, reason, who);
 
         // notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {

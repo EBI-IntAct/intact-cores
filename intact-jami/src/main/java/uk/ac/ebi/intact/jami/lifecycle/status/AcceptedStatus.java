@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.jami.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
+import uk.ac.ebi.intact.jami.model.user.User;
 
 /**
  */
@@ -37,13 +38,13 @@ public class AcceptedStatus extends GlobalStatus {
      * @param releasable the releasable
      * @param comment optional comment
      */
-    public void readyForRelease(Releasable releasable, String comment) {
+    public void readyForRelease(Releasable releasable, String comment, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition accepted to ready for release cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
         }
 
-        changeStatus(releasable, LifeCycleStatus.READY_FOR_RELEASE, LifeCycleEventType.READY_FOR_RELEASE, comment);
+        changeStatus(releasable, LifeCycleStatus.READY_FOR_RELEASE, LifeCycleEventType.READY_FOR_RELEASE, comment, who);
 
         for ( LifecycleEventListener listener : getListeners() ) {
             listener.fireReadyForRelease( releasable );

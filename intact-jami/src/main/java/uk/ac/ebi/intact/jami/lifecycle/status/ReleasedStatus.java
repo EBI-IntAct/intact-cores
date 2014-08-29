@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.jami.lifecycle.LifecycleEventListener;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEventType;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
+import uk.ac.ebi.intact.jami.model.user.User;
 
 /**
  */
@@ -31,7 +32,7 @@ public class ReleasedStatus extends GlobalStatus {
         setLifecycleStatus(LifeCycleStatus.RELEASED);
     }
 
-    public void putOnHold(Releasable releasable, String reason) {
+    public void putOnHold(Releasable releasable, String reason, User who) {
         if (!canChangeStatus(releasable)){
             throw new IllegalTransitionException("Transition released to accepted on hold cannot be applied to object '"+ releasable.toString()+
                     "' with state: '"+releasable.getStatus()+"'");
@@ -39,7 +40,7 @@ public class ReleasedStatus extends GlobalStatus {
         enfoceMandatory(reason);
 
         releasable.onHold(reason);
-        changeStatus(releasable, LifeCycleStatus.ACCEPTED_ON_HOLD, LifeCycleEventType.PUT_ON_HOLD, reason);
+        changeStatus(releasable, LifeCycleStatus.ACCEPTED_ON_HOLD, LifeCycleEventType.PUT_ON_HOLD, reason, who);
 
         // Notify listeners
         for ( LifecycleEventListener listener : getListeners() ) {
