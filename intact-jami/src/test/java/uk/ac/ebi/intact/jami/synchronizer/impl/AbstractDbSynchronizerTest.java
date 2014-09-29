@@ -16,10 +16,7 @@ import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.*;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -47,6 +44,7 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
     public void init(){
         this.context = new DefaultSynchronizerContext(this.entityManager);
         initSynchronizer();
+        this.entityManager.setFlushMode(FlushModeType.COMMIT);
     }
 
     public void persist() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {

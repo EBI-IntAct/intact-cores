@@ -139,6 +139,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> modelledParticipantSynchronizer;
     private ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> participantEvidenceSynchronizer;
 
+    // complex xref synchronizer
+    private XrefSynchronizer<InteractorXref> complexXrefSynchronizer;
+
     public DefaultSynchronizerContext(EntityManager entityManager){
         if (entityManager == null){
             throw new IllegalArgumentException("Entity manager cannot be null in an IntAct database synchronizer context");
@@ -841,6 +844,14 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     @Override
+    public XrefSynchronizer<InteractorXref> getComplexXrefSynchronizer() {
+        if (this.complexXrefSynchronizer == null){
+            this.complexXrefSynchronizer = new ComplexXrefSynchronizerTemplate(this);
+        }
+        return complexXrefSynchronizer;
+    }
+
+    @Override
     public UserContext getUserContext() {
         return this.userContext;
     }
@@ -871,6 +882,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         clearCache(this.aliasSynchronizer);
         clearCache(this.annotationSynchronizer);
         clearCache(this.xrefSynchronizer);
+        clearCache(this.complexXrefSynchronizer);
         clearCache(this.cooperativeEffectSynchronizer);
         clearCache(this.preAssemblySynchronizer);
         clearCache(this.allosterySynchronizer);

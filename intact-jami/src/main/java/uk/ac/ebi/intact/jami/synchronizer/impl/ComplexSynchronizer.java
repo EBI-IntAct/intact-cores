@@ -126,6 +126,24 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     }
 
     @Override
+    protected void prepareXrefs(IntactComplex intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
+        if (intactInteractor.areXrefsInitialized()){
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getDbXrefs());
+            for (Xref xref : xrefsToPersist){
+                // do not persist or merge xrefs because of cascades
+                Xref cvXref = enableSynchronization ?
+                        getContext().getComplexXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getComplexXrefSynchronizer().convertToPersistentObject(xref);
+                // we have a different instance because needed to be synchronized
+                if (cvXref != xref){
+                    intactInteractor.getDbXrefs().remove(xref);
+                    intactInteractor.getDbXrefs().add(cvXref);
+                }
+            }
+        }
+    }
+
+    @Override
     public void convertPersistableProperties(IntactComplex intactComplex) throws FinderException, PersisterException, SynchronizerException {
         // prepare evidence type
         prepareEvidenceType(intactComplex, false);

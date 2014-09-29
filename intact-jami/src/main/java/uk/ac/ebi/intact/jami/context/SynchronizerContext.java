@@ -128,6 +128,8 @@ public interface SynchronizerContext {
 
     public XrefSynchronizer<InteractorXref> getInteractorXrefSynchronizer();
 
+    public XrefSynchronizer<InteractorXref> getComplexXrefSynchronizer();
+
     public XrefSynchronizer<FeatureEvidenceXref> getFeatureEvidenceXrefSynchronizer();
 
     public XrefSynchronizer<ModelledFeatureXref> getModelledFeatureXrefSynchronizer();

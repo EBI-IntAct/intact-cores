@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -381,6 +382,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected abstract void storeInCache(I originalObject, T persistentObject, T existingInstance);
 
     protected EntityManager getEntityManager() {
+        // the flushmode commit must be set so the entity manager do not flush when creating queries
+        this.entityManager.setFlushMode(FlushModeType.COMMIT);
         return entityManager;
     }
 

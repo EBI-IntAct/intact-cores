@@ -2,8 +2,7 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import psidev.psi.mi.jami.model.CvTerm;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Implementation of xref for interactors
@@ -14,6 +13,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table( name = "ia_interactor_xref" )
+@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
+@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue( "simple" )
 public class InteractorXref extends AbstractIntactXref{
 
     protected InteractorXref() {
