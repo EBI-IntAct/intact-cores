@@ -65,7 +65,6 @@ public class IntactDaoImpl implements IntactDao {
 
     public EntityManager getEntityManager() {
         // the flushmode commit must be set so the entity manager do not flush when creating queries
-        this.entityManager.setFlushMode(FlushModeType.COMMIT);
         return this.entityManager;
     }
 

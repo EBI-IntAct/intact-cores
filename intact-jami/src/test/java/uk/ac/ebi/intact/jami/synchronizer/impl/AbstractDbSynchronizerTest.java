@@ -44,7 +44,6 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
     public void init(){
         this.context = new DefaultSynchronizerContext(this.entityManager);
         initSynchronizer();
-        this.entityManager.setFlushMode(FlushModeType.COMMIT);
     }
 
     public void persist() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
