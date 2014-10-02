@@ -46,4 +46,15 @@ public class InteractorXref extends Xref {
         return super.getParentAc();
     }
 
+    @Column(name = "category")
+    /**
+     * For forward compatibility with intact-jami only
+     */
+    private String getCategory() {
+        return "simple";
+    }
+
+    private void setCategory(String category) {
+        // nothing to do
+    }
 }
