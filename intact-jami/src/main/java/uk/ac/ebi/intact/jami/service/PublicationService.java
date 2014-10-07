@@ -1,19 +1,18 @@
 package uk.ac.ebi.intact.jami.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Publication;
-import uk.ac.ebi.intact.jami.dao.IntactDao;
-import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Publication service
@@ -24,18 +23,13 @@ import java.util.*;
  */
 @Service(value = "publicationService")
 @Lazy
-public class PublicationService implements IntactService<Publication>{
+public class PublicationService extends AbstractReleasableLifeCycleService<IntactPublication> implements IntactService<Publication>{
 
-    @Autowired
-    @Qualifier("intactDao")
-    private IntactDao intactDAO;
-    @Autowired
-    @Qualifier("intactTransactionSynchronization")
-    private IntactTransactionSynchronization afterCommitExecutor;
+    private static final Logger LOGGER = Logger.getLogger("ComplexService");
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll() {
-        return this.intactDAO.getPublicationDao().countAll();
+        return getIntactDao().getPublicationDao().countAll();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -45,12 +39,12 @@ public class PublicationService implements IntactService<Publication>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Publication> fetchIntactObjects(int first, int max) {
-        return new ArrayList<Publication>(this.intactDAO.getPublicationDao().getAll("ac", first, max));
+        return new ArrayList<Publication>(getIntactDao().getPublicationDao().getAll("ac", first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public long countAll(String countQuery, Map<String, Object> parameters) {
-        return this.intactDAO.getPublicationDao().countByQuery(countQuery, parameters);
+        return getIntactDao().getPublicationDao().countByQuery(countQuery, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -60,40 +54,63 @@ public class PublicationService implements IntactService<Publication>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Publication> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
-        return new ArrayList<Publication>(this.intactDAO.getPublicationDao().getByQuery(query, parameters, first, max));
+        return new ArrayList<Publication>(getIntactDao().getPublicationDao().getByQuery(query, parameters, first, max));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Publication object) throws PersisterException, FinderException, SynchronizerException {
-        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+        getAfterCommitExecutor().registerDaoForSynchronization(getIntactDao());
 
         // we can synchronize the complex with the database now
-        intactDAO.getSynchronizerContext().getPublicationSynchronizer().synchronize(object, true);
+        getIntactDao().getSynchronizerContext().getPublicationSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Collection<? extends Publication> objects) throws SynchronizerException, PersisterException, FinderException {
-        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+        getAfterCommitExecutor().registerDaoForSynchronization(getIntactDao());
 
         for (Publication pub : objects){
             // we can synchronize the complex with the database now
-            intactDAO.getSynchronizerContext().getPublicationSynchronizer().synchronize(pub, true);
+            getIntactDao().getSynchronizerContext().getPublicationSynchronizer().synchronize(pub, true);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Publication object) throws PersisterException, FinderException, SynchronizerException {
-        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+        getAfterCommitExecutor().registerDaoForSynchronization(getIntactDao());
 
-        this.intactDAO.getSynchronizerContext().getPublicationSynchronizer().delete(object);
+        getIntactDao().getSynchronizerContext().getPublicationSynchronizer().delete(object);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Collection<? extends Publication> objects) throws SynchronizerException, PersisterException, FinderException {
-        afterCommitExecutor.registerDaoForSynchronization(intactDAO);
+        getAfterCommitExecutor().registerDaoForSynchronization(getIntactDao());
 
         for (Publication pub : objects){
-            this.intactDAO.getSynchronizerContext().getPublicationSynchronizer().delete(pub);
+            getIntactDao().getSynchronizerContext().getPublicationSynchronizer().delete(pub);
         }
+    }
+
+    @Override
+    protected IntactPublication loadReleasableByAc(String ac) {
+        return getIntactDao().getPublicationDao().getByAc(ac);
+    }
+
+    @Override
+    protected void updateReleasable(IntactPublication releasable) {
+        try {
+            getIntactDao().getPublicationDao().update(releasable);
+        } catch (FinderException e) {
+            LOGGER.log(Level.SEVERE, "Cannot update publication "+releasable.getAc(), e);
+        } catch (SynchronizerException e) {
+            LOGGER.log(Level.SEVERE, "Cannot update publication "+releasable.getAc(), e);
+        } catch (PersisterException e) {
+            LOGGER.log(Level.SEVERE, "Cannot update publication "+releasable.getAc(), e);
+        }
+    }
+
+    @Override
+    protected void registerListeners() {
+        // nothing to do
     }
 }
