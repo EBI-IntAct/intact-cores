@@ -899,4 +899,13 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     private void setCategory(String category) {
         this.category = category;
     }
+
+    @Column(name = "maxstoichiometry")
+    private float getMaxStoichiometry() {
+        return this.stoichiometry;
+    }
+
+    private void setMaxStoichiometry(float max) {
+        this.stoichiometry = max;
+    }
 }
