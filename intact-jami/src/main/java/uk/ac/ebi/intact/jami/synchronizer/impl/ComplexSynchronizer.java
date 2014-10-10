@@ -433,4 +433,10 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         }
         intactParticipant.getParticipants().clear();
     }
+
+    @Override
+    public void clearCache() {
+        super.clearCache();
+        this.experimentBCSynchronizer.clearCache();
+    }
 }
