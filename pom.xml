@@ -12,16 +12,16 @@
     <groupId>uk.ac.ebi.intact.core</groupId>
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
-    <version>2.6.7</version>
+    <version>2.6.8-SNAPSHOT</version>
 
     <name>IntAct Core</name>
     <description>Core Master POM</description>
     <url>http://www.ebi.ac.uk/~intact/devsite/core</url>
 
     <scm>
-        <connection>scm:svn:https://intact.googlecode.com/svn/repo/core/tags/core-2.6.7</connection>
-        <developerConnection>scm:svn:https://intact.googlecode.com/svn/repo/core/tags/core-2.6.7</developerConnection>
-        <url>http://code.google.com/p/intact/source/browse/repo/core/tags/core-2.6.7</url>
+        <connection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk</connection>
+        <developerConnection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk</developerConnection>
+        <url>http://code.google.com/p/intact/source/browse/repo/core/trunk</url>
     </scm>
 
     <properties>
