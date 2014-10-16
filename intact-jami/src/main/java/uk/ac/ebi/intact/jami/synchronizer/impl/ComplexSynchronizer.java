@@ -333,12 +333,14 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                 // check that experiment host is the same as existing organism
                 if (intactComplex.getOrganism() != null && exp.getHostOrganism() != null){
                      if (intactComplex.getOrganism().getTaxId() != exp.getHostOrganism().getTaxId()){
+                         intactComplex.getExperiments().clear();
                          IntactUtils.createAndAddDefaultExperimentForComplexes(intactComplex, exp.getPublication() != null ?
                                  (exp.getPublication().getPubmedId() != null ? exp.getPublication().getPubmedId() : "unassigned638")
                                  : "unassigned638");
                      }
                 }
                 else {
+                    intactComplex.getExperiments().clear();
                     IntactUtils.createAndAddDefaultExperimentForComplexes(intactComplex, exp.getPublication() != null ?
                             (exp.getPublication().getPubmedId() != null ? exp.getPublication().getPubmedId() : "unassigned638")
                             : "unassigned638");
