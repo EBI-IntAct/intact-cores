@@ -104,13 +104,11 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
     }
 
     public T update(T objToUpdate) throws FinderException,PersisterException,SynchronizerException{
-        synchronizeObjectProperties(objToUpdate);
-        return getEntityManager().merge(objToUpdate);
+        return synchronizeAndUpdateObjectProperties(objToUpdate);
     }
 
     public void persist(T objToPersist) throws FinderException,PersisterException,SynchronizerException{
-        synchronizeObjectProperties(objToPersist);
-        getEntityManager().persist(objToPersist);
+        synchronizeAndUpdateObjectProperties(objToPersist);
     }
 
     public void persistAll(Collection<T> objsToPersist) throws FinderException,PersisterException,SynchronizerException{
@@ -142,8 +140,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
     }
 
     public void merge(T objToReplicate) throws FinderException,PersisterException,SynchronizerException{
-        synchronizeObjectProperties(objToReplicate);
-        getEntityManager().merge(objToReplicate);
+        synchronizeAndUpdateObjectProperties(objToReplicate);
     }
 
     public boolean isTransient(T object) {
@@ -165,6 +162,10 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
 
     protected void synchronizeObjectProperties(T objToUpdate) throws PersisterException, FinderException, SynchronizerException {
         getDbSynchronizer().synchronizeProperties(objToUpdate);
+    }
+
+    protected T synchronizeAndUpdateObjectProperties(T objToUpdate) throws PersisterException, FinderException, SynchronizerException {
+        return (T)getDbSynchronizer().synchronize(objToUpdate, true);
     }
 
     protected EntityManager getEntityManager() {
