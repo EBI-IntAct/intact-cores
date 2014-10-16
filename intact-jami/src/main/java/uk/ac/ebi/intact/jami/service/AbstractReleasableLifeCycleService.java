@@ -37,7 +37,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
     private static final Logger LOGGER = Logger.getLogger("AbstractReleasableLifeCycleService");
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void createNewReleasable(String ac, String comment, String userLogin){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -59,7 +59,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void assignReleasableToCurator(String ac, String curatorLogin, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -84,7 +84,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void claimReleasableOwnership(String ac, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -106,7 +106,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void reserveReleasable(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -129,7 +129,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void startReleasableCuration(String ac, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -151,7 +151,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void unassignReleasable(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -174,7 +174,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void readyForCheckingReleasable(String ac, String message, String userLogin){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -198,7 +198,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void acceptReleasable(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -221,7 +221,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void rejectReleasable(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -244,7 +244,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void revertReleasableFromReadForChecking(String ac, String userLogin){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -266,7 +266,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void readyForRelease(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -289,7 +289,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void removeOnHoldFromReleasable(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -312,7 +312,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void release(String ac, String message, String user){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -336,7 +336,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void putReleasableOnHoldFromReadyForRelease(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -359,7 +359,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void revertReleasableToReadyForChecking(String ac, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
@@ -381,7 +381,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void moveReleasableFromReleasedToOnHold(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
