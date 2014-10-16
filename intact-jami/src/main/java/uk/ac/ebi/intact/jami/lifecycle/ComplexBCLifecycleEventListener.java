@@ -78,7 +78,7 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
         if (releaseable instanceof IntactComplex){
             IntactComplex complex = (IntactComplex)releaseable;
 
-            Experiment exp = complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
+            Experiment exp = !complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
             if (exp == null){
                 IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "14681455");
             }
@@ -86,7 +86,8 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
                 exp.setPublication(new IntactPublication("14681455"));
             }
             else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("14681455")){
-                exp.setPublication(new IntactPublication("14681455"));
+                complex.getExperiments().clear();
+                IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "14681455");
             }
         }
     }
@@ -96,7 +97,7 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
         if (releaseable instanceof IntactComplex){
             IntactComplex complex = (IntactComplex)releaseable;
 
-            Experiment exp = complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
+            Experiment exp = !complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
             if (exp == null){
                 IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "14681455");
             }
@@ -104,7 +105,8 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
                 exp.setPublication(new IntactPublication("14681455"));
             }
             else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("14681455")){
-                exp.setPublication(new IntactPublication("14681455"));
+                complex.getExperiments().clear();
+                IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "14681455");
             }
         }
     }
@@ -114,7 +116,7 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
         if (releaseable instanceof IntactComplex){
             IntactComplex complex = (IntactComplex)releaseable;
 
-            Experiment exp = complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
+            Experiment exp = !complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
             if (exp == null){
                 IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "unassigned638");
             }
@@ -122,7 +124,8 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
                 exp.setPublication(new IntactPublication("unassigned638"));
             }
             else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("unassigned638")){
-                exp.setPublication(new IntactPublication("unassigned638"));
+                complex.getExperiments().clear();
+                IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "unassigned638");
             }
         }
     }
@@ -132,7 +135,7 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
         if (releaseable instanceof IntactComplex){
             IntactComplex complex = (IntactComplex)releaseable;
 
-            Experiment exp = complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
+            Experiment exp = !complex.getExperiments().isEmpty() ? complex.getExperiments().iterator().next() : null;
             if (exp == null){
                 IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "unassigned638");
             }
@@ -140,7 +143,8 @@ public class ComplexBCLifecycleEventListener implements LifecycleEventListener {
                 exp.setPublication(new IntactPublication("unassigned638"));
             }
             else if (exp.getPublication().getPubmedId() == null || !exp.getPublication().getPubmedId().equals("unassigned638")){
-                exp.setPublication(new IntactPublication("unassigned638"));
+                complex.getExperiments().clear();
+                IntactUtils.createAndAddDefaultExperimentForComplexes(complex, "unassigned638");
             }
         }
     }
