@@ -351,20 +351,4 @@ public class IntactProtein extends IntactPolymer implements Protein{
     public String toString() {
         return getGeneName() != null ? geneName.getName() : (getUniprotkb() != null ? uniprotkb.getId() : (getRefseq() != null ? refseq.getId() : super.toString()));
     }
-
-    protected class ProteinAliasList extends PersistentAliasList {
-        public ProteinAliasList(Collection<Alias> aliases){
-            super(aliases);
-        }
-
-        @Override
-        protected boolean needToPreProcessElementToAdd(Alias added) {
-            return false;
-        }
-
-        @Override
-        protected Alias processOrWrapElementToAdd(Alias added) {
-            return added;
-        }
-    }
 }

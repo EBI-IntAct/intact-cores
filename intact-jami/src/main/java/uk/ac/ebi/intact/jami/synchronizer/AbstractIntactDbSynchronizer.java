@@ -7,7 +7,6 @@ import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -178,8 +177,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 return findOrPersist(object, intactObject, persist, needToSynchronizeProperties);
             }
             else{
-                // we synchronize properties of an object attached to session. We don't want to flush before synchronizing
-                getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
                 // cache object to persist if allowed
                 storeInCache(object, intactObject, intactObject);
@@ -190,7 +187,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 // then set userContext
                 intactObject.setLocalUserContext(getContext().getUserContext());
 
-                getEntityManager().setFlushMode(FlushModeType.AUTO);
                 return intactObject;
             }
         }
@@ -348,8 +344,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
-                // we synchronize properties of an object attached to session. We don't want to flush before synchronizing
-                getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
                 T mergedObject = getIntactMerger().merge(persistentObject, existingInstance);
                 // synchronize before persisting
@@ -359,7 +353,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 // then set userContext
                 mergedObject.setLocalUserContext(getContext().getUserContext());
 
-                getEntityManager().setFlushMode(FlushModeType.AUTO);
                 return mergedObject;
             }
             // we only return the existing instance if no merge allowed
@@ -392,7 +385,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected abstract void storeInCache(I originalObject, T persistentObject, T existingInstance);
 
     protected EntityManager getEntityManager() {
-        // the flushmode commit must be set so the entity manager do not flush when creating queries
         return entityManager;
     }
 

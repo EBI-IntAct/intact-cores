@@ -4,13 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.jami.ApplicationContextProvider;
-import uk.ac.ebi.intact.jami.context.UserContext;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.lifecycle.LifeCycleManager;
 import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
 
+import javax.persistence.FlushModeType;
 import java.util.logging.Logger;
 
 /**
@@ -45,6 +44,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         // register listeners if necessary
         registerListeners();
 
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
+
         // load releasable
         T releasable = loadReleasableByAc(ac);
         if (releasable == null){
@@ -57,6 +59,8 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -66,6 +70,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -82,6 +89,8 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -91,6 +100,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -104,6 +116,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -113,6 +126,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -127,6 +143,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -136,6 +153,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -149,6 +169,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -158,6 +179,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -172,12 +196,16 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void readyForCheckingReleasable(String ac, String message, String userLogin){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // register listeners if necessary
         registerListeners();
@@ -196,12 +224,16 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void acceptReleasable(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // register listeners if necessary
         registerListeners();
@@ -219,12 +251,16 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void rejectReleasable(String ac, String message, String loginUser){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // register listeners if necessary
         registerListeners();
@@ -242,12 +278,16 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void revertReleasableFromReadForChecking(String ac, String userLogin){
         // register intactdao in the transaction manager so it can clean cache after transaction commit
         afterCommitExecutor.registerDaoForSynchronization(this.intactDao);
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // register listeners if necessary
         registerListeners();
@@ -264,6 +304,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -273,6 +314,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -287,6 +331,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -296,6 +341,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -310,6 +358,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -320,20 +369,23 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
         // register listeners if necessary
         registerListeners();
 
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
+
         // load releasable
         T releasable = loadReleasableByAc(ac);
         if (releasable == null){
             LOGGER.severe("Releasable " + ac + " does not exist.");
         }
         else{
-            UserContext userContext = ApplicationContextProvider.getBean("jamiUserContext");
             lifecycleManager.getReadyForReleaseStatus().release(releasable,
                     message,
-                    userContext.getUser());
+                    intactDao.getUserDao().getByLogin(user));
 
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -343,6 +395,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -357,6 +412,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -366,6 +422,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -379,6 +438,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -388,6 +448,9 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
 
         // register listeners if necessary
         registerListeners();
+
+        // we don't want to flush the queries
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // load releasable
         T releasable = loadReleasableByAc(ac);
@@ -402,6 +465,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
             // update releasable
             updateReleasable(releasable);
         }
+        getIntactDao().getEntityManager().setFlushMode(FlushModeType.AUTO);
     }
 
     protected abstract T loadReleasableByAc(String ac);

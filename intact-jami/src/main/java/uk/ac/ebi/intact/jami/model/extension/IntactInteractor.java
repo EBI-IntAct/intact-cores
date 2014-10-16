@@ -380,7 +380,10 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     }
 
     protected void initialiseAnnotations(){
-        this.annotations = getDbAnnotations();
+        // init db persistent annots
+        getDbAnnotations();
+
+        this.annotations = this.persistentAnnotations;
 
         for (Annotation a : this.annotations){
             processAddedAnnotation(a);
@@ -419,7 +422,10 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
     }
 
     protected void initialiseAliases(){
-        this.aliases = getDbAliases();
+        // init persistent aliases
+        getDbAliases();
+
+        this.aliases = this.persistentAliases;
         for (Alias a : this.aliases){
             processAddedAlias(a);
         }
