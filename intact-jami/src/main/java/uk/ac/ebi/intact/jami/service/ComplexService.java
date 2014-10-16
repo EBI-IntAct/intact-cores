@@ -11,6 +11,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
+import javax.persistence.FlushModeType;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,6 +98,7 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
     @Override
     protected void updateReleasable(IntactComplex releasable) {
         try {
+            getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
             getIntactDao().getComplexDao().update(releasable);
         } catch (FinderException e) {
             LOGGER.log(Level.SEVERE, "Cannot update complex "+releasable.getAc(), e);

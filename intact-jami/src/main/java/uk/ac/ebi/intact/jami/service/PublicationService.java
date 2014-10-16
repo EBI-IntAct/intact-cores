@@ -10,6 +10,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
+import javax.persistence.FlushModeType;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,6 +100,7 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
     @Override
     protected void updateReleasable(IntactPublication releasable) {
         try {
+            getIntactDao().getEntityManager().setFlushMode(FlushModeType.COMMIT);
             getIntactDao().getPublicationDao().update(releasable);
         } catch (FinderException e) {
             LOGGER.log(Level.SEVERE, "Cannot update publication "+releasable.getAc(), e);
