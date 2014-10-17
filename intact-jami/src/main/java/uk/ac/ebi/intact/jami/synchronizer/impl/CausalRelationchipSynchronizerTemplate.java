@@ -13,6 +13,8 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Finder/persister for causal relationship
@@ -30,6 +32,16 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
 
     public I find(CausalRelationship object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<I> findAll(CausalRelationship object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(CausalRelationship object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(I object) throws FinderException, PersisterException, SynchronizerException {

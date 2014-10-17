@@ -9,6 +9,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
@@ -90,6 +91,64 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         }
     }
 
+    @Override
+    public Collection<IntactSource> findAll(Source term) {
+        if (term == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(term)){
+            return Collections.singleton(this.persistedObjects.get(term));
+        }
+        else if (term.getMIIdentifier() != null){
+            return fetchAllByIdentifier(term.getMIIdentifier(), CvTerm.PSI_MI, false);
+        }
+        else if (term.getPARIdentifier() != null){
+            return fetchAllByIdentifier(term.getMIIdentifier(), CvTerm.PSI_PAR, false);
+        }
+        else if (!term.getIdentifiers().isEmpty()){
+            Collection<IntactSource> fetchedTerms = new ArrayList<IntactSource>();
+            for (Xref ref : term.getIdentifiers()){
+                fetchedTerms.addAll(fetchAllByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true));
+            }
+
+            return fetchedTerms;
+        }
+        else{
+            return fetchAllByName(term.getShortName(), null);
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Source term) {
+        if (term == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(term)){
+            IntactSource fetched = this.persistedObjects.get(term);
+            if (fetched.getAc() != null){
+               return Collections.singleton(fetched.getAc());
+            }
+            return Collections.EMPTY_LIST;
+        }
+        else if (term.getMIIdentifier() != null){
+            return fetchAllAcsByIdentifier(term.getMIIdentifier(), CvTerm.PSI_MI, false);
+        }
+        else if (term.getPARIdentifier() != null){
+            return fetchAllAcsByIdentifier(term.getMIIdentifier(), CvTerm.PSI_PAR, false);
+        }
+        else if (!term.getIdentifiers().isEmpty()){
+            Collection<String> fetchedTerms = new ArrayList<String>();
+            for (Xref ref : term.getIdentifiers()){
+                fetchedTerms.addAll(fetchAllAcsByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true));
+            }
+
+            return fetchedTerms;
+        }
+        else{
+            return fetchAllAcsByName(term.getShortName(), null);
+        }
+    }
+
     public void synchronizeProperties(IntactSource intactSource) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactSource);
@@ -138,6 +197,24 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             throw new BridgeFailedException("The source "+searchName + " can match "+cvs.size()+" sources in the database and we cannot determine which one is valid.");
         }
         return null;
+    }
+
+    public Collection<IntactSource> fetchAllByName(String searchName, String miOntologyName) {
+        if(searchName == null)
+            throw new IllegalArgumentException("Can not search for a name without a value.");
+        Query query = getEntityManager().createQuery("select s from IntactSource s " +
+                "where s.shortName = :name");
+        query.setParameter("name", searchName.trim().toLowerCase());
+        return query.getResultList();
+    }
+
+    public Collection<String> fetchAllAcsByName(String searchName, String miOntologyName) {
+        if(searchName == null)
+            throw new IllegalArgumentException("Can not search for a name without a value.");
+        Query query = getEntityManager().createQuery("select distinct s.ac from IntactSource s " +
+                "where s.shortName = :name");
+        query.setParameter("name", searchName.trim().toLowerCase());
+        return query.getResultList();
     }
 
     public Collection<Source> fetchByName(String searchName) throws BridgeFailedException {
@@ -243,6 +320,60 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             throw new BridgeFailedException("The source "+termIdentifier + " can match "+cvs.size()+" sources in the database and we cannot determine which one is valid.");
         }
         return null;
+    }
+
+    protected Collection<IntactSource> fetchAllByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) {
+        Query query;
+        if (checkAc){
+            query = getEntityManager().createQuery("select s from IntactSource s " +
+                    "where s.ac = :id");
+            query.setParameter("id", termIdentifier);
+            Collection<IntactSource> cvs = query.getResultList();
+            if (!cvs.isEmpty()){
+                return cvs;
+            }
+        }
+
+        query = getEntityManager().createQuery("select distinct s from IntactSource s " +
+                "join s.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and d.shortName = :psiName " +
+                "and x.id = :psiId");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("psiName", miOntologyName.toLowerCase().trim());
+        query.setParameter("psiId", termIdentifier);
+
+        return query.getResultList();
+    }
+
+    protected Collection<String> fetchAllAcsByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) {
+        Query query;
+        if (checkAc){
+            query = getEntityManager().createQuery("select distinct s.ac from IntactSource s " +
+                    "where s.ac = :id");
+            query.setParameter("id", termIdentifier);
+            Collection<String> cvs = query.getResultList();
+            if (!cvs.isEmpty()){
+                return cvs;
+            }
+        }
+
+        query = getEntityManager().createQuery("select distinct s.ac from IntactSource s " +
+                "join s.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and d.shortName = :psiName " +
+                "and x.id = :psiId");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("psiName", miOntologyName.toLowerCase().trim());
+        query.setParameter("psiId", termIdentifier);
+
+        return query.getResultList();
     }
 
     @Override

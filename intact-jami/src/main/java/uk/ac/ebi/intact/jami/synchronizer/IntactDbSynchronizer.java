@@ -3,6 +3,8 @@ package uk.ac.ebi.intact.jami.synchronizer;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
+import java.util.Collection;
+
 /**
  * Interface for finders that can retrieve existing instances in the DB given an object
  * that can be transient.
@@ -18,12 +20,26 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
 
 
     /**
-     * Finds an existing object in the database based on a business key
+     * Finds a unique existing object in the database based on a business key
      * @param object
      * @return
-     * @throws FinderException
+     * @throws FinderException if several objects already exist in the database and it does not know which one to return
      */
     public T find(I object) throws FinderException;
+
+    /**
+     * Finds all existing object in the database based on a business key
+     * @param object
+     * @return  the collection of duplicated objects matching this object in the database
+     */
+    public Collection<T> findAll(I object);
+
+    /**
+     * Finds all existing object acs in the database based on a business key
+     * @param object
+     * @return  the collection of duplicated object acs matching this object in the database
+     */
+    public Collection<String> findAllMatchingAcs(I object);
 
     /**
      * Persist this object instance (MUST be an instance annotated with hibernate annotations) and

@@ -9,6 +9,8 @@ import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -28,6 +30,16 @@ implements LifecycleEventSynchronizer<A>{
 
     public A find(LifeCycleEvent object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<A> findAll(LifeCycleEvent object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(LifeCycleEvent object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {

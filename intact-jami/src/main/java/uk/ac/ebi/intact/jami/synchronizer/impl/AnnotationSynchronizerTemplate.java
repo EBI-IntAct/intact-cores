@@ -10,6 +10,8 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAnnotation;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Finder/persister for annotations
@@ -31,6 +33,16 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
 
     public A find(Annotation object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<A> findAll(Annotation object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Annotation object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {

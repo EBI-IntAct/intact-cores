@@ -14,6 +14,10 @@ import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Synchronizer for features
  *
@@ -42,6 +46,32 @@ public class CompositeFeatureSynchronizer implements IntactDbSynchronizer<Featur
         }
         else {
             return null;
+        }
+    }
+
+    @Override
+    public Collection<AbstractIntactFeature> findAll(Feature term) {
+        if (term instanceof FeatureEvidence){
+            return new ArrayList<AbstractIntactFeature>(this.context.getFeatureEvidenceSynchronizer().findAll((FeatureEvidence)term));
+        }
+        else if (term instanceof ModelledFeature){
+            return new ArrayList<AbstractIntactFeature>(this.context.getModelledFeatureSynchronizer().findAll((ModelledFeature) term));
+        }
+        else {
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Feature term) {
+        if (term instanceof FeatureEvidence){
+            return this.context.getFeatureEvidenceSynchronizer().findAllMatchingAcs((FeatureEvidence) term);
+        }
+        else if (term instanceof ModelledFeature){
+            return this.context.getModelledFeatureSynchronizer().findAllMatchingAcs((ModelledFeature) term);
+        }
+        else {
+            return Collections.EMPTY_LIST;
         }
     }
 

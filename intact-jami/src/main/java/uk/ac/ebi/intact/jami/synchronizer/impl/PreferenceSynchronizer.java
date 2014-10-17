@@ -11,6 +11,8 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Finder/persister for user preferences
@@ -31,6 +33,16 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
 
     public Preference find(Preference preference) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<Preference> findAll(Preference object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Preference object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(Preference object) throws FinderException, PersisterException, SynchronizerException {

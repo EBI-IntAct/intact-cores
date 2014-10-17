@@ -15,6 +15,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -102,6 +103,32 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
         // only retrieve an object in the cache, otherwise return null
         else {
             return null;
+        }
+    }
+
+    @Override
+    public Collection<IntactVariableParameterValue> findAll(VariableParameterValue object) {
+        if (this.persistedObjects.containsKey(object)){
+            return Collections.singleton(this.persistedObjects.get(object));
+        }
+        // only retrieve an object in the cache, otherwise return null
+        else {
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(VariableParameterValue object) {
+        if (this.persistedObjects.containsKey(object)){
+            IntactVariableParameterValue fetched = this.persistedObjects.get(object);
+            if (fetched.getId() != null){
+                return Collections.singleton(Long.toString(fetched.getId()));
+            }
+            return Collections.EMPTY_LIST;
+        }
+        // only retrieve an object in the cache, otherwise return null
+        else {
+            return Collections.EMPTY_LIST;
         }
     }
 

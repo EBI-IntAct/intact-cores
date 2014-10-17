@@ -10,6 +10,8 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactConfidence;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default finder/persister of confidenceClass
@@ -32,6 +34,16 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
 
     public C find(T object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<C> findAll(T object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(T object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(C object) throws FinderException, PersisterException, SynchronizerException {

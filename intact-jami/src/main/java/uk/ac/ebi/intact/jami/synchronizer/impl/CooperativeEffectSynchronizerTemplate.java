@@ -15,6 +15,7 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default finder/synchronizer for basic cooperative effect
@@ -35,6 +36,16 @@ implements CooperativeEffectSynchronizer<T, C> {
 
     public C find(T object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<C> findAll(T object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(T object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(C object) throws FinderException, PersisterException, SynchronizerException {

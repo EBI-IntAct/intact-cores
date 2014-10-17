@@ -11,6 +11,7 @@ import uk.ac.ebi.intact.jami.synchronizer.InteractorSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -64,6 +65,76 @@ public class CompositeInteractorSynchronizer implements InteractorFetcher<Intera
         }
         else {
             return this.context.getInteractorBaseSynchronizer().find(term);
+        }
+    }
+
+    @Override
+    public Collection<IntactInteractor> findAll(Interactor term) {
+        if (term instanceof Molecule){
+            if (term instanceof Polymer){
+                if (term instanceof Protein){
+                    return new ArrayList<IntactInteractor>(this.context.getProteinSynchronizer().findAll((Protein) term));
+                }
+                else if (term instanceof NucleicAcid){
+                    return new ArrayList<IntactInteractor>(this.context.getNucleicAcidSynchronizer().findAll((NucleicAcid) term));
+                }
+                else{
+                    return new ArrayList<IntactInteractor>(this.context.getPolymerSynchronizer().findAll((Polymer) term));
+                }
+            }
+            else if (term instanceof BioactiveEntity){
+                return new ArrayList<IntactInteractor>(this.context.getBioactiveEntitySynchronizer().findAll((BioactiveEntity) term));
+            }
+            else if (term instanceof Gene){
+                return new ArrayList<IntactInteractor>(this.context.getGeneSynchronizer().findAll((Gene) term));
+            }
+            else{
+                return new ArrayList<IntactInteractor>(this.context.getMoleculeSynchronizer().findAll((Molecule) term));
+            }
+        }
+        else if (term instanceof Complex){
+            return new ArrayList<IntactInteractor>(this.context.getComplexSynchronizer().findAll((Complex) term));
+        }
+        else if (term instanceof InteractorPool){
+            return new ArrayList<IntactInteractor>(this.context.getInteractorPoolSynchronizer().findAll((InteractorPool) term));
+        }
+        else {
+            return this.context.getInteractorBaseSynchronizer().findAll(term);
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Interactor term) {
+        if (term instanceof Molecule){
+            if (term instanceof Polymer){
+                if (term instanceof Protein){
+                    return this.context.getProteinSynchronizer().findAllMatchingAcs((Protein) term);
+                }
+                else if (term instanceof NucleicAcid){
+                    return this.context.getNucleicAcidSynchronizer().findAllMatchingAcs((NucleicAcid) term);
+                }
+                else{
+                    return this.context.getPolymerSynchronizer().findAllMatchingAcs((Polymer) term);
+                }
+            }
+            else if (term instanceof BioactiveEntity){
+                return this.context.getBioactiveEntitySynchronizer().findAllMatchingAcs((BioactiveEntity) term);
+            }
+            else if (term instanceof Gene){
+                return this.context.getGeneSynchronizer().findAllMatchingAcs((Gene) term);
+            }
+            else{
+                return this.context.getMoleculeSynchronizer().findAllMatchingAcs((Molecule) term);
+            }
+        }
+        else if (term instanceof Complex){
+            return this.context.getComplexSynchronizer().findAllMatchingAcs((Complex) term);
+        }
+        else if (term instanceof InteractorPool){
+            return this.context.getInteractorPoolSynchronizer().findAllMatchingAcs((InteractorPool) term);
+        }
+        else {
+            return this.context.getInteractorBaseSynchronizer().findAllMatchingAcs(term);
         }
     }
 

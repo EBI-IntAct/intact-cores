@@ -13,6 +13,8 @@ import uk.ac.ebi.intact.jami.model.extension.IntactPosition;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default synchronizer/finder for Ranges
@@ -36,6 +38,16 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
 
     public I find(Range object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<I> findAll(Range object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Range object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(I object) throws FinderException, PersisterException, SynchronizerException {

@@ -45,6 +45,39 @@ public class PolymerSynchronizerTemplate<T extends Polymer, P extends IntactPoly
         }
     }
 
+    @Override
+    protected Collection<P> postFilterAll(T term, Collection<P> results) {
+        Collection<P> filteredResults = new ArrayList<P>(results.size());
+        for (P interactor : results){
+            if (term.getSequence() != null && term.getSequence().equalsIgnoreCase(interactor.getSequence())){
+                filteredResults.add(interactor);
+            }
+            // we accept null sequences when finding polymers
+            else if (term.getSequence() == null){
+                filteredResults.add(interactor);
+            }
+        }
+
+        return filteredResults;
+    }
+
+    @Override
+    protected Collection<String> postFilterAllAcs(T term, Collection<P> results) {
+        Collection<String> filteredResults = new ArrayList<String>(results.size());
+        for (P interactor : results){
+            if (term.getSequence() != null && term.getSequence().equalsIgnoreCase(interactor.getSequence())
+                    && interactor.getAc() != null){
+                filteredResults.add(interactor.getAc());
+            }
+            // we accept null sequences when finding polymers
+            else if (term.getSequence() == null && interactor.getAc() != null){
+                filteredResults.add(interactor.getAc());
+            }
+        }
+
+        return filteredResults;
+    }
+
     // TODO uncomment this method when intact-core is removed and the sequence property of a polymer is persisted as a lob
     /*@Override
     protected Collection<P> findByOtherProperties(T term, IntactCvTerm existingType, IntactOrganism existingOrganism) {

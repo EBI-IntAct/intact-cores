@@ -12,6 +12,7 @@ import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.PublicationXref;
@@ -100,6 +101,70 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             }
         } catch (BridgeFailedException e) {
             throw new FinderException("Problem fetching publications from the database", e);
+        }
+    }
+
+    @Override
+    public Collection<IntactPublication> findAll(Publication publication) {
+        if (publication == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(publication)){
+            return Collections.singleton(this.persistedObjects.get(publication));
+        }
+        else if (publication.getPubmedId() != null){
+            return fetchAllByIdentifier(publication.getPubmedId(), Xref.PUBMED, false);
+        }
+        else if (publication.getDoi() != null){
+            return fetchAllByIdentifier(publication.getDoi(), Xref.DOI, false);
+        }
+        else if (publication.getImexId() != null){
+            return fetchAllByImexId(publication.getImexId());
+        }
+        else if (!publication.getIdentifiers().isEmpty()){
+            Collection<IntactPublication> fetchedPublications = new ArrayList<IntactPublication>();
+            for (Xref ref : publication.getIdentifiers()){
+                fetchedPublications.addAll(fetchAllByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true));
+            }
+
+            return fetchedPublications;
+        }
+        else{
+            return fetchAllByTitleAndJournal(publication.getTitle(), publication.getJournal(), publication.getPublicationDate(), publication.getAuthors());
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Publication publication) {
+        if (publication == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(publication)){
+            IntactPublication fetched = this.persistedObjects.get(publication);
+            if (fetched.getAc() != null){
+                return Collections.singleton(fetched.getAc());
+            }
+            return Collections.EMPTY_LIST;
+        }
+        else if (publication.getPubmedId() != null){
+            return fetchAllAcsByIdentifier(publication.getPubmedId(), Xref.PUBMED, false);
+        }
+        else if (publication.getDoi() != null){
+            return fetchAllAcsByIdentifier(publication.getDoi(), Xref.DOI, false);
+        }
+        else if (publication.getImexId() != null){
+            return fetchAllAcsByImexId(publication.getImexId());
+        }
+        else if (!publication.getIdentifiers().isEmpty()){
+            Collection<String> fetchedPublications = new ArrayList<String>();
+            for (Xref ref : publication.getIdentifiers()){
+                fetchedPublications.addAll(fetchAllAcsByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true));
+            }
+
+            return fetchedPublications;
+        }
+        else{
+            return fetchAllAcsByTitleAndJournal(publication.getTitle(), publication.getJournal(), publication.getPublicationDate(), publication.getAuthors());
         }
     }
 
@@ -242,6 +307,96 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         return null;
     }
 
+    protected Collection<IntactPublication> fetchAllByTitleAndJournal(String title, String journal, Date publicationDate, Collection<String> authors) {
+        Query query;
+        if(title == null && journal == null && publicationDate == null && authors.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+        else if (authors.isEmpty()){
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
+                    "and "+(journal != null ? "upper(p.journal) = :journal":"p.journal is null ") +
+                    "and p.publicationDate "+(publicationDate != null ? "= :pubDate":"is null "));
+            if (title != null){
+                query.setParameter("title", title.toUpperCase().trim());
+            }
+            if (journal != null){
+                query.setParameter("journal", journal.toUpperCase().trim());
+            }
+            if (publicationDate != null){
+                query.setParameter("pubDate", publicationDate);
+            }
+        }
+        else {
+            query = getEntityManager().createQuery("select distinct p from IntactPublication p " +
+                    "join p.dbAnnotations as a "+
+                    "join a.topic as topic "+
+                    "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
+                    "and "+(journal != null ? "upper(p.journal) = :journal ":"p.journal is null ") +
+                    "and p.publicationDate "+(publicationDate != null ? "= :pubDate ":"is null ") +
+                    "and topic.shortLabel = :authors " +
+                    "and upper(a.value) = :authorsList");
+            if (title != null){
+                query.setParameter("title", title.toUpperCase().trim());
+            }
+            if (journal != null){
+                query.setParameter("journal", journal.toUpperCase().trim());
+            }
+            if (publicationDate != null){
+                query.setParameter("pubDate", publicationDate);
+            }
+            query.setParameter("authors", Annotation.AUTHOR);
+            query.setParameter("authorsList",StringUtils.join(authors, ", ").toUpperCase());
+        }
+
+        return query.getResultList();
+    }
+
+    protected Collection<String> fetchAllAcsByTitleAndJournal(String title, String journal, Date publicationDate, Collection<String> authors) {
+        Query query;
+        if(title == null && journal == null && publicationDate == null && authors.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+        else if (authors.isEmpty()){
+            query = getEntityManager().createQuery("select distinct p.ac from IntactPublication p " +
+                    "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
+                    "and "+(journal != null ? "upper(p.journal) = :journal":"p.journal is null ") +
+                    "and p.publicationDate "+(publicationDate != null ? "= :pubDate":"is null "));
+            if (title != null){
+                query.setParameter("title", title.toUpperCase().trim());
+            }
+            if (journal != null){
+                query.setParameter("journal", journal.toUpperCase().trim());
+            }
+            if (publicationDate != null){
+                query.setParameter("pubDate", publicationDate);
+            }
+        }
+        else {
+            query = getEntityManager().createQuery("select distinct p.ac from IntactPublication p " +
+                    "join p.dbAnnotations as a "+
+                    "join a.topic as topic "+
+                    "where "+(title != null ? "upper(p.fullName) = :title " : "p.fullName is null ") +
+                    "and "+(journal != null ? "upper(p.journal) = :journal ":"p.journal is null ") +
+                    "and p.publicationDate "+(publicationDate != null ? "= :pubDate ":"is null ") +
+                    "and topic.shortLabel = :authors " +
+                    "and upper(a.value) = :authorsList");
+            if (title != null){
+                query.setParameter("title", title.toUpperCase().trim());
+            }
+            if (journal != null){
+                query.setParameter("journal", journal.toUpperCase().trim());
+            }
+            if (publicationDate != null){
+                query.setParameter("pubDate", publicationDate);
+            }
+            query.setParameter("authors", Annotation.AUTHOR);
+            query.setParameter("authorsList",StringUtils.join(authors, ", ").toUpperCase());
+        }
+
+        return query.getResultList();
+    }
+
     protected IntactPublication fetchByIdentifier(String identifier, String source, boolean checkAc) throws BridgeFailedException {
         Query query;
         if (checkAc){
@@ -277,6 +432,62 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         return null;
     }
 
+    protected Collection<IntactPublication> fetchAllByIdentifier(String identifier, String source, boolean checkAc) {
+        Query query;
+        if (checkAc){
+            query = getEntityManager().createQuery("select p from IntactPublication p " +
+                    "where p.ac = :id");
+            query.setParameter("id", identifier);
+            Collection<IntactPublication> publications = query.getResultList();
+            if (!publications.isEmpty()){
+                return publications;
+            }
+        }
+
+        query = getEntityManager().createQuery("select distinct p from IntactPublication p " +
+                "join p.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc or q.shortName = :primary) " +
+                "and d.shortName = :dbName " +
+                "and x.id = :dbId");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("primary", Xref.PRIMARY);
+        query.setParameter("dbName", source.toLowerCase().trim());
+        query.setParameter("dbId", identifier);
+
+        return query.getResultList();
+    }
+
+    protected Collection<String> fetchAllAcsByIdentifier(String identifier, String source, boolean checkAc) {
+        Query query;
+        if (checkAc){
+            query = getEntityManager().createQuery("select distinct p.ac from IntactPublication p " +
+                    "where p.ac = :id");
+            query.setParameter("id", identifier);
+            Collection<String> publications = query.getResultList();
+            if (!publications.isEmpty()){
+                return publications;
+            }
+        }
+
+        query = getEntityManager().createQuery("select distinct p.ac from IntactPublication p " +
+                "join p.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc or q.shortName = :primary) " +
+                "and d.shortName = :dbName " +
+                "and x.id = :dbId");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("primary", Xref.PRIMARY);
+        query.setParameter("dbName", source.toLowerCase().trim());
+        query.setParameter("dbId", identifier);
+
+        return query.getResultList();
+    }
+
     protected IntactPublication fetchByImexId(String imex) throws FinderException {
 
         Query query = getEntityManager().createQuery("select distinct p from IntactPublication p " +
@@ -298,6 +509,38 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             throw new FinderException("The publication "+imex + " can match "+publications.size()+" publications in the database and we cannot determine which one is valid.");
         }
         return null;
+    }
+
+    protected Collection<IntactPublication> fetchAllByImexId(String imex){
+
+        Query query = getEntityManager().createQuery("select distinct p from IntactPublication p " +
+                "join p.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where q.shortName = :imexPrimary " +
+                "and d.shortName = :dbName " +
+                "and x.id = :dbId");
+        query.setParameter("imexPrimary", Xref.IMEX_PRIMARY.toLowerCase());
+        query.setParameter("dbName", Xref.IMEX.toLowerCase());
+        query.setParameter("dbId", imex);
+
+        return query.getResultList();
+    }
+
+    protected Collection<String> fetchAllAcsByImexId(String imex){
+
+        Query query = getEntityManager().createQuery("select distinct p.ac from IntactPublication p " +
+                "join p.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where q.shortName = :imexPrimary " +
+                "and d.shortName = :dbName " +
+                "and x.id = :dbId");
+        query.setParameter("imexPrimary", Xref.IMEX_PRIMARY.toLowerCase());
+        query.setParameter("dbName", Xref.IMEX.toLowerCase());
+        query.setParameter("dbId", imex);
+
+        return query.getResultList();
     }
 
     @Override

@@ -89,6 +89,88 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         }
     }
 
+    @Override
+    public Collection<I> findAll(T term) {
+        Query query;
+        if (term == null){
+            return Collections.EMPTY_LIST;
+        }
+        if (this.persistedObjects.containsKey(term)){
+            return Collections.singleton(this.persistedObjects.get(term));
+        }
+        else{
+            Collection<String> existingTypes = getContext().getInteractorTypeSynchronizer().findAllMatchingAcs(term.getInteractorType());
+            // could not retrieve the interactor type so this interactor does not exist in IntAct
+            if (existingTypes.isEmpty()){
+                return null;
+            }
+            Collection<String> existingOrganisms = Collections.EMPTY_LIST;
+            if (term.getOrganism() != null){
+                existingOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(term.getOrganism());
+                // could not retrieve the organism so this interactor does not exist in IntAct
+                if (existingOrganisms.isEmpty()){
+                    return null;
+                }
+            }
+
+            // try to fetch interactor using identifiers
+            Collection<I> results = findByIdentifiers(term, existingOrganisms, existingTypes);
+            if (results.isEmpty()){
+                // fetch using other properties
+                results = findByOtherProperties(term, existingTypes, existingOrganisms);
+                if (results.isEmpty()){
+                    // fetch using shortname
+                    query = findByName(term, existingTypes, existingOrganisms);
+                    results = query.getResultList();
+                }
+            }
+
+            return postFilterAll(term, results);
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(T term) {
+        Query query;
+        if (term == null){
+            return Collections.EMPTY_LIST;
+        }
+        I interactor = this.persistedObjects.get(term);
+
+        if (interactor != null && interactor.getAc() != null ){
+            return Collections.singleton(interactor.getAc());
+        }
+        else{
+            Collection<String> existingTypes = getContext().getInteractorTypeSynchronizer().findAllMatchingAcs(term.getInteractorType());
+            // could not retrieve the interactor type so this interactor does not exist in IntAct
+            if (existingTypes.isEmpty()){
+                return null;
+            }
+            Collection<String> existingOrganisms = Collections.EMPTY_LIST;
+            if (term.getOrganism() != null){
+                existingOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(term.getOrganism());
+                // could not retrieve the organism so this interactor does not exist in IntAct
+                if (existingOrganisms.isEmpty()){
+                    return null;
+                }
+            }
+
+            // try to fetch interactor using identifiers
+            Collection<I> results = findByIdentifiers(term, existingOrganisms, existingTypes);
+            if (results.isEmpty()){
+                // fetch using other properties
+                results = findByOtherProperties(term, existingTypes, existingOrganisms);
+                if (results.isEmpty()){
+                    // fetch using shortname
+                    query = findByName(term, existingTypes, existingOrganisms);
+                    results = query.getResultList();
+                }
+            }
+
+            return postFilterAllAcs(term, results);
+        }
+    }
+
     // nothing to do here
     protected I postFilter(T term, Collection<I> results) {
         if (results.size() == 1){
@@ -97,8 +179,27 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         return null;
     }
 
+    protected Collection<I> postFilterAll(T term, Collection<I> results) {
+        return results;
+    }
+
+    protected Collection<String> postFilterAllAcs(T term, Collection<I> results) {
+        Collection<String> acs = new ArrayList<String>(results.size());
+        for (I interactor : results){
+           if (interactor.getAc() != null){
+              acs.add(interactor.getAc());
+           }
+        }
+
+        return acs;
+    }
+
     // nothing to do here
     protected Collection<I> findByOtherProperties(T term, IntactCvTerm existingType, IntactOrganism existingOrganism) {
+        return Collections.EMPTY_LIST;
+    }
+
+    protected Collection<I> findByOtherProperties(T term, Collection<String> existingTypes, Collection<String> existingOrganisms) {
         return Collections.EMPTY_LIST;
     }
 
@@ -123,6 +224,31 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             query.setParameter("name", term.getShortName().trim().toLowerCase());
             query.setParameter("orgAc", existingOrganism.getAc());
             query.setParameter("typeAc", existingType.getAc());
+        }
+        return query;
+    }
+
+    protected Query findByName(T term, Collection<String> existingTypes, Collection<String> existingOrganisms) {
+        Query query;
+        if (existingOrganisms.isEmpty()){
+            query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
+                    "join i.interactorType as t " +
+                    "where i.shortName = :name " +
+                    "and i.organism is null " +
+                    "and t.ac in (:typeAc)");
+            query.setParameter("name", term.getShortName().trim().toLowerCase());
+            query.setParameter("typeAc", existingTypes);
+        }
+        else{
+            query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
+                    "join i.interactorType as t " +
+                    "join i.organism as o " +
+                    "where i.shortName = :name " +
+                    "and o.ac in (:orgAc) " +
+                    "and t.ac in (:typeAc)");
+            query.setParameter("name", term.getShortName().trim().toLowerCase());
+            query.setParameter("orgAc", existingOrganisms);
+            query.setParameter("typeAc", existingTypes);
         }
         return query;
     }
@@ -430,6 +556,102 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                     query.setParameter("id", ref.getId());
                     query.setParameter("typeAc", existingType.getAc());
                     query.setParameter("orgAc", existingOrganism.getAc());
+
+                    interactors = query.getResultList();
+                    if (interactors.size() == 1){
+                        return interactors;
+                    }
+                    else if (interactors.size() > 1){
+                        totalInteractors.addAll(interactors);
+                    }
+                }
+            }
+        }
+
+        return totalInteractors;
+    }
+
+    protected Collection<I> findByIdentifiers(T term, Collection<String> existingOrganisms, Collection<String> existingTypes) {
+        if (term.getIdentifiers().isEmpty()){
+            return Collections.EMPTY_LIST;
+        }
+        Query query=null;
+        Collection<I> totalInteractors = new ArrayList<I>();
+        // no organism for this interactor.
+        if (existingOrganisms.isEmpty()){
+            for (Xref ref : term.getIdentifiers()){
+                query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
+                        "join i.interactorType as t " +
+                        "where i.ac = :id " +
+                        "and i.organism is null " +
+                        "and t.ac in (:typeAc)");
+                query.setParameter("id", ref.getId());
+                query.setParameter("typeAc", existingTypes);
+                Collection<I> interactors = query.getResultList();
+                if (!interactors.isEmpty()){
+                    return interactors;
+                }
+                else{
+                    query = getEntityManager().createQuery("select distinct i from "+getIntactClass().getSimpleName()+" i " +
+                            "join i.dbXrefs as x " +
+                            "join x.database as d " +
+                            "join x.qualifier as q " +
+                            "join i.interactorType as t " +
+                            "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                            "and d.shortName = :db " +
+                            "and x.id = :id " +
+                            "and t.ac in (:typeAc) " +
+                            "and i.organism is null");
+                    query.setParameter("identity", Xref.IDENTITY);
+                    query.setParameter("secondaryAc", Xref.SECONDARY);
+                    query.setParameter("db", ref.getDatabase().getShortName());
+                    query.setParameter("id", ref.getId());
+                    query.setParameter("typeAc", existingTypes);
+
+                    interactors = query.getResultList();
+                    if (interactors.size() == 1){
+                        return interactors;
+                    }
+                    else if (interactors.size() > 1){
+                        totalInteractors.addAll(interactors);
+                    }
+                }
+            }
+        }
+        // organism for this interactor
+        else{
+            for (Xref ref : term.getIdentifiers()){
+                query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
+                        "join i.organism as o " +
+                        "join i.interactorType as t " +
+                        "where i.ac = :id " +
+                        "and t.ac in (:typeAc) " +
+                        "and o.ac in (:orgAc)");
+                query.setParameter("id", ref.getId());
+                query.setParameter("typeAc", existingTypes);
+                query.setParameter("orgAc", existingOrganisms);
+                Collection<I> interactors = query.getResultList();
+                if (!interactors.isEmpty()){
+                    return interactors;
+                }
+                else{
+                    query = getEntityManager().createQuery("select distinct i from "+getIntactClass().getSimpleName()+" i " +
+                            "join i.dbXrefs as x " +
+                            "join x.database as d " +
+                            "join x.qualifier as q " +
+                            "join i.organism as o " +
+                            "join i.interactorType as t " +
+                            "where (q.shortName = :identity or q.shortName = :secondaryAc)" +
+                            "and d.shortName = :db " +
+                            "and x.id = :id " +
+                            "and t.ac in (:typeAc) " +
+                            "and o.ac in (:orgAc)");
+                    query.setParameter("identity", Xref.IDENTITY);
+                    query.setParameter("secondaryAc", Xref.SECONDARY);
+                    query.setParameter("db", ref.getDatabase().getShortName());
+                    query.setParameter("id", ref.getId());
+                    query.setParameter("typeAc", existingTypes);
+                    query.setParameter("orgAc", existingOrganisms);
 
                     interactors = query.getResultList();
                     if (interactors.size() == 1){

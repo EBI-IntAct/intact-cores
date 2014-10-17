@@ -10,6 +10,8 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactXref;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Finder/persister for xrefs
@@ -32,6 +34,16 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
 
     public X find(Xref object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<X> findAll(Xref object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Xref object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(X object) throws FinderException, PersisterException, SynchronizerException {

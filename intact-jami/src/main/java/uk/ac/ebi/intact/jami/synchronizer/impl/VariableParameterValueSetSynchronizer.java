@@ -12,6 +12,8 @@ import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -85,6 +87,16 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
 
     public IntactVariableParameterValueSet find(VariableParameterValueSet object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<IntactVariableParameterValueSet> findAll(VariableParameterValueSet object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(VariableParameterValueSet object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(IntactVariableParameterValueSet object) throws FinderException, PersisterException, SynchronizerException {

@@ -13,6 +13,7 @@ import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +60,46 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
             throw new FinderException("The role "+object + " can match "+roles.size()+" roles in the database and we cannot determine which one is valid.");
         }
         return null;
+    }
+
+    @Override
+    public Collection<Role> findAll(Role object) {
+        Query query;
+        if (object == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedRoles.containsKey(object)){
+            return Collections.singleton(this.persistedRoles.get(object));
+        }
+        // we have a simple roles. Only check its taxid
+        else {
+            query = getEntityManager().createQuery("select r from Role r " +
+                    "where r.name = :name");
+            query.setParameter("name", object.getName().trim().toUpperCase());
+        }
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Role object) {
+        Query query;
+        if (object == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedRoles.containsKey(object)){
+            Role fetched =  this.persistedRoles.get(object);
+            if (fetched.getAc() != null){
+               return Collections.singleton(fetched.getAc());
+            }
+            return Collections.EMPTY_LIST;
+        }
+        // we have a simple roles. Only check its taxid
+        else {
+            query = getEntityManager().createQuery("select r.ac from Role r " +
+                    "where r.name = :name");
+            query.setParameter("name", object.getName().trim().toUpperCase());
+        }
+        return query.getResultList();
     }
 
     public void synchronizeProperties(Role object) throws FinderException, PersisterException, SynchronizerException {

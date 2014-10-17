@@ -14,10 +14,7 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Default finder/synchronizer for features
@@ -47,6 +44,32 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         // only retrieve an object in the cache, otherwise return null
         else {
             return null;
+        }
+    }
+
+    @Override
+    public Collection<I> findAll(F feature) {
+        if (this.persistedObjects.containsKey(feature)){
+            return Collections.singleton(this.persistedObjects.get(feature));
+        }
+        // only retrieve an object in the cache, otherwise return null
+        else {
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(F feature) {
+        if (this.persistedObjects.containsKey(feature)){
+            I retrievedFeature = this.persistedObjects.get(feature);
+            if (retrievedFeature != null && retrievedFeature.getAc() != null){
+               return Collections.singleton(retrievedFeature.getAc());
+            }
+            return Collections.EMPTY_LIST;
+        }
+        // only retrieve an object in the cache, otherwise return null
+        else {
+            return Collections.EMPTY_LIST;
         }
     }
 

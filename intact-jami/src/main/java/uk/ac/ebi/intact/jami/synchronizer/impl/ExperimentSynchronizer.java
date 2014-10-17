@@ -114,7 +114,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
             Collection<IntactExperiment> results = query.getResultList();
             if (!results.isEmpty()){
                 Collection<IntactExperiment> filteredResults = new ArrayList<IntactExperiment>(results.size());
-                for (IntactExperiment exp : filteredResults){
+                for (IntactExperiment exp : results){
                     if (this.annotationCollectionComparator.compare(experiment.getAnnotations(), exp.getAnnotations()) == 0
                             && this.variableParameterComparator.compare(experiment.getVariableParameters(), exp.getVariableParameters()) == 0){
                         filteredResults.add(exp);
@@ -129,6 +129,173 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 }
             }
             return null;
+        }
+    }
+
+    @Override
+    public Collection<IntactExperiment> findAll(Experiment experiment) {
+        if (experiment == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(experiment)){
+            return Collections.singleton(this.persistedObjects.get(experiment));
+        }
+        else{
+            Collection<String> fetchedPublications = Collections.EMPTY_LIST;
+            if (experiment.getPublication() != null){
+                fetchedPublications = getContext().getPublicationSynchronizer().findAllMatchingAcs(experiment.getPublication());
+                // the publication does not exist so the experiment does not exist
+                if (fetchedPublications.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedOrganisms = Collections.EMPTY_LIST;
+            if (experiment.getHostOrganism() != null){
+                fetchedOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(experiment.getHostOrganism());
+                // the organism does not exist so the experiment does not exist
+                if (fetchedOrganisms.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedDetectionMethods = Collections.EMPTY_LIST;
+            if (experiment.getInteractionDetectionMethod() != null){
+                fetchedDetectionMethods = getContext().getInteractionDetectionMethodSynchronizer().findAllMatchingAcs(experiment.getInteractionDetectionMethod());
+                // the detection method does not exist so the experiment does not exist
+                if (fetchedDetectionMethods.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedParticipantDetectionMethods = Collections.EMPTY_LIST;
+            CvTerm commonMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(experiment);
+            if (commonMethod != null){
+                fetchedParticipantDetectionMethods = getContext().getParticipantDetectionMethodSynchronizer().findAllMatchingAcs(commonMethod);
+                // the participant detection method does not exist so the experiment does not exist
+                if (fetchedParticipantDetectionMethods.isEmpty()){
+                    return null;
+                }
+            }
+
+            Query query = getEntityManager().createQuery("select e from IntactExperiment e " +
+                    (!fetchedOrganisms.isEmpty()? "join e.hostOrganism as h " : "" ) +
+                    (!fetchedDetectionMethods.isEmpty() ? "join e.interactionDetectionMethod as det " : "" ) +
+                    (!fetchedPublications.isEmpty() ? "join e.publication as p " : "" ) +
+                    (!fetchedParticipantDetectionMethods.isEmpty() ? "join e.participantIdentificationMethod as ident " : "" ) +
+                    "where "+
+                    (!fetchedOrganisms.isEmpty() ? "h.ac in (:orgAc) " : "e.hostOrganism is null " ) +
+                    (!fetchedDetectionMethods.isEmpty() ? "and det.ac in (:detAc) " : "and e.interactionDetectionMethod is null " ) +
+                    (!fetchedPublications.isEmpty() ? "and p.ac in (:pubAc) " : "and e.publication is null " ) +
+                    (!fetchedParticipantDetectionMethods.isEmpty() ? "and ident.ac in (:identAc)" : "and e.participantIdentificationMethod is null" ));
+            if (!fetchedOrganisms.isEmpty()){
+                query.setParameter("orgAc", fetchedOrganisms);
+            }
+            if (!fetchedDetectionMethods.isEmpty()){
+                query.setParameter("detAc", fetchedDetectionMethods);
+            }
+            if (!fetchedPublications.isEmpty()){
+                query.setParameter("pubAc", fetchedPublications);
+            }
+            if (!fetchedParticipantDetectionMethods.isEmpty()){
+                query.setParameter("identAc", fetchedParticipantDetectionMethods);
+            }
+
+            Collection<IntactExperiment> results = query.getResultList();
+            if (!results.isEmpty()){
+                Collection<IntactExperiment> filteredResults = new ArrayList<IntactExperiment>(results.size());
+                for (IntactExperiment exp : results){
+                    if (this.annotationCollectionComparator.compare(experiment.getAnnotations(), exp.getAnnotations()) == 0
+                            && this.variableParameterComparator.compare(experiment.getVariableParameters(), exp.getVariableParameters()) == 0){
+                        filteredResults.add(exp);
+                    }
+                }
+
+                return filteredResults;
+            }
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Experiment experiment) {
+        if (experiment == null){
+            return Collections.EMPTY_LIST;
+        }
+        IntactExperiment expCached = this.persistedObjects.get(experiment);
+
+        if (expCached != null && expCached.getAc() != null ){
+            return Collections.singleton(expCached.getAc());
+        }
+        else{
+            Collection<String> fetchedPublications = Collections.EMPTY_LIST;
+            if (experiment.getPublication() != null){
+                fetchedPublications = getContext().getPublicationSynchronizer().findAllMatchingAcs(experiment.getPublication());
+                // the publication does not exist so the experiment does not exist
+                if (fetchedPublications.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedOrganisms = Collections.EMPTY_LIST;
+            if (experiment.getHostOrganism() != null){
+                fetchedOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(experiment.getHostOrganism());
+                // the organism does not exist so the experiment does not exist
+                if (fetchedOrganisms.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedDetectionMethods = Collections.EMPTY_LIST;
+            if (experiment.getInteractionDetectionMethod() != null){
+                fetchedDetectionMethods = getContext().getInteractionDetectionMethodSynchronizer().findAllMatchingAcs(experiment.getInteractionDetectionMethod());
+                // the detection method does not exist so the experiment does not exist
+                if (fetchedDetectionMethods.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedParticipantDetectionMethods = Collections.EMPTY_LIST;
+            CvTerm commonMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(experiment);
+            if (commonMethod != null){
+                fetchedParticipantDetectionMethods = getContext().getParticipantDetectionMethodSynchronizer().findAllMatchingAcs(commonMethod);
+                // the participant detection method does not exist so the experiment does not exist
+                if (fetchedParticipantDetectionMethods.isEmpty()){
+                    return null;
+                }
+            }
+
+            Query query = getEntityManager().createQuery("select distinct e.ac from IntactExperiment e " +
+                    (!fetchedOrganisms.isEmpty()? "join e.hostOrganism as h " : "" ) +
+                    (!fetchedDetectionMethods.isEmpty() ? "join e.interactionDetectionMethod as det " : "" ) +
+                    (!fetchedPublications.isEmpty() ? "join e.publication as p " : "" ) +
+                    (!fetchedParticipantDetectionMethods.isEmpty() ? "join e.participantIdentificationMethod as ident " : "" ) +
+                    "where "+
+                    (!fetchedOrganisms.isEmpty() ? "h.ac in (:orgAc) " : "e.hostOrganism is null " ) +
+                    (!fetchedDetectionMethods.isEmpty() ? "and det.ac in (:detAc) " : "and e.interactionDetectionMethod is null " ) +
+                    (!fetchedPublications.isEmpty() ? "and p.ac in (:pubAc) " : "and e.publication is null " ) +
+                    (!fetchedParticipantDetectionMethods.isEmpty() ? "and ident.ac in (:identAc)" : "and e.participantIdentificationMethod is null" ));
+            if (!fetchedOrganisms.isEmpty()){
+                query.setParameter("orgAc", fetchedOrganisms);
+            }
+            if (!fetchedDetectionMethods.isEmpty()){
+                query.setParameter("detAc", fetchedDetectionMethods);
+            }
+            if (!fetchedPublications.isEmpty()){
+                query.setParameter("pubAc", fetchedPublications);
+            }
+            if (!fetchedParticipantDetectionMethods.isEmpty()){
+                query.setParameter("identAc", fetchedParticipantDetectionMethods);
+            }
+
+            Collection<IntactExperiment> results = query.getResultList();
+            if (!results.isEmpty()){
+                Collection<String> filteredResults = new ArrayList<String>(results.size());
+                for (IntactExperiment exp : results){
+                    if (this.annotationCollectionComparator.compare(experiment.getAnnotations(), exp.getAnnotations()) == 0
+                            && this.variableParameterComparator.compare(experiment.getVariableParameters(), exp.getVariableParameters()) == 0
+                            && exp.getAc() != null){
+                        filteredResults.add(exp.getAc());
+                    }
+                }
+
+                return filteredResults;
+            }
+            return Collections.EMPTY_LIST;
         }
     }
 

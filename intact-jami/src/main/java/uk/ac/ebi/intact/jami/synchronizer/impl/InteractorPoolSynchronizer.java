@@ -116,6 +116,56 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     }
 
     @Override
+    protected Collection<IntactInteractorPool> postFilterAll(InteractorPool term, Collection<IntactInteractorPool> results) {
+        Collection<IntactInteractorPool> filteredResults = new ArrayList<IntactInteractorPool>(results.size());
+        for (IntactInteractorPool interactor : results){
+            if (DefaultInteractorPoolComparator.areEquals(term, interactor)){
+                filteredResults.add(interactor);
+            }
+        }
+
+        return filteredResults;
+    }
+
+    @Override
+    protected Collection<String> postFilterAllAcs(InteractorPool term, Collection<IntactInteractorPool> results) {
+        Collection<String> filteredResults = new ArrayList<String>(results.size());
+        for (IntactInteractorPool interactor : results){
+            if (DefaultInteractorPoolComparator.areEquals(term, interactor) && interactor.getAc()!= null){
+                filteredResults.add(interactor.getAc());
+            }
+        }
+
+        return filteredResults;
+    }
+
+    @Override
+    protected Collection<IntactInteractorPool> findByOtherProperties(InteractorPool term, Collection<String> existingTypes, Collection<String> existingOrganisms) {
+        Query query;
+        if (existingOrganisms.isEmpty()){
+            query = getEntityManager().createQuery("select i from IntactInteractorPool i " +
+                    "join i.interactorType as t " +
+                    "where i.organism is null " +
+                    "and t.ac in (:typeAc) " +
+                    "and size(i.interactors) =:interactorSize");
+            query.setParameter("typeAc", existingTypes);
+            query.setParameter("interactorSize", term.size());
+        }
+        else{
+            query = getEntityManager().createQuery("select i from IntactInteractorPool i " +
+                    "join i.interactorType as t " +
+                    "join i.organism as o " +
+                    "where o.ac in (:orgAc) " +
+                    "and t.ac in (:typeAc) " +
+                    "and size(i.interactors) =:interactorSize");
+            query.setParameter("orgAc", existingOrganisms);
+            query.setParameter("typeAc", existingTypes);
+            query.setParameter("interactorSize", term.size());
+        }
+        return query.getResultList();
+    }
+
+    @Override
     protected void initialisePersistedObjectMap() {
         super.initialisePersistedObjectMap(new IntactInteractorPoolComparator());
     }

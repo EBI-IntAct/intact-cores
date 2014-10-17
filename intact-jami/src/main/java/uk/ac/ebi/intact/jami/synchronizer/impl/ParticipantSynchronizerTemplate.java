@@ -12,9 +12,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactStoichiometry;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Synchronizer for entities and participants
@@ -44,6 +42,30 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         }
         else{
             return null;
+        }
+    }
+
+    @Override
+    public Collection<I> findAll(T term) {
+        if (this.persistedObjects.containsKey(term)){
+            return Collections.singleton(this.persistedObjects.get(term));
+        }
+        else{
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(T term) {
+        if (this.persistedObjects.containsKey(term)){
+            I fetched = this.persistedObjects.get(term);
+            if (fetched != null && fetched.getAc() != null){
+               return Collections.singleton(fetched.getAc());
+            }
+            return Collections.EMPTY_LIST;
+        }
+        else{
+            return Collections.EMPTY_LIST;
         }
     }
 

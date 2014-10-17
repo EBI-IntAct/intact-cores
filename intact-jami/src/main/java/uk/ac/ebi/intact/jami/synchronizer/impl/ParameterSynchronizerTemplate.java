@@ -10,6 +10,8 @@ import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * default finder/Synchronizer for parameter
@@ -31,6 +33,16 @@ implements ParameterSynchronizer<T,P>{
 
     public P find(T object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<P> findAll(T object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(T object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(P object) throws FinderException, PersisterException, SynchronizerException {

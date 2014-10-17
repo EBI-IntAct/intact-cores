@@ -10,6 +10,8 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactAlias;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Finder/persister for alias
@@ -32,6 +34,16 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
 
     public A find(Alias object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<A> findAll(Alias object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Alias object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(A object) throws FinderException, PersisterException, SynchronizerException {

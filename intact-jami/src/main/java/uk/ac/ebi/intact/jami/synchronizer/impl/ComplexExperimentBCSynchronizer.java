@@ -109,6 +109,120 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         }
     }
 
+    @Override
+    public Collection<IntactExperiment> findAll(Experiment experiment) {
+        if (experiment == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(experiment)){
+            return Collections.singleton(this.persistedObjects.get(experiment));
+        }
+        else{
+            Collection<String> fetchedPublications = Collections.EMPTY_LIST;
+            if (experiment.getPublication() != null){
+                fetchedPublications = getContext().getPublicationSynchronizer().findAllMatchingAcs(experiment.getPublication());
+                // the publication does not exist so the experiment does not exist
+                if (fetchedPublications.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedOrganisms = Collections.EMPTY_LIST;
+            if (experiment.getHostOrganism() != null){
+                fetchedOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(experiment.getHostOrganism());
+                // the organism does not exist so the experiment does not exist
+                if (fetchedOrganisms.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedDetectionMethods = Collections.EMPTY_LIST;
+            if (experiment.getInteractionDetectionMethod() != null){
+                fetchedDetectionMethods = getContext().getInteractionDetectionMethodSynchronizer().findAllMatchingAcs(experiment.getInteractionDetectionMethod());
+                // the detection method does not exist so the experiment does not exist
+                if (fetchedDetectionMethods.isEmpty()){
+                    return null;
+                }
+            }
+
+            Query query = getEntityManager().createQuery("select e from IntactExperiment e " +
+                    (!fetchedOrganisms.isEmpty() ? "join e.hostOrganism as h " : "" ) +
+                    (!fetchedDetectionMethods.isEmpty() ? "join e.interactionDetectionMethod as det " : "" ) +
+                    (!fetchedPublications.isEmpty() ? "join e.publication as p " : "" ) +
+                    "where "+
+                    (!fetchedOrganisms.isEmpty() ? "h.ac in (:orgAc) " : "e.hostOrganism is null " ) +
+                    (!fetchedDetectionMethods.isEmpty() ? "and det.ac in (:detAc) " : "and e.interactionDetectionMethod is null " ) +
+                    (!fetchedPublications.isEmpty() ? "and p.ac in (:pubAc) " : "and e.publication is null " ));
+            if (fetchedOrganisms != null){
+                query.setParameter("orgAc", fetchedOrganisms);
+            }
+            if (fetchedDetectionMethods != null){
+                query.setParameter("detAc", fetchedDetectionMethods);
+            }
+            if (fetchedPublications != null){
+                query.setParameter("pubAc", fetchedPublications);
+            }
+
+            return query.getResultList();
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Experiment experiment) {
+        if (experiment == null){
+            return Collections.EMPTY_LIST;
+        }
+        IntactExperiment exp = this.persistedObjects.get(experiment);
+
+        if (exp != null && exp.getAc() != null ){
+            return Collections.singleton(exp.getAc());
+        }
+        else{
+            Collection<String> fetchedPublications = Collections.EMPTY_LIST;
+            if (experiment.getPublication() != null){
+                fetchedPublications = getContext().getPublicationSynchronizer().findAllMatchingAcs(experiment.getPublication());
+                // the publication does not exist so the experiment does not exist
+                if (fetchedPublications.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedOrganisms = Collections.EMPTY_LIST;
+            if (experiment.getHostOrganism() != null){
+                fetchedOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(experiment.getHostOrganism());
+                // the organism does not exist so the experiment does not exist
+                if (fetchedOrganisms.isEmpty()){
+                    return null;
+                }
+            }
+            Collection<String> fetchedDetectionMethods = Collections.EMPTY_LIST;
+            if (experiment.getInteractionDetectionMethod() != null){
+                fetchedDetectionMethods = getContext().getInteractionDetectionMethodSynchronizer().findAllMatchingAcs(experiment.getInteractionDetectionMethod());
+                // the detection method does not exist so the experiment does not exist
+                if (fetchedDetectionMethods.isEmpty()){
+                    return null;
+                }
+            }
+
+            Query query = getEntityManager().createQuery("select distinct e.ac from IntactExperiment e " +
+                    (!fetchedOrganisms.isEmpty() ? "join e.hostOrganism as h " : "" ) +
+                    (!fetchedDetectionMethods.isEmpty() ? "join e.interactionDetectionMethod as det " : "" ) +
+                    (!fetchedPublications.isEmpty() ? "join e.publication as p " : "" ) +
+                    "where "+
+                    (!fetchedOrganisms.isEmpty() ? "h.ac in (:orgAc) " : "e.hostOrganism is null " ) +
+                    (!fetchedDetectionMethods.isEmpty() ? "and det.ac in (:detAc) " : "and e.interactionDetectionMethod is null " ) +
+                    (!fetchedPublications.isEmpty() ? "and p.ac in (:pubAc) " : "and e.publication is null " ));
+            if (fetchedOrganisms != null){
+                query.setParameter("orgAc", fetchedOrganisms);
+            }
+            if (fetchedDetectionMethods != null){
+                query.setParameter("detAc", fetchedDetectionMethods);
+            }
+            if (fetchedPublications != null){
+                query.setParameter("pubAc", fetchedPublications);
+            }
+
+            return query.getResultList();
+        }
+    }
+
     public void synchronizeProperties(IntactExperiment intactExperiment) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactExperiment);

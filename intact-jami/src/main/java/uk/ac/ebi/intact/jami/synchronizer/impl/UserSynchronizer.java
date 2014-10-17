@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.UserMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -64,6 +65,46 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
             throw new FinderException("The user "+user + " can match "+users.size()+" users in the database and we cannot determine which one is valid.");
         }
         return null;
+    }
+
+    @Override
+    public Collection<User> findAll(User user) {
+        Query query;
+        if (user == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedUsers.containsKey(user)){
+            return Collections.singleton(this.persistedUsers.get(user));
+        }
+        // we have a simple roles. Only check its taxid
+        else {
+            query = getEntityManager().createQuery("select u from User u " +
+                    "where u.login = :login");
+            query.setParameter("login", user.getLogin().trim());
+        }
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(User user) {
+        Query query;
+        if (user == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedUsers.containsKey(user)){
+            User fetched = this.persistedUsers.get(user);
+            if (fetched.getAc() != null){
+                return Collections.singleton(fetched.getAc());
+            }
+            return Collections.EMPTY_LIST;
+        }
+        // we have a simple roles. Only check its taxid
+        else {
+            query = getEntityManager().createQuery("select distinct u.ac from User u " +
+                    "where u.login = :login");
+            query.setParameter("login", user.getLogin().trim());
+        }
+        return query.getResultList();
     }
 
     public void synchronizeProperties(User object) throws FinderException, PersisterException, SynchronizerException {

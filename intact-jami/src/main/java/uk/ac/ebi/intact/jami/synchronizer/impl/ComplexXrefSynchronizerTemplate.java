@@ -3,12 +3,16 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.model.CvTerm;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.ComplexGOXref;
 import uk.ac.ebi.intact.jami.model.extension.InteractorXref;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Finder/persister for interactor xrefs
@@ -27,6 +31,16 @@ public class ComplexXrefSynchronizerTemplate extends XrefSynchronizerTemplate<In
     public ComplexXrefSynchronizerTemplate(SynchronizerContext context){
         super(context, InteractorXref.class);
 
+    }
+
+    @Override
+    public Collection<InteractorXref> findAll(Xref object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Xref object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(InteractorXref object) throws FinderException, PersisterException, SynchronizerException {

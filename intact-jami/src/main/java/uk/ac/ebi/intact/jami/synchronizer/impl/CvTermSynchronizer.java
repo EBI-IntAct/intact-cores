@@ -112,6 +112,68 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         }
     }
 
+    @Override
+    public Collection<IntactCvTerm> findAll(CvTerm term) {
+        if (term == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(term)){
+            return Collections.singleton(this.persistedObjects.get(term));
+        }
+        else if (term.getMIIdentifier() != null){
+            return fetchAllByIdentifier(term.getMIIdentifier(), CvTerm.PSI_MI, false);
+        }
+        else if (term.getMODIdentifier() != null){
+            return fetchAllByIdentifier(term.getMIIdentifier(), CvTerm.PSI_MOD, false);
+        }
+        else if (term.getPARIdentifier() != null){
+            return fetchAllByIdentifier(term.getMIIdentifier(), CvTerm.PSI_PAR, false);
+        }
+        else if (!term.getIdentifiers().isEmpty()){
+            Collection<IntactCvTerm> fetchedTerms = new ArrayList<IntactCvTerm>();
+            for (Xref ref : term.getIdentifiers()){
+                fetchedTerms.addAll(fetchAllByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true));
+            }
+
+            return fetchedTerms;
+        }
+        else{
+            return fetchAllByName(term.getShortName(), null);
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(CvTerm term) {
+        if (term == null){
+            return Collections.EMPTY_LIST;
+        }
+
+        IntactCvTerm cached = this.persistedObjects.get(term);
+        if (cached != null && cached.getAc() != null){
+            return Collections.singleton(cached.getAc());
+        }
+        else if (term.getMIIdentifier() != null){
+            return fetchAllAcsByIdentifier(term.getMIIdentifier(), CvTerm.PSI_MI, false);
+        }
+        else if (term.getMODIdentifier() != null){
+            return fetchAllAcsByIdentifier(term.getMIIdentifier(), CvTerm.PSI_MOD, false);
+        }
+        else if (term.getPARIdentifier() != null){
+            return fetchAllAcsByIdentifier(term.getMIIdentifier(), CvTerm.PSI_PAR, false);
+        }
+        else if (!term.getIdentifiers().isEmpty()){
+            Collection<String> fetchedTerms = new ArrayList<String>();
+            for (Xref ref : term.getIdentifiers()){
+                fetchedTerms.addAll(fetchAllAcsByIdentifier(ref.getId(), ref.getDatabase().getShortName(), true));
+            }
+
+            return fetchedTerms;
+        }
+        else{
+            return fetchAllAcsByName(term.getShortName(), null);
+        }
+    }
+
     public void synchronizeProperties(IntactCvTerm intactCv) throws FinderException, PersisterException, SynchronizerException {
         // first set objclass
         initialiseObjClass(intactCv);
@@ -162,6 +224,30 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             throw new BridgeFailedException("The cv "+searchName + " can match "+cvs.size()+" terms in the database and we cannot determine which one is valid.");
         }
         return null;
+    }
+
+    public Collection<IntactCvTerm> fetchAllByName(String searchName, String miOntologyName)  {
+        if(searchName == null)
+            throw new IllegalArgumentException("Can not search for a name without a value.");
+        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                "where cv.shortName = :name" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
+        query.setParameter("name", searchName.trim().toLowerCase());
+        if (objClass != null){
+            query.setParameter("objclass", objClass);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<String> fetchAllAcsByName(String searchName, String miOntologyName)  {
+        if(searchName == null)
+            throw new IllegalArgumentException("Can not search for a name without a value.");
+        Query query = getEntityManager().createQuery("select distinct cv.ac from IntactCvTerm cv " +
+                "where cv.shortName = :name" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
+        query.setParameter("name", searchName.trim().toLowerCase());
+        if (objClass != null){
+            query.setParameter("objclass", objClass);
+        }
+        return query.getResultList();
     }
 
     public Collection<CvTerm> fetchByName(String searchName) throws BridgeFailedException {
@@ -331,6 +417,72 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             throw new BridgeFailedException("The cv "+termIdentifier + " can match "+cvs.size()+" terms in the database and we cannot determine which one is valid.");
         }
         return null;
+    }
+
+    protected Collection<IntactCvTerm> fetchAllByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) {
+        Query query;
+        if (checkAc){
+            query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+                    "where cv.ac = :id" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
+            query.setParameter("id", termIdentifier);
+            if (objClass != null){
+                query.setParameter("objclass", objClass);
+            }
+            Collection<IntactCvTerm> cvs = query.getResultList();
+            if (!cvs.isEmpty()){
+                return cvs;
+            }
+        }
+
+        query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
+                "join cv.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and d.shortName = :psiName " +
+                "and x.id = :psiId" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("psiName", miOntologyName.toLowerCase().trim());
+        query.setParameter("psiId", termIdentifier);
+        if (objClass != null){
+            query.setParameter("objclass", objClass);
+        }
+
+        return query.getResultList();
+    }
+
+    protected Collection<String> fetchAllAcsByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) {
+        Query query;
+        if (checkAc){
+            query = getEntityManager().createQuery("select distinct cv.ac from IntactCvTerm cv " +
+                    "where cv.ac = :id" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
+            query.setParameter("id", termIdentifier);
+            if (objClass != null){
+                query.setParameter("objclass", objClass);
+            }
+            Collection<String> cvs = query.getResultList();
+            if (!cvs.isEmpty()){
+                return cvs;
+            }
+        }
+
+        query = getEntityManager().createQuery("select distinct cv.ac from IntactCvTerm cv " +
+                "join cv.dbXrefs as x " +
+                "join x.database as d " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and d.shortName = :psiName " +
+                "and x.id = :psiId" + (this.objClass != null ? " and cv.objClass = :objclass" : ""));
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("psiName", miOntologyName.toLowerCase().trim());
+        query.setParameter("psiId", termIdentifier);
+        if (objClass != null){
+            query.setParameter("objclass", objClass);
+        }
+
+        return query.getResultList();
     }
 
     @Override

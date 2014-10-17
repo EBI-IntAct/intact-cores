@@ -98,6 +98,66 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     }
 
     @Override
+    protected Collection<IntactComplex> postFilterAll(Complex term, Collection<IntactComplex> results) {
+        Collection<IntactComplex> filteredResults = new ArrayList<IntactComplex>(results.size());
+        for (IntactComplex complex : results){
+            // we accept empty participants when finding complexes
+            if (term.getParticipants().isEmpty()){
+                filteredResults.add(complex);
+            }
+            // same participants
+            else if (this.participantsComparator.compare(term.getParticipants(), complex.getParticipants()) == 0){
+                filteredResults.add(complex);
+            }
+        }
+
+        return filteredResults;
+    }
+
+    @Override
+    protected Collection<String> postFilterAllAcs(Complex term, Collection<IntactComplex> results) {
+        Collection<String> filteredResults = new ArrayList<String>(results.size());
+        for (IntactComplex complex : results){
+            // we accept empty participants when finding complexes
+            if (term.getParticipants().isEmpty() && complex.getAc() != null){
+                filteredResults.add(complex.getAc());
+            }
+            // same participants
+            else if (this.participantsComparator.compare(term.getParticipants(), complex.getParticipants()) == 0 && complex.getAc() != null){
+                filteredResults.add(complex.getAc());
+            }
+        }
+
+        return filteredResults;
+    }
+
+    @Override
+    protected Collection<IntactComplex> findByOtherProperties(Complex term, Collection<String> existingTypes, Collection<String> existingOrganisms) {
+        Query query;
+        if (existingOrganisms.isEmpty()){
+            query = getEntityManager().createQuery("select i from IntactComplex i " +
+                    "join i.interactorType as t " +
+                    "where i.organism is null " +
+                    "and size(i.participants) =:participantSize " +
+                    "and t.ac in (:typeAc)");
+            query.setParameter("typeAc", existingTypes);
+            query.setParameter("participantSize", term.getParticipants().size());
+        }
+        else{
+            query = getEntityManager().createQuery("select i from "+getIntactClass().getSimpleName()+" i " +
+                    "join i.interactorType as t " +
+                    "join i.organism as o " +
+                    "where o.ac in (:orgAc) " +
+                    "and size(i.participants) =:participantSize " +
+                    "and t.ac in (:typeAc)");
+            query.setParameter("orgAc", existingOrganisms);
+            query.setParameter("participantSize", term.getParticipants().size());
+            query.setParameter("typeAc", existingTypes);
+        }
+        return query.getResultList();
+    }
+
+    @Override
     protected void initialisePersistedObjectMap() {
         super.initialisePersistedObjectMap(new UnambiguousIntactComplexComparator());
     }

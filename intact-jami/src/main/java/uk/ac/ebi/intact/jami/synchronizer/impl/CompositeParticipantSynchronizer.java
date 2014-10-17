@@ -9,6 +9,9 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * Synchronizer for all participants
  *
@@ -36,6 +39,30 @@ public class CompositeParticipantSynchronizer implements ParticipantSynchronizer
         // modelled
         else {
             return this.context.getModelledParticipantSynchronizer().find((ModelledParticipant)term);
+        }
+    }
+
+    @Override
+    public Collection<AbstractIntactParticipant> findAll(Participant term) {
+        // experimental
+        if (term instanceof ParticipantEvidence){
+            return new ArrayList<AbstractIntactParticipant>(this.context.getParticipantEvidenceSynchronizer().findAll((ParticipantEvidence)term));
+        }
+        // modelled
+        else {
+            return new ArrayList<AbstractIntactParticipant>(this.context.getModelledParticipantSynchronizer().findAll((ModelledParticipant) term));
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Participant term) {
+        // experimental
+        if (term instanceof ParticipantEvidence){
+            return this.context.getParticipantEvidenceSynchronizer().findAllMatchingAcs((ParticipantEvidence) term);
+        }
+        // modelled
+        else {
+            return this.context.getModelledParticipantSynchronizer().findAllMatchingAcs((ModelledParticipant) term);
         }
     }
 

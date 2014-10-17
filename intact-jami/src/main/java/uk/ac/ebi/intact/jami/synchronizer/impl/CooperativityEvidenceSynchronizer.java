@@ -15,6 +15,7 @@ import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default finder/synchronizer for cooperativity evidence
@@ -32,6 +33,16 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
 
     public IntactCooperativityEvidence find(CooperativityEvidence object) throws FinderException {
         return null;
+    }
+
+    @Override
+    public Collection<IntactCooperativityEvidence> findAll(CooperativityEvidence object) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(CooperativityEvidence object) {
+        return Collections.EMPTY_LIST;
     }
 
     public void synchronizeProperties(IntactCooperativityEvidence object) throws FinderException, PersisterException, SynchronizerException {

@@ -126,6 +126,154 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         return null;
     }
 
+    @Override
+    public Collection<IntactOrganism> findAll(Organism term) {
+        Query query;
+        if (term == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(term)){
+            return Collections.singleton(this.persistedObjects.get(term));
+        }
+        // we have a simple organism. Only check its taxid
+        else if (term.getCellType() == null && term.getTissue() == null){
+            query = getEntityManager().createQuery("select o from IntactOrganism o " +
+                    "where o.cellType is null " +
+                    "and o.tissue is null " +
+                    "and o.dbTaxid = :taxid");
+            query.setParameter("taxid", Integer.toString(term.getTaxId()));
+        }
+        // we have a celltype/tissue to find first
+        else {
+            if (term.getCellType() != null && term.getTissue() != null){
+                Collection<String> existingCells = getContext().getCellTypeSynchronizer().findAllMatchingAcs(term.getCellType());
+                Collection<String> existingTissues = getContext().getTissueSynchronizer().findAllMatchingAcs(term.getTissue());
+                // cell line or tissue is not known so the biosource does not exist in IntAct
+                if (existingCells.isEmpty() || existingTissues.isEmpty()){
+                    return null;
+                }
+                else {
+                    query = getEntityManager().createQuery("select o from IntactOrganism o " +
+                            "join o.cellType as cell " +
+                            "join o.tissue as t " +
+                            "where cell.ac in (:cellAc) " +
+                            "and t.ac in (:tissueAc) " +
+                            "and o.dbTaxid = :taxid");
+                    query.setParameter("cellAc", existingCells);
+                    query.setParameter("tissueAc", existingTissues);
+                    query.setParameter("taxid", Integer.toString(term.getTaxId()));
+                }
+            }
+            else if (term.getCellType() != null){
+                Collection<String> existingCells = getContext().getCellTypeSynchronizer().findAllMatchingAcs(term.getCellType());
+                // cell line or tissue is not known so the biosource does not exist in IntAct
+                if (existingCells.isEmpty()){
+                    return null;
+                }
+                else {
+                    query = getEntityManager().createQuery("select o from IntactOrganism o " +
+                            "join o.cellType as cell " +
+                            "where cell.ac in (:cellAc) " +
+                            "and o.dbTaxid in (:taxid)");
+                    query.setParameter("cellAc", existingCells);
+                    query.setParameter("taxid", Integer.toString(term.getTaxId()));
+                }
+            }
+            else{
+                Collection<String> existingTissues = getContext().getTissueSynchronizer().findAllMatchingAcs(term.getTissue());
+                // cell line or tissue is not known so the biosource does not exist in IntAct
+                if (existingTissues.isEmpty()){
+                    return null;
+                }
+                else {
+                    query = getEntityManager().createQuery("select o from IntactOrganism o " +
+                            "join o.tissue as t " +
+                            "where t.ac in (:tissueAc) " +
+                            "and o.dbTaxid = :taxid");
+                    query.setParameter("tissueAc", existingTissues);
+                    query.setParameter("taxid", Integer.toString(term.getTaxId()));
+                }
+            }
+        }
+        return query.getResultList();
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(Organism term) {
+        Query query;
+        if (term == null){
+            return Collections.EMPTY_LIST;
+        }
+        else if (this.persistedObjects.containsKey(term)){
+            IntactOrganism fetched = this.persistedObjects.get(term);
+            if (fetched.getAc() != null){
+                return Collections.singleton(fetched.getAc());
+            }
+            return Collections.EMPTY_LIST;
+        }
+        // we have a simple organism. Only check its taxid
+        else if (term.getCellType() == null && term.getTissue() == null){
+            query = getEntityManager().createQuery("select distinct o.ac from IntactOrganism o " +
+                    "where o.cellType is null " +
+                    "and o.tissue is null " +
+                    "and o.dbTaxid = :taxid");
+            query.setParameter("taxid", Integer.toString(term.getTaxId()));
+        }
+        // we have a celltype/tissue to find first
+        else {
+            if (term.getCellType() != null && term.getTissue() != null){
+                Collection<String> existingCells = getContext().getCellTypeSynchronizer().findAllMatchingAcs(term.getCellType());
+                Collection<String> existingTissues = getContext().getTissueSynchronizer().findAllMatchingAcs(term.getTissue());
+                // cell line or tissue is not known so the biosource does not exist in IntAct
+                if (existingCells.isEmpty() || existingTissues.isEmpty()){
+                    return null;
+                }
+                else {
+                    query = getEntityManager().createQuery("select distinct o.ac from IntactOrganism o " +
+                            "join o.cellType as cell " +
+                            "join o.tissue as t " +
+                            "where cell.ac in (:cellAc) " +
+                            "and t.ac in (:tissueAc) " +
+                            "and o.dbTaxid = :taxid");
+                    query.setParameter("cellAc", existingCells);
+                    query.setParameter("tissueAc", existingTissues);
+                    query.setParameter("taxid", Integer.toString(term.getTaxId()));
+                }
+            }
+            else if (term.getCellType() != null){
+                Collection<String> existingCells = getContext().getCellTypeSynchronizer().findAllMatchingAcs(term.getCellType());
+                // cell line or tissue is not known so the biosource does not exist in IntAct
+                if (existingCells.isEmpty()){
+                    return null;
+                }
+                else {
+                    query = getEntityManager().createQuery("select distinct o.ac from IntactOrganism o " +
+                            "join o.cellType as cell " +
+                            "where cell.ac in (:cellAc) " +
+                            "and o.dbTaxid in (:taxid)");
+                    query.setParameter("cellAc", existingCells);
+                    query.setParameter("taxid", Integer.toString(term.getTaxId()));
+                }
+            }
+            else{
+                Collection<String> existingTissues = getContext().getTissueSynchronizer().findAllMatchingAcs(term.getTissue());
+                // cell line or tissue is not known so the biosource does not exist in IntAct
+                if (existingTissues.isEmpty()){
+                    return null;
+                }
+                else {
+                    query = getEntityManager().createQuery("select distinct o.ac from IntactOrganism o " +
+                            "join o.tissue as t " +
+                            "where t.ac in (:tissueAc) " +
+                            "and o.dbTaxid = :taxid");
+                    query.setParameter("tissueAc", existingTissues);
+                    query.setParameter("taxid", Integer.toString(term.getTaxId()));
+                }
+            }
+        }
+        return query.getResultList();
+    }
+
     public void synchronizeProperties(IntactOrganism intactOrganism) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeCommonName(intactOrganism);

@@ -42,6 +42,30 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         }
     }
 
+    @Override
+    public Collection<IntactInteractionEvidence> findAll(InteractionEvidence interaction) {
+        if (this.persistedObjects.containsKey(interaction)){
+            return Collections.singleton(this.persistedObjects.get(interaction));
+        }
+        else{
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    @Override
+    public Collection<String> findAllMatchingAcs(InteractionEvidence interaction) {
+        if (this.persistedObjects.containsKey(interaction)){
+            IntactInteractionEvidence evCached = this.persistedObjects.get(interaction);
+            if (evCached != null && evCached.getAc() != null){
+               return Collections.singleton(evCached.getAc());
+            }
+            return Collections.EMPTY_LIST;
+        }
+        else{
+            return Collections.EMPTY_LIST;
+        }
+    }
+
     public void synchronizeProperties(IntactInteractionEvidence intactInteraction) throws FinderException, PersisterException, SynchronizerException {
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactInteraction);
