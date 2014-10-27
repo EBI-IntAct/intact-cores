@@ -7,6 +7,7 @@ import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -38,6 +39,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     public T persist(T object) throws FinderException, PersisterException, SynchronizerException {
+
+        // set flush mode to commit so queries do not trigger flush
+        FlushModeType mode = getEntityManager().getFlushMode();
+        getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         // when the object is dirty, we need to synchronize the properties first
         if (isObjectDirty((I)object)){
@@ -74,10 +79,16 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
         // then set userContext
         object.setLocalUserContext(getContext().getUserContext());
+
+        getEntityManager().setFlushMode(mode);
         return object;
     }
 
     public T synchronize(I object, boolean persist) throws FinderException, PersisterException, SynchronizerException {
+
+        // set flush mode to commit so queries do not trigger flush
+        FlushModeType mode = getEntityManager().getFlushMode();
+        getEntityManager().setFlushMode(FlushModeType.COMMIT);
 
         if (!this.intactClass.isAssignableFrom(object.getClass())){
             T newObject = null;
@@ -87,6 +98,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 T fetched = fetchMatchingObjectFromIdentityCache(object);
                 // then set userContext
                 fetched.setLocalUserContext(getContext().getUserContext());
+
+                getEntityManager().setFlushMode(mode);
                 return fetched;
             }
             // when the object is dirty, we need to synchronize the properties first
@@ -115,6 +128,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 T fetched = fetchObjectFromCache(object);
                 // then set userContext
                 fetched.setLocalUserContext(getContext().getUserContext());
+                getEntityManager().setFlushMode(mode);
+
                 return fetched;
             }
             else{
@@ -132,7 +147,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
 
             // new object to synchronize with db
-            return findOrPersist(object, newObject, persist, needToSynchronizeProperties);
+            T fetched= findOrPersist(object, newObject, persist, needToSynchronizeProperties);
+            getEntityManager().setFlushMode(mode);
+            return fetched;
         }
         else{
             T intactObject = (T)object;
@@ -143,6 +160,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 T fetched = fetchMatchingObjectFromIdentityCache(object);
                 // then set userContext
                 fetched.setLocalUserContext(getContext().getUserContext());
+                getEntityManager().setFlushMode(mode);
                 return fetched;
             }
             // when the object is dirty, we need to synchronize the properties first
@@ -160,6 +178,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 T fetched = fetchObjectFromCache(object);
                 // then set userContext
                 fetched.setLocalUserContext(getContext().getUserContext());
+                getEntityManager().setFlushMode(mode);
                 return fetched;
             }
 
@@ -168,13 +187,16 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 T merged = mergeExistingInstanceToCurrentSession(intactObject, identifier, needToSynchronizeProperties);
                 // then set userContext
                 merged.setLocalUserContext(getContext().getUserContext());
+                getEntityManager().setFlushMode(mode);
                 return merged;
 
             }
             // retrieve and or persist transient instance
             else if (identifier == null){
                 // new object to synchronize with db
-                return findOrPersist(object, intactObject, persist, needToSynchronizeProperties);
+                T fetched = findOrPersist(object, intactObject, persist, needToSynchronizeProperties);
+                getEntityManager().setFlushMode(mode);
+                return fetched;
             }
             else{
 
@@ -186,6 +208,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 }
                 // then set userContext
                 intactObject.setLocalUserContext(getContext().getUserContext());
+                getEntityManager().setFlushMode(mode);
 
                 return intactObject;
             }
