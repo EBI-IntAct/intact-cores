@@ -7,6 +7,7 @@ import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.xref.UnambiguousExternalIdentifierComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 
 import java.util.ArrayList;
@@ -147,16 +148,21 @@ public class IntactSourceComparator implements IntactComparator<Source> {
     }
 
     private void filterAutomaticallyGeneratedIdentifiers(Collection<Xref> identifiers, Collection<Xref> originalXrefs) {
-         for (Xref ref : originalXrefs){
-             if (XrefUtils.isXrefFromDatabase(ref, this.institution.getMIIdentifier(), this.institution.getShortName())
-                     && XrefUtils.doesXrefHaveQualifier(ref, Xref.IDENTITY_MI, Xref.IDENTITY) &&
-                     ref.getId().startsWith(cvPrefix)){
-                  // ignore this identifier
-             }
-             else{
-                 identifiers.add(ref);
-             }
-         }
+        for (Xref ref : originalXrefs){
+            if (XrefUtils.isXrefFromDatabase(ref, this.institution.getMIIdentifier(), this.institution.getShortName())
+                    && XrefUtils.doesXrefHaveQualifier(ref, Xref.IDENTITY_MI, Xref.IDENTITY) &&
+                    ref.getId().startsWith(cvPrefix)){
+                // ignore this identifier
+            }
+            else if (XrefUtils.isXrefFromDatabase(ref, this.institution.getMIIdentifier(), this.institution.getShortName())
+                    && XrefUtils.doesXrefHaveQualifier(ref, Xref.IDENTITY_MI, Xref.IDENTITY) &&
+                    !(ref instanceof IntactCvTerm)){
+                // ignore this identifier
+            }
+            else{
+                identifiers.add(ref);
+            }
+        }
     }
 
     /**

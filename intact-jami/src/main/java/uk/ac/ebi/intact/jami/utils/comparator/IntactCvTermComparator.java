@@ -154,6 +154,11 @@ public class IntactCvTermComparator implements IntactComparator<CvTerm> {
                      ref.getId().startsWith(cvPrefix)){
                   // ignore this identifier
              }
+             else if (XrefUtils.isXrefFromDatabase(ref, this.institution.getMIIdentifier(), this.institution.getShortName())
+                     && XrefUtils.doesXrefHaveQualifier(ref, Xref.IDENTITY_MI, Xref.IDENTITY) &&
+                     !(ref instanceof IntactCvTerm)){
+                 // ignore this identifier
+             }
              else{
                  identifiers.add(ref);
              }
