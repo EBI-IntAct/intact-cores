@@ -75,23 +75,6 @@ public class IntactCvTermComparator implements IntactComparator<CvTerm> {
             String par1 = cvTerm1.getPARIdentifier();
             String par2 = cvTerm2.getPARIdentifier();
 
-            // get objclass first
-            String objClass1 = cvTerm1 instanceof IntactCvTerm ? ((IntactCvTerm) cvTerm1).getObjClass() : null;
-            String objClass2 = cvTerm2 instanceof IntactCvTerm ? ((IntactCvTerm) cvTerm2).getObjClass() : null;
-
-            if (objClass1 != null && objClass2 != null){
-                int comp = objClass1.compareTo(objClass2);
-                if (comp != 0){
-                    return comp;
-                }
-            }
-            else if (objClass1 != null){
-                 return BEFORE;
-            }
-            else if (objClass2 != null){
-                return AFTER;
-            }
-
             if (mi1 != null && mi2 != null){
                 return mi1.compareTo(mi2);
             }
