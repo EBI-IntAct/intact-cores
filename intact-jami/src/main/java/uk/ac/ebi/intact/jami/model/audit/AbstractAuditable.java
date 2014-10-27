@@ -59,7 +59,7 @@ public abstract class AbstractAuditable implements Auditable, Serializable {
      */
     private Date updated;
 
-    private UserContext localContext;
+    private transient UserContext localContext;
 
 
     public AbstractAuditable() {
