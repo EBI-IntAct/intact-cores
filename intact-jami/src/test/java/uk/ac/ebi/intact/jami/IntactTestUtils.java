@@ -524,16 +524,25 @@ public class IntactTestUtils {
 
     public static IntactInteractorPool createIntactInteractorPool() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         IntactInteractorPool interactor = createIntactInteractor(IntactInteractorPool.class);
-        interactor.add(createDefaultIntactInteractor());
-        interactor.add(createIntactPolymer());
+        Interactor interactor1 = createDefaultIntactInteractor();
+        interactor1.setShortName("interactor 1");
+        Interactor interactor2 = createIntactPolymer();
+        interactor2.setShortName("interactor 2");
+        interactor.add(interactor1);
+        interactor.add(interactor2);
 
         return interactor;
     }
 
     public static InteractorPool createInteractorPool() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         InteractorPool interactor = createInteractor(DefaultInteractorPool.class);
-        interactor.add(createDefaultInteractor());
-        interactor.add(createDefaultPolymer());
+
+        Interactor interactor1 = createDefaultInteractor();
+        interactor1.setShortName("interactor 1");
+        Interactor interactor2 = createDefaultPolymer();
+        interactor2.setShortName("interactor 2");
+        interactor.add(interactor1);
+        interactor.add(interactor2);
 
         return interactor;
     }

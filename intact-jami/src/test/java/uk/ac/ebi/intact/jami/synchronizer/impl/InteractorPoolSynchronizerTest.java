@@ -102,7 +102,7 @@ public class InteractorPoolSynchronizerTest extends AbstractDbSynchronizerTest<I
         sameLabel.getOrganism().setTaxId(9055);
         sameLabel = ((InteractorPoolSynchronizer) this.synchronizer).synchronize(sameLabel, true);
         this.entityManager.flush();
-        Assert.assertEquals("test interactor-4", sameLabel.getShortName());
+        Assert.assertEquals("test interactor-1", sameLabel.getShortName());
     }
 
     @Override
@@ -169,7 +169,7 @@ public class InteractorPoolSynchronizerTest extends AbstractDbSynchronizerTest<I
     @Override
     protected void testPersistedProperties(IntactInteractorPool persistedObject) {
         Assert.assertNotNull(persistedObject.getAc());
-        Assert.assertEquals("test interactor-2", persistedObject.getShortName());
+        Assert.assertEquals("test interactor", persistedObject.getShortName());
         Assert.assertEquals("Full interactor name", persistedObject.getFullName());
         Assert.assertNotNull(persistedObject.getOrganism());
         Assert.assertNotNull(((IntactOrganism) persistedObject.getOrganism()).getAc());
@@ -193,7 +193,7 @@ public class InteractorPoolSynchronizerTest extends AbstractDbSynchronizerTest<I
     @Override
     protected void testNonPersistedProperties(IntactInteractorPool persistedObject) {
         Assert.assertNull(persistedObject.getAc());
-        Assert.assertEquals("test interactor-2", persistedObject.getShortName());
+        Assert.assertEquals("test interactor", persistedObject.getShortName());
         Assert.assertEquals("Full interactor name", persistedObject.getFullName());
         Assert.assertNotNull(persistedObject.getOrganism());
         Assert.assertNotNull(((IntactOrganism) persistedObject.getOrganism()).getAc());
