@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.jami.utils.comparator;
 
 import psidev.psi.mi.jami.model.Publication;
-import psidev.psi.mi.jami.utils.comparator.publication.UnambiguousPublicationComparator;
+import psidev.psi.mi.jami.utils.comparator.publication.PublicationComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 
 /**
@@ -12,7 +12,12 @@ import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
  * @since <pre>14/08/14</pre>
  */
 
-public class IntactPublicationComparator extends UnambiguousPublicationComparator implements IntactComparator<Publication> {
+public class IntactPublicationComparator extends PublicationComparator implements IntactComparator<Publication> {
+
+    public IntactPublicationComparator() {
+        super(new IntactIdentifiersComparator());
+    }
+
     @Override
     public boolean canCompare(Publication pub) {
         if (pub instanceof IntactPublication){

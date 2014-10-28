@@ -244,8 +244,6 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                 String identifier = "unassigned" + nextIntegerAsString;
                 // set identifier
                 intactPublication.setShortLabel(identifier);
-                // add xref
-                intactPublication.getIdentifiers().add(new PublicationXref(IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI), identifier, IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI)));
             }
             // truncate if necessary
             if (IntactUtils.MAX_SHORT_LABEL_LEN < intactPublication.getShortLabel().length()){
