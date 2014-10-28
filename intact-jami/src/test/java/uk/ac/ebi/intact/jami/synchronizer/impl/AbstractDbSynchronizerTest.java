@@ -118,21 +118,21 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
 
     public void synchronize_not_persist() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         T objectToTest = createDefaultObject();
-        this.synchronizer.synchronize(objectToTest, false);
+        objectToTest = (T)this.synchronizer.synchronize(objectToTest, false);
 
         testNonPersistedProperties(objectToTest);
     }
 
     public void synchronize_persist() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         T objectToTest = createDefaultObject();
-        this.synchronizer.synchronize(objectToTest, true);
+        objectToTest = (T)this.synchronizer.synchronize(objectToTest, true);
 
         testPersistedProperties(objectToTest);
     }
 
     public void merge_test1() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         T objectToTest = createDefaultObject();
-        this.synchronizer.synchronize(objectToTest, true);
+        objectToTest = (T)this.synchronizer.synchronize(objectToTest, true);
         entityManager.flush();
         entityManager.detach(objectToTest);
         this.synchronizer.clearCache();
@@ -146,7 +146,7 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
 
     public void merge_test2() throws PersisterException, FinderException, SynchronizerException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         T objectToTest = createDefaultObject();
-        this.synchronizer.synchronize(objectToTest, true);
+        objectToTest = (T) this.synchronizer.synchronize(objectToTest, true);
         entityManager.flush();
         entityManager.detach(objectToTest);
         this.synchronizer.clearCache();
