@@ -1,23 +1,27 @@
 package uk.ac.ebi.intact.jami.utils.comparator;
 
-import psidev.psi.mi.jami.model.Interactor;
-import psidev.psi.mi.jami.model.InteractorPool;
-import psidev.psi.mi.jami.model.Organism;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
+import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
+import psidev.psi.mi.jami.utils.comparator.alias.AliasComparator;
+import psidev.psi.mi.jami.utils.comparator.interactor.InteractorBaseComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 
 /**
- * Comparator for IntAct experiments that take into account annotations and
- * participant identification methods
+ * Comparator for IntAct interactors
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>24/01/14</pre>
  */
 
-public class UnambiguousIntactInteractorBaseComparator extends UnambiguousExactInteractorBaseComparator
+public class IntactInteractorBaseComparator extends InteractorBaseComparator
 implements IntactComparator<Interactor>{
+
+    public IntactInteractorBaseComparator() {
+        super(new IntactIdentifiersComparator(),
+                new CollectionComparator<Alias>(new AliasComparator(new IntactCvTermComparator())));
+    }
 
     @Override
     /**

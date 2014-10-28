@@ -1,37 +1,31 @@
 package uk.ac.ebi.intact.jami.utils.comparator;
 
-import psidev.psi.mi.jami.model.Interactor;
-import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.model.Organism;
-import psidev.psi.mi.jami.utils.comparator.interactor.InteractorPoolComparator;
+import psidev.psi.mi.jami.model.Protein;
+import psidev.psi.mi.jami.utils.comparator.interactor.ProteinComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 
 /**
- * Comparator for IntAct experiments that take into account annotations and
- * participant identification methods
+ * Comparator for IntAct polymers
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactInteractorPoolComparator extends InteractorPoolComparator
-implements IntactComparator<InteractorPool>{
+public class IntactProteinComparator extends ProteinComparator
+implements IntactComparator<Protein>{
 
-    public IntactInteractorPoolComparator() {
-        super(new IntactInteractorComparator());
-    }
-
-    public IntactInteractorPoolComparator(IntactInteractorComparator interactorComparator) {
-        super(interactorComparator);
+    public IntactProteinComparator() {
+        super(new IntactPolymerComparator());
     }
 
     @Override
     /**
      * @return true if the object has some properties necessary for the comparator that are not lazy loaded
      */
-    public boolean canCompare(InteractorPool objectToCompare) {
+    public boolean canCompare(Protein objectToCompare) {
         // first check interactor type
         if (objectToCompare.getInteractorType() != null){
             if (objectToCompare.getInteractorType() instanceof IntactCvTerm){
@@ -66,12 +60,6 @@ implements IntactComparator<InteractorPool>{
             }
 
             if (!intactInteractor.areAliasesInitialized()){
-                return false;
-            }
-        }
-
-        for (Interactor i : objectToCompare){
-            if (!IntactInteractorBaseComparator.canCompareAllProperties(i)){
                 return false;
             }
         }

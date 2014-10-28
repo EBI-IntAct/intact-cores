@@ -2,7 +2,8 @@ package uk.ac.ebi.intact.jami.utils.comparator;
 
 import org.hibernate.Hibernate;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousExperimentComparator;
+import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
+import psidev.psi.mi.jami.utils.comparator.experiment.ExperimentComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 
@@ -15,8 +16,13 @@ import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
  * @since <pre>24/01/14</pre>
  */
 
-public class UnambiguousIntactExperimentComparator extends UnambiguousExperimentComparator
+public class IntactComplexExperimentComparator extends ExperimentComparator
 implements IntactComparator<Experiment>{
+
+    public IntactComplexExperimentComparator() {
+        super(new IntactPublicationComparator(), new IntactOrganismComparator(),
+                new CollectionComparator<VariableParameter>(new IntactVariableParameterComparator()));
+    }
 
     @Override
     /**

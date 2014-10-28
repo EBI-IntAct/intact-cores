@@ -1,31 +1,28 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactComplexComparator;
 import psidev.psi.mi.jami.utils.comparator.participant.UnambiguousModelledParticipantComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ComplexMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleStatus;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
-import uk.ac.ebi.intact.jami.utils.comparator.UnambiguousIntactComplexComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComplexComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactModelledParticipantComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.TreeMap;
 
 /**
  * Default synchronizer for complexes
@@ -45,7 +42,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     public ComplexSynchronizer(SynchronizerContext context) {
         super(context, IntactComplex.class);
-        this.participantsComparator = new CollectionComparator<ModelledParticipant>(new UnambiguousModelledParticipantComparator());
+        this.participantsComparator = new CollectionComparator<ModelledParticipant>(new IntactModelledParticipantComparator());
         this.experimentBCSynchronizer = new ComplexExperimentBCSynchronizer(context);
     }
 
@@ -159,7 +156,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     @Override
     protected void initialisePersistedObjectMap() {
-        super.initialisePersistedObjectMap(new UnambiguousIntactComplexComparator());
+        super.initialisePersistedObjectMap(new IntactComplexComparator());
     }
 
     @Override

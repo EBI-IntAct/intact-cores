@@ -7,14 +7,13 @@ import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorBaseComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.InteractorBaseMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
-import uk.ac.ebi.intact.jami.utils.comparator.UnambiguousIntactInteractorBaseComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactInteractorBaseComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -290,7 +289,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     protected void initialisePersistedObjectMap() {
-        this.interactorComparator = new UnambiguousIntactInteractorBaseComparator();
+        this.interactorComparator = new IntactInteractorBaseComparator();
         this.persistedObjects = new TreeMap<T, I>(this.interactorComparator);
         this.convertedObjects = new IdentityMap();
     }

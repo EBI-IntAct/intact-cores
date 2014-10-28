@@ -16,7 +16,7 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
-import uk.ac.ebi.intact.jami.utils.comparator.UnambiguousIntactExperimentComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComplexExperimentComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -41,7 +41,7 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     public ComplexExperimentBCSynchronizer(SynchronizerContext context){
         super(context, IntactExperiment.class);
         // to keep track of persisted cvs
-        this.experimentComparator = new UnambiguousIntactExperimentComparator();
+        this.experimentComparator = new IntactComplexExperimentComparator();
 
         this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(this.experimentComparator);
         this.convertedObjects = new IdentityMap();

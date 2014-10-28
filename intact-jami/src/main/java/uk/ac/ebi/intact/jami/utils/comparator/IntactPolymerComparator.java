@@ -2,7 +2,8 @@ package uk.ac.ebi.intact.jami.utils.comparator;
 
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.Polymer;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactPolymerComparator;
+import psidev.psi.mi.jami.utils.comparator.interactor.PolymerComparator;
+import psidev.psi.mi.jami.utils.comparator.organism.OrganismTaxIdComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 
@@ -14,8 +15,12 @@ import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactPolymerComparator extends UnambiguousExactPolymerComparator
+public class IntactPolymerComparator extends PolymerComparator
 implements IntactComparator<Polymer>{
+
+    public IntactPolymerComparator() {
+        super(new IntactInteractorBaseComparator(), new OrganismTaxIdComparator());
+    }
 
     @Override
     /**

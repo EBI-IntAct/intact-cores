@@ -2,22 +2,41 @@ package uk.ac.ebi.intact.jami.utils.comparator;
 
 import org.hibernate.Hibernate;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactComplexComparator;
+import psidev.psi.mi.jami.utils.comparator.interactor.ComplexComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledFeature;
 
 /**
- * Comparator for IntAct experiments that take into account annotations and
- * participant identification methods
+ * Basic IntactComplexComparator.
+ *
+ * It will first look at the default properties of an interactor using AbstractInteractorBaseComparator.
+ * It will then compare the interaction types using AbstractCvtermComparator
+ * If the basic interactor properties are the same, It will first compare the collection of components using ModelledParticipantComparator.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
- * @since <pre>24/01/14</pre>
+ * @since <pre>17/01/13</pre>
  */
 
-public class UnambiguousIntactComplexComparator extends UnambiguousExactComplexComparator
-implements IntactComparator<Complex>{
+public class IntactComplexComparator extends ComplexComparator implements IntactComparator<Complex>{
+
+    /**
+     * Creates a bew IntactComplexComparator. It needs a AbstractInteractorBaseComparator to compares interactor properties
+     *
+     */
+    public IntactComplexComparator(){
+
+        super(new IntactInteractorBaseComparator(), new IntactModelledParticipantComparator(), new IntactCvTermComparator());
+    }
+
+    public IntactInteractorBaseComparator getInteractorBaseComparator() {
+        return (IntactInteractorBaseComparator)super.getInteractorBaseComparator();
+    }
+
+    public IntactCvTermComparator getCvTermComparator() {
+        return (IntactCvTermComparator)super.getCvTermComparator();
+    }
 
     @Override
     /**
@@ -83,8 +102,8 @@ implements IntactComparator<Complex>{
                     }
 
                     // check interactor
-                    if (!UnambiguousIntactInteractorBaseComparator.canCompareAllProperties(part.getInteractor())){
-                         return false;
+                    if (!IntactInteractorBaseComparator.canCompareAllProperties(part.getInteractor())){
+                        return false;
                     }
 
                     // check features
@@ -110,20 +129,20 @@ implements IntactComparator<Complex>{
 
                             // check ranges
                             if (Hibernate.isInitialized(feature.getRanges())){
-                                 for (Range r : feature.getRanges()){
-                                     // check start status
-                                     if (r.getStart().getStatus() instanceof IntactCvTerm){
-                                         if (!((IntactCvTerm)r.getStart().getStatus()).areXrefsInitialized()){
-                                             return false;
-                                         }
-                                     }
-                                     // check end status
-                                     if (r.getEnd().getStatus() instanceof IntactCvTerm){
-                                         if (!((IntactCvTerm)r.getEnd().getStatus()).areXrefsInitialized()){
-                                             return false;
-                                         }
-                                     }
-                                 }
+                                for (Range r : feature.getRanges()){
+                                    // check start status
+                                    if (r.getStart().getStatus() instanceof IntactCvTerm){
+                                        if (!((IntactCvTerm)r.getStart().getStatus()).areXrefsInitialized()){
+                                            return false;
+                                        }
+                                    }
+                                    // check end status
+                                    if (r.getEnd().getStatus() instanceof IntactCvTerm){
+                                        if (!((IntactCvTerm)r.getEnd().getStatus()).areXrefsInitialized()){
+                                            return false;
+                                        }
+                                    }
+                                }
                             }
                             else{
                                 return false;
@@ -131,9 +150,9 @@ implements IntactComparator<Complex>{
 
                             // check xrefs
                             if (feature instanceof IntactModelledFeature){
-                                 if (!((IntactModelledFeature)feature).areXrefsInitialized()){
-                                     return false;
-                                 }
+                                if (!((IntactModelledFeature)feature).areXrefsInitialized()){
+                                    return false;
+                                }
                             }
                         }
                     }
