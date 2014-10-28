@@ -32,6 +32,13 @@ public class IntactModelledParticipantPoolComparator extends ModelledParticipant
                         new CollectionComparator<ModelledFeature>(new IntactModelledFeatureComparator())));
     }
 
+    public IntactModelledParticipantPoolComparator(EntityBaseComparator interactorComparator) {
+        super(new IntactParticipantBaseComparator(interactorComparator),
+                new IntactModelledFeatureComparator(),
+                new ModelledEntityComparator(interactorComparator, new IntactModelledFeatureComparator()));
+
+    }
+
     public IntactParticipantBaseComparator getParticipantBaseComparator() {
         return (IntactParticipantBaseComparator)super.getParticipantBaseComparator();
     }

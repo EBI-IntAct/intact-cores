@@ -30,6 +30,13 @@ public class IntactComplexComparator extends ComplexComparator implements Intact
         super(new IntactInteractorBaseComparator(), new IntactModelledParticipantComparator(), new IntactCvTermComparator());
     }
 
+    public IntactComplexComparator(IntactModelledParticipantComparator participantComparator){
+
+        super(new IntactInteractorBaseComparator(),
+                participantComparator != null ? participantComparator : new IntactModelledParticipantComparator(),
+                new IntactCvTermComparator());
+    }
+
     public IntactInteractorBaseComparator getInteractorBaseComparator() {
         return (IntactInteractorBaseComparator)super.getInteractorBaseComparator();
     }

@@ -36,6 +36,27 @@ public class IntactInteractorComparator extends InteractorComparator {
                 new IntactProteinComparator());
     }
 
+    public IntactInteractorComparator(IntactInteractorPoolComparator poolComparator){
+        super(new IntactInteractorBaseComparator(),
+                new IntactComplexComparator(),
+                new IntactPolymerComparator(),
+                new IntactBioactiveEntityComparator(),
+                new IntactGeneComparator(),
+                new IntactNucleicAcidComparator(),
+                new IntactProteinComparator(),
+                poolComparator);
+    }
+
+    public IntactInteractorComparator(IntactComplexComparator complexComparator){
+        super(new IntactInteractorBaseComparator(),
+                complexComparator != null ? complexComparator : new IntactComplexComparator(),
+                new IntactPolymerComparator(),
+                new IntactBioactiveEntityComparator(),
+                new IntactGeneComparator(),
+                new IntactNucleicAcidComparator(),
+                new IntactProteinComparator());
+    }
+
     @Override
     public int compare(Interactor interactor1, Interactor interactor2) {
         return super.compare(interactor1, interactor2);

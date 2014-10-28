@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.utils.comparator;
 
+import psidev.psi.mi.jami.utils.comparator.participant.EntityBaseComparator;
 import psidev.psi.mi.jami.utils.comparator.participant.ModelledParticipantComparator;
 
 /**
@@ -21,7 +22,10 @@ public class IntactModelledParticipantComparator extends ModelledParticipantComp
      * Creates a new ComponentComparator
      */
     public IntactModelledParticipantComparator(){
-        super(new IntactModelledParticipantPoolComparator());
+        IntactInteractorComparator interactorComparator =
+                new IntactInteractorComparator(new IntactComplexComparator(this));
+        EntityBaseComparator baseComparator = new EntityBaseComparator(interactorComparator);
+        setPoolComparator(new IntactModelledParticipantPoolComparator(baseComparator));
     }
 
     public IntactModelledParticipantPoolComparator getParticipantPoolComparator() {

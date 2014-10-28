@@ -25,6 +25,11 @@ public class IntactParticipantBaseComparator extends ParticipantBaseComparator {
         super(new EntityBaseComparator(new IntactInteractorComparator()), new IntactCvTermComparator());
     }
 
+    public IntactParticipantBaseComparator(EntityBaseComparator entityComparator){
+
+        super(entityComparator, new IntactCvTermComparator());
+    }
+
     public IntactCvTermComparator getCvTermComparator() {
         return (IntactCvTermComparator)super.getCvTermComparator();
     }
