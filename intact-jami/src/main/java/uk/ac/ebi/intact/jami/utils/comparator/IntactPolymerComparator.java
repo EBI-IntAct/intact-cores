@@ -19,7 +19,7 @@ public class IntactPolymerComparator extends PolymerComparator
 implements IntactComparator<Polymer>{
 
     public IntactPolymerComparator() {
-        super(new IntactInteractorBaseComparator(), new OrganismTaxIdComparator());
+        super(new IntactExactInteractorBaseComparator(), new OrganismTaxIdComparator());
     }
 
     @Override

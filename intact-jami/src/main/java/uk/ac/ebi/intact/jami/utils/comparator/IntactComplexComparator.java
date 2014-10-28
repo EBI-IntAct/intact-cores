@@ -27,12 +27,12 @@ public class IntactComplexComparator extends ComplexComparator implements Intact
      */
     public IntactComplexComparator(){
 
-        super(new IntactInteractorBaseComparator(), new IntactModelledParticipantComparator(), new IntactCvTermComparator());
+        super(new IntactExactInteractorBaseComparator(), new IntactModelledParticipantComparator(), new IntactCvTermComparator());
     }
 
     public IntactComplexComparator(IntactModelledParticipantComparator participantComparator){
 
-        super(new IntactInteractorBaseComparator(),
+        super(new IntactExactInteractorBaseComparator(),
                 participantComparator != null ? participantComparator : new IntactModelledParticipantComparator(),
                 new IntactCvTermComparator());
     }

@@ -18,7 +18,7 @@ public class IntactGeneComparator extends GeneComparator
 implements IntactComparator<Gene>{
 
     public IntactGeneComparator() {
-        super(new IntactInteractorBaseComparator());
+        super(new IntactExactInteractorBaseComparator());
     }
 
     @Override

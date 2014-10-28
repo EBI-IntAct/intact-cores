@@ -27,7 +27,7 @@ public class IntactInteractorComparator extends InteractorComparator {
      * Creates a new InteractorComparator.
      */
     public IntactInteractorComparator(){
-        super(new IntactInteractorBaseComparator(),
+        super(new IntactExactInteractorBaseComparator(),
                 new IntactComplexComparator(),
                 new IntactPolymerComparator(),
                 new IntactBioactiveEntityComparator(),
@@ -37,7 +37,7 @@ public class IntactInteractorComparator extends InteractorComparator {
     }
 
     public IntactInteractorComparator(IntactInteractorPoolComparator poolComparator){
-        super(new IntactInteractorBaseComparator(),
+        super(new IntactExactInteractorBaseComparator(),
                 new IntactComplexComparator(),
                 new IntactPolymerComparator(),
                 new IntactBioactiveEntityComparator(),
@@ -48,7 +48,7 @@ public class IntactInteractorComparator extends InteractorComparator {
     }
 
     public IntactInteractorComparator(IntactComplexComparator complexComparator){
-        super(new IntactInteractorBaseComparator(),
+        super(new IntactExactInteractorBaseComparator(),
                 complexComparator != null ? complexComparator : new IntactComplexComparator(),
                 new IntactPolymerComparator(),
                 new IntactBioactiveEntityComparator(),

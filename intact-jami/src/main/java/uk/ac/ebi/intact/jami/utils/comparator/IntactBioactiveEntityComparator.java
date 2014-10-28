@@ -18,7 +18,7 @@ public class IntactBioactiveEntityComparator extends BioactiveEntityComparator
 implements IntactComparator<BioactiveEntity>{
 
     public IntactBioactiveEntityComparator() {
-        super(new IntactInteractorBaseComparator());
+        super(new IntactExactInteractorBaseComparator());
     }
 
     @Override

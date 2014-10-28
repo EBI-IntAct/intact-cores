@@ -13,6 +13,7 @@ import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactExactInteractorBaseComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactInteractorBaseComparator;
 
 import javax.persistence.Query;
@@ -289,7 +290,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     protected void initialisePersistedObjectMap() {
-        this.interactorComparator = new IntactInteractorBaseComparator();
+        this.interactorComparator = new IntactExactInteractorBaseComparator();
         this.persistedObjects = new TreeMap<T, I>(this.interactorComparator);
         this.convertedObjects = new IdentityMap();
     }
