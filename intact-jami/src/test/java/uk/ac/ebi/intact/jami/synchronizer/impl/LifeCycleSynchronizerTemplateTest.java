@@ -140,7 +140,7 @@ public class LifeCycleSynchronizerTemplateTest extends AbstractDbSynchronizerTes
     @Override
     protected AbstractLifeCycleEvent createDefaultObject() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         try {
-            this.context.getUserSynchronizer().persist(IntactTestUtils.createCuratorUser());
+            this.context.getUserReadOnlySynchronizer().persist(IntactTestUtils.createCuratorUser());
         } catch (FinderException e) {
             e.printStackTrace();
         } catch (PersisterException e) {
