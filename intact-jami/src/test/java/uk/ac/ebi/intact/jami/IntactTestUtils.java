@@ -241,7 +241,7 @@ public class IntactTestUtils {
     }
 
     public static IntactCvTerm createCvTermWithAnnotationsAndAliases() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST", null);
+        IntactCvTerm cvDatabase = IntactUtils.createMIDatabase("teST2", null);
         cvDatabase.getAnnotations().add(createAnnotationComment(CvTermAnnotation.class));
         cvDatabase.getSynonyms().add(createAliasSynonym(CvTermAlias.class));
         cvDatabase.setObjClass(IntactUtils.DATABASE_OBJCLASS);

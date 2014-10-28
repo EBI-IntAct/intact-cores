@@ -377,7 +377,7 @@ public class CvTermSynchronizerTemplateTest extends AbstractDbSynchronizerTest<C
         // cvs with annotations and aliases
         else if (testNumber == 3){
             Assert.assertNotNull(objectToTest.getAc());
-            Assert.assertEquals("test", objectToTest.getShortName());
+            Assert.assertEquals("test2", objectToTest.getShortName());
             Assert.assertNull(objectToTest.getFullName());
             Assert.assertNull(objectToTest.getDefinition());
             Assert.assertEquals(1, objectToTest.getAnnotations().size());
@@ -478,7 +478,7 @@ public class CvTermSynchronizerTemplateTest extends AbstractDbSynchronizerTest<C
         // cvs with annotations and aliases
         else if (testNumber == 3){
             Assert.assertNull(objectToTest.getAc());
-            Assert.assertEquals("test", objectToTest.getShortName());
+            Assert.assertEquals("test2", objectToTest.getShortName());
             Assert.assertNull(objectToTest.getFullName());
             Assert.assertNull(objectToTest.getDefinition());
             Assert.assertEquals(1, objectToTest.getAnnotations().size());

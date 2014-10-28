@@ -168,7 +168,7 @@ public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
     }
 
     protected void persist(T objectToTest) throws FinderException, PersisterException, SynchronizerException {
-        this.synchronizer.persist(objectToTest);
+        objectToTest = (T) this.synchronizer.persist(objectToTest);
 
         testPersistedProperties(objectToTest);
     }
