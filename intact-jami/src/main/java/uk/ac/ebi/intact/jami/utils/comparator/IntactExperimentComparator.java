@@ -5,7 +5,7 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import psidev.psi.mi.jami.utils.comparator.annotation.AnnotationComparator;
 import psidev.psi.mi.jami.utils.comparator.annotation.UnambiguousAnnotationComparator;
-import psidev.psi.mi.jami.utils.comparator.experiment.UnambiguousExperimentComparator;
+import psidev.psi.mi.jami.utils.comparator.experiment.ExperimentComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactParticipantEvidence;
@@ -23,13 +23,14 @@ import java.util.Collection;
  * @since <pre>24/01/14</pre>
  */
 
-public class IntactExperimentComparator extends UnambiguousExperimentComparator implements IntactComparator<Experiment>{
+public class IntactExperimentComparator extends ExperimentComparator implements IntactComparator<Experiment>{
     private AnnotationComparator annotationComparator;
     private CollectionComparator<Annotation> annotationCollectionComparator;
 
     public IntactExperimentComparator() {
-        super();
-        this.annotationComparator = new UnambiguousAnnotationComparator();
+        super(new IntactPublicationComparator(), new IntactOrganismComparator(),
+                new CollectionComparator<VariableParameter>(new IntactVariableParameterComparator()));
+        this.annotationComparator = new AnnotationComparator(new IntactCvTermComparator());
         this.annotationCollectionComparator = new CollectionComparator<Annotation>(this.annotationComparator);
     }
 
@@ -79,8 +80,23 @@ public class IntactExperimentComparator extends UnambiguousExperimentComparator 
         }
     }
 
-    public AnnotationComparator getAnnotationComparator() {
-        return annotationComparator;
+    @Override
+    public IntactPublicationComparator getPublicationComparator() {
+        return (IntactPublicationComparator) super.getPublicationComparator();
+    }
+
+    @Override
+    public IntactCvTermComparator getCvTermComparator() {
+        return (IntactCvTermComparator) super.getCvTermComparator();
+    }
+
+    @Override
+    public IntactOrganismComparator getOrganismComparator() {
+        return (IntactOrganismComparator) super.getOrganismComparator();
+    }
+
+    public UnambiguousAnnotationComparator getAnnotationComparator() {
+        return (UnambiguousAnnotationComparator)annotationComparator;
     }
 
     public CollectionComparator<Annotation> getAnnotationCollectionComparator() {

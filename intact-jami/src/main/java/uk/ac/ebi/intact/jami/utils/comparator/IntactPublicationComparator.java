@@ -19,6 +19,11 @@ public class IntactPublicationComparator extends PublicationComparator implement
     }
 
     @Override
+    public IntactIdentifiersComparator getIdentifierCollectionComparator() {
+        return (IntactIdentifiersComparator)super.getIdentifierCollectionComparator();
+    }
+
+    @Override
     public boolean canCompare(Publication pub) {
         if (pub instanceof IntactPublication){
             if (!((IntactPublication)pub).areAnnotationsInitialized() || !((IntactPublication)pub).areXrefsInitialized()){

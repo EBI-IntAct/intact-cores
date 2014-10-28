@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.jami.utils.comparator;
 
 import psidev.psi.mi.jami.model.Organism;
-import psidev.psi.mi.jami.utils.comparator.organism.UnambiguousOrganismComparator;
+import psidev.psi.mi.jami.utils.comparator.organism.OrganismComparator;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 
 /**
@@ -12,7 +12,12 @@ import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
  * @since <pre>14/08/14</pre>
  */
 
-public class IntactOrganismComparator extends UnambiguousOrganismComparator implements IntactComparator<Organism>{
+public class IntactOrganismComparator extends OrganismComparator implements IntactComparator<Organism>{
+
+    public IntactOrganismComparator() {
+        super(new IntactCvTermComparator());
+    }
+
     @Override
     public boolean canCompare(Organism objectToCompare) {
         // check cellType
