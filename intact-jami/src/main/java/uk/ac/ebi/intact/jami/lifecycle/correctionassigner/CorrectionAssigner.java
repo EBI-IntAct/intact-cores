@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.lifecycle.correctionassigner;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
@@ -25,7 +26,7 @@ public class CorrectionAssigner {
 
     }
 
-    @Transactional(value = "jamiTransactionManager")
+    @Transactional(value = "jamiTransactionManager", propagation = Propagation.REQUIRED)
     public User assignReviewer(Releasable releasable) {
         final User owner = releasable.getCurrentOwner();
         if (owner == null) {
