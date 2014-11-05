@@ -35,6 +35,8 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
 
     private IntactExperimentComparator experimentComparator;
 
+    private Set<String> persistedNames;
+
     public ExperimentSynchronizer(SynchronizerContext context){
         super(context, IntactExperiment.class);
         // to keep track of persisted cvs
@@ -44,6 +46,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
 
         this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(experimentComparator);
         this.convertedObjects = new IdentityMap();
+        persistedNames = new HashSet<String>();
     }
 
     public IntactExperiment find(Experiment experiment) throws FinderException {
@@ -321,6 +324,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.persistedNames.clear();
     }
     @Override
     protected Object extractIdentifier(IntactExperiment object) {
@@ -524,6 +528,10 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 query.setParameter("expAc", intactExperiment.getAc());
             }
             existingExperiments = query.getResultList();
+            // check cached names
+            if (this.persistedNames.contains(name)){
+                existingExperiments.add(name);
+            }
             if (!existingExperiments.isEmpty()){
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
                 if (!nameInSync.equals(name)){
