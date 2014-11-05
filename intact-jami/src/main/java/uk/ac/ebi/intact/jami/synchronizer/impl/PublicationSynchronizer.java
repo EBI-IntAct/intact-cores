@@ -218,38 +218,35 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     protected void prepareAndSynchronizeShortLabel(IntactPublication intactPublication) throws SynchronizerException {
-        // only synchronize when possible
-        if (getEntityManager().contains(intactPublication)){
-            // first initialise shortlabel if not done
-            String pubmed = intactPublication.getPubmedId();
-            String doi = intactPublication.getDoi();
-            if (pubmed != null ){
-                intactPublication.setShortLabel(pubmed);
+        // first initialise shortlabel if not done
+        String pubmed = intactPublication.getPubmedId();
+        String doi = intactPublication.getDoi();
+        if (pubmed != null ){
+            intactPublication.setShortLabel(pubmed);
+        }
+        else if (doi != null){
+            intactPublication.setShortLabel(doi);
+        }
+        else if (!intactPublication.getIdentifiers().isEmpty()){
+            intactPublication.setShortLabel(intactPublication.getIdentifiers().iterator().next().getId());
+        }
+        else {
+            // create unassigned pubmed id
+            SequenceManager seqManager = ApplicationContextProvider.getBean("jamiSequenceManager", SequenceManager.class);
+            if (seqManager == null){
+                throw new SynchronizerException("The publication synchronizer needs a sequence manager to automatically generate a unassigned pubmed identifier for backward compatibility. No sequence manager bean " +
+                        "was found in the spring context.");
             }
-            else if (doi != null){
-                intactPublication.setShortLabel(doi);
-            }
-            else if (!intactPublication.getIdentifiers().isEmpty()){
-                intactPublication.setShortLabel(intactPublication.getIdentifiers().iterator().next().getId());
-            }
-            else {
-                // create unassigned pubmed id
-                SequenceManager seqManager = ApplicationContextProvider.getBean("jamiSequenceManager", SequenceManager.class);
-                if (seqManager == null){
-                    throw new SynchronizerException("The publication synchronizer needs a sequence manager to automatically generate a unassigned pubmed identifier for backward compatibility. No sequence manager bean " +
-                            "was found in the spring context.");
-                }
-                seqManager.createSequenceIfNotExists(IntactUtils.UNASSIGNED_SEQ, 1);
-                String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(IntactUtils.UNASSIGNED_SEQ));
-                String identifier = "unassigned" + nextIntegerAsString;
-                // set identifier
-                intactPublication.setShortLabel(identifier);
-            }
-            // truncate if necessary
-            if (IntactUtils.MAX_SHORT_LABEL_LEN < intactPublication.getShortLabel().length()){
-                log.warn("Publication shortLabel too long: "+intactPublication.getShortLabel()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-                intactPublication.setShortLabel(intactPublication.getShortLabel().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
-            }
+            seqManager.createSequenceIfNotExists(IntactUtils.UNASSIGNED_SEQ, 1);
+            String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(IntactUtils.UNASSIGNED_SEQ));
+            String identifier = "unassigned" + nextIntegerAsString;
+            // set identifier
+            intactPublication.setShortLabel(identifier);
+        }
+        // truncate if necessary
+        if (IntactUtils.MAX_SHORT_LABEL_LEN < intactPublication.getShortLabel().length()){
+            log.warn("Publication shortLabel too long: "+intactPublication.getShortLabel()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
+            intactPublication.setShortLabel(intactPublication.getShortLabel().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
     }
 
