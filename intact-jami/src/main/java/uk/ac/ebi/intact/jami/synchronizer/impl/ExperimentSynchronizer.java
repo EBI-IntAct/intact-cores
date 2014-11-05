@@ -493,9 +493,11 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         }
         else{
             detectionMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(intactExperiment);
-            intactExperiment.setParticipantIdentificationMethod(enableSynchronization ?
-                    getContext().getParticipantDetectionMethodSynchronizer().synchronize(detectionMethod, true) :
-                    getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(detectionMethod));
+            if (detectionMethod != null){
+                intactExperiment.setParticipantIdentificationMethod(enableSynchronization ?
+                        getContext().getParticipantDetectionMethodSynchronizer().synchronize(detectionMethod, true) :
+                        getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(detectionMethod));
+            }
         }
     }
 

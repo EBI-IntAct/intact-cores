@@ -374,9 +374,11 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         }
         else{
             detectionMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(intactExperiment);
-            intactExperiment.setParticipantIdentificationMethod(enableSynchronization ?
-                    getContext().getParticipantDetectionMethodSynchronizer().synchronize(detectionMethod, true) :
-                    getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(detectionMethod));
+            if (detectionMethod != null){
+                intactExperiment.setParticipantIdentificationMethod(enableSynchronization ?
+                        getContext().getParticipantDetectionMethodSynchronizer().synchronize(detectionMethod, true) :
+                        getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(detectionMethod));
+            }
         }
     }
 
