@@ -159,7 +159,7 @@ public class IntactUtils {
                     +(label2Size > 0 ? "-"+label2.substring(0, maxSize2 + rest2) : "");
         }
 
-        return label1 + (label2 != null ? "-"+label2 : "");
+        return label1 + (label2 != null ? "-"+label2 : "-1");
     }
 
     public static String generateAutomaticShortlabelForModelledInteraction(ModelledInteraction intactInteraction, int maxLength){
