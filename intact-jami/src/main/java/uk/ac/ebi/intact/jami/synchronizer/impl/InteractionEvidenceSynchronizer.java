@@ -302,6 +302,17 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
                 query.setParameter("interAc", intactInteraction.getAc());
             }
             existingInteractions = query.getResultList();
+            // check also with interactors
+            Query query2 = getEntityManager().createQuery("select i.shortName from IntactInteractor i " +
+                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
+                    + (intactInteraction.getAc() != null ? "and i.ac <> :interAc" : ""));
+            query2.setParameter("name", name);
+            query2.setParameter("nameWithSuffix", name+"-%");
+            if (intactInteraction.getAc() != null){
+                query2.setParameter("interAc", intactInteraction.getAc());
+            }
+            existingInteractions.addAll(query2.getResultList());
+
             if (!existingInteractions.isEmpty()){
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractions, IntactUtils.MAX_SHORT_LABEL_LEN, true);
                 if (!nameInSync.equals(name)){
