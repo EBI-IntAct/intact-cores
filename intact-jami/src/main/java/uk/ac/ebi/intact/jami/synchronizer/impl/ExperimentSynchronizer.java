@@ -546,6 +546,8 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
             }
         }
         while(!existingExperiments.isEmpty());
+
+        this.persistedNames.add(intactExperiment.getShortLabel());
     }
 
     @Override
