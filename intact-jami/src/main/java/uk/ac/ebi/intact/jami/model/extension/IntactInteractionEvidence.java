@@ -475,7 +475,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         if (persistentAnnotations == null){
             this.persistentAnnotations = new PersistentAnnotationList(null);
         }
-        return this.persistentAnnotations;
+        return this.persistentAnnotations.getWrappedList();
     }
 
     @Column(name = "category", nullable = false, updatable = false)
