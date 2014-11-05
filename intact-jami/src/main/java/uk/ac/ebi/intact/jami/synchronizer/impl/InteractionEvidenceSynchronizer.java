@@ -26,11 +26,14 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     private Map<InteractionEvidence, IntactInteractionEvidence> persistedObjects;
     private Map<InteractionEvidence, IntactInteractionEvidence> convertedObjects;
 
+    private Set<String> persistedNames;
+
     public InteractionEvidenceSynchronizer(SynchronizerContext context){
         super(context, IntactInteractionEvidence.class);
         // to keep track of persisted cvs
         this.persistedObjects = new IdentityMap();
         this.convertedObjects = new IdentityMap();
+        this.persistedNames = new HashSet<String>();
     }
 
     public IntactInteractionEvidence find(InteractionEvidence interaction) throws FinderException {
@@ -88,6 +91,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.persistedNames.clear();
     }
 
     @Override
@@ -312,6 +316,10 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
                 query2.setParameter("interAc", intactInteraction.getAc());
             }
             existingInteractions.addAll(query2.getResultList());
+            // check cached names
+            if (this.persistedNames.contains(name)){
+                existingInteractions.add(name);
+            }
 
             if (!existingInteractions.isEmpty()){
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractions, IntactUtils.MAX_SHORT_LABEL_LEN, true);
@@ -327,6 +335,8 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
             }
         }
         while(!existingInteractions.isEmpty());
+
+        this.persistedNames.add(intactInteraction.getShortName());
     }
 
     @Override

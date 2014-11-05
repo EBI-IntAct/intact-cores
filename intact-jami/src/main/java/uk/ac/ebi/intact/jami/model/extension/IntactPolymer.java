@@ -174,44 +174,49 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
     }
 
     protected void convertSequence( String aSequence, Collection<SequenceChunk> chunks ) {
-        // Save work if the new sequence is identical to the old one.
-        // The container to hold redundant chunks.
-        ArrayList<SequenceChunk> chunkPool = null;
+        if (aSequence == null){
+            chunks.clear();
+        }
+        else{
+            // Save work if the new sequence is identical to the old one.
+            // The container to hold redundant chunks.
+            ArrayList<SequenceChunk> chunkPool = null;
 
-        // All old data are kept, we try to recycle as much chunk as possible
-        if ( !chunks.isEmpty() ) {
-            // There is existing chunk ... prepare them for recycling.
-            chunkPool = new ArrayList<SequenceChunk>( chunks.size() );
-            chunkPool.addAll( chunks );
-            int count = chunkPool.size();
+            // All old data are kept, we try to recycle as much chunk as possible
+            if ( !chunks.isEmpty() ) {
+                // There is existing chunk ... prepare them for recycling.
+                chunkPool = new ArrayList<SequenceChunk>( chunks.size() );
+                chunkPool.addAll( chunks );
+                int count = chunkPool.size();
 
-            // clean chunk to recycle
-            for ( int i = 0; i < count; i++ ) {
-                SequenceChunk sc = chunkPool.get( i );
-                chunks.remove(sc);
+                // clean chunk to recycle
+                for ( int i = 0; i < count; i++ ) {
+                    SequenceChunk sc = chunkPool.get( i );
+                    chunks.remove(sc);
+                }
             }
-        }
 
-        // Note the use of integer operations
-        int chunkCount = aSequence.length() / IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK;
-        if ( aSequence.length() % IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK > 0 ) {
-            chunkCount++;
-        }
+            // Note the use of integer operations
+            int chunkCount = aSequence.length() / IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK;
+            if ( aSequence.length() % IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK > 0 ) {
+                chunkCount++;
+            }
 
-        for ( int i = 0; i < chunkCount; i++ ) {
-            String chunk = aSequence.substring( i * IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK,
-                    Math.min( ( i + 1 ) * IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK,
-                            aSequence.length() ) );
+            for ( int i = 0; i < chunkCount; i++ ) {
+                String chunk = aSequence.substring( i * IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK,
+                        Math.min( ( i + 1 ) * IntactUtils.MAX_SEQ_LENGTH_PER_CHUNK,
+                                aSequence.length() ) );
 
-            if ( chunkPool != null && chunkPool.size() > 0 ) {
-                // recycle chunk
-                SequenceChunk sc = chunkPool.remove( 0 );
-                sc.setSequenceChunk( chunk );
-                sc.setSequenceIndex(i);
-                chunks.add(sc);
-            } else {
-                // create new chunk
-                chunks.add(new SequenceChunk(i, chunk));
+                if ( chunkPool != null && chunkPool.size() > 0 ) {
+                    // recycle chunk
+                    SequenceChunk sc = chunkPool.remove( 0 );
+                    sc.setSequenceChunk( chunk );
+                    sc.setSequenceIndex(i);
+                    chunks.add(sc);
+                } else {
+                    // create new chunk
+                    chunks.add(new SequenceChunk(i, chunk));
+                }
             }
         }
     }
