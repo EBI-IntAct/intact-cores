@@ -234,7 +234,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
 
     protected void prepareXrefs(IntactInteractionEvidence intactInteraction, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteraction.areXrefsInitialized()){
-            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteraction.getXrefs());
+            List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteraction.getDbXrefs());
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref expRef = enableSynchronization ?
