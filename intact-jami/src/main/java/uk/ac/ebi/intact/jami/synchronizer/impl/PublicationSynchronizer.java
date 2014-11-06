@@ -739,6 +739,8 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     protected void prepareExperiments(IntactPublication intactPublication, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactPublication.areExperimentsInitialized()){
             List<Experiment> experimentToPersist = new ArrayList<Experiment>(intactPublication.getExperiments());
+            Set<Experiment> processedExperiments = new HashSet<Experiment>(intactPublication.getExperiments());
+
             for (Experiment experiment : experimentToPersist){
                 // do not persist or merge experiments because of cascades
                 Experiment pubExperiment = enableSynchronization ?
@@ -747,7 +749,9 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                 // we have a different instance because needed to be synchronized
                 if (pubExperiment != experiment){
                     intactPublication.getExperiments().remove(experiment);
-                    intactPublication.addExperiment(pubExperiment);
+                    if (processedExperiments.add(pubExperiment)){
+                        intactPublication.addExperiment(pubExperiment);
+                    }
                 }
             }
         }

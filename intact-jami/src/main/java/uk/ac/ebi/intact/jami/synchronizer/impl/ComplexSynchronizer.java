@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
@@ -20,9 +21,7 @@ import uk.ac.ebi.intact.jami.utils.comparator.IntactModelledParticipantComparato
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Default synchronizer for complexes
@@ -405,6 +404,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
             }
             Collection<Experiment> experimentsToPersist = new ArrayList<Experiment>(intactComplex.getExperiments());
+            Set<Experiment> processedExperiments = new HashSet<Experiment>(intactComplex.getExperiments().size());
             for (Experiment exp : experimentsToPersist){
                 // synchronize publication if not done yet
                 if (exp.getPublication() != null){
@@ -423,7 +423,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                 // we have a different instance because needed to be synchronized
                 if (expPar != exp){
                     intactComplex.getExperiments().remove(exp);
-                    intactComplex.getExperiments().add(expPar);
+                    if (processedExperiments.add(expPar)){
+                        intactComplex.getExperiments().add(expPar);
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
+import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
@@ -19,10 +20,7 @@ import uk.ac.ebi.intact.jami.utils.comparator.IntactPolymerComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Synchronizer for IntAct interactor pools
@@ -57,6 +55,8 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     protected void prepareInteractors(IntactInteractorPool intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areInteractorsInitialized()){
             List<Interactor> interactorToPersist = new ArrayList<Interactor>(intactInteractor);
+            Set<Interactor> processedInteractors = new HashSet<Interactor>(intactInteractor.size());
+
             for (Interactor interactor : interactorToPersist){
                 if (interactor != intactInteractor){
                     Interactor interactorCheck = enableSynchronization ?
@@ -65,7 +65,9 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
                     // we have a different instance because needed to be synchronized
                     if (interactorCheck != interactor){
                         intactInteractor.remove(interactor);
-                        intactInteractor.add(interactorCheck);
+                        if (processedInteractors.add(interactorCheck)){
+                            intactInteractor.add(interactorCheck);
+                        }
                     }
                 }
             }
