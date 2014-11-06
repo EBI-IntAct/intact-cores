@@ -68,15 +68,13 @@ implements CooperativeEffectSynchronizer<T, C> {
     protected void prepareAnnotations(C object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (object.areAnnotationsInitialized()){
             Collection<Annotation> annotsToPersist = new ArrayList<Annotation>(object.getAnnotations());
+            object.getAnnotations().clear();
             for (Annotation annot : annotsToPersist){
                 Annotation persistentAnnot = enableSynchronization ?
                         getContext().getCooperativeEffectAnnotationSynchronizer().synchronize(annot, false) :
                         getContext().getCooperativeEffectAnnotationSynchronizer().convertToPersistentObject(annot);
                 // we have a different instance because needed to be synchronized
-                if (persistentAnnot != annot){
-                    object.getAnnotations().remove(annot);
-                    object.getAnnotations().add(persistentAnnot);
-                }
+                object.getAnnotations().add(persistentAnnot);
             }
         }
     }
@@ -84,6 +82,7 @@ implements CooperativeEffectSynchronizer<T, C> {
     protected void prepareAffectedInteractions(C object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (object.areAffectedInteractionsInitialized()){
             Collection<ModelledInteraction> interactionsToPersist = new ArrayList<ModelledInteraction>(object.getAffectedInteractions());
+            object.getAffectedInteractions().clear();
             for (ModelledInteraction interaction : interactionsToPersist){
                 // first convert to complex as we import modelled interactions as complexes in intact
                 Complex convertedComplex = null;
@@ -99,10 +98,7 @@ implements CooperativeEffectSynchronizer<T, C> {
                         getContext().getComplexSynchronizer().synchronize(convertedComplex, true) :
                         getContext().getComplexSynchronizer().convertToPersistentObject(convertedComplex);
                 // we have a different instance because needed to be synchronized
-                if (persistentInteraction != interaction){
-                    object.getAffectedInteractions().remove(interaction);
-                    object.getAffectedInteractions().add(persistentInteraction);
-                }
+                object.getAffectedInteractions().add(persistentInteraction);
             }
         }
     }
@@ -110,15 +106,13 @@ implements CooperativeEffectSynchronizer<T, C> {
     protected void prepareCooperativityEvidences(C object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (object.areCooperativityEvidencesInitialized()){
             Collection<CooperativityEvidence> parametersToPersist = new ArrayList<CooperativityEvidence>(object.getCooperativityEvidences());
+            object.getCooperativityEvidences().clear();
             for (CooperativityEvidence param : parametersToPersist){
                 CooperativityEvidence expParam = enableSynchronization ?
                         getContext().getCooperativityEvidenceSynchronizer().synchronize(param, false) :
                         getContext().getCooperativityEvidenceSynchronizer().convertToPersistentObject(param);
                 // we have a different instance because needed to be synchronized
-                if (expParam != param){
-                    object.getCooperativityEvidences().remove(param);
-                    object.getCooperativityEvidences().add(expParam);
-                }
+                object.getCooperativityEvidences().add(expParam);
             }
         }
     }

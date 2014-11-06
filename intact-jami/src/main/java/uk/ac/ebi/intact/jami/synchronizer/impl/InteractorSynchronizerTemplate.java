@@ -383,16 +383,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected void prepareXrefs(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getDbXrefs());
+            intactInteractor.getDbXrefs().clear();
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref cvXref = enableSynchronization ?
                         getContext().getInteractorXrefSynchronizer().synchronize(xref, false) :
                         getContext().getInteractorXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
-                if (cvXref != xref){
-                    intactInteractor.getDbXrefs().remove(xref);
-                    intactInteractor.getDbXrefs().add(cvXref);
-                }
+                intactInteractor.getDbXrefs().add(cvXref);
             }
         }
     }
@@ -400,16 +398,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected void prepareAnnotations(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteractor.getDbAnnotations());
+            intactInteractor.getDbAnnotations().clear();
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation cvAnnotation = enableSynchronization ?
                         getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false) :
                         getContext().getInteractorAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
-                if (cvAnnotation != annotation){
-                    intactInteractor.getDbAnnotations().remove(annotation);
-                    intactInteractor.getDbAnnotations().add(cvAnnotation);
-                }
+                intactInteractor.getDbAnnotations().add(cvAnnotation);
             }
         }
     }
@@ -417,16 +413,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected void prepareAliases(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactInteractor.getDbAliases());
+            intactInteractor.getDbAliases().clear();
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
                 Alias cvAlias = enableSynchronization ?
                         getContext().getInteractorAliasSynchronizer().synchronize(alias, false) :
                         getContext().getInteractorAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
-                if (cvAlias != alias){
-                    intactInteractor.getDbAliases().remove(alias);
-                    intactInteractor.getDbAliases().add(cvAlias);
-                }
+                intactInteractor.getDbAliases().add(cvAlias);
             }
         }
     }

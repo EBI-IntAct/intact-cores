@@ -334,16 +334,14 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     protected void prepareXrefs(IntactExperiment intactExperiment, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactExperiment.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactExperiment.getXrefs());
+            intactExperiment.getXrefs().clear();
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref expRef = enableSynchronization ?
                         getContext().getExperimentXrefSynchronizer().synchronize(xref, false) :
                         getContext().getExperimentXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
-                if (expRef != xref){
-                    intactExperiment.getXrefs().remove(xref);
-                    intactExperiment.getXrefs().add(expRef);
-                }
+                intactExperiment.getXrefs().add(expRef);
             }
         }
     }
@@ -351,16 +349,14 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     protected void prepareAnnotations(IntactExperiment intactExperiment, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactExperiment.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactExperiment.getAnnotations());
+            intactExperiment.getAnnotations().clear();
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation expAnnotation = enableSynchronization ?
                         getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
                         getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
-                if (expAnnotation != annotation){
-                    intactExperiment.getAnnotations().remove(annotation);
-                    intactExperiment.getAnnotations().add(expAnnotation);
-                }
+                intactExperiment.getAnnotations().add(expAnnotation);
             }
         }
     }

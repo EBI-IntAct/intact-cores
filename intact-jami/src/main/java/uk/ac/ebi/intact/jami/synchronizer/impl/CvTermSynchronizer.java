@@ -614,15 +614,13 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
         if (intactCv.areParentsInitialized()){
             List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getParents());
+            intactCv.getParents().clear();
             for (OntologyTerm term : termsToPersist){
                 IntactCvTerm cvParent = enableSynchronization ?
                         synchronize(term, true) :
                         convertToPersistentObject(term);
                 // we have a different instance because needed to be synchronized
-                if (cvParent != term){
-                    intactCv.removeParent(term);
-                    intactCv.addParent(cvParent);
-                }
+                intactCv.addParent(cvParent);
             }
         }
     }
@@ -630,16 +628,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     protected void prepareXrefs(IntactCvTerm intactCv, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getDbXrefs());
+            intactCv.getDbXrefs().clear();
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 CvTermXref cvXref = enableSynchronization ?
                         getContext().getCvXrefSynchronizer().synchronize(xref, false) :
                         getContext().getCvXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
-                if (cvXref != xref){
-                    intactCv.getDbXrefs().remove(xref);
-                    intactCv.getDbXrefs().add(cvXref);
-                }
+                intactCv.getDbXrefs().add(cvXref);
             }
         }
     }
@@ -647,16 +643,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     protected void prepareAnnotations(IntactCvTerm intactCv, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getDbAnnotations());
+            intactCv.getDbAnnotations().clear();
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 CvTermAnnotation cvAnnotation = enableSynchronization ?
                         getContext().getCvAnnotationSynchronizer().synchronize(annotation, false):
                         getContext().getCvAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
-                if (cvAnnotation != annotation){
-                    intactCv.getDbAnnotations().remove(annotation);
-                    intactCv.getDbAnnotations().add(cvAnnotation);
-                }
+                intactCv.getDbAnnotations().add(cvAnnotation);
             }
         }
     }
@@ -664,16 +658,14 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     protected void prepareAliases(IntactCvTerm intactCv, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactCv.areSynonymsInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
+            intactCv.getSynonyms().clear();
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
                 CvTermAlias cvAlias = enableSynchronization ?
                         getContext().getCvAliasSynchronizer().synchronize(alias, false):
                         getContext().getCvAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
-                if (cvAlias != alias){
-                    intactCv.getSynonyms().remove(alias);
-                    intactCv.getSynonyms().add(cvAlias);
-                }
+                intactCv.getSynonyms().add(cvAlias);
             }
         }
     }

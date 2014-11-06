@@ -68,15 +68,13 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
 
         if (object.areEvidenceMethodsInitialized()){
             Collection<CvTerm> parametersToPersist = new ArrayList<CvTerm>(object.getEvidenceMethods());
+            object.getEvidenceMethods().clear();
             for (CvTerm param : parametersToPersist){
                 CvTerm expParam = enableSynchronization ?
                         getContext().getTopicSynchronizer().synchronize(param, true) :
                         getContext().getTopicSynchronizer().convertToPersistentObject(param);
                 // we have a different instance because needed to be synchronized
-                if (expParam != param){
-                    object.getEvidenceMethods().remove(param);
-                    object.getEvidenceMethods().add(expParam);
-                }
+                object.getEvidenceMethods().add(expParam);
             }
         }
     }

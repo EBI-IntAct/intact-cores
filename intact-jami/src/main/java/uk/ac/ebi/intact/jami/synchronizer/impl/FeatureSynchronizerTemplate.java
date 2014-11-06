@@ -117,6 +117,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         }
         if (intactFeature.areLinkedFeaturesInitialized()){
             List<F> featureToSynchronize = new ArrayList<F>(intactFeature.getDbLinkedFeatures());
+            intactFeature.getDbLinkedFeatures().clear();
             for (F feature : featureToSynchronize){
                 if (intactFeature != feature){
                     // do not persist or merge features because of cascades
@@ -124,10 +125,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
                             synchronize((F) feature, false) :
                             convertToPersistentObject((F)feature);
                     // we have a different instance because needed to be synchronized
-                    if (linkedFeature != feature){
-                        intactFeature.getDbLinkedFeatures().remove(feature);
-                        intactFeature.getDbLinkedFeatures().add(linkedFeature);
-                    }
+                    intactFeature.getDbLinkedFeatures().add(linkedFeature);
                 }
             }
         }

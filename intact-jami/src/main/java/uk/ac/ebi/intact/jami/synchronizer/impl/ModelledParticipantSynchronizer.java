@@ -69,16 +69,14 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareCausalRelationships(IntactModelledParticipant intactEntity, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areCausalRelationshipsInitialized()){
             List<CausalRelationship> relationshipsToPersist = new ArrayList<CausalRelationship>(intactEntity.getCausalRelationships());
+            intactEntity.getCausalRelationships().clear();
             for (CausalRelationship causalRelationship : relationshipsToPersist){
                 // do not persist or merge causalRelationship because of cascades
                 CausalRelationship persistentRelationship = enableSynchronization ?
                         getContext().getModelledCausalRelationshipSynchronizer().synchronize(causalRelationship, false) :
                         getContext().getModelledCausalRelationshipSynchronizer().convertToPersistentObject(causalRelationship);
                 // we have a different instance because needed to be synchronized
-                if (persistentRelationship != causalRelationship){
-                    intactEntity.getCausalRelationships().remove(causalRelationship);
-                    intactEntity.getCausalRelationships().add(persistentRelationship);
-                }
+                intactEntity.getCausalRelationships().add(persistentRelationship);
             }
         }
     }
@@ -89,15 +87,13 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
                 intactEntity.getDbExperimentalRoles().add(IntactUtils.createMIExperimentalRole(Participant.NEUTRAL, Participant.NEUTRAL_MI));
             }
             List<CvTerm> rolesToPersist = new ArrayList<CvTerm>(intactEntity.getDbExperimentalRoles());
+            intactEntity.getDbExperimentalRoles().clear();
             for (CvTerm role : rolesToPersist){
                 CvTerm persistentRole = enableSynchronization ?
                         getContext().getExperimentalRoleSynchronizer().synchronize(role, true) :
                         getContext().getExperimentalRoleSynchronizer().convertToPersistentObject(role);
                 // we have a different instance because needed to be synchronized
-                if (persistentRole != role){
-                    intactEntity.getDbExperimentalRoles().remove(role);
-                    intactEntity.getDbExperimentalRoles().add(persistentRole);
-                }
+                intactEntity.getDbExperimentalRoles().add(persistentRole);
             }
         }
     }
@@ -105,16 +101,14 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareXrefs(IntactModelledParticipant intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactEntity.getXrefs());
+            intactEntity.getXrefs().clear();
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref persistentXref = enableSynchronization ?
                         getContext().getModelledParticipantXrefSynchronizer().synchronize(xref, false) :
                         getContext().getModelledParticipantXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
-                if (persistentXref != xref){
-                    intactEntity.getXrefs().remove(xref);
-                    intactEntity.getXrefs().add(persistentXref);
-                }
+                intactEntity.getXrefs().add(persistentXref);
             }
         }
     }
@@ -122,16 +116,14 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareAnnotations(IntactModelledParticipant intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactEntity.getAnnotations());
+            intactEntity.getAnnotations().clear();
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation persistentAnnotation = enableSynchronization ?
                         getContext().getModelledParticipantAnnotationSynchronizer().synchronize(annotation, false) :
                         getContext().getModelledParticipantAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
-                if (persistentAnnotation != annotation){
-                    intactEntity.getAnnotations().remove(annotation);
-                    intactEntity.getAnnotations().add(persistentAnnotation);
-                }
+                intactEntity.getAnnotations().add(persistentAnnotation);
             }
         }
     }
@@ -139,16 +131,14 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareAliases(IntactModelledParticipant intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactEntity.getAliases());
+            intactEntity.getAliases().clear();
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
                 Alias persistentAlias = enableSynchronization ?
                         getContext().getModelledParticipantAliasSynchronizer().synchronize(alias, false) :
                         getContext().getModelledParticipantAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
-                if (persistentAlias != alias){
-                    intactEntity.getAliases().remove(alias);
-                    intactEntity.getAliases().add(persistentAlias);
-                }
+                intactEntity.getAliases().add(persistentAlias);
             }
         }
     }

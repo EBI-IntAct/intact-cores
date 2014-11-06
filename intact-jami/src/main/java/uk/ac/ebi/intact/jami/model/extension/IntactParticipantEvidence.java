@@ -391,7 +391,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
      * Only this method is persistent because we want to exclude the participant identification method which is persisted at the experiment
      * level
      */
-    protected Collection<CvTerm> getDbIdentificationMethods() {
+    public Collection<CvTerm> getDbIdentificationMethods() {
         if (persistentIdentificationMethods == null){
             persistentIdentificationMethods = new ArrayList<CvTerm>(getIdentificationMethods());
             if (getInteraction() != null && getInteraction().getExperiment() instanceof IntactExperiment){

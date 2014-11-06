@@ -198,7 +198,9 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     public void addChild( OntologyTerm cvDagObject ) {
 
         getChildren().add( cvDagObject );
-        cvDagObject.getParents().add( this );
+        if (!cvDagObject.getParents().contains(cvDagObject)){
+            cvDagObject.getParents().add( this );
+        }
     }
 
     public void removeChild( OntologyTerm cvDagObject ) {
@@ -225,7 +227,9 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     public void addParent( OntologyTerm cvDagObject ) {
 
         getParents().add( cvDagObject );
-        cvDagObject.getChildren().add( this );
+        if (!cvDagObject.getChildren().contains(this)){
+            cvDagObject.getChildren().add( this );
+        }
     }
 
     public void removeParent( OntologyTerm cvDagObject ) {

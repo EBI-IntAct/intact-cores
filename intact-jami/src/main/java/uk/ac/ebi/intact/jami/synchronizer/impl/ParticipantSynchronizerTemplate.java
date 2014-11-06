@@ -164,6 +164,7 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     protected void prepareFeatures(I intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areFeaturesInitialized()) {
             List<Feature> featuresToPersist = new ArrayList<Feature>(intactEntity.getFeatures());
+            intactEntity.getFeatures().clear();
             for (Feature feature : featuresToPersist) {
                 feature.setParticipant(intactEntity);
                 // do not persist or merge features because of cascades
@@ -171,10 +172,8 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
                         (Feature)getFeatureSynchronizer().synchronize(feature, false) :
                         (Feature)getFeatureSynchronizer().convertToPersistentObject(feature);
                 // we have a different instance because needed to be synchronized
-                if (persistentFeature != feature) {
-                    intactEntity.getFeatures().remove(feature);
-                    intactEntity.addFeature(persistentFeature);
-                }
+               intactEntity.addFeature(persistentFeature);
+
             }
         }
     }

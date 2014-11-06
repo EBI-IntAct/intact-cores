@@ -47,16 +47,14 @@ public class ModelledRangeSynchronizer extends RangeSynchronizerTemplate<Modelle
     protected void prepareXrefs(AbstractIntactResultingSequence intactObj, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactObj.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());
+            intactObj.getXrefs().clear();
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref objRef = enableSynchronization ?
                         getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false):
                         getContext().getModelledResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
-                if (objRef != xref){
-                    intactObj.getXrefs().remove(xref);
-                    intactObj.getXrefs().add(objRef);
-                }
+                intactObj.getXrefs().add(objRef);
             }
         }
     }

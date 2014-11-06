@@ -122,15 +122,13 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     protected void prepareRoles(User intactUser, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactUser.areRolesInitialized()){
             List<Role> rolesToPersist = new ArrayList<Role>(intactUser.getRoles());
+            intactUser.getRoles().clear();
             for (Role role : rolesToPersist){
                 Role userRole = enableSynchronization ?
                         getContext().getRoleSynchronizer().synchronize(role, true) :
                         getContext().getRoleSynchronizer().convertToPersistentObject(role);
                 // we have a different instance because needed to be synchronized
-                if (userRole != role){
-                    intactUser.removeRole(role);
-                    intactUser.addRole(userRole);
-                }
+                intactUser.addRole(userRole);
             }
         }
     }
@@ -138,16 +136,14 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     protected void preparePreferences(User intactUser, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactUser.arePreferencesInitialized()){
             List<Preference> preferencesToPersist = new ArrayList<Preference>(intactUser.getPreferences());
+            intactUser.getPreferences().clear();
             for (Preference pref : preferencesToPersist){
                 // do not persist or merge preferences because of cascades
                 Preference userPref = enableSynchronization ?
                         getContext().getPreferenceSynchronizer().synchronize(pref, false) :
                         getContext().getPreferenceSynchronizer().convertToPersistentObject(pref);
                 // we have a different instance because needed to be synchronized
-                if (userPref != pref){
-                    intactUser.removePreference(pref);
-                    intactUser.addPreference(userPref);
-                }
+                intactUser.addPreference(userPref);
             }
         }
     }

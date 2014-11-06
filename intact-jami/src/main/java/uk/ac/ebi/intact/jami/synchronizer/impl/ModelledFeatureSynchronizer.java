@@ -69,6 +69,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
     protected void prepareRanges(IntactModelledFeature intactFeature, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactFeature.areRangesInitialized()){
             List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
+            intactFeature.getRanges().clear();
             for (Range range : rangesToPersist){
                 // initialise resulting sequence
                 if (intactFeature.getParticipant() != null){
@@ -82,10 +83,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
                         getContext().getModelledRangeSynchronizer().synchronize(range, false) :
                         getContext().getModelledRangeSynchronizer().convertToPersistentObject(range);
                 // we have a different instance because needed to be synchronized
-                if (featureRange != range){
-                    intactFeature.getRanges().remove(range);
-                    intactFeature.getRanges().add(featureRange);
-                }
+                intactFeature.getRanges().add(featureRange);
             }
         }
     }
@@ -108,16 +106,14 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
     protected void prepareXrefs(IntactModelledFeature intactFeature, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getDbXrefs());
+            intactFeature.getDbXrefs().clear();
             for (Xref xref : xrefsToPersist){
                 // do not persist or merge xrefs because of cascades
                 Xref featureXref = enableSynchronization ?
                         getContext().getModelledFeatureXrefSynchronizer().synchronize(xref, false) :
                         getContext().getModelledFeatureXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
-                if (featureXref != xref){
-                    intactFeature.getDbXrefs().remove(xref);
-                    intactFeature.getDbXrefs().add(featureXref);
-                }
+                intactFeature.getDbXrefs().add(featureXref);
             }
         }
     }
@@ -125,16 +121,14 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
     protected void prepareAnnotations(IntactModelledFeature intactFeature, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
+            intactFeature.getAnnotations().clear();
             for (Annotation annotation : annotationsToPersist){
                 // do not persist or merge annotations because of cascades
                 Annotation featureAnnotation = enableSynchronization ?
                         getContext().getModelledFeatureAnnotationSynchronizer().synchronize(annotation, false) :
                         getContext().getModelledFeatureAnnotationSynchronizer().convertToPersistentObject(annotation);
                 // we have a different instance because needed to be synchronized
-                if (featureAnnotation != annotation){
-                    intactFeature.getAnnotations().remove(annotation);
-                    intactFeature.getAnnotations().add(featureAnnotation);
-                }
+                intactFeature.getAnnotations().add(featureAnnotation);
             }
         }
     }
@@ -142,16 +136,14 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
     protected void prepareAliases(IntactModelledFeature intactFeature, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactFeature.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
+            intactFeature.getAliases().clear();
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
                 Alias featureAlias = enableSynchronization ?
                         getContext().getModelledFeatureAliasSynchronizer().synchronize(alias, false) :
                         getContext().getModelledFeatureAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
-                if (featureAlias != alias){
-                    intactFeature.getAliases().remove(alias);
-                    intactFeature.getAliases().add(featureAlias);
-                }
+                intactFeature.getAliases().add(featureAlias);
             }
         }
     }

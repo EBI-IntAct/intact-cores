@@ -337,16 +337,15 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     protected void prepareAliases(IntactOrganism intactOrganism, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactOrganism.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactOrganism.getAliases());
+            intactOrganism.getAliases().clear();
             for (Alias alias : aliasesToPersist){
                 // do not persist or merge alias because of cascades
                 Alias organismAlias = enableSynchronization ?
                         getContext().getOrganismAliasSynchronizer().synchronize(alias, false) :
                         getContext().getOrganismAliasSynchronizer().convertToPersistentObject(alias);
                 // we have a different instance because needed to be synchronized
-                if (organismAlias != alias){
-                    intactOrganism.getAliases().remove(alias);
-                    intactOrganism.getAliases().add(organismAlias);
-                }
+                intactOrganism.getAliases().add(organismAlias);
+
             }
         }
     }
