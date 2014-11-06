@@ -242,8 +242,8 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
                         getContext().getInteractionXrefSynchronizer().convertToPersistentObject(xref);
                 // we have a different instance because needed to be synchronized
                 if (expRef != xref){
-                    intactInteraction.getXrefs().remove(xref);
-                    intactInteraction.getXrefs().add(expRef);
+                    intactInteraction.getDbXrefs().remove(xref);
+                    intactInteraction.getDbXrefs().add(expRef);
                 }
             }
         }
