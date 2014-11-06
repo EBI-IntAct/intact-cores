@@ -985,10 +985,20 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     protected void setDbXrefs(Collection<Xref> persistentXrefs){
         if (persistentXrefs instanceof PersistentXrefList){
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
+            resetXrefs();
         }
         else{
             this.persistentXrefs = new PersistentXrefList(persistentXrefs);
+            resetXrefs();
         }
+    }
+
+    protected void resetXrefs(){
+        this.identifiers = null;
+        this.xrefs = null;
+        this.pubmedId = null;
+        this.doi = null;
+        this.imexId = null;
     }
 
     protected void initialiseAnnotations() {

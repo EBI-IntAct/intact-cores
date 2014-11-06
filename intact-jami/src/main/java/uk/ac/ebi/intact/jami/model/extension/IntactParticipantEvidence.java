@@ -346,7 +346,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
     }
 
     protected void setDbExperimentalRoles(List<CvTerm> experimentalRoles) {
-        this.experimentalRoles = experimentalRoles;
+        this.experimentalRoles = experimentalRoles != null ? experimentalRoles : new ArrayList<CvTerm>();
     }
 
     protected void setIdentificationMethods(Collection<CvTerm> identificationMethods) {
@@ -377,7 +377,8 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
     }
 
     protected void setDbIdentificationMethods(Collection<CvTerm> persistentIdentificationMethods) {
-        this.persistentIdentificationMethods = persistentIdentificationMethods;
+        this.persistentIdentificationMethods = persistentIdentificationMethods != null ? identificationMethods : new ArrayList<CvTerm>();
+        this.identificationMethods = null;
     }
 
     @ManyToMany(targetEntity = IntactCvTerm.class)
