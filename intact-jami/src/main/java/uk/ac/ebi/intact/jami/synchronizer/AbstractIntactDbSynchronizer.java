@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
+import psidev.psi.mi.jami.enricher.exception.EnricherException;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
@@ -62,7 +63,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // check cache when possible
         else if (isObjectStoredInCache((I) object)){
             // process object from cache
-            return processCachedObject((I)object, object, mode, true);
+            return processCachedObject((I)object, mode, true);
         }
 
         // store in cache
@@ -105,7 +106,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
             else if (isObjectStoredInCache(object)){
-                return processCachedObject(object, newObject, mode, false);
+                return processCachedObject(object, mode, true);
             }
 
             // no cached object, process the transient instance and synchronize with database
@@ -127,7 +128,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
             else if (isObjectStoredInCache(object)){
-               return processCachedObject(object, intactObject, mode, false);
+               return processCachedObject(object, mode, true);
             }
 
             // detached existing instance which need to be reattached to the session
@@ -412,18 +413,24 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @param existingInstance : existing instance from cache/database
      * @return  the object merged with the cache if necessary, the fetched object otherwise
      */
-    protected T mergeWithCachedObject(T object, T existingInstance, boolean needToSynchronizeProperties) throws PersisterException,
+    protected T mergeWithCachedObject(I object, T existingInstance, boolean needToSynchronizeProperties) throws PersisterException,
             FinderException, SynchronizerException {
-        // merge cached instance with original object
-        T mergedObject = getIntactMerger().merge(object, existingInstance);
-        // synchronize before persisting
-        if (needToSynchronizeProperties){
-            synchronizeProperties(mergedObject);
+        if (object != existingInstance){
+            // merge cached instance with original object
+            try {
+                getIntactMerger().enrich((I)existingInstance, object);
+            } catch (EnricherException e) {
+                throw new SynchronizerException("Cannot merge "+object + " with "+existingInstance, e);
+            }
+            // then set userContext
+            existingInstance.setLocalUserContext(getContext().getUserContext());
+            // synchronize before persisting
+            if (needToSynchronizeProperties){
+                // synchronize properties
+                synchronizeDirtyObjectProperties(object, existingInstance);
+            }
         }
-        // then set userContext
-        mergedObject.setLocalUserContext(getContext().getUserContext());
-
-        return mergedObject;
+        return existingInstance;
     }
 
     /**
@@ -440,7 +447,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // synchronize properties
         synchronizeProperties(persistentObject);
         // remove object from identity cache as not dirty anymore
-        removeObjectInstanceFromIdentityCache((I)object);
+        removeObjectInstanceFromIdentityCache((I) object);
     }
 
     /**
@@ -510,7 +517,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     /**
      *
      * @param object
-     * @param persistentObject
      * @param mode
      * @param needToSynchronize
      * @return the cached object merged with the properties of the original object
@@ -518,11 +524,11 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @throws FinderException
      * @throws SynchronizerException
      */
-    protected T processCachedObject(I object, T persistentObject, FlushModeType mode, boolean needToSynchronize) throws PersisterException, FinderException, SynchronizerException {
+    protected T processCachedObject(I object, FlushModeType mode, boolean needToSynchronize) throws PersisterException, FinderException, SynchronizerException {
         // get cached instance
         T fetched = fetchObjectFromCache(object);
         // then merge properties if not done yet
-        T merged = mergeWithCachedObject(persistentObject, fetched, needToSynchronize);
+        T merged = mergeWithCachedObject(object, fetched, needToSynchronize);
 
         // reset entity manager flushMode
         resetEntityManagerFlushType(mode);
