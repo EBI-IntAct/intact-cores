@@ -4,6 +4,7 @@ import psidev.psi.mi.jami.bridges.fetcher.PublicationFetcher;
 import psidev.psi.mi.jami.enricher.CuratedPublicationEnricher;
 import psidev.psi.mi.jami.enricher.PublicationEnricher;
 import psidev.psi.mi.jami.enricher.SourceEnricher;
+import psidev.psi.mi.jami.enricher.exception.EnricherException;
 import psidev.psi.mi.jami.enricher.impl.full.FullPublicationEnricher;
 import psidev.psi.mi.jami.enricher.listener.PublicationEnricherListener;
 import psidev.psi.mi.jami.model.Experiment;
@@ -126,5 +127,11 @@ public class PublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Public
             }
             index++;
         }
+    }
+
+    @Override
+    protected void enrichBasicProperties(Publication objectToEnrich, Publication objectSource) throws EnricherException {
+        super.enrichBasicProperties(objectToEnrich, objectSource);
+        mergeExperiments(objectToEnrich, objectToEnrich.getExperiments(), objectSource.getExperiments());
     }
 }

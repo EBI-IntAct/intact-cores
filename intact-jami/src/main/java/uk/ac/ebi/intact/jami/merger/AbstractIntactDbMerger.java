@@ -52,7 +52,7 @@ public abstract class AbstractIntactDbMerger<I extends Object, A extends Auditab
                 // then merge general properties
                 try {
                     // WARNING: we enrich the object loaded from the database, not the object source!
-                    enrichBasicProperties((I)obj2, (I)obj1);
+                    this.basicEnricher.enrich((I)obj2, (I)obj1);
                 } catch (EnricherException e) {
                     throw new IllegalStateException("Cannot merge "+obj1 + " with "+obj2, e);
                 }
@@ -81,10 +81,6 @@ public abstract class AbstractIntactDbMerger<I extends Object, A extends Auditab
         else if (this.basicEnricher != null){
             enrichBasicProperties(objectToEnrich, objectSource);
         }
-    }
-
-    protected void enrichBasicProperties(I objectToEnrich) throws EnricherException{
-        this.basicEnricher.enrich(objectToEnrich);
     }
 
     protected void enrichBasicProperties(I objectToEnrich, I objectSource) throws EnricherException{

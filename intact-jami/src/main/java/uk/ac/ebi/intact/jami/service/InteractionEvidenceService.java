@@ -29,7 +29,7 @@ import java.util.*;
 public class InteractionEvidenceService implements IntactService<InteractionEvidence> {
 
     @Autowired
-    @Qualifier("intactDAO")
+    @Qualifier("intactDao")
     private IntactDao intactDAO;
     @Autowired
     @Qualifier("intactTransactionSynchronization")
