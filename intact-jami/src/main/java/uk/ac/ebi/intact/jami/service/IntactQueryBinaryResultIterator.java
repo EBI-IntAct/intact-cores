@@ -65,7 +65,7 @@ public class IntactQueryBinaryResultIterator<T extends Interaction, B extends Bi
 
     protected void prepareNextObject(){
 
-        if (this.binaryIterator.hasNext()){
+        if (this.binaryIterator != null && this.binaryIterator.hasNext()){
             this.currentBinary = this.binaryIterator.next();
         }
         else if (!this.queryIterator.hasNext()){

@@ -84,7 +84,7 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
 
     protected void prepareNextObject(){
 
-        if (this.chunkIterator.hasNext()){
+        if (this.chunkIterator != null && this.chunkIterator.hasNext()){
             this.currentObject = this.chunkIterator.next();
         }
         else if (totalCount == currentCount){
