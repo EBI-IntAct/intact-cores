@@ -180,6 +180,8 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
     }
 
     public void setPublication(Publication ref) {
+        // initialise refs
+        getXrefs();
         if (this.bibRef != null){
             getDbXrefs().removeAll(this.bibRef.getIdentifiers());
         }
