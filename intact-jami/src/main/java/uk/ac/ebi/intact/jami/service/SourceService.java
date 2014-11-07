@@ -68,6 +68,8 @@ public class SourceService implements IntactService<Source>{
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getSourceSynchronizer().synchronize(object, true);
+
+        intactDAO.getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -83,6 +85,7 @@ public class SourceService implements IntactService<Source>{
     public void delete(Source object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getSourceSynchronizer().delete(object);
+        intactDAO.getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

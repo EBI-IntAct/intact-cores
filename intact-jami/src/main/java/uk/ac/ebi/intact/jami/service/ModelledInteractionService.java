@@ -71,6 +71,7 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
 
         saveModelledInteraction(object);
+        intactDAO.getEntityManager().flush();
     }
 
     protected void saveModelledInteraction(ModelledInteraction object) throws FinderException, PersisterException, SynchronizerException {
@@ -102,6 +103,7 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
         if (object instanceof Complex){
             this.intactDAO.getSynchronizerContext().getComplexSynchronizer().delete((Complex)object);
         }
+        intactDAO.getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

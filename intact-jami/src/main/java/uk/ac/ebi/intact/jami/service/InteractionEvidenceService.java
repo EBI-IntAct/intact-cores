@@ -69,7 +69,7 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
     public void saveOrUpdate(InteractionEvidence object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         saveInteraction(object);
-
+        intactDAO.getEntityManager().flush();
     }
 
     protected void saveInteraction(InteractionEvidence object) throws FinderException, PersisterException, SynchronizerException {
@@ -114,6 +114,7 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
     public void delete(InteractionEvidence object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getInteractionSynchronizer().delete(object);
+        intactDAO.getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

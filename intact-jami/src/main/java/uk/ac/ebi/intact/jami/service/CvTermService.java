@@ -69,6 +69,7 @@ public class CvTermService implements IntactService<CvTerm>{
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getCvSynchronizer(this.objClass).synchronize(object, true);
+        intactDAO.getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -84,6 +85,7 @@ public class CvTermService implements IntactService<CvTerm>{
     public void delete(CvTerm object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getCvSynchronizer(this.objClass).delete(object);
+        intactDAO.getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

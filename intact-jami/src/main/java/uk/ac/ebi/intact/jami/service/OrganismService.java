@@ -69,6 +69,7 @@ public class OrganismService implements IntactService<Organism>{
 
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getOrganismSynchronizer().synchronize(object, true);
+        intactDAO.getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -86,6 +87,7 @@ public class OrganismService implements IntactService<Organism>{
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
 
         this.intactDAO.getSynchronizerContext().getOrganismSynchronizer().delete(object);
+        intactDAO.getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

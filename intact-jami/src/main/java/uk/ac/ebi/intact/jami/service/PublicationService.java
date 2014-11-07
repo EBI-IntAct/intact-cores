@@ -63,6 +63,7 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
 
         // we can synchronize the complex with the database now
         getIntactDao().getSynchronizerContext().getPublicationSynchronizer().synchronize(object, true);
+        getIntactDao().getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -80,6 +81,8 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
         getAfterCommitExecutor().registerDaoForSynchronization(getIntactDao());
 
         getIntactDao().getSynchronizerContext().getPublicationSynchronizer().delete(object);
+
+        getIntactDao().getEntityManager().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -89,6 +92,7 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
         for (Publication pub : objects){
             getIntactDao().getSynchronizerContext().getPublicationSynchronizer().delete(pub);
         }
+
     }
 
     @Override
