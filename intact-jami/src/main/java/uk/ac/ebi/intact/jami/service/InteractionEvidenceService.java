@@ -79,11 +79,13 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
     protected void saveInteraction(InteractionEvidence object) throws FinderException, PersisterException, SynchronizerException {
         IntactExperiment curatedExperiment = null;
         // if the interaction has an experiment, we may have to persist the experiment first
-        if (object.getExperiment() != null){
+        if (object.getExperiment() != null && (!(object.getExperiment() instanceof IntactExperiment)
+                || intactDAO.getExperimentDao().isTransient((IntactExperiment)object.getExperiment()))){
            Experiment exp = object.getExperiment();
-            IntactPublication intactCuratedPub = null;
+           IntactPublication intactCuratedPub = null;
             // if the experiment has a publication, we may have to persist the publication first
-           if (exp.getPublication() != null){
+           if (exp.getPublication() != null && (!(exp.getPublication() instanceof IntactPublication)
+                   || intactDAO.getPublicationDao().isTransient((IntactPublication)exp.getPublication()))){
                Publication pub = exp.getPublication();
                // create publication first in the database if not done
                if (pub != null){

@@ -77,7 +77,7 @@ public class ExperimentService implements IntactService<Experiment>{
         Publication pub = object.getPublication();
         // create publication first in the database if not done
         if (pub != null){
-            // transcient publication to persist first
+            // transient publication to persist first
             if (!(pub instanceof IntactPublication)
                     || intactDAO.getPublicationDao().isTransient((IntactPublication)pub)){
                 IntactPublication intactCuratedPub = new IntactPublication();
