@@ -81,10 +81,10 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
         // if the interaction has an experiment, we may have to persist the experiment first
         if (object.getExperiment() != null){
            Experiment exp = object.getExperiment();
+            IntactPublication intactCuratedPub = null;
             // if the experiment has a publication, we may have to persist the publication first
            if (exp.getPublication() != null){
                Publication pub = exp.getPublication();
-               IntactPublication intactCuratedPub = null;
                // create publication first in the database if not done
                if (pub != null){
                    intactCuratedPub = new IntactPublication();
@@ -92,13 +92,13 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
                    intactDAO.getPublicationDao().persist(intactCuratedPub);
                }
-
-               curatedExperiment = new IntactExperiment(intactCuratedPub);
-               ExperimentCloner.copyAndOverrideExperimentProperties(exp, curatedExperiment);
-               // create experiment in database if not done
-               intactDAO.getExperimentDao().persist(curatedExperiment);
-               object.setExperimentAndAddInteractionEvidence(curatedExperiment);
            }
+
+            curatedExperiment = new IntactExperiment(intactCuratedPub);
+            ExperimentCloner.copyAndOverrideExperimentProperties(exp, curatedExperiment);
+            // create experiment in database if not done
+            intactDAO.getExperimentDao().persist(curatedExperiment);
+            object.setExperimentAndAddInteractionEvidence(curatedExperiment);
         }
 
         // we can synchronize the interaction with the database now
