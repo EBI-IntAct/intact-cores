@@ -259,7 +259,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             this.imexId = new DefaultXref(imexDatabase, identifier, imexPrimaryQualifier);
             xrefs.add(this.imexId);
 
-            this.curationDepth = CurationDepth.IMEx;
+            setCurationDepth(CurationDepth.IMEx);
         }
         else if (this.imexId != null){
             throw new IllegalArgumentException("The imex id has to be non null.");
