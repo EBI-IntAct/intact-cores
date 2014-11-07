@@ -312,10 +312,10 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     private void processRemovedAnnotationEvent(Annotation removed) {
         if (url != null && url.equals(removed)){
-            url = null;
+            url = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), Annotation.URL_MI, Annotation.URL);
         }
         else if (postalAddress != null && postalAddress.equals(removed)){
-            postalAddress = null;
+            postalAddress = AnnotationUtils.collectFirstAnnotationWithTopic(getAnnotations(), null, Annotation.POSTAL_ADDRESS);
         }
     }
 
