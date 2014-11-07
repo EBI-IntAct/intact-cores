@@ -377,7 +377,7 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
     }
 
     protected void setDbIdentificationMethods(Collection<CvTerm> persistentIdentificationMethods) {
-        this.persistentIdentificationMethods = persistentIdentificationMethods != null ? identificationMethods : new ArrayList<CvTerm>();
+        this.persistentIdentificationMethods = persistentIdentificationMethods != null ? persistentIdentificationMethods : new ArrayList<CvTerm>();
         this.identificationMethods = null;
     }
 
