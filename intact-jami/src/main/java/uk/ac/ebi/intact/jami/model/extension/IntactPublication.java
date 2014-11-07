@@ -876,6 +876,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
                 }
                 else{
                     this.xrefs.addOnly(ref);
+                    processAddedXrefEvent(ref);
                 }
             }
         }
