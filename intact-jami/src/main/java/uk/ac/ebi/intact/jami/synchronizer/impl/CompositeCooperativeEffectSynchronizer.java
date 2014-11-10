@@ -143,4 +143,10 @@ public class CompositeCooperativeEffectSynchronizer implements CooperativeEffect
             return this.context.getPreAssemblySynchronizer().convertToPersistentObject(preassembly);
         }
     }
+
+    @Override
+    public void flush() {
+        this.context.getPreAssemblySynchronizer().flush();
+        this.context.getAllosterySynchronizer().flush();
+    }
 }

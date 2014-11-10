@@ -141,4 +141,10 @@ public class CompositeParticipantSynchronizer implements ParticipantSynchronizer
             return this.context.getModelledParticipantSynchronizer().convertToPersistentObject((ModelledParticipant)term);
         }
     }
+
+    @Override
+    public void flush() {
+        this.context.getModelledParticipantSynchronizer().flush();
+        this.context.getParticipantEvidenceSynchronizer().flush();
+    }
 }

@@ -336,4 +336,17 @@ public class CompositeInteractorSynchronizer implements InteractorFetcher<Intera
     public Collection<Interactor> fetchByIdentifiers(Collection<String> identifiers) throws BridgeFailedException {
         return ((InteractorFetcher<Interactor>)this.context.getInteractorTypeSynchronizer()).fetchByIdentifiers(identifiers);
     }
+
+    @Override
+    public void flush() {
+        this.context.getProteinSynchronizer().flush();
+        this.context.getNucleicAcidSynchronizer().flush();
+        this.context.getPolymerSynchronizer().flush();
+        this.context.getBioactiveEntitySynchronizer().flush();
+        this.context.getGeneSynchronizer().flush();
+        this.context.getMoleculeSynchronizer().flush();
+        this.context.getComplexSynchronizer().flush();
+        this.context.getInteractorPoolSynchronizer().flush();
+        this.context.getInteractorBaseSynchronizer().flush();
+    }
 }

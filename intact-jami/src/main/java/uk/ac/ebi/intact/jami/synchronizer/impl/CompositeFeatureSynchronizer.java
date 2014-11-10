@@ -155,4 +155,10 @@ public class CompositeFeatureSynchronizer implements IntactDbSynchronizer<Featur
             return this.context.getFeatureEvidenceSynchronizer().convertToPersistentObject(featureEvidence);
         }
     }
+
+    @Override
+    public void flush() {
+        this.context.getFeatureEvidenceSynchronizer().flush();
+        this.context.getModelledFeatureSynchronizer().flush();
+    }
 }
