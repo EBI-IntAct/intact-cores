@@ -105,13 +105,13 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
 
     public T update(T objToUpdate) throws FinderException,PersisterException,SynchronizerException{
         T objInSync = synchronizeAndUpdateObjectProperties(objToUpdate);
-        entityManager.flush();
+        getDbSynchronizer().flush();
         return objInSync;
     }
 
     public void persist(T objToPersist) throws FinderException,PersisterException,SynchronizerException{
         synchronizeAndUpdateObjectProperties(objToPersist);
-        entityManager.flush();
+        getDbSynchronizer().flush();
     }
 
     public void persistAll(Collection<T> objsToPersist) throws FinderException,PersisterException,SynchronizerException{
@@ -122,7 +122,7 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
 
     public void delete(T objToDelete) {
         getDbSynchronizer().delete(objToDelete);
-        entityManager.flush();
+        getDbSynchronizer().flush();
     }
 
     public void deleteAll(Collection<T> objsToDelete) {

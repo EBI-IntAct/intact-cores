@@ -103,4 +103,9 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
      * @return the new object instance that is fully persistable but IS NOT synchronized with existing persistent objects in the database
      */
     public T convertToPersistentObject(I object) throws SynchronizerException, PersisterException, FinderException;;
+
+    /**
+     * The synchronizer will flush to the database any pending data changes
+     */
+    public void flush();
 }

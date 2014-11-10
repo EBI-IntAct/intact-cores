@@ -69,7 +69,7 @@ public class SourceService implements IntactService<Source>{
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getSourceSynchronizer().synchronize(object, true);
 
-        intactDAO.getEntityManager().flush();
+        this.intactDAO.getSynchronizerContext().getSourceSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -79,13 +79,14 @@ public class SourceService implements IntactService<Source>{
             // we can synchronize the complex with the database now
             intactDAO.getSynchronizerContext().getSourceSynchronizer().synchronize(source, true);
         }
+        this.intactDAO.getSynchronizerContext().getSourceSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Source object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getSourceSynchronizer().delete(object);
-        intactDAO.getEntityManager().flush();
+        this.intactDAO.getSynchronizerContext().getSourceSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -94,5 +95,6 @@ public class SourceService implements IntactService<Source>{
         for (Source source : objects){
             this.intactDAO.getSynchronizerContext().getSourceSynchronizer().delete(source);
         }
+        this.intactDAO.getSynchronizerContext().getSourceSynchronizer().flush();
     }
 }

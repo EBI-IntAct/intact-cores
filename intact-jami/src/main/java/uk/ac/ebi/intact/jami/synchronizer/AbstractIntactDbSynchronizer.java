@@ -635,4 +635,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @return true if the object is dirty and needs to be synchronized before putting anything in the cache
      */
     protected abstract boolean isObjectDirty(I originalObject);
+
+    @Override
+    public void flush() {
+        getEntityManager().flush();
+        clearCache();
+    }
 }

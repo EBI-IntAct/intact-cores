@@ -65,7 +65,7 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
 
         // we can synchronize the complex with the database now
         getIntactDao().getSynchronizerContext().getComplexSynchronizer().synchronize(object, true);
-        getIntactDao().getEntityManager().flush();
+        getIntactDao().getSynchronizerContext().getComplexSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -75,13 +75,14 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
             // we can synchronize the complex with the database now
             getIntactDao().getSynchronizerContext().getComplexSynchronizer().synchronize(interaction, true);
         }
+        getIntactDao().getSynchronizerContext().getComplexSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Complex object) throws PersisterException, FinderException, SynchronizerException {
         getAfterCommitExecutor().registerDaoForSynchronization(getIntactDao());
         getIntactDao().getSynchronizerContext().getComplexSynchronizer().delete(object);
-        getIntactDao().getEntityManager().flush();
+        getIntactDao().getSynchronizerContext().getComplexSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -90,6 +91,7 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
         for (Complex interaction : objects){
             getIntactDao().getSynchronizerContext().getComplexSynchronizer().delete(interaction);
         }
+        getIntactDao().getSynchronizerContext().getComplexSynchronizer().flush();
     }
 
     @Override

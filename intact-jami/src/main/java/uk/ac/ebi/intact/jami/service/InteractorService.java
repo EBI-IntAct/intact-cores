@@ -53,7 +53,7 @@ public class InteractorService implements IntactService<Interactor>{
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         // we can synchronize the complex with the database now
         intactDAO.getSynchronizerContext().getInteractorSynchronizer().synchronize(object, true);
-        intactDAO.getEntityManager().flush();
+        this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -78,13 +78,14 @@ public class InteractorService implements IntactService<Interactor>{
             // we can synchronize the complex with the database now
             intactDAO.getSynchronizerContext().getInteractorSynchronizer().synchronize(interactor, true);
         }
+        this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void delete(Interactor object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().delete(object);
-        intactDAO.getEntityManager().flush();
+        this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -93,5 +94,6 @@ public class InteractorService implements IntactService<Interactor>{
         for (Interactor interactor : objects){
             this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().delete(interactor);
         }
+        this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().flush();
     }
 }

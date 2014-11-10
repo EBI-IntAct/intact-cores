@@ -70,7 +70,7 @@ public class ExperimentService implements IntactService<Experiment>{
     public void saveOrUpdate(Experiment object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         saveExperiment(object);
-        intactDAO.getEntityManager().flush();
+        this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().flush();
     }
 
     protected void saveExperiment(Experiment object) throws FinderException, SynchronizerException, PersisterException {
@@ -97,13 +97,14 @@ public class ExperimentService implements IntactService<Experiment>{
         for (Experiment exp : objects){
             saveExperiment(exp);
         }
+        this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Experiment object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
         this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().delete(object);
-        intactDAO.getEntityManager().flush();
+        this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().flush();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -112,5 +113,6 @@ public class ExperimentService implements IntactService<Experiment>{
         for (Experiment exp : objects){
             this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().delete(exp);
         }
+        this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().flush();
     }
 }
