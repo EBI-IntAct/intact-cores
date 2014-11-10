@@ -16,7 +16,7 @@ import java.util.Date;
 @Table( name = "ia_lifecycle_event" )
 public class PublicationLifeCycleEvent extends AbstractLifeCycleEvent {
 
-    public PublicationLifeCycleEvent() {
+    protected PublicationLifeCycleEvent() {
     }
 
     public PublicationLifeCycleEvent(LifeCycleEventType event, User who, Date when, String note) {

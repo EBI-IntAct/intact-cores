@@ -298,7 +298,7 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
                 this.acRef = new DefaultXref(intactContext.getIntactConfiguration().getDefaultInstitution(), getAc(), CvTermUtils.createIdentityQualifier());
             }
             else{
-                this.acRef = new DefaultXref(new DefaultCvTerm("unknwon"), getAc(), CvTermUtils.createIdentityQualifier());
+                this.acRef = new DefaultXref(new DefaultCvTerm("unknown"), getAc(), CvTermUtils.createIdentityQualifier());
             }
             this.identifiers.addOnly(this.acRef);
         }

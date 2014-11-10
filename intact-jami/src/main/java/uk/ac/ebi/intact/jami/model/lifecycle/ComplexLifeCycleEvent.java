@@ -16,7 +16,7 @@ import java.util.Date;
 @Table( name = "ia_complex_lcycle_evt" )
 public class ComplexLifeCycleEvent extends AbstractLifeCycleEvent {
 
-    public ComplexLifeCycleEvent() {
+    protected ComplexLifeCycleEvent() {
     }
 
     public ComplexLifeCycleEvent(LifeCycleEventType event, User who, Date when, String note) {
