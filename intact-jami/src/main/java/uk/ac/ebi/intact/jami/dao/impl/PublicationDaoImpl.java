@@ -545,7 +545,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
 
     public Collection<IntactPublication> getByLifecycleEvent(String evtName, int first, int max){
         Query query;
-        if (evtName != null){
+        if (evtName == null){
             query = getEntityManager().createQuery("select p from IntactPublication p "  +
                     "where p.lifecycleEvents is empty order by p.ac");
         }
@@ -563,7 +563,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
 
     public Collection<IntactPublication> getByStatus(String statusName, int first, int max){
         Query query;
-        if (statusName != null){
+        if (statusName == null){
             query = getEntityManager().createQuery("select p from IntactPublication p "  +
                     "where p.cvStatus is null order by p.ac");
         }

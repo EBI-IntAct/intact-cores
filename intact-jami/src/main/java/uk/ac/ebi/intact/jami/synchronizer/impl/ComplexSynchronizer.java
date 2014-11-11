@@ -179,6 +179,8 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         prepareLifeCycleEvents(intactComplex, true);
         // then prepare experiment for backward compatibility
         prepareExperiments(intactComplex, true);
+        // then prepare source
+        prepareSource(intactComplex, true);
     }
 
     @Override
@@ -218,6 +220,17 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         prepareLifeCycleEvents(intactComplex, false);
         // then prepare experiment for backward compatibility
         prepareExperiments(intactComplex, false);
+        // then check source
+        prepareSource(intactComplex, false);
+    }
+
+    protected void prepareSource(IntactComplex intactSource, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
+        Source source = intactSource.getSource();
+        if (source != null){
+            intactSource.setSource(enableSynchronization ?
+                    getContext().getSourceSynchronizer().synchronize(source, true) :
+                    getContext().getSourceSynchronizer().convertToPersistentObject(source));
+        }
     }
 
     @Override
