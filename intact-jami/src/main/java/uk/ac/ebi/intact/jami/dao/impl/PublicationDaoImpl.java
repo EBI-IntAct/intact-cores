@@ -552,7 +552,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         else{
             query = getEntityManager().createQuery("select distinct p from IntactPublication p "  +
                     "join p.lifecycleEvents as l "  +
-                    "join l.event as e "  +
+                    "join l.cvEvent as e "  +
                     "where e.shortName = :name order by p.ac");
             query.setParameter("name", evtName);
         }
@@ -565,11 +565,11 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
         Query query;
         if (statusName != null){
             query = getEntityManager().createQuery("select p from IntactPublication p "  +
-                    "where p.status is null order by p.ac");
+                    "where p.cvStatus is null order by p.ac");
         }
         else{
             query = getEntityManager().createQuery("select p from IntactPublication p "  +
-                    "join p.status as s "  +
+                    "join p.cvStatus as s "  +
                     "where s.shortName = :name order by p.ac");
             query.setParameter("name", statusName);
         }

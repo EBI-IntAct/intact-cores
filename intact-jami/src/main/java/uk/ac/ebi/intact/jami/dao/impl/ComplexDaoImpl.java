@@ -69,7 +69,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         else{
             query = getEntityManager().createQuery("select distinct p from IntactComplex p "  +
                     "join p.lifecycleEvents as l "  +
-                    "join l.event as e "  +
+                    "join l.cvEvent as e "  +
                     "where e.shortName = :name order by p.ac");
             query.setParameter("name", evtName);
         }
@@ -82,11 +82,11 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         Query query;
         if (statusName != null){
             query = getEntityManager().createQuery("select p from IntactComplex p "  +
-                    "where p.status is null order by p.ac");
+                    "where p.cvStatus is null order by p.ac");
         }
         else{
             query = getEntityManager().createQuery("select p from IntactComplex p "  +
-                    "join p.status as s "  +
+                    "join p.cvStatus as s "  +
                     "where s.shortName = :name order by p.ac");
             query.setParameter("name", statusName);
         }
