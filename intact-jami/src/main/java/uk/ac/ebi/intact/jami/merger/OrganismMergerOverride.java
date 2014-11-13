@@ -38,7 +38,7 @@ public class OrganismMergerOverride extends IntactDbMergerOverride<Organism, Int
         return null;
     }
 
-    public CvTermEnricher<CvTerm> getCvTermEmricher() {
+    public CvTermEnricher<CvTerm> getCvTermEnricher() {
         return null;
     }
 }
