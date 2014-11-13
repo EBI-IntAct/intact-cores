@@ -64,7 +64,7 @@ public class IntactUtils {
     public static final String PUBLICATION_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvPublicationStatus";
     public static final String LIFECYCLE_EVENT_OBJCLASS ="uk.ac.ebi.intact.model.CvLifecycleEvent";
 
-    public static String generateAutomaticInteractionEvidenceShortlabelFor(IntactInteractionEvidence intactInteraction, int maxLength){
+    public static String generateAutomaticInteractionEvidenceShortlabelFor(InteractionEvidence intactInteraction, int maxLength){
         if (intactInteraction.getParticipants().isEmpty()){
             return "unknown";
         }
@@ -211,7 +211,7 @@ public class IntactUtils {
         return label1;
     }
 
-    public static String generateAutomaticComplexShortlabelFor(IntactComplex intactInteraction, int maxLength){
+    public static String generateAutomaticComplexShortlabelFor(Complex intactInteraction, int maxLength){
         String organismName = null;
         if (intactInteraction.getOrganism() != null){
             organismName=(intactInteraction.getOrganism().getCommonName() != null ? intactInteraction.getOrganism().getCommonName().trim().toLowerCase() : Integer.toString(intactInteraction.getOrganism().getTaxId()));
