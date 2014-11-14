@@ -111,6 +111,7 @@ public class IntactUtils {
                  firstAlphabetical = name;
             }
             else if (name.compareTo(firstAlphabetical) < 0){
+                secondAlphabetical = firstAlphabetical;
                 firstAlphabetical = name;
             }
             else if (secondAlphabetical == null){
