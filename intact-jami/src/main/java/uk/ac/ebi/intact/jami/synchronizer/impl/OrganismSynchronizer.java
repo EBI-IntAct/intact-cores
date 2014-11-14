@@ -363,13 +363,13 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         if (intactOrganism.getCommonName() == null){
             intactOrganism.setCommonName(intactOrganism.getScientificName() != null ? intactOrganism.getScientificName() : Integer.toString(intactOrganism.getTaxId()));
             if (intactOrganism.getCellType() != null){
-                intactOrganism.setCommonName(intactOrganism.getCommonName()+"-"+intactOrganism.getCellType().getShortName());
+                intactOrganism.setCommonName(intactOrganism.getCommonName()+"_"+intactOrganism.getCellType().getShortName());
             }
             else if (intactOrganism.getTissue() != null){
-                intactOrganism.setCommonName(intactOrganism.getCommonName()+"-"+intactOrganism.getTissue().getShortName());
+                intactOrganism.setCommonName(intactOrganism.getCommonName()+"_"+intactOrganism.getTissue().getShortName());
             }
             else if (intactOrganism.getTissue() != null){
-                intactOrganism.setCommonName(intactOrganism.getCommonName()+"-"+intactOrganism.getCompartment().getShortName());
+                intactOrganism.setCommonName(intactOrganism.getCommonName()+"_"+intactOrganism.getCompartment().getShortName());
             }
         }
         // truncate if necessary
