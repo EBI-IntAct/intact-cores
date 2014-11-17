@@ -5,7 +5,9 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
+import uk.ac.ebi.intact.jami.model.IntactPrimaryObject;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
+import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -28,6 +30,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     private Class<? extends T> intactClass;
 
     private IntactDbMerger<I,T> intactMerger;
+
+    private DbSynchronizerListener listener;
 
     public AbstractIntactDbSynchronizer(SynchronizerContext context, Class<? extends T> intactClass){
         if (context == null){
@@ -256,6 +260,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         deleteRelatedProperties(persistedObject);
         // remove instance to be deleted
         this.entityManager.remove(persistedObject);
+        if (listener != null
+                && persistedObject instanceof IntactPrimaryObject){
+            listener.onDeleted((IntactPrimaryObject)persistedObject);
+        }
     }
 
     /**
@@ -287,6 +295,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             if (reloaded != null){
                 // cache object to persist if allowed
                 storeInCache((I)reloaded, intactObject, reloaded);
+                if (listener != null
+                        && intactObject instanceof IntactPrimaryObject){
+                    listener.onMerged((IntactPrimaryObject)intactObject, (IntactPrimaryObject)reloaded);
+                }
                 return reloaded;
             }
             // the reloaded object does not exist which means the object is in fact transient
@@ -306,6 +318,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // merge
             T mergedObject = this.entityManager.merge(intactObject);
+            if (listener != null
+                    && intactObject instanceof IntactPrimaryObject){
+                listener.onMerged((IntactPrimaryObject)intactObject, (IntactPrimaryObject)mergedObject);
+            }
             // cache object to persist if allowed
             storeInCache((I)mergedObject, intactObject, mergedObject);
             // second round of synchronization in case we need to initialise collection that were not initialised
@@ -378,7 +394,19 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 // then set userContext
                 mergedObject.setLocalUserContext(getContext().getUserContext());
 
+                if (listener != null
+                        && persistentObject instanceof IntactPrimaryObject){
+                    if (((IntactPrimaryObject)persistentObject).getAc() == null
+                            && ((IntactPrimaryObject)existingInstance).getAc() != null){
+                        listener.onTransientMergedWithDbInstance((IntactPrimaryObject)persistentObject, (IntactPrimaryObject)existingInstance);
+                    }
+                }
+
                 return mergedObject;
+            }
+            if (listener != null
+                    && persistentObject instanceof IntactPrimaryObject){
+                listener.onReplacedWithDbInstance((IntactPrimaryObject)persistentObject, (IntactPrimaryObject)existingInstance);
             }
             // we only return the existing instance if no merge allowed
             return existingInstance;
@@ -405,6 +433,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      */
     protected void persistObject(T existingInstance) {
         this.entityManager.persist(existingInstance);
+
+        if (this.listener != null && existingInstance instanceof IntactPrimaryObject){
+           this.listener.onPersisted((IntactPrimaryObject)existingInstance);
+        }
     }
 
     /**
@@ -640,5 +672,15 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     public void flush() {
         getEntityManager().flush();
         clearCache();
+    }
+
+    @Override
+    public DbSynchronizerListener getListener() {
+        return this.listener;
+    }
+
+    @Override
+    public void setListener(DbSynchronizerListener listener) {
+        this.listener = listener;
     }
 }

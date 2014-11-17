@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.synchronizer;
 
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.model.audit.Auditable;
+import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 
 import java.util.Collection;
 
@@ -108,4 +109,16 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
      * The synchronizer will flush to the database any pending data changes
      */
     public void flush();
+
+    /**
+     *
+     * @return the db synchronizer listener if not null
+     */
+    public DbSynchronizerListener getListener();
+
+    /**
+     *
+     * @param listener : tye db listener
+     */
+    public void setListener(DbSynchronizerListener listener);
 }
