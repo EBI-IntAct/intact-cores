@@ -84,4 +84,24 @@ public class DbSynchronizerStatisticsReporter implements DbSynchronizerListener{
             deletedCounts.put(object.getClass(), 1);
         }
     }
+
+    public Map<Class, Integer> getPersistedCounts() {
+        return persistedCounts;
+    }
+
+    public Map<Class, Integer> getDeletedCounts() {
+        return deletedCounts;
+    }
+
+    public Map<Class, Integer> getMergedCounts() {
+        return mergedCounts;
+    }
+
+    public Map<Class, Integer> getMergedTransientCounts() {
+        return mergedTransientCounts;
+    }
+
+    public Map<Class, Integer> getTransientReplacedCounts() {
+        return transientReplacedCounts;
+    }
 }
