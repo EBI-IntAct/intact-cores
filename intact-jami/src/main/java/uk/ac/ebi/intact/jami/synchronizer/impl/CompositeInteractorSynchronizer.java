@@ -10,6 +10,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.InteractorSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -348,5 +349,23 @@ public class CompositeInteractorSynchronizer implements InteractorFetcher<Intera
         this.context.getComplexSynchronizer().flush();
         this.context.getInteractorPoolSynchronizer().flush();
         this.context.getInteractorBaseSynchronizer().flush();
+    }
+
+    @Override
+    public DbSynchronizerListener getListener() {
+        return this.context.getSynchronizerListener();
+    }
+
+    @Override
+    public void setListener(DbSynchronizerListener listener) {
+        this.context.getProteinSynchronizer().setListener(listener);
+        this.context.getNucleicAcidSynchronizer().setListener(listener);
+        this.context.getPolymerSynchronizer().setListener(listener);
+        this.context.getBioactiveEntitySynchronizer().setListener(listener);
+        this.context.getGeneSynchronizer().setListener(listener);
+        this.context.getMoleculeSynchronizer().setListener(listener);
+        this.context.getComplexSynchronizer().setListener(listener);
+        this.context.getInteractorPoolSynchronizer().setListener(listener);
+        this.context.getInteractorBaseSynchronizer().setListener(listener);
     }
 }

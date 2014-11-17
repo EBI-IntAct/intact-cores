@@ -8,6 +8,7 @@ import uk.ac.ebi.intact.jami.synchronizer.ParticipantSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,11 +35,11 @@ public class CompositeParticipantSynchronizer implements ParticipantSynchronizer
     public AbstractIntactParticipant find(Participant term) throws FinderException {
         // experimental
         if (term instanceof ParticipantEvidence){
-            return this.context.getParticipantEvidenceSynchronizer().find((ParticipantEvidence)term);
+            return this.context.getParticipantEvidenceSynchronizer().find((ParticipantEvidence) term);
         }
         // modelled
         else {
-            return this.context.getModelledParticipantSynchronizer().find((ModelledParticipant)term);
+            return this.context.getModelledParticipantSynchronizer().find((ModelledParticipant) term);
         }
     }
 
@@ -146,5 +147,16 @@ public class CompositeParticipantSynchronizer implements ParticipantSynchronizer
     public void flush() {
         this.context.getModelledParticipantSynchronizer().flush();
         this.context.getParticipantEvidenceSynchronizer().flush();
+    }
+
+    @Override
+    public DbSynchronizerListener getListener() {
+        return this.context.getSynchronizerListener();
+    }
+
+    @Override
+    public void setListener(DbSynchronizerListener listener) {
+        this.context.getModelledParticipantSynchronizer().setListener(listener);
+        this.context.getParticipantEvidenceSynchronizer().setListener(listener);
     }
 }

@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.synchronizer.impl.*;
+import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.EntityManager;
@@ -30,6 +31,8 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private EntityManager entityManager;
 
     private UserContext userContext;
+
+    private DbSynchronizerListener listener;
 
     // cv synchronizer
     private IntactDbSynchronizer<CvTerm, IntactCvTerm> generalCvSynchronizer;
@@ -856,6 +859,75 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.userContext;
     }
 
+    @Override
+    public DbSynchronizerListener getSynchronizerListener() {
+        return this.listener;
+    }
+
+    @Override
+    public void initialiseDbSynchronizerListener(DbSynchronizerListener listener) {
+        this.listener = listener;
+        initListener(this.databaseSynchronizer);
+        initListener(this.qualifierSynchronizer);
+        initListener(this.topicSynchronizer);
+        initListener(this.aliasTypeSynchronizer);
+        initListener(this.unitSynchronizer);
+        initListener(this.featureTypeSynchronizer);
+        initListener(this.experimentalRoleSynchronizer);
+        initListener(this.biologicalRoleSynchronizer);
+        initListener(this.interactionDetectionMethodSynchronizer);
+        initListener(this.interactionTypeSynchronizer);
+        initListener(this.participantDetectionMethodSynchronizer);
+        initListener(this.experimentalPreparationSynchronizer);
+        initListener(this.interactorTypeSynchronizer);
+        initListener(this.rangeStatusSynchronizer);
+        initListener(this.confidenceTypeSynchronizer);
+        initListener(this.parameterTypeSynchronizer);
+        initListener(this.cellTypeSynchronizer);
+        initListener(this.tissueSynchronizer);
+        initListener(this.featureDetectionMethodSynchronizer);
+        initListener(this.lifecycleStatusSynchronizer);
+        initListener(this.lifecycleEventSynchronizer);
+        initListener(this.sourceSynchronizer);
+        initListener(this.aliasSynchronizer);
+        initListener(this.annotationSynchronizer);
+        initListener(this.xrefSynchronizer);
+        initListener(this.complexXrefSynchronizer);
+        initListener(this.cooperativeEffectSynchronizer);
+        initListener(this.preAssemblySynchronizer);
+        initListener(this.allosterySynchronizer);
+        initListener(this.interactorSynchronizer);
+        initListener(this.interactorBaseSynchronizer);
+        initListener(this.polymerSynchronizer);
+        initListener(this.complexSynchronizer);
+        initListener(this.interactorPoolSynchronizer);
+        initListener(this.causalRelationshipSynchronizer);
+        initListener(this.confidenceSynchronizer);
+        initListener(this.parameterSynchronizer);
+        initListener(this.organismSynchronizer);
+        initListener(this.rangeSynchronizer);
+        initListener(this.modelledRangeSynchronizer);
+        initListener(this.experimentalRangeSynchronizer);
+        initListener(this.preferenceSynchronizer);
+        initListener(this.roleSynchronizer);
+        initListener(this.userSynchronizer);
+        initListener(this.publicationSynchronizer);
+        initListener(this.experimentSynchronizer);
+        initListener(this.interactionEvidenceSynchronizer);
+        initListener(this.cooperativityEvidenceSynchronizer);
+        initListener(this.lifecycleSynchronizer);
+        initListener(this.featureSynchronizer);
+        initListener(this.featureEvidenceSynchronizer);
+        initListener(this.modelledFeatureSynchronizer);
+        initListener(this.variableParameterSynchronizer);
+        initListener(this.variableParameterValueSynchronizer);
+        initListener(this.variableParameterValueSetSynchronizer);
+        initListener(this.participantSynchronizer);
+        initListener(this.modelledParticipantSynchronizer);
+        initListener(this.participantEvidenceSynchronizer);
+        initListener(this.generalCvSynchronizer);
+    }
+
     public void clearCache() {
         clearCache(this.databaseSynchronizer);
         clearCache(this.qualifierSynchronizer);
@@ -991,6 +1063,12 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private void clearCache(IntactDbSynchronizer delegate){
         if (delegate != null){
             delegate.clearCache();
+        }
+    }
+
+    private void initListener(IntactDbSynchronizer delegate){
+        if (delegate != null){
+            delegate.setListener(listener);
         }
     }
 }

@@ -1,15 +1,16 @@
 package uk.ac.ebi.intact.jami.context;
 
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
-import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 
 import javax.persistence.EntityManager;
 
@@ -253,4 +254,8 @@ public interface SynchronizerContext {
     public ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer();
 
     public UserContext getUserContext();
+
+    public DbSynchronizerListener getSynchronizerListener();
+
+    public void initialiseDbSynchronizerListener(DbSynchronizerListener listener);
 }

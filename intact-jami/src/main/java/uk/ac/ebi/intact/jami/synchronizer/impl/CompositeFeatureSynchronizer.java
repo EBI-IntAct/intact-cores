@@ -13,6 +13,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -160,5 +161,16 @@ public class CompositeFeatureSynchronizer implements IntactDbSynchronizer<Featur
     public void flush() {
         this.context.getFeatureEvidenceSynchronizer().flush();
         this.context.getModelledFeatureSynchronizer().flush();
+    }
+
+    @Override
+    public DbSynchronizerListener getListener() {
+        return this.context.getSynchronizerListener();
+    }
+
+    @Override
+    public void setListener(DbSynchronizerListener listener) {
+        this.context.getModelledFeatureSynchronizer().setListener(listener);
+        this.context.getFeatureEvidenceSynchronizer().setListener(listener);
     }
 }

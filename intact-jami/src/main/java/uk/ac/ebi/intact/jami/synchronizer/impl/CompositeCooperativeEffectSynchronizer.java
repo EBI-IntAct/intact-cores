@@ -13,6 +13,7 @@ import uk.ac.ebi.intact.jami.synchronizer.CooperativeEffectSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -148,5 +149,16 @@ public class CompositeCooperativeEffectSynchronizer implements CooperativeEffect
     public void flush() {
         this.context.getPreAssemblySynchronizer().flush();
         this.context.getAllosterySynchronizer().flush();
+    }
+
+    @Override
+    public DbSynchronizerListener getListener() {
+        return this.context.getSynchronizerListener();
+    }
+
+    @Override
+    public void setListener(DbSynchronizerListener listener) {
+        this.context.getPreAssemblySynchronizer().setListener(listener);
+        this.context.getAllosterySynchronizer().setListener(listener);
     }
 }
