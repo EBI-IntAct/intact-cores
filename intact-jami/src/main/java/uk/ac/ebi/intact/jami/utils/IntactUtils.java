@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.utils;
 
+import org.hibernate.Hibernate;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AliasUtils;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
@@ -79,7 +80,7 @@ public class IntactUtils {
         for (ParticipantEvidence participant : intactInteraction.getParticipants()){
             // extract participant name (gene name or shortlabel if no gene names)
             Alias geneName = AliasUtils.collectFirstAliasWithType(participant.getInteractor().getAliases(), Alias.GENE_NAME_MI, Alias.GENE_NAME);
-            String name = (geneName != null ? geneName.getName() : participant.getInteractor().getShortName()).trim().toLowerCase().replaceAll("-", "_"); 
+            String name = (geneName != null ? geneName.getName() : participant.getInteractor().getShortName()).trim().toLowerCase().replaceAll("-", "_");
             // bait should be first label
             if (ParticipantUtils.doesParticipantHaveExperimentalRole(participant, Participant.BAIT_ROLE_MI, Participant.BAIT_ROLE_MI)){
                 if (label1 == null){
@@ -108,7 +109,7 @@ public class IntactUtils {
                 }
             }
             else if (firstAlphabetical == null){
-                 firstAlphabetical = name;
+                firstAlphabetical = name;
             }
             else if (name.compareTo(firstAlphabetical) < 0){
                 secondAlphabetical = firstAlphabetical;
@@ -525,12 +526,486 @@ public class IntactUtils {
 
     public static CvTerm extractMostCommonParticipantDetectionMethodFrom(Experiment exp){
         if (exp instanceof IntactExperiment){
-             IntactExperiment intactExp = (IntactExperiment)exp;
+            IntactExperiment intactExp = (IntactExperiment)exp;
             if (intactExp.getParticipantIdentificationMethod() != null){
-                 return intactExp.getParticipantIdentificationMethod();
+                return intactExp.getParticipantIdentificationMethod();
             }
         }
         return ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp);
 
+    }
+
+    public static void initialiseCvTerm(IntactCvTerm cv){
+        if (!cv.areXrefsInitialized()){
+            // initialise xrefs
+            Hibernate.initialize(cv.getDbXrefs());
+        }
+        if (!cv.areAnnotationsInitialized()){
+            // initialise annotations
+            Hibernate.initialize(cv.getDbAnnotations());
+        }
+        if (!cv.areSynonymsInitialized()){
+            // initialise synonyms
+            Hibernate.initialize(cv.getSynonyms());
+        }
+    }
+
+    public static void initialiseSource(IntactSource cv){
+        if (!cv.areXrefsInitialized()){
+            // initialise xrefs
+            Hibernate.initialize(cv.getDbXrefs());
+        }
+        if (!cv.areAnnotationsInitialized()){
+            // initialise annotations
+            Hibernate.initialize(cv.getDbAnnotations());
+        }
+        if (!cv.areSynonymsInitialized()){
+            // initialise synonyms
+            Hibernate.initialize(cv.getSynonyms());
+        }
+    }
+
+    public static void initialiseOntologyTerm(IntactCvTerm cv){
+        initialiseCvTerm(cv);
+        for (CvTerm child : cv.getChildren()){
+            initialiseOntologyTerm((IntactCvTerm) child);
+        }
+        for (CvTerm parent : cv.getParents()){
+            initialiseOntologyTerm((IntactCvTerm)parent);
+        }
+    }
+
+    public static void initialiseAlias(AbstractIntactAlias alias){
+        if (alias.getType() != null){
+            // initialise type
+            initialiseCvTerm((IntactCvTerm)alias.getType());
+        }
+    }
+
+    public static void initialiseXref(AbstractIntactXref xref){
+        // initialise db
+        initialiseCvTerm((IntactCvTerm)xref.getDatabase());
+        if (xref.getQualifier() != null){
+            // initialise qualifier
+            initialiseCvTerm((IntactCvTerm)xref.getQualifier());
+        }
+        if (xref instanceof ComplexGOXref){
+            ComplexGOXref goRef = (ComplexGOXref)xref;
+            if (goRef.getEvidenceType() != null){
+                // initialise evidence type
+                initialiseCvTerm((IntactCvTerm)goRef.getEvidenceType());
+            }
+        }
+    }
+
+    public static void initialiseAnnotation(AbstractIntactAnnotation annotation){
+        // initialise topic
+        initialiseCvTerm((IntactCvTerm)annotation.getTopic());
+    }
+
+    public static void initialiseParameter(AbstractIntactParameter param){
+        // initialise type
+        initialiseCvTerm((IntactCvTerm)param.getType());
+        if (param.getUnit() != null){
+            // initialise unit
+            initialiseCvTerm((IntactCvTerm)param.getUnit());
+        }
+    }
+
+    public static void initialiseConfidence(AbstractIntactConfidence conf){
+        // initialise type
+        initialiseCvTerm((IntactCvTerm)conf.getType());
+    }
+
+    public static void initialiseVariableParameterValueSet(IntactVariableParameterValueSet set){
+        if (!set.areVariableParameterValuesInitialized()){
+           Hibernate.initialize(set);
+        }
+    }
+
+    public static void initialiseVariableParameter(IntactVariableParameter param){
+        if (param.getUnit() != null){
+            // initialise unit
+            initialiseCvTerm((IntactCvTerm) param.getUnit());
+        }
+        // initialise values
+        if (param.areVariableParameterValuesInitialized()){
+           Hibernate.initialize(param.getVariableValues());
+        }
+    }
+
+    public static void initialiseCausalRelationship(AbstractIntactCausalRelationship rel){
+        // initialise relation type
+        initialiseCvTerm((IntactCvTerm)rel.getRelationType());
+        // initialise target
+        if (rel.getTarget() instanceof ParticipantEvidence){
+            initialiseParticipantEvidence((IntactParticipantEvidence)rel.getTarget());
+        }
+        else if (rel.getTarget() instanceof ModelledParticipant){
+            initialiseModelledParticipant((IntactModelledParticipant) rel.getTarget());
+        }
+    }
+
+    public static void initialiseCooperativityEvidence(IntactCooperativityEvidence evidence){
+        // initialise publication
+        initialisePublication((IntactPublication)evidence.getPublication());
+        // initialise evidence
+        for (CvTerm cv : evidence.getEvidenceMethods()){
+            initialiseCvTerm((IntactCvTerm)cv);
+        }
+    }
+
+    public static void initialiseCooperativeEffect(AbstractIntactCooperativeEffect cooperativeEffect){
+        // initialise outcome
+        initialiseCvTerm((IntactCvTerm)cooperativeEffect.getOutCome());
+        // initialise response
+        if (cooperativeEffect.getResponse() != null){
+            initialiseCvTerm((IntactCvTerm)cooperativeEffect.getResponse());
+        }
+        // initialise annotations
+        for (Annotation annot : cooperativeEffect.getAnnotations()){
+            initialiseAnnotation((AbstractIntactAnnotation)annot);
+        }
+        // initialise cooperativity evidences
+        for (CooperativityEvidence ev : cooperativeEffect.getCooperativityEvidences()){
+            initialiseCooperativityEvidence((IntactCooperativityEvidence) ev);
+        }
+        // initialise affected interaction
+        for (ModelledInteraction inter : cooperativeEffect.getAffectedInteractions()){
+            initialiseComplex((IntactComplex) inter);
+        }
+    }
+
+    public static void initialiseAllostery(AbstractIntactAllostery allostery){
+        initialiseCooperativeEffect(allostery);
+
+        // initialise molecule
+        initialiseModelledParticipant((IntactModelledParticipant)allostery.getAllostericMolecule());
+        // initialise type
+        if (allostery.getAllosteryType() != null){
+            initialiseCvTerm((IntactCvTerm)allostery.getAllosteryType());
+        }
+        // initialise mechanism
+        if (allostery.getAllostericMechanism() != null){
+            initialiseCvTerm((IntactCvTerm)allostery.getAllostericMechanism());
+        }
+        // initialise effector
+        switch (allostery.getAllostericEffector().getEffectorType()){
+            case molecule:
+                initialiseModelledParticipant((IntactModelledParticipant) ((IntactMoleculeEffector) allostery.getAllostericEffector()).getMolecule());
+                break;
+            case feature_modification:
+                initialiseModelledFeature((IntactModelledFeature) ((IntactFeatureModificationEffector) allostery.getAllostericEffector()).getFeatureModification());
+                break;
+        }
+    }
+
+    public static void initialiseResultingSequence(AbstractIntactResultingSequence sequence){
+        // initialise xrefs
+        for (Xref ref : sequence.getXrefs()){
+            initialiseXref((AbstractIntactXref)ref);
+        }
+    }
+
+    public static void initialisePosition(IntactPosition pos){
+        // initialise status
+        initialiseCvTerm((IntactCvTerm)pos.getStatus());
+    }
+
+    public static void initialiseRange(AbstractIntactRange range){
+        // initialise start
+        initialisePosition((IntactPosition) range.getStart());
+        // initialise end
+        initialisePosition((IntactPosition)range.getEnd());
+        if (range.getResultingSequence() != null){
+            // initialise resulting sequence
+            initialiseResultingSequence((AbstractIntactResultingSequence)range.getResultingSequence());
+        }
+        // initialise target
+        if (range.getParticipant() instanceof ParticipantEvidence){
+            initialiseParticipantEvidence((IntactParticipantEvidence)range.getParticipant());
+        }
+        else if (range.getParticipant() instanceof ModelledParticipant){
+            initialiseModelledParticipant((IntactModelledParticipant)range.getParticipant());
+        }
+    }
+    public static void initialiseFeature(AbstractIntactFeature feature){
+        if (feature.getType() != null){
+            // initialise type
+            initialiseCvTerm((IntactCvTerm)feature.getType());
+        }
+        // initialise role
+        if (feature.getRole() != null){
+            initialiseCvTerm((IntactCvTerm)feature.getRole());
+        }
+        // initialise xrefs
+        for (Object ref : feature.getDbXrefs()){
+            initialiseXref((AbstractIntactXref)ref);
+        }
+        // initialise annotations
+        for (Object ref : feature.getAnnotations()){
+            initialiseAnnotation((AbstractIntactAnnotation)ref);
+        }
+        // initialise aliases
+        for (Object ref : feature.getAliases()){
+            initialiseAlias((AbstractIntactAlias)ref);
+        }
+        // initialise ranges
+        for (Object ref : feature.getRanges()){
+            initialiseRange((AbstractIntactRange)ref);
+        }
+    }
+
+    public static void initialiseModelledFeature(IntactModelledFeature feature){
+        initialiseFeature(feature);
+        // initialise linked features
+        for (ModelledFeature feat : feature.getLinkedFeatures()){
+            initialiseModelledFeature((IntactModelledFeature)feat);
+        }
+    }
+
+    public static void initialiseFeatureEvidence(IntactFeatureEvidence feature){
+        initialiseFeature(feature);
+        // initialise linked features
+        for (FeatureEvidence feat : feature.getLinkedFeatures()){
+            initialiseFeatureEvidence((IntactFeatureEvidence) feat);
+        }
+        // initialise db method
+        for (CvTerm cv : feature.getDetectionMethods()){
+            initialiseCvTerm((IntactCvTerm)cv);
+        }
+    }
+
+    public static void initialiseParticipant(AbstractIntactParticipant participant){
+        // initialise interactor
+        initialiseInteractor((IntactInteractor)participant.getInteractor());
+        // initialise bio role
+        initialiseCvTerm((IntactCvTerm)participant.getBiologicalRole());
+
+        // initialise xrefs
+        for (Object ref : participant.getXrefs()){
+            initialiseXref((AbstractIntactXref)ref);
+        }
+        // initialise annotations
+        for (Object ref : participant.getAnnotations()){
+            initialiseAnnotation((AbstractIntactAnnotation)ref);
+        }
+        // initialise aliases
+        for (Object ref : participant.getAliases()){
+            initialiseAlias((AbstractIntactAlias)ref);
+        }
+        // initialise causal relationships
+        for (Object ref : participant.getCausalRelationships()){
+            initialiseCausalRelationship((AbstractIntactCausalRelationship) ref);
+        }
+    }
+
+    public static void initialiseModelledParticipant(IntactModelledParticipant participant){
+        initialiseParticipant(participant);
+
+        // initialise features
+        for (ModelledFeature feature : participant.getFeatures()){
+            initialiseModelledFeature((IntactModelledFeature)feature);
+        }
+    }
+
+    public static void initialiseParticipantEvidence(IntactParticipantEvidence participant){
+        initialiseParticipant(participant);
+
+        // initialise features
+        for (FeatureEvidence feature : participant.getFeatures()){
+            initialiseFeatureEvidence((IntactFeatureEvidence) feature);
+        }
+
+        // initialise exp role
+        initialiseCvTerm((IntactCvTerm)participant.getExperimentalRole());
+        // initialise host organism
+        if (participant.getExpressedInOrganism() != null){
+            initialiseOrganism((IntactOrganism)participant.getExpressedInOrganism());
+        }
+        // initialise exp preparations
+        for (CvTerm cv : participant.getExperimentalPreparations()){
+            initialiseCvTerm((IntactCvTerm)cv);
+        }
+        // initialise identification methods
+        for (CvTerm cv : participant.getIdentificationMethods()){
+            initialiseCvTerm((IntactCvTerm)cv);
+        }
+        // initialise confidences
+        for (Confidence conf : participant.getConfidences()){
+            initialiseConfidence((AbstractIntactConfidence) conf);
+        }
+        // initialise parameters
+        for (Parameter param : participant.getParameters()){
+            initialiseParameter((AbstractIntactParameter) param);
+        }
+    }
+
+    public static void initialisePublication(IntactPublication publication){
+        // initialise xrefs
+        for (Object ref : publication.getDbXrefs()){
+            initialiseXref((AbstractIntactXref)ref);
+        }
+        // initialise annotations
+        for (Object ref : publication.getDbAnnotations()){
+            initialiseAnnotation((AbstractIntactAnnotation)ref);
+        }
+        // initialise source
+        if (publication.getSource() != null){
+            initialiseSource((IntactSource)publication.getSource());
+        }
+        // initialise experiment
+        for (Experiment exp : publication.getExperiments()){
+            initialiseExperiment((IntactExperiment)exp, false);
+        }
+    }
+
+    public static void initialiseExperiment(IntactExperiment experiment, boolean initPublication){
+        if (initPublication && experiment.getPublication() != null){
+            // initialise publication
+            initialisePublication((IntactPublication)experiment.getPublication());
+        }
+        // initialise xrefs
+        for (Object ref : experiment.getXrefs()){
+            initialiseXref((AbstractIntactXref)ref);
+        }
+        // initialise annotations
+        for (Object ref : experiment.getAnnotations()){
+            initialiseAnnotation((AbstractIntactAnnotation)ref);
+        }
+        // initialise detection method
+        initialiseCvTerm((IntactCvTerm)experiment.getInteractionDetectionMethod());
+        // initialise host organism
+        if (experiment.getHostOrganism() != null){
+            initialiseOrganism((IntactOrganism)experiment.getHostOrganism());
+        }
+        // initialise participant method
+        if (experiment.getParticipantIdentificationMethod() != null){
+            initialiseCvTerm((IntactCvTerm)experiment.getParticipantIdentificationMethod());
+        }
+        // initialise variable parameters
+        for (VariableParameter param : experiment.getVariableParameters()){
+            initialiseVariableParameter((IntactVariableParameter)param);
+        }
+        // initialise interaction evidences
+        for (InteractionEvidence ev : experiment.getInteractionEvidences()){
+            initialiseInteractionEvidence((IntactInteractionEvidence)ev, false);
+        }
+    }
+
+    public static void initialiseOrganism(IntactOrganism organism){
+        // initialise aliases
+        for (Object ref : organism.getAliases()){
+            initialiseAlias((AbstractIntactAlias)ref);
+        }
+
+        // init cell type
+        if (organism.getCellType() != null){
+           initialiseCvTerm((IntactCvTerm)organism.getCellType());
+        }
+        // init tissue
+        if (organism.getTissue() != null){
+            initialiseCvTerm((IntactCvTerm)organism.getTissue());
+        }
+    }
+
+    public static void initialiseInteractor(IntactInteractor interactor){
+        // initialise interactor type
+        initialiseCvTerm((IntactCvTerm)interactor.getInteractorType());
+
+        // initialise xrefs
+        for (Object ref : interactor.getDbXrefs()){
+            initialiseXref((AbstractIntactXref)ref);
+        }
+        // initialise annotations
+        for (Object ref : interactor.getDbAnnotations()){
+            initialiseAnnotation((AbstractIntactAnnotation)ref);
+        }
+        // initialise aliases
+        for (Object ref : interactor.getDbAliases()){
+            initialiseAlias((AbstractIntactAlias)ref);
+        }
+        // initialise organism
+        if (interactor.getOrganism() != null){
+           initialiseOrganism((IntactOrganism)interactor.getOrganism());
+        }
+
+        // special cases
+        if (interactor instanceof IntactPolymer){
+            IntactPolymer polymer = (IntactPolymer)interactor;
+            polymer.getSequence();
+        }
+        else if (interactor instanceof IntactInteractorPool){
+            IntactInteractorPool pool = (IntactInteractorPool)interactor;
+            for (Interactor inter : pool){
+                initialiseInteractor((IntactInteractor)inter);
+            }
+        }
+        else if (interactor instanceof IntactComplex){
+            IntactComplex complex = (IntactComplex)interactor;
+            // init source
+            if (complex.getSource() != null){
+                initialiseSource((IntactSource)complex.getSource());
+            }
+            // init participants
+            for (ModelledParticipant participant : complex.getParticipants()){
+                initialiseModelledParticipant((IntactModelledParticipant)participant);
+            }
+            // init confidences
+            for (ModelledConfidence conf : complex.getModelledConfidences()){
+                initialiseConfidence((AbstractIntactConfidence)conf);
+            }
+            // init parameters
+            for (ModelledParameter param : complex.getModelledParameters()){
+                initialiseParameter((AbstractIntactParameter)param);
+            }
+            // init interaction type
+            if (complex.getInteractionType() != null){
+                initialiseCvTerm((IntactCvTerm)complex.getInteractionType());
+            }
+            // init evidence type
+            if (complex.getEvidenceType() != null){
+                initialiseCvTerm((IntactCvTerm)complex.getEvidenceType());
+            }
+        }
+    }
+
+    public static void initialiseInteractionEvidence(IntactInteractionEvidence interaction, boolean initExperiment){
+        // initialise xrefs
+        for (Object ref : interaction.getDbXrefs()){
+            initialiseXref((AbstractIntactXref)ref);
+        }
+        // initialise annotations
+        for (Object ref : interaction.getDbAnnotations()){
+            initialiseAnnotation((AbstractIntactAnnotation)ref);
+        }
+        // initialise experiment
+        if (initExperiment && interaction.getExperiment() != null){
+            initialiseExperiment((IntactExperiment)interaction.getExperiment(), true);
+        }
+        // init participants
+        for (ParticipantEvidence participant : interaction.getParticipants()){
+            initialiseParticipantEvidence((IntactParticipantEvidence)participant);
+        }
+        // init confidences
+        for (Confidence conf : interaction.getConfidences()){
+            initialiseConfidence((AbstractIntactConfidence)conf);
+        }
+        // init parameters
+        for (Parameter param : interaction.getParameters()){
+            initialiseParameter((AbstractIntactParameter)param);
+        }
+        // init interaction type
+        if (interaction.getInteractionType() != null){
+            initialiseCvTerm((IntactCvTerm)interaction.getInteractionType());
+        }
+        // init evidence type
+        for (VariableParameterValueSet set : interaction.getVariableParameterValues()){
+             initialiseVariableParameterValueSet((IntactVariableParameterValueSet)set);
+        }
+    }
+
+    public static void initialiseComplex(IntactComplex complex){
+        initialiseInteractor(complex);
     }
 }

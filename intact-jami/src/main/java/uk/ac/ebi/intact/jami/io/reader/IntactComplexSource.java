@@ -1,30 +1,30 @@
 package uk.ac.ebi.intact.jami.io.reader;
 
-import psidev.psi.mi.jami.datasource.ModelledInteractionSource;
+import psidev.psi.mi.jami.datasource.ComplexSource;
 import psidev.psi.mi.jami.exception.MIIOException;
-import psidev.psi.mi.jami.model.ModelledInteraction;
+import psidev.psi.mi.jami.model.Complex;
 
 import java.util.Collection;
 
 /**
- * Intact source for modelled interactions
+ * Intact source for complexes
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
  * @since <pre>24/02/14</pre>
  */
 
-public class IntactModelledSource extends IntactModelledStream implements ModelledInteractionSource<ModelledInteraction> {
+public class IntactComplexSource extends IntactComplexStream implements ComplexSource {
 
-    public IntactModelledSource() {
+    public IntactComplexSource() {
         super();
     }
 
-    public IntactModelledSource(String springFile, String intactServiceName) {
+    public IntactComplexSource(String springFile, String intactServiceName) {
         super(springFile, intactServiceName);
     }
 
-    public Collection<ModelledInteraction> getInteractions() throws MIIOException {
+    public Collection<Complex> getInteractions() throws MIIOException {
         if (!isInitialised()){
             initialiseContext(null);
         }

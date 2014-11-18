@@ -11,10 +11,12 @@ import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.*;
 
@@ -66,6 +68,42 @@ public class ExperimentService implements IntactService<Experiment>{
         return new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getByQuery(query, parameters, first, max));
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Experiment> fetchIntactObjects(String query, Map<String, Object> parameters) {
+        return new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<Experiment> iterateAll(boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<Experiment>(this, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Experiment> fetchIntactObjects(int first, int max, boolean loadLazyCollections) {
+        List<Experiment> results = new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getAll("ac", first, max));
+        initialiseLazyExperiment(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<Experiment> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<Experiment>(this, query, countQuery, parameters, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Experiment> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max, boolean loadLazyCollections) {
+        List<Experiment> results = new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getByQuery(query, parameters, first, max));
+        initialiseLazyExperiment(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Experiment> fetchIntactObjects(String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        List<Experiment> results = new ArrayList<Experiment>(this.intactDAO.getExperimentDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+        initialiseLazyExperiment(loadLazyCollections, results);
+        return results;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Experiment object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
@@ -114,5 +152,13 @@ public class ExperimentService implements IntactService<Experiment>{
             this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().delete(exp);
         }
         this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().flush();
+    }
+
+    private void initialiseLazyExperiment(boolean loadLazyCollections, List<Experiment> results) {
+        if (loadLazyCollections){
+            for (Experiment exp : results){
+                IntactUtils.initialiseExperiment((IntactExperiment) exp, true);
+            }
+        }
     }
 }

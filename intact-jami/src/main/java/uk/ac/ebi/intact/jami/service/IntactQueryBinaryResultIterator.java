@@ -63,6 +63,48 @@ public class IntactQueryBinaryResultIterator<T extends Interaction, B extends Bi
         prepareNextObject();
     }
 
+    public IntactQueryBinaryResultIterator(IntactService<T> service, ComplexExpansionMethod<T,B> expansionMethod, boolean loadLazyCollections){
+
+        this.queryIterator = new IntactQueryResultIterator<T>(service, loadLazyCollections);
+        if (expansionMethod == null){
+            throw new IllegalArgumentException("The complex expansion is mandatory");
+        }
+        this.expansionMethod = expansionMethod;
+        prepareNextObject();
+    }
+
+    public IntactQueryBinaryResultIterator(IntactService<T> service, int batch, ComplexExpansionMethod<T,B> expansionMethod, boolean loadLazyCollections){
+
+        this.queryIterator = new IntactQueryResultIterator<T>(service, batch, loadLazyCollections);
+        if (expansionMethod == null){
+            throw new IllegalArgumentException("The complex expansion is mandatory");
+        }
+        this.expansionMethod = expansionMethod;
+        prepareNextObject();
+    }
+
+    public IntactQueryBinaryResultIterator(IntactService<T> service, String query, String queryCount,
+                                           Map<String, Object> parameters, ComplexExpansionMethod<T,B> expansionMethod, boolean loadLazyCollections){
+
+        this.queryIterator = new IntactQueryResultIterator<T>(service, query, queryCount, parameters, loadLazyCollections);
+        if (expansionMethod == null){
+            throw new IllegalArgumentException("The complex expansion is mandatory");
+        }
+        this.expansionMethod = expansionMethod;
+        prepareNextObject();
+    }
+
+    public IntactQueryBinaryResultIterator(IntactService<T> service, int batch, String query, String queryCount, Map<String, Object> parameters,
+                                           ComplexExpansionMethod<T,B> expansionMethod, boolean loadLazyCollections){
+
+        this.queryIterator = new IntactQueryResultIterator<T>(service, batch, query, queryCount, parameters, loadLazyCollections);
+        if (expansionMethod == null){
+            throw new IllegalArgumentException("The complex expansion is mandatory");
+        }
+        this.expansionMethod = expansionMethod;
+        prepareNextObject();
+    }
+
     protected void prepareNextObject(){
 
         if (this.binaryIterator != null && this.binaryIterator.hasNext()){

@@ -50,4 +50,9 @@ public class IntactDataSourceOptions extends MIDataSourceOptions{
      * It is optional and no query parameters will be used by default if this map is not provided
      */
     public static final String HQL_QUERY_PARAMETERS_OPTION = "hql_query_parameter_key";
+
+    /**
+     * A boolean value to know if the properties will be lazy loaded (false) or fully initialised (true)
+     */
+    public static final String DB_INITIALISE_LAZY = "db_initialise_lazy";
 }

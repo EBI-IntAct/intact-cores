@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Organism;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
+import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.*;
 
@@ -63,6 +65,42 @@ public class OrganismService implements IntactService<Organism>{
         return new ArrayList<Organism>(this.intactDAO.getOrganismDao().getByQuery(query, parameters, first, max));
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Organism> fetchIntactObjects(String query, Map<String, Object> parameters) {
+        return new ArrayList<Organism>(this.intactDAO.getOrganismDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<Organism> iterateAll(boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<Organism>(this, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Organism> fetchIntactObjects(int first, int max, boolean loadLazyCollections) {
+        List<Organism> results = new ArrayList<Organism>(this.intactDAO.getOrganismDao().getAll("ac", first, max));
+        initialiseLazyOrganism(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<Organism> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<Organism>(this, query, countQuery, parameters, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Organism> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max, boolean loadLazyCollections) {
+        List<Organism> results =  new ArrayList<Organism>(this.intactDAO.getOrganismDao().getByQuery(query, parameters, first, max));
+        initialiseLazyOrganism(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Organism> fetchIntactObjects(String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        List<Organism> results =  new ArrayList<Organism>(this.intactDAO.getOrganismDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+        initialiseLazyOrganism(loadLazyCollections, results);
+        return results;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Organism object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
@@ -99,5 +137,13 @@ public class OrganismService implements IntactService<Organism>{
             this.intactDAO.getSynchronizerContext().getOrganismSynchronizer().delete(org);
         }
         this.intactDAO.getSynchronizerContext().getOrganismSynchronizer().flush();
+    }
+
+    private void initialiseLazyOrganism(boolean loadLazyCollections, List<Organism> results) {
+        if (loadLazyCollections){
+            for (Organism organism : results){
+                IntactUtils.initialiseOrganism((IntactOrganism) organism);
+            }
+        }
     }
 }

@@ -14,10 +14,12 @@ import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.*;
 
@@ -67,6 +69,42 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<InteractionEvidence> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(query, parameters, first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<InteractionEvidence> fetchIntactObjects(String query, Map<String, Object> parameters) {
+        return new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<InteractionEvidence> iterateAll(boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<InteractionEvidence>(this, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<InteractionEvidence> fetchIntactObjects(int first, int max, boolean loadLazyCollections) {
+        List<InteractionEvidence> results = new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getAll("ac", first, max));
+        initialiseLazyInteraction(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<InteractionEvidence> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<InteractionEvidence>(this, query, countQuery, parameters, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<InteractionEvidence> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max, boolean loadLazyCollections) {
+        List<InteractionEvidence> results = new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(query, parameters, first, max));
+        initialiseLazyInteraction(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<InteractionEvidence> fetchIntactObjects(String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        List<InteractionEvidence> results = new ArrayList<InteractionEvidence>(this.intactDAO.getInteractionDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+        initialiseLazyInteraction(loadLazyCollections, results);
+        return results;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -130,5 +168,13 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
             this.intactDAO.getSynchronizerContext().getInteractionSynchronizer().delete(interaction);
         }
         this.intactDAO.getSynchronizerContext().getInteractionSynchronizer().flush();
+    }
+
+    private void initialiseLazyInteraction(boolean loadLazyCollections, List<InteractionEvidence> results) {
+        if (loadLazyCollections){
+            for (InteractionEvidence interaction : results){
+                IntactUtils.initialiseInteractionEvidence((IntactInteractionEvidence) interaction, true);
+            }
+        }
     }
 }

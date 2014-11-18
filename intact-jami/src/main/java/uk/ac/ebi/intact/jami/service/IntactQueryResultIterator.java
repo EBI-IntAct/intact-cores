@@ -24,6 +24,7 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
     private Iterator<T> chunkIterator;
     private String query;
     private Map<String, Object> queryParameters;
+    private boolean loadLazyCollections = false;
 
     public IntactQueryResultIterator(IntactService<T> service){
         if (service == null){
@@ -82,6 +83,70 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
         prepareNextObject();
     }
 
+    public IntactQueryResultIterator(IntactService<T> service, boolean loadLazyCollections){
+        this.loadLazyCollections = loadLazyCollections;
+
+        if (service == null){
+            throw new IllegalArgumentException("The IntAct service cannot be null");
+        }
+        this.service = service;
+        this.totalCount = this.service.countAll();
+        this.query = null;
+        this.queryParameters = null;
+
+        prepareNextObject();
+    }
+
+    public IntactQueryResultIterator(IntactService<T> service, int batch, boolean loadLazyCollections){
+        this.loadLazyCollections = loadLazyCollections;
+
+        if (service == null){
+            throw new IllegalArgumentException("The IntAct service cannot be null");
+        }
+        this.service = service;
+        this.totalCount = this.service.countAll();
+        this.batch = batch;
+        this.query = null;
+        this.queryParameters = null;
+
+        prepareNextObject();
+    }
+
+    public IntactQueryResultIterator(IntactService<T> service, String query, String queryCount, Map<String, Object> parameters, boolean loadLazyCollections){
+        this.loadLazyCollections = loadLazyCollections;
+
+        if (service == null){
+            throw new IllegalArgumentException("The IntAct service cannot be null");
+        }
+        this.service = service;
+        this.query = query;
+        this.queryParameters = parameters;
+        this.totalCount = this.service.countAll(queryCount, parameters);
+
+        prepareNextObject();
+
+    }
+
+    public IntactQueryResultIterator(IntactService<T> service, int batch, String query, String queryCount, Map<String, Object> parameters, boolean loadLazyCollections){
+        this.loadLazyCollections = loadLazyCollections;
+
+        if (service == null){
+            throw new IllegalArgumentException("The IntAct service cannot be null");
+        }
+        this.service = service;
+        this.query = query;
+        this.queryParameters = parameters;
+        if (queryCount != null){
+            this.totalCount = this.service.countAll(queryCount, parameters);
+        }
+        else{
+            this.totalCount = this.service.countAll();
+        }
+        this.batch = batch;
+
+        prepareNextObject();
+    }
+
     protected void prepareNextObject(){
 
         if (this.chunkIterator != null && this.chunkIterator.hasNext()){
@@ -93,10 +158,10 @@ public class IntactQueryResultIterator<T> implements Iterator<T> {
         else{
             long max = Math.min(batch, totalCount - currentCount);
             if (this.query == null){
-                this.chunk = this.service.fetchIntactObjects((int)currentCount, (int)max);
+                this.chunk = this.service.fetchIntactObjects((int)currentCount, (int)max, this.loadLazyCollections);
             }
             else{
-                this.chunk = this.service.fetchIntactObjects(this.query, this.queryParameters, (int)currentCount, (int)max);
+                this.chunk = this.service.fetchIntactObjects(this.query, this.queryParameters, (int)currentCount, (int)max, this.loadLazyCollections);
             }
             this.chunkIterator = this.chunk.iterator();
             if (this.chunkIterator.hasNext()){

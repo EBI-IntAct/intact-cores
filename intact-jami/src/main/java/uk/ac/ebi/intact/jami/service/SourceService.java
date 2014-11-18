@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Source;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.*;
 
@@ -63,6 +65,42 @@ public class SourceService implements IntactService<Source>{
         return new ArrayList<Source>(this.intactDAO.getSourceDao().getByQuery(query, parameters, first, max));
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Source> fetchIntactObjects(String query, Map<String, Object> parameters) {
+        return new ArrayList<Source>(this.intactDAO.getSourceDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<Source> iterateAll(boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<Source>(this, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Source> fetchIntactObjects(int first, int max, boolean loadLazyCollections) {
+        List<Source> results = new ArrayList<Source>(this.intactDAO.getSourceDao().getAll("ac", first, max));
+        initialiseLazySource(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<Source> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<Source>(this, query, countQuery, parameters, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Source> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max, boolean loadLazyCollections) {
+        List<Source> results = new ArrayList<Source>(this.intactDAO.getSourceDao().getByQuery(query, parameters, first, max));
+        initialiseLazySource(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Source> fetchIntactObjects(String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        List<Source> results =  new ArrayList<Source>(this.intactDAO.getSourceDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+        initialiseLazySource(loadLazyCollections, results);
+        return results;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(Source object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
@@ -96,5 +134,13 @@ public class SourceService implements IntactService<Source>{
             this.intactDAO.getSynchronizerContext().getSourceSynchronizer().delete(source);
         }
         this.intactDAO.getSynchronizerContext().getSourceSynchronizer().flush();
+    }
+
+    private void initialiseLazySource(boolean loadLazyCollections, List<Source> results) {
+        if (loadLazyCollections){
+            for (Source source : results){
+                IntactUtils.initialiseSource((IntactSource) source);
+            }
+        }
     }
 }

@@ -31,6 +31,18 @@ public interface IntactService<I> {
 
     public List<I> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max);
 
+    public List<I> fetchIntactObjects(String query, Map<String, Object> parameters);
+
+    public Iterator<I> iterateAll(boolean loadLazyCollections);
+
+    public List<I> fetchIntactObjects(int first, int max, boolean loadLazyCollections);
+
+    public Iterator<I> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections);
+
+    public List<I> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max, boolean loadLazyCollections);
+
+    public List<I> fetchIntactObjects(String query, Map<String, Object> parameters, boolean loadLazyCollections);
+
     public void saveOrUpdate(I object) throws PersisterException, FinderException, SynchronizerException;
 
     public void saveOrUpdate(Collection<? extends I> objects) throws SynchronizerException, PersisterException, FinderException;

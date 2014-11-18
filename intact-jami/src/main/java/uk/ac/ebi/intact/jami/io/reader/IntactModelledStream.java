@@ -6,7 +6,7 @@ import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.service.ModelledInteractionService;
 
 /**
- * Intact stream for interaction evidences
+ * Intact stream for modelled interaction
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

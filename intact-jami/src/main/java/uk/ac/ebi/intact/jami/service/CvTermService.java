@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.*;
 
@@ -64,6 +66,42 @@ public class CvTermService implements IntactService<CvTerm>{
         return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getByQuery(query, parameters, first, max));
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<CvTerm> fetchIntactObjects(String query, Map<String, Object> parameters) {
+        return new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<CvTerm> iterateAll(boolean loadLazyCollections) {
+        return  new IntactQueryResultIterator<CvTerm>(this, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<CvTerm> fetchIntactObjects(int first, int max, boolean loadLazyCollections) {
+        List<CvTerm> results = new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getAll("ac", first, max));
+        initialiseLazyCvTerm(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<CvTerm> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<CvTerm>(this, query, countQuery, parameters, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<CvTerm> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max, boolean loadLazyCollections) {
+        List<CvTerm> results = new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getByQuery(query, parameters, first, max));
+        initialiseLazyCvTerm(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<CvTerm> fetchIntactObjects(String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        List<CvTerm> results = new ArrayList<CvTerm>(this.intactDAO.getCvTermDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+        initialiseLazyCvTerm(loadLazyCollections, results);
+        return results;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
     public void saveOrUpdate(CvTerm object) throws PersisterException, FinderException, SynchronizerException {
         afterCommitExecutor.registerDaoForSynchronization(intactDAO);
@@ -104,5 +142,13 @@ public class CvTermService implements IntactService<CvTerm>{
 
     public void setObjClass(String objClass) {
         this.objClass = objClass;
+    }
+
+    private void initialiseLazyCvTerm(boolean loadLazyCollections, List<CvTerm> results) {
+        if (loadLazyCollections){
+            for (CvTerm cv : results){
+                IntactUtils.initialiseCvTerm((IntactCvTerm) cv);
+            }
+        }
     }
 }

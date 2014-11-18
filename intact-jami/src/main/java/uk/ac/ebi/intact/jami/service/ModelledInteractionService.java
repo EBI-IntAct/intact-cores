@@ -15,6 +15,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.*;
 
@@ -64,6 +65,42 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<ModelledInteraction> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getByQuery(query, parameters, first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<ModelledInteraction> fetchIntactObjects(String query, Map<String, Object> parameters) {
+        return new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<ModelledInteraction> iterateAll(boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<ModelledInteraction>(this, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<ModelledInteraction> fetchIntactObjects(int first, int max, boolean loadLazyCollections) {
+        List<ModelledInteraction> results = new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getAll("ac", first, max));
+        initialiseLazyInteraction(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<ModelledInteraction> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<ModelledInteraction>(this, query, countQuery, parameters, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<ModelledInteraction> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max, boolean loadLazyCollections) {
+        List<ModelledInteraction> results = new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getByQuery(query, parameters, first, max));
+        initialiseLazyInteraction(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<ModelledInteraction> fetchIntactObjects(String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        List<ModelledInteraction> results = new ArrayList<ModelledInteraction>(this.intactDAO.getComplexDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+        initialiseLazyInteraction(loadLazyCollections, results);
+        return results;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -117,5 +154,13 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
             }
         }
         this.intactDAO.getSynchronizerContext().getComplexSynchronizer().flush();
+    }
+
+    private void initialiseLazyInteraction(boolean loadLazyCollections, List<ModelledInteraction> results) {
+        if (loadLazyCollections){
+            for (ModelledInteraction interactor : results){
+                IntactUtils.initialiseInteractor((IntactComplex) interactor);
+            }
+        }
     }
 }

@@ -28,6 +28,7 @@ public abstract class AbstractIntactStream<T extends Interaction> implements MID
     private String countQuery;
     private String query;
     private Map<String, Object> queryParameters;
+    private boolean initialiseLazy = false;
 
     public AbstractIntactStream(){
         if (isSpringContextInitialised()){
@@ -105,7 +106,11 @@ public abstract class AbstractIntactStream<T extends Interaction> implements MID
         }
         // load query parameters
         if (options.containsKey(IntactDataSourceOptions.HQL_QUERY_PARAMETERS_OPTION)){
-            this.queryParameters = (Map<String, Object>)options.get(IntactDataSourceOptions.HQL_QUERY_PARAMETERS_OPTION);
+            this.queryParameters = (Map<String, Object>)options.get(IntactDataSourceOptions.DB_INITIALISE_LAZY);
+        }
+        // load lazy collections
+        if (options.containsKey(IntactDataSourceOptions.DB_INITIALISE_LAZY)){
+            this.initialiseLazy = (Boolean)options.get(IntactDataSourceOptions.HQL_QUERY_PARAMETERS_OPTION);
         }
 
         if (this.intactService == null){
@@ -121,7 +126,7 @@ public abstract class AbstractIntactStream<T extends Interaction> implements MID
         if (!isInitialised){
             initialiseContext(null);
         }
-        return new IntactQueryResultIterator<T>(getIntactService(), getQuery(), getCountQuery(), getQueryParameters());
+        return new IntactQueryResultIterator<T>(getIntactService(), getQuery(), getCountQuery(), getQueryParameters(), initialiseLazy);
     }
 
     public void close() throws MIIOException{

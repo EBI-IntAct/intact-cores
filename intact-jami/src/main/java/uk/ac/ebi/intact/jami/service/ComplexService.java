@@ -10,6 +10,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -57,6 +58,42 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public List<Complex> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max) {
         return new ArrayList<Complex>(getIntactDao().getComplexDao().getByQuery(query, parameters, first, max));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Complex> fetchIntactObjects(String query, Map<String, Object> parameters) {
+        return new ArrayList<Complex>(getIntactDao().getComplexDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<Complex> iterateAll(boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<Complex>(this, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Complex> fetchIntactObjects(int first, int max, boolean loadLazyCollections) {
+        List<Complex> results = new ArrayList<Complex>(getIntactDao().getComplexDao().getAll("ac", first, max));
+        initialiseLazyComplex(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public Iterator<Complex> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        return new IntactQueryResultIterator<Complex>(this, query, countQuery, parameters, loadLazyCollections);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Complex> fetchIntactObjects(String query, Map<String, Object> parameters, int first, int max, boolean loadLazyCollections) {
+        List<Complex> results = new ArrayList<Complex>(getIntactDao().getComplexDao().getByQuery(query, parameters, first, max));
+        initialiseLazyComplex(loadLazyCollections, results);
+        return results;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
+    public List<Complex> fetchIntactObjects(String query, Map<String, Object> parameters, boolean loadLazyCollections) {
+        List<Complex> results = new ArrayList<Complex>(getIntactDao().getComplexDao().getByQuery(query, parameters, 0, Integer.MAX_VALUE));
+        initialiseLazyComplex(loadLazyCollections, results);
+        return results;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
@@ -115,5 +152,13 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
     @Override
     protected void registerListeners() {
         getLifecycleManager().registerListener(this.complexBCListener);
+    }
+
+    private void initialiseLazyComplex(boolean loadLazyCollections, List<Complex> results) {
+        if (loadLazyCollections){
+            for (Complex complex : results){
+                IntactUtils.initialiseComplex((IntactComplex) complex);
+            }
+        }
     }
 }
