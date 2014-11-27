@@ -77,7 +77,7 @@ public class Application extends AbstractIntactPrimaryObject {
         return properties;
     }
 
-    public void setProperties(Collection<ApplicationProperty> properties) {
+    private void setProperties(Collection<ApplicationProperty> properties) {
         this.properties = properties;
     }
 
