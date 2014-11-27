@@ -9,6 +9,9 @@ import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.meta.Application;
+import uk.ac.ebi.intact.jami.model.meta.ApplicationProperty;
+import uk.ac.ebi.intact.jami.model.meta.DbInfo;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -144,6 +147,13 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
 
     // complex xref synchronizer
     private XrefSynchronizer<InteractorXref> complexXrefSynchronizer;
+
+    // db info snchronizer
+    private IntactDbSynchronizer<DbInfo,DbInfo> dbInfoSynchronizer;
+    // application synchronizer
+    private IntactDbSynchronizer<Application,Application> applicationSynchronizer;
+    // application property synchronizer
+    private IntactDbSynchronizer<ApplicationProperty,ApplicationProperty> applicationPropertySynchronizer;
 
     public DefaultSynchronizerContext(EntityManager entityManager){
         if (entityManager == null){
@@ -855,6 +865,30 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     }
 
     @Override
+    public IntactDbSynchronizer<DbInfo, DbInfo> getDbInfoSynchronizer() {
+        if (this.dbInfoSynchronizer == null){
+            this.dbInfoSynchronizer = new DbInfoSynchronizer(this);
+        }
+        return this.dbInfoSynchronizer;
+    }
+
+    @Override
+    public IntactDbSynchronizer<Application, Application> getApplicationSynchronizer() {
+        if (this.applicationSynchronizer == null){
+            this.applicationSynchronizer = new ApplicationSynchronizer(this);
+        }
+        return this.applicationSynchronizer;
+    }
+
+    @Override
+    public IntactDbSynchronizer<ApplicationProperty, ApplicationProperty> getApplicationPropertySynchronizer() {
+        if (this.applicationPropertySynchronizer == null){
+            this.applicationPropertySynchronizer = new ApplicationPropertySynchronizer(this);
+        }
+        return this.applicationPropertySynchronizer;
+    }
+
+    @Override
     public UserContext getUserContext() {
         return this.userContext;
     }
@@ -926,6 +960,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         initListener(this.modelledParticipantSynchronizer);
         initListener(this.participantEvidenceSynchronizer);
         initListener(this.generalCvSynchronizer);
+        initListener(this.dbInfoSynchronizer);
+        initListener(this.applicationPropertySynchronizer);
+        initListener(this.applicationSynchronizer);
     }
 
     public void clearCache() {
@@ -988,6 +1025,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         clearCache(this.modelledParticipantSynchronizer);
         clearCache(this.participantEvidenceSynchronizer);
         clearCache(this.generalCvSynchronizer);
+        clearCache(this.dbInfoSynchronizer);
+        clearCache(this.applicationSynchronizer);
+        clearCache(this.applicationPropertySynchronizer);
     }
 
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getGeneralCvSynchronizer() {

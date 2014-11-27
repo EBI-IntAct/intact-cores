@@ -6,6 +6,9 @@ import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.meta.Application;
+import uk.ac.ebi.intact.jami.model.meta.ApplicationProperty;
+import uk.ac.ebi.intact.jami.model.meta.DbInfo;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -252,6 +255,12 @@ public interface SynchronizerContext {
     public ParticipantSynchronizer<ModelledParticipant, IntactModelledParticipant> getModelledParticipantSynchronizer();
 
     public ParticipantSynchronizer<ParticipantEvidence, IntactParticipantEvidence> getParticipantEvidenceSynchronizer();
+
+    public IntactDbSynchronizer<DbInfo, DbInfo> getDbInfoSynchronizer();
+
+    public IntactDbSynchronizer<Application, Application> getApplicationSynchronizer();
+
+    public IntactDbSynchronizer<ApplicationProperty, ApplicationProperty> getApplicationPropertySynchronizer();
 
     public UserContext getUserContext();
 

@@ -63,6 +63,9 @@ public class IntactDaoImpl implements IntactDao {
     private VariableParameterValueDao variableParameterValueDao;
     private VariableParameterValueSetDao variableParameterValueSetDao;
 
+    private DbInfoDao dbInfoDao;
+    private ApplicationDao applicationDao;
+
     public EntityManager getEntityManager() {
         // the flushmode commit must be set so the entity manager do not flush when creating queries
         return this.entityManager;
@@ -279,6 +282,22 @@ public class IntactDaoImpl implements IntactDao {
             this.participantEvidenceDao = new ParticipantEvidenceDaoImpl(getEntityManager(), getSynchronizerContext());
         }
         return this.participantEvidenceDao;
+    }
+
+    @Override
+    public DbInfoDao getDbInfoDao() {
+        if (this.dbInfoDao == null){
+           this.dbInfoDao = new DbInfoDaoImpl(getEntityManager(), getSynchronizerContext());
+        }
+        return this.dbInfoDao;
+    }
+
+    @Override
+    public ApplicationDao getApplicationDao() {
+        if (this.applicationDao == null){
+            this.applicationDao = new ApplicationDaoImpl(getEntityManager(), getSynchronizerContext());
+        }
+        return this.applicationDao;
     }
 
     public UserContext getUserContext() {

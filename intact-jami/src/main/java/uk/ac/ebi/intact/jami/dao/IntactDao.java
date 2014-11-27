@@ -91,4 +91,8 @@ public interface IntactDao {
     public ModelledParticipantDao getModelledParticipantDao();
 
     public ParticipantEvidenceDao getParticipantEvidenceDao();
+
+    public DbInfoDao getDbInfoDao();
+
+    public ApplicationDao getApplicationDao();
 }
