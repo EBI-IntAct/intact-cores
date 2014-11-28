@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Publication;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -133,6 +134,27 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
         getIntactDao().getSynchronizerContext().getPublicationSynchronizer().flush();
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    public int replaceSource(IntactSource sourceInstitution, IntactSource destinationInstitution) {
+
+        if (sourceInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Source institution needs to be present in the database so sourceInstitutionAc cannot be null ");
+        }
+
+        if (destinationInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Destination institution needs to be present in the database so destinationInstitutionAc cannot be null.");
+        }
+
+        return getIntactDao().getEntityManager().createQuery("update IntactPublication ao " +
+                "set ao.source = :destInstitution " +
+                "where ao.source.ac = :sourceInstitutionAc " +
+                "and ao.source.ac <> :destInstitutionAc")
+                .setParameter("sourceInstitutionAc", sourceInstitution.getAc())
+                .setParameter("destInstitution", destinationInstitution)
+                .setParameter("destInstitutionAc", destinationInstitution.getAc())
+                .executeUpdate();
+    }
+
     @Override
     protected IntactPublication loadReleasableByAc(String ac) {
         return getIntactDao().getPublicationDao().getByAc(ac);
@@ -149,6 +171,24 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
         } catch (PersisterException e) {
             LOGGER.log(Level.SEVERE, "Cannot update publication "+releasable.getAc(), e);
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    public int replaceInstitution(IntactSource destinationInstitution, String createUser) {
+
+        if (destinationInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Destination institution needs to be present in the database. " +
+                    "Supplied institution does not have an AC: " + destinationInstitution);
+        }
+
+        return getIntactDao().getEntityManager().createQuery("update IntactPublication ao " +
+                "set ao.source = :destInstitution " +
+                "where ao.currentOwner = :creator " +
+                "and ao.source.ac <> :destInstitutionAc")
+                .setParameter("destInstitution", destinationInstitution)
+                .setParameter("creator", createUser)
+                .setParameter("destInstitutionAc", destinationInstitution.getAc())
+                .executeUpdate();
     }
 
     @Override

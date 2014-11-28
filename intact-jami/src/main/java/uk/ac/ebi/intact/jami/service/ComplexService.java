@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Complex;
+import psidev.psi.mi.jami.model.Source;
 import uk.ac.ebi.intact.jami.lifecycle.ComplexBCLifecycleEventListener;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -103,6 +105,45 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
         // we can synchronize the complex with the database now
         getIntactDao().getSynchronizerContext().getComplexSynchronizer().synchronize(object, true);
         getIntactDao().getSynchronizerContext().getComplexSynchronizer().flush();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    public int replaceSource(IntactSource sourceInstitution, IntactSource destinationInstitution) {
+
+        if (sourceInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Source institution needs to be present in the database so sourceInstitutionAc cannot be null ");
+        }
+
+        if (destinationInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Destination institution needs to be present in the database so destinationInstitutionAc cannot be null.");
+        }
+
+        return getIntactDao().getEntityManager().createQuery("update IntactComplex ao " +
+                "set ao.source = :destInstitution " +
+                "where ao.source.ac = :sourceInstitutionAc " +
+                "and ao.source.ac <> :destInstitutionAc")
+                .setParameter("sourceInstitutionAc", sourceInstitution.getAc())
+                .setParameter("destInstitution", destinationInstitution)
+                .setParameter("destInstitutionAc", destinationInstitution.getAc())
+                .executeUpdate();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
+    public int replaceInstitution(IntactSource destinationInstitution, String createUser) {
+
+        if (destinationInstitution.getAc() == null) {
+            throw new IllegalArgumentException("Destination institution needs to be present in the database. " +
+                    "Supplied institution does not have an AC: " + destinationInstitution);
+        }
+
+        return getIntactDao().getEntityManager().createQuery("update IntactComplex ao " +
+                "set ao.source = :destInstitution " +
+                "where ao.currentOwner = :creator " +
+                "and ao.source.ac <> :destInstitutionAc")
+                .setParameter("destInstitution", destinationInstitution)
+                .setParameter("creator", createUser)
+                .setParameter("destInstitutionAc", destinationInstitution.getAc())
+                .executeUpdate();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

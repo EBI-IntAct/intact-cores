@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.jami.service;
 
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
+
 /**
  * Service interface for intact basic services
  *
@@ -89,4 +91,8 @@ public interface ReleasableLifecycleService {
      * This method will put a released releasable on hold
      */
     public void moveReleasableFromReleasedToOnHold(String ac, String message, String loginUser);
+
+    public int replaceSource(IntactSource sourceInstitution, IntactSource destinationInstitution);
+
+    public int replaceInstitution(IntactSource destinationInstitution, String createUser);
 }
