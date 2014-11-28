@@ -129,7 +129,7 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
-    public int replaceInstitution(IntactSource destinationInstitution, String createUser) {
+    public int replaceSource(IntactSource destinationInstitution, String createUser) {
 
         if (destinationInstitution.getAc() == null) {
             throw new IllegalArgumentException("Destination institution needs to be present in the database. " +

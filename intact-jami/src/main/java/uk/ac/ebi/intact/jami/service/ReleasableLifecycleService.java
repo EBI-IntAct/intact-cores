@@ -94,5 +94,5 @@ public interface ReleasableLifecycleService {
 
     public int replaceSource(IntactSource sourceInstitution, IntactSource destinationInstitution);
 
-    public int replaceInstitution(IntactSource destinationInstitution, String createUser);
+    public int replaceSource(IntactSource destinationInstitution, String createUser);
 }
