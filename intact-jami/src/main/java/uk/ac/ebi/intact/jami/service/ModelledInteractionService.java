@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.jami.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,6 +15,7 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -30,11 +29,9 @@ import java.util.*;
 @Lazy
 public class ModelledInteractionService implements IntactService<ModelledInteraction>{
 
-    @Autowired
-    @Qualifier("intactDao")
+    @Resource(name = "intactDao")
     private IntactDao intactDAO;
-    @Autowired
-    @Qualifier("intactTransactionSynchronization")
+    @Resource(name = "intactTransactionSynchronization")
     private IntactTransactionSynchronization afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

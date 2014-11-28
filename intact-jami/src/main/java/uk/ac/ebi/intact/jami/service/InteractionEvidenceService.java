@@ -21,6 +21,7 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -34,8 +35,7 @@ import java.util.*;
 @Lazy
 public class InteractionEvidenceService implements IntactService<InteractionEvidence> {
 
-    @Autowired
-    @Qualifier("intactDao")
+    @Resource(name = "intactDao")
     private IntactDao intactDAO;
     @Autowired
     @Qualifier("intactTransactionSynchronization")

@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.jami.dao.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -15,7 +13,11 @@ import uk.ac.ebi.intact.jami.model.lifecycle.AbstractLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.ComplexLifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.lifecycle.PublicationLifeCycleEvent;
 
-import javax.persistence.*;
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 
 /**
  * Implementation of IntactDao
@@ -33,8 +35,7 @@ public class IntactDaoImpl implements IntactDao {
     @PersistenceUnit(unitName = "intact-jami", name = "intactEntityManagerFactory")
     private EntityManagerFactory intactEntityManagerFactory;
 
-    @Autowired
-    @Qualifier(value = "jamiUserContext")
+    @Resource(name = "jamiUserContext")
     private UserContext userContext;
 
     private SynchronizerContext synchronizerContext;

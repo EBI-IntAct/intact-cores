@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.jami.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
@@ -9,6 +7,7 @@ import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.lifecycle.LifeCycleManager;
 import uk.ac.ebi.intact.jami.model.lifecycle.Releasable;
 
+import javax.annotation.Resource;
 import javax.persistence.FlushModeType;
 import java.util.logging.Logger;
 
@@ -22,16 +21,13 @@ import java.util.logging.Logger;
 
 public abstract class AbstractReleasableLifeCycleService<T extends Releasable> implements ReleasableLifecycleService{
 
-    @Autowired
-    @Qualifier("intactDao")
+    @Resource(name = "intactDao")
     private IntactDao intactDao;
 
-    @Autowired
-    @Qualifier("jamiLifeCycleManager")
+    @Resource(name = "jamiLifeCycleManager")
     private LifeCycleManager lifecycleManager;
 
-    @Autowired
-    @Qualifier("intactTransactionSynchronization")
+    @Resource(name = "intactTransactionSynchronization")
     private IntactTransactionSynchronization afterCommitExecutor;
 
     private static final Logger LOGGER = Logger.getLogger("AbstractReleasableLifeCycleService");

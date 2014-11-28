@@ -15,11 +15,10 @@
  */
 package uk.ac.ebi.intact.jami.lifecycle;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.jami.lifecycle.status.*;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -32,32 +31,23 @@ import java.util.Collection;
 @Component(value = "jamiLifeCycleManager")
 public class LifeCycleManager {
 
-    @Autowired
-    @Qualifier("jamiStartStatus")
+    @Resource(name = "jamiStartStatus")
     private StartStatus jamiStartStatus;
-    @Autowired
-    @Qualifier("jamiNewStatus")
+    @Resource(name = "jamiNewStatus")
     private NewStatus jamiNewStatus;
-    @Autowired
-    @Qualifier("jamiAssignedStatus")
+    @Resource(name = "jamiAssignedStatus")
     private AssignedStatus jamiAssignedStatus;
-    @Autowired
-    @Qualifier("jamiCurationInProgressStatus")
+    @Resource(name = "jamiCurationInProgressStatus")
     private CurationInProgressStatus jamiCurationInProgressStatus;
-    @Autowired
-    @Qualifier("jamiReadyForCheckingStatus")
+    @Resource(name = "jamiReadyForCheckingStatus")
     private ReadyForCheckingStatus jamiReadyForCheckingStatus;
-    @Autowired
-    @Qualifier("jamiAcceptedStatus")
+    @Resource(name = "jamiAcceptedStatus")
     private AcceptedStatus jamiAcceptedStatus;
-    @Autowired
-    @Qualifier("jamiAcceptedOnHoldStatus")
+    @Resource(name = "jamiAcceptedOnHoldStatus")
     private AcceptedOnHoldStatus jamiAcceptedOnHoldStatus;
-    @Autowired
-    @Qualifier("jamiReadyForReleaseStatus")
+    @Resource(name = "jamiReadyForReleaseStatus")
     private ReadyForReleaseStatus jamiReadyForReleaseStatus;
-    @Autowired
-    @Qualifier("jamiReleasedStatus")
+    @Resource(name = "jamiReleasedStatus")
     private ReleasedStatus jamiReleasedStatus;
 
     private Collection<GlobalStatus> getAllStatus() {

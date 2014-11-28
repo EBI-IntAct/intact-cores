@@ -18,13 +18,13 @@ package uk.ac.ebi.intact.jami.sequence;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 /**
  * Unit tester for SequenceManager
@@ -37,8 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @DirtiesContext
 public class SequenceManagerTest{
 
-    @Autowired
-    @Qualifier("jamiSequenceManager")
+    @Resource(name = "jamiSequenceManager")
     private SequenceManager seqManager;
 
     @Test
