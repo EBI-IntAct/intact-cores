@@ -256,8 +256,10 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
         if (getDefinition() != null){
             getDbAnnotations().remove(this.definition);
         }
-        this.definition = new CvTermAnnotation(IntactUtils.createMITopic("definition", null), def);
-        getDbAnnotations().add(this.definition);
+        if (def != null){
+            this.definition = new CvTermAnnotation(IntactUtils.createMITopic("definition", null), def);
+            getDbAnnotations().add(this.definition);
+        }
     }
 
     @Column( name = "objclass", nullable = false)
