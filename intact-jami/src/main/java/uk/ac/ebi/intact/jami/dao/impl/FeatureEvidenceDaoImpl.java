@@ -59,6 +59,14 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
     }
 
     @Override
+    public int countParametersForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.parameters) from IntactFeatureEvidence i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer<FeatureEvidence, IntactFeatureEvidence> getDbSynchronizer() {
         return getSynchronizerContext().getFeatureEvidenceSynchronizer();
     }

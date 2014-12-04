@@ -15,4 +15,7 @@ import java.util.Collection;
 public interface FeatureEvidenceDao extends FeatureDao<IntactFeatureEvidence> {
 
     public Collection<IntactFeatureEvidence> getByFeatureDetectionMethod(String methodName, String methodMI);
+
+    public int countParametersForFeature(String ac);
+
 }

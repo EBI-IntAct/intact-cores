@@ -53,4 +53,6 @@ public interface ExperimentDao extends IntactBaseDao<IntactExperiment> {
     public int countXrefsForExperiment(String ac);
 
     public int countAnnotationsForExperiment(String ac);
+
+    public int countVariableParametersForExperiment(String ac);
 }
