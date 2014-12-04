@@ -1146,6 +1146,14 @@ public class FeatureDaoImpl<T extends Feature, F extends AbstractIntactFeature> 
     }
 
     @Override
+    public int countRangesForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.ranges) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getFeatureSynchronizer();
     }
