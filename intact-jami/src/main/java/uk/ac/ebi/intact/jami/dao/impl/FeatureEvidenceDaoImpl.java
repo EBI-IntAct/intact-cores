@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.jami.synchronizer.impl.FeatureEvidenceSynchronizer;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Implementation for feature evidence dao
@@ -33,7 +34,7 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
         Query query;
         if (methodName == null && methodMI == null){
             query = getEntityManager().createQuery("select f from IntactFeatureEvidence f "  +
-                    "where f.dbDetectionMethods is empty");
+                    "where f.dbDetectionMethods is empty and f.featureIdentification is null");
         }
         else if (methodMI != null){
             query = getEntityManager().createQuery("select distinct f from IntactFeatureEvidence f "  +
@@ -48,6 +49,24 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
             query.setParameter("secondaryAc", Xref.SECONDARY);
             query.setParameter("psimi", CvTerm.PSI_MI);
             query.setParameter("mi", methodMI);
+
+            List<IntactFeatureEvidence> results = query.getResultList();
+            if (results.isEmpty()){
+                query = getEntityManager().createQuery("select distinct f from IntactFeatureEvidence f "  +
+                        "join f.featureIdentification as det " +
+                        "join det.dbXrefs as xref " +
+                        "join xref.database as d " +
+                        "join xref.qualifier as q " +
+                        "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                        "and d.shortName = :psimi " +
+                        "and xref.id = :mi");
+                query.setParameter("identity", Xref.IDENTITY);
+                query.setParameter("secondaryAc", Xref.SECONDARY);
+                query.setParameter("psimi", CvTerm.PSI_MI);
+                query.setParameter("mi", methodMI);
+                results = query.getResultList();
+            }
+            return results;
         }
         else{
             query = getEntityManager().createQuery("select distinct f from IntactFeatureEvidence f "  +
@@ -55,12 +74,28 @@ public class FeatureEvidenceDaoImpl extends FeatureDaoImpl<FeatureEvidence, Inta
                     "where det.shortName = :methodName");
             query.setParameter("methodName", methodName);
         }
-        return query.getResultList();
+        List<IntactFeatureEvidence> results = query.getResultList();
+        if (results.isEmpty()){
+            query = getEntityManager().createQuery("select distinct f from IntactFeatureEvidence f "  +
+                    "join f.featureIdentification as det " +
+                    "where det.shortName = :methodName");
+            query.setParameter("methodName", methodName);
+            results = query.getResultList();
+        }
+        return results;
     }
 
     @Override
     public int countParametersForFeature(String ac) {
         Query query = getEntityManager().createQuery("select size(i.parameters) from IntactFeatureEvidence i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
+    public int countDetectionMethodsForFeature(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.dbDetectionMethods) from IntactFeatureEvidence i " +
                 "where i.ac = :ac");
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();
