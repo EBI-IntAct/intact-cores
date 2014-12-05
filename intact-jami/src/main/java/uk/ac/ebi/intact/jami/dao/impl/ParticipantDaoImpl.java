@@ -600,6 +600,14 @@ public class ParticipantDaoImpl<T extends Participant, F extends AbstractIntactP
     }
 
     @Override
+    public int countCausalRelationshipsForParticipant(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.causalRelationships) from "+getEntityClass().getSimpleName()+" i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getParticipantSynchronizer();
     }

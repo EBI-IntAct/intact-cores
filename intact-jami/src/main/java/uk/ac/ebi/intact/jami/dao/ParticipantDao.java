@@ -64,4 +64,7 @@ public interface ParticipantDao<F extends AbstractIntactParticipant> extends Int
     public int countXrefsForParticipant(String ac);
 
     public int countAnnotationsForParticipant(String ac);
+
+    public int countCausalRelationshipsForParticipant(String ac);
+
 }
