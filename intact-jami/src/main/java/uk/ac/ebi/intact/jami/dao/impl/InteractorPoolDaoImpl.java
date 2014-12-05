@@ -46,4 +46,12 @@ public class InteractorPoolDaoImpl extends InteractorDaoImpl<InteractorPool,Inta
         query.setParameter("name",value);
         return query.getResultList();
     }
+
+    @Override
+    public int countMembersOfPool(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.interactors) from IntactInteractorPool i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
 }
