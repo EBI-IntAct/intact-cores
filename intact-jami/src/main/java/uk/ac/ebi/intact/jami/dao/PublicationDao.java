@@ -72,4 +72,6 @@ public interface PublicationDao extends IntactBaseDao<IntactPublication> {
     public int countXrefsForPublication(String ac);
 
     public int countAnnotationsForPublication(String ac);
+
+    public int countInteractionsForPublication(String ac);
 }

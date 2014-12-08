@@ -703,6 +703,15 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
     }
 
     @Override
+    public int countInteractionsForPublication(String ac) {
+        Query query = getEntityManager().createQuery("select sum(size(e.interactionEvidences)) from IntactPublication i " +
+                "join i.experiments as e " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer<Publication, IntactPublication> getDbSynchronizer() {
         return getSynchronizerContext().getPublicationSynchronizer();
     }
