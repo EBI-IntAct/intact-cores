@@ -870,7 +870,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.xrefs = new PublicationXrefList();
         if (this.persistentXrefs != null){
             for (Xref ref : this.persistentXrefs){
-                if (XrefUtils.isXrefAnIdentifier(ref) || XrefUtils.doesXrefHaveQualifier(ref, Xref.PRIMARY_MI, Xref.PRIMARY)){
+                if (XrefUtils.isXrefAnIdentifier(ref) || XrefUtils.doesXrefHaveQualifier(ref, Xref.PRIMARY_MI, Xref.PRIMARY)
+                        || XrefUtils.doesXrefHaveQualifier(ref, null, "intact-secondary")){
                     this.identifiers.addOnly(ref);
                     processAddedIdentifierEvent(ref);
                 }
