@@ -1014,6 +1014,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         if (this.persistentAnnotations != null){
             for (Annotation annot : this.persistentAnnotations){
                  processAddedDbAnnotationEvent(annot);
+                this.annotations.addOnly(annot);
             }
         }
         else{
