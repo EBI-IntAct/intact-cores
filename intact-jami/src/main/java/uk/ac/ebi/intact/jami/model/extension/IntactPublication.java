@@ -983,7 +983,8 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     }
 
     protected void initialiseAuthors(){
-        this.authors = new ArrayList<String>();
+        // initialise annotations first
+        initialiseAnnotations();
     }
 
     protected void setDbXrefs(Collection<Xref> persistentXrefs){
