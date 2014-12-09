@@ -134,6 +134,68 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
         return query.getResultList();
     }
 
+    public Collection<F> getByXrefQualifier(String qualifierName, String qualifierMI, String primaryId) {
+        Query query;
+        if (qualifierMI != null){
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+                    "join f.dbXrefs as x " +
+                    "join x.qualifier as dat " +
+                    "join dat.dbXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi " +
+                    "and x.id = :primary");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", qualifierMI);
+            query.setParameter("primary", primaryId);
+        }
+        else{
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+                    "join f.dbXrefs as x " +
+                    "join x.qualifier as d " +
+                    "where d.shortName = :dbName " +
+                    "and x.id = :primary");
+            query.setParameter("dbName", qualifierName);
+            query.setParameter("primary", primaryId);
+        }
+        return query.getResultList();
+    }
+
+    public Collection<F> getByXrefQualifierLike(String qualifierName, String qualifierMI, String primaryId) {
+        Query query;
+        if (qualifierMI != null){
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+                    "join f.dbXrefs as x " +
+                    "join x.qualifier as dat " +
+                    "join dat.dbXrefs as xref " +
+                    "join xref.database as d " +
+                    "join xref.qualifier as q " +
+                    "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                    "and d.shortName = :psimi " +
+                    "and xref.id = :mi " +
+                    "and upper(x.id) like :primary");
+            query.setParameter("identity", Xref.IDENTITY);
+            query.setParameter("secondaryAc", Xref.SECONDARY);
+            query.setParameter("psimi", CvTerm.PSI_MI);
+            query.setParameter("mi", qualifierMI);
+            query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
+        }
+        else{
+            query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
+                    "join f.dbXrefs as x " +
+                    "join x.qualifier as d " +
+                    "where d.shortName = :dbName " +
+                    "and upper(x.id) like :primary");
+            query.setParameter("dbName", qualifierName);
+            query.setParameter("primary", "%"+primaryId.toUpperCase()+"%");
+        }
+        return query.getResultList();
+    }
+
     public Collection<F> getByXref(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI) {
         Query query;
         if (dbMI != null){
