@@ -57,7 +57,7 @@ public class ModelledParticipantDaoImpl extends ParticipantDaoImpl<ModelledParti
             query.setParameter("mi", typeMI);
         }
         else{
-            query = getEntityManager().createQuery("select e from "+getEntityClass()+" e " +
+            query = getEntityManager().createQuery("select distinct e from "+getEntityClass()+" e " +
                     "join e.causalRelationships as c " +
                     "join c.relationType as t " +
                     "where t.shortName = :unitName");
@@ -67,7 +67,7 @@ public class ModelledParticipantDaoImpl extends ParticipantDaoImpl<ModelledParti
     }
 
     public Collection<IntactModelledParticipant> getByCausalRelationshipTargetAc(String parentAc) {
-        Query query = getEntityManager().createQuery("select e from IntactModelledParticipant e  " +
+        Query query = getEntityManager().createQuery("select distinct e from IntactModelledParticipant e  " +
                 "join e.causalRelationships as c " +
                 "join c.target as t " +
                 "where t.ac = :ac ");

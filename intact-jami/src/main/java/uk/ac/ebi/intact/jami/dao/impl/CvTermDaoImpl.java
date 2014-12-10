@@ -523,7 +523,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByDefinition(String des) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                     "join cv.dbAnnotations as a " +
                     "join a.topic as t " +
                     "where t.shortLabel = :defTopic and a.value = :def ");
@@ -533,7 +533,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     }
 
     public Collection<IntactCvTerm> getByDescriptionLike(String des) {
-        Query query = getEntityManager().createQuery("select cv from IntactCvTerm cv " +
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
                 "join cv.dbAnnotations as a " +
                 "join a.topic as t " +
                     "where t.shortLabel = :defTopic and upper(a.value) like :def ");

@@ -503,7 +503,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
     public Collection<IntactPublication> getByReleasedDate(Date date) {
         Query query;
         if (date == null){
-            query = getEntityManager().createQuery("select p from IntactPublication p " +
+            query = getEntityManager().createQuery("select distinct p from IntactPublication p " +
                     "join p.lifecycleEvents as l " +
                     "join l.event as t " +
                     "where l.when is null and t.shortName = :released");
@@ -520,7 +520,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
     }
 
     public Collection<IntactPublication> getByCurationDepth(CurationDepth depth, int first, int max){
-        Query query = getEntityManager().createQuery("select p from IntactPublication p "  +
+        Query query = getEntityManager().createQuery("select distinct p from IntactPublication p "  +
                 "join p.dbAnnotations as a " +
                 "join a.topic as t " +
                 "where t.shortName = :depthName and t.value = :curation order by p.ac");

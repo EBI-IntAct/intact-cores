@@ -9,6 +9,7 @@ import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     }
 
     public Collection<IntactInteractionEvidence> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+        Query query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                 "join f.dbXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -66,26 +67,84 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     }
 
     @Override
-    public Collection<IntactInteractionEvidence> getByInteractorIdentifier(String primaryId) {
-        Query query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
-                "join f.participants as part " +
-                "join part.interactor as inter " +
-                "join inter.dbXrefs as x " +
-                "join x.qualifier as dat " +
-                "join dat.dbXrefs as xref " +
-                "join xref.database as d " +
-                "join xref.qualifier as q " +
-                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
-                "and d.shortName = :psimi " +
-                "and xref.id = :mi " +
-                "and x.id = :primary");
+    public Collection<IntactInteractionEvidence> getByInteractorsPrimaryId(String... primaryIds) {
+        if (primaryIds.length > 5) {
+            return getByInteractorsPrimaryIdExactComponents(primaryIds);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("select i from IntactInteractionEvidence as i ");
+
+        for (int i=0; i<primaryIds.length; i++) {
+            sb.append("join i.participants as comp").append(i).append(" ");
+            sb.append("join comp").append(i).append(".interactor.dbXrefs as xref").append(i).append(" ");
+        }
+
+        sb.append("where ");
+
+        for (int i=0; i<primaryIds.length; i++) {
+            if (i>0) {
+                sb.append("and ");
+            }
+            sb.append("xref").append(i).append(".id = :protPrimaryId").append(i).append(" ");
+            sb.append("and ( xref").append(i).append(".qualifier.shortName = :identity").append(" or xref").append(i).
+                    append(".qualifier.shortName = :secondary )").append(" ");
+        }
+
+        if (primaryIds.length > 0) {
+            sb.append("and ");
+        }
+        sb.append("size(i.participants) = "+primaryIds.length);
+
+        Query query = getEntityManager().createQuery(sb.toString());
         query.setParameter("identity", Xref.IDENTITY);
-        query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("psimi", CvTerm.PSI_MI);
-        query.setParameter("mi", Xref.IDENTITY_MI);
-        query.setParameter("primary", primaryId);
+        query.setParameter("secondary", Xref.SECONDARY);
+        for (int i=0; i<primaryIds.length; i++) {
+            query.setParameter("protPrimaryId"+i, primaryIds[i]);
+        }
 
         return query.getResultList();
+    }
+
+    protected List<IntactInteractionEvidence> getByInteractorsPrimaryIdExactComponents(String... primaryIds) {
+        List<IntactInteractionEvidence> results = new ArrayList<IntactInteractionEvidence>();
+
+        // get first all the interactions of the same size (efficient only for interactions with several components)
+        Query query = getEntityManager().createQuery("select distinct i from IntactInteractionEvidence i where size(i.components) = :compSize");
+        query.setParameter("compSize", primaryIds.length);
+
+        List<IntactInteractionEvidence> interactionsOfTheSameSize = query.getResultList();
+
+        // the following crappy algorithm checks that the interactors contained in the interactions
+        // have the provided list of primaryIds
+        for (IntactInteractionEvidence interaction : interactionsOfTheSameSize) {
+            String[] primIdsToFind = new String[primaryIds.length];
+            System.arraycopy(primaryIds, 0, primIdsToFind, 0, primaryIds.length);
+
+            for (ParticipantEvidence component : interaction.getParticipants()) {
+                for (Xref idXref : component.getInteractor().getIdentifiers()) {
+                    for (int i=0; i<primIdsToFind.length; i++) {
+                        if (idXref.getId().equals(primIdsToFind[i])) {
+                            primIdsToFind[i] = "";
+                        }
+                    }
+                }
+            }
+
+            boolean found = true;
+
+            for (String id : primIdsToFind) {
+                if (id.length() > 0) {
+                    found = false;
+                }
+            }
+
+            if (found) {
+                results.add(interaction);
+            }
+        }
+
+        return results;
     }
 
     public Collection<IntactInteractionEvidence> getByXrefLike(String primaryId) {
@@ -476,7 +535,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     }
 
     public Collection<IntactInteractionEvidence> getByExperimentAc(String ac) {
-        Query query = getEntityManager().createQuery("select f from IntactInteractionEvidence f "  +
+        Query query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                 "join f.dbExperiments as e " +
                 "where e.ac = :expAc");
         query.setParameter("expAc",ac);
@@ -552,7 +611,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     public Collection<IntactInteractionEvidence> getByParameterUnit(String unitName, String unitMI) {
         Query query;
         if (unitMI == null && unitName == null){
-            query = getEntityManager().createQuery("select i from IntactInteractionEvidence i " +
+            query = getEntityManager().createQuery("select distinct i from IntactInteractionEvidence i " +
                     "join i.parameters as p " +
                     "where p.unit is null");
         }
@@ -644,7 +703,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         }
         else{
             if (unitMI == null && unitName == null){
-                query = getEntityManager().createQuery("select i from IntactInteractionEvidence i " +
+                query = getEntityManager().createQuery("select distinct i from IntactInteractionEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "where t.shortName = :confName " +
@@ -652,7 +711,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("typeName", typeName);
             }
             else if (unitMI != null){
-                query = getEntityManager().createQuery("select i from IntactInteractionEvidence i " +
+                query = getEntityManager().createQuery("select distinct i from IntactInteractionEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "join p.unit as u " +
@@ -670,7 +729,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 query.setParameter("typeName", typeName);
             }
             else{
-                query = getEntityManager().createQuery("select i from IntactInteractionEvidence i " +
+                query = getEntityManager().createQuery("select distinct i from IntactInteractionEvidence i " +
                         "join i.parameters as p " +
                         "join p.type as t " +
                         "join p.unit as u " +

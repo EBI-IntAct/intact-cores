@@ -372,7 +372,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
     public Collection<IntactComplex> getByParameterUnit(String unitName, String unitMI) {
         Query query;
         if (unitMI == null && unitName == null){
-            query = getEntityManager().createQuery("select i from IntactComplex i " +
+            query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                     "join i.modelledParameters as p " +
                     "where p.unit is null");
         }
@@ -464,7 +464,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         }
         else{
             if (unitMI == null && unitName == null){
-                query = getEntityManager().createQuery("select i from IntactComplex i " +
+                query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                         "join i.modelledParameters as p " +
                         "join p.type as t " +
                         "where t.shortName = :confName " +
@@ -472,7 +472,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 query.setParameter("typeName", typeName);
             }
             else if (unitMI != null){
-                query = getEntityManager().createQuery("select i from IntactComplex i " +
+                query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                         "join i.modelledParameters as p " +
                         "join p.type as t " +
                         "join p.unit as u " +
@@ -490,7 +490,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 query.setParameter("typeName", typeName);
             }
             else{
-                query = getEntityManager().createQuery("select i from IntactComplex i " +
+                query = getEntityManager().createQuery("select distinct i from IntactComplex i " +
                         "join i.modelledParameters as p " +
                         "join p.type as t " +
                         "join p.unit as u " +
@@ -582,7 +582,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
 
     @Override
     public Collection<LifeCycleEvent> getLifeCycleEventsForComplex(String ac) {
-        Query query = getEntityManager().createQuery("select l from IntactComplex p " +
+        Query query = getEntityManager().createQuery("select distinct l from IntactComplex p " +
                 "join p.lifecycleEvents as l " +
                 "where p.ac = :ac");
         query.setParameter("ac", ac);
@@ -599,7 +599,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
 
     @Override
     public Collection<ModelledConfidence> getConfidencesForComplex(String ac) {
-        Query query = getEntityManager().createQuery("select x from IntactComplex i " +
+        Query query = getEntityManager().createQuery("select distinct x from IntactComplex i " +
                 "join i.modelledConfidences as x " +
                 "where i.ac = :ac");
         query.setParameter("ac", ac);
@@ -608,7 +608,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
 
     @Override
     public Collection<ModelledParameter> getParametersForComplex(String ac) {
-        Query query = getEntityManager().createQuery("select x from IntactComplex i " +
+        Query query = getEntityManager().createQuery("select distinct x from IntactComplex i " +
                 "join i.modelledParameters as x " +
                 "where i.ac = :ac");
         query.setParameter("ac", ac);

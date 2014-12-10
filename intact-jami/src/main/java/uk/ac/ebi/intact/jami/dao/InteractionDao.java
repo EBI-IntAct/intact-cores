@@ -26,7 +26,19 @@ public interface InteractionDao extends IntactBaseDao<IntactInteractionEvidence>
 
     public Collection<IntactInteractionEvidence> getByXref(String primaryId);
 
-    public Collection<IntactInteractionEvidence> getByInteractorIdentifier(String primaryId);
+    /**
+     * Retrieves those interactions that contain the interactors with the provided primary IDs.<br/>
+     * The search is exact (only those interactions where the number of components equals the number
+     * of passed primaryIDs)
+     * When searching self interactions, if you pass only one primaryId it will get those interactions that only
+     * contain only one component (exactComponents has to be true - otherwise the method would return all the interactions
+     * where that primaryID is found). In the case where an interaction contains two or more components with the same interactor,
+     * you should pass to the method as many -repeated- primaryID as components contain the interaction.
+     * @param primaryIds the number of primaryIDs to search
+     * @return the interactions for those primaryIDs
+     *
+     */
+    public Collection<IntactInteractionEvidence> getByInteractorsPrimaryId(String... primaryIds);
 
     public Collection<IntactInteractionEvidence> getByXrefLike(String primaryId);
 

@@ -49,9 +49,7 @@ public interface FeatureDao<F extends AbstractIntactFeature> extends IntactBaseD
 
     public Collection<F> getByFeatureType(String typeName, String typeMI);
 
-    public Collection<F> getByInteractionEffect(String effectName, String effectMI);
-
-    public Collection<F> getByInteractionDependency(String dependencyName, String dependencyMI);
+    public Collection<F> getByFeatureRole(String effectName, String effectMI);
 
     public Collection<F> getByInterproIdentifier(String primaryId);
 

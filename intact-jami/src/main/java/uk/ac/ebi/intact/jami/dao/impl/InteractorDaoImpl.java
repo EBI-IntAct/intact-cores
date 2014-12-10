@@ -50,14 +50,14 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     public Collection<F> getByShortNameLike(String value) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f " +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f " +
                 "where upper(f.shortName) like :name");
         query.setParameter("name","%"+value.toUpperCase()+"%");
         return query.getResultList();
     }
 
     public Collection<F> getByXref(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.dbXrefs as x " +
                 "where x.id = :primaryId");
         query.setParameter("primaryId",primaryId);
@@ -65,7 +65,7 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     public Collection<F> getByXrefLike(String primaryId) {
-        Query query = getEntityManager().createQuery("select f from "+getEntityClass().getSimpleName()+" f "  +
+        Query query = getEntityManager().createQuery("select distinct f from "+getEntityClass().getSimpleName()+" f "  +
                 "join f.dbXrefs as x " +
                 "where upper(x.id) like :primaryId");
         query.setParameter("primaryId","%"+primaryId.toUpperCase()+"%");
