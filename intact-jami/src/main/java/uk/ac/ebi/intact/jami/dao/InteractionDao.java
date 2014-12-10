@@ -83,4 +83,7 @@ public interface InteractionDao extends IntactBaseDao<IntactInteractionEvidence>
     public int countXrefsForInteraction(String ac);
 
     public int countAnnotationsForInteraction(String ac);
+
+    public int countVariableParameterValuesSetsForInteraction(String ac);
+
 }

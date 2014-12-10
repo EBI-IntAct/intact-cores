@@ -817,4 +817,12 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();
     }
+
+    @Override
+    public int countVariableParameterValuesSetsForInteraction(String ac) {
+        Query query = getEntityManager().createQuery("select size(i.variableParameterValues) from IntactInteractionEvidence i " +
+                "where i.ac = :ac");
+        query.setParameter("ac", ac);
+        return (Integer)query.getSingleResult();
+    }
 }
