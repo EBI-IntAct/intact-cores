@@ -26,6 +26,8 @@ public interface InteractionDao extends IntactBaseDao<IntactInteractionEvidence>
 
     public Collection<IntactInteractionEvidence> getByXref(String primaryId);
 
+    public Collection<IntactInteractionEvidence> getByInteractorIdentifier(String primaryId);
+
     public Collection<IntactInteractionEvidence> getByXrefLike(String primaryId);
 
     public Collection<IntactInteractionEvidence> getByXref(String dbName, String dbMI, String primaryId);

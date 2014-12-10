@@ -65,6 +65,29 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
         return query.getResultList();
     }
 
+    @Override
+    public Collection<IntactInteractionEvidence> getByInteractorIdentifier(String primaryId) {
+        Query query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
+                "join f.participants as part " +
+                "join part.interactor as inter " +
+                "join inter.dbXrefs as x " +
+                "join x.qualifier as dat " +
+                "join dat.dbXrefs as xref " +
+                "join xref.database as d " +
+                "join xref.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and d.shortName = :psimi " +
+                "and xref.id = :mi " +
+                "and x.id = :primary");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("psimi", CvTerm.PSI_MI);
+        query.setParameter("mi", Xref.IDENTITY_MI);
+        query.setParameter("primary", primaryId);
+
+        return query.getResultList();
+    }
+
     public Collection<IntactInteractionEvidence> getByXrefLike(String primaryId) {
         Query query = getEntityManager().createQuery("select distinct f from IntactInteractionEvidence f "  +
                 "join f.dbXrefs as x " +
