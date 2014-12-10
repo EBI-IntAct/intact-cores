@@ -1010,12 +1010,16 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     protected void initialiseAnnotations() {
         this.annotations = new PublicationAnnotationList();
         this.authors = new ArrayList<String>();
+        this.curationDepth = CurationDepth.undefined;
+        this.journal = null;
+        this.publicationDate = null;
 
         // initialise persistent annot and content
         if (this.persistentAnnotations != null){
             for (Annotation annot : this.persistentAnnotations){
-                 processAddedDbAnnotationEvent(annot);
-                this.annotations.addOnly(annot);
+                if (!processAddedDbAnnotationEvent(annot)){
+                    this.annotations.addOnly(annot);
+                }
             }
         }
         else{
@@ -1023,7 +1027,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
-    protected void processAddedDbAnnotationEvent(Annotation added) {
+    protected boolean processAddedDbAnnotationEvent(Annotation added) {
         if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.AUTHOR_MI, Annotation.AUTHOR) && added.getValue() != null){
             if (added.getValue().contains(", ")){
                 getAuthors().addAll(Arrays.asList(added.getValue().split(", ")));
@@ -1031,34 +1035,45 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             else{
                 getAuthors().add(added.getValue());
             }
+            return true;
         }
         // journal
         else if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.PUBLICATION_JOURNAL_MI, Annotation.PUBLICATION_JOURNAL) && added.getValue() != null){
             this.journal = added.getValue();
+            return true;
         }
         // publication year
         else if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR) && added.getValue() != null){
             try {
                 this.publicationDate = IntactUtils.YEAR_FORMAT.parse(added.getValue());
+                return true;
             } catch (ParseException e) {
                 e.printStackTrace();
                 this.publicationDate = null;
+                return false;
             }
         }
         // curation depth
         else if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.CURATION_DEPTH_MI, Annotation.CURATION_DEPTH) && added.getValue() != null){
             if (Annotation.IMEX_CURATION.equalsIgnoreCase(added.getValue())){
                 this.curationDepth = CurationDepth.IMEx;
+                return true;
             }
             else if (Annotation.MIMIX_CURATION.equalsIgnoreCase(added.getValue())){
                 this.curationDepth = CurationDepth.MIMIx;
+                return true;
             }
             else if (Annotation.RAPID_CURATION.equalsIgnoreCase(added.getValue())){
                 this.curationDepth = CurationDepth.rapid_curation;
+                return true;
             }
             else{
                 this.curationDepth = CurationDepth.undefined;
+                return true;
             }
+        }
+        else{
+            return false;
         }
     }
 
