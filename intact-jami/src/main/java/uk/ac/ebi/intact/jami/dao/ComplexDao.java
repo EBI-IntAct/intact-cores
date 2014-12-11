@@ -70,4 +70,6 @@ public interface ComplexDao extends InteractorDao<IntactComplex>{
     public int countConfidencesForComplex(String ac);
 
     public int countParametersForComplex(String ac);
+
+    public int countComplexesInvolvingInteractor(String ac);
 }
