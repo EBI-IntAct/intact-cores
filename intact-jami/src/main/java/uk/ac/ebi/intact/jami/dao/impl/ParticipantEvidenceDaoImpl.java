@@ -458,4 +458,13 @@ public class ParticipantEvidenceDaoImpl extends ParticipantDaoImpl<ParticipantEv
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();
     }
+
+    @Override
+    public int countParticipantsByExpressedInOrganism(String organismAc) {
+        Query query = getEntityManager().createQuery("select count (distinct i.ac) from IntactParticipantEvidence i " +
+                "join i.expressedInOrganism o " +
+                "where o.ac = :ac");
+        query.setParameter("ac", organismAc);
+        return (Integer)query.getSingleResult();
+    }
 }

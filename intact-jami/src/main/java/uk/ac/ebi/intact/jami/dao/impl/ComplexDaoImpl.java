@@ -639,4 +639,13 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();
     }
+
+    @Override
+    public int countComplexesByOrganism(String organismAc) {
+        Query query = getEntityManager().createQuery("select count (distinct i.ac) from IntactComplex i " +
+                "join i.organism o " +
+                "where o.ac = :ac");
+        query.setParameter("ac", organismAc);
+        return (Integer)query.getSingleResult();
+    }
 }

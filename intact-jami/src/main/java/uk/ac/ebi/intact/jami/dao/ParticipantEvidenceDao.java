@@ -53,4 +53,6 @@ public interface ParticipantEvidenceDao extends ParticipantDao<IntactParticipant
     public int countExperimentalPreparationsForParticipant(String ac);
 
     public int countIdentificationMethodsForParticipant(String ac);
+
+    public int countParticipantsByExpressedInOrganism(String organismAc);
 }

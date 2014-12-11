@@ -55,4 +55,6 @@ public interface ExperimentDao extends IntactBaseDao<IntactExperiment> {
     public int countAnnotationsForExperiment(String ac);
 
     public int countVariableParametersForExperiment(String ac);
+
+    public int countExperimentsByHostOrganism(String organismAc);
 }

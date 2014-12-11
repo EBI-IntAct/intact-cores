@@ -66,4 +66,6 @@ public interface InteractorDao<I extends IntactInteractor> extends IntactBaseDao
 
     public int countAnnotationsForInteractor(String ac);
 
+    public int countInteractorsByOrganism(String organismAc);
+
 }

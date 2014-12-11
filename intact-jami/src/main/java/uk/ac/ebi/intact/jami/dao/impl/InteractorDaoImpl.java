@@ -661,6 +661,15 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
     }
 
     @Override
+    public int countInteractorsByOrganism(String organismAc) {
+        Query query = getEntityManager().createQuery("select count (distinct i.ac) from "+getEntityClass().getSimpleName()+" i " +
+                "join i.organism o " +
+                "where o.ac = :ac");
+        query.setParameter("ac", organismAc);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer getDbSynchronizer() {
         return getSynchronizerContext().getInteractorSynchronizer();
     }

@@ -528,6 +528,15 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
     }
 
     @Override
+    public int countExperimentsByHostOrganism(String organismAc) {
+        Query query = getEntityManager().createQuery("select count (distinct i.ac) from IntactExperiment i " +
+                "join i.hostOrganism o " +
+                "where o.ac = :ac");
+        query.setParameter("ac", organismAc);
+        return (Integer)query.getSingleResult();
+    }
+
+    @Override
     public IntactDbSynchronizer<Experiment, IntactExperiment> getDbSynchronizer() {
         return getSynchronizerContext().getExperimentSynchronizer();
     }
