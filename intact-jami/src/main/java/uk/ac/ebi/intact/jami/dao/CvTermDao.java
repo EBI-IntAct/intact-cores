@@ -33,6 +33,8 @@ public interface CvTermDao extends IntactBaseDao<IntactCvTerm>{
 
     public IntactCvTerm getByUniqueIdentifier(String primaryId);
 
+    public IntactCvTerm getByUniqueIdentifier(String primaryId, String objClass);
+
     public Collection<IntactCvTerm> getByXrefLike(String dbName, String dbMI, String primaryId);
 
     public Collection<IntactCvTerm> getByXref(String dbName, String dbMI, String primaryId, String qualifierName, String qualifierMI);

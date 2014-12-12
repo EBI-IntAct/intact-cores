@@ -124,6 +124,21 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         return (IntactCvTerm)query.getSingleResult();
     }
 
+    @Override
+    public IntactCvTerm getByUniqueIdentifier(String primaryId, String objClass) {
+        Query query = getEntityManager().createQuery("select distinct cv from IntactCvTerm cv " +
+                "join cv.dbXrefs as x " +
+                "join x.qualifier as q " +
+                "where (q.shortName = :identity or q.shortName = :secondaryAc) " +
+                "and x.id = :primary " +
+                "and cv.objClass =:objclass");
+        query.setParameter("identity", Xref.IDENTITY);
+        query.setParameter("secondaryAc", Xref.SECONDARY);
+        query.setParameter("primary", primaryId);
+        query.setParameter("objClass", objClass);
+        return (IntactCvTerm)query.getSingleResult();
+    }
+
     public Collection<IntactCvTerm> getByXrefLike(String dbName, String dbMI, String primaryId) {
         Query query;
         if (dbMI != null){
