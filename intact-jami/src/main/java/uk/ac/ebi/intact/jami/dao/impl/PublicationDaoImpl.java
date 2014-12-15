@@ -706,9 +706,10 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
     public int countInteractionsForPublication(String ac) {
         Query query = getEntityManager().createQuery("select sum(size(e.interactionEvidences)) from IntactPublication i " +
                 "join i.experiments as e " +
-                "where i.ac = :ac");
+                "where i.ac = :ac group by e.ac");
         query.setParameter("ac", ac);
-        return (Integer)query.getSingleResult();
+        Long res = (Long)query.getSingleResult();
+        return res != null ? res.intValue() : 0;
     }
 
     @Override
