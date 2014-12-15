@@ -226,9 +226,4 @@ public class IntactNucleicAcid extends IntactPolymer implements NucleicAcid{
         ddbjEmblGenbank = null;
         refseq = null;
     }
-
-    @Override
-    public String toString() {
-        return getDdbjEmblGenbank() != null ? ddbjEmblGenbank.getId() : (getRefseq() != null ? refseq.getId() : super.toString());
-    }
 }

@@ -272,11 +272,6 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
         }
     }
 
-    @Override
-    public String toString() {
-        return getChebi() != null ? getChebi() : (getStandardInchiKey() != null ? standardInchiKey.getValue() : (getSmile() != null ? smile.getValue() : (standardInchi != null ? standardInchi.getValue() : super.toString())));
-    }
-
     private void processAddedChecksumEvent(Checksum added) {
         // the added checksum is standard inchi key and it is not the current standard inchi key
         if (standardInchiKey == null && ChecksumUtils.doesChecksumHaveMethod(added, Checksum.STANDARD_INCHI_KEY_MI, Checksum.STANDARD_INCHI_KEY)){

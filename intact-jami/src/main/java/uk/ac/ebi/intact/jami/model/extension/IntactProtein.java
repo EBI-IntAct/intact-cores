@@ -346,9 +346,4 @@ public class IntactProtein extends IntactPolymer implements Protein{
             geneName = AliasUtils.collectFirstAliasWithType(getAliases(), Alias.GENE_NAME_MI, Alias.GENE_NAME);
         }
     }
-
-    @Override
-    public String toString() {
-        return getGeneName() != null ? geneName.getName() : (getUniprotkb() != null ? uniprotkb.getId() : (getRefseq() != null ? refseq.getId() : super.toString()));
-    }
 }

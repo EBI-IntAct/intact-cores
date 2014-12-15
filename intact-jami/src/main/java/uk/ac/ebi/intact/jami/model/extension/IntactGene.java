@@ -267,11 +267,6 @@ public class IntactGene extends IntactMolecule implements Gene{
         }
     }
 
-    @Override
-    public String toString() {
-        return getEnsembl() != null ? ensembl.getId() : (getEnsemblGenome() != null ? ensemblGenome.getId() : (getEntrezGeneId() != null ? entrezGeneId.getId() : (getRefseq() != null ? refseq.getId() : super.toString())));
-    }
-
     protected void processAddedIdentifierEvent(Xref added) {
         // the added identifier is ensembl and it is not the current ensembl identifier
         if (ensembl != added && XrefUtils.isXrefFromDatabase(added, Xref.ENSEMBL_MI, Xref.ENSEMBL)){
