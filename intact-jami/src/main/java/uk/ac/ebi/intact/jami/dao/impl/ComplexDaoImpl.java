@@ -634,7 +634,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
     @Override
     public int countComplexesInvolvingInteractor(String ac) {
         Query query = getEntityManager().createQuery("select count(distinct i.ac) from IntactComplex i " +
-                "join i.participants as p join p.interactors as inter " +
+                "join i.participants as p join p.interactor as inter " +
                 "where inter.ac = :ac");
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();

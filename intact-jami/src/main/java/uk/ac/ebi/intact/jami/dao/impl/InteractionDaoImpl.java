@@ -829,7 +829,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
     @Override
     public int countInteractionsInvolvingInteractor(String ac) {
         Query query = getEntityManager().createQuery("select count(distinct i.ac) from IntactInteractionEvidence i " +
-                "join i.participants as p join p.interactors as inter " +
+                "join i.participants as p join p.interactor as inter " +
                 "where inter.ac = :ac");
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();
