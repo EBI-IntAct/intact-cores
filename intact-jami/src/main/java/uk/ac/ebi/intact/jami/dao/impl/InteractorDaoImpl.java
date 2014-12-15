@@ -666,7 +666,8 @@ public class InteractorDaoImpl<T extends Interactor, F extends IntactInteractor>
                 "join i.organism o " +
                 "where o.ac = :ac");
         query.setParameter("ac", organismAc);
-        return (Integer)query.getSingleResult();
+        Long results = (Long)query.getSingleResult();
+        return results != null ? results.intValue() : 0;
     }
 
     @Override

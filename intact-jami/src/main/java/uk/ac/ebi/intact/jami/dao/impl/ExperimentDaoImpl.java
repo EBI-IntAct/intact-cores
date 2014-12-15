@@ -533,7 +533,8 @@ public class ExperimentDaoImpl extends AbstractIntactBaseDao<Experiment, IntactE
                 "join i.hostOrganism o " +
                 "where o.ac = :ac");
         query.setParameter("ac", organismAc);
-        return (Integer)query.getSingleResult();
+        Long results = (Long)query.getSingleResult();
+        return results != null ? results.intValue() : 0;
     }
 
     @Override

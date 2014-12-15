@@ -465,6 +465,7 @@ public class ParticipantEvidenceDaoImpl extends ParticipantDaoImpl<ParticipantEv
                 "join i.expressedInOrganism o " +
                 "where o.ac = :ac");
         query.setParameter("ac", organismAc);
-        return (Integer)query.getSingleResult();
+        Long results = (Long)query.getSingleResult();
+        return results != null ? results.intValue() : 0;
     }
 }

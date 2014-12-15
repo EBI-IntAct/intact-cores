@@ -832,6 +832,7 @@ public class InteractionDaoImpl extends AbstractIntactBaseDao<InteractionEvidenc
                 "join i.participants as p join p.interactor as inter " +
                 "where inter.ac = :ac");
         query.setParameter("ac", ac);
-        return (Integer)query.getSingleResult();
+        Long results = (Long)query.getSingleResult();
+        return results != null ? results.intValue() : 0;
     }
 }

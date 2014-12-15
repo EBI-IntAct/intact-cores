@@ -637,7 +637,8 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 "join i.participants as p join p.interactor as inter " +
                 "where inter.ac = :ac");
         query.setParameter("ac", ac);
-        return (Integer)query.getSingleResult();
+        Long results = (Long)query.getSingleResult();
+        return results != null ? results.intValue() : 0;
     }
 
     @Override
@@ -646,6 +647,7 @@ public class ComplexDaoImpl extends InteractorDaoImpl<Complex,IntactComplex> imp
                 "join i.organism o " +
                 "where o.ac = :ac");
         query.setParameter("ac", organismAc);
-        return (Integer)query.getSingleResult();
+        Long results = (Long)query.getSingleResult();
+        return results != null ? results.intValue() : 0;
     }
 }
