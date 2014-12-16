@@ -69,7 +69,7 @@ public class Application extends AbstractIntactPrimaryObject {
 
 
     @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name="application_ac", referencedColumnName="key")
+    @JoinColumn(name="application_ac", referencedColumnName="ac")
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
     @LazyCollection(LazyCollectionOption.FALSE)
     @ForeignKey(name="FK_PROP_APPLICATION")
