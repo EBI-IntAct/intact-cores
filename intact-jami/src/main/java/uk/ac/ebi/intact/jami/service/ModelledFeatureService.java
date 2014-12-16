@@ -25,7 +25,7 @@ import java.util.*;
  * @version $Id$
  * @since <pre>21/02/14</pre>
  */
-@Service(value = "featureEvidenceService")
+@Service(value = "modelledFeatureService")
 @Lazy
 public class ModelledFeatureService implements IntactService<ModelledFeature> {
 

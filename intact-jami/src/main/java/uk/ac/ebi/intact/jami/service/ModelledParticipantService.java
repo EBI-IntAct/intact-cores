@@ -24,7 +24,7 @@ import java.util.*;
  * @version $Id$
  * @since <pre>21/02/14</pre>
  */
-@Service(value = "participantEvidenceService")
+@Service(value = "modelledParticipantService")
 @Lazy
 public class ModelledParticipantService implements IntactService<ModelledParticipant> {
 
