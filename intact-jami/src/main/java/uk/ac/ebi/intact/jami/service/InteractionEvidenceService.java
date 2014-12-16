@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.jami.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +35,7 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Resource(name = "intactDao")
     private IntactDao intactDAO;
-    @Autowired
-    @Qualifier("intactTransactionSynchronization")
+    @Resource(name = "intactTransactionSynchronization")
     private IntactTransactionSynchronization afterCommitExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
