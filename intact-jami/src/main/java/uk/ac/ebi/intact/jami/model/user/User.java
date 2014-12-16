@@ -42,8 +42,6 @@ public class User extends AbstractIntactPrimaryObject {
     // Constructors
 
     protected User() {
-        this.roles = new HashSet<Role>();
-        this.preferences = new ArrayList<Preference>();
         this.disabled = false;
     }
 
@@ -149,18 +147,21 @@ public class User extends AbstractIntactPrimaryObject {
     @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
     @LazyCollection(LazyCollectionOption.FALSE)
     public Set<Role> getRoles() {
+        if (this.roles == null){
+            this.roles = new HashSet<Role>();
+        }
         return roles;
     }
 
     public void addRole(Role role) {
         if (role != null) {
-            roles.add(role);
+            getRoles().add(role);
         }
     }
 
     public void removeRole(Role role) {
         if (role != null) {
-            roles.remove(role);
+            getRoles().remove(role);
         }
     }
 
@@ -170,7 +171,7 @@ public class User extends AbstractIntactPrimaryObject {
 
     public boolean hasRole(String roleName) {
         if (roleName != null) {
-            return this.roles.contains(roleName.trim().toUpperCase());
+            return this.getRoles().contains(roleName.trim().toUpperCase());
         }
         return false;
     }
@@ -189,6 +190,9 @@ public class User extends AbstractIntactPrimaryObject {
     @ForeignKey(name="FK_PREF_USER")
     @LazyCollection(LazyCollectionOption.FALSE)
     public Collection<Preference> getPreferences() {
+        if (this.preferences == null){
+           this.preferences = new ArrayList<Preference>();
+        }
         return preferences;
     }
 
@@ -241,7 +245,7 @@ public class User extends AbstractIntactPrimaryObject {
 
     public void removePreference(Preference preference) {
         if (preference != null) {
-            preferences.remove(preference);
+            getPreferences().remove(preference);
         }
     }
 
@@ -258,8 +262,8 @@ public class User extends AbstractIntactPrimaryObject {
         sb.append(", lastLogin=").append(lastLogin);
         sb.append(", email='").append(email).append('\'');
         sb.append(", disabled='").append(disabled).append('\'');
-        sb.append(", roles=").append(roles);
-        sb.append(", preferences=").append(preferences);
+        sb.append(", roles=").append(getRoles());
+        sb.append(", preferences=").append(getPreferences());
         sb.append('}');
         return sb.toString();
     }
