@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringPersistentObject;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
@@ -172,6 +173,6 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Role, Role>(this));
+        super.setIntactMerger(new IntactDbMergerIgnoringLocalObject<Role, Role>(this));
     }
 }
