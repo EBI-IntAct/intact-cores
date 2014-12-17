@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.service;
 
+import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
@@ -50,4 +51,6 @@ public interface IntactService<I> {
     public void delete(I object) throws PersisterException, FinderException, SynchronizerException;
 
     public void delete(Collection<? extends I> objects) throws SynchronizerException, PersisterException, FinderException;
+
+    public IntactDao getIntactDao();
 }
