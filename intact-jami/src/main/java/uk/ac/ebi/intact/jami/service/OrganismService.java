@@ -139,6 +139,10 @@ public class OrganismService implements IntactService<Organism>{
         this.intactDAO.getSynchronizerContext().getOrganismSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyOrganism(boolean loadLazyCollections, List<Organism> results) {
         if (loadLazyCollections){
             for (Organism organism : results){

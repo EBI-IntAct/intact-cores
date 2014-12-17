@@ -149,6 +149,10 @@ public class ModelledParticipantService implements IntactService<ModelledPartici
         this.intactDAO.getSynchronizerContext().getModelledParticipantSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyParticipant(boolean loadLazyCollections, List<ModelledParticipant> results) {
         if (loadLazyCollections){
             for (ModelledParticipant participant : results){

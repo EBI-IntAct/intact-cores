@@ -402,7 +402,7 @@ public abstract class AbstractReleasableLifeCycleService<T extends Releasable> i
     protected abstract T loadReleasableByAc(String ac);
     protected abstract void updateReleasable(T releasable);
 
-    protected IntactDao getIntactDao() {
+    public IntactDao getIntactDao() {
         return intactDao;
     }
 

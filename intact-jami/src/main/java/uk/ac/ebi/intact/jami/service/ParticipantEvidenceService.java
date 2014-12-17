@@ -150,6 +150,10 @@ public class ParticipantEvidenceService implements IntactService<ParticipantEvid
         this.intactDAO.getSynchronizerContext().getParticipantEvidenceSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyParticipant(boolean loadLazyCollections, List<ParticipantEvidence> results) {
         if (loadLazyCollections){
             for (ParticipantEvidence participant : results){

@@ -136,6 +136,10 @@ public class SourceService implements IntactService<Source>{
         this.intactDAO.getSynchronizerContext().getSourceSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazySource(boolean loadLazyCollections, List<Source> results) {
         if (loadLazyCollections){
             for (Source source : results){

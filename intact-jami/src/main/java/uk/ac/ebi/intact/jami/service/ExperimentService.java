@@ -156,6 +156,10 @@ public class ExperimentService implements IntactService<Experiment>{
         this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyExperiment(boolean loadLazyCollections, List<Experiment> results) {
         if (loadLazyCollections){
             for (Experiment exp : results){

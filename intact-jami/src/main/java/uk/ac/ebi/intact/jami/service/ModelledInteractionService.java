@@ -156,6 +156,10 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
         this.intactDAO.getSynchronizerContext().getComplexSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyInteraction(boolean loadLazyCollections, List<ModelledInteraction> results) {
         if (loadLazyCollections){
             for (ModelledInteraction interactor : results){

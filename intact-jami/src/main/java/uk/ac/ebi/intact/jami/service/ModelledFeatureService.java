@@ -150,6 +150,10 @@ public class ModelledFeatureService implements IntactService<ModelledFeature> {
         this.intactDAO.getSynchronizerContext().getModelledFeatureSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyFeature(boolean loadLazyCollections, List<ModelledFeature> results) {
         if (loadLazyCollections){
             for (ModelledFeature feature : results){

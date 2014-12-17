@@ -135,6 +135,10 @@ public class InteractorService implements IntactService<Interactor>{
         this.intactDAO.getSynchronizerContext().getInteractorSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyInteractor(boolean loadLazyCollections, List<Interactor> results) {
         if (loadLazyCollections){
             for (Interactor interactor : results){

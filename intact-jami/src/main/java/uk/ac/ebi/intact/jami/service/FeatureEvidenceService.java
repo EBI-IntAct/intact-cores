@@ -150,6 +150,10 @@ public class FeatureEvidenceService implements IntactService<FeatureEvidence> {
         this.intactDAO.getSynchronizerContext().getFeatureEvidenceSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyFeature(boolean loadLazyCollections, List<FeatureEvidence> results) {
         if (loadLazyCollections){
             for (FeatureEvidence feature : results){

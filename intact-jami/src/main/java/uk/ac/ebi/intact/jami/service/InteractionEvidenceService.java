@@ -173,6 +173,10 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
         this.intactDAO.getSynchronizerContext().getInteractionSynchronizer().flush();
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyInteraction(boolean loadLazyCollections, List<InteractionEvidence> results) {
         if (loadLazyCollections){
             for (InteractionEvidence interaction : results){

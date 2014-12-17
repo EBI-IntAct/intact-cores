@@ -144,6 +144,10 @@ public class CvTermService implements IntactService<CvTerm>{
         this.objClass = objClass;
     }
 
+    public IntactDao getIntactDao() {
+        return intactDAO;
+    }
+
     private void initialiseLazyCvTerm(boolean loadLazyCollections, List<CvTerm> results) {
         if (loadLazyCollections){
             for (CvTerm cv : results){

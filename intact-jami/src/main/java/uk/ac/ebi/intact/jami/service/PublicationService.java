@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Publication;
+import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
