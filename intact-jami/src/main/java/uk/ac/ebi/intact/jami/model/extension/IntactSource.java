@@ -186,11 +186,13 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
             getDbXrefs().removeAll(this.bibRef.getIdentifiers());
         }
         this.bibRef = ref;
-        if (!ref.getIdentifiers().isEmpty()){
-            resetXrefs();
-            for (Xref primary : this.bibRef.getIdentifiers()){
-                getDbXrefs().add(new SourceXref(primary.getDatabase(), primary.getId(), primary.getVersion(),
-                        IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI)));
+        if (this.bibRef != null){
+            if (!ref.getIdentifiers().isEmpty()){
+                resetXrefs();
+                for (Xref primary : this.bibRef.getIdentifiers()){
+                    getDbXrefs().add(new SourceXref(primary.getDatabase(), primary.getId(), primary.getVersion(),
+                            IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI)));
+                }
             }
         }
     }
