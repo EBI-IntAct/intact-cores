@@ -133,6 +133,10 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
             curatedExperiment = new IntactExperiment(intactCuratedPub);
             ExperimentCloner.copyAndOverrideExperimentProperties(exp, curatedExperiment);
+            if (intactCuratedPub != null){
+               curatedExperiment.setPublication(intactCuratedPub);
+            }
+
             // create experiment in database if not done
             intactDAO.getExperimentDao().persist(curatedExperiment);
             object.setExperimentAndAddInteractionEvidence(curatedExperiment);
