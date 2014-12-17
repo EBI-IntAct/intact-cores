@@ -121,7 +121,7 @@ public class ExperimentService implements IntactService<Experiment>{
                 IntactPublication intactCuratedPub = new IntactPublication();
                 PublicationCloner.copyAndOverridePublicationProperties(pub, intactCuratedPub);
 
-                object.setPublication(intactDAO.getSynchronizerContext().getPublicationSynchronizer().persist(intactCuratedPub));
+                object.setPublication(intactDAO.getSynchronizerContext().getPublicationSynchronizer().synchronize(intactCuratedPub, true));
             }
         }
         // we can synchronize the complex with the database now

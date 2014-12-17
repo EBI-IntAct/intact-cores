@@ -127,7 +127,7 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
                    intactCuratedPub = new IntactPublication();
                    PublicationCloner.copyAndOverridePublicationProperties(pub, intactCuratedPub);
 
-                   intactCuratedPub = intactDAO.getSynchronizerContext().getPublicationSynchronizer().persist(intactCuratedPub);
+                   intactCuratedPub = intactDAO.getSynchronizerContext().getPublicationSynchronizer().synchronize(intactCuratedPub, true);
                }
            }
 
@@ -138,7 +138,7 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
             }
 
             // create experiment in database if not done
-            object.setExperiment(intactDAO.getSynchronizerContext().getExperimentSynchronizer().persist(curatedExperiment));
+            object.setExperiment(intactDAO.getSynchronizerContext().getExperimentSynchronizer().synchronize(curatedExperiment, true));
         }
 
         // we can synchronize the interaction with the database now
