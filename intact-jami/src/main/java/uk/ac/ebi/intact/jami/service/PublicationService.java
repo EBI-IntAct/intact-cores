@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.jami.service;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import java.util.logging.Logger;
  */
 @Service(value = "publicationService")
 @Lazy
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class PublicationService extends AbstractReleasableLifeCycleService<IntactPublication> implements IntactService<Publication>{
 
     private static final Logger LOGGER = Logger.getLogger("ComplexService");
