@@ -131,7 +131,7 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
                }
            }
 
-            curatedExperiment = new IntactExperiment(intactCuratedPub);
+            curatedExperiment = new IntactExperiment(null);
             ExperimentCloner.copyAndOverrideExperimentProperties(exp, curatedExperiment);
             if (intactCuratedPub != null){
                curatedExperiment.setPublication(intactCuratedPub);
