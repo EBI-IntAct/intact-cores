@@ -110,16 +110,16 @@ public class FeatureEvidenceService implements IntactService<FeatureEvidence> {
         this.intactDAO.getSynchronizerContext().getFeatureEvidenceSynchronizer().flush();
     }
 
-    protected void saveFeature(FeatureEvidence object) throws FinderException, PersisterException, SynchronizerException {
+    protected IntactFeatureEvidence saveFeature(FeatureEvidence object) throws FinderException, PersisterException, SynchronizerException {
         // if the feature has a participant, we may have to persist the participant first
         if (object.getParticipant() != null && (!(object.getParticipant() instanceof IntactParticipantEvidence && object.getParticipant() instanceof ParticipantEvidence)
                 || intactDAO.getParticipantEvidenceDao().isTransient((IntactParticipantEvidence)object.getParticipant()))){
             ParticipantEvidence participant = (ParticipantEvidence)object.getParticipant();
-            this.participantEvidenceService.saveParticipant(participant);
+            object.setParticipant(this.participantEvidenceService.saveParticipant(participant));
         }
 
         // we can synchronize the feature with the database now
-        intactDAO.getSynchronizerContext().getFeatureEvidenceSynchronizer().synchronize(object, true);
+        return intactDAO.getSynchronizerContext().getFeatureEvidenceSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

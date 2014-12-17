@@ -108,7 +108,7 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
         this.intactDAO.getSynchronizerContext().getComplexSynchronizer().flush();
     }
 
-    protected void saveModelledInteraction(ModelledInteraction object) throws FinderException, PersisterException, SynchronizerException {
+    protected IntactComplex saveModelledInteraction(ModelledInteraction object) throws FinderException, PersisterException, SynchronizerException {
         Complex complex;
         if (!(object instanceof Complex)){
             complex = new IntactComplex(object.getShortName() != null ? object.getShortName() : "unknown");
@@ -118,7 +118,7 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
             complex = (Complex)object;
         }
         // we can synchronize the complex with the database now
-        intactDAO.getSynchronizerContext().getComplexSynchronizer().synchronize(complex, true);
+        return intactDAO.getSynchronizerContext().getComplexSynchronizer().synchronize(complex, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

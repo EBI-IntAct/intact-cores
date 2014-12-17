@@ -110,16 +110,16 @@ public class ModelledFeatureService implements IntactService<ModelledFeature> {
         this.intactDAO.getSynchronizerContext().getModelledFeatureSynchronizer().flush();
     }
 
-    protected void saveFeature(ModelledFeature object) throws FinderException, PersisterException, SynchronizerException {
+    protected IntactModelledFeature saveFeature(ModelledFeature object) throws FinderException, PersisterException, SynchronizerException {
         // if the feature has a participant, we may have to persist the participant first
         if (object.getParticipant() != null && (!(object.getParticipant() instanceof IntactModelledParticipant && object.getParticipant() instanceof ModelledParticipant)
                 || intactDAO.getModelledParticipantDao().isTransient((IntactModelledParticipant)object.getParticipant()))){
             ModelledParticipant participant = (ModelledParticipant)object.getParticipant();
-            this.modelledParticipantService.saveParticipant(participant);
+            object.setParticipant(this.modelledParticipantService.saveParticipant(participant));
         }
 
         // we can synchronize the feature with the database now
-        intactDAO.getSynchronizerContext().getModelledFeatureSynchronizer().synchronize(object, true);
+        return intactDAO.getSynchronizerContext().getModelledFeatureSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

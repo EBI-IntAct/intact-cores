@@ -111,7 +111,7 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
         this.intactDAO.getSynchronizerContext().getInteractionSynchronizer().flush();
     }
 
-    protected void saveInteraction(InteractionEvidence object) throws FinderException, PersisterException, SynchronizerException {
+    protected IntactInteractionEvidence saveInteraction(InteractionEvidence object) throws FinderException, PersisterException, SynchronizerException {
         IntactExperiment curatedExperiment = null;
         // if the interaction has an experiment, we may have to persist the experiment first
         if (object.getExperiment() != null && (!(object.getExperiment() instanceof IntactExperiment)
@@ -139,11 +139,11 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
             // create experiment in database if not done
             intactDAO.getExperimentDao().persist(curatedExperiment);
-            object.setExperimentAndAddInteractionEvidence(curatedExperiment);
+            object.setExperiment(curatedExperiment);
         }
 
         // we can synchronize the interaction with the database now
-        intactDAO.getSynchronizerContext().getInteractionSynchronizer().synchronize(object, true);
+       return intactDAO.getSynchronizerContext().getInteractionSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

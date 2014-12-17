@@ -111,7 +111,7 @@ public class ExperimentService implements IntactService<Experiment>{
         this.intactDAO.getSynchronizerContext().getExperimentSynchronizer().flush();
     }
 
-    protected void saveExperiment(Experiment object) throws FinderException, SynchronizerException, PersisterException {
+    protected IntactExperiment saveExperiment(Experiment object) throws FinderException, SynchronizerException, PersisterException {
         Publication pub = object.getPublication();
         // create publication first in the database if not done
         if (pub != null){
@@ -122,11 +122,11 @@ public class ExperimentService implements IntactService<Experiment>{
                 PublicationCloner.copyAndOverridePublicationProperties(pub, intactCuratedPub);
 
                 intactDAO.getPublicationDao().persist(intactCuratedPub);
-                intactCuratedPub.addExperiment(object);
+                object.setPublication(intactCuratedPub);
             }
         }
         // we can synchronize the complex with the database now
-        intactDAO.getSynchronizerContext().getExperimentSynchronizer().synchronize(object, true);
+        return intactDAO.getSynchronizerContext().getExperimentSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

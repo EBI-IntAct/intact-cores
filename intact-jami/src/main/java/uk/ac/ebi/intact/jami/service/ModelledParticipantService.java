@@ -109,16 +109,16 @@ public class ModelledParticipantService implements IntactService<ModelledPartici
         this.intactDAO.getSynchronizerContext().getModelledParticipantSynchronizer().flush();
     }
 
-    protected void saveParticipant(ModelledParticipant object) throws FinderException, PersisterException, SynchronizerException {
+    protected IntactModelledParticipant saveParticipant(ModelledParticipant object) throws FinderException, PersisterException, SynchronizerException {
         // if the participant has an interaction, we may have to persist the interaction first
         if (object.getInteraction() != null && (!(object.getInteraction() instanceof IntactComplex)
                 || intactDAO.getComplexDao().isTransient((IntactComplex)object.getInteraction()))){
            ModelledInteraction interaction = object.getInteraction();
-           this.modelledInteractionService.saveModelledInteraction(interaction);
+           object.setInteraction(this.modelledInteractionService.saveModelledInteraction(interaction));
         }
 
         // we can synchronize the participant with the database now
-        intactDAO.getSynchronizerContext().getModelledParticipantSynchronizer().synchronize(object, true);
+        return intactDAO.getSynchronizerContext().getModelledParticipantSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")

@@ -110,16 +110,16 @@ public class ParticipantEvidenceService implements IntactService<ParticipantEvid
         this.intactDAO.getSynchronizerContext().getParticipantEvidenceSynchronizer().flush();
     }
 
-    protected void saveParticipant(ParticipantEvidence object) throws FinderException, PersisterException, SynchronizerException {
+    protected IntactParticipantEvidence saveParticipant(ParticipantEvidence object) throws FinderException, PersisterException, SynchronizerException {
         // if the participant has an interaction, we may have to persist the interaction first
         if (object.getInteraction() != null && (!(object.getInteraction() instanceof IntactInteractionEvidence)
                 || intactDAO.getInteractionDao().isTransient((IntactInteractionEvidence)object.getInteraction()))){
            InteractionEvidence interaction = object.getInteraction();
-           this.interactionEvidenceService.saveInteraction(interaction);
+           object.setInteraction(this.interactionEvidenceService.saveInteraction(interaction));
         }
 
         // we can synchronize the participant with the database now
-        intactDAO.getSynchronizerContext().getParticipantEvidenceSynchronizer().synchronize(object, true);
+        return intactDAO.getSynchronizerContext().getParticipantEvidenceSynchronizer().synchronize(object, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager")
