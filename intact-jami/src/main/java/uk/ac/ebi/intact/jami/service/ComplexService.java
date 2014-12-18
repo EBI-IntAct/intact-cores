@@ -141,8 +141,8 @@ public class ComplexService extends AbstractReleasableLifeCycleService<IntactCom
 
         return getIntactDao().getEntityManager().createQuery("update IntactComplex ao " +
                 "set ao.source = :destInstitution " +
-                "where ao.currentOwner.login = :creator " +
-                "and ao.source.ac <> :destInstitutionAc")
+                "where ao.ac in (select distinct ao2.ac from IntactComplex ao2 where ao2.currentOwner.login = :creator " +
+                "and ao2.source.ac <> :destInstitutionAc)")
                 .setParameter("destInstitution", destinationInstitution)
                 .setParameter("creator", createUser)
                 .setParameter("destInstitutionAc", destinationInstitution.getAc())
