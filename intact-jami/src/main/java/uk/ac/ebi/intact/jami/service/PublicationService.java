@@ -187,7 +187,7 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
 
         return getIntactDao().getEntityManager().createQuery("update IntactPublication ao " +
                 "set ao.source = :destInstitution " +
-                "where ao.currentOwner = :creator " +
+                "where ao.currentOwner.login = :creator " +
                 "and ao.source.ac <> :destInstitutionAc")
                 .setParameter("destInstitution", destinationInstitution)
                 .setParameter("creator", createUser)
