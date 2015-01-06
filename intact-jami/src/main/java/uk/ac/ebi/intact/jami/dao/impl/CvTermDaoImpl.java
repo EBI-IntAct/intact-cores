@@ -7,7 +7,11 @@ import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.dao.CvTermDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -755,5 +759,12 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     @Override
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDbSynchronizer() {
         return getSynchronizerContext().getGeneralCvSynchronizer();
+    }
+
+    @Override
+    protected IntactCvTerm synchronizeAndUpdateObjectProperties(IntactCvTerm objToUpdate) throws PersisterException, FinderException, SynchronizerException {
+        // init obj class synchronizer
+        ((CvTermSynchronizer)getDbSynchronizer()).setObjClass(objToUpdate.getObjClass());
+        return super.synchronizeAndUpdateObjectProperties(objToUpdate);
     }
 }
