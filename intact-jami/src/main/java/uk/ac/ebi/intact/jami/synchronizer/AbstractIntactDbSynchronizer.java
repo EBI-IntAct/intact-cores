@@ -130,10 +130,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 // no needs to synchronize again the properties
                 needToSynchronizeProperties = false;
             }
-            // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
-            else if (isObjectStoredInCache(object)){
-               return processCachedObject(object, mode, true);
-            }
 
             // detached existing instance which need to be reattached to the session
             if (identifier != null && !this.entityManager.contains(intactObject)){
@@ -146,6 +142,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 resetEntityManagerFlushType(mode);
                 return merged;
 
+            }
+            // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
+            else if (isObjectStoredInCache(object)){
+                return processCachedObject(object, mode, true);
             }
             // retrieve and/or persist transient instance
             else if (identifier == null){
