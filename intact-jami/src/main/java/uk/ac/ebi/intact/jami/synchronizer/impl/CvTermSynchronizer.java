@@ -334,7 +334,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     public void setObjClass(String objClass) {
-        this.objClass = objClass != null ? objClass : IntactUtils.TOPIC_OBJCLASS;
+        this.objClass = objClass;
     }
 
     public void prepareAndSynchronizeShortLabel(IntactCvTerm intactCv) {
