@@ -58,7 +58,7 @@ public interface IntactBaseDao<T extends Auditable> {
 
     public void detach(T objToEvict);
 
-    public void merge(T objToReplicate) throws FinderException, SynchronizerException, PersisterException;
+    public T merge(T objToReplicate) throws FinderException, SynchronizerException, PersisterException;
 
     public boolean isTransient(T object);
 

@@ -143,8 +143,8 @@ public abstract class AbstractIntactBaseDao<I,T extends Auditable> implements In
         getEntityManager().detach(objToEvict);
     }
 
-    public void merge(T objToReplicate) throws FinderException,PersisterException,SynchronizerException{
-        synchronizeAndUpdateObjectProperties(objToReplicate);
+    public T merge(T objToReplicate) throws FinderException,PersisterException,SynchronizerException{
+        return synchronizeAndUpdateObjectProperties(objToReplicate);
     }
 
     public boolean isTransient(T object) {
