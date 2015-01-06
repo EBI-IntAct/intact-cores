@@ -760,11 +760,4 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDbSynchronizer() {
         return getSynchronizerContext().getGeneralCvSynchronizer();
     }
-
-    @Override
-    protected IntactCvTerm synchronizeAndUpdateObjectProperties(IntactCvTerm objToUpdate) throws PersisterException, FinderException, SynchronizerException {
-        // init obj class synchronizer
-        ((CvTermSynchronizer)getDbSynchronizer()).setObjClass(objToUpdate.getObjClass());
-        return super.synchronizeAndUpdateObjectProperties(objToUpdate);
-    }
 }
