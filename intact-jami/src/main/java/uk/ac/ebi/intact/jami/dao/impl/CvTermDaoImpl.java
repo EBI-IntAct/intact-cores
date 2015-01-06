@@ -139,7 +139,7 @@ public class CvTermDaoImpl extends AbstractIntactBaseDao<CvTerm, IntactCvTerm> i
         query.setParameter("identity", Xref.IDENTITY);
         query.setParameter("secondaryAc", Xref.SECONDARY);
         query.setParameter("primary", primaryId);
-        query.setParameter("objClass", objClass);
+        query.setParameter("objclass", objClass);
         return (IntactCvTerm)query.getSingleResult();
     }
 
