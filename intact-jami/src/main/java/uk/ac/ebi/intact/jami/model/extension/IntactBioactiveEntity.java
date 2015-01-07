@@ -390,7 +390,7 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
             }
             // we have a simple annotation
             else{
-                getAnnotations().add(annotation);
+                ((BioactiveEntityAnnotationList)getAnnotations()).addOnly(annotation);
             }
         }
     }
