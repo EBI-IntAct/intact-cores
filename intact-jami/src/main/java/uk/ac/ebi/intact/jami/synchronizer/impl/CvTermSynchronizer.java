@@ -63,7 +63,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     public CvTermSynchronizer(SynchronizerContext context, String objClass){
         this(context);
         //If no objclass provided all new cv created will be annotation topic by default
-        this.objClass = null;
+        this.objClass = objClass;
     }
 
     public IntactCvTerm find(CvTerm term) throws FinderException {
