@@ -19,4 +19,7 @@ public interface InteractorPoolDao extends InteractorDao<IntactInteractorPool> {
     public Collection<IntactInteractorPool> getByInteractorShortName(String value);
 
     public int countMembersOfPool(String ac);
+
+    public int countMoleculeSetsInvolvingInteractor(String ac);
+
 }

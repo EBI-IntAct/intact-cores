@@ -54,4 +54,14 @@ public class InteractorPoolDaoImpl extends InteractorDaoImpl<InteractorPool,Inta
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();
     }
+
+    @Override
+    public int countMoleculeSetsInvolvingInteractor(String ac) {
+        Query query = getEntityManager().createQuery("select count(distinct i.ac) from IntactInteractorPool i " +
+                "join i.interactors as inter " +
+                "where inter.ac = :ac");
+        query.setParameter("ac", ac);
+        Long results = (Long)query.getSingleResult();
+        return results != null ? results.intValue() : 0;
+    }
 }
