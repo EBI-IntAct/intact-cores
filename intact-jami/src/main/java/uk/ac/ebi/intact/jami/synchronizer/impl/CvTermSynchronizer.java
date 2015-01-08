@@ -343,40 +343,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             log.warn("Cv term shortLabel too long: "+intactCv.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        String name;
-        List<String> existingCvs;
-        do{
-            name = intactCv.getShortName().trim().toLowerCase();
-            existingCvs = Collections.EMPTY_LIST;
 
-            // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select cv.shortName from IntactCvTerm cv " +
-                    "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
-                    + (this.objClass != null ? " and cv.objClass = :objclass " : " ")
-                    + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
-            query.setParameter("name", name);
-            query.setParameter("nameWithSuffix", name+"-%");
-            if (this.objClass != null){
-                query.setParameter("objclass", this.objClass);
-            }
-            if (intactCv.getAc() != null){
-                query.setParameter("cvAc", intactCv.getAc());
-            }
-            existingCvs = query.getResultList();
-            if (!existingCvs.isEmpty()){
-                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-                if (!nameInSync.equals(name)){
-                    intactCv.setShortName(nameInSync);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                intactCv.setShortName(name);
-            }
-        }
-        while(!existingCvs.isEmpty());
+        IntactUtils.synchronizeCvTermShortName(intactCv, getEntityManager(), this.objClass);
     }
 
     protected IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {

@@ -504,36 +504,8 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             log.warn("Source shortLabel too long: "+intactSource.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        String name;
-        List<String> existingSource;
-        do{
-            name = intactSource.getShortName().trim();
-            existingSource = Collections.EMPTY_LIST;
 
-            // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select s.shortName from IntactSource s " +
-                    "where (s.shortName = :name or s.shortName like :nameWithSuffix) "
-                    + (intactSource.getAc() != null ? "and s.ac <> :sourceAc" : ""));
-            query.setParameter("name", name);
-            query.setParameter("nameWithSuffix", name+"-%");
-            if (intactSource.getAc() != null){
-                query.setParameter("sourceAc", intactSource.getAc());
-            }
-            existingSource = query.getResultList();
-            if (!existingSource.isEmpty()){
-                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingSource, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-                if (!nameInSync.equals(name)){
-                    intactSource.setShortName(nameInSync);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                intactSource.setShortName(name);
-            }
-        }
-        while(!existingSource.isEmpty());
+        IntactUtils.synchronizeSourceShortName(intactSource, getEntityManager());
     }
 
     @Override

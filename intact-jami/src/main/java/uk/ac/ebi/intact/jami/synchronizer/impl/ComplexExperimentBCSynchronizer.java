@@ -387,36 +387,7 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         }
 
         // then synchronize with database
-        String name;
-        List<String> existingExperiments;
-        do{
-            name = intactExperiment.getShortLabel().trim().toLowerCase();
-            existingExperiments = Collections.EMPTY_LIST;
-
-            // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select e.shortLabel from IntactExperiment e " +
-                    "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
-                    + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
-            query.setParameter("name", name);
-            query.setParameter("nameWithSuffix", name+"-%");
-            if (intactExperiment.getAc() != null){
-                query.setParameter("expAc", intactExperiment.getAc());
-            }
-            existingExperiments = query.getResultList();
-            if (!existingExperiments.isEmpty()){
-                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
-                if (!nameInSync.equals(name)){
-                    intactExperiment.setShortLabel(nameInSync);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                intactExperiment.setShortLabel(name);
-            }
-        }
-        while(!existingExperiments.isEmpty());
+        IntactUtils.synchronizeExperimentShortLabel(intactExperiment, getEntityManager(), Collections.EMPTY_SET);
     }
 
     @Override

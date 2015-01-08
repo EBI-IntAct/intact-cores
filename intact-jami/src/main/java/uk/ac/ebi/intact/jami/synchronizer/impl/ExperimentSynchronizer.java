@@ -7,11 +7,16 @@ import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
-import uk.ac.ebi.intact.jami.utils.comparator.IntactExperimentComparator;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
+import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactExperimentComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -505,40 +510,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         }
 
         // then synchronize with database
-        String name;
-        List<String> existingExperiments;
-        do{
-            name = intactExperiment.getShortLabel().trim().toLowerCase();
-            existingExperiments = Collections.EMPTY_LIST;
-
-            // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select e.shortLabel from IntactExperiment e " +
-                    "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
-                    + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
-            query.setParameter("name", name);
-            query.setParameter("nameWithSuffix", name+"-%");
-            if (intactExperiment.getAc() != null){
-                query.setParameter("expAc", intactExperiment.getAc());
-            }
-            existingExperiments = query.getResultList();
-            // check cached names
-            if (this.persistedNames.contains(name)){
-                existingExperiments.add(name);
-            }
-            if (!existingExperiments.isEmpty()){
-                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
-                if (!nameInSync.equals(name)){
-                    intactExperiment.setShortLabel(nameInSync);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                intactExperiment.setShortLabel(name);
-            }
-        }
-        while(!existingExperiments.isEmpty());
+        IntactUtils.synchronizeExperimentShortLabel(intactExperiment, getEntityManager(), this.persistedNames);
 
         this.persistedNames.add(intactExperiment.getShortLabel());
     }

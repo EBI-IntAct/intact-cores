@@ -5,11 +5,13 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractionCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.InteractionEvidenceMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
-import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
+import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
+import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
+import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
-import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -277,52 +279,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
             intactInteraction.setShortName(IntactUtils.generateAutomaticInteractionEvidenceShortlabelFor(intactInteraction, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
-        // then synchronize with database
-        String name;
-        List<String> existingInteractions;
-        do{
-            name = intactInteraction.getShortName().trim().toLowerCase();
-            existingInteractions = Collections.EMPTY_LIST;
-
-            // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select i.shortName from IntactInteractionEvidence i " +
-                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
-                    + (intactInteraction.getAc() != null ? "and i.ac <> :interAc" : ""));
-            query.setParameter("name", name);
-            query.setParameter("nameWithSuffix", name+"-%");
-            if (intactInteraction.getAc() != null){
-                query.setParameter("interAc", intactInteraction.getAc());
-            }
-            existingInteractions = query.getResultList();
-            // check also with interactors
-            Query query2 = getEntityManager().createQuery("select i.shortName from IntactInteractor i " +
-                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
-                    + (intactInteraction.getAc() != null ? "and i.ac <> :interAc" : ""));
-            query2.setParameter("name", name);
-            query2.setParameter("nameWithSuffix", name+"-%");
-            if (intactInteraction.getAc() != null){
-                query2.setParameter("interAc", intactInteraction.getAc());
-            }
-            existingInteractions.addAll(query2.getResultList());
-            // check cached names
-            if (this.persistedNames.contains(name)){
-                existingInteractions.add(name);
-            }
-
-            if (!existingInteractions.isEmpty()){
-                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractions, IntactUtils.MAX_SHORT_LABEL_LEN, true);
-                if (!nameInSync.equals(name)){
-                    intactInteraction.setShortName(nameInSync);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                intactInteraction.setShortName(name);
-            }
-        }
-        while(!existingInteractions.isEmpty());
+        IntactUtils.synchronizeInteractionEvidenceShortName(intactInteraction, getEntityManager(), this.persistedNames);
 
         this.persistedNames.add(intactInteraction.getShortName());
     }

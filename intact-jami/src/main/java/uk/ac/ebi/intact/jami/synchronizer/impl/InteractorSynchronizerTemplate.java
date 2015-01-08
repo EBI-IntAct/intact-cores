@@ -5,16 +5,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
-import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.model.Alias;
+import psidev.psi.mi.jami.model.Annotation;
+import psidev.psi.mi.jami.model.Interactor;
+import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.InteractorBaseMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.*;
+import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
+import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactExactInteractorBaseComparator;
-import uk.ac.ebi.intact.jami.utils.comparator.IntactInteractorBaseComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -438,35 +442,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             log.warn("Interactor shortLabel too long: "+intactInteractor.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactInteractor.setShortName(intactInteractor.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        String name;
-        List<String> existingInteractors;
-        do{
-            name = intactInteractor.getShortName().trim().toLowerCase();
 
-            // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select i.shortName from IntactInteractor i " +
-                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
-                    + (intactInteractor.getAc() != null ? "and i.ac <> :interactorAc" : ""));
-            query.setParameter("name", name);
-            query.setParameter("nameWithSuffix", name+"-%");
-            if (intactInteractor.getAc() != null){
-                query.setParameter("interactorAc", intactInteractor.getAc());
-            }
-            existingInteractors = query.getResultList();
-            if (!existingInteractors.isEmpty()){
-                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-                if (!nameInSync.equals(name)){
-                    intactInteractor.setShortName(nameInSync);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                intactInteractor.setShortName(name);
-            }
-        }
-        while(!existingInteractors.isEmpty());
+        IntactUtils.synchronizeInteractorShortName(intactInteractor, getEntityManager());
     }
 
     protected Collection<I> findByIdentifier(T term, IntactOrganism existingOrganism, IntactCvTerm existingType) throws FinderException {

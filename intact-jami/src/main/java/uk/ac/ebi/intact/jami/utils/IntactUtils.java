@@ -8,6 +8,8 @@ import psidev.psi.mi.jami.utils.ParticipantUtils;
 import psidev.psi.mi.jami.utils.comparator.IntegerComparator;
 import uk.ac.ebi.intact.jami.model.extension.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -264,6 +266,206 @@ public class IntactUtils {
             return label1+(organismName != null ? "_"+organismName : "").substring(0, maxLength);
         }
         return label1+(organismName != null ? "_"+organismName : "");
+    }
+
+    public static void synchronizeExperimentShortLabel(IntactExperiment intactExperiment, EntityManager manager, Set<String> persistedNames){
+        if (intactExperiment.getShortLabel() == null){
+            return;
+        }
+        // then synchronize with database
+        String name;
+        List<String> existingExperiments;
+        do{
+            name = intactExperiment.getShortLabel().trim().toLowerCase();
+
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
+                    "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
+                    + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (intactExperiment.getAc() != null){
+                query.setParameter("expAc", intactExperiment.getAc());
+            }
+            existingExperiments = query.getResultList();
+            // check cached names
+            if (persistedNames.contains(name)){
+                existingExperiments.add(name);
+            }
+            if (!existingExperiments.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
+                if (!nameInSync.equals(name)){
+                    intactExperiment.setShortLabel(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactExperiment.setShortLabel(name);
+            }
+        }
+        while(!existingExperiments.isEmpty());
+    }
+
+    public static void synchronizeInteractionEvidenceShortName(IntactInteractionEvidence intactInteraction, EntityManager manager, Set<String> persistedNames){
+        if (intactInteraction.getShortName() == null){
+            return;
+        }
+        // then synchronize with database
+        String name;
+        List<String> existingInteractions;
+        do{
+            name = intactInteraction.getShortName().trim().toLowerCase();
+            existingInteractions = Collections.EMPTY_LIST;
+
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select i.shortName from IntactInteractionEvidence i " +
+                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
+                    + (intactInteraction.getAc() != null ? "and i.ac <> :interAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (intactInteraction.getAc() != null){
+                query.setParameter("interAc", intactInteraction.getAc());
+            }
+            existingInteractions = query.getResultList();
+            // check also with interactors
+            Query query2 = manager.createQuery("select i.shortName from IntactInteractor i " +
+                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
+                    + (intactInteraction.getAc() != null ? "and i.ac <> :interAc" : ""));
+            query2.setParameter("name", name);
+            query2.setParameter("nameWithSuffix", name+"-%");
+            if (intactInteraction.getAc() != null){
+                query2.setParameter("interAc", intactInteraction.getAc());
+            }
+            existingInteractions.addAll(query2.getResultList());
+            // check cached names
+            if (persistedNames.contains(name)){
+                existingInteractions.add(name);
+            }
+
+            if (!existingInteractions.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractions, IntactUtils.MAX_SHORT_LABEL_LEN, true);
+                if (!nameInSync.equals(name)){
+                    intactInteraction.setShortName(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactInteraction.setShortName(name);
+            }
+        }
+        while(!existingInteractions.isEmpty());
+    }
+
+    public static void synchronizeInteractorShortName(IntactInteractor intactInteractor, EntityManager manager){
+        if (intactInteractor.getShortName() == null){
+            return;
+        }
+        String name;
+        List<String> existingInteractors;
+        do{
+            name = intactInteractor.getShortName().trim().toLowerCase();
+
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select i.shortName from IntactInteractor i " +
+                    "where (i.shortName = :name or i.shortName like :nameWithSuffix) "
+                    + (intactInteractor.getAc() != null ? "and i.ac <> :interactorAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (intactInteractor.getAc() != null){
+                query.setParameter("interactorAc", intactInteractor.getAc());
+            }
+            existingInteractors = query.getResultList();
+            if (!existingInteractors.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactInteractor.setShortName(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactInteractor.setShortName(name);
+            }
+        }
+        while(!existingInteractors.isEmpty());
+    }
+
+    public static void synchronizeCvTermShortName(IntactCvTerm intactCv, EntityManager manager, String objClass){
+        if (intactCv.getShortName() == null){
+            return;
+        }
+        String name;
+        List<String> existingCvs;
+        do{
+            name = intactCv.getShortName().trim().toLowerCase();
+            existingCvs = Collections.EMPTY_LIST;
+
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select cv.shortName from IntactCvTerm cv " +
+                    "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
+                    + (objClass != null ? " and cv.objClass = :objclass " : " ")
+                    + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (objClass != null){
+                query.setParameter("objclass", objClass);
+            }
+            if (intactCv.getAc() != null){
+                query.setParameter("cvAc", intactCv.getAc());
+            }
+            existingCvs = query.getResultList();
+            if (!existingCvs.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactCv.setShortName(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactCv.setShortName(name);
+            }
+        }
+        while(!existingCvs.isEmpty());
+    }
+
+    public static void synchronizeSourceShortName(IntactSource intactSource, EntityManager manager){
+        String name;
+        List<String> existingSource;
+        do{
+            name = intactSource.getShortName().trim();
+            existingSource = Collections.EMPTY_LIST;
+
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select s.shortName from IntactSource s " +
+                    "where (s.shortName = :name or s.shortName like :nameWithSuffix) "
+                    + (intactSource.getAc() != null ? "and s.ac <> :sourceAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (intactSource.getAc() != null){
+                query.setParameter("sourceAc", intactSource.getAc());
+            }
+            existingSource = query.getResultList();
+            if (!existingSource.isEmpty()){
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingSource, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactSource.setShortName(nameInSync);
+                }
+                else{
+                    break;
+                }
+            }
+            else{
+                intactSource.setShortName(name);
+            }
+        }
+        while(!existingSource.isEmpty());
     }
 
     public static String generateAutomaticExperimentShortlabelFor(IntactExperiment intactExperiment, int maxLength){
