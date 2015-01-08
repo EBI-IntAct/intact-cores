@@ -43,7 +43,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 "and x.id = :id");
         query.setParameter("identity", Xref.IDENTITY);
         query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("primary", Xref.PRIMARY_MI);
+        query.setParameter("primary", Xref.PRIMARY);
         query.setParameter("pubmed", Xref.PUBMED);
         query.setParameter("id", value);
         List<IntactPublication> results = query.getResultList();
@@ -68,7 +68,7 @@ public class PublicationDaoImpl extends AbstractIntactBaseDao<Publication, Intac
                 "and x.id = :id");
         query.setParameter("identity", Xref.IDENTITY);
         query.setParameter("secondaryAc", Xref.SECONDARY);
-        query.setParameter("primary", Xref.PRIMARY_MI);
+        query.setParameter("primary", Xref.PRIMARY);
         query.setParameter("doi", Xref.DOI);
         query.setParameter("id", value);
         List<IntactPublication> results = query.getResultList();
