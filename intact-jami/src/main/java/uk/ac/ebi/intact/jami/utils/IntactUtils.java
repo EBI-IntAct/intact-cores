@@ -281,12 +281,18 @@ public class IntactUtils {
         else if (!pub.getAuthors().isEmpty() && pub.getPublicationDate() != null){
             yearString = IntactUtils.YEAR_FORMAT.format(pub.getPublicationDate());
             label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_");
+            if (label.contains(" ")){
+                label = label.split(" ")[0];
+            }
             finalLabel = label+"-"+yearString;
         }
         else if (!pub.getAuthors().isEmpty()){
             Calendar now = Calendar.getInstance();
             yearString = Integer.toString(now.get(Calendar.YEAR));
             label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_");
+            if (label.contains(" ")){
+                label = label.split(" ")[0];
+            }
             finalLabel = label+"-"+yearString;
         }
         else if (pub.getPublicationDate() != null){
